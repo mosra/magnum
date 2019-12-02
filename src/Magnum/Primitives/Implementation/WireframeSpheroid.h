@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/Trade.h"
@@ -41,13 +41,13 @@ class WireframeSpheroid {
         void ring(Float y);
         void cylinder();
 
-        Trade::MeshData3D finalize();
+        Trade::MeshData finalize();
 
     private:
         UnsignedInt _segments;
 
-        std::vector<UnsignedInt> _indices;
-        std::vector<Vector3> _positions;
+        Containers::Array<UnsignedInt> _indexData;
+        Containers::Array<Vector3> _vertexData;
 };
 
 }}}

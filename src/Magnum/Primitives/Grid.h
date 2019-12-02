@@ -66,8 +66,11 @@ CORRADE_ENUMSET_OPERATORS(GridFlags)
 /**
 @brief Solid 3D grid
 
-2x2 grid in the XY plane with normals in positive Z direction. Indexed
-@ref MeshPrimitive::Triangles with optional normals and texture coordinates.
+2x2 grid in the XY plane with normals in positive Z direction.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector3 positions, optional
+@ref VertexFormat::Vector3 normals and @ref VertexFormat::Vector2 texture
+coordinates.
 
 @image html primitives-grid3dsolid.png width=256px
 
@@ -78,12 +81,14 @@ cells horizontally and 4 vertically. In particular, this is different from the
 `subdivisions` parameter in @ref icosphereSolid().
 @see @ref grid3DWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D grid3DSolid(const Vector2i& subdivisions, GridFlags flags = GridFlag::GenerateNormals);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData grid3DSolid(const Vector2i& subdivisions, GridFlags flags = GridFlag::GenerateNormals);
 
 /**
 @brief Wireframe 3D grid
 
-2x2 grid in the XY plane. Indexed @ref MeshPrimitive::Lines.
+2x2 grid in the XY plane. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+positions.
 
 @image html primitives-grid3dwireframe.png width=256px
 
@@ -91,10 +96,12 @@ The @p subdivisions parameter describes how many times the plane gets cut in
 each direction. Specifying @cpp {0, 0} @ce will make the result an (indexed)
 equivalent to @ref planeWireframe(); @cpp {5, 3} @ce will make the grid have 6
 cells horizontally and 4 vertically. In particular, this is different from the
-`subdivisions` parameter in @ref icosphereSolid().
+`subdivisions` parameter in @ref icosphereSolid(). Also please note the grid
+has vertices in each intersection to be suitable for deformation along the Z
+axis --- not just long lines crossing each other.
 @see @ref grid3DSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D grid3DWireframe(const Vector2i& subdivisions);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData grid3DWireframe(const Vector2i& subdivisions);
 
 }}
 

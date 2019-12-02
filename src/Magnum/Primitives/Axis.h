@@ -37,26 +37,30 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D axis
 
-Two color-coded arrows for visualizing orientation (XY is RG). Indexed
-@ref MeshPrimitive::Lines with vertex colors.
+Two color-coded arrows for visualizing orientation (XY is RG).
+@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort indices,
+interleaved @ref VertexFormat::Vector2 positions and @ref VertexFormat::Vector3
+colors. The returned instance references data stored in constant memory.
 
 @image html primitives-axis2d.png width=256px
 
 @see @ref axis3D(), @ref crosshair2D(), @ref line2D()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D axis2D();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData axis2D();
 
 /**
 @brief 3D axis
 
-Three color-coded arrows for visualizing orientation (XYZ is RGB). Indexed
-@ref MeshPrimitive::Lines with vertex colors.
+Three color-coded arrows for visualizing orientation (XYZ is RGB).
+@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort indices,
+interleaved @ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3
+colors. The returned instance references data stored in constant memory.
 
 @image html primitives-axis3d.png width=256px
 
 @see @ref axis2D(), @ref crosshair3D(), @ref line3D()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D axis3D();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData axis3D();
 
 }}
 

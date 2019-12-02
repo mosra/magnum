@@ -29,14 +29,14 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Primitives/Implementation/Spheroid.h"
 #include "Magnum/Primitives/Implementation/WireframeSpheroid.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords) {
+Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords) {
     CORRADE_ASSERT(rings >= 2 && segments >= 3,
         "Primitives::uvSphereSolid(): at least two rings and three segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid sphere(segments, textureCoords == UVSphereTextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -62,10 +62,10 @@ Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSpher
     return sphere.finalize();
 }
 
-Trade::MeshData3D uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
+Trade::MeshData uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
     CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%4 == 0,
         "Primitives::uvSphereWireframe(): multiples of 2 rings and multiples of 4 segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::WireframeSpheroid sphere(segments/4);
 

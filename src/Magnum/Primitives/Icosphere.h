@@ -38,8 +38,9 @@ namespace Magnum { namespace Primitives {
 @brief Solid 3D icosphere
 @param subdivisions      Number of subdivisions
 
-Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
-normals.
+Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
+@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
+positions and @ref VertexFormat::Vector3 normals.
 
 @image html primitives-icospheresolid.png width=256px
 
@@ -51,7 +52,7 @@ result in 320 faces and so on. In particular, this is different from the
 `subdivisions` parameter in @ref grid3DSolid() or @ref grid3DWireframe().
 @see @ref uvSphereSolid(), @ref uvSphereWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D icosphereSolid(UnsignedInt subdivisions);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData icosphereSolid(UnsignedInt subdivisions);
 
 }}
 

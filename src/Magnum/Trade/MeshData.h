@@ -312,7 +312,8 @@ Containers::Array<MeshAttributeData> MAGNUM_TRADE_EXPORT meshAttributeDataNonOwn
 
 Provides access to mesh vertex and index data, together with additional
 information such as primitive type. Populated instances of this class are
-returned from @ref AbstractImporter::mesh().
+returned from @ref AbstractImporter::mesh() and from particular functions in
+the @ref Primitives library.
 
 @section Trade-MeshData-usage Basic usage
 

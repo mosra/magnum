@@ -50,24 +50,28 @@ enum class PlaneTextureCoords: UnsignedByte {
 @brief Solid 3D plane
 
 2x2 plane. Non-indexed @ref MeshPrimitive::TriangleStrip on the XY plane with
-normals in positive Z direction.
+@ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3 normals in
+positive Z direction. The returned instance references data stored in constant
+memory.
 
 @image html primitives-planesolid.png width=256px
 
 @see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D planeSolid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
 
 /**
 @brief Wireframe 3D plane
 
-2x2 plane. Non-indexed @ref MeshPrimitive::LineLoop on the XY plane.
+2x2 plane. Non-indexed @ref MeshPrimitive::LineLoop on the XY plane with
+@ref VertexFormat::Vector3 positions. The returned instance references data
+stored in constant memory.
 
 @image html primitives-planewireframe.png width=256px
 
 @see @ref planeSolid(), @ref squareWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D planeWireframe();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeWireframe();
 
 }}
 

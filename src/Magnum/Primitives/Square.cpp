@@ -27,34 +27,74 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D squareSolid(const SquareTextureCoords textureCoords) {
-    std::vector<std::vector<Vector2>> coords;
-    if(textureCoords == SquareTextureCoords::Generate) coords.push_back({
-        {1.0f, 0.0f},
-        {1.0f, 1.0f},
-        {0.0f, 0.0f},
-        {0.0f, 1.0f}
-    });
+namespace {
 
-    return Trade::MeshData2D{MeshPrimitive::TriangleStrip, {}, {{
-        {1.0f, -1.0f},
-        {1.0f, 1.0f},
-        {-1.0f, -1.0f},
-        {-1.0f, 1.0f}
-    }}, std::move(coords), {}, nullptr};
+constexpr Vector2 VerticesSolid[] {
+    { 1.0f, -1.0f},
+    { 1.0f,  1.0f},
+    {-1.0f, -1.0f},
+    {-1.0f,  1.0f}
+};
+constexpr struct VertexSolidTextureCoords {
+    Vector2 position;
+    Vector2 textureCoords;
+} VerticesSolidTextureCoords[] {
+    {{ 1.0f, -1.0f}, {1.0f, 0.0f}},
+    {{ 1.0f,  1.0f}, {1.0f, 1.0f}},
+    {{-1.0f, -1.0f}, {0.0f, 0.0f}},
+    {{-1.0f,  1.0f}, {0.0f, 1.0f}}
+};
+constexpr Trade::MeshAttributeData AttributesSolid[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesSolid)}
+};
+constexpr Trade::MeshAttributeData AttributesSolidTextureCoords[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesSolidTextureCoords,
+            &VerticesSolidTextureCoords[0].position,
+            Containers::arraySize(VerticesSolidTextureCoords), sizeof(VertexSolidTextureCoords))},
+    Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+        Containers::stridedArrayView(VerticesSolidTextureCoords,
+            &VerticesSolidTextureCoords[0].textureCoords,
+            Containers::arraySize(VerticesSolidTextureCoords), sizeof(VertexSolidTextureCoords))}
+};
+
 }
 
-Trade::MeshData2D squareWireframe() {
-    return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {{
-        {-1.0f, -1.0f},
-        {1.0f, -1.0f},
-        {1.0f, 1.0f},
-        {-1.0f, 1.0f}
-    }}, {}, {}, nullptr};
+Trade::MeshData squareSolid(const SquareTextureCoords textureCoords) {
+    if(textureCoords != SquareTextureCoords::Generate)
+        return Trade::MeshData{MeshPrimitive::TriangleStrip,
+            {}, VerticesSolid,
+            Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+
+    return Trade::MeshData{MeshPrimitive::TriangleStrip,
+        {}, VerticesSolidTextureCoords,
+        Trade::meshAttributeDataNonOwningArray(AttributesSolidTextureCoords)};
+}
+
+namespace {
+
+constexpr Vector2 VerticesWireframe[]{
+    {-1.0f, -1.0f},
+    { 1.0f, -1.0f},
+    { 1.0f,  1.0f},
+    {-1.0f,  1.0f}
+};
+constexpr Trade::MeshAttributeData AttributesWireframe[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesWireframe)}
+};
+
+}
+
+Trade::MeshData squareWireframe() {
+    return Trade::MeshData{MeshPrimitive::LineLoop,
+        {}, VerticesWireframe,
+        Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 
 }}

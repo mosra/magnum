@@ -25,24 +25,26 @@
 
 #include "WireframeSpheroid.h"
 
+#include <Corrade/Containers/GrowableArray.h>
+
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 
 WireframeSpheroid::WireframeSpheroid(const UnsignedInt segments): _segments(segments) {}
 
 void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rings) {
-    CORRADE_INTERNAL_ASSERT(_positions.empty());
+    CORRADE_INTERNAL_ASSERT(_vertexData.empty());
 
     /* Initial vertex */
-    _positions.push_back(Vector3::yAxis(endY - 1.0f));
+    arrayAppend(_vertexData, Vector3::yAxis(endY - 1.0f));
 
     /* Connect initial vertex to first ring */
     for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {0, i+1});
+        arrayAppend(_indexData, {0u, i+1});
 
     /* Hemisphere vertices and indices */
     const Rad ringAngleIncrement(Constants::piHalf()/rings);
@@ -50,21 +52,24 @@ void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rin
         const Rad angle = Float(j+1)*ringAngleIncrement;
         const std::pair<Float, Float> sincos = Math::sincos(angle);
 
-        _positions.emplace_back(0.0f, endY - sincos.second, sincos.first);
-        _positions.emplace_back(sincos.first, endY - sincos.second, 0.0f);
-        _positions.emplace_back(0.0f, endY - sincos.second, -sincos.first);
-        _positions.emplace_back(-sincos.first, endY - sincos.second, 0.0f);
+        arrayAppend(_vertexData, {
+            {0.0f, endY - sincos.second, sincos.first},
+            {sincos.first, endY - sincos.second, 0.0f},
+            {0.0f, endY - sincos.second, -sincos.first},
+            {-sincos.first, endY - sincos.second, 0.0f}
+        });
 
         /* Connect vertices to next ring */
-        for(UnsignedInt i = 0; i != 4; ++i)
-            _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4+i, UnsignedInt(_positions.size())+i});
+        for(UnsignedInt i = 0; i != 4; ++i) {
+            arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4 + i, UnsignedInt(_vertexData.size()) + i});
+        }
     }
 }
 
 void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt rings) {
     /* Connect previous ring to following vertices (if any) */
     if(rings > 1) for(UnsignedInt i = 0; i != 4; ++i) {
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4*_segments+i, UnsignedInt(_positions.size())+i});
+        arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4*_segments + i, UnsignedInt(_vertexData.size()) + i});
     }
 
     /* Hemisphere vertices and indices */
@@ -74,23 +79,26 @@ void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt ring
         const std::pair<Float, Float> sincos = Math::sincos(angle);
 
         /* Connect previous hemisphere ring to current vertices */
-        if(j != 0) for(UnsignedInt i = 0; i != 4; ++i)
-            _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4+i, UnsignedInt(_positions.size())+i});
+        if(j != 0) for(UnsignedInt i = 0; i != 4; ++i) {
+            arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4 + i, UnsignedInt(_vertexData.size()) + i});
+        }
 
-        _positions.emplace_back(0.0f, startY + sincos.first, sincos.second);
-        _positions.emplace_back(sincos.second, startY + sincos.first, 0.0f);
-        _positions.emplace_back(0.0f, startY + sincos.first, -sincos.second);
-        _positions.emplace_back(-sincos.second, startY + sincos.first, 0.0f);
+        arrayAppend(_vertexData, {
+            {0.0f, startY + sincos.first, sincos.second},
+            {sincos.second, startY + sincos.first, 0.0f},
+            {0.0f, startY + sincos.first, -sincos.second},
+            {-sincos.second, startY + sincos.first, 0.0f}
+        });
     }
 
     /* Final vertex */
-    _positions.push_back(Vector3::yAxis(startY + 1.0f));
+    arrayAppend(_vertexData, Vector3::yAxis(startY + 1.0f));
 
     /* Connect last ring to final vertex */
     if(rings > 1) for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size()) -5 + i, UnsignedInt(_positions.size()) - 1});
+        arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 5 + i, UnsignedInt(_vertexData.size()) - 1});
     else for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size()) - 4*_segments + i- 1 , UnsignedInt(_positions.size()) - 1});
+        arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4*_segments + i - 1, UnsignedInt(_vertexData.size()) - 1});
 }
 
 void WireframeSpheroid::ring(const Float y) {
@@ -100,24 +108,28 @@ void WireframeSpheroid::ring(const Float y) {
         for(UnsignedInt i = 0; i != 4; ++i) {
             const Rad segmentAngle = Rad(Float(i)*Constants::piHalf()) + Float(j)*segmentAngleIncrement;
             const std::pair<Float, Float> sincos = Math::sincos(segmentAngle);
-            if(j != 0) _indices.insert(_indices.end(), {UnsignedInt(_positions.size()-4), UnsignedInt(_positions.size())});
-            _positions.emplace_back(sincos.first, y, sincos.second);
+            if(j != 0) arrayAppend(_indexData, {UnsignedInt(_vertexData.size() - 4), UnsignedInt(_vertexData.size())});
+            arrayAppend(_vertexData, {sincos.first, y, sincos.second});
         }
     }
 
     /* Close the ring */
     for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4+i, UnsignedInt(_positions.size())-4*_segments+(i+1)%4});
+        arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4 + i, UnsignedInt(_vertexData.size()) - 4*_segments + (i + 1)%4});
 }
 
 void WireframeSpheroid::cylinder() {
     /* Connect four vertex pairs of previous and next ring */
     for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4*_segments+i, UnsignedInt(_positions.size())+i});
+        arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4*_segments + i, UnsignedInt(_vertexData.size()) + i});
 }
 
-Trade::MeshData3D WireframeSpheroid::finalize() {
-    return Trade::MeshData3D{MeshPrimitive::Lines, std::move(_indices), {std::move(_positions)}, {}, {}, {}, nullptr};
+Trade::MeshData WireframeSpheroid::finalize() {
+    Trade::MeshIndexData indices{_indexData};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position, Containers::arrayView(_vertexData)};
+    return Trade::MeshData{MeshPrimitive::Lines,
+        Containers::arrayAllocatorCast<char>(std::move(_indexData)), indices,
+        Containers::arrayAllocatorCast<char>(std::move(_vertexData)), {positions}};
 }
 
 }}}

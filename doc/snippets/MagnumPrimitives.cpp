@@ -26,8 +26,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Primitives/Gradient.h"
 #include "Magnum/Primitives/Line.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 using namespace Magnum;
 

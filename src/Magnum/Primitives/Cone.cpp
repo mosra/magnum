@@ -29,14 +29,14 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Primitives/Implementation/Spheroid.h"
 #include "Magnum/Primitives/Implementation/WireframeSpheroid.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D coneSolid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const ConeFlags flags) {
+Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const ConeFlags flags) {
     CORRADE_ASSERT(rings >= 1 && segments >= 3,
         "Primitives::coneSolid(): at least one ring and three segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid cone{segments, flags & ConeFlag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate};
 
@@ -64,10 +64,10 @@ Trade::MeshData3D coneSolid(const UnsignedInt rings, const UnsignedInt segments,
     return cone.finalize();
 }
 
-Trade::MeshData3D coneWireframe(const UnsignedInt segments, const Float halfLength) {
+Trade::MeshData coneWireframe(const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(segments >= 4 && segments%4 == 0,
         "Primitives::coneWireframe(): multiples of 4 segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Lines, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Lines, 0}));
 
     Implementation::WireframeSpheroid cone{segments/4};
     cone.ring(-halfLength);

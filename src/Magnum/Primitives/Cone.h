@@ -65,21 +65,22 @@ CORRADE_ENUMSET_OPERATORS(ConeFlags)
 @param halfLength   Half the cone length
 @param flags        Flags
 
-Cone along Y axis of radius @cpp 1.0f @ce. Indexed
-@ref MeshPrimitive::Triangles. Note that in order to have properly smooth
-normals over the whole area, the tip consists of @cpp segments*2 @ce vertices
-instead of just one.
+Cone along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
+@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
+positions, @ref VertexFormat::Vector3 normals and optional
+@ref VertexFormat::Vector2 texture coordinates. Note that in order to have
+properly smooth normals over the whole area, the tip consists of
+@cpp segments*2 @ce vertices instead of just one.
 
 @image html primitives-conesolid.png width=256px
 
 The cone is by default created with radius set to @f$ 1.0 @f$. In order to get
 radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
-@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
-@ref Trade::MeshData3D::positions() by @f$ r @f$, for example using
-@ref MeshTools::transformPointsInPlace().
+@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all positions by
+@f$ r @f$, for example using @ref MeshTools::transformPointsInPlace().
 @see @ref coneWireframe(), @ref cylinderSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D coneSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, ConeFlags flags = {});
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData coneSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, ConeFlags flags = {});
 
 /**
 @brief Wireframe 3D cone
@@ -87,13 +88,15 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D coneSolid(UnsignedInt rings, Unsigned
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cone length
 
-Cone along Y axis of radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
+Cone along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+positions.
 
 @image html primitives-conewireframe.png width=256px
 
 @see @ref coneSolid(), @ref cylinderWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D coneWireframe(UnsignedInt segments, Float halfLength);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData coneWireframe(UnsignedInt segments, Float halfLength);
 
 }}
 

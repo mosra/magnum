@@ -27,24 +27,39 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D crosshair2D() {
-    return Trade::MeshData2D{MeshPrimitive::Lines, {}, {{
-        {-1.0f,  0.0f}, {1.0f, 0.0f},
-        { 0.0f, -1.0f}, {0.0f, 1.0f}
-    }}, {}, {}, nullptr};
+namespace {
+
+constexpr Vector2 Positions2D[]{
+    {-1.0f,  0.0f}, {1.0f, 0.0f},
+    { 0.0f, -1.0f}, {0.0f, 1.0f}
+};
+constexpr Vector3 Positions3D[]{
+    {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
+    { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
+    { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
+};
+
+constexpr Trade::MeshAttributeData Attributes2D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(Positions2D)}
+};
+constexpr Trade::MeshAttributeData Attributes3D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(Positions3D)}
+};
+
 }
 
-Trade::MeshData3D crosshair3D() {
-    return Trade::MeshData3D{MeshPrimitive::Lines, {}, {{
-        {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
-        { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
-        { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
-    }}, {}, {}, {}, nullptr};
+Trade::MeshData crosshair2D() {
+    return Trade::MeshData{MeshPrimitive::Lines, {}, Positions2D,
+        Trade::meshAttributeDataNonOwningArray(Attributes2D)};
+}
+
+Trade::MeshData crosshair3D() {
+    return Trade::MeshData{MeshPrimitive::Lines, {}, Positions3D,
+        Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 
 }}

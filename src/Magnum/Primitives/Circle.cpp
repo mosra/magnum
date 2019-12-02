@@ -28,112 +28,140 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D circle2DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
+Trade::MeshData circle2DSolid(const UnsignedInt segments, const CircleTextureCoords textureCoords) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): segments must be >= 3",
-        (Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
-    std::vector<Vector2> positions;
-    positions.reserve(segments + 2);
+    /* Allocate interleaved array for all vertex data */
+    std::size_t stride = sizeof(Vector2);
+    std::size_t attributeCount = 1;
+    if(textureCoords == CircleTextureCoords::Generate) {
+        ++attributeCount;
+        stride += sizeof(Vector2);
+    }
+    Containers::Array<char> vertexData{stride*(segments + 2)};
+    Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
 
-    std::vector<std::vector<Vector2>> textureCoordinates;
-    if(textureCoords == CircleTextureCoords::Generate)
-        textureCoordinates.emplace_back();
-
-    /* Central point */
-    positions.emplace_back();
-    if(textureCoords == CircleTextureCoords::Generate)
-        textureCoordinates.front().emplace_back(0.5f, 0.5f);
-
-    /* Points on circle. The first/last point is here twice to close the circle
-       properly. */
+    /* Fill positions */
+    Containers::StridedArrayView1D<Vector2> positions{vertexData,
+        reinterpret_cast<Vector2*>(vertexData.begin()),
+        segments + 2, std::ptrdiff_t(stride)};
+    attributes[0] =
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions};
+    positions[0] = {};
+    /* Points on the circle. The first/last point is here twice to close the
+       circle properly. */
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        Vector2 position{sincos.second, sincos.first};
-        positions.emplace_back(position);
-
-        if(textureCoords == CircleTextureCoords::Generate)
-            textureCoordinates.front().emplace_back(position*0.5f + Vector2{0.5f});
+        positions[i + 1] = {sincos.second, sincos.first};
     }
 
-    return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, std::move(textureCoordinates), {}, nullptr};
+    /* Fill texture coords, if any */
+    if(textureCoords == CircleTextureCoords::Generate) {
+        Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.begin() + sizeof(Vector2)),
+            positions.size(), std::ptrdiff_t(stride)};
+        attributes[1] =
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, textureCoords};
+        for(std::size_t i = 0; i != positions.size(); ++i)
+            textureCoords[i] = positions[i]*0.5f + Vector2{0.5f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes)};
 }
 
-Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
+Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): segments must be >= 3",
-        (Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
-    std::vector<Vector2> positions;
-    positions.reserve(segments);
+    Containers::Array<char> vertexData{segments*sizeof(Vector2)};
+    auto positions = Containers::arrayCast<Vector2>(vertexData);
 
     /* Points on circle */
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions.emplace_back(sincos.second, sincos.first);
+        positions[i] = {sincos.second, sincos.first};
     }
 
-    return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
+    return Trade::MeshData{MeshPrimitive::LineLoop, std::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
 }
 
-Trade::MeshData3D circle3DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
+Trade::MeshData circle3DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
-        (Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
-    std::vector<Vector3> positions;
-    positions.reserve(segments + 2);
+    /* Allocate interleaved array for all vertex data */
+    std::size_t stride = 2*sizeof(Vector3);
+    std::size_t attributeCount = 2;
+    if(textureCoords == CircleTextureCoords::Generate) {
+        ++attributeCount;
+        stride += sizeof(Vector2);
+    }
+    Containers::Array<char> vertexData{stride*(segments + 2)};
+    Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
 
-    std::vector<std::vector<Vector2>> textureCoordinates;
-    if(textureCoords == CircleTextureCoords::Generate)
-        textureCoordinates.emplace_back();
-
-    /* Central point */
-    positions.emplace_back();
-    if(textureCoords == CircleTextureCoords::Generate)
-        textureCoordinates.front().emplace_back(0.5f, 0.5f);
-
-    /* Points on circle. The first/last point is here twice to close the circle
-       properly. */
+    /* Fill positions */
+    Containers::StridedArrayView1D<Vector3> positions{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.begin()),
+        segments + 2, std::ptrdiff_t(stride)};
+    attributes[0] =
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions};
+    positions[0] = {};
+    /* Points on the circle. The first/last point is here twice to close the
+       circle properly. */
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        Vector3 position{sincos.second, sincos.first, 0.0f};
-        positions.emplace_back(position);
-
-        if(textureCoords == CircleTextureCoords::Generate)
-            textureCoordinates.front().emplace_back(position.xy()*0.5f + Vector2{0.5f});
+        positions[i + 1] = {sincos.second, sincos.first, 0.0f};
     }
 
-    /* Normals. All pointing in the same direction. */
-    std::vector<Vector3> normals{segments + 2, Vector3::zAxis(1.0f)};
+    /* Fill normals */
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.begin() + sizeof(Vector3)),
+        segments + 2, std::ptrdiff_t(stride)};
+    attributes[1] =
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals};
+    for(Vector3& normal: normals) normal = Vector3::zAxis(1.0f);
 
-    return Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {std::move(normals)}, std::move(textureCoordinates), {}, nullptr};
+    /* Fill texture coords, if any */
+    if(textureCoords == CircleTextureCoords::Generate) {
+        Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.begin() + 2*sizeof(Vector3)),
+            positions.size(), std::ptrdiff_t(stride)};
+        attributes[2] =
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, textureCoords};
+        for(std::size_t i = 0; i != positions.size(); ++i)
+            textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes)};
 }
 
-Trade::MeshData3D circle3DWireframe(const UnsignedInt segments) {
+Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): segments must be >= 3",
-        (Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::LineLoop, 0}));
 
-    std::vector<Vector3> positions;
-    positions.reserve(segments);
+    Containers::Array<char> vertexData{segments*sizeof(Vector3)};
+    auto positions = Containers::arrayCast<Vector3>(vertexData);
 
     /* Points on circle */
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions.emplace_back(sincos.second, sincos.first, 0.0f);
+        positions[i] = {sincos.second, sincos.first, 0.0f};
     }
 
-    return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, {}, nullptr};
+    return Trade::MeshData{MeshPrimitive::LineLoop, std::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
 }
 
 }}

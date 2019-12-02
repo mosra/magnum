@@ -37,36 +37,42 @@ namespace Magnum { namespace Primitives {
 /**
 @brief Solid 3D cube
 
-Indexed @ref MeshPrimitive::Triangles with flat normals.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedShort indices,
+interleaved @ref VertexFormat::Vector3 positions and flat
+@ref VertexFormat::Vector3 normals. The returned instance references data
+stored in constant memory.
 
 @image html primitives-cubesolid.png width=256px
 
 @see @ref cubeSolidStrip(), @ref cubeWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolid();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolid();
 
 /**
 @brief Solid 3D cube as a single strip
 
-Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
-normals or anything else.
+Non-indexed @ref MeshPrimitive::TriangleStrip with @ref VertexFormat::Vector3
+positions. The returned instance references data stored in constant memory. No
+normals or anything else --- use @ref cubeSolid() instead if you need these.
 
 @image html primitives-cubesolid.png width=256px
 
-@see @ref cubeSolid(), @ref cubeWireframe()
+@see @ref cubeWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolidStrip();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolidStrip();
 
 /**
 @brief Wireframe 3D cube
 
-Indexed @ref MeshPrimitive::Lines.
+@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort indices and
+@ref VertexFormat::Vector3 positions. The returned instance references data
+stored in constant memory.
 
 @image html primitives-cubewireframe.png width=256px
 
 @see @ref cubeSolid(), @ref cubeSolidStrip()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeWireframe();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeWireframe();
 
 }}
 

@@ -27,24 +27,35 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D line2D(const Vector2& a, const Vector2& b) {
-    return Trade::MeshData2D{MeshPrimitive::Lines, {}, {{a, b}}, {}, {}, nullptr};
+Trade::MeshData line2D(const Vector2& a, const Vector2& b) {
+    Containers::Array<char> vertexData{sizeof(Vector2)*2};
+    auto positions = Containers::arrayCast<Vector2>(vertexData);
+    positions[0] = a;
+    positions[1] = b;
+
+    return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
+        {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
 }
 
-Trade::MeshData3D line3D(const Vector3& a, const Vector3& b) {
-    return Trade::MeshData3D{MeshPrimitive::Lines, {}, {{a, b}}, {}, {}, {}, nullptr};
+Trade::MeshData line3D(const Vector3& a, const Vector3& b) {
+    Containers::Array<char> vertexData{sizeof(Vector3)*2};
+    auto positions = Containers::arrayCast<Vector3>(vertexData);
+    positions[0] = a;
+    positions[1] = b;
+
+    return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
+        {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
 }
 
-Trade::MeshData2D line2D() {
+Trade::MeshData line2D() {
    return line2D({0.0f, 0.0f}, {1.0f, 0.0f});
 }
 
-Trade::MeshData3D line3D() {
+Trade::MeshData line3D() {
     return line3D({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
 }
 

@@ -65,21 +65,22 @@ CORRADE_ENUMSET_OPERATORS(CylinderFlags)
 @param halfLength   Half the cylinder length
 @param flags        Flags
 
-Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
-@ref MeshPrimitive::Triangles with normals, optional 2D texture coordinates and
-optional capped ends. If texture coordinates are generated, vertices of one
-segment are duplicated for texture wrapping.
+Cylinder along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles
+with @ref MeshIndexType::UnsignedInt indices, interleaved
+@ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3 normals,
+optional @ref VertexFormat::Vector2 texture coordinates and optional capped
+ends. If texture coordinates are generated, vertices of one segment are
+duplicated for texture wrapping.
 
 @image html primitives-cylindersolid.png width=256px
 
 The cylinder is by default created with radius set to @f$ 1.0 @f$. In order to
 get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
-@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
-@ref Trade::MeshData3D::positions() by @f$ r @f$, for example using
-@ref MeshTools::transformPointsInPlace().
+@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all positions by
+@f$ r @f$, for example using @ref MeshTools::transformPointsInPlace().
 @see @ref cylinderWireframe(), @ref coneSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cylinderSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
 
 /**
 @brief Wireframe 3D cylinder
@@ -89,14 +90,15 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderSolid(UnsignedInt rings, Unsi
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cylinder length
 
-Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
-@ref MeshPrimitive::Lines.
+Cylinder along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+positions.
 
 @image html primitives-cylinderwireframe.png width=256px
 
 @see @ref cylinderSolid(), @ref coneWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderWireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cylinderWireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
 
 }}
 

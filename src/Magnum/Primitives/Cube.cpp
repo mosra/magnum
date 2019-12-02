@@ -27,82 +27,75 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D cubeSolid() {
-    return Trade::MeshData3D{MeshPrimitive::Triangles, {
-         0,  1,  2,  0,  2,  3, /* +Z */
-         4,  5,  6,  4,  6,  7, /* +X */
-         8,  9, 10,  8, 10, 11, /* +Y */
-        12, 13, 14, 12, 14, 15, /* -Z */
-        16, 17, 18, 16, 18, 19, /* -Y */
-        20, 21, 22, 20, 22, 23  /* -X */
-    }, {{
-        {-1.0f, -1.0f,  1.0f},
-        { 1.0f, -1.0f,  1.0f},
-        { 1.0f,  1.0f,  1.0f}, /* +Z */
-        {-1.0f,  1.0f,  1.0f},
+namespace {
 
-        { 1.0f, -1.0f,  1.0f},
-        { 1.0f, -1.0f, -1.0f},
-        { 1.0f,  1.0f, -1.0f}, /* +X */
-        { 1.0f,  1.0f,  1.0f},
+/* not 8-bit because GPUs (and Vulkan) don't like it nowadays */
+constexpr UnsignedShort IndicesSolid[]{
+     0,  1,  2,  0,  2,  3, /* +Z */
+     4,  5,  6,  4,  6,  7, /* +X */
+     8,  9, 10,  8, 10, 11, /* +Y */
+    12, 13, 14, 12, 14, 15, /* -Z */
+    16, 17, 18, 16, 18, 19, /* -Y */
+    20, 21, 22, 20, 22, 23  /* -X */
+};
+constexpr struct VertexSolid {
+    Vector3 position;
+    Vector3 normal;
+} VerticesSolid[]{
+    {{-1.0f, -1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
+    {{ 1.0f, -1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
+    {{ 1.0f,  1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}}, /* +Z */
+    {{-1.0f,  1.0f,  1.0f}, { 0.0f,  0.0f,  1.0f}},
 
-        {-1.0f,  1.0f,  1.0f},
-        { 1.0f,  1.0f,  1.0f},
-        { 1.0f,  1.0f, -1.0f}, /* +Y */
-        {-1.0f,  1.0f, -1.0f},
+    {{ 1.0f, -1.0f,  1.0f}, { 1.0f,  0.0f,  0.0f}},
+    {{ 1.0f, -1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}},
+    {{ 1.0f,  1.0f, -1.0f}, { 1.0f,  0.0f,  0.0f}}, /* +X */
+    {{ 1.0f,  1.0f,  1.0f}, { 1.0f,  0.0f,  0.0f}},
 
-        { 1.0f, -1.0f, -1.0f},
-        {-1.0f, -1.0f, -1.0f},
-        {-1.0f,  1.0f, -1.0f}, /* -Z */
-        { 1.0f,  1.0f, -1.0f},
+    {{-1.0f,  1.0f,  1.0f}, { 0.0f,  1.0f,  0.0f}},
+    {{ 1.0f,  1.0f,  1.0f}, { 0.0f,  1.0f,  0.0f}},
+    {{ 1.0f,  1.0f, -1.0f}, { 0.0f,  1.0f,  0.0f}}, /* +Y */
+    {{-1.0f,  1.0f, -1.0f}, { 0.0f,  1.0f,  0.0f}},
 
-        {-1.0f, -1.0f, -1.0f},
-        { 1.0f, -1.0f, -1.0f},
-        { 1.0f, -1.0f,  1.0f}, /* -Y */
-        {-1.0f, -1.0f,  1.0f},
+    {{ 1.0f, -1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
+    {{-1.0f, -1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
+    {{-1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}}, /* -Z */
+    {{ 1.0f,  1.0f, -1.0f}, { 0.0f,  0.0f, -1.0f}},
 
-        {-1.0f, -1.0f, -1.0f},
-        {-1.0f, -1.0f,  1.0f},
-        {-1.0f,  1.0f,  1.0f}, /* -X */
-        {-1.0f,  1.0f, -1.0f}
-    }}, {{
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f},
-        { 0.0f,  0.0f,  1.0f}, /* +Z */
-        { 0.0f,  0.0f,  1.0f},
+    {{-1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f,  0.0f}},
+    {{ 1.0f, -1.0f, -1.0f}, { 0.0f, -1.0f,  0.0f}},
+    {{ 1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f,  0.0f}}, /* -Y */
+    {{-1.0f, -1.0f,  1.0f}, { 0.0f, -1.0f,  0.0f}},
 
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f},
-        { 1.0f,  0.0f,  0.0f}, /* +X */
-        { 1.0f,  0.0f,  0.0f},
+    {{-1.0f, -1.0f, -1.0f}, {-1.0f,  0.0f,  0.0f}},
+    {{-1.0f, -1.0f,  1.0f}, {-1.0f,  0.0f,  0.0f}},
+    {{-1.0f,  1.0f,  1.0f}, {-1.0f,  0.0f,  0.0f}}, /* -X */
+    {{-1.0f,  1.0f, -1.0f}, {-1.0f,  0.0f,  0.0f}}
+};
+constexpr Trade::MeshAttributeData AttributesSolid[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesSolid, &VerticesSolid[0].position,
+            Containers::arraySize(VerticesSolid), sizeof(VertexSolid))},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+        Containers::stridedArrayView(VerticesSolid, &VerticesSolid[0].normal,
+            Containers::arraySize(VerticesSolid), sizeof(VertexSolid))}
+};
 
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f},
-        { 0.0f,  1.0f,  0.0f}, /* +Y */
-        { 0.0f,  1.0f,  0.0f},
-
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f},
-        { 0.0f,  0.0f, -1.0f}, /* -Z */
-        { 0.0f,  0.0f, -1.0f},
-
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f},
-        { 0.0f, -1.0f,  0.0f}, /* -Y */
-        { 0.0f, -1.0f,  0.0f},
-
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f},
-        {-1.0f,  0.0f,  0.0f}, /* -X */
-        {-1.0f,  0.0f,  0.0f}
-    }}, {}, {}, nullptr};
 }
 
-Trade::MeshData3D cubeSolidStrip() {
+Trade::MeshData cubeSolid() {
+    return Trade::MeshData{MeshPrimitive::Triangles,
+        {}, IndicesSolid, Trade::MeshIndexData{IndicesSolid},
+        {}, VerticesSolid, Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+}
+
+namespace {
+
+constexpr Vector3 VerticesSolidStrip[]{
     /* Sources:
         https://twitter.com/Donzanoid/status/436843034966507520
         http://www.asmcommunity.net/forums/topic/?id=6284#post-45209
@@ -126,41 +119,64 @@ Trade::MeshData3D cubeSolidStrip() {
             |F \|
             2---3
     */
-    return Trade::MeshData3D{MeshPrimitive::TriangleStrip, {}, {{
-        { 1.0f,  1.0f,  1.0f}, /* 3 */
-        {-1.0f,  1.0f,  1.0f}, /* 2 */
-        { 1.0f, -1.0f,  1.0f}, /* 6 */
-        {-1.0f, -1.0f,  1.0f}, /* 7 */
-        {-1.0f, -1.0f, -1.0f}, /* 4 */
-        {-1.0f,  1.0f,  1.0f}, /* 2 */
-        {-1.0f,  1.0f, -1.0f}, /* 0 */
-        { 1.0f,  1.0f,  1.0f}, /* 3 */
-        { 1.0f,  1.0f, -1.0f}, /* 1 */
-        { 1.0f, -1.0f,  1.0f}, /* 6 */
-        { 1.0f, -1.0f, -1.0f}, /* 5 */
-        {-1.0f, -1.0f, -1.0f}, /* 4 */
-        { 1.0f,  1.0f, -1.0f}, /* 1 */
-        {-1.0f,  1.0f, -1.0f}  /* 0 */
-    }}, {}, {}, {}, nullptr};
+    { 1.0f,  1.0f,  1.0f}, /* 3 */
+    {-1.0f,  1.0f,  1.0f}, /* 2 */
+    { 1.0f, -1.0f,  1.0f}, /* 6 */
+    {-1.0f, -1.0f,  1.0f}, /* 7 */
+    {-1.0f, -1.0f, -1.0f}, /* 4 */
+    {-1.0f,  1.0f,  1.0f}, /* 2 */
+    {-1.0f,  1.0f, -1.0f}, /* 0 */
+    { 1.0f,  1.0f,  1.0f}, /* 3 */
+    { 1.0f,  1.0f, -1.0f}, /* 1 */
+    { 1.0f, -1.0f,  1.0f}, /* 6 */
+    { 1.0f, -1.0f, -1.0f}, /* 5 */
+    {-1.0f, -1.0f, -1.0f}, /* 4 */
+    { 1.0f,  1.0f, -1.0f}, /* 1 */
+    {-1.0f,  1.0f, -1.0f}  /* 0 */
+};
+constexpr Trade::MeshAttributeData AttributesSolidStrip[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesSolidStrip)}
+};
+
 }
 
-Trade::MeshData3D cubeWireframe() {
-    return Trade::MeshData3D{MeshPrimitive::Lines, {
-        0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
-        4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
-        1, 5, 2, 6,             /* +X */
-        0, 4, 3, 7              /* -X */
-    }, {{
-        {-1.0f, -1.0f,  1.0f},
-        { 1.0f, -1.0f,  1.0f},
-        { 1.0f,  1.0f,  1.0f},
-        {-1.0f,  1.0f,  1.0f},
+Trade::MeshData cubeSolidStrip() {
+    return Trade::MeshData{MeshPrimitive::TriangleStrip,
+        {}, VerticesSolidStrip, Trade::meshAttributeDataNonOwningArray(AttributesSolidStrip)};
+}
 
-        {-1.0f, -1.0f, -1.0f},
-        { 1.0f, -1.0f, -1.0f},
-        { 1.0f,  1.0f, -1.0f},
-        {-1.0f,  1.0f, -1.0f}
-    }}, {}, {}, {}, nullptr};
+namespace {
+
+/* not 8-bit because GPUs (and Vulkan) don't like it nowadays */
+constexpr UnsignedShort IndicesWireframe[]{
+    0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
+    4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
+    1, 5, 2, 6,             /* +X */
+    0, 4, 3, 7              /* -X */
+};
+constexpr Vector3 VerticesWireframe[]{
+    {-1.0f, -1.0f,  1.0f},
+    { 1.0f, -1.0f,  1.0f},
+    { 1.0f,  1.0f,  1.0f},
+    {-1.0f,  1.0f,  1.0f},
+
+    {-1.0f, -1.0f, -1.0f},
+    { 1.0f, -1.0f, -1.0f},
+    { 1.0f,  1.0f, -1.0f},
+    {-1.0f,  1.0f, -1.0f}
+};
+constexpr Trade::MeshAttributeData AttributesWireframe[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(VerticesWireframe)}
+};
+
+}
+
+Trade::MeshData cubeWireframe() {
+    return Trade::MeshData{MeshPrimitive::Lines,
+        {}, IndicesWireframe, Trade::MeshIndexData{IndicesWireframe},
+        {}, VerticesWireframe, Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 
 }}

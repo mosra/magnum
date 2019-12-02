@@ -28,17 +28,22 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Intersection.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB) {
-    std::vector<Vector2> positions{Vector2{ 1.0f, -1.0f},
-                                   Vector2{ 1.0f,  1.0f},
-                                   Vector2{-1.0f, -1.0f},
-                                   Vector2{-1.0f,  1.0f}};
-    std::vector<Color4> colors{4};
+Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB) {
+    struct Vertex {
+        Vector2 position;
+        Color4 color;
+    };
+
+    Containers::Array<char> vertexData{sizeof(Vertex)*4};
+    auto vertices = Containers::arrayCast<Vertex>(vertexData);
+    vertices[0].position = { 1.0f, -1.0f};
+    vertices[1].position = { 1.0f,  1.0f};
+    vertices[2].position = {-1.0f, -1.0f};
+    vertices[3].position = {-1.0f,  1.0f};
 
     /* For every corner, take a line perpendicular to the gradient direction
        and passing through the corner. The calculated intersection position
@@ -47,27 +52,45 @@ Trade::MeshData2D gradient2D(const Vector2& a, const Color4& colorA, const Vecto
     const Vector2 direction = b - a;
     const Vector2 perpendicular = direction.perpendicular();
     for(std::size_t i = 0; i != 4; ++i) {
-        const Float t = Math::Intersection::lineSegmentLine(a, direction, positions[i], perpendicular);
-        colors[i] = Math::lerp(colorA, colorB, t);
+        const Float t = Math::Intersection::lineSegmentLine(a, direction, vertices[i].position, perpendicular);
+        vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    return Trade::MeshData2D{MeshPrimitive::TriangleStrip, {}, {std::move(positions)}, {}, {std::move(colors)}, nullptr};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(vertices, &vertices[0].position,
+            vertices.size(), sizeof(Vertex))};
+    Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
+        Containers::stridedArrayView(vertices, &vertices[0].color,
+            vertices.size(), sizeof(Vertex))};
+    return Trade::MeshData{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), {positions, colors}};
 }
 
-Trade::MeshData2D gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
+Trade::MeshData gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
     return Primitives::gradient2D({-1.0f, 0.0f}, colorLeft, {1.0f, 0.0f}, colorRight);
 }
 
-Trade::MeshData2D gradient2DVertical(const Color4& colorBottom, const Color4& colorTop) {
+Trade::MeshData gradient2DVertical(const Color4& colorBottom, const Color4& colorTop) {
     return Primitives::gradient2D({0.0f, -1.0f}, colorBottom, {0.0f, 1.0f}, colorTop);
 }
 
-Trade::MeshData3D gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
-    std::vector<Vector3> positions{Vector3{ 1.0f, -1.0f, 0.0f},
-                                   Vector3{ 1.0f,  1.0f, 0.0f},
-                                   Vector3{-1.0f, -1.0f, 0.0f},
-                                   Vector3{-1.0f,  1.0f, 0.0f}};
-    std::vector<Color4> colors{4};
+Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
+    struct Vertex {
+        Vector3 position;
+        Vector3 normal;
+        Color4 color;
+    };
+
+    Containers::Array<char> vertexData{sizeof(Vertex)*4};
+    auto vertices = Containers::arrayCast<Vertex>(vertexData);
+    vertices[0].position = { 1.0f, -1.0f, 0};
+    vertices[1].position = { 1.0f,  1.0f, 0};
+    vertices[2].position = {-1.0f, -1.0f, 0};
+    vertices[3].position = {-1.0f,  1.0f, 0};
+    vertices[0].normal = {0.0f, 0.0f, 1.0f};
+    vertices[1].normal = {0.0f, 0.0f, 1.0f};
+    vertices[2].normal = {0.0f, 0.0f, 1.0f};
+    vertices[3].normal = {0.0f, 0.0f, 1.0f};
 
     /* For every corner, take a plane perpendicular to the gradient direction
        and passing through the corner. The calculated intersection position
@@ -75,24 +98,29 @@ Trade::MeshData3D gradient3D(const Vector3& a, const Color4& colorA, const Vecto
        for given corner. */
     const Vector3 direction = b - a;
     for(std::size_t i = 0; i != 4; ++i) {
-        const Vector4 plane = Math::planeEquation(direction, positions[i]);
+        const Vector4 plane = Math::planeEquation(direction, vertices[i].position);
         const Float t = Math::Intersection::planeLine(plane, a, direction);
-        colors[i] = Math::lerp(colorA, colorB, t);
+        vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    return Trade::MeshData3D{MeshPrimitive::TriangleStrip, {}, {std::move(positions)}, {{
-        {0.0f, 0.0f, 1.0f},
-        {0.0f, 0.0f, 1.0f},
-        {0.0f, 0.0f, 1.0f},
-        {0.0f, 0.0f, 1.0f}
-    }}, {}, {std::move(colors)}, nullptr};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(vertices, &vertices[0].position,
+            vertices.size(), sizeof(Vertex))};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::stridedArrayView(vertices, &vertices[0].normal,
+            vertices.size(), sizeof(Vertex))};
+    Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
+        Containers::stridedArrayView(vertices, &vertices[0].color,
+            vertices.size(), sizeof(Vertex))};
+    return Trade::MeshData{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), {positions, normals, colors}};
 }
 
-Trade::MeshData3D gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
+Trade::MeshData gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
     return Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorLeft, {1.0f, 0.0f, 0.0f}, colorRight);
 }
 
-Trade::MeshData3D gradient3DVertical(const Color4& colorBottom, const Color4& colorTop) {
+Trade::MeshData gradient3DVertical(const Color4& colorBottom, const Color4& colorTop) {
     return Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorBottom, {0.0f, 1.0f, 0.0f}, colorTop);
 }
 

@@ -38,14 +38,15 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D line
 
-Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
+Non-indexed @ref MeshPrimitive::Lines with @ref VertexFormat::Vector2 positions
+going from @p a to @p b.
 
 @image html primitives-line2d.png width=256px
 
 @see @ref line3D(), @ref line3D(const Vector3&, const Vector3&), @ref axis2D(),
     @ref crosshair2D()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D(const Vector2& a, const Vector2& b);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D(const Vector2& a, const Vector2& b);
 
 /**
 @brief 2D line in an identity transformation
@@ -54,19 +55,20 @@ Equivalent to calling @ref line2D(const Vector2&, const Vector2&) as
 
 @snippet MagnumPrimitives.cpp line2D-identity
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line2D();
 
 /**
 @brief 3D line
 
-Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
+Non-indexed @ref MeshPrimitive::Lines with @ref VertexFormat::Vector3 positions
+going from @p a to @p b.
 
 @image html primitives-line3d.png width=256px
 
 @see @ref line3D(), @ref line2D(const Vector2&, const Vector2&), @ref axis3D(),
     @ref crosshair3D()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D(const Vector3& a, const Vector3& b);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line3D(const Vector3& a, const Vector3& b);
 
 /**
 @brief 3D line in an identity transformation
@@ -76,7 +78,7 @@ Unit-size line in direction of positive X axis. Equivalent to calling
 
 @snippet MagnumPrimitives.cpp line3D-identity
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData line3D();
 
 }}
 

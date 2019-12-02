@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
@@ -49,16 +51,17 @@ class Spheroid {
         void topFaceRing();
         void capVertexRing(Float y, Float textureCoordsV, const Vector3& normal);
 
-        Trade::MeshData3D finalize();
+        Trade::MeshData finalize();
 
     private:
-        UnsignedInt segments;
-        TextureCoords textureCoords;
+        UnsignedInt _segments;
+        TextureCoords _textureCoords;
 
-        std::vector<UnsignedInt> indices;
-        std::vector<Vector3> positions;
-        std::vector<Vector3> normals;
-        std::vector<Vector2> textureCoords2D;
+        Containers::Array<UnsignedInt> _indexData;
+        Containers::Array<char> _vertexData;
+
+        void append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords = {});
+        void setLastVertexTextureCoords(const Vector2& textureCoords);
 };
 
 }}}

@@ -38,16 +38,18 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D square with a gradient
 
-2x2 square with vertex colors. Non-indexed @ref MeshPrimitive::TriangleStrip.
-Vertex colors correspond to the gradient defined by the endpoints @p a and
-@p b, linearly interpolated from @p colorA to @p colorB.
+2x2 square with vertex colors. Non-indexed @ref MeshPrimitive::TriangleStrip
+with interleaved @ref VertexFormat::Vector2 positions and
+@ref VertexFormat::Vector4 colors. Vertex colors correspond to the gradient
+defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
+@p colorB.
 
 @image html primitives-gradient2d.png width=256px
 
 @see @ref gradient2DHorizontal(), @ref gradient2DVertical(), @ref gradient3D(),
     @ref squareSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB);
 
 /**
 @brief 2D square with a horizontal gradient
@@ -60,7 +62,7 @@ Equivalent to calling @ref gradient2D() like this:
 
 @see @ref gradient2DVertical(), @ref gradient3DHorizontal(), @ref squareSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight);
 
 /**
 @brief 2D square with a vertical gradient
@@ -73,22 +75,24 @@ Equivalent to calling @ref gradient2D() like this:
 
 @see @ref gradient2DHorizontal(), @ref gradient3DVertical(), @ref squareSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D gradient2DVertical(const Color4& colorBottom, const Color4& colorTop);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2DVertical(const Color4& colorBottom, const Color4& colorTop);
 
 /**
 @brief 3D plane with a gradient
 
 2x2 plane with vertex colors. Non-indexed @ref MeshPrimitive::TriangleStrip on
-the XY plane with normals in positive Z direction. Vertex colors correspond to
-the gradient defined by the endpoints @p a and @p b, linearly interpolated from
-@p colorA to @p colorB.
+the XY plane with interleaved @ref VertexFormat::Vector3 positions,
+@ref VertexFormat::Vector3 normals in positive Z direction and
+@ref VertexFormat::Vector4 colors. Vertex colors correspond to the gradient
+defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
+@p colorB.
 
 @image html primitives-gradient3d.png width=256px
 
 @see @ref gradient3DHorizontal(), @ref gradient3DVertical(), @ref gradient2D(),
     @ref planeSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB);
 
 /**
 @brief 3D plane with a horizontal gradient
@@ -101,7 +105,7 @@ Equivalent to calling @ref gradient3D() like this:
 
 @see @ref gradient3DVertical(), @ref gradient2DHorizontal(), @ref planeSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight);
 
 /**
 @brief 3D plane with a vertical gradient
@@ -114,7 +118,7 @@ Equivalent to calling @ref gradient3D() like this:
 
 @see @ref gradient3DHorizontal(), @ref gradient2DVertical(), @ref planeSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D gradient3DVertical(const Color4& colorBottom, const Color4& colorTop);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3DVertical(const Color4& colorBottom, const Color4& colorTop);
 
 }}
 

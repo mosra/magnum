@@ -52,15 +52,17 @@ enum class UVSphereTextureCoords: UnsignedByte {
     equal to @cpp 3 @ce.
 @param textureCoords    Whether to generate texture coordinates
 
-Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
-normals and optional 2D texture coordinates. If texture coordinates are
+Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
+@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
+positions, @ref VertexFormat::Vector3 normals and optional
+@ref VertexFormat::Vector2 texture coordinates. If texture coordinates are
 generated, vertices of one segment are duplicated for texture wrapping.
 
 @image html primitives-uvspheresolid.png width=256px
 
 @see @ref icosphereSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
 
 /**
 @brief Wireframe 3D UV sphere
@@ -69,13 +71,15 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, Unsi
 @param segments         Number of (line) segments. Must be larger or equal to
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 
-Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
+Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+positions.
 
 @image html primitives-uvspherewireframe.png width=256px
 
 @see @ref icosphereSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereWireframe(UnsignedInt rings, UnsignedInt segments);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereWireframe(UnsignedInt rings, UnsignedInt segments);
 
 }}
 

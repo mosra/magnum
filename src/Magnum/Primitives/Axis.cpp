@@ -27,83 +27,99 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-using namespace Math::Literals;
+namespace {
 
-Trade::MeshData2D axis2D() {
-    return Trade::MeshData2D{MeshPrimitive::Lines,
-        {0, 1,
-         1, 2, /* X axis */
-         1, 3,
+/* not 8-bit because GPUs (and Vulkan) don't like it nowadays */
+constexpr UnsignedShort Indices2D[]{
+    0, 1,
+    1, 2, /* X axis */
+    1, 3,
 
-         4, 5,
-         5, 6, /* Y axis */
-         5, 7},
-        {{{ 0.0f,  0.0f},
-          { 1.0f,  0.0f}, /* X axis */
-          { 0.9f,  0.1f},
-          { 0.9f, -0.1f},
+    4, 5,
+    5, 6, /* Y axis */
+    5, 7
+};
+constexpr UnsignedShort Indices3D[]{
+    0, 1,
+    1, 2,  /* X axis */
+    1, 3,
 
-          { 0.0f,  0.0f},
-          { 0.0f,  1.0f}, /* Y axis */
-          { 0.1f,  0.9f},
-          {-0.1f,  0.9f}}}, {},
-        {{0xff0000_rgbf,
-          0xff0000_rgbf, /* X axis */
-          0xff0000_rgbf,
-          0xff0000_rgbf,
+    4, 5,
+    5, 6,  /* Y axis */
+    5, 7,
 
-          0x00ff00_rgbf,
-          0x00ff00_rgbf, /* Y axis */
-          0x00ff00_rgbf,
-          0x00ff00_rgbf}}};
+    8, 9,
+    9, 10, /* Z axis */
+    9, 11
+};
+
+constexpr struct Vertex2D {
+    Vector2 position;
+    Color3 color;
+} Vertices2D[]{
+    {{ 0.0f,  0.0f}, {1.0f, 0.0f, 0.0f}},
+    {{ 1.0f,  0.0f}, {1.0f, 0.0f, 0.0f}}, /* X axis */
+    {{ 0.9f,  0.1f}, {1.0f, 0.0f, 0.0f}},
+    {{ 0.9f, -0.1f}, {1.0f, 0.0f, 0.0f}},
+
+    {{ 0.0f,  0.0f}, {0.0f, 1.0f, 0.0f}},
+    {{ 0.0f,  1.0f}, {0.0f, 1.0f, 0.0f}}, /* Y axis */
+    {{ 0.1f,  0.9f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.1f,  0.9f}, {0.0f, 1.0f, 0.0f}}
+};
+constexpr struct Vertex3D {
+    Vector3 position;
+    Color3 color;
+} Vertices3D[]{
+    {{ 0.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f}},
+    {{ 1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f}}, /* X axis */
+    {{ 0.9f,  0.1f,  0.0f}, {1.0f, 0.0f, 0.0f}},
+    {{ 0.9f, -0.1f,  0.0f}, {1.0f, 0.0f, 0.0f}},
+
+    {{ 0.0f,  0.0f,  0.0f}, {0.0f, 1.0f, 0.0f}},
+    {{ 0.0f,  1.0f,  0.0f}, {0.0f, 1.0f, 0.0f}}, /* Y axis */
+    {{ 0.1f,  0.9f,  0.0f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.1f,  0.9f,  0.0f}, {0.0f, 1.0f, 0.0f}},
+
+    {{ 0.0f,  0.0f,  0.0f}, {0.0f, 0.0f, 1.0f}},
+    {{ 0.0f,  0.0f,  1.0f}, {0.0f, 0.0f, 1.0f}}, /* Z axis */
+    {{ 0.1f,  0.0f,  0.9f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.1f,  0.0f,  0.9f}, {0.0f, 0.0f, 1.0f}}
+};
+
+constexpr Trade::MeshAttributeData Attributes2D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(Vertices2D, &Vertices2D[0].position,
+            Containers::arraySize(Vertices2D), sizeof(Vertex2D))},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+        Containers::stridedArrayView(Vertices2D, &Vertices2D[0].color,
+            Containers::arraySize(Vertices2D), sizeof(Vertex2D))}
+};
+constexpr Trade::MeshAttributeData Attributes3D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(Vertices3D, &Vertices3D[0].position,
+            Containers::arraySize(Vertices3D), sizeof(Vertex3D))},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+        Containers::stridedArrayView(Vertices3D, &Vertices3D[0].color,
+            Containers::arraySize(Vertices3D), sizeof(Vertex3D))}
+};
+
 }
 
-Trade::MeshData3D axis3D() {
-    return Trade::MeshData3D{MeshPrimitive::Lines,
-        {0, 1,
-         1, 2,  /* X axis */
-         1, 3,
+Trade::MeshData axis2D() {
+    return Trade::MeshData{MeshPrimitive::Lines,
+        {}, Indices2D, Trade::MeshIndexData{Indices2D},
+        {}, Vertices2D, Trade::meshAttributeDataNonOwningArray(Attributes2D)};
+}
 
-         4, 5,
-         5, 6,  /* Y axis */
-         5, 7,
-
-         8, 9,
-         9, 10, /* Z axis */
-         9, 11},
-        {{{ 0.0f,  0.0f,  0.0f},
-          { 1.0f,  0.0f,  0.0f}, /* X axis */
-          { 0.9f,  0.1f,  0.0f},
-          { 0.9f, -0.1f,  0.0f},
-
-          { 0.0f,  0.0f,  0.0f},
-          { 0.0f,  1.0f,  0.0f}, /* Y axis */
-          { 0.1f,  0.9f,  0.0f},
-          {-0.1f,  0.9f,  0.0f},
-
-          { 0.0f,  0.0f,  0.0f},
-          { 0.0f,  0.0f,  1.0f}, /* Z axis */
-          { 0.1f,  0.0f,  0.9f},
-          {-0.1f,  0.0f,  0.9f}}}, {}, {},
-        {{0xff0000_rgbf,
-          0xff0000_rgbf, /* X axis */
-          0xff0000_rgbf,
-          0xff0000_rgbf,
-
-          0x00ff00_rgbf,
-          0x00ff00_rgbf, /* Y axis */
-          0x00ff00_rgbf,
-          0x00ff00_rgbf,
-
-          0x0000ff_rgbf,
-          0x0000ff_rgbf, /* Z axis */
-          0x0000ff_rgbf,
-          0x0000ff_rgbf}}};
+Trade::MeshData axis3D() {
+    return Trade::MeshData{MeshPrimitive::Lines,
+        {}, Indices3D, Trade::MeshIndexData{Indices3D},
+        {}, Vertices3D, Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 
 }}

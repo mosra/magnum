@@ -25,28 +25,29 @@
 
 #include "Capsule.h"
 
+#include <Corrade/Containers/GrowableArray.h>
+
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Primitives/Implementation/Spheroid.h"
 #include "Magnum/Primitives/Implementation/WireframeSpheroid.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D capsule2DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const Float halfLength) {
+Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1,
         "Primitives::capsule2DWireframe(): at least one hemisphere ring and one cylinder ring expected",
-        (Trade::MeshData2D{MeshPrimitive::Triangles, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-    std::vector<Vector2> positions;
-    positions.reserve(hemisphereRings*4+2+(cylinderRings-1)*2);
+    Containers::Array<Vector2> vertexData;
+    arrayReserve(vertexData, hemisphereRings*4+2+(cylinderRings-1)*2);
     const Rad angleIncrement(Constants::piHalf()/hemisphereRings);
     const Float cylinderIncrement = 2.0f*halfLength/cylinderRings;
 
     /* Bottom cap vertex */
-    positions.emplace_back(0.0f, -halfLength-1.0f);
+    arrayAppend(vertexData, {0.0f, -halfLength-1.0f});
 
     /* Bottom hemisphere */
     for(UnsignedInt i = 0; i != hemisphereRings; ++i) {
@@ -54,13 +55,13 @@ Trade::MeshData2D capsule2DWireframe(const UnsignedInt hemisphereRings, const Un
         const std::pair<Float, Float> sincos = Math::sincos(angle);
         const Float x = sincos.first;
         const Float y = -sincos.second-halfLength;
-        positions.insert(positions.end(), {{-x, y}, {x, y}});
+        arrayAppend(vertexData, {{-x, y}, {x, y}});
     }
 
-    /* Cylinder (bottom and top vertices are done within caps */
+    /* Cylinder (bottom and top vertices are done within caps) */
     for(UnsignedInt i = 0; i != cylinderRings-1; ++i) {
         const Float y = (i+1)*cylinderIncrement-halfLength;
-        positions.insert(positions.end(), {{-1.0f, y}, {1.0f, y}});
+        arrayAppend(vertexData, {{-1.0f, y}, {1.0f, y}});
     }
 
     /* Top hemisphere */
@@ -69,35 +70,38 @@ Trade::MeshData2D capsule2DWireframe(const UnsignedInt hemisphereRings, const Un
         const std::pair<Float, Float> sincos = Math::sincos(angle);
         const Float x = sincos.second;
         const Float y = sincos.first+halfLength;
-        positions.insert(positions.end(), {{-x, y}, {x, y}});
+        arrayAppend(vertexData, {{-x, y}, {x, y}});
     }
 
     /* Top cap vertex */
-    positions.emplace_back(0.0f, halfLength+1.0f);
+    arrayAppend(vertexData, {0.0f, halfLength+1.0f});
 
-    std::vector<UnsignedInt> indices;
-    indices.reserve(hemisphereRings*8+cylinderRings*4);
+    Containers::Array<UnsignedInt> indexData;
+    arrayReserve(indexData, hemisphereRings*8+cylinderRings*4);
 
     /* Bottom cap indices */
-    indices.insert(indices.end(), {0, 1, 0, 2});
+    arrayAppend(indexData, {0u, 1u, 0u, 2u});
 
     /* Side indices */
     for(UnsignedInt i = 0; i != cylinderRings+hemisphereRings*2-2; ++i)
-        indices.insert(indices.end(), {i*2+1, i*2+3,
-                                       i*2+2, i*2+4});
+        arrayAppend(indexData, {i*2+1, i*2+3, i*2+2, i*2+4});
 
     /* Top cap indices */
-    indices.insert(indices.end(),
-        {UnsignedInt(positions.size())-3, UnsignedInt(positions.size())-1,
-         UnsignedInt(positions.size())-2, UnsignedInt(positions.size())-1});
+    arrayAppend(indexData,
+        {UnsignedInt(vertexData.size())-3, UnsignedInt(vertexData.size())-1,
+         UnsignedInt(vertexData.size())-2, UnsignedInt(vertexData.size())-1});
 
-    return Trade::MeshData2D{MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, {}, {}, nullptr};
+    Trade::MeshIndexData indices{indexData};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position, Containers::arrayView(vertexData)};
+    return Trade::MeshData{MeshPrimitive::Lines,
+        Containers::arrayAllocatorCast<char>(std::move(indexData)), indices,
+        Containers::arrayAllocatorCast<char>(std::move(vertexData)), {positions}};
 }
 
-Trade::MeshData3D capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleTextureCoords textureCoords) {
+Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleTextureCoords textureCoords) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3,
         "Primitives::capsule3DSolid(): at least one hemisphere ring, one cylinder ring and three segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::Spheroid capsule(segments, textureCoords == CapsuleTextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -130,10 +134,10 @@ Trade::MeshData3D capsule3DSolid(const UnsignedInt hemisphereRings, const Unsign
     return capsule.finalize();
 }
 
-Trade::MeshData3D capsule3DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
+Trade::MeshData capsule3DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0,
         "Primitives::capsule3DWireframe(): at least one hemisphere and cylinder ring and multiples of 4 segments expected",
-        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Implementation::WireframeSpheroid capsule(segments/4);
 

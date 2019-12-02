@@ -452,7 +452,7 @@ std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::gradient3DVertica
 }
 
 std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::capsule2DWireframe() {
-    auto capsule = Primitives::capsule2DWireframe(8, 1, 0.75f);
+    Trade::MeshData2D capsule = Primitives::capsule2DWireframe(8, 1, 0.75f);
     MeshTools::transformPointsInPlace(Matrix3::scaling(Vector2{0.75f}), capsule.positions(0));
     return {std::move(capsule), "capsule2dwireframe.png"};
 }
@@ -466,7 +466,7 @@ std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::crosshair2D() {
 }
 
 std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::line2D() {
-    auto line = Primitives::line2D();
+    Trade::MeshData2D line = Primitives::line2D();
     MeshTools::transformPointsInPlace(Matrix3::translation(Vector2::xAxis(-1.0f))*Matrix3::scaling(Vector2::xScale(2.0f)), line.positions(0));
     return {std::move(line), "line2d.png"};
 }
@@ -476,7 +476,7 @@ std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::squareWireframe()
 }
 
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::capsule3DWireframe() {
-    auto capsule = Primitives::capsule3DWireframe(8, 1, 16, 1.0f);
+    Trade::MeshData3D capsule = Primitives::capsule3DWireframe(8, 1, 16, 1.0f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}), capsule.positions(0));
     return {std::move(capsule), "capsule3dwireframe.png"};
 }
@@ -506,7 +506,7 @@ std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::grid3DWireframe()
 }
 
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::line3D() {
-    auto line = Primitives::line3D();
+    Trade::MeshData3D line = Primitives::line3D();
     MeshTools::transformPointsInPlace(Matrix4::translation(Vector3::xAxis(-1.0f))*Matrix4::scaling(Vector3::xScale(2.0f)), line.positions(0));
     return {std::move(line), "line3d.png"};
 }
@@ -528,7 +528,7 @@ std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::squareSolid() {
 }
 
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::capsule3DSolid() {
-    auto capsule = Primitives::capsule3DSolid(4, 1, 12, 0.75f);
+    Trade::MeshData3D capsule = Primitives::capsule3DSolid(4, 1, 12, 0.75f);
     MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{0.75f}), capsule.positions(0));
     return {std::move(capsule), "capsule3dsolid.png"};
 }

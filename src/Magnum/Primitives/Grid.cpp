@@ -27,82 +27,133 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D grid3DSolid(const Vector2i& subdivisions, const GridFlags flags) {
+Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags) {
     const Vector2i vertexCount = subdivisions + Vector2i{2};
     const Vector2i faceCount = subdivisions + Vector2i{1};
 
-    std::vector<Vector3> positions;
-    positions.reserve(vertexCount.product());
-    for(Int y = 0; y != vertexCount.y(); ++y)
-        for(Int x = 0; x != vertexCount.x(); ++x)
-            positions.emplace_back((Vector2(x, y)/Vector2(faceCount))*2.0f - Vector2{1.0f}, 0.0f);
-
-    std::vector<UnsignedInt> indices;
-    indices.reserve(faceCount.product()*6);
-    for(Int y = 0; y != faceCount.y(); ++y) {
-        for(Int x = 0; x != faceCount.x(); ++x) {
-            /* 2--1 5
-               | / /|
-               |/ / |
-               0 3--4 */
-            indices.insert(indices.end(), {
-                UnsignedInt(y*vertexCount.x() + x),
-                UnsignedInt((y + 1)*vertexCount.x() + x + 1),
-                UnsignedInt((y + 1)*vertexCount.x() + x + 0),
-                UnsignedInt(y*vertexCount.x() + x),
-                UnsignedInt(y*vertexCount.x() + x + 1),
-                UnsignedInt((y + 1)*vertexCount.x() + x + 1)});
+    /* Indices */
+    Containers::Array<char> indexData{std::size_t(faceCount.product()*6)*sizeof(UnsignedInt)};
+    auto indices = Containers::arrayCast<UnsignedInt>(indexData);
+    {
+        std::size_t i = 0;
+        for(Int y = 0; y != faceCount.y(); ++y) {
+            for(Int x = 0; x != faceCount.x(); ++x) {
+                /* 2--1 5
+                   | / /|
+                   |/ / |
+                   0 3--4 */
+                indices[i++] = UnsignedInt(y*vertexCount.x() + x);
+                indices[i++] = UnsignedInt((y + 1)*vertexCount.x() + x + 1);
+                indices[i++] = UnsignedInt((y + 1)*vertexCount.x() + x + 0);
+                indices[i++] = UnsignedInt(y*vertexCount.x() + x);
+                indices[i++] = UnsignedInt(y*vertexCount.x() + x + 1);
+                indices[i++] = UnsignedInt((y + 1)*vertexCount.x() + x + 1);
+            }
         }
     }
 
-    std::vector<std::vector<Vector3>> normals;
-    if(flags & GridFlag::GenerateNormals)
-        normals.emplace_back(positions.size(), Vector3::zAxis(1.0f));
-
-    std::vector<std::vector<Vector2>> textureCoordinates;
+    /* Allocate interleaved array for all vertex data */
+    std::size_t stride = sizeof(Vector3);
+    std::size_t attributeCount = 1;
+    if(flags & GridFlag::GenerateNormals) {
+        ++attributeCount;
+        stride += sizeof(Vector3);
+    }
     if(flags & GridFlag::GenerateTextureCoords) {
-        textureCoordinates.emplace_back();
-        textureCoordinates[0].reserve(positions.size());
-        for(std::size_t i = 0; i != positions.size(); ++i)
-            textureCoordinates[0].emplace_back(positions[i].xy()*0.5f + Vector2{0.5f});
+        ++attributeCount;
+        stride += sizeof(Vector2);
+    }
+    Containers::Array<char> vertexData{stride*vertexCount.product()};
+    Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
+    std::size_t attributeIndex = 0;
+    std::size_t attributeOffset = 0;
+
+    /* Fill positions */
+    Containers::StridedArrayView1D<Vector3> positions{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.begin()),
+        std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};
+    attributes[attributeIndex++] =
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions};
+    attributeOffset += sizeof(Vector3);
+    {
+        std::size_t i = 0;
+        for(Int y = 0; y != vertexCount.y(); ++y)
+            for(Int x = 0; x != vertexCount.x(); ++x)
+                positions[i++] = {(Vector2(x, y)/Vector2(faceCount))*2.0f - Vector2{1.0f}, 0.0f};
     }
 
-    return Trade::MeshData3D{MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, std::move(normals), std::move(textureCoordinates), {}, nullptr};
+    /* Fill normals, if any. It's always the second attribute, right after
+       positions. */
+    if(flags & GridFlag::GenerateNormals) {
+        Containers::StridedArrayView1D<Vector3> normals{vertexData,
+            reinterpret_cast<Vector3*>(vertexData.begin() + attributeOffset),
+            std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};
+        attributes[attributeIndex++] =
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals};
+        attributeOffset += sizeof(Vector3);
+        for(auto&& i: normals) i = Vector3::zAxis(1.0f);
+    }
+
+    if(flags & GridFlag::GenerateTextureCoords) {
+        Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.begin() + attributeOffset),
+            std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};
+        attributes[attributeIndex++] =
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, textureCoords};
+        attributeOffset += sizeof(Vector2);
+        for(std::size_t i = 0; i != positions.size(); ++i)
+            textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::Triangles,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        std::move(vertexData), std::move(attributes)};
 }
 
-Trade::MeshData3D grid3DWireframe(const Vector2i& subdivisions) {
+Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
     const Vector2i vertexCount = subdivisions + Vector2i{2};
     const Vector2i faceCount = subdivisions + Vector2i{1};
 
-    std::vector<Vector3> positions;
-    positions.reserve(vertexCount.product());
-    for(Int y = 0; y != vertexCount.y(); ++y)
-        for(Int x = 0; x != vertexCount.x(); ++x)
-            positions.emplace_back((Vector2(x, y)/Vector2(faceCount))*2.0f - Vector2{1.0f}, 0.0f);
-
-    std::vector<UnsignedInt> indices;
-    indices.reserve(vertexCount.y()*(vertexCount.x() - 1)*2 +
-                    vertexCount.x()*(vertexCount.y() - 1)*2);
-    for(Int y = 0; y != vertexCount.y(); ++y) {
-        for(Int x = 0; x != vertexCount.x(); ++x) {
-            /* 3    7
-               |    | ...
-               2    6
-               0--1 4--5 ... */
-            if(x != vertexCount.x() - 1) indices.insert(indices.end(), {
-                UnsignedInt(y*vertexCount.x() + x),
-                UnsignedInt(y*vertexCount.x() + x + 1)});
-            if(y != vertexCount.y() - 1) indices.insert(indices.end(), {
-                UnsignedInt(y*vertexCount.x() + x),
-                UnsignedInt((y + 1)*vertexCount.x() + x)});
+    Containers::Array<char> indexData{sizeof(UnsignedInt)*
+        (vertexCount.y()*(vertexCount.x() - 1)*2 +
+        vertexCount.x()*(vertexCount.y() - 1)*2)};
+    auto indices = Containers::arrayCast<UnsignedInt>(indexData);
+    {
+        std::size_t i = 0;
+        for(Int y = 0; y != vertexCount.y(); ++y) {
+            for(Int x = 0; x != vertexCount.x(); ++x) {
+                /* 3    7
+                   |    | ...
+                   2    6
+                   0--1 4--5 ... */
+                if(x != vertexCount.x() - 1) {
+                    indices[i++] = UnsignedInt(y*vertexCount.x() + x);
+                    indices[i++] = UnsignedInt(y*vertexCount.x() + x + 1);
+                }
+                if(y != vertexCount.y() - 1) {
+                    indices[i++] = UnsignedInt(y*vertexCount.x() + x);
+                    indices[i++] = UnsignedInt((y + 1)*vertexCount.x() + x);
+                }
+            }
         }
     }
 
-    return Trade::MeshData3D{MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, {}, {}, {}, nullptr};
+    Containers::Array<char> vertexData{sizeof(Vector3)*vertexCount.product()};
+    auto positions = Containers::arrayCast<Vector3>(vertexData);
+    {
+        std::size_t i = 0;
+        for(Int y = 0; y != vertexCount.y(); ++y)
+            for(Int x = 0; x != vertexCount.x(); ++x)
+                positions[i++] = {(Vector2(x, y)/Vector2(faceCount))*2.0f - Vector2{1.0f}, 0.0f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::Lines,
+        std::move(indexData), Trade::MeshIndexData{indices},
+        std::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
 }
 
 }}
