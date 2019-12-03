@@ -232,6 +232,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
 
         /**
          * @brief Bind textures to given range of texture units
+         * @m_since_latest
          *
          * Binds first texture in the list to @p firstTextureUnit, second to
          * `firstTextureUnit + 1` etc. If any texture is @cpp nullptr @ce,
@@ -294,6 +295,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
 
         /**
          * @brief Bind textures to given range of texture units
+         * @m_since_latest
          *
          * Binds first level of given texture in the list to @p firstImageUnit,
          * second to `firstTextureUnit + 1` etc. 3D, cube map and array

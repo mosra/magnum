@@ -103,6 +103,14 @@ See also:
 -   Ability to specify application return code in
     @ref Platform::AbstractXApplication::exit()
 
+@subsubsection changelog-latest-changes-gl GL library
+
+-   Added @ref GL::AbstractTexture::bind() and
+    @ref GL::AbstractTexture::bindImages() overloads taking a
+    @ref Corrade::Containers::ArrayView instead of @ref std::initializer_list
+    in order to allow passing runtime-sized lists (see
+    [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
+
 @subsubsection changelog-latest-changes-platform Platform libraries
 
 -   Worked around @ref Platform::GlfwApplication crash while creating GL
