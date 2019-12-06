@@ -255,9 +255,10 @@ checked by the implementation:
     As @ref Trade-AbstractImporter-data-dependency "mentioned above",
     @ref Corrade::Containers::Array instances returned from plugin
     implementations are not allowed to use anything else than the default
-    deleter, otherwise this could cause dangling function pointer call on array
-    destruction if the plugin gets unloaded before the array is destroyed. This
-    is asserted by the base implementation on return.
+    deleter or the deleter used by @ref Trade::ArrayAllocator, otherwise this
+    could cause dangling function pointer call on array destruction if the
+    plugin gets unloaded before the array is destroyed. This is asserted by the
+    base implementation on return.
 @par
     Similarly for interpolator functions passed through
     @ref Animation::TrackView instances to @ref AnimationData --- to avoid
