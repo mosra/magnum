@@ -36,10 +36,10 @@ namespace Magnum {
 
 Windows supports two approaches to advertising HiDPI support. The recommended
 way is via a so-called manifest file added to an executable, but it's also
-possible to it programatically through the `SetProcessDpiAwareness()` family of
-APIs. Note there's three different levels of DPI awareness setup for Windows
-Vista and newer, Windows 8.1 and newer and Windows 10, and for best support may
-want to support all three.
+possible to it programatically through the [SetProcessDpiAwareness()](https://docs.microsoft.com/en-us/windows/win32/api/shellscalingapi/nf-shellscalingapi-setprocessdpiawareness)
+family of APIs. Note there's three different levels of DPI awareness setup for
+Windows Vista and newer, Windows 8.1 and newer and Windows 10, and for best
+support may want to support all three.
 
 When using MSVC, the manifest file can be added directly via CMake. Advertising application-wide per-monitor support can look like in the following snippet,
 together with fallbacks for older systems:

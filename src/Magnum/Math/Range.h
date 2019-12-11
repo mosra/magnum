@@ -225,7 +225,7 @@ template<UnsignedInt dimensions, class T> class Range {
         }
 
         /**
-         * @brief Padded rage
+         * @brief Padded range
          *
          * Translates the minimal and maximal coordinates by given amount.
          * Center remains the same.
