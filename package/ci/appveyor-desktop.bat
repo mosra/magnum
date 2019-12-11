@@ -48,6 +48,7 @@ cmake .. ^
     -DBUILD_TESTS=ON ^
     -DBUILD_GL_TESTS=ON ^
     -DBUILD_STATIC=%BUILD_STATIC% ^
+    -DBUILD_PLUGINS_STATIC=%BUILD_STATIC% ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 

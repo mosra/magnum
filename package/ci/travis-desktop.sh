@@ -49,6 +49,7 @@ cmake .. \
     -DBUILD_GL_TESTS=ON \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DBUILD_STATIC=$BUILD_STATIC \
+    -DBUILD_PLUGINS_STATIC=$BUILD_STATIC \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
 ninja -j4
