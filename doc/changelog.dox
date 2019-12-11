@@ -136,6 +136,8 @@ See also:
     and @ref Magnum/Platform/GlfwApplication.h (see [mosra/magnum#389](https://github.com/mosra/magnum/pull/389))
 -   `FindSDL2.cmake` got updated to link to all dependencies when using a
     statically built SDL on Windows
+-   `FindMagnum.cmake` now properly recognizes an optional dependency between
+    @ref DebugTools and @ref Trade on GL-less builds
 
 @subsection changelog-latest-bugfixes Bug fixes
 

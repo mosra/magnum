@@ -363,17 +363,19 @@ set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )
 
-set(_MAGNUM_DebugTools_DEPENDENCIES )
+# Trade is used by CompareImage. If Trade is not enabled, CompareImage is not
+# compiled at all.
+set(_MAGNUM_DebugTools_DEPENDENCIES Trade)
+set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
+# MeshTools, Primitives, SceneGraph and Shaders are used only for GL renderers
+# in DebugTools. All of this is optional, compiled in only if the base library
+# was selected.
 if(MAGNUM_TARGET_GL)
-    # MeshTools, Primitives, SceneGraph and Shaders are used only for GL
-    # renderers. All of this is optional, compiled in only if the base library
-    # was selected.
-    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Trade GL)
+    list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders GL)
     set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_SceneGraph_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
-    set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
 endif()
 
