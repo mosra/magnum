@@ -83,6 +83,8 @@ namespace C {
 
 struct MyApplication: Platform::Application {
     MyApplication(const Arguments& arguments);
+
+    void foo();
 };
 
 /* [configuration] */
@@ -94,6 +96,13 @@ MyApplication::MyApplication(const Arguments& arguments):
     // ...
 }
 /* [configuration] */
+
+void MyApplication::foo() {
+/* [Sdl2Application-dpi-scaling] */
+Vector2 scaling = Vector2{framebufferSize()}*dpiScaling()/Vector2{windowSize()};
+/* [Sdl2Application-dpi-scaling] */
+static_cast<void>(scaling);
+}
 
 }
 

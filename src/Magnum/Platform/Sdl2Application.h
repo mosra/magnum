@@ -383,6 +383,12 @@ The default is depending on the platform:
     @ref Platform-EmscriptenApplication-dpi "EmscriptenApplication DPI awareness docs"
     for more information.
 
+With @ref windowSize(), @ref framebufferSize() and @ref dpiScaling() having a
+different relation on each platform, the way to calculate context scaling
+consistently everywhere is using this expression:
+
+@snippet MagnumPlatform.cpp Sdl2Application-dpi-scaling
+
 If your application is saving and restoring window size, it's advisable to take
 @ref dpiScaling() into account:
 
