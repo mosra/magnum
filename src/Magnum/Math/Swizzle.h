@@ -72,7 +72,7 @@ namespace Implementation {
             return vector._data[i];
         }
     };
-    template<std::size_t size, char component, std::size_t i> struct ScatterComponent: ScatterComponentOr<size, i, component == i> {
+    template<std::size_t size, char component, std::size_t i> struct ScatterComponent: ScatterComponentOr<size, i, static_cast<std::size_t>(component) == i> {
         static_assert(component == 'x' || component == 'r' ||
                     ((component == 'y' || component == 'g') && size > 1) ||
                     ((component == 'z' || component == 'b') && size > 2) ||
