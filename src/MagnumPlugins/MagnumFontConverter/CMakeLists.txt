@@ -45,6 +45,8 @@ endif()
 target_link_libraries(MagnumFontConverter PUBLIC Magnum MagnumText MagnumTrade)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter PUBLIC TgaImageConverter)
+elseif(BUILD_PLUGINS_STATIC)
+    target_link_libraries(MagnumFontConverter INTERFACE TgaImageConverter)
 endif()
 # Modify output location only if all are set, otherwise it makes no sense
 if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CMAKE_LIBRARY_OUTPUT_DIRECTORY AND CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
