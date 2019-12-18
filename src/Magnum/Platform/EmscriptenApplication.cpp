@@ -251,7 +251,8 @@ Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) co
        However, in order to actually calculate the framebuffer size we need to
        query the device pixel ratio. That's done in tryCreate() below, here it
        is returning 1.0 to be consistent with behavior on other platforms where
-       it's either windowSize == 1 */
+       it's either windowSize == framebufferSize and dpiScaling of any value,
+       or windowSize != framebufferSize and dpiScaling == 1. */
     return Vector2{1.0f};
 }
 
