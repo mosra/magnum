@@ -145,6 +145,7 @@ See also:
     statically built SDL on Windows
 -   `FindMagnum.cmake` now properly recognizes an optional dependency between
     @ref DebugTools and @ref Trade on GL-less builds
+-   Various compiler warning fixes (see [mosra/magnum#406](https://github.com/mosra/magnum/pull/406))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

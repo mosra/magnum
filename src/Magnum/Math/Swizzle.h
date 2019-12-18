@@ -72,7 +72,8 @@ namespace Implementation {
             return vector._data[i];
         }
     };
-    template<std::size_t size, char component, std::size_t i> struct ScatterComponent: ScatterComponentOr<size, i, static_cast<std::size_t>(component) == i> {
+    /* MSVC complains about C4389 signed/unsigned mismatch without the cast */
+    template<std::size_t size, char component, std::size_t i> struct ScatterComponent: ScatterComponentOr<size, i, std::size_t(component) == i> {
         static_assert(component == 'x' || component == 'r' ||
                     ((component == 'y' || component == 'g') && size > 1) ||
                     ((component == 'z' || component == 'b') && size > 2) ||
