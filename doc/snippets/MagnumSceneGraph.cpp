@@ -26,6 +26,7 @@
 #include <algorithm>
 
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Intersection.h"
 #include "Magnum/SceneGraph/Animable.h"
 #include "Magnum/SceneGraph/AnimableGroup.h"
 #include "Magnum/SceneGraph/AbstractGroupedFeature.h"
@@ -347,6 +348,36 @@ std::sort(drawableTransformations.begin(), drawableTransformations.end(),
 
 camera.draw(drawableTransformations);
 /* [Drawable-draw-order] */
+}
+
+{
+Object3D cameraObject;
+SceneGraph::Camera3D camera{cameraObject};
+SceneGraph::DrawableGroup3D drawableGroup;
+/* [Drawable-culling] */
+struct CullableDrawable3D: SceneGraph::Drawable3D {
+    Range3D aabb; /* Relative to world origin */
+
+    // ...
+};
+
+/* Camera frustum relative to world origin */
+auto frustum = Frustum::fromMatrix(camera.projectionMatrix()*camera.cameraMatrix());
+
+/* Erase all items that don't pass the frustum check */
+std::vector<std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>>
+    drawableTransformations = camera.drawableTransformations(drawableGroup);
+drawableTransformations.erase(std::remove_if(
+    drawableTransformations.begin(), drawableTransformations.end(),
+    [&](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& a) {
+        Range3D aabb = static_cast<CullableDrawable3D&>(a.first.get()).aabb;
+        return !Math::Intersection::rangeFrustum(aabb, frustum);
+    }),
+    drawableTransformations.end());
+
+/* Draw just the visible part */
+camera.draw(drawableTransformations);
+/* [Drawable-culling] */
 }
 
 }
