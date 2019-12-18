@@ -1001,8 +1001,8 @@ if(WITH_GL_INFO)
             WindowlessEmscriptenApplication.js
             DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info)
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-gl-info.js.mem
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-gl-info.wasm
+            $<TARGET_FILE_DIR:magnum-gl-info>/magnum-gl-info.js.mem
+            $<TARGET_FILE_DIR:magnum-gl-info>/magnum-gl-info.wasm
             DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info OPTIONAL)
     endif()
 

@@ -139,8 +139,8 @@ if(WITH_AL_INFO)
             ${PROJECT_SOURCE_DIR}/src/Magnum/Platform/WindowlessEmscriptenApplication.js
             DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info)
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-al-info.js.mem
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-al-info.wasm
+            $<TARGET_FILE_DIR:magnum-al-info>/magnum-al-info.js.mem
+            $<TARGET_FILE_DIR:magnum-al-info>/magnum-al-info.wasm
             DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info OPTIONAL)
     endif()
 
