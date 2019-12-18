@@ -24,6 +24,10 @@ environment:
     APPVEYOR_JOB_NAME: windows-static-msvc2019
     BUILD_STATIC: ON
   - TARGET: desktop
+    COMPILER: msvc-clang
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-msvc2019-clang
+  - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gl-mingw
@@ -69,6 +73,8 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" pip install codecov
 
 - IF NOT "%BUILD_STATIC%" == "ON" set BUILD_STATIC=OFF
+# For ES builds, otherwise the "%COMPILER:~0,4%" below doesn't work, sigh
+- IF "%COMPILER%" == "" set COMPILER=msvc
 
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.19.1-bin.zip appveyor DownloadFile https://openal-soft.org/openal-binaries/openal-soft-1.19.1-bin.zip
@@ -83,19 +89,19 @@ install:
 - IF "%TARGET%" == "desktop-gles" set BUILD_APPLICATIONS=NO
 
 # SDL2
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
 
 # GLFW
 - IF "%BUILD_APPLICATIONS%" == "YES" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
 - IF "%BUILD_APPLICATIONS%" == "YES" 7z x glfw-3.2.1.bin.WIN64.zip && ren glfw-3.2.1.bin.WIN64 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
-- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
 build_script:
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
+- IF "%TARGET%" == "desktop" IF "%COMPILER:~0,4%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
 # Vulkan needs to be in a separate build, because in the future it'll need
