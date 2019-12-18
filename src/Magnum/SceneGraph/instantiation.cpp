@@ -42,8 +42,9 @@
 namespace Magnum { namespace SceneGraph {
 
 /* On non-MinGW Windows the instantiations are already marked with extern
-   template */
-#if !defined(CORRADE_TARGET_WINDOWS) || defined(__MINGW32__)
+   template. However Clang-CL doesn't propagate the export from the extern
+   template, it seems. */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(CORRADE_TARGET_MINGW) || defined(CORRADE_TARGET_CLANG_CL)
 #define MAGNUM_SCENEGRAPH_EXPORT_HPP MAGNUM_SCENEGRAPH_EXPORT
 #else
 #define MAGNUM_SCENEGRAPH_EXPORT_HPP

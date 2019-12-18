@@ -34,59 +34,67 @@
 namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template struct ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Double>>;
+/* Apparently clang-cl doesn't propagate the export from the extern template
+   declaration or something */
+#ifdef CORRADE_TARGET_CLANG_CL
+#define MAGNUM_EXPORT_TEMPLATE MAGNUM_EXPORT
+#else
+#define MAGNUM_EXPORT_TEMPLATE
+#endif
 
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Double>>;
 
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Double>>;
 
-template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
-template struct ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Double>>;
 
-template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Int>>;
-template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Double>>;
-template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
+
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<2, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<2, Magnum::Int>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<3, Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<3, Magnum::Int>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<2, Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
 
 /* Other (complex, dual complex, quaternion) just reinterpret to 2/4-component
    vectors instantiated above */
-template struct ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Float>>;
-template struct ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Double>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Float>>;
+template struct MAGNUM_EXPORT_TEMPLATE ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Double>>;
 #endif
 
 }}
