@@ -173,7 +173,17 @@ template<> struct Constants<Double> {
     static constexpr Double sqrt3()     { return 1.7320508075688773; }
     static constexpr Double sqrtHalf()  { return 0.7071067811865475; }
 
-    static constexpr Double nan()   { return Double(NAN); }
+    static constexpr Double nan()   {
+        /* For some reason the NAN macro is not constexpr when using clang-cl,
+           but the builtin (which is used in std::numeric_limits) is. According
+           to the test, NAN is constexpr when using MSVC itself, except on MSVC
+           2015.*/
+        #ifdef CORRADE_TARGET_CLANG_CL
+        return __builtin_nan("0");
+        #else
+        return Double(NAN);
+        #endif
+    }
     static constexpr Double inf()   { return HUGE_VAL; }
 };
 template<> struct Constants<Float> {
@@ -191,7 +201,17 @@ template<> struct Constants<Float> {
     static constexpr Float sqrt3()      { return 1.732050808f; }
     static constexpr Float sqrtHalf()   { return 0.707106781f; }
 
-    static constexpr Float nan()    { return NAN; }
+    static constexpr Float nan()    {
+        /* For some reason the NAN macro is not constexpr when using clang-cl,
+           but the builtin (which is used in std::numeric_limits) is. According
+           to the test, NAN is constexpr when using MSVC itself, except on MSVC
+           2015.*/
+        #ifdef CORRADE_TARGET_CLANG_CL
+        return __builtin_nanf("0");
+        #else
+        return NAN;
+        #endif
+    }
     static constexpr Float inf()    { return HUGE_VALF; }
 };
 #endif
