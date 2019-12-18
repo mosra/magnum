@@ -113,6 +113,11 @@ See also:
     in order to allow passing runtime-sized lists (see
     [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
 
+@subsubsection changelog-latest-changes-meshtools MeshTools library
+
+-   Added @ref MeshTools::subdivideInPlace() that operates on a partially
+    filled array view instead of a @ref std::vector
+
 @subsubsection changelog-latest-changes-platform Platform libraries
 
 -   Worked around @ref Platform::GlfwApplication crash while creating GL
