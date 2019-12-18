@@ -49,10 +49,13 @@ duplicate vertices in the mesh is up to user.
 template<class Vertex, class Interpolator> void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
 
-    std::size_t indexCount = indices.size();
+    /* For each triangle it'll generate three new vertices and three more
+       triangles */
     indices.reserve(indices.size()*4);
+    vertices.reserve(vertices.size() + indices.size());
 
     /* Subdivide each face to four new */
+    std::size_t indexCount = indices.size();
     for(std::size_t i = 0; i != indexCount; i += 3) {
         /* Interpolate each side */
         UnsignedInt newVertices[3];
