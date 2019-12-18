@@ -243,10 +243,9 @@ endif()
 
 # Read flags from configuration
 file(READ ${_MAGNUM_CONFIGURE_FILE} _magnumConfigure)
+string(REGEX REPLACE ";" "\\\\;" _magnumConfigure "${_magnumConfigure}")
+string(REGEX REPLACE "\n" ";" _magnumConfigure "${_magnumConfigure}")
 set(_magnumFlags
-    # WARNING: CAREFUL HERE, the string(FIND) succeeds even if a subset is
-    # found -- so e.g. looking for TARGET_GL will match TARGET_GLES2 as well.
-    # So far that's not a problem, but might become an issue for new flags.
     BUILD_DEPRECATED
     BUILD_STATIC
     TARGET_GL
@@ -258,7 +257,7 @@ set(_magnumFlags
     TARGET_HEADLESS
     TARGET_VK)
 foreach(_magnumFlag ${_magnumFlags})
-    string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
+    list(FIND _magnumConfigure "#define CORRADE_${_magnumFlag}" _magnum_${_magnumFlag})
     if(NOT _magnum_${_magnumFlag} EQUAL -1)
         set(MAGNUM_${_magnumFlag} 1)
     endif()
