@@ -33,7 +33,17 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
+#ifdef CORRADE_TARGET_CLANG_CL
+/* SDL does #pragma pack(push,8) and #pragma pack(pop,8) in different headers
+   (begin_code.h and end_code.h) and clang-cl doesn't like that, even though it
+   is completely fine. Silence the warning. */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpragma-pack"
+#endif
 #include <SDL_events.h>
+#ifdef CORRADE_TARGET_CLANG_CL
+#pragma clang diagnostic pop
+#endif
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
