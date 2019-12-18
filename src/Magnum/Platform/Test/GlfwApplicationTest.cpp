@@ -61,6 +61,9 @@ struct GlfwApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™!");
+        } else if(event.key() == KeyEvent::Key::S) {
+            Debug{} << "setting window size, which should trigger a viewport event";
+            setWindowSize(Vector2i{300, 200});
         }
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         else if(event.key() == KeyEvent::Key::W) {

@@ -647,6 +647,13 @@ Vector2i GlfwApplication::windowSize() const {
     return size;
 }
 
+void GlfwApplication::setWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::setWindowSize(): no window opened", );
+
+    const Vector2i newSize = _dpiScaling*size;
+    glfwSetWindowSize(_window, newSize.x(), newSize.y());
+}
+
 #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 void GlfwApplication::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMinWindowSize(): no window opened", );

@@ -355,6 +355,18 @@ class GlfwApplication {
          */
         Vector2i windowSize() const;
 
+        /**
+         * @brief Set window size
+         * @param size    The size, in screen coordinates
+         * @m_since_latest
+         *
+         * To make the sizing work independently of the display DPI, @p size is
+         * internally multiplied with @ref dpiScaling() before getting applied.
+         * Expects that a window is already created.
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
+         */
+        void setWindowSize(const Vector2i& size);
+
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window minimum size
@@ -364,8 +376,9 @@ class GlfwApplication {
          * If a value is set to @cpp -1 @ce, it will disable/remove the
          * corresponding limit. To make the sizing work independently of the
          * display DPI, @p size is internally multiplied with @ref dpiScaling()
-         * before getting applied.
+         * before getting applied. Expects that a window is already created.
          * @note Supported since GLFW 3.2.
+         * @see @ref setMaxWindowSize(), @ref setWindowSize()
          */
         void setMinWindowSize(const Vector2i& size = {-1, -1});
 
@@ -377,8 +390,9 @@ class GlfwApplication {
          * If a value is set to @cpp -1 @ce, it will disable/remove the
          * corresponding limit. To make the sizing work independently of the
          * display DPI, @p size is internally multiplied with @ref dpiScaling()
-         * before getting applied.
+         * before getting applied. Expects that a window is already created.
          * @note Supported since GLFW 3.2.
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
          */
         void setMaxWindowSize(const Vector2i& size = {-1, -1});
         #endif

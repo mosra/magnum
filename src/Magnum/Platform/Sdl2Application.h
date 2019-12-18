@@ -638,6 +638,19 @@ class Sdl2Application {
 
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
+         * @brief Set window size
+         * @param size    The size, in screen coordinates
+         * @m_since_latest
+         *
+         * To make the sizing work independently of the display DPI, @p size is
+         * internally multiplied with @ref dpiScaling() before getting applied.
+         * Expects that a window is already created.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
+         */
+        void setWindowSize(const Vector2i& size);
+
+        /**
          * @brief Set minimum window size
          * @param size    The minimum size, in screen coordinates
          * @m_since{2019,10}
@@ -645,8 +658,10 @@ class Sdl2Application {
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
          * to disable/remove a size limit. To make the sizing work
          * independently of the display DPI, @p size is internally multiplied
-         * with @ref dpiScaling() before getting applied.
+         * with @ref dpiScaling() before getting applied. Expects that a window
+         * is already created.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMaxWindowSize(), @ref setWindowSize()
          */
         void setMinWindowSize(const Vector2i& size);
 
@@ -658,8 +673,10 @@ class Sdl2Application {
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
          * to disable/remove a size limit. To make the sizing work
          * independently of the display DPI, @p size is internally multiplied
-         * with @ref dpiScaling() before getting applied.
+         * with @ref dpiScaling() before getting applied. Expects that a window
+         * is already created.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setMinWindowSize(), @ref setMaxWindowSize()
          */
         void setMaxWindowSize(const Vector2i& size);
         #endif
