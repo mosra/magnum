@@ -526,10 +526,19 @@ Context* currentContext = nullptr;
    called from. To avoid #ifdef hell in code below, the currentContext is
    redefined to return a value from this uniqueness-ensuring function. */
 #if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+/* Clang-CL complains that the function has a return type incompatible with C.
+   I don't care, I only need an unmangled name to look up later at runtime. */
+#ifdef CORRADE_TARGET_CLANG_CL
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
+#endif
 extern "C" CORRADE_VISIBILITY_EXPORT Context*& magnumGLUniqueCurrentContext();
 extern "C" CORRADE_VISIBILITY_EXPORT Context*& magnumGLUniqueCurrentContext() {
     return currentContext;
 }
+#ifdef CORRADE_TARGET_CLANG_CL
+#pragma clang diagnostic pop
+#endif
 
 namespace {
 
