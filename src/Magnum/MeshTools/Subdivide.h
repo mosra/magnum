@@ -30,35 +30,9 @@
  */
 
 #include <vector>
-#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Assert.h>
 
 namespace Magnum { namespace MeshTools {
-
-namespace Implementation {
-
-template<class Vertex, class Interpolator> class Subdivide {
-    public:
-        Subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices): indices(indices), vertices(vertices) {}
-
-        void operator()(Interpolator interpolator);
-
-    private:
-        std::vector<UnsignedInt>& indices;
-        std::vector<Vertex>& vertices;
-
-        UnsignedInt addVertex(const Vertex& v) {
-            vertices.push_back(v);
-            return vertices.size()-1;
-        }
-
-        void addFace(UnsignedInt first, UnsignedInt second, UnsignedInt third) {
-            indices.push_back(first);
-            indices.push_back(second);
-            indices.push_back(third);
-        }
-};
-
-}
 
 /**
 @brief Subdivide the mesh
@@ -72,13 +46,7 @@ template<class Vertex, class Interpolator> class Subdivide {
 Goes through all triangle faces and subdivides them into four new. Removing
 duplicate vertices in the mesh is up to user.
 */
-template<class Vertex, class Interpolator> inline void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
-    Implementation::Subdivide<Vertex, Interpolator>(indices, vertices)(interpolator);
-}
-
-namespace Implementation {
-
-template<class Vertex, class Interpolator> void Subdivide<Vertex, Interpolator>::operator()(Interpolator interpolator) {
+template<class Vertex, class Interpolator> void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3!", );
 
     std::size_t indexCount = indices.size();
@@ -88,8 +56,9 @@ template<class Vertex, class Interpolator> void Subdivide<Vertex, Interpolator>:
     for(std::size_t i = 0; i != indexCount; i += 3) {
         /* Interpolate each side */
         UnsignedInt newVertices[3];
-        for(int j = 0; j != 3; ++j)
-            newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
+        for(int j = 0; j != 3; ++j) {
+            newVertices[j] = vertices.size(); vertices.push_back(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
+        }
 
         /*
             Add three new faces (0, 1, 3) and update original (2)
@@ -104,14 +73,14 @@ template<class Vertex, class Interpolator> void Subdivide<Vertex, Interpolator>:
                   /       \   /      \
              orig 1 ----- new 1 ---- orig 2
         */
-        addFace(indices[i], newVertices[0], newVertices[2]);
-        addFace(newVertices[0], indices[i+1], newVertices[1]);
-        addFace(newVertices[2], newVertices[1], indices[i+2]);
+        indices.insert(indices.end(), {
+            indices[i], newVertices[0], newVertices[2],
+            newVertices[0], indices[i+1], newVertices[1],
+            newVertices[2], newVertices[1], indices[i+2]
+        });
         for(std::size_t j = 0; j != 3; ++j)
             indices[i+j] = newVertices[j];
     }
-}
-
 }
 
 }}
