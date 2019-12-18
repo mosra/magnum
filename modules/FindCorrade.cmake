@@ -88,6 +88,16 @@
 #  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
+#  CORRADE_TARGET_GCC           - Defined if compiling with GCC or GCC-
+#   compatible Clang
+#  CORRADE_TARGET_CLANG         - Defined if compiling with Clang or any of its
+#   variants
+#  CORRADE_TARGET_APPLE_CLANG   - Defined if compiling with Apple's Clang
+#  CORRADE_TARGET_CLANG_CL      - Defined if compiling with Clang-CL (Clang
+#   with a MSVC frontend)
+#  CORRADE_TARGET_MSVC          - Defined if compiling with MSVC or Clang with
+#   a MSVC frontend
+#  CORRADE_TARGET_MINGW`        - Defined if compiling under MinGW
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
@@ -289,10 +299,9 @@ endif()
 
 # Read flags from configuration
 file(READ ${_CORRADE_CONFIGURE_FILE} _corradeConfigure)
+string(REGEX REPLACE ";" "\\\\;" _corradeConfigure "${_corradeConfigure}")
+string(REGEX REPLACE "\n" ";" _corradeConfigure "${_corradeConfigure}")
 set(_corradeFlags
-    # WARNING: CAREFUL HERE, the string(FIND) succeeds even if a subset is
-    # found -- so e.g. looking for TARGET_GL will match TARGET_GLES2 as well.
-    # So far that's not a problem, but might become an issue for new flags.
     MSVC2015_COMPATIBILITY
     MSVC2017_COMPATIBILITY
     MSVC2019_COMPATIBILITY
@@ -307,11 +316,15 @@ set(_corradeFlags
     TARGET_WINDOWS_RT
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
+    # TARGET_X86 etc and TARGET_LIBCXX are not exposed to CMake as the meaning
+    # is unclear on platforms with multi-arch binaries or when mixing different
+    # STL implementations. TARGET_GCC etc are figured out via UseCorrade.cmake,
+    # as the compiler can be different when compiling the lib & when using it.
     PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     TESTSUITE_TARGET_XCTEST
     UTILITY_USE_ANSI_COLORS)
 foreach(_corradeFlag ${_corradeFlags})
-    string(FIND "${_corradeConfigure}" "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
+    list(FIND _corradeConfigure "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
     if(NOT _corrade_${_corradeFlag} EQUAL -1)
         set(CORRADE_${_corradeFlag} 1)
     endif()
