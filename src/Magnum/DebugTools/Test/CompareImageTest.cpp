@@ -673,9 +673,10 @@ void CompareImageTest::compareSpecials() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
-       NaNs. This is *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. */
-    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(__MINGW32__)
+    /* Apple platforms, Android and MinGW32 don't print signed NaNs. This is
+       *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. It used
+       to be with Emscripten too, but since 1.38.44 works the same as Linux. */
+    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
     CORRADE_COMPARE(out.str(),
         "Images a and b have both max and mean delta above threshold, actual 3.1/nan but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
@@ -700,7 +701,7 @@ void CompareImageTest::compareSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* Linux */
+    /* Linux, Emscripten */
     #else
     CORRADE_COMPARE(out.str(),
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan but at most 1.5/0.5 expected. Delta image:\n"
@@ -727,9 +728,10 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         compare.printMessage(flags, d, "a", "b");
     }
 
-    /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
-       NaNs. This is *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. */
-    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(__MINGW32__)
+    /* Apple platforms, Android and MinGW32 don't print signed NaNs. This is
+       *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. It used
+       to be with Emscripten too, but since 1.38.44 works the same as Linux. */
+    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
     CORRADE_COMPARE(out.str(),
         "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
@@ -754,7 +756,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* Linux */
+    /* Linux, Emscripten */
     #else
     CORRADE_COMPARE(out.str(),
         "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
