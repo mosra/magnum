@@ -64,7 +64,15 @@ enum class Flag {
 };
 
 typedef Containers::EnumSet<Flag> Flags;
+
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
 CORRADE_ENUMSET_OPERATORS(Flags)
+#ifdef CORRADE_TARGET_CLANG
+#pragma clang diagnostic pop
+#endif
 
 struct CompileGLTest: GL::OpenGLTester {
     public:
