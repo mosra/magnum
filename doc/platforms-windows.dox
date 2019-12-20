@@ -143,6 +143,45 @@ console window lurking in the background. This can be fixed by creating your
 executable with @cmake add_executable(... WIN32 ...) @ce and linking to the
 @ref main "Corrade::Main" library. See its documentation for more information.
 
+@section platforms-windows-clang-cl Using Clang-CL
+
+As an alternative to MSVC it's possible to use [Clang-CL](https://clang.llvm.org/docs/UsersManual.html#clang-cl).
+Compared to MinGW it is fully ABI-compatible with MSVC, sharing the same STL
+implementation, and thus you can freely mix and match libraries built by either
+of them.
+
+If you already have MSVC 2019, clang-cl is available as an optional install
+component. Configuring your project to be used with e.g. Ninja could then look
+similarly to the following. Custom clang-cl installations work as well of
+course, adapt the paths as necessary:
+
+@code{.bat}
+C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" x64
+
+cmake .. ^
+    -DCMAKE_C_COMPILER="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin/clang-cl.exe" ^
+    -DCMAKE_CXX_COMPILER="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin/clang-cl.exe" ^
+    -DCMAKE_LINKER="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/Llvm/bin/lld-link.exe" ^
+    -DCMAKE_CXX_FLAGS="-m64" ^
+    -G Ninja
+@endcode
+
+CMake is currently [having issues propagating correct bitness to clang-cl](https://gitlab.kitware.com/cmake/cmake/issues/16259)
+when using Ninja, which means you may need to explicitly pass either `-m64` or
+`-m32` to Clang. In the above case, `vcvarsall.bat` was called with the `x64`
+parameter but the Clang bundled with Visual Studio is 32-bit and thus defaults
+to 32-bit builds. Additionally, if your code needs to use exceptions (Magnum
+itself doesn't, but @ref Corrade::TestSuite relies on them to report failures
+in tests), you may need to explicitly pass `/EHs` via `CMAKE_CXX_FLAGS` as
+exceptions are currently [disabled by default](https://github.com/catchorg/Catch2/issues/1113).
+
+While Magnum itself is tested to work with this compiler, be prepared that you
+might run into exciting new issues that aren't present with MSVC, MinGW or
+Clang alone. In dire situations, you can use @ref CORRADE_TARGET_CLANG_CL to
+add compiler-specific workarounds.
+
+More information on [the Microsoft C++ Team Blog](https://devblogs.microsoft.com/cppblog/clang-llvm-support-in-visual-studio/).
+
 @section platforms-windows-rt Windows RT
 
 Windows RT is a restricted subset of Windows API, used for UWP / "Metro" /

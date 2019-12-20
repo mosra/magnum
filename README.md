@@ -55,7 +55,7 @@ SUPPORTED PLATFORMS
 ===================
 
 -   **Linux** and embedded Linux
--   **Windows**, **Windows RT** (Store/Phone)
+-   **Windows** with MSVC, clang-cl and MinGW, **Windows RT** (Store/Phone)
 -   **macOS**, **iOS**
 -   **Android**
 -   **Web** ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
