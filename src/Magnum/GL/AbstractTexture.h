@@ -829,6 +829,21 @@ inline GLuint AbstractTexture::release() {
     return id;
 }
 
+#ifdef CORRADE_TARGET_CLANG_CL
+/* Otherwise Clang-CL complains these functions are not defined */
+#ifndef MAGNUM_TARGET_GLES
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDSA>(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+#endif
+
+#ifndef MAGNUM_TARGET_WEBGL
+extern template void  AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+#ifndef MAGNUM_TARGET_GLES
+extern template void AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDSA>(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+#endif
+#endif
+#endif
+
 }}
 
 #endif
