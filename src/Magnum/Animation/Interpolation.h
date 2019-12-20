@@ -339,29 +339,73 @@ template<> struct TypeTraits<bool, bool>: TypeTraitsBool<bool> {};
 template<std::size_t size> struct TypeTraits<Math::BoolVector<size>, Math::BoolVector<size>>: TypeTraitsBool<Math::BoolVector<size>> {};
 
 /* Complex, preferring slerp() as it is more precise */
-template<class T> struct MAGNUM_EXPORT TypeTraits<Math::Complex<T>, Math::Complex<T>> {
+template<class T> struct
+#ifndef CORRADE_TARGET_CLANG_CL
+/* Clang-CL complains that it's ignored if it's on the class, so putting it
+   on the function instead. However MSVC doesn't like that, so doing this only
+   for Clang-CL. */
+MAGNUM_EXPORT
+#endif
+TypeTraits<Math::Complex<T>, Math::Complex<T>> {
     typedef Math::Complex<T>(*Interpolator)(const Math::Complex<T>&, const Math::Complex<T>&, Float);
 
-    static Interpolator interpolator(Interpolation interpolation);
+    static
+    #ifdef CORRADE_TARGET_CLANG_CL
+    MAGNUM_EXPORT
+    #endif
+    Interpolator interpolator(Interpolation interpolation);
 };
 
 /* Quaternions and dual quaternions, preferring slerp() as it is more precise */
-template<class T> struct MAGNUM_EXPORT TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>> {
+template<class T> struct
+#ifndef CORRADE_TARGET_CLANG_CL
+/* Clang-CL complains that it's ignored if it's on the class, so putting it
+   on the function instead. However MSVC doesn't like that, so doing this only
+   for Clang-CL. */
+MAGNUM_EXPORT
+#endif
+TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>> {
     typedef Math::Quaternion<T>(*Interpolator)(const Math::Quaternion<T>&, const Math::Quaternion<T>&, Float);
 
-    static Interpolator interpolator(Interpolation interpolation);
+    static
+    #ifdef CORRADE_TARGET_CLANG_CL
+    MAGNUM_EXPORT
+    #endif
+    Interpolator interpolator(Interpolation interpolation);
 };
-template<class T> struct MAGNUM_EXPORT TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>> {
+template<class T> struct
+#ifndef CORRADE_TARGET_CLANG_CL
+/* Clang-CL complains that it's ignored if it's on the class, so putting it
+   on the function instead. However MSVC doesn't like that, so doing this only
+   for Clang-CL. */
+MAGNUM_EXPORT
+#endif
+TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>> {
     typedef Math::DualQuaternion<T>(*Interpolator)(const Math::DualQuaternion<T>&, const Math::DualQuaternion<T>&, Float);
 
-    static Interpolator interpolator(Interpolation interpolation);
+    static
+    #ifdef CORRADE_TARGET_CLANG_CL
+    MAGNUM_EXPORT
+    #endif
+    Interpolator interpolator(Interpolation interpolation);
 };
 
 /* Cubic Hermite spline point has a different result type */
-template<class T> struct MAGNUM_EXPORT TypeTraits<Math::CubicHermite<T>, T> {
+template<class T> struct
+#ifndef CORRADE_TARGET_CLANG_CL
+/* Clang-CL complains that it's ignored if it's on the class, so putting it
+   on the function instead. However MSVC doesn't like that, so doing this only
+   for Clang-CL. */
+MAGNUM_EXPORT
+#endif
+TypeTraits<Math::CubicHermite<T>, T> {
     typedef T(*Interpolator)(const Math::CubicHermite<T>&, const Math::CubicHermite<T>&, Float);
 
-    static Interpolator interpolator(Interpolation interpolation);
+    static
+    #ifdef CORRADE_TARGET_CLANG_CL
+    MAGNUM_EXPORT
+    #endif
+    Interpolator interpolator(Interpolation interpolation);
 };
 
 }
