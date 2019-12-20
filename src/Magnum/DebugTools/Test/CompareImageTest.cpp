@@ -89,7 +89,6 @@ struct CompareImageTest: TestSuite::Tester {
     void imageNonZeroDelta();
     void imageNonZeroDeltaNoPixels();
     void imageError();
-    void imageFile();
     void imageFileZeroDelta();
     void imageFileNonZeroDelta();
     void imageFileError();
