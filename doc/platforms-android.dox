@@ -60,7 +60,10 @@ for a cleaner setup.
 
 Gradle requires Android SDK version of CMake, which is currently at version
 3.6. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
-instead.
+instead. On the other hand, while it's possible to use the CMake from Android
+SDK to build Magnum itself, the following guide is written with CMake 3.7 and
+newer in mind, which has Android support built-in. In older versions you'd need
+to supply a toolchain file instead and the configuration values are different.
 
 @section platforms-android-console Building and running console applications
 
