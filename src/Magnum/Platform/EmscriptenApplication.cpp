@@ -476,10 +476,13 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     emscripten_set_mousemove_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
-            /* Avoid bogus offset at first -- report 0 when the event is called
-               for the first time */
-            Vector2i position{Int(event->canvasX), Int(event->canvasY)};
+            /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is
+               not initialized, so we have to rely on the target being the
+               canvas. That's always true for mouse events. */
+            Vector2i position{Int(event->targetX), Int(event->targetY)};
             MouseMoveEvent e{*event,
+                /* Avoid bogus offset at first -- report 0 when the event is
+                   called for the first time. */
                 app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
                 position - app._previousMouseMovePosition};
             app._previousMouseMovePosition = position;
@@ -735,7 +738,10 @@ EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::but
 }
 
 Vector2i EmscriptenApplication::MouseEvent::position() const {
-    return {Int(_event.canvasX), Int(_event.canvasY)};
+    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
+       initialized, so we have to rely on the target being the canvas. That's
+       always true for mouse events. */
+    return {Int(_event.targetX), Int(_event.targetY)};
 }
 
 EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
@@ -752,7 +758,10 @@ EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveE
 }
 
 Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
-    return {Int(_event.canvasX), Int(_event.canvasY)};
+    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
+       initialized, so we have to rely on the target being the canvas. That's
+       always true for mouse events. */
+    return {Int(_event.targetX), Int(_event.targetY)};
 }
 
 EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
@@ -778,7 +787,10 @@ Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
 }
 
 Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
-    return {Int(_event.mouse.canvasX), Int(_event.mouse.canvasY)};
+    /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is not
+       initialized, so we have to rely on the target being the canvas. That's
+       always true for mouse events. */
+    return {Int(_event.mouse.targetX), Int(_event.mouse.targetY)};
 }
 
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {

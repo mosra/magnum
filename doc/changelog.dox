@@ -172,6 +172,9 @@ See also:
     @ref Platform::EmscriptenApplication::KeyEvent::Key::Semicolon "Key::Semicolon" and
     @ref Platform::EmscriptenApplication::KeyEvent::Key::Backquote "Key::Backquote"
     in @ref Platform::EmscriptenApplication
+-   Fixed broken @ref Platform::EmscriptenApplication mouse event coordinates
+    when `-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1` is enabled (see
+    [mosra/magnum#408](https://github.com/mosra/magnum/issues/408))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
