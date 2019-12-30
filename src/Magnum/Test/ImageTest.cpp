@@ -479,6 +479,9 @@ void ImageTest::constructMoveGeneric() {
     CORRADE_COMPARE(c.size(), (Vector2i{1, 3}));
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 3*16);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Image2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Image2D>::value);
 }
 
 void ImageTest::constructMoveImplementationSpecific() {
@@ -543,6 +546,9 @@ void ImageTest::constructMoveCompressedGeneric() {
     CORRADE_COMPARE(c.size(), (Vector2i{4, 4}));
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 8);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<CompressedImage2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<CompressedImage2D>::value);
 }
 
 void ImageTest::constructMoveCompressedImplementationSpecific() {
