@@ -135,10 +135,7 @@ class Resource {
         }
 
         /** @brief Move constructor */
-        Resource(Resource<T, U>&& other): manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
-            /** @brief Make other's state well-defined */
-            other.manager = nullptr;
-        }
+        Resource(Resource<T, U>&& other) noexcept;
 
         /** @brief Destructor */
         ~Resource() {
@@ -149,7 +146,7 @@ class Resource {
         Resource<T, U>& operator=(const Resource<T, U>& other);
 
         /** @brief Move assignment */
-        Resource<T, U>& operator=(Resource<T, U>&& other);
+        Resource<T, U>& operator=(Resource<T, U>&& other) noexcept;
 
         /** @brief Equality comparison */
         bool operator==(const Resource<T, U>& other) const {
@@ -260,17 +257,21 @@ template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(const Resou
     return *this;
 }
 
-template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T, U>&& other) {
-    /** @todo Just swap the values */
-    if(manager) manager->decrementReferenceCount(_key);
-
-    manager = other.manager;
-    _key = other._key;
-    lastCheck = other.lastCheck;
-    _state = other._state;
-    data = other.data;
-
+template<class T, class U> Resource<T, U>::Resource(Resource<T, U>&& other) noexcept: manager(other.manager), _key(other._key), lastCheck(other.lastCheck), _state(other._state), data(other.data) {
     other.manager = nullptr;
+    other._key = {};
+    other.lastCheck = 0;
+    other._state = ResourceState::Final;
+    other.data = nullptr;
+}
+
+template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T, U>&& other) noexcept {
+    using std::swap;
+    swap(manager, other.manager);
+    swap(_key, other._key);
+    swap(lastCheck, other.lastCheck);
+    swap(_state, other._state);
+    swap(data, other.data);
     return *this;
 }
 

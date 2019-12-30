@@ -105,6 +105,8 @@ See also:
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
+-   @ref Resource is now nothrow-movable and thus can be used with growable
+    @ref Containers::Array instances
 
 @subsubsection changelog-latest-changes-gl GL library
 

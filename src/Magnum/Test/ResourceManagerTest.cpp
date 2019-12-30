@@ -157,6 +157,9 @@ void ResourceManagerTest::constructResourceMove() {
     CORRADE_COMPARE(c.state(), ResourceState::Final);
     CORRADE_COMPARE(*c, 6432);
     CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Resource<Int>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Resource<Int>>::value);
 }
 
 void ResourceManagerTest::compare() {
