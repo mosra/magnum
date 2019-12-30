@@ -35,6 +35,11 @@ namespace Magnum { namespace Test { namespace {
 struct ResourceManagerTest: TestSuite::Tester {
     explicit ResourceManagerTest();
 
+    void constructResource();
+    void constructResourceEmpty();
+    void constructResourceCopy();
+    void constructResourceMove();
+
     void compare();
     void state();
     void stateFallback();
@@ -65,7 +70,12 @@ typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests({&ResourceManagerTest::compare,
+    addTests({&ResourceManagerTest::constructResource,
+              &ResourceManagerTest::constructResourceEmpty,
+              &ResourceManagerTest::constructResourceCopy,
+              &ResourceManagerTest::constructResourceMove,
+
+              &ResourceManagerTest::compare,
               &ResourceManagerTest::state,
               &ResourceManagerTest::stateFallback,
               &ResourceManagerTest::stateDisallowed,
@@ -81,6 +91,72 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::loaderSetNullptr,
 
               &ResourceManagerTest::debugResourceState});
+}
+
+void ResourceManagerTest::constructResource() {
+    ResourceManager rm;
+    rm.set("thing", 6432);
+
+    Resource<Int> a = rm.get<Int>("thing");
+    CORRADE_COMPARE(a.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(a.state(), ResourceState::Final);
+    CORRADE_COMPARE(*a, 6432);
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
+}
+
+void ResourceManagerTest::constructResourceEmpty() {
+    Resource<Int> a;
+    CORRADE_COMPARE(a.key(), ResourceKey{});
+    CORRADE_COMPARE(a.state(), ResourceState::Final);
+    CORRADE_VERIFY(!a);
+}
+
+void ResourceManagerTest::constructResourceCopy() {
+    ResourceManager rm;
+    rm.set("thing", 6432);
+
+    Resource<Int> a = rm.get<Int>("thing");
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
+
+    Resource<Int> b = a;
+    CORRADE_COMPARE(a.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(b.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(a.state(), ResourceState::Final);
+    CORRADE_COMPARE(b.state(), ResourceState::Final);
+    CORRADE_COMPARE(*a, 6432);
+    CORRADE_COMPARE(*b, 6432);
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 2);
+
+    Resource<Int> c;
+    c = b;
+    CORRADE_COMPARE(b.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(c.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(b.state(), ResourceState::Final);
+    CORRADE_COMPARE(c.state(), ResourceState::Final);
+    CORRADE_COMPARE(*b, 6432);
+    CORRADE_COMPARE(*c, 6432);
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 3);
+}
+
+void ResourceManagerTest::constructResourceMove() {
+    ResourceManager rm;
+    rm.set("thing", 6432);
+
+    Resource<Int> a = rm.get<Int>("thing");
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
+
+    Resource<Int> b = std::move(a);
+    CORRADE_COMPARE(b.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(b.state(), ResourceState::Final);
+    CORRADE_COMPARE(*b, 6432);
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
+
+    Resource<Int> c;
+    c = std::move(b);
+    CORRADE_COMPARE(c.key(), ResourceKey("thing"));
+    CORRADE_COMPARE(c.state(), ResourceState::Final);
+    CORRADE_COMPARE(*c, 6432);
+    CORRADE_COMPARE(rm.referenceCount<Int>("thing"), 1);
 }
 
 void ResourceManagerTest::compare() {
