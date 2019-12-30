@@ -33,10 +33,11 @@
 #include <numeric>
 #include <unordered_map>
 #include <vector>
+#include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Utility/MurmurHash2.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/FunctionsBatch.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -76,16 +77,14 @@ data accordingly:
 @snippet MagnumMeshTools.cpp removeDuplicates2
 */
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
-    /* Get bounds */
-    Vector min = data[0], max = data[0];
-    for(const auto& v: data) {
-        min = Math::min(v, min);
-        max = Math::max(v, max);
-    }
+    /* Get bounds. When NaNs appear, those will get collapsed together when
+       you're lucky, or cause the whole data to disappear when you're not -- it
+       needs a much more specialized handling to be robust. */
+    std::pair<Vector, Vector> minmax = Math::minmax<Vector>(data);
 
     /* Make epsilon so large that std::size_t can index all vectors inside the
        bounds. */
-    epsilon = Math::max(epsilon, typename Vector::Type((max-min).max()/~std::size_t{}));
+    epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/~std::size_t{}));
 
     /* Resulting index array */
     std::vector<UnsignedInt> resultIndices(data.size());
@@ -107,7 +106,7 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
         /* Go through all vectors */
         for(std::size_t i = 0; i != data.size(); ++i) {
             /* Try to insert new vertex to the table */
-            const Math::Vector<Vector::Size, std::size_t> v((data[i] + moved - min)/epsilon);
+            const Math::Vector<Vector::Size, std::size_t> v((data[i] + moved - minmax.first)/epsilon);
             const auto result = table.emplace(v, table.size());
 
             /* Add the (either new or already existing) index to index array */
