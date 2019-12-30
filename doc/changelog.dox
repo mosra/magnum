@@ -105,10 +105,6 @@ See also:
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
--   @ref Platform::GlfwApplication now gracefully handles monitor sizes of zero
-    when calculating DPI scaling (see [mosra/magnum#388](https://github.com/mosra/magnum/pull/388))
--   Ability to specify application return code in
-    @ref Platform::AbstractXApplication::exit()
 
 @subsubsection changelog-latest-changes-gl GL library
 
@@ -125,6 +121,10 @@ See also:
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
+-   @ref Platform::GlfwApplication now gracefully handles monitor sizes of zero
+    when calculating DPI scaling (see [mosra/magnum#388](https://github.com/mosra/magnum/pull/388))
+-   Ability to specify application return code in
+    @ref Platform::AbstractXApplication::exit()
 -   Worked around @ref Platform::GlfwApplication crash while creating GL
     context on a hidden window on Wayland (see
     [mosra/magnum#392](https://github.com/mosra/magnum/pull/392),
