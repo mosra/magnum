@@ -63,15 +63,15 @@ no interpolation is done. Note that this function is meant to be used for
 floating-point data (or generally with non-zero @p epsilon), for discrete data
 the usual sorting method is much more efficient.
 
-If you want to remove duplicate data from already indexed array, first remove
-duplicates as if the array wasn't indexed at all and then use @ref duplicate()
-to combine the two index arrays:
+If you want to remove duplicate data from an already indexed array, first
+remove duplicates as if the array wasn't indexed at all and then use
+@ref duplicate() to combine the two index arrays:
 
 @snippet MagnumMeshTools.cpp removeDuplicates1
 
 Removing duplicates in multiple indcidental arrays is also possible --- first
 remove duplicates in each array separately and then use @ref combineIndexedArrays()
-to combine the resulting index arrays to single index array and reorder the
+to combine the resulting index arrays to single index array, and reorder the
 data accordingly:
 
 @snippet MagnumMeshTools.cpp removeDuplicates2
@@ -86,35 +86,42 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
        bounds. */
     epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/~std::size_t{}));
 
-    /* Resulting index array */
-    std::vector<UnsignedInt> resultIndices(data.size());
-    std::iota(resultIndices.begin(), resultIndices.end(), 0);
+    /* Resulting index array. Because we'll be remapping these, we need to
+       start from a 0..n sequence. */
+    std::vector<UnsignedInt> indices(data.size());
+    std::iota(indices.begin(), indices.end(), 0);
 
     /* Table containing original vector index for each discretized vector.
        Reserving more buckets than necessary (i.e. as if each vector was
        unique). */
     std::unordered_map<Math::Vector<Vector::Size, std::size_t>, UnsignedInt, Implementation::VectorHash<Vector::Size>> table(data.size());
 
-    /* Index array for each pass, new data array */
-    std::vector<UnsignedInt> indices;
-    indices.reserve(data.size());
+    /* Index array that'll be filled in each pass and then used for remapping
+       the `indices` */
+    std::vector<UnsignedInt> remapping(data.size());
 
     /* First go with original coordinates, then move them by epsilon/2 in each
        direction. */
     Vector moved;
     for(std::size_t moving = 0; moving <= Vector::Size; ++moving) {
+        /* Clear the table for this pass */
+        table.clear();
+
         /* Go through all vectors */
         for(std::size_t i = 0; i != data.size(); ++i) {
-            /* Try to insert new vertex to the table */
-            const Math::Vector<Vector::Size, std::size_t> v((data[i] + moved - minmax.first)/epsilon);
+            /* Try to insert new vertex into the table */
+            const Math::Vector<Vector::Size, std::size_t> v{(data[i] + moved - minmax.first)/epsilon};
             const auto result = table.emplace(v, table.size());
 
-            /* Add the (either new or already existing) index to index array */
-            indices.push_back(result.first->second);
+            /* Add the (either new or already existing) index into index array */
+            remapping[i] = result.first->second;
 
-            /* If this is new combination, copy the data to new (earlier)
-               possition in the array */
-            if(result.second && i != table.size()-1) data[table.size()-1] = data[i];
+            /* If this is a new combination, copy the data to new (earlier)
+               position in the array. Data in [table.size()-1, i) are already
+               present in the [0, table.size()-1) range from previous
+               iterations so we aren't overwriting anything. */
+            if(result.second && i != table.size() - 1)
+                data[table.size()-1] = data[i];
         }
 
         /* Shrink the data array */
@@ -122,21 +129,17 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
         data.resize(table.size());
 
         /* Remap the resulting index array */
-        for(auto& i: resultIndices) i = indices[i];
+        for(auto& i: indices) i = remapping[i];
 
         /* Finished */
         if(moving == Vector::Size) continue;
 
-        /* Move vertex coordinates by epsilon/2 in next direction */
+        /* Move vertex coordinates by epsilon/2 in the next direction */
         moved = Vector();
         moved[moving] = epsilon/2;
-
-        /* Clear the structures for next pass */
-        table.clear();
-        indices.clear();
     }
 
-    return resultIndices;
+    return indices;
 }
 
 }}
