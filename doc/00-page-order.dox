@@ -55,6 +55,8 @@ See also and @ref configurationvalues, @ref tweakableliterals and a
 
 @page configurationvalues Configuration value parsers and writers for custom types
 
+@m_keywords{Serialization Parsers}
+
 See also @ref debugoperators, @ref tweakableliterals and a
 @m_class{m-doc-external} [related section in Corrade](https://doc.magnum.graphics/corrade/corrade-configurationvalues.html).
 
