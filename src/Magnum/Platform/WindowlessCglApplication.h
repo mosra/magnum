@@ -41,6 +41,9 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/Platform/Platform.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#define GL_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
+#endif
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
 #include <OpenGL/CGLCurrent.h>

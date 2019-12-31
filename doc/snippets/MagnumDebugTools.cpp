@@ -100,3 +100,6 @@ CORRADE_COMPARE_WITH(actual.pixels<Color3ub>().flipped<0>(), expected,
 }
 }
 };
+
+/* To prevent macOS ranlib complaining that there are no symbols */
+int main() {}
