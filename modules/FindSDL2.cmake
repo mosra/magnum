@@ -117,8 +117,8 @@ if(CORRADE_TARGET_WINDOWS)
         PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 endif()
 
-# iOS dependencies
-if(CORRADE_TARGET_IOS)
+# (Static) iOS dependencies
+if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
     set(_SDL2_FRAMEWORKS
         AudioToolbox
         AVFoundation
@@ -126,6 +126,7 @@ if(CORRADE_TARGET_IOS)
         CoreMotion
         Foundation
         GameController
+        Metal # needed since 2.0.8
         QuartzCore
         UIKit)
     set(_SDL2_FRAMEWORK_LIBRARIES )
@@ -173,8 +174,8 @@ if(NOT TARGET SDL2::SDL2)
                 INTERFACE_LINK_LIBRARIES Threads::Threads ${CMAKE_DL_LIBS})
         endif()
 
-        # Link frameworks on iOS
-        if(CORRADE_TARGET_IOS)
+        # Link frameworks on iOS if we have a static SDL
+        if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()
