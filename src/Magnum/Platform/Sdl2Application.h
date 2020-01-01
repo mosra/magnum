@@ -61,6 +61,16 @@
 #include <SDL_video.h>
 #include <SDL_scancode.h>
 
+#ifdef CORRADE_TARGET_IOS
+/* Including SDL_main.h unconditionally would mean it'd override Corrade::Main
+   on Windows (both are parsing wargv and converting them to UTF-8, but ours
+   does that better and additionally enables ANSI colors and UTF-8 console
+   output). Right now (SDL 2.0.11) it's only needed for WinRT (which is done
+   below), Android (which we don't support for SDL) and iOS, so whitelist it
+   only for iOS. */
+#include <SDL_main.h>
+#endif
+
 #ifdef CORRADE_TARGET_WINDOWS_RT
 #include <SDL_main.h> /* For SDL_WinRTRunApp */
 #include <wrl.h> /* For the WinMain entrypoint */

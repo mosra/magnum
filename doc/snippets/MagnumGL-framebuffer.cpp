@@ -97,4 +97,5 @@ GL::Buffer b; // implicitly tied to `other`
 /* [Context-makeCurrent] */
 }
 
+return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }
