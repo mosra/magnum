@@ -39,7 +39,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 Parts of this library are additionally available in a form of
@@ -66,7 +66,7 @@ library:
 find_package(Magnum REQUIRED Sdl2Application)
 
 # ...
-target_link_libraries(your-app Magnum::Application)
+target_link_libraries(your-app PRIVATE Magnum::Application)
 @endcode
 
 See documentation of particular `*Application` classs, the
@@ -90,7 +90,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 See @ref building, @ref cmake, @ref matrix-vector and @ref transformations for
@@ -132,7 +132,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 See @ref building, @ref cmake and @ref types for more information.
@@ -162,7 +162,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
@@ -197,7 +197,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
@@ -222,7 +222,7 @@ target:
 find_package(Magnum REQUIRED)
 
 # ...
-target_link_libraries(your-app Magnum::Magnum)
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
@@ -273,7 +273,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED Audio)
 
 # ...
-target_link_libraries(your-app Magnum::Audio)
+target_link_libraries(your-app PRIVATE Magnum::Audio)
 @endcode
 
 Additional plugins and utilities are built separately. See particular
@@ -303,7 +303,7 @@ the `Magnum` package and link to the `Magnum::DebugTools` target:
 find_package(Magnum REQUIRED DebugTools)
 
 # ...
-target_link_libraries(your-app Magnum::DebugTools)
+target_link_libraries(your-app PRIVATE Magnum::DebugTools)
 @endcode
 
 See @ref building, @ref cmake and @ref debug-tools for more information.
@@ -327,7 +327,7 @@ target:
 find_package(Magnum REQUIRED GL)
 
 # ...
-target_link_libraries(your-app Magnum::GL)
+target_link_libraries(your-app PRIVATE Magnum::GL)
 @endcode
 
 In case you're building for EGL or OpenGL ES platforms, you also need to copy
@@ -373,7 +373,7 @@ the `Magnum` package and link to the `Magnum::MeshTools` target:
 find_package(Magnum REQUIRED MeshTools)
 
 # ...
-target_link_libraries(your-app Magnum::MeshTools)
+target_link_libraries(your-app PRIVATE Magnum::MeshTools)
 @endcode
 
 Note that functionality depending on @ref GL APIs is available only if Magnum
@@ -399,7 +399,7 @@ the `Magnum` package and link to the `Magnum::Primitives` target:
 find_package(Magnum REQUIRED Primitives)
 
 # ...
-target_link_libraries(your-app Magnum::Primitives)
+target_link_libraries(your-app PRIVATE Magnum::Primitives)
 @endcode
 
 See @ref building and @ref cmake for more information.
@@ -421,7 +421,7 @@ the `Magnum` package and link to the `Magnum::SceneGraph` target:
 find_package(Magnum REQUIRED SceneGraph)
 
 # ...
-target_link_libraries(your-app Magnum::SceneGraph)
+target_link_libraries(your-app PRIVATE Magnum::SceneGraph)
 @endcode
 
 See @ref building, @ref cmake and @ref scenegraph for more information.
@@ -443,7 +443,7 @@ use this library with CMake, you need to request the `Shaders` component of the
 find_package(Magnum REQUIRED Shaders)
 
 # ...
-target_link_libraries(your-app Magnum::Shaders)
+target_link_libraries(your-app PRIVATE Magnum::Shaders)
 @endcode
 
 See @ref building, @ref cmake and @ref shaders for more information.
@@ -508,7 +508,7 @@ this library with CMake, you need to request the `Text` component of the
 find_package(Magnum REQUIRED Text)
 
 # ...
-target_link_libraries(your-app Magnum::Text)
+target_link_libraries(your-app PRIVATE Magnum::Text)
 @endcode
 
 Additional plugins and utilities are built separately. See particular `*Font`
@@ -535,7 +535,7 @@ component of the `Magnum` package in CMake and link to the
 find_package(Magnum REQUIRED TextureTools)
 
 # ...
-target_link_libraries(your-app Magnum::TextureTools)
+target_link_libraries(your-app PRIVATE Magnum::TextureTools)
 @endcode
 
 Note that functionality depending on @ref GL APIs is available only if Magnum
@@ -564,7 +564,7 @@ this library with CMake, you need to request the `Trade` component of the
 find_package(Magnum REQUIRED Trade)
 
 # ...
-target_link_libraries(your-app Magnum::Trade)
+target_link_libraries(your-app PRIVATE Magnum::Trade)
 @endcode
 
 Additional plugins and utilities are built separately. See particular
@@ -590,7 +590,7 @@ package and link to the `Magnum::Vk` target:
 find_package(Magnum REQUIRED Vk)
 
 # ...
-target_link_libraries(your-app Magnum::Vk)
+target_link_libraries(your-app PRIVATE Magnum::Vk)
 @endcode
 
 See @ref building, @ref cmake and @ref vulkan for more information.

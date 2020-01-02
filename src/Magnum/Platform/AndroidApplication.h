@@ -105,7 +105,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_ANDROID)
-    target_link_libraries(your-app Magnum::AndroidApplication)
+    target_link_libraries(your-app PRIVATE Magnum::AndroidApplication)
 endif()
 @endcode
 

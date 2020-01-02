@@ -65,7 +65,7 @@ In order to use this library from Cmake, you need to request the
 find_package(Magnum REQUIRED GlxApplication)
 
 # ...
-target_link_libraries(your-app Magnum::GlxApplication)
+target_link_libraries(your-app PRIVATE Magnum::GlxApplication)
 @endcode
 
 If no other application is requested, you can also use the generic

@@ -66,7 +66,7 @@ target:
 find_package(Magnum REQUIRED XEglApplication)
 
 # ...
-target_link_libraries(your-app Magnum::XEglApplication)
+target_link_libraries(your-app PRIVATE Magnum::XEglApplication)
 @endcode
 
 If no other application is requested, you can also use the generic

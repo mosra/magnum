@@ -110,7 +110,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED GlfwApplication)
 
 # ...
-target_link_libraries(your-app Magnum::GlfwApplication)
+target_link_libraries(your-app PRIVATE Magnum::GlfwApplication)
 @endcode
 
 If no other application is requested, you can also use the generic

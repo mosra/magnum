@@ -122,7 +122,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(your-app Magnum::EmscriptenApplication)
+    target_link_libraries(your-app PRIVATE Magnum::EmscriptenApplication)
 endif()
 @endcode
 

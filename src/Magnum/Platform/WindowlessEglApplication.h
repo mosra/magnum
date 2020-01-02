@@ -351,7 +351,7 @@ component of the `Magnum` package and link to the
 find_package(Magnum REQUIRED WindowlessEglApplication)
 
 # ...
-target_link_libraries(your-app Magnum::WindowlessEglApplication)
+target_link_libraries(your-app PRIVATE Magnum::WindowlessEglApplication)
 @endcode
 
 If no other application is requested, you can also use the generic

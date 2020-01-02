@@ -181,7 +181,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_IOS)
-    target_link_libraries(your-app Magnum::WindowlessIosApplication)
+    target_link_libraries(your-app PRIVATE Magnum::WindowlessIosApplication)
 endif()
 @endcode
 

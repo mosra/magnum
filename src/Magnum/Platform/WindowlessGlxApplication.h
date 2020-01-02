@@ -283,7 +283,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_UNIX)
-    target_link_libraries(your-app Magnum::WindowlessGlxApplication)
+    target_link_libraries(your-app PRIVATE Magnum::WindowlessGlxApplication)
 endif()
 @endcode
 

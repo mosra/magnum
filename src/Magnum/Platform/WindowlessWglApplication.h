@@ -281,7 +281,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_WINDOWS)
-    target_link_libraries(your-app Magnum::WindowlessWglApplication)
+    target_link_libraries(your-app PRIVATE Magnum::WindowlessWglApplication)
 endif()
 @endcode
 

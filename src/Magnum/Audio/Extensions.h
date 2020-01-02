@@ -54,7 +54,7 @@ this library with CMake, you need to request the `Audio` component of the
 find_package(Magnum REQUIRED Audio)
 
 # ...
-target_link_libraries(your-app Magnum::Audio)
+target_link_libraries(your-app PRIVATE Magnum::Audio)
 @endcode
 
 See @ref building and @ref cmake for more information.

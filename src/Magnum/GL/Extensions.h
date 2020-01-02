@@ -70,7 +70,7 @@ package and link to the `Magnum::GL` target:
 find_package(Magnum REQUIRED GL)
 
 # ...
-target_link_libraries(your-app Magnum::GL)
+target_link_libraries(your-app PRIVATE Magnum::GL)
 @endcode
 
 See @ref building, @ref cmake and @ref opengl for more information.

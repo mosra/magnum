@@ -219,7 +219,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 find_package(Magnum REQUIRED Sdl2Application)
 
 # ...
-target_link_libraries(your-app Magnum::Sdl2Application)
+target_link_libraries(your-app PRIVATE Magnum::Sdl2Application)
 @endcode
 
 If no other application is requested, you can also use the generic

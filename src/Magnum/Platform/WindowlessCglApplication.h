@@ -186,7 +186,7 @@ endif()
 
 # ...
 if(CORRADE_TARGET_APPLE)
-    target_link_libraries(your-app Magnum::WindowlessCglApplication)
+    target_link_libraries(your-app PRIVATE Magnum::WindowlessCglApplication)
 endif()
 @endcode
 
