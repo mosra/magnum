@@ -51,17 +51,15 @@ enum class SamplerFilter: GLint {
      * Linear interpolation filtering. Can't be used with integer
      * texture formats.
      * @requires_es_extension Extension @gl_extension{OES,texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::Float
+     *      for linear interpolation of textures with float @ref TextureFormat
      * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::Float
+     *      for linear interpolation of textures with float @ref TextureFormat
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
+     *      for linear interpolation of textures with half-float
+     *      @ref TextureFormat in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::HalfFloat in WebGL 1.0.
+     *      for linear interpolation of textures with half-float
+     *      @ref TextureFormat in WebGL 1.0.
      */
     Linear = GL_LINEAR
 };
@@ -100,17 +98,15 @@ enum class SamplerMipmap: GLint {
      * rectangle textures.**
      * @m_keywords{GL_NEAREST_MIPMAP_LINEAR GL_LINEAR_MIPMAP_LINEAR}
      * @requires_es_extension Extension @gl_extension{OES,texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::Float
+     *      for linear interpolation of textures with float @ref TextureFormat
      * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::Float
+     *      for linear interpolation of textures with float @ref TextureFormat
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
+     *      for linear interpolation of textures with half-float
+     *      @ref TextureFormat in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for linear interpolation of textures with
-     *      @ref TextureFormat::HalfFloat in WebGL 1.0.
+     *      for linear interpolation of textures with half-float
+     *      @ref TextureFormat in WebGL 1.0.
      */
     Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
 };
@@ -170,8 +166,8 @@ enum class SamplerWrapping: GLint {
      * edge after that. **Unavailable on rectangle textures.**
      * @requires_gl44 Extension @gl_extension{ARB,texture_mirror_clamp_to_edge},
      *      @gl_extension{ATI,texture_mirror_once} or @gl_extension{EXT,texture_mirror_clamp}
-     * @requires_gl Only separate @ref Wrapping::MirroredRepeat or
-     *      @ref Wrapping::ClampToEdge is available in OpenGL ES and
+     * @requires_gl Only separate @ref SamplerWrapping::MirroredRepeat or
+     *      @ref SamplerWrapping::ClampToEdge is available in OpenGL ES and
      *      WebGL.
      */
     MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE

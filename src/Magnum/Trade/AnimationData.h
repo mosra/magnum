@@ -64,8 +64,8 @@ enum class AnimationTrackType: UnsignedByte {
 
     /**
      * @ref Magnum::Vector3 "Vector3". Usually used for
-     * @ref AnimationTrackTarget::Translation3D and
-     * @ref AnimationTrackTarget::Scaling3D.
+     * @ref AnimationTrackTargetType::Translation3D and
+     * @ref AnimationTrackTargetType::Scaling3D.
      */
     Vector3,
 

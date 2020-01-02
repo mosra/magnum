@@ -529,7 +529,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, it is assumed that faces have the same size and just the
-         * size of @ref Coordinate::PositiveX face is queried. See
+         * size of @ref CubeMapCoordinate::PositiveX face is queried. See
          * @ref Texture::imageSize() for more information.
          * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
@@ -1179,8 +1179,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::invalidateSubImage()
          *
          * Z coordinate is equivalent to number of texture face, i.e.
-         * @ref Coordinate::PositiveX is `0` and so on, in the same order as in
-         * the enum.
+         * @ref CubeMapCoordinate::PositiveX is `0` and so on, in the same
+         * order as in the enum.
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */
