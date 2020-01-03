@@ -106,7 +106,7 @@ See also:
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
 -   @ref Resource is now nothrow-movable and thus can be used with growable
-    @ref Containers::Array instances
+    @ref Corrade::Containers::Array instances
 
 @subsubsection changelog-latest-changes-gl GL library
 

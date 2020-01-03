@@ -29,7 +29,7 @@
 /** @namespace Magnum
 @brief Root namespace
 
-Contains classes for interacting with OpenGL.
+Base classes and typedefs.
 
 This library is built as part of Magnum by default. To use this library with
 CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:

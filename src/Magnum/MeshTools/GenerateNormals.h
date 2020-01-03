@@ -91,7 +91,7 @@ duplicates before returning. Expects that the position count is divisible by 3.
     from the input @p indices array, so you'll need to recombine them using
     @ref combineIndexedArrays() in order to have a single index array for both
     vertices and normals. Because this makes the usage more complex than
-    strictly neccessary, this function is deprecated in favor of
+    strictly necessary, this function is deprecated in favor of
     @ref generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&).
 */
 CORRADE_DEPRECATED("use generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&) instead") std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions);
