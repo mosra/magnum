@@ -257,7 +257,7 @@ set(_magnumFlags
     TARGET_HEADLESS
     TARGET_VK)
 foreach(_magnumFlag ${_magnumFlags})
-    list(FIND _magnumConfigure "#define CORRADE_${_magnumFlag}" _magnum_${_magnumFlag})
+    list(FIND _magnumConfigure "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
     if(NOT _magnum_${_magnumFlag} EQUAL -1)
         set(MAGNUM_${_magnumFlag} 1)
     endif()
