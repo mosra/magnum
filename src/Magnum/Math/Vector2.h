@@ -162,8 +162,9 @@ template<class T> class Vector2: public Vector<2, T> {
          * @f]
          * @see @ref cross(),
          *      @ref dot(const Vector<size, T>&, const Vector<size, T>&),
-         *      @ref operator-() const
+         *      @ref Vector::operator-() const "operator-() const"
          */
+        /* For some reason @ref operator-() const doesn't work since 1.8.17 */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         Vector2<T>
         #else
