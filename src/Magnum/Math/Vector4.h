@@ -66,13 +66,22 @@ template<class T> class Vector4: public Vector<4, T> {
          */
         constexpr /*implicit*/ Vector4() noexcept: Vector<4, T>{ZeroInit} {}
 
-        /** @copydoc Vector::Vector(ZeroInitT) */
+        /** @copydoc Magnum::Math::Vector::Vector(ZeroInitT) */
+        /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
+           here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
+           fire! FFS. */
         constexpr explicit Vector4(ZeroInitT) noexcept: Vector<4, T>{ZeroInit} {}
 
-        /** @copydoc Vector::Vector(NoInitT) */
+        /** @copydoc Magnum::Math::Vector::Vector(NoInitT) */
+        /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
+           here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
+           fire! FFS. */
         explicit Vector4(NoInitT) noexcept: Vector<4, T>{NoInit} {}
 
-        /** @copydoc Vector::Vector(T) */
+        /** @copydoc Magnum::Math::Vector::Vector(T) */
+        /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
+           here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
+           fire! FFS. */
         constexpr explicit Vector4(T value) noexcept: Vector<4, T>(value) {}
 
         /**
@@ -93,7 +102,10 @@ template<class T> class Vector4: public Vector<4, T> {
          */
         constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w) noexcept: Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
-        /** @copydoc Vector::Vector(const Vector<size, U>&) */
+        /** @copydoc Magnum::Math::Vector::Vector(const Vector<size, U>&) */
+        /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
+           here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
+           fire! FFS. */
         template<class U> constexpr explicit Vector4(const Vector<4, U>& other) noexcept: Vector<4, T>(other) {}
 
         /** @brief Construct vector from external representation */
