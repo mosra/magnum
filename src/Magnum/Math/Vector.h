@@ -231,7 +231,9 @@ template<std::size_t size, class T> class Vector {
          * @see @ref operator[]()
          */
         T* data() { return _data; }
-        constexpr const T* data() const { return _data; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const T* data() const { return _data; }
 
         /**
          * @brief Value at given position
@@ -239,7 +241,9 @@ template<std::size_t size, class T> class Vector {
          * @see @ref data()
          */
         T& operator[](std::size_t pos) { return _data[pos]; }
-        constexpr T operator[](std::size_t pos) const { return _data[pos]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T operator[](std::size_t pos) const { return _data[pos]; }
 
         /**
          * @brief Equality comparison

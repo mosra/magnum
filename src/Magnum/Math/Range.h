@@ -171,9 +171,11 @@ template<UnsignedInt dimensions, class T> class Range {
         T* data() {
             return dataInternal(typename std::conditional<dimensions == 1, void*, T*>::type{});
         }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         constexpr const T* data() const {
             return dataInternal(typename std::conditional<dimensions == 1, void*, T*>::type{});
-        } /**< @overload */
+        }
 
         /**
          * @brief Minimal coordinates (inclusive)
@@ -183,7 +185,9 @@ template<UnsignedInt dimensions, class T> class Range {
          *      @ref Range3D::backBottomLeft()
          */
         VectorType& min() { return _min; }
-        constexpr const VectorType min() const { return _min; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const VectorType min() const { return _min; }
 
         /**
          * @brief Maximal coordinates (exclusive)
@@ -193,7 +197,9 @@ template<UnsignedInt dimensions, class T> class Range {
          *      @ref Range3D::frontTopRight()
          */
         VectorType& max() { return _max; }
-        constexpr const VectorType max() const { return _max; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const VectorType max() const { return _max; }
 
         /**
          * @brief Range size
@@ -402,7 +408,9 @@ template<class T> class Range2D: public Range<2, T> {
          * Equivalent to @ref min().
          */
         Vector2<T>& bottomLeft() { return Range<2, T>::min(); }
-        constexpr Vector2<T> bottomLeft() const { return Range<2, T>::min(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector2<T> bottomLeft() const { return Range<2, T>::min(); }
 
         /** @brief Bottom right corner */
         constexpr Vector2<T> bottomRight() const {
@@ -420,23 +428,33 @@ template<class T> class Range2D: public Range<2, T> {
          * Equivalent to @ref max().
          */
         Vector2<T>& topRight() { return Range<2, T>::max(); }
-        constexpr Vector2<T> topRight() const { return Range<2, T>::max(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector2<T> topRight() const { return Range<2, T>::max(); }
 
         /** @brief Left edge */
         T& left() { return Range<2, T>::min().x(); }
-        constexpr T left() const { return Range<2, T>::min().x(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T left() const { return Range<2, T>::min().x(); }
 
         /** @brief Right edge */
         T& right() { return Range<2, T>::max().x(); }
-        constexpr T right() const { return Range<2, T>::max().x(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T right() const { return Range<2, T>::max().x(); }
 
         /** @brief Bottom edge */
         T& bottom() { return Range<2, T>::min().y(); }
-        constexpr T bottom() const { return Range<2, T>::min().y(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T bottom() const { return Range<2, T>::min().y(); }
 
         /** @brief Top edge */
         T& top() { return Range<2, T>::max().y(); }
-        constexpr T top() const { return Range<2, T>::max().y(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T top() const { return Range<2, T>::max().y(); }
 
         /** @brief Range in the X axis */
         constexpr Range<1, T> x() const {
@@ -530,7 +548,9 @@ template<class T> class Range3D: public Range<3, T> {
          * Equivalent to @ref min().
          */
         Vector3<T>& backBottomLeft() { return Range<3, T>::min(); }
-        constexpr Vector3<T> backBottomLeft() const { return Range<3, T>::min(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> backBottomLeft() const { return Range<3, T>::min(); }
 
         /** @brief Back bottom right corner */
         constexpr Vector3<T> backBottomRight() const {
@@ -553,7 +573,9 @@ template<class T> class Range3D: public Range<3, T> {
          * Equivalent to @ref max().
          */
         Vector3<T>& frontTopRight() { return Range<3, T>::max(); }
-        constexpr Vector3<T> frontTopRight() const { return Range<3, T>::max(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> frontTopRight() const { return Range<3, T>::max(); }
 
         /** @brief Front top left corner */
         constexpr Vector3<T> frontTopLeft() const {
@@ -572,27 +594,39 @@ template<class T> class Range3D: public Range<3, T> {
 
         /** @brief Left edge */
         T& left() { return Range<3, T>::min().x(); }
-        constexpr T left() const { return Range<3, T>::min().x(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T left() const { return Range<3, T>::min().x(); }
 
         /** @brief Right edge */
         T& right() { return Range<3, T>::max().x(); }
-        constexpr T right() const { return Range<3, T>::max().x(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T right() const { return Range<3, T>::max().x(); }
 
         /** @brief Bottom edge */
         T& bottom() { return Range<3, T>::min().y(); }
-        constexpr T bottom() const { return Range<3, T>::min().y(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T bottom() const { return Range<3, T>::min().y(); }
 
         /** @brief Top edge */
         T& top() { return Range<3, T>::max().y(); }
-        constexpr T top() const { return Range<3, T>::max().y(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T top() const { return Range<3, T>::max().y(); }
 
         /** @brief Back edge */
         T& back() { return Range<3, T>::min().z(); }
-        constexpr T back() const { return Range<3, T>::min().z(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T back() const { return Range<3, T>::min().z(); }
 
         /** @brief Front edge */
         T& front() { return Range<3, T>::max().z(); }
-        constexpr T front() const { return Range<3, T>::max().z(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T front() const { return Range<3, T>::max().z(); }
 
         /** @brief Range in the X axis */
         constexpr Range<1, T> x() const {

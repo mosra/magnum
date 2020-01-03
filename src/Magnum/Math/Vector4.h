@@ -108,7 +108,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref r()
          */
         T& x() { return Vector<4, T>::_data[0]; }
-        constexpr T x() const { return Vector<4, T>::_data[0]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T x() const { return Vector<4, T>::_data[0]; }
 
         /**
          * @brief Y component
@@ -116,7 +118,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref g()
          */
         T& y() { return Vector<4, T>::_data[1]; }
-        constexpr T y() const { return Vector<4, T>::_data[1]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T y() const { return Vector<4, T>::_data[1]; }
 
         /**
          * @brief Z component
@@ -124,7 +128,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref b()
          */
         T& z() { return Vector<4, T>::_data[2]; }
-        constexpr T z() const { return Vector<4, T>::_data[2]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T z() const { return Vector<4, T>::_data[2]; }
 
         /**
          * @brief W component
@@ -132,7 +138,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref a()
          */
         T& w() { return Vector<4, T>::_data[3]; }
-        constexpr T w() const { return Vector<4, T>::_data[3]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T w() const { return Vector<4, T>::_data[3]; }
 
         /**
          * @brief R component
@@ -140,7 +148,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * Equivalent to @ref x().
          */
         T& r() { return Vector<4, T>::_data[0]; }
-        constexpr T r() const { return Vector<4, T>::_data[0]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T r() const { return Vector<4, T>::_data[0]; }
 
         /**
          * @brief G component
@@ -148,7 +158,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * Equivalent to @ref y().
          */
         T& g() { return Vector<4, T>::_data[1]; }
-        constexpr T g() const { return Vector<4, T>::_data[1]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T g() const { return Vector<4, T>::_data[1]; }
 
         /**
          * @brief B component
@@ -156,7 +168,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * Equivalent to @ref z().
          */
         T& b() { return Vector<4, T>::_data[2]; }
-        constexpr T b() const { return Vector<4, T>::_data[2]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T b() const { return Vector<4, T>::_data[2]; }
 
         /**
          * @brief A component
@@ -164,7 +178,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * Equivalent to @ref w().
          */
         T& a() { return Vector<4, T>::_data[3]; }
-        constexpr T a() const { return Vector<4, T>::_data[3]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T a() const { return Vector<4, T>::_data[3]; }
 
         /**
          * @brief XYZ part of the vector
@@ -173,9 +189,11 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref swizzle(), @ref rgb()
          */
         Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         constexpr const Vector3<T> xyz() const {
             return {Vector<4, T>::_data[0], Vector<4, T>::_data[1], Vector<4, T>::_data[2]};
-        } /**< @overload */
+        }
 
         /**
          * @brief RGB part of the vector
@@ -185,9 +203,11 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref swizzle()
          */
         Vector3<T>& rgb() { return Vector3<T>::from(Vector<4, T>::data()); }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         constexpr const Vector3<T> rgb() const {
             return {Vector<4, T>::_data[0], Vector<4, T>::_data[1], Vector<4, T>::_data[2]};
-        } /**< @overload */
+        }
 
         /**
          * @brief XY part of the vector
@@ -196,9 +216,11 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref swizzle()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         constexpr const Vector2<T> xy() const {
             return {Vector<4, T>::_data[0], Vector<4, T>::_data[1]};
-        } /**< @overload */
+        }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };

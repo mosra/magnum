@@ -550,7 +550,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @see @ref up(), @ref Vector2::xAxis(), @ref Matrix4::right()
          */
         Vector2<T>& right() { return (*this)[0].xy(); }
-        constexpr Vector2<T> right() const { return (*this)[0].xy(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector2<T> right() const { return (*this)[0].xy(); }
 
         /**
          * @brief Up-pointing 2D vector
@@ -566,7 +568,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @see @ref right(), @ref Vector2::yAxis(), @ref Matrix4::up()
          */
         Vector2<T>& up() { return (*this)[1].xy(); }
-        constexpr Vector2<T> up() const { return (*this)[1].xy(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector2<T> up() const { return (*this)[1].xy(); }
 
         /**
          * @brief 2D translation part of the matrix
@@ -584,7 +588,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref Matrix4::translation()
          */
         Vector2<T>& translation() { return (*this)[2].xy(); }
-        constexpr Vector2<T> translation() const { return (*this)[2].xy(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector2<T> translation() const { return (*this)[2].xy(); }
 
         /**
          * @brief Inverted rigid transformation matrix

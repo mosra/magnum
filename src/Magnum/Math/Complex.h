@@ -188,7 +188,9 @@ template<class T> class Complex {
          * @see @ref real(), @ref imaginary()
          */
         T* data() { return &_real; }
-        constexpr const T* data() const { return &_real; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const T* data() const { return &_real; }
 
         /** @brief Equality comparison */
         bool operator==(const Complex<T>& other) const {
@@ -219,7 +221,9 @@ template<class T> class Complex {
          * @see @ref data()
          */
         T& real() { return _real; }
-        constexpr T real() const { return _real; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T real() const { return _real; }
 
         /**
          * @brief Imaginary part (@f$ a_i @f$)
@@ -227,7 +231,9 @@ template<class T> class Complex {
          * @see @ref data()
          */
         T& imaginary() { return _imaginary; }
-        constexpr T imaginary() const { return _imaginary; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T imaginary() const { return _imaginary; }
 
         /**
          * @brief Convert a complex number to vector

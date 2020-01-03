@@ -157,7 +157,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref operator[]()
          */
         T* data() { return _data[0].data(); }
-        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const T* data() const { return _data[0].data(); }
 
         /**
          * @brief Column at given position
@@ -170,8 +172,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref row(), @ref data()
          */
         Vector<rows, T>& operator[](std::size_t col) { return _data[col]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* returns const& so [][] operations are also constexpr */
-        constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
+        constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; }
 
         /**
          * @brief Row at given position

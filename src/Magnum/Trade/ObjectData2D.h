@@ -160,7 +160,9 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }
-        const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        const std::vector<UnsignedInt>& children() const { return _children; }
 
         /** @brief Flags */
         ObjectFlags2D flags() const { return _flags; }

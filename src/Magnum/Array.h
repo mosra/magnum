@@ -94,14 +94,18 @@ template<UnsignedInt dimensions, class T> class Array {
 
         /** @brief Value at given position */
         T& operator[](UnsignedInt pos) { return _data[pos]; }
-        constexpr T operator[](UnsignedInt pos) const { return _data[pos]; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T operator[](UnsignedInt pos) const { return _data[pos]; }
 
         /**
          * @brief Raw data
          * @return One-dimensional array of `dimensions` length
          */
         T* data() { return _data; }
-        constexpr const T* data() const { return _data; } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr const T* data() const { return _data; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -133,8 +137,11 @@ template<class T> class Array1D: public Array<1, T> {
         /** @brief Copy constructor */
         constexpr Array1D(const Array<1, T>& other): Array<1, T>(other) {}
 
-        T& x() { return Array<1, T>::_data[0]; } /**< @brief X component */
-        constexpr T x() const { return Array<1, T>::_data[0]; } /**< @overload */
+        /** @brief X component */
+        T& x() { return Array<1, T>::_data[0]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T x() const { return Array<1, T>::_data[0]; }
 };
 
 /**
@@ -159,10 +166,17 @@ template<class T> class Array2D: public Array<2, T> {
         /** @brief Copy constructor */
         constexpr Array2D(const Array<2, T>& other): Array<2, T>(other) {}
 
-        T& x() { return Array<2, T>::_data[0]; } /**< @brief X component */
-        constexpr T x() const { return Array<2, T>::_data[0]; } /**< @overload */
-        T& y() { return Array<2, T>::_data[1]; } /**< @brief Y component */
-        constexpr T y() const { return Array<2, T>::_data[1]; } /**< @overload */
+        /** @brief X component */
+        T& x() { return Array<2, T>::_data[0]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T x() const { return Array<2, T>::_data[0]; }
+
+        /** @brief Y component */
+        T& y() { return Array<2, T>::_data[1]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T y() const { return Array<2, T>::_data[1]; }
 };
 
 /**
@@ -188,21 +202,34 @@ template<class T> class Array3D: public Array<3, T> {
         /** @brief Copy constructor */
         constexpr Array3D(const Array<3, T>& other): Array<3, T>(other) {}
 
-        T& x() { return Array<3, T>::_data[0]; } /**< @brief X component */
-        constexpr T x() const { return Array<3, T>::_data[0]; } /**< @overload */
-        T& y() { return Array<3, T>::_data[1]; } /**< @brief Y component */
-        constexpr T y() const { return Array<3, T>::_data[1]; } /**< @overload */
-        T& z() { return Array<3, T>::_data[2]; } /**< @brief Z component */
-        constexpr T z() const { return Array<3, T>::_data[2]; } /**< @overload */
+        /** @brief X component */
+        T& x() { return Array<3, T>::_data[0]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T x() const { return Array<3, T>::_data[0]; }
+
+        /** @brief Y component */
+        T& y() { return Array<3, T>::_data[1]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T y() const { return Array<3, T>::_data[1]; }
+
+        /** @brief Z component */
+        T& z() { return Array<3, T>::_data[2]; }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr T z() const { return Array<3, T>::_data[2]; }
 
         /**
          * @brief XY part of the array
          * @return First two components of the array
          */
         Array2D<T>& xy() { return reinterpret_cast<Array2D<T>&>(*this); }
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         constexpr Array2D<T> xy() const {
             return {Array<3, T>::_data[0], Array<3, T>::_data[1]};
-        } /**< @overload */
+        }
 };
 
 /** @debugoperator{Array} */

@@ -838,7 +838,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::right()
          */
         Vector3<T>& right() { return (*this)[0].xyz(); }
-        constexpr Vector3<T> right() const { return (*this)[0].xyz(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> right() const { return (*this)[0].xyz(); }
 
         /**
          * @brief Up-pointing 3D vector
@@ -856,7 +858,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::up()
          */
         Vector3<T>& up() { return (*this)[1].xyz(); }
-        constexpr Vector3<T> up() const { return (*this)[1].xyz(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> up() const { return (*this)[1].xyz(); }
 
         /**
          * @brief Backward-pointing 3D vector
@@ -873,7 +877,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @see @ref right(), @ref up(), @ref Vector3::yAxis()
          */
         Vector3<T>& backward() { return (*this)[2].xyz(); }
-        constexpr Vector3<T> backward() const { return (*this)[2].xyz(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> backward() const { return (*this)[2].xyz(); }
 
         /**
          * @brief 3D translation part of the matrix
@@ -892,7 +898,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref Matrix3::translation()
          */
         Vector3<T>& translation() { return (*this)[3].xyz(); }
-        constexpr Vector3<T> translation() const { return (*this)[3].xyz(); } /**< @overload */
+
+        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
+        constexpr Vector3<T> translation() const { return (*this)[3].xyz(); }
 
         /**
          * @brief Inverted rigid transformation matrix
