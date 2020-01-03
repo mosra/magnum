@@ -60,13 +60,34 @@ Loads Wavefront OBJ (`*.obj`) files, with the following supported features:
 -   vertex positions, normals and 2D texture coordinates
 -   triangles, lines and points
 
+@section Trade-ObjImporter-usage Usage
+
 This plugin depends on the @ref Trade library and is built if `WITH_OBJIMPORTER`
-is enabled when building Magnum. To use as a dynamic plugin, you need to load
-the @cpp "ObjImporter" @ce plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use as
-a static plugin or as a dependency of another plugin with CMake, you need to
-request the `ObjImporter` component of the `Magnum` package and link to the
-`Magnum::ObjImporter` target. See @ref building, @ref cmake and @ref plugins
-for more information.
+is enabled when building Magnum. To use as a dynamic plugin, load
+@cpp "ObjImporter" @ce via @ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_OBJIMPORTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::ObjImporter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `ObjImporter` component of the `Magnum` package and link to
+the `Magnum::ObjImporter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED ObjImporter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::ObjImporter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 
 @section Trade-ObjImporter-limitations Behavior and limitations
 

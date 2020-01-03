@@ -32,8 +32,7 @@
 Contains classes for interacting with OpenGL.
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -57,10 +56,9 @@ Base classes for creating applications with various toolkits.
 
 Parts of this namespace are built if `WITH_*APPLICATION` is enabled when
 building Magnum, with each library having specific toolkit dependencies and
-platform requirements. To use a particular application library with CMake, you
-need to request given `*Application` component of the `Magnum` package and link
-to the `Magnum::Application` target. Example using the @ref Platform::Sdl2Application
-library:
+platform requirements. To use a particular application library with CMake,
+request given `*Application` component of the `Magnum` package and link
+to the `Magnum::Application` target, for example:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Sdl2Application)
@@ -69,9 +67,9 @@ find_package(Magnum REQUIRED Sdl2Application)
 target_link_libraries(your-app PRIVATE Magnum::Application)
 @endcode
 
-See documentation of particular `*Application` classs, the
+Please see documentation of a particular `*Application` classs, the
 @ref magnum-gl-info "magnum-gl-info" utility documentation, @ref building,
-@ref cmake and @ref platform for more information.
+@ref cmake and @ref platform for more information about usage requirements.
 */
 
 /** @dir Magnum/Math
@@ -83,8 +81,7 @@ See documentation of particular `*Application` classs, the
 Template classes for matrix and vector calculations.
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -125,8 +122,7 @@ more information.
 Literals for easy construction of angle and color values.
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -155,8 +151,7 @@ See @ref building, @ref cmake and @ref types for more information.
 Various matrix and vector algorithms.
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -190,8 +185,7 @@ See @ref building and @ref cmake for more information.
 @brief Functions for calculating distances
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -215,8 +209,7 @@ See @ref building and @ref cmake for more information.
 @brief Functions for calculating intersections
 
 This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -242,9 +235,17 @@ See @ref building and @ref cmake for more information.
 /** @namespace Magnum::Animation
 @brief Keyframe-based animation
 
-This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package and link to `Magnum::Magnum` target. See @ref building,
-@ref cmake and @ref animation for more information.
+This library is built as part of Magnum by default. To use this library with
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
+@endcode
+
+See @ref building, @ref cmake and @ref animation for more information.
 @experimental
 */
 
@@ -256,24 +257,28 @@ find `Magnum` package and link to `Magnum::Magnum` target. See @ref building,
 
 Audio import, playback and integration with @ref SceneGraph.
 
-This library depends on the [OpenAL](https://www.openal.org/) library. It is
+This library depends on the [OpenAL](https://www.openal.org/) library and is
 built if `WITH_AUDIO` is enabled when building Magnum. To use this library with
-CMake, you need to copy
-[FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
-from the `modules/` directory in Magnum sources to a `modules/` dir in your
-project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
-able to correctly find the OpenAL library on all platforms. Then request the
-`Audio` component of the `Magnum` package and link to the `Magnum::Audio`
-target:
+CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
+into your `modules/` directory, request the `Audio` component of the `Magnum`
+package and link to the `Magnum::Audio` target:
 
 @code{.cmake}
-# Path where FindOpenAL.cmake can be found, adapt as needed
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
-
 find_package(Magnum REQUIRED Audio)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::Audio)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default. Using OpenAL itself as a CMake subproject
+isn't isn't tested at the moment, so you need to provide it as a system
+dependency and point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+
+@code{.cmake}
+set(WITH_AUDIO ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 Additional plugins and utilities are built separately. See particular
@@ -296,8 +301,8 @@ utility documentation, @ref building, @ref building-plugins, @ref cmake,
 Debugging helpers, renderers and profilers.
 
 This library is built if `WITH_DEBUGTOOLS` is enabled when building Magnum. To
-use this library with CMake, you need to request the `DebugTools` component of
-the `Magnum` package and link to the `Magnum::DebugTools` target:
+use this library with CMake, request the `DebugTools` component of the `Magnum`
+package and link to the `Magnum::DebugTools` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED DebugTools)
@@ -319,9 +324,8 @@ C++11 wrappers around OpenGL objects with state tracking and transparent
 extension support.
 
 All of this library except @ref GL::OpenGLTester is built if `WITH_GL` is
-enabled when building Magnum. To use this library with CMake, you need to
-request the `GL` component of the `Magnum` package and link to the `Magnum::GL`
-target:
+enabled when building Magnum. To use this library with CMake, request the `GL`
+component of the `Magnum` package and link to the `Magnum::GL` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED GL)
@@ -330,18 +334,11 @@ find_package(Magnum REQUIRED GL)
 target_link_libraries(your-app PRIVATE Magnum::GL)
 @endcode
 
-In case you're building for EGL or OpenGL ES platforms, you also need to copy
+In case you're building for EGL or OpenGL ES platforms, you also need to put
 [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake),
 [FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake)
 or [FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake)
-from the `modules/` directory in Magnum sources to a `modules/` dir in your
-project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
-able to find the EGL and OpenGL ES libraries:
-
-@code{.cmake}
-# Path where FindEGL.cmake and others can be found, adapt as needed
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
-@endcode
+into your `modules/` directory.
 
 See @ref building, @ref cmake and @ref opengl for more information.
 
@@ -366,8 +363,8 @@ See @ref building, @ref cmake and @ref opengl for more information.
 Tools for generating, optimizing and cleaning meshes.
 
 This library is built if `WITH_MESHTOOLS` is enabled when building Magnum. To
-use this library with CMake, you need to request the `MeshTools` component of
-the `Magnum` package and link to the `Magnum::MeshTools` target:
+use this library with CMake, request the `MeshTools` component of the `Magnum`
+package and link to the `Magnum::MeshTools` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED MeshTools)
@@ -392,8 +389,8 @@ See @ref building and @ref cmake for more information.
 Basic primitives for testing purposes.
 
 This library is built if `WITH_PRIMITIVES` is enabled when building Magnum. To
-use this library with CMake, you need to request the `Primitives` component of
-the `Magnum` package and link to the `Magnum::Primitives` target:
+use this library with CMake, request the `Primitives` component of the `Magnum`
+package and link to the `Magnum::Primitives` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Primitives)
@@ -414,8 +411,8 @@ See @ref building and @ref cmake for more information.
 Managing object hierarchy, transformations and interactions.
 
 This library is built if `WITH_SCENEGRAPH` is enabled when building Magnum. To
-use this library with CMake, you need to request the `SceneGraph` component of
-the `Magnum` package and link to the `Magnum::SceneGraph` target:
+use this library with CMake, request the `SceneGraph` component of the `Magnum`
+package and link to the `Magnum::SceneGraph` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED SceneGraph)
@@ -436,8 +433,8 @@ See @ref building, @ref cmake and @ref scenegraph for more information.
 Collection of shaders for easy prototyping and basic usage.
 
 This library is built if `WITH_SHADERS` is enabled when building Magnum. To
-use this library with CMake, you need to request the `Shaders` component of the
-`Magnum` package and link to the `Magnum::Shaders` target:
+use this library with CMake, request the `Shaders` component of the `Magnum`
+package and link to the `Magnum::Shaders` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Shaders)
@@ -501,8 +498,8 @@ See @ref building, @ref cmake and @ref shaders for more information.
 Font texture creation and text layout.
 
 This library is built if `WITH_TEXT` is enabled when building Magnum. To use
-this library with CMake, you need to request the `Text` component of the
-`Magnum` package and link to the `Magnum::Text` target:
+this library with CMake, request the `Text` component of the `Magnum` package
+and link to the `Magnum::Text` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Text)
@@ -527,9 +524,8 @@ and `*FontConverter` class documentation, the
 Tools for generating, compressing and optimizing textures.
 
 This library is built if `WITH_TEXTURETOOLS` is enabled when building Magnum.
-To use this library with CMake, you need to request the `TextureTools`
-component of the `Magnum` package in CMake and link to the
-`Magnum::TextureTools` target:
+To use this library with CMake, request the `TextureTools` component of the
+`Magnum` package in CMake and link to the `Magnum::TextureTools` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED TextureTools)
@@ -557,8 +553,8 @@ Contains plugin interfaces for importing data of various formats and classes
 for direct access to the data.
 
 This library is built if `WITH_TRADE` is enabled when building Magnum. To use
-this library with CMake, you need to request the `Trade` component of the
-`Magnum` package and link to the `Magnum::Trade` target:
+this library with CMake, request the `Trade` component of the `Magnum` package
+and link to the `Magnum::Trade` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Trade)
@@ -583,14 +579,23 @@ Additional plugins and utilities are built separately. See particular
 C++14 wrappers and helpers for Vulkan development.
 
 This library is built if `WITH_VK` is enabled when building Magnum. To use this
-library with CMake, you need to request the `Vk` component of the `Magnum`
-package and link to the `Magnum::Vk` target:
+library with CMake, request the `Vk` component of the `Magnum` package and link
+to the `Magnum::Vk` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Vk)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::Vk)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_VK ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 See @ref building, @ref cmake and @ref vulkan for more information.

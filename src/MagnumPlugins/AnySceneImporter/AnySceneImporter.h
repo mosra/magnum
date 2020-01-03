@@ -54,17 +54,7 @@ namespace Magnum { namespace Trade {
 @brief Any scene importer plugin
 
 Detects file type based on file extension, loads corresponding plugin and then
-tries to open the file with it.
-
-This plugin depends on the @ref Trade library and is built if
-`WITH_ANYSCENEIMPORTER` is enabled when building Magnum. To use as a dynamic
-plugin, you need to load the @cpp "AnySceneImporter" @ce plugin from
-`MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
-another plugin with CMake, you need to request the `AnySceneImporter` component
-of the `Magnum` package in CMake and link to the `Magnum::AnySceneImporter`
-target. See @ref building, @ref cmake and @ref plugins for more information.
-
-Supported formats:
+tries to open the file with it. Supported formats:
 
 -   3ds Max 3DS and ASE (`*.3ds`, `*.ase`), loaded with any plugin that
     provides `3dsImporter`
@@ -106,6 +96,36 @@ Supported formats:
 -   XGL (`*.xgl`, `*.zgl`), loaded with any plugin that provides `XglImporter`
 
 Only loading from files is supported.
+
+@section Trade-AnySceneImporter-usage Usage
+
+This plugin depends on the @ref Trade library and is built if
+`WITH_ANYSCENEIMPORTER` is enabled when building Magnum. To use as a dynamic
+plugin, load @cpp "AnySceneImporter" @ce via
+@ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::AnySceneImporter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `AnySceneImporter` component of the `Magnum` package in
+CMake and link to the `Magnum::AnySceneImporter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED AnySceneImporter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::AnySceneImporter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:

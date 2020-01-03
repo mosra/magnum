@@ -56,8 +56,7 @@ namespace Magnum { namespace Platform {
 @m_keywords{WindowlessGLContext}
 
 GL context used in @ref WindowlessCglApplication. Does not have any default
-framebuffer. It is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in
-CMake.
+framebuffer.
 
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
@@ -151,8 +150,7 @@ class WindowlessCglContext::Configuration {
 @m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessCglContext. This
-application library is available on desktop OpenGL on macOS. It is built if
-`WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.
+application library is available on desktop OpenGL on macOS.
 
 @section Platform-WindowlessCglApplication-bootstrap Bootstrap application
 
@@ -175,7 +173,8 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessCglApplication-usage General usage
 
-In order to use this library from CMake, you need to request the
+This application library is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled
+when building Magnum. To use this library from CMake, request the
 `WindowlessCglApplication` component of the `Magnum` package and link to the `Magnum::WindowlessCglApplication` target:
 
 @code{.cmake}
@@ -188,6 +187,15 @@ endif()
 if(CORRADE_TARGET_APPLE)
     target_link_libraries(your-app PRIVATE Magnum::WindowlessCglApplication)
 endif()
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_WINDOWLESSCGLAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

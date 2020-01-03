@@ -43,6 +43,18 @@ namespace Magnum { namespace Animation {
 A collection of predefined [easing / tweening](https://en.wikipedia.org/wiki/Inbetweening)
 functions for adding life to animation interpolation.
 
+This library is built as part of Magnum by default. To use this library with
+CMake, find the `Magnum` package and link to the `Magnum::Magnum` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::Magnum)
+@endcode
+
+See @ref building, @ref cmake and @ref animation for more information.
+
 @m_class{m-row m-container-inflate}
 
 @parblock

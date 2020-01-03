@@ -58,17 +58,7 @@ namespace Magnum { namespace Audio {
 @m_keywords{AnyAudioImporter}
 
 Detects file type based on file extension, loads corresponding plugin and then
-tries to open the file with it.
-
-This plugin depends on the @ref Audio library and is built if
-`WITH_ANYAUDIOIMPORTER` is enabled when building Magnum. To use as a dynamic
-plugin, you need to load the @cpp "AnyAudioImporter" @ce plugin from
-`MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
-another plugin with CMake, you need to request the `AnyAudioImporter` component
-of the `Magnum` package and link to the `Magnum::AnyAudioImporter` target. See
-@ref building, @ref cmake and @ref plugins for more information.
-
-Supported formats:
+tries to open the file with it. Supported formats:
 
 -   AAC (`*.aac`), loaded with any plugin that provides `AacAudioImporter`
 -   MP3 (`*.mp3`), loaded with any plugin that provides `Mp3AudioImporter`
@@ -79,6 +69,36 @@ Supported formats:
 -   FLAC (`*.flac`), loaded with any plugin that provides `FlacAudioImporter`
 
 Only loading from files is supported.
+
+@section Audio-AnyImporter-usage Usage
+
+This plugin depends on the @ref Audio library and is built if
+`WITH_ANYAUDIOIMPORTER` is enabled when building Magnum. To use as a dynamic
+plugin, load @cpp "AnyAudioImporter" @ce via
+@ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_ANYAUDIOIMPORTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::AnyAudioImporter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `AnyAudioImporter` component of the `Magnum` package and
+link to the `Magnum::AnyAudioImporter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED AnyAudioImporter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::AnyAudioImporter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
     public:

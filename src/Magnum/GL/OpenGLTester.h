@@ -71,8 +71,8 @@ the base features.
 This class is available on platforms with corresponding
 `Platform::Windowless*Application` implementation, which currently means all
 platforms. It is built into a separate static library and only if
-`WITH_OPENGLTESTER` is enabled when building Magnum. To use it with CMake, you
-need to request the `OpenGLTester` component of the `Magnum` package. Derive
+`WITH_OPENGLTESTER` is enabled when building Magnum. To use it with CMake,
+request the `OpenGLTester` component of the `Magnum` package. Derive
 your test class from this class instead of @ref Corrade::TestSuite::Tester and
 either link to `Magnum::OpenGLTester` target or add it to the `LIBRARIES`
 section of the @ref corrade-cmake-add-test "corrade_add_test()" macro:
@@ -82,6 +82,14 @@ find_package(Magnum REQUIRED OpenGLTester)
 
 # ...
 corrade_add_test(YourTest YourTest.cpp LIBRARIES Magnum::OpenGLTester)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, ensure it's enabled
+as it's not built by default:
+
+@code{.cmake}
+set(WITH_OPENGLTESTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 See @ref building, @ref cmake and @ref testsuite for more information.

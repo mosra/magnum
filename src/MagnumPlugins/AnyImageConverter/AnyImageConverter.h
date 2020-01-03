@@ -54,20 +54,10 @@ namespace Magnum { namespace Trade {
 @brief Any image converter plugin
 
 Detects file type based on file extension, loads corresponding plugin and then
-tries to convert the file with it.
+tries to convert the file with it. Supported formats for uncompressed data:
 
-This plugin depends on the @ref Trade library and is built if
-`WITH_ANYIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic
-plugin, you need to load the @cpp "AnyImageConverter" @ce plugin from
-`MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
-another plugin with CMake, you need to request the `AnyImageConverter`
-component of the `Magnum` package and link to the `Magnum::AnyImageConverter`
-target. See @ref building, @ref cmake and @ref plugins for more information.
-
-Supported formats for uncompressed data:
-
--   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any other
-    plugin that provides it
+-   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any
+    other plugin that provides it
 -   Windows Bitmap (`*.bmp`), converted with any plugin that provides
     `BmpImageConverter`
 -   OpenEXR (`*.exr`), converted with any plugin that provides
@@ -81,9 +71,38 @@ Supported formats for uncompressed data:
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with
     @ref TgaImageConverter or any other plugin that provides it
 
-No supported formats for compressed data yet.
+No supported formats for compressed data yet. Only exporting to files is
+supported.
 
-Only exporting to files is supported.
+@section Trade-AnyImageConverter-usage Usage
+
+This plugin depends on the @ref Trade library and is built if
+`WITH_ANYIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic
+plugin, load @cpp "AnyImageConverter" @ce via
+@ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_ANYIMAGECONVERTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::AnyImageConverter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `AnyImageConverter` component of the `Magnum` package and
+link to the `Magnum::AnyImageConverter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED AnyImageConverter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::AnyImageConverter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageConverter {
     public:

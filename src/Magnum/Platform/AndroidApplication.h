@@ -56,13 +56,10 @@ namespace Magnum { namespace Platform {
 
 @m_keywords{Application}
 
-Application running on Android.
-
-This application library is available only on
+Application running on Android. Available only on
 @ref CORRADE_TARGET_ANDROID "Android", see respective sections
 in the @ref building-corrade-cross-android "Corrade" and
-@ref building-cross-android "Magnum" building documentation. It is built if
-`WITH_ANDROIDAPPLICATION` is enabled when building Magnum.
+@ref building-cross-android "Magnum" building documentation.
 
 @section Platform-AndroidApplication-bootstrap Bootstrap application
 
@@ -90,12 +87,12 @@ together with a troubleshooting guide is available in @ref platforms-android.
 
 @section Platform-AndroidApplication-usage General usage
 
-In order to use this library from CMake, you need to copy `FindEGL.cmake`
-and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the `modules/`
-directory in Magnum source to the `modules/` dir in your project (so it is able
-to find EGL and OpenGL ES libraries). Request the `AndroidApplication`
-component of the `Magnum` package and link to the `Magnum::AndroidApplication`
-target:
+This application library is built if `WITH_ANDROIDAPPLICATION` is enabled when
+building Magnum. To use this library with CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
+and [FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake) (or
+[FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake))
+into your `modules/` directory, request the `AndroidApplication` component of
+the `Magnum` package and link to the `Magnum::AndroidApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -109,10 +106,27 @@ if(CORRADE_TARGET_ANDROID)
 endif()
 @endcode
 
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_ANDROIDAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+@endcode
+
 If no other application is requested, you can also use the generic
 `Magnum::Application` alias to simplify porting. Again, see @ref building and
 @ref cmake for more information. Note that unlike on other platforms you need
-to create *shared library* instead of executable.
+to create a *shared library* instead of an executable:
+
+@code{.cmake}
+if(NOT CORRADE_TARGET_ANDROID)
+    add_executable(your-app ...)
+else()
+    add_library(your-app SHARED ...)
+endif()
+@endcode
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass must be then made accessible from JNI using

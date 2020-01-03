@@ -45,8 +45,7 @@ namespace Magnum { namespace Platform {
 Application using pure X11 and EGL. Supports keyboard and mouse handling.
 
 This application library is available on both desktop OpenGL and
-@ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux. It depends on **X11** and **EGL**
-libraries and is built if `WITH_XEGLAPPLICATION` is enabled in CMake.
+@ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux.
 
 @section Platform-XEglApplication-bootstrap Bootstrap application
 
@@ -56,17 +55,26 @@ more information.
 
 @section Platform-XEglApplication-usage General usage
 
-In order to use this library from CMake, you need to copy `FindEGL.cmake` from
-the modules directory in Magnum source to the `modules/` dir in your project
-(so it is able to find the EGL library). Request the `XEglApplication`
-component of the `Magnum` package and link to the `Magnum::XEglApplication`
-target:
+This application library depends on **X11** and **EGL** libraries and is built
+if `WITH_XEGLAPPLICATION` is enabled when building Magnum. To use this library
+from CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
+into your `modules/` directory, request the `XEglApplication` component of the
+`Magnum` package and link to the `Magnum::XEglApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED XEglApplication)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::XEglApplication)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_XEGLAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

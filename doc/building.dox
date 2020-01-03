@@ -536,12 +536,12 @@ information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
 related info for the Corrade library.
 
 By default the engine is built with nearly everything except the @ref Audio
-library, plugins, command-line utilities and application libraries (see below).
-Using the following `WITH_*` CMake options you can specify which parts will be
-built and which not:
+and @ref Vk libraries, plugins, command-line utilities and application
+libraries (see below). Using the following `WITH_*` CMake options you can
+specify which parts will be built and which not:
 
 -   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
-    [OpenAL](https://www.openal.org/), not built by default.
+    [OpenAL](https://www.openal.org/), not enabled by default.
 -   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
 -   `WITH_GL` --- Build the @ref GL library. Enabled automatically if
     `WITH_SHADERS` is enabled.
@@ -557,7 +557,8 @@ built and which not:
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
     automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
 -   `WITH_TRADE` --- Build the @ref Trade library.
--   `WITH_VK` --- Build the @ref Vk library
+-   `WITH_VK` --- Build the @ref Vk library. Depends on Vulkan, not enabled by
+    default.
 
 There are more involved component dependencies that are not described here (for
 example the @ref DebugTools has some functionality that gets built only when

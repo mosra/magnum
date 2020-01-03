@@ -58,15 +58,36 @@ Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
 @ref MagnumFont for more information about the font. The plugin requires the
 passed @ref AbstractGlyphCache to support @ref GlyphCacheFeature::ImageDownload.
 
+@section Text-MagnumFontConverter-usage Usage
+
 This plugin depends on the @ref Text library and the
 @ref Trade::TgaImageConverter "TgaImageConverter" plugin. It is built if
 `WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use as a
-dynamic plugin, you need to load the @cpp "MagnumFontConverter" @ce plugin from
-`MAGNUM_PLUGINS_FONTCONVERTER_DIR`. To use as a static plugin or as a
-dependency of another plugin with CMake, you need to request the
-`MagnumFontConverter` component of the `Magnum` package and link to the
-`Magnum::MagnumFontConverter` target. See @ref building, @ref cmake and
-@ref plugins for more information.
+dynamic plugin, load @cpp "MagnumFontConverter" @ce via
+@ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_MAGNUMFONTCONVERTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::MagnumFontConverter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `MagnumFontConverter` component of the `Magnum` package and
+link to the `Magnum::MagnumFontConverter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED MagnumFontConverter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::MagnumFontConverter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::AbstractFontConverter {
     public:

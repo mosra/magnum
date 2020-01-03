@@ -61,13 +61,10 @@ namespace Magnum { namespace Platform {
 
 @m_keywords{Application}
 
-Application running on Emscripten.
-
-This application library is available only on
+Application running on Emscripten. Available only on
 @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see respective sections
 in the @ref building-corrade-cross-emscripten "Corrade" and
-@ref building-cross-emscripten "Magnum" building documentation. It is built if
-`WITH_EMSCRIPTENAPPLICATION` is enabled when building Magnum.
+@ref building-cross-emscripten "Magnum" building documentation.
 
 @section Platform-EmscriptenApplication-bootstrap Bootstrap application
 
@@ -111,8 +108,12 @@ together with a troubleshooting guide is available in @ref platforms-html5.
 
 @section Platform-EmscriptenApplication-usage General usage
 
-Request the `EmscriptenApplication` component of the `Magnum` package and link
-to the `Magnum::EmscriptenApplication` target:
+This application library is built if `WITH_EMSCRIPTENAPPLICATION` is enabled
+when building Magnum. To use this library with CMake, put
+[FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake) (or
+[FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake))
+into your `modules/` directory, request the `EmscriptenApplication` component
+of the `Magnum` package and link to the `Magnum::EmscriptenApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -124,6 +125,15 @@ endif()
 if(CORRADE_TARGET_EMSCRIPTEN)
     target_link_libraries(your-app PRIVATE Magnum::EmscriptenApplication)
 endif()
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_EMSCRIPTENAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

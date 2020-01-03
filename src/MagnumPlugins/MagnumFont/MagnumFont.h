@@ -58,15 +58,6 @@ namespace Magnum { namespace Text {
 /**
 @brief Simple bitmap font plugin
 
-This plugin depends on the @ref Text library and the
-@ref Trade::TgaImporter "TgaImporter" plugin. It is built if `WITH_MAGNUMFONT`
-is enabled when building Magnum. To use as a dynamic plugin, you need to load
-the @cpp "MagnumFont" @ce plugin from `MAGNUM_PLUGINS_FONT_DIR`. To use as a
-static plugin or as a dependency of another plugin with CMake, you need to
-request the `MagnumFont` component of the `Magnum` package and link to the
-`Magnum::MagnumFont` target. See @ref building, @ref cmake and @ref plugins
-for more information.
-
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
 can be conveniently created from any other format using
@@ -124,6 +115,36 @@ rectangle=45 0 44 25
 
 # ...
 @endcode
+
+@section Text-MagnumFont-usage Usage
+
+This plugin depends on the @ref Text library and the
+@ref Trade::TgaImporter "TgaImporter" plugin. It is built if `WITH_MAGNUMFONT`
+is enabled when building Magnum. To use as a dynamic plugin, load
+@cpp "MagnumFont" @ce via @ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_MAGNUMFONT ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::MagnumFont)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `MagnumFont` component of the `Magnum` package and link to
+the `Magnum::MagnumFont` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED MagnumFont)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::MagnumFont)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     public:

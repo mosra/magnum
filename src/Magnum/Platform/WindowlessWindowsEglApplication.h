@@ -55,7 +55,6 @@ namespace Magnum { namespace Platform {
 @m_keywords{WindowlessGLContext}
 
 GL context using pure WINAPI and EGL, used in @ref WindowlessWindowsEglApplication.
-It is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is enabled in CMake.
 
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
@@ -216,8 +215,7 @@ CORRADE_ENUMSET_OPERATORS(WindowlessWindowsEglContext::Configuration::Flags)
 @m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessWindowsEglContext.
-This application library is available on OpenGL ES (also ANGLE) on Windows. It
-is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is enabled in CMake.
+This application library is available on OpenGL ES (also ANGLE) on Windows.
 
 @section Platform-WindowlessWindowsEglApplication-bootstrap Bootstrap application
 
@@ -240,11 +238,11 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessWindowsEglApplication-usage General usage
 
-In order to use this library from CMake, you need to copy `FindEGL.cmake` from
-the modules directory in Magnum source to the `modules/` dir in your project
-(so it is able to find the EGL library). Request the
-`WindowlessWindowsEglApplication` component of the `Magnum` package and link to
-the `Magnum::WindowlessGlxApplication` target:
+This application library is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is
+enabled when building Magnum. To use this library from CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
+into your `modules/` directory, request the `WindowlessWindowsEglApplication`
+component of the `Magnum` package and link to the
+`Magnum::WindowlessGlxApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -256,6 +254,15 @@ endif()
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(your-app PRIVATE Magnum::WindowlessWindowsEglApplication)
 endif()
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_WINDOWLESSWINDOWSEGLAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

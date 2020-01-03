@@ -59,8 +59,7 @@ namespace Magnum { namespace Platform {
 @m_keywords{WindowlessGLContext}
 
 GL context using pure X11 and GLX, used in @ref WindowlessGlxApplication. Does
-not have any default framebuffer. It is built if `WITH_WINDOWLESSGLXAPPLICATION`
-is enabled in CMake.
+not have any default framebuffer.
 
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
@@ -247,9 +246,7 @@ CORRADE_ENUMSET_OPERATORS(WindowlessGlxContext::Configuration::Flags)
 
 Application for offscreen rendering using @ref WindowlessGlxContext. This
 application library is available on desktop OpenGL and
-@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
-depends on **X11** library and is built if `WITH_WINDOWLESSGLXAPPLICATION` is
-enabled in CMake.
+@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux.
 
 @section Platform-WindowlessGlxApplication-bootstrap Bootstrap application
 
@@ -272,8 +269,11 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessGlxApplication-usage General usage
 
-In order to use this library from CMake, you need to request the
-`WindowlessGlxApplication` component of the `Magnum` package and link to the `Magnum::WindowlessGlxApplication` target:
+This application library depends on the **X11** library and is built if
+`WITH_WINDOWLESSGLXAPPLICATION` is enabled when building Magnum. To use this
+library with CMake, you need to request the `WindowlessGlxApplication`
+component of the `Magnum` package and link to the
+`Magnum::WindowlessGlxApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
@@ -285,6 +285,15 @@ endif()
 if(CORRADE_TARGET_UNIX)
     target_link_libraries(your-app PRIVATE Magnum::WindowlessGlxApplication)
 endif()
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_WINDOWLESSGLXAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

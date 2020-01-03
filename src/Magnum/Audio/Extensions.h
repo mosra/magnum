@@ -46,15 +46,28 @@ Each struct has the same public methods as @ref Extension class (currently just
 compile-time decisions rather than @ref Extension instances. See
 @ref Context::isExtensionSupported() for example usage.
 
-This namespace is built if `WITH_AUDIO` is enabled when building Magnum. To use
-this library with CMake, you need to request the `Audio` component of the
-`Magnum` package and link to the `Magnum::Audio` target.
+This library depends on the [OpenAL](https://www.openal.org/) library and is
+built if `WITH_AUDIO` is enabled when building Magnum. To use this library with
+CMake, put [FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
+into your `modules/` directory, request the `Audio` component of the `Magnum`
+package and link to the `Magnum::Audio` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Audio)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::Audio)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default. Using OpenAL itself as a CMake subproject
+isn't isn't tested at the moment, so you need to provide it as a system
+dependency and point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+
+@code{.cmake}
+set(WITH_AUDIO ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 See @ref building and @ref cmake for more information.

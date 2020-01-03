@@ -60,18 +60,39 @@ namespace Magnum { namespace Trade {
 Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) uncompressed BGR,
 BGRA or grayscale images with 8 bits per channel.
 
-This plugin depends on the @ref Trade library and is built if `WITH_TGAIMPORTER`
-is enabled when building Magnum. To use as a dynamic plugin, you need to load
-the @cpp "TgaImporter" @ce plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use as
-a static plugin or use this as a dependency of another plugin with CMake, you
-need to request the `TgaImporter` component of the `Magnum` package and link to
-the `Magnum::TgaImporter` target. See @ref building, @ref cmake and
-@ref plugins for more information.
-
 The images are imported with @ref PixelFormat::RGB8Unorm,
 @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::R8Unorm, respectively. Images
 are imported with default @ref PixelStorage parameters except for alignment,
 which may be changed to `1` if the data require it.
+
+@section Trade-TgaImporter-usage Usage
+
+This plugin depends on the @ref Trade library and is built if `WITH_TGAIMPORTER`
+is enabled when building Magnum. To use as a dynamic plugin, load
+@cpp "TgaImporter" @ce via @ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_TGAIMPORTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::TgaImporter)
+@endcode
+
+To use as a static plugin or use this as a dependency of another plugin with
+CMake, you need to request the `TgaImporter` component of the `Magnum` package
+and link to the `Magnum::TgaImporter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED TgaImporter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::TgaImporter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

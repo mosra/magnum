@@ -95,14 +95,11 @@ namespace Implementation {
 @m_keywords{Application}
 
 Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
-Supports keyboard and mouse handling.
-
-This application library is in theory available for all platforms for which
-SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see
+Supports keyboard and mouse handling. This application library is available for
+all platforms for which SDL2 is ported except Android (thus also
+@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see
 respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
-@ref building-cross-emscripten "Magnum's" building documentation). It depends
-on the [SDL2](http://www.libsdl.org) library (Emscripten has it built in) and
-is built if `WITH_SDL2APPLICATION` is enabled in CMake.
+@ref building-cross-emscripten "Magnum's" building documentation).
 
 @m_class{m-block m-success}
 
@@ -205,21 +202,29 @@ final package along with a PowerShell script for easy local installation.
 
 @section Platform-Sdl2Application-usage General usage
 
-In order to use this library from CMake, you need to copy
+This application library depends on the [SDL2](http://www.libsdl.org) library
+(Emscripten has it built in) and is built if `WITH_SDL2APPLICATION` is enabled
+when building Magnum. To use this library with CMake, put
 [FindSDL2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindSDL2.cmake)
-from the `modules/` directory in Magnum sources to a `modules/` dir in your
-project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
-able to find the SDL2 library. Then request the `Sdl2Application` component of
+into your `modules/` directory, request the `Sdl2Application` component of
 the `Magnum` package and link to the `Magnum::Sdl2Application` target:
 
 @code{.cmake}
-# Path where FindSDL2.cmake can be found, adapt as needed
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
-
 find_package(Magnum REQUIRED Sdl2Application)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::Sdl2Application)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default.  Using SDL2 itself as a CMake subproject isn't
+tested at the moment, so you need to provide it as a system dependency and
+point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+
+@code{.cmake}
+set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

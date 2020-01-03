@@ -124,10 +124,13 @@ set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 # So the AnyImageImporter / AnySceneImporter gets built implicitly
-add_custom_target(plugins ALL DEPENDS
+add_dependencies(your-app
     Magnum::AnyImageImporter
     Magnum::AnySceneImporter)
 @endcode
+
+Each namespace, plugin and application class provides further information about
+additional steps needed for a CMake subproject setup.
 
 @section cmake-find-module Finding the package and its components
 

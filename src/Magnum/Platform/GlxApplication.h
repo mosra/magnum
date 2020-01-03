@@ -43,11 +43,8 @@ namespace Magnum { namespace Platform {
 @m_keywords{Application}
 
 Application using pure X11 and GLX. Supports keyboard and mouse handling.
-
-This application library is available on desktop OpenGL and
-@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
-depends on the **X11** library and is built if `WITH_GLXAPPLICATION` is enabled
-in CMake.
+Available on desktop OpenGL and
+@ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux.
 
 @section Platform-GlxApplication-bootstrap Bootstrap application
 
@@ -57,15 +54,24 @@ more information.
 
 @section Platform-GlxApplication-usage General usage
 
-In order to use this library from Cmake, you need to request the
-`GlxApplication` component of the `Magnum` package and link to the
-`Magnum::GlxApplication` target:
+This application library depends on the **X11** library and is built if `WITH_GLXAPPLICATION` is enabled when building Magnum. To use this library from
+CMake, request the `GlxApplication` component of the `Magnum` package and link
+to the `Magnum::GlxApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED GlxApplication)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::GlxApplication)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default:
+
+@code{.cmake}
+set(WITH_GLXAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

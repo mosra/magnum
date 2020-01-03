@@ -62,10 +62,7 @@ namespace Implementation {
 
 Application using the [GLFW](http://glfw.org) toolkit. Supports keyboard and
 mouse handling with support for changing cursor and mouse tracking and warping.
-
-This application library is available on all platforms where GLFW is ported. It
-depends on the [GLFW](http://glfw.org) library and is built if
-`WITH_GLFWAPPLICATION` is enabled when building Magnum.
+Available on all platforms where GLFW is ported.
 
 @m_class{m-block m-success}
 
@@ -96,21 +93,32 @@ See @ref cmake for more information.
 
 @section Platform-GlfwApplication-usage General usage
 
-In order to use this library from CMake, you need to copy
+This application library depends on the [GLFW](http://glfw.org) library and is
+built if `WITH_GLFWAPPLICATION` is enabled when building Magnum. To use this
+library with CMake, put
 [FindGLFW.cmake](https://github.com/mosra/magnum/blob/master/modules/FindGLFW.cmake)
-from the `modules/` directory in Magnum sources to a `modules/` dir in your
-project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
-able to find the GLFW library. Then request the `GlfwApplication` component of
-the `Magnum` package and link to the `Magnum::GlfwApplication` target:
+into your `modules/` directory, request the `GlfwApplication` component of the
+`Magnum` package and link to the `Magnum::GlfwApplication` target:
 
 @code{.cmake}
-# Path where FindGLFW.cmake can be found, adapt as needed
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
-
 find_package(Magnum REQUIRED GlfwApplication)
 
 # ...
 target_link_libraries(your-app PRIVATE Magnum::GlfwApplication)
+@endcode
+
+Additionally, if you're using Magnum as a CMake subproject, bundle the
+[glfw repository](https://github.com/glfw/glfw) and do the following
+* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
+library is not built by default. If you want to use system-installed GLFW, omit
+the first part and point `CMAKE_PREFIX_PATH` to its installation dir if
+necessary.
+
+@code{.cmake}
+add_subdirectory(glfw)
+
+set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 If no other application is requested, you can also use the generic

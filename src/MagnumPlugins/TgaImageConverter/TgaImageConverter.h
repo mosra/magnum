@@ -58,14 +58,35 @@ Creates Truevision TGA (`*.tga`) files from images with format
 @ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGBA8Unorm or
 @ref PixelFormat::R8Unorm.
 
+@section Trade-TgaImageConverter-usage Usage
+
 This plugin depends on the @ref Trade library and is built if
 `WITH_TGAIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic
-plugin, you need to load the @cpp "TgaImageConverter" @ce plugin from
-`MAGNUM_PLUGINS_IMAGECONVERTER_DIR`. To use as a static plugin or as a
-dependency of another plugin with CMake, you need to request the
-`TgaImageConverter` component of the `Magnum` package and link to the
-`Magnum::TgaImageConverter` target. See @ref building, @ref cmake and
-@ref plugins for more information.
+plugin, load @cpp "TgaImageConverter" @ce via
+@ref Corrade::PluginManager::Manager.
+
+Additionally, if you're using Magnum as a CMake subproject, do the following:
+
+@code{.cmake}
+set(WITH_TGAIMAGECONVERTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the dynamically loaded plugin gets built implicitly
+add_dependencies(your-app Magnum::TgaImageConverter)
+@endcode
+
+To use as a static plugin or as a dependency of another plugin with CMake, you
+need to request the `TgaImageConverter` component of the `Magnum` package and
+link to the `Magnum::TgaImageConverter` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED TgaImageConverter)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::TgaImageConverter)
+@endcode
+
+See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
