@@ -39,12 +39,14 @@ struct SubdivideRemoveDuplicatesBenchmark: TestSuite::Tester {
 
     void subdivide();
     void subdivideAndRemoveDuplicatesAfter();
+    void subdivideAndRemoveDuplicatesAfterInPlace();
     void subdivideAndRemoveDuplicatesInBetween();
 };
 
 SubdivideRemoveDuplicatesBenchmark::SubdivideRemoveDuplicatesBenchmark() {
     addBenchmarks({&SubdivideRemoveDuplicatesBenchmark::subdivide,
                    &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter,
+                   &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfterInPlace,
                    &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween}, 4);
 }
 
@@ -74,6 +76,13 @@ void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter() {
 
         /* Remove duplicates after */
         icosphere.indices() = MeshTools::duplicate(icosphere.indices(), MeshTools::removeDuplicates(icosphere.positions(0)));
+    }
+}
+
+void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfterInPlace() {
+    CORRADE_BENCHMARK(3) {
+        /* Because that's what this thing does */
+        Trade::MeshData3D icosphere = Primitives::icosphereSolid(5);
     }
 }
 
