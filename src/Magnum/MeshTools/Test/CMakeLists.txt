@@ -40,6 +40,7 @@ set_property(TARGET
     MeshToolsCombineIndexedArraysTest
     MeshToolsDuplicateTest
     MeshToolsInterleaveTest
+    MeshToolsRemoveDuplicatesTest
     MeshToolsSubdivideTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 

@@ -47,7 +47,7 @@ namespace Magnum { namespace MeshTools {
 All vertices in each triangle face get the same normal vector. Expects that the
 position count is divisible by 3. If you need to generate flat normals for an
 indexed mesh, @ref duplicate() the vertices first, after the operation you
-might want to remove the duplicates again using @ref removeDuplicates().
+might want to remove the duplicates again using @ref removeDuplicatesInPlace().
 Example usage:
 
 @snippet MagnumMeshTools.cpp generateFlatNormals

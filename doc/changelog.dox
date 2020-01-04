@@ -207,6 +207,9 @@ See also:
 
 -   Added @ref MeshTools::subdivideInPlace() that operates on a partially
     filled array view instead of a @ref std::vector
+-   Added @ref MeshTools::removeDuplicatesIndexedInPlace() that operates
+    in-place on an indexed array view and a STL-less
+    @ref MeshTools::removeDuplicatesInPlace() variant
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

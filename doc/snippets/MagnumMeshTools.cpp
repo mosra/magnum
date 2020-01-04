@@ -85,16 +85,7 @@ auto data = MeshTools::interleave(positions, weights, 2, vertexColors, 1);
 }
 
 {
-/* [removeDuplicates1] */
-std::vector<UnsignedInt> indices;
-std::vector<Vector3> positions;
-
-indices = MeshTools::duplicate(indices, MeshTools::removeDuplicates(positions));
-/* [removeDuplicates1] */
-}
-
-{
-/* [removeDuplicates2] */
+/* [removeDuplicates-multiple] */
 std::vector<Vector3> positions;
 std::vector<Vector2> texCoords;
 
@@ -105,7 +96,7 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
     std::make_pair(std::cref(positionIndices), std::ref(positions)),
     std::make_pair(std::cref(texCoordIndices), std::ref(texCoords))
 );
-/* [removeDuplicates2] */
+/* [removeDuplicates-multiple] */
 }
 
 {

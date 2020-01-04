@@ -26,13 +26,14 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::removeDuplicates()
+ * @brief Function @ref Magnum::MeshTools::removeDuplicatesInPlace(), @ref Magnum::MeshTools::removeDuplicatesIndexedInPlace(), @ref Magnum::MeshTools::removeDuplicates()
  */
 
 #include <limits>
 #include <numeric>
 #include <unordered_map>
 #include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Utility/MurmurHash2.h>
 
@@ -51,11 +52,14 @@ namespace Implementation {
 }
 
 /**
-@brief Remove duplicate floating-point vector data from given array
-@param[in,out] data Input data array
-@param[in] epsilon  Epsilon value, vertices nearer than this distance will be
+@brief Remove duplicate floating-point vector data from given array in-place
+@param[in,out] data Data array, duplicate items will be cut away with order
+    preserved
+@param[in] epsilon  Epsilon value, vertices closer than this distance will be
     melt together
-@return Index array and unique data
+@return Size of unique prefix in the cleaned up @p data array and the resulting
+    index array
+@m_since_latest
 
 Removes duplicate data from the array by collapsing them into buckets of size
 @p epsilon. First vector in given bucket is used, other ones are thrown away,
@@ -63,57 +67,82 @@ no interpolation is done. Note that this function is meant to be used for
 floating-point data (or generally with non-zero @p epsilon), for discrete data
 the usual sorting method is much more efficient.
 
-If you want to remove duplicate data from an already indexed array, first
-remove duplicates as if the array wasn't indexed at all and then use
-@ref duplicate() to combine the two index arrays:
-
-@snippet MagnumMeshTools.cpp removeDuplicates1
-
-Removing duplicates in multiple indcidental arrays is also possible --- first
-remove duplicates in each array separately and then use @ref combineIndexedArrays()
-to combine the resulting index arrays to single index array, and reorder the
-data accordingly:
-
-@snippet MagnumMeshTools.cpp removeDuplicates2
+If you want to remove duplicate data from an already indexed array, use
+@ref removeDuplicatesIndexedInPlace() instead. See also
+@ref removeDuplicates(std::vector<Vector>&, typename Vector::Type) for a
+variant operating on a STL vector.
 */
-template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
+template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+
+/**
+@brief Remove duplicate floating-point vector data from a STL vector in-place
+@param[in,out] data Data array, duplicate items will be cut away with order
+    preserved and the size shrunk to just the unique prefix
+@param[in] epsilon  Epsilon value, vertices closer than this distance will be
+    melt together
+@return Resulting index array
+
+Similar to the above, except that it's operating on a @ref std::vector, which
+gets shrunk as a result (instead of the prefix size being returned). This
+variant is useful together with @ref combineIndexedArrays() to remove
+duplicates in multiple incidental arrays --- first remove duplicates in each
+array separately and then combine the resulting index arrays to single index
+array, and reorder the data accordingly:
+
+@snippet MagnumMeshTools.cpp removeDuplicates-multiple
+*/
+template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+
+/**
+@brief Remove duplicates from indexed floating-point vector data in-place
+@param[in,out] indices  Index array, which will get remapped to list just
+    unique vertices
+@param[in,out] data     Data array, duplicate items will be cut away with order
+    preserved
+@param[in] epsilon      Epsilon value, vertices closer than this distance will
+    be melt together
+@return Size of unique prefix in the cleaned up @p data array
+@m_since_latest
+
+Compared to @ref removeDuplicatesInPlace() this variant is more suited for data
+that is already indexed as it works on the existing index array instead of
+allocating a new one.
+*/
+template<class IndexType, class Vector> std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
+    /* Somehow ~IndexType{} doesn't work for < 4byte types, as the result is
+       int(-1) instead of the type I want */
+    CORRADE_ASSERT(data.size() <= IndexType(-1), "MeshTools::removeDuplicatesIndexedInPlace(): a" << sizeof(IndexType) << Debug::nospace << "-byte index type is too small for" << data.size() << "vertices", {});
+
     /* Get bounds. When NaNs appear, those will get collapsed together when
        you're lucky, or cause the whole data to disappear when you're not -- it
        needs a much more specialized handling to be robust. */
-    std::pair<Vector, Vector> minmax = Math::minmax<Vector>(data);
+    std::pair<Vector, Vector> minmax = Math::minmax(data);
 
     /* Make epsilon so large that std::size_t can index all vectors inside the
        bounds. */
     epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/~std::size_t{}));
 
-    /* Resulting index array. Because we'll be remapping these, we need to
-       start from a 0..n sequence. */
-    std::vector<UnsignedInt> indices(data.size());
-    std::iota(indices.begin(), indices.end(), 0);
-
     /* Table containing original vector index for each discretized vector.
        Reserving more buckets than necessary (i.e. as if each vector was
        unique). */
-    std::unordered_map<Math::Vector<Vector::Size, std::size_t>, UnsignedInt, Implementation::VectorHash<Vector::Size>> table(data.size());
+    std::size_t dataSize = data.size();
+    std::unordered_map<Math::Vector<Vector::Size, std::size_t>, UnsignedInt, Implementation::VectorHash<Vector::Size>> table(dataSize);
 
     /* Index array that'll be filled in each pass and then used for remapping
        the `indices` */
-    std::vector<UnsignedInt> remapping(data.size());
+    Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
 
     /* First go with original coordinates, then move them by epsilon/2 in each
        direction. */
     Vector moved;
     for(std::size_t moving = 0; moving <= Vector::Size; ++moving) {
-        /* Clear the table for this pass */
-        table.clear();
-
         /* Go through all vectors */
-        for(std::size_t i = 0; i != data.size(); ++i) {
+        for(std::size_t i = 0; i != dataSize; ++i) {
             /* Try to insert new vertex into the table */
             const Math::Vector<Vector::Size, std::size_t> v{(data[i] + moved - minmax.first)/epsilon};
             const auto result = table.emplace(v, table.size());
 
-            /* Add the (either new or already existing) index into index array */
+            /* Add the (either new or already existing) index into the array */
             remapping[i] = result.first->second;
 
             /* If this is a new combination, copy the data to new (earlier)
@@ -121,12 +150,8 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
                present in the [0, table.size()-1) range from previous
                iterations so we aren't overwriting anything. */
             if(result.second && i != table.size() - 1)
-                data[table.size()-1] = data[i];
+                data[table.size() - 1] = data[i];
         }
-
-        /* Shrink the data array */
-        CORRADE_INTERNAL_ASSERT(data.size() >= table.size());
-        data.resize(table.size());
 
         /* Remap the resulting index array */
         for(auto& i: indices) i = remapping[i];
@@ -137,8 +162,31 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
         /* Move vertex coordinates by epsilon/2 in the next direction */
         moved = Vector();
         moved[moving] = epsilon/2;
+
+        /* Next time go only through the unique prefix; clear the table for the
+           next pass */
+        dataSize = table.size();
+        table.clear();
     }
 
+    CORRADE_INTERNAL_ASSERT(data.size() >= dataSize);
+    return dataSize;
+}
+
+template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {
+    /* A trivial index array that'll be remapped and returned after */
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()};
+    std::iota(indices.begin(), indices.end(), 0);
+    const std::size_t size = removeDuplicatesIndexedInPlace(Containers::stridedArrayView(indices), data, epsilon);
+    return {std::move(indices), size};
+}
+
+template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {
+    /* A trivial index array that'll be remapped and returned after */
+    std::vector<UnsignedInt> indices(data.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    const std::size_t size = removeDuplicatesIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(data), epsilon);
+    data.resize(size);
     return indices;
 }
 
