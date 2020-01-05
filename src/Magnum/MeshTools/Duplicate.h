@@ -63,6 +63,18 @@ template<class IndexType, class T> Containers::Array<T> duplicate(const Containe
 }
 
 /**
+@brief Duplicate data using given index array
+
+Like @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&),
+but putting the result into a @ref std::vector.
+*/
+template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
+    std::vector<T> out(indices.size());
+    duplicateInto<UnsignedInt, T>(indices, data, out);
+    return out;
+}
+
+/**
 @brief Duplicate data using an index array into given output array
 @param[in]  indices Index array to use
 @param[in]  data    Input data
@@ -80,18 +92,6 @@ template<class IndexType, class T> void duplicateInto(const Containers::StridedA
         CORRADE_ASSERT(index < data.size(), "MeshTools::duplicateInto(): index" << index << "out of bounds for" << data.size() << "elements", );
         out[i] = data[index];
     }
-}
-
-/**
-@brief Duplicate data using given index array
-
-Like @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&),
-but putting the result into a @ref std::vector.
-*/
-template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
-    std::vector<T> out(indices.size());
-    duplicateInto<UnsignedInt, T>(indices, data, out);
-    return out;
 }
 
 }}
