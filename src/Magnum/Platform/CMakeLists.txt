@@ -36,8 +36,8 @@ set(MagnumPlatform_HEADERS
 
 set(MagnumPlatform_PRIVATE_HEADERS )
 
-# DPI scaling queries only for EmscriptenApplication, Sdl2Application and
-# GlfwApplication at the moment, build the files only then
+# DPI scaling queries and related stuff for EmscriptenApplication,
+# Sdl2Application and GlfwApplication
 if(WITH_EMSCRIPTENAPPLICATION OR WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION)
     # List of libraries to link when using the MagnumPlatformObjects target
     # TODO: use target_link_libraries() when we are on a CMake version that
