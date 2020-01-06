@@ -27,12 +27,14 @@
 
 #include <stack>
 
-namespace Magnum { namespace MeshTools { namespace Implementation {
+#include "Magnum/MeshTools/Implementation/Tipsify.h"
 
-void Tipsify::operator()(std::size_t cacheSize) {
+namespace Magnum { namespace MeshTools {
+
+void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
     std::vector<UnsignedInt> liveTriangleCount, neighborPosition, neighbors;
-    buildAdjacency(liveTriangleCount, neighborPosition, neighbors);
+    Implementation::buildAdjacency(indices, vertexCount, liveTriangleCount, neighborPosition, neighbors);
 
     /* Global time, per-vertex caching timestamps, per-triangle emmited flag */
     UnsignedInt time = cacheSize+1;
@@ -129,33 +131,4 @@ void Tipsify::operator()(std::size_t cacheSize) {
     swap(indices, outputIndices);
 }
 
-void Tipsify::buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) const {
-    /* How many times is each vertex referenced == count of neighboring
-       triangles for each vertex */
-    liveTriangleCount.clear();
-    liveTriangleCount.resize(vertexCount);
-    for(std::size_t i = 0; i != indices.size(); ++i)
-        ++liveTriangleCount[indices[i]];
-
-    /* Building offset array from counts. Neighbors for i-th vertex will at
-       the end be in interval neighbors[neighborOffset[i]] ;
-       neighbors[neighborOffset[i+1]]. Currently the values are shifted to
-       right, because the next loop will shift them back left. */
-    neighborOffset.clear();
-    neighborOffset.reserve(vertexCount+1);
-    neighborOffset.push_back(0);
-    UnsignedInt sum = 0;
-    for(std::size_t i = 0; i != vertexCount; ++i) {
-        neighborOffset.push_back(sum);
-        sum += liveTriangleCount[i];
-    }
-
-    /* Array of neighbors, using (and changing) neighborOffset array for
-       positioning */
-    neighbors.clear();
-    neighbors.resize(sum);
-    for(std::size_t i = 0; i != indices.size(); ++i)
-        neighbors[neighborOffset[indices[i]+1]++] = i/3;
-}
-
-}}}
+}}

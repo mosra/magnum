@@ -48,6 +48,9 @@ set(MagnumMeshTools_HEADERS
 
     visibility.h)
 
+set(MagnumMeshTools_INTERNAL_HEADERS
+    Implementation/Tipsify.h)
+
 if(BUILD_DEPRECATED)
     list(APPEND MagnumMeshTools_HEADERS GenerateFlatNormals.h)
 endif()
@@ -65,7 +68,8 @@ endif()
 # Objects shared between main and test library
 add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_SRCS}
-    ${MagnumMeshTools_HEADERS})
+    ${MagnumMeshTools_HEADERS}
+    ${MagnumMeshTools_INTERNAL_HEADERS})
 target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")

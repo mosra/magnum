@@ -27,6 +27,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Tipsify.h"
+#include "Magnum/MeshTools/Implementation/Tipsify.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -87,7 +88,7 @@ TipsifyTest::TipsifyTest() {
 void TipsifyTest::buildAdjacency() {
     std::vector<UnsignedInt> indices = Indices;
     std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
-    Implementation::Tipsify(indices, VertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
+    Implementation::buildAdjacency(indices, VertexCount, liveTriangleCount, neighborOffset, neighbors);
 
     CORRADE_COMPARE(liveTriangleCount, (std::vector<UnsignedInt>{
         1, 3, 3, 2,

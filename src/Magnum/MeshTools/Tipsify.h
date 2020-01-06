@@ -36,30 +36,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-namespace Implementation {
-
-class MAGNUM_MESHTOOLS_EXPORT Tipsify {
-    public:
-        Tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount): indices(indices), vertexCount(vertexCount) {}
-
-        void operator()(std::size_t cacheSize);
-
-        /**
-         * @brief Build vertex-triangle adjacency
-         *
-         * Computes count and indices of adjacent triangles for each vertex
-         * (used internally).
-         * @todo Export only for unit test, hide otherwise
-         */
-        void buildAdjacency(std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) const;
-
-    private:
-        std::vector<UnsignedInt>& indices;
-        const UnsignedInt vertexCount;
-};
-
-}
-
 /**
 @brief Tipsify the mesh
 @param[in,out] indices  Indices array to operate on
@@ -73,9 +49,7 @@ for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 @todo Ability to compute vertex count automatically
 */
-inline void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize) {
-    Implementation::Tipsify(indices, vertexCount)(cacheSize);
-}
+MAGNUM_MESHTOOLS_EXPORT void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
 
 }}
 
