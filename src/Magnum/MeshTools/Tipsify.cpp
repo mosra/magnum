@@ -33,8 +33,8 @@ namespace Magnum { namespace MeshTools {
 
 void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
-    std::vector<UnsignedInt> liveTriangleCount, neighborPosition, neighbors;
-    Implementation::buildAdjacency(indices, vertexCount, liveTriangleCount, neighborPosition, neighbors);
+    std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
+    Implementation::buildAdjacency(indices, vertexCount, liveTriangleCount, neighborOffset, neighbors);
 
     /* Global time, per-vertex caching timestamps, per-triangle emmited flag */
     UnsignedInt time = cacheSize+1;
@@ -57,7 +57,7 @@ void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, c
         std::vector<UnsignedInt> candidates;
 
         /* For all neighbors of fanning vertex */
-        for(UnsignedInt ti = neighborPosition[fanningVertex], t = neighbors[ti]; ti != neighborPosition[fanningVertex+1]; t = neighbors[++ti]) {
+        for(UnsignedInt ti = neighborOffset[fanningVertex], t = neighbors[ti]; ti != neighborOffset[fanningVertex+1]; t = neighbors[++ti]) {
             /* Continue if already emitted */
             if(emitted[t]) continue;
             emitted[t] = true;
