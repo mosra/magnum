@@ -719,7 +719,8 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
         return false;
     }
 
-    _flags |= Flag::VSyncEnabled;
+    if(interval) _flags |= Flag::VSyncEnabled;
+    else _flags &= ~Flag::VSyncEnabled;
     return true;
 }
 

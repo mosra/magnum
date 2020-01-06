@@ -822,7 +822,8 @@ class Sdl2Application {
          *
          * This setting reduces the main loop frequency in case VSync is
          * not/cannot be enabled or no drawing is done. Default is @cpp 0 @ce
-         * (i.e. looping at maximum frequency).
+         * (i.e. looping at maximum frequency). If the application is drawing
+         * on the screen and VSync is enabled, this setting is ignored.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
          *      the browser is managing the frequency instead.
          * @see @ref setSwapInterval()

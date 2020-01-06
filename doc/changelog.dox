@@ -185,6 +185,9 @@ See also:
     @cpp #include <SDL_main.h> @ce, causing iOS builds to fail to initialize.
     The include got added back and initialization failures are reported with
     more information now.
+-   Calling @ref Platform::Sdl2Application::setSwapInterval() with @cpp 0 @ce
+    caused @ref Platform::Sdl2Application::setMinimalLoopPeriod() "setMinimalLoopPeriod()"
+    to be ignored even though Vsync was in fact not enabled.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
