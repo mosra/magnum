@@ -36,6 +36,7 @@ struct TipsifyTest: TestSuite::Tester {
 
     void buildAdjacency();
     void tipsify();
+    void oneDegenerateTriangle();
 };
 
 /*
@@ -82,7 +83,8 @@ constexpr std::size_t VertexCount = 19;
 
 TipsifyTest::TipsifyTest() {
     addTests({&TipsifyTest::buildAdjacency,
-              &TipsifyTest::tipsify});
+              &TipsifyTest::tipsify,
+              &TipsifyTest::oneDegenerateTriangle});
 }
 
 void TipsifyTest::buildAdjacency() {
@@ -156,6 +158,15 @@ void TipsifyTest::tipsify() {
         14, 15, 11, /* from dead-end vertex stack */
         16, 17, 18 /* arbitrary vertex */
     }));
+}
+
+void TipsifyTest::oneDegenerateTriangle() {
+    /* There used to be an OOB access (neighbors[++ti]) caught by ASan, this
+       triggers it */
+    std::vector<UnsignedInt> indices{0, 0, 0};
+    MeshTools::tipsify(indices, 1, 2);
+
+    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 0, 0}));
 }
 
 }}}}
