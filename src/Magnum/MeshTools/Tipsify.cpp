@@ -57,7 +57,9 @@ void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, c
         std::vector<UnsignedInt> candidates;
 
         /* For all neighbors of fanning vertex */
-        for(UnsignedInt ti = neighborOffset[fanningVertex], t = neighbors[ti]; ti != neighborOffset[fanningVertex+1]; t = neighbors[++ti]) {
+        for(UnsignedInt ti = neighborOffset[fanningVertex]; ti != neighborOffset[fanningVertex+1]; ++ti) {
+            const UnsignedInt t = neighbors[ti];
+
             /* Continue if already emitted */
             if(emitted[t]) continue;
             emitted[t] = true;
