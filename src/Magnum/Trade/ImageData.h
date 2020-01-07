@@ -388,9 +388,12 @@ template<UnsignedInt dimensions> class ImageData {
          * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. Expects that
-         * the image is not compressed. See @ref Image-pixel-views for more
-         * information.
-         * @see @ref isCompressed()
+         * the image is not compressed. The last dimension represents the
+         * actual data type (its size is equal to type size) and is guaranteed
+         * to be contiguous. Use the templated overload below to get pixels in
+         * a concrete type. See @ref Image-pixel-views for more information.
+         * @see @ref isCompressed(),
+         *      @ref Corrade::Containers::StridedArrayView::isContiguous()
          */
         Containers::StridedArrayView<dimensions + 1, char> pixels();
         Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
