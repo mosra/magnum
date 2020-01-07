@@ -916,6 +916,11 @@ WARN_LOGFILE           =
 
 INPUT                  = src/Magnum \
                          src/MagnumPlugins \
+                         src/Magnum/Audio/al-info.cpp \
+                         src/Magnum/Platform/gl-info.cpp \
+                         src/Magnum/Text/fontconverter.cpp \
+                         src/Magnum/TextureTools/distancefieldconverter.cpp \
+                         src/Magnum/Trade/imageconverter.cpp \
                          doc/ \
                          ../magnum-plugins/src/Magnum \
                          ../magnum-plugins/src/MagnumPlugins \
@@ -924,6 +929,7 @@ INPUT                  = src/Magnum \
                          ../magnum-integration/doc/ \
                          ../magnum-examples/doc/ \
                          ../magnum-extras/src/Magnum \
+                         ../magnum-extras/src/Magnum/Ui/ui-gallery.cpp \
                          ../magnum-extras/doc/
 
 # This tag can be used to specify the character encoding of the source files
@@ -951,8 +957,7 @@ INPUT_ENCODING         = UTF-8
 # C comment), *.py, *.pyw, *.f90, *.f95, *.f03, *.f08, *.f, *.for, *.tcl, *.vhd,
 # *.vhdl, *.ucf, *.qsf and *.ice.
 
-FILE_PATTERNS          = *.cpp \
-                         *.h \
+FILE_PATTERNS          = *.h \
                          *.hpp \
                          *.dox
 
