@@ -58,6 +58,7 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothZeroAreaTriangle();
     void smoothNanPosition();
     void smoothWrongCount();
+    void smoothOutOfBounds();
     void smoothIntoWrongSize();
 
     void benchmarkFlat();
@@ -81,6 +82,7 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothZeroAreaTriangle,
               &GenerateNormalsTest::smoothNanPosition,
               &GenerateNormalsTest::smoothWrongCount,
+              &GenerateNormalsTest::smoothOutOfBounds,
               &GenerateNormalsTest::smoothIntoWrongSize});
 
     addBenchmarks({&GenerateNormalsTest::benchmarkFlat,
@@ -384,6 +386,16 @@ void GenerateNormalsTest::smoothWrongCount() {
     const Vector3 positions[1];
     generateSmoothNormals(indices, positions);
     CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index count not divisible by 3\n");
+}
+
+void GenerateNormalsTest::smoothOutOfBounds() {
+    std::stringstream out;
+    Error redirectError{&out};
+
+    const Vector3 positions[2];
+    const UnsignedInt indices[] { 0, 1, 2 };
+    generateSmoothNormals(indices, positions);
+    CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index 2 out of bounds for 2 elements\n");
 }
 
 void GenerateNormalsTest::smoothIntoWrongSize() {

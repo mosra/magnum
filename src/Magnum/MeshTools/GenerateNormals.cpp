@@ -111,7 +111,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
         Containers::arrayCast<UnsignedInt>(normals);
     for(UnsignedInt& i: triangleCount) i = 0;
     for(const T index: indices) {
-        CORRADE_ASSERT(index < positions.size(), "MeshTools::generateSmoothNormals(): index" << index << "out of bounds for" << positions.size() << "elements", );
+        CORRADE_ASSERT(index < positions.size(), "MeshTools::generateSmoothNormalsInto(): index" << index << "out of bounds for" << positions.size() << "elements", );
         ++triangleCount[index];
     }
 
