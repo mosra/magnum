@@ -362,20 +362,17 @@ void GenerateNormalsTest::smoothNanPosition() {
         { 0.0f, Constants::nan(), 0.0f},
     };
 
-    /* Second triangle is just an edge, so it shouldn't contribute to the first
-       triangle normal */
+    /* Second triangle will poison a part of the first with NaNs, but it won't
+       crash */
     constexpr UnsignedInt indices[] {
-        0, 1, 2, 1, 2, 1
+        0, 1, 2, 1, 2, 3
     };
 
     Containers::Array<Vector3> generated = generateSmoothNormals(indices, positions);
-    CORRADE_COMPARE_AS(generated.prefix(3),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
-            Vector3::zAxis(),
-            Vector3::zAxis(),
-            Vector3::zAxis()
-        }}), TestSuite::Compare::Container<Containers::ArrayView<const Vector3>>);
-    CORRADE_COMPARE(Math::isNan(generated[3]), BoolVector3{0x7});
+    CORRADE_COMPARE(generated[0], Vector3::zAxis());
+    CORRADE_VERIFY(Math::isNan(generated[1]).all());
+    CORRADE_VERIFY(Math::isNan(generated[2]).all());
+    CORRADE_VERIFY(Math::isNan(generated[3]).all());
 }
 
 void GenerateNormalsTest::smoothWrongCount() {
