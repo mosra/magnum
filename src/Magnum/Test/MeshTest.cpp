@@ -67,8 +67,8 @@ void MeshTest::primitiveMapping() {
     for(UnsignedInt i = 0; i <= 0xff; ++i) {
         const auto primitive = MeshPrimitive(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range) */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
@@ -77,6 +77,7 @@ void MeshTest::primitiveMapping() {
         switch(primitive) {
             #define _c(primitive) \
                 case MeshPrimitive::primitive: \
+                    CORRADE_COMPARE(Utility::ConfigurationValue<MeshPrimitive>::toString(MeshPrimitive::primitive, {}), #primitive); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xff); \
                     ++nextHandled; \
@@ -104,8 +105,8 @@ void MeshTest::indexTypeMapping() {
     for(UnsignedInt i = 0; i <= 0xff; ++i) {
         const auto type = MeshIndexType(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range) */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
@@ -114,6 +115,7 @@ void MeshTest::indexTypeMapping() {
         switch(type) {
             #define _c(type) \
                 case MeshIndexType::type: \
+                    CORRADE_COMPARE(Utility::ConfigurationValue<MeshIndexType>::toString(MeshIndexType::type, {}), #type); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xff); \
                     ++nextHandled; \

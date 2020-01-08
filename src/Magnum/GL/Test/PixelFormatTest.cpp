@@ -117,8 +117,8 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::PixelFormat(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */
@@ -327,8 +327,8 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::CompressedPixelFormat(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */

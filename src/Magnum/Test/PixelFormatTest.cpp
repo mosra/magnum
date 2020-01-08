@@ -112,11 +112,9 @@ void PixelFormatTest::mapping() {
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = PixelFormat(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
-           - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
+           - that there was no gap (unhandled value inside the range) */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -124,6 +122,7 @@ void PixelFormatTest::mapping() {
         switch(format) {
             #define _c(format) \
                 case PixelFormat::format: \
+                    CORRADE_COMPARE(Utility::ConfigurationValue<PixelFormat>::toString(PixelFormat::format, {}), #format); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     ++nextHandled; \
@@ -152,11 +151,9 @@ void PixelFormatTest::compressedMapping() {
     for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = CompressedPixelFormat(i);
         /* Each case verifies:
-           - that the cases are ordered by number (so insertion here is done in
-             proper place)
-           - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that the entries are ordered by number by comparing a function to
+             expected result (so insertion here is done in proper place)
+           - that there was no gap (unhandled value inside the range) */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -164,6 +161,7 @@ void PixelFormatTest::compressedMapping() {
         switch(format) {
             #define _c(format, width, height, depth, size) \
                 case CompressedPixelFormat::format: \
+                    CORRADE_COMPARE(Utility::ConfigurationValue<CompressedPixelFormat>::toString(CompressedPixelFormat::format, {}), #format); \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::format), (Vector3i{width, height, depth})); \
