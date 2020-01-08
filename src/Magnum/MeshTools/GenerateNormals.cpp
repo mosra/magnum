@@ -86,6 +86,8 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
 }
 #endif
 
+namespace {
+
 #if defined(CORRADE_MSVC2019_COMPATIBILITY) && !defined(CORRADE_MSVC2017_COMPATIBILITY)
 /* When using /permissive- with MSVC2019, using namespace inside the function
    below FOR SOME REASON gets lost when instantiating the template. That's
@@ -94,7 +96,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
 using namespace Math::Literals;
 #endif
 
-template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+template<class T> inline void generateSmoothNormalsIntoImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
     CORRADE_ASSERT(indices.size() % 3 == 0,
         "MeshTools::generateSmoothNormalsInto(): index count not divisible by 3", );
     CORRADE_ASSERT(normals.size() == positions.size(),
@@ -217,22 +219,42 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
     }
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template void generateSmoothNormalsInto<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-template void generateSmoothNormalsInto<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-template void generateSmoothNormalsInto<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-#endif
+}
 
-template<class T> Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
+/* If not done this way but with templates instead, C++ wouldn't be able to
+   figure out on its own which overload to use when indices are not already a
+   strided arrray view */
+void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+    generateSmoothNormalsIntoImplementation(indices, positions, normals);
+}
+void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+    generateSmoothNormalsIntoImplementation(indices, positions, normals);
+}
+void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+    generateSmoothNormalsIntoImplementation(indices, positions, normals);
+}
+
+namespace {
+
+template<class T> inline Containers::Array<Vector3> generateSmoothNormalsImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
     Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
     generateSmoothNormalsInto(indices, positions, out);
     return out;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template Containers::Array<Vector3> generateSmoothNormals<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&);
-template Containers::Array<Vector3> generateSmoothNormals<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&);
-template Containers::Array<Vector3> generateSmoothNormals<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&);
-#endif
+}
+
+/* If not done this way but with templates instead, C++ wouldn't be able to
+   figure out on its own which overload to use when indices are not already a
+   strided arrray view */
+Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
+    return generateSmoothNormalsImplementation(indices, positions);
+}
+Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
+    return generateSmoothNormalsImplementation(indices, positions);
+}
+Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
+    return generateSmoothNormalsImplementation(indices, positions);
+}
 
 }}

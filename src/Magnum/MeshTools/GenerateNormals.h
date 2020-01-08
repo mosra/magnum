@@ -118,13 +118,19 @@ Martijn Buijs.
 @see @ref generateSmoothNormalsInto(), @ref generateFlatNormals(),
     @ref MeshTools::CompileFlag::GenerateSmoothNormals
 */
-template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
-extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&);
-extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&);
-extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&);
-#endif
+/**
+ * @overload
+ * @m_since{2019,10}
+ */
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+
+/**
+ * @overload
+ * @m_since{2019,10}
+ */
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
 
 /**
 @brief Generate smooth normals into an existing array
@@ -147,13 +153,19 @@ conversions:
 
 @see @ref generateFlatNormalsInto()
 */
-template<class T> MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
+MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
-extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
-#endif
+/**
+ * @overload
+ * @m_since{2019,10}
+ */
+MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
+
+/**
+ * @overload
+ * @m_since{2019,10}
+ */
+MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
 
 }}
 

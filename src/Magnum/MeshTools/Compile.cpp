@@ -199,7 +199,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
             normalStorage = generateFlatNormals(positions);
             useIndices = false;
         } else {
-            normalStorage = generateSmoothNormals<UnsignedInt>(meshData.indices(), positions);
+            normalStorage = generateSmoothNormals(meshData.indices(), positions);
             useIndices = true;
         }
 

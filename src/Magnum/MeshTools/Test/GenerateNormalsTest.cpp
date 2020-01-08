@@ -51,7 +51,7 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void flatWrongCount();
     void flatIntoWrongSize();
 
-    void smoothTwoTriangles();
+    template<class T> void smoothTwoTriangles();
     void smoothCube();
     void smoothBeveledCube();
     void smoothCylinder();
@@ -72,7 +72,9 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::flatWrongCount,
               &GenerateNormalsTest::flatIntoWrongSize,
 
-              &GenerateNormalsTest::smoothTwoTriangles,
+              &GenerateNormalsTest::smoothTwoTriangles<UnsignedByte>,
+              &GenerateNormalsTest::smoothTwoTriangles<UnsignedShort>,
+              &GenerateNormalsTest::smoothTwoTriangles<UnsignedInt>,
               &GenerateNormalsTest::smoothCube,
               &GenerateNormalsTest::smoothBeveledCube,
               &GenerateNormalsTest::smoothCylinder,
@@ -155,12 +157,14 @@ void GenerateNormalsTest::flatIntoWrongSize() {
     CORRADE_COMPARE(out.str(), "MeshTools::generateFlatNormalsInto(): bad output size, expected 6 but got 7\n");
 }
 
-void GenerateNormalsTest::smoothTwoTriangles() {
-    const UnsignedInt indices[]{0, 1, 2, 3, 4, 5};
+template<class T> void GenerateNormalsTest::smoothTwoTriangles() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const T indices[]{0, 1, 2, 3, 4, 5};
 
     /* Should generate the same output as flat normals */
     CORRADE_COMPARE_AS(
-        generateSmoothNormals(Containers::stridedArrayView(indices), TwoTriangles),
+        generateSmoothNormals(indices, TwoTriangles),
         (Containers::Array<Vector3>{Containers::InPlaceInit, {
             Vector3::zAxis(),
             Vector3::zAxis(),
@@ -194,7 +198,7 @@ void GenerateNormalsTest::smoothCube() {
 
     /* Normals should be the same as positions, only normalized */
     CORRADE_COMPARE_AS(
-        generateSmoothNormals(Containers::stridedArrayView(indices), positions),
+        generateSmoothNormals(indices, positions),
         (Containers::Array<Vector3>{Containers::InPlaceInit, {
             positions[0]/Constants::sqrt3(),
             positions[1]/Constants::sqrt3(),
@@ -206,7 +210,6 @@ void GenerateNormalsTest::smoothCube() {
             positions[7]/Constants::sqrt3()
         }}), TestSuite::Compare::Container);
 }
-
 
 constexpr Vector3 BeveledCubePositions[] {
     {-1.0f, -0.6f,  1.1f},
@@ -284,7 +287,7 @@ void GenerateNormalsTest::smoothBeveledCube() {
     Vector3 x{0.996072f, 0.0754969f, 0.0462723f};
     Vector3 y{0.0467958f, 0.997808f, 0.0467958f};
     CORRADE_COMPARE_AS(generateSmoothNormals(
-        Containers::stridedArrayView(BeveledCubeIndices), BeveledCubePositions),
+        BeveledCubeIndices, BeveledCubePositions),
         (Containers::Array<Vector3>{Containers::InPlaceInit, {
             z*Math::sign(BeveledCubePositions[ 0]),
             z*Math::sign(BeveledCubePositions[ 1]),
@@ -341,8 +344,7 @@ void GenerateNormalsTest::smoothZeroAreaTriangle() {
         0, 1, 2, 1, 2, 1
     };
 
-    CORRADE_COMPARE_AS(generateSmoothNormals(
-        Containers::stridedArrayView(indices), positions),
+    CORRADE_COMPARE_AS(generateSmoothNormals(indices, positions),
         (Containers::Array<Vector3>{Containers::InPlaceInit, {
             Vector3::zAxis(),
             Vector3::zAxis(),
@@ -364,8 +366,7 @@ void GenerateNormalsTest::smoothNanPosition() {
         0, 1, 2, 1, 2, 1
     };
 
-    Containers::Array<Vector3> generated = generateSmoothNormals(
-        Containers::stridedArrayView(indices), positions);
+    Containers::Array<Vector3> generated = generateSmoothNormals(indices, positions);
     CORRADE_COMPARE_AS(generated.prefix(3),
         (Containers::Array<Vector3>{Containers::InPlaceInit, {
             Vector3::zAxis(),
@@ -381,7 +382,7 @@ void GenerateNormalsTest::smoothWrongCount() {
 
     const UnsignedByte indices[7]{};
     const Vector3 positions[1];
-    generateSmoothNormals(Containers::stridedArrayView(indices), positions);
+    generateSmoothNormals(indices, positions);
     CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): index count not divisible by 3\n");
 }
 
@@ -392,7 +393,7 @@ void GenerateNormalsTest::smoothIntoWrongSize() {
     const UnsignedByte indices[6]{};
     const Vector3 positions[3];
     Vector3 normals[4];
-    generateSmoothNormalsInto(Containers::stridedArrayView(indices), positions, normals);
+    generateSmoothNormalsInto(indices, positions, normals);
     CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): bad output size, expected 3 but got 4\n");
 }
 
@@ -412,9 +413,7 @@ void GenerateNormalsTest::benchmarkFlat() {
 void GenerateNormalsTest::benchmarkSmooth() {
     Containers::Array<Vector3> normals{Containers::NoInit, Containers::arraySize(BeveledCubePositions)};
     CORRADE_BENCHMARK(10) {
-        generateSmoothNormalsInto(
-            Containers::stridedArrayView(BeveledCubeIndices),
-            BeveledCubePositions, normals);
+        generateSmoothNormalsInto(BeveledCubeIndices, BeveledCubePositions, normals);
     }
 
     CORRADE_COMPARE(Math::min(normals), (Vector3{-0.996072f, -0.997808f, -0.996072f}));

@@ -58,7 +58,7 @@ std::vector<UnsignedInt> indices;
 std::vector<Vector3> positions;
 
 std::vector<Vector3> normals{positions.size()};
-MeshTools::generateSmoothNormalsInto<UnsignedInt>(indices, positions, normals);
+MeshTools::generateSmoothNormalsInto(indices, positions, normals);
 /* [generateSmoothNormalsInto] */
 }
 
