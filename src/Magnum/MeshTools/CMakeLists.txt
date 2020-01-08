@@ -31,6 +31,7 @@ set(MagnumMeshTools_SRCS
 set(MagnumMeshTools_GracefulAssert_SRCS
     CombineIndexedArrays.cpp
     CompressIndices.cpp
+    Duplicate.cpp
     FlipNormals.cpp
     GenerateNormals.cpp)
 

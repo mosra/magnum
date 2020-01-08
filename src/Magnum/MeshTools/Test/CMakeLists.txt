@@ -25,7 +25,7 @@
 
 corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES Magnum)
+corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsGenerateNormalsTest GenerateNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES Magnum)
@@ -33,7 +33,7 @@ corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIE
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
-corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumMeshTools MagnumPrimitives)
 
 # Graceful assert for testing
 set_property(TARGET

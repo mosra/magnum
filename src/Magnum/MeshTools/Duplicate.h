@@ -33,9 +33,9 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/visibility.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -83,16 +83,40 @@ template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indic
 @m_since{2019,10}
 
 A variant of @ref duplicate() that fills existing memory instead of allocating
-a new array.
+a new array. Expects that @p out has the same size as @p indices and all
+indices are in range for the @p data array.
 */
-template<class IndexType, class T> void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out) {
-    CORRADE_ASSERT(out.size() == indices.size(),
-        "MeshTools::duplicateInto(): bad output size, expected" << indices.size() << "but got" << out.size(), );
-    for(std::size_t i = 0; i != indices.size(); ++i) {
-        const std::size_t index = indices[i];
-        CORRADE_ASSERT(index < data.size(), "MeshTools::duplicateInto(): index" << index << "out of bounds for" << data.size() << "elements", );
-        out[i] = data[index];
-    }
+template<class IndexType, class T> void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out);
+
+/**
+@brief Duplicate type-erased data using an index array into given output array
+@param[in]  indices Index array to use
+@param[in]  data    Input data
+@param[out] out     Where to store the output
+@m_since_latest
+
+Compared to @ref duplicateInto(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&, const Containers::StridedArrayView1D<T>&)
+accepts a 2D view, where the second dimension spans the actual type. Expects
+that @p out has the same size as @p indices and all indices are in range for
+the @p data array, and that the second dimension of both @p data and @p out
+is contiguous and has the same size.
+*/
+MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
+
+template<class IndexType, class T> inline void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out) {
+    duplicateInto(indices, Containers::arrayCast<2, const char>(data), Containers::arrayCast<2, char>(out));
 }
 
 }}

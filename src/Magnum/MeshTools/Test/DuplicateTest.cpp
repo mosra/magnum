@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/TypeTraits.h"
 #include "Magnum/MeshTools/Duplicate.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
@@ -42,6 +43,10 @@ struct DuplicateTest: TestSuite::Tester {
 
     void duplicateInto();
     void duplicateIntoWrongSize();
+
+    template<class T> void duplicateIntoErased();
+    void duplicateIntoErasedWrongTypeSize();
+    void duplicateIntoErasedNonContiguous();
 };
 
 DuplicateTest::DuplicateTest() {
@@ -50,7 +55,13 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateStl,
 
               &DuplicateTest::duplicateInto,
-              &DuplicateTest::duplicateIntoWrongSize});
+              &DuplicateTest::duplicateIntoWrongSize,
+
+              &DuplicateTest::duplicateIntoErased<UnsignedByte>,
+              &DuplicateTest::duplicateIntoErased<UnsignedShort>,
+              &DuplicateTest::duplicateIntoErased<UnsignedInt>,
+              &DuplicateTest::duplicateIntoErasedWrongTypeSize,
+              &DuplicateTest::duplicateIntoErasedNonContiguous});
 }
 
 void DuplicateTest::duplicate() {
@@ -102,7 +113,55 @@ void DuplicateTest::duplicateIntoWrongSize() {
 
     MeshTools::duplicateInto<UnsignedByte, Int>(indices, data, output);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::duplicateInto(): bad output size, expected 6 but got 5\n");
+        "MeshTools::duplicateInto(): index array and output size don't match, expected 6 but got 5\n");
+}
+
+template<class T> void DuplicateTest::duplicateIntoErased() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    constexpr T indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Int output[6];
+
+    MeshTools::duplicateInto(
+        Containers::stridedArrayView(indices),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE_AS(Containers::arrayView<const Int>(output),
+        Containers::arrayView({35, 35, -7, -18, 12, 12}),
+        TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateIntoErasedWrongTypeSize() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Short output[6];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicateInto(
+        Containers::stridedArrayView(indices),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): input and output type size doesn't match, expected 4 but got 2\n");
+}
+
+void DuplicateTest::duplicateIntoErasedNonContiguous() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Short output[6];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicateInto(
+        Containers::stridedArrayView(indices),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)).every({1, 2}),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): second view dimension is not contiguous\n");
 }
 
 }}}}
