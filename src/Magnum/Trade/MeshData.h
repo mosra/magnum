@@ -152,18 +152,18 @@ constexpr UnsignedShort meshAttributeCustom(MeshAttribute name) {
 @brief Mesh index data
 @m_since_latest
 
-Convenience type for populating @ref MeshData. Has no accessors, as the data
-are then accessible through @ref MeshData APIs.
+Convenience type for populating @ref MeshData, see its documentation for an
+introduction.
 @see @ref MeshAttributeData
 */
 class MAGNUM_TRADE_EXPORT MeshIndexData {
     public:
         /** @brief Construct for a non-indexed mesh */
-        explicit MeshIndexData() noexcept: type{} {}
+        explicit MeshIndexData() noexcept: _type{} {}
 
         /**
          * @brief Construct with a runtime-specified index type
-         * @param type      Mesh index type
+         * @param type      Index type
          * @param data      Index data
          *
          * The @p data size is expected to correspond to given @p type (e.g.,
@@ -185,6 +185,12 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
         /** @brief Construct with unsigned int indices */
         constexpr explicit MeshIndexData(Containers::ArrayView<const UnsignedInt> data) noexcept: MeshIndexData{MeshIndexType::UnsignedInt, data, nullptr} {}
 
+        /** @brief Index type */
+        constexpr MeshIndexType type() const { return _type; }
+
+        /** @brief Type-erased index data */
+        constexpr Containers::ArrayView<const void> data() const { return _data; }
+
     private:
         /* Contains an assert common for all constexpr constructor, nullptr_t
            to disambiguate from the public constructor of the same signature --
@@ -193,11 +199,10 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
            template, we don't need that check anyway */
         constexpr explicit MeshIndexData(MeshIndexType type, Containers::ArrayView<const void> data, std::nullptr_t);
 
-        /* Not prefixed with _ because we use them like public in MeshData */
         friend MeshData;
-        MeshIndexType type;
+        MeshIndexType _type;
         /* Void so the constructors can be constexpr */
-        Containers::ArrayView<const void> data;
+        Containers::ArrayView<const void> _data;
 };
 
 /**
@@ -1083,8 +1088,8 @@ namespace Implementation {
 }
 #endif
 
-constexpr MeshIndexData::MeshIndexData(MeshIndexType type, Containers::ArrayView<const void> data, std::nullptr_t):
-    type{type}, data{(CORRADE_CONSTEXPR_ASSERT(!data.empty(), "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead"), data)} {}
+constexpr MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data, std::nullptr_t):
+    _type{type}, _data{(CORRADE_CONSTEXPR_ASSERT(!data.empty(), "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead"), data)} {}
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
     name{name},  format{format}, data{(CORRADE_CONSTEXPR_ASSERT(

@@ -264,50 +264,38 @@ constexpr UnsignedInt IndexInts[]{2110122, 132257, 3};
 
 void MeshDataTest::constructIndex() {
     {
-        Containers::Array<char> indexData{3*1};
-        auto indexView = Containers::arrayCast<UnsignedByte>(indexData);
-
-        MeshIndexData indices{indexView};
-        MeshData data{MeshPrimitive::Points, std::move(indexData), indices};
-        CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedByte);
-        CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedByte>().data()), indexView.data());
-        CORRADE_COMPARE(data.indexCount(), 3);
+        const UnsignedByte indexData[]{25, 132, 3};
+        MeshIndexData indices{indexData};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(indices.data().data(), indexData);
 
         constexpr MeshIndexData cindices{IndexBytes};
-        MeshData cdata{MeshPrimitive::Points, {}, IndexBytes, cindices};
-        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedByte);
-        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedByte>().data()), IndexBytes);
-        CORRADE_COMPARE(data.indexCount(), 3);
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::ArrayView<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(data.data(), IndexBytes);
     } {
-        Containers::Array<char> indexData{3*2};
-        auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
-
-        MeshIndexData indices{indexView};
-        MeshData data{MeshPrimitive::Points, std::move(indexData), indices};
-        CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-        CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedShort>().data()), indexView.data());
-        CORRADE_COMPARE(data.indexCount(), 3);
+        const UnsignedShort indexData[]{2575, 13224, 3};
+        MeshIndexData indices{indexData};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(indices.data().data(), indexData);
 
         constexpr MeshIndexData cindices{IndexShorts};
-        MeshData cdata{MeshPrimitive::Points, {}, IndexShorts, cindices};
-        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedShort);
-        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedShort>().data()), IndexShorts);
-        CORRADE_COMPARE(data.indexCount(), 3);
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::ArrayView<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(data.data(), IndexShorts);
     } {
-        Containers::Array<char> indexData{3*4};
-        auto indexView = Containers::arrayCast<UnsignedInt>(indexData);
-
-        MeshIndexData indices{indexView};
-        MeshData data{MeshPrimitive::Points, std::move(indexData), indices};
-        CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedInt);
-        CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedInt>().data()), indexView.data());
-        CORRADE_COMPARE(data.indexCount(), 3);
+        const UnsignedInt indexData[]{2110122, 132257, 3};
+        MeshIndexData indices{indexData};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(indices.data().data(), indexData);
 
         constexpr MeshIndexData cindices{IndexInts};
-        MeshData cdata{MeshPrimitive::Points, {}, IndexInts, cindices};
-        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedInt);
-        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedInt>().data()), IndexInts);
-        CORRADE_COMPARE(data.indexCount(), 3);
+        constexpr MeshIndexType type = cindices.type();
+        constexpr Containers::ArrayView<const void> data = cindices.data();
+        CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(data.data(), IndexInts);
     }
 }
 
@@ -319,18 +307,14 @@ void MeshDataTest::constructIndexZeroCount() {
 }
 
 void MeshDataTest::constructIndexTypeErased() {
-    Containers::Array<char> indexData{3*2};
-    auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
-
+    const char indexData[3*2]{};
     MeshIndexData indices{MeshIndexType::UnsignedShort, indexData};
-    MeshData data{MeshPrimitive::Points, std::move(indexData), indices};
-    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
-    CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedShort>().data()), indexView.data());
-    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
+    CORRADE_VERIFY(indices.data().data() == indexData);
 }
 
 void MeshDataTest::constructIndexTypeErasedWrongSize() {
-    Containers::Array<char> indexData{3*2};
+    const char indexData[3*2]{};
 
     std::ostringstream out;
     Error redirectError{&out};
