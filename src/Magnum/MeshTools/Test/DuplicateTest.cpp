@@ -69,9 +69,8 @@ void DuplicateTest::duplicate() {
     constexpr Int data[]{-7, 35, 12, -18};
 
     CORRADE_COMPARE_AS((MeshTools::duplicate<UnsignedByte, Int>(indices, data)),
-        (Containers::Array<Int>{Containers::InPlaceInit, {
-            35, 35, -7, -18, 12, 12
-        }}), TestSuite::Compare::Container);
+        Containers::arrayView<Int>({35, 35, -7, -18, 12, 12}),
+        TestSuite::Compare::Container);
 }
 
 void DuplicateTest::duplicateOutOfBounds() {
@@ -98,9 +97,8 @@ void DuplicateTest::duplicateInto() {
 
     MeshTools::duplicateInto<UnsignedByte, Int>(indices, data, output);
     CORRADE_COMPARE_AS(Containers::arrayView<const Int>(output),
-        (Containers::Array<Int>{Containers::InPlaceInit, {
-            35, 35, -7, -18, 12, 12
-        }}), TestSuite::Compare::Container);
+        Containers::arrayView({35, 35, -7, -18, 12, 12}),
+        TestSuite::Compare::Container);
 }
 
 void DuplicateTest::duplicateIntoWrongSize() {

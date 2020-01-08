@@ -62,8 +62,9 @@ void CompressIndicesTest::compressChar() {
     CORRADE_COMPARE(start, 0);
     CORRADE_COMPARE(end, 4);
     CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
-    CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
-        (std::vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(data),
+        Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
+        TestSuite::Compare::Container);
 }
 
 void CompressIndicesTest::compressShort() {
@@ -76,19 +77,9 @@ void CompressIndicesTest::compressShort() {
     CORRADE_COMPARE(start, 0);
     CORRADE_COMPARE(end, 256);
     CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
-    if(!Utility::Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
-            (std::vector<char>{ 0x01, 0x00,
-                           0x00, 0x01,
-                           0x00, 0x00,
-                           0x05, 0x00 }));
-    } else {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
-            (std::vector<char>{ 0x00, 0x01,
-                           0x01, 0x00,
-                           0x00, 0x00,
-                           0x00, 0x05 }));
-    }
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(data),
+        Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
+        TestSuite::Compare::Container);
 }
 
 void CompressIndicesTest::compressInt() {
@@ -101,23 +92,14 @@ void CompressIndicesTest::compressInt() {
     CORRADE_COMPARE(start, 2);
     CORRADE_COMPARE(end, 65536);
     CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
-
-    if(!Utility::Endianness::isBigEndian()) {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
-            (std::vector<char>{ 0x00, 0x00, 0x01, 0x00,
-                           0x03, 0x00, 0x00, 0x00,
-                           0x02, 0x00, 0x00, 0x00 }));
-    } else {
-        CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
-            (std::vector<char>{ 0x00, 0x01, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x03,
-                           0x00, 0x00, 0x00, 0x02 }));
-    }
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(data),
+        Containers::arrayView<UnsignedInt>({65536, 3, 2}),
+        TestSuite::Compare::Container);
 }
 
 void CompressIndicesTest::compressAsShort() {
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
-        (Containers::Array<UnsignedShort>{Containers::InPlaceInit, {123, 456}}),
+        Containers::arrayView<UnsignedShort>({123, 456}),
         TestSuite::Compare::Container);
 
     std::ostringstream out;

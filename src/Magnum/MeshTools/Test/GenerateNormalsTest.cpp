@@ -102,14 +102,14 @@ constexpr Vector3 TwoTriangles[]{
 
 void GenerateNormalsTest::flat() {
     CORRADE_COMPARE_AS(generateFlatNormals(TwoTriangles),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+        Containers::arrayView<Vector3>({
             Vector3::zAxis(),
             Vector3::zAxis(),
             Vector3::zAxis(),
             -Vector3::zAxis(),
             -Vector3::zAxis(),
             -Vector3::zAxis()
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -165,16 +165,15 @@ template<class T> void GenerateNormalsTest::smoothTwoTriangles() {
     const T indices[]{0, 1, 2, 3, 4, 5};
 
     /* Should generate the same output as flat normals */
-    CORRADE_COMPARE_AS(
-        generateSmoothNormals(indices, TwoTriangles),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(generateSmoothNormals(indices, TwoTriangles),
+        Containers::arrayView<Vector3>({
             Vector3::zAxis(),
             Vector3::zAxis(),
             Vector3::zAxis(),
             -Vector3::zAxis(),
             -Vector3::zAxis(),
             -Vector3::zAxis()
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateNormalsTest::smoothCube() {
@@ -199,9 +198,8 @@ void GenerateNormalsTest::smoothCube() {
     };
 
     /* Normals should be the same as positions, only normalized */
-    CORRADE_COMPARE_AS(
-        generateSmoothNormals(indices, positions),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(generateSmoothNormals(indices, positions),
+        Containers::arrayView<Vector3>({
             positions[0]/Constants::sqrt3(),
             positions[1]/Constants::sqrt3(),
             positions[2]/Constants::sqrt3(),
@@ -210,7 +208,7 @@ void GenerateNormalsTest::smoothCube() {
             positions[5]/Constants::sqrt3(),
             positions[6]/Constants::sqrt3(),
             positions[7]/Constants::sqrt3()
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 }
 
 constexpr Vector3 BeveledCubePositions[] {
@@ -288,9 +286,8 @@ void GenerateNormalsTest::smoothBeveledCube() {
     Vector3 z{0.0462723f, 0.0754969f, 0.996072f};
     Vector3 x{0.996072f, 0.0754969f, 0.0462723f};
     Vector3 y{0.0467958f, 0.997808f, 0.0467958f};
-    CORRADE_COMPARE_AS(generateSmoothNormals(
-        BeveledCubeIndices, BeveledCubePositions),
-        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+    CORRADE_COMPARE_AS(generateSmoothNormals(BeveledCubeIndices, BeveledCubePositions),
+        Containers::arrayView<Vector3>({
             z*Math::sign(BeveledCubePositions[ 0]),
             z*Math::sign(BeveledCubePositions[ 1]),
             z*Math::sign(BeveledCubePositions[ 2]), /* +Z */
@@ -320,7 +317,7 @@ void GenerateNormalsTest::smoothBeveledCube() {
             x*Math::sign(BeveledCubePositions[21]),
             x*Math::sign(BeveledCubePositions[22]), /* -X */
             x*Math::sign(BeveledCubePositions[23])
-        }}), TestSuite::Compare::Container);
+        }), TestSuite::Compare::Container);
 }
 
 void GenerateNormalsTest::smoothCylinder() {
