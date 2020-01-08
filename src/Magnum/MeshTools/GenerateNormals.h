@@ -43,6 +43,7 @@ namespace Magnum { namespace MeshTools {
 @brief Generate flat normals
 @param positions    Triangle vertex positions
 @return Per-vertex normals
+@m_since{2019,10}
 
 All vertices in each triangle face get the same normal vector. Expects that the
 position count is divisible by 3. If you need to generate flat normals for an
@@ -130,6 +131,7 @@ extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoot
 @param[in] indices      Triangle face indices
 @param[in] positions    Triangle vertex positions
 @param[out] normals     Where to put the generated normals
+@m_since{2019,10}
 
 A variant of @ref generateSmoothNormals() that fills existing memory instead of
 allocating a new array. The @p normals array is expected to have the same size

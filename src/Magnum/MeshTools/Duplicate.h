@@ -46,6 +46,7 @@ template<class IndexType, class T> void duplicateInto(const Containers::StridedA
 
 /**
 @brief Duplicate data using given index array
+@m_since{2019,10}
 
 Converts indexed array to non-indexed, for example data `{a, b, c, d}` with
 index array `{1, 1, 0, 3, 2, 2}` will be converted to `{b, b, a, d, c, c}`.
