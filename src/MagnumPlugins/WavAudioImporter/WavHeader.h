@@ -60,6 +60,11 @@ struct WavHeaderChunk {
 #pragma pack(1)
 /* WAV 'fmt' header */
 struct WavFormatChunk {
+    /* GCC 4.8 needs this, otherwise it can't store this in an Optional. It
+       also can't be just =default, otherwise it'll still try to construct the
+       members when using {} */
+    WavFormatChunk() {}
+
     RiffChunk chunk;                /* Starting RIFF chunk */
     WavAudioFormat audioFormat;     /* Audio format */
     UnsignedShort numChannels;      /* 1 = Mono, 2 = Stereo */
