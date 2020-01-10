@@ -28,7 +28,7 @@
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/Endianness.h>
+#include <Corrade/Utility/EndiannessBatch.h>
 
 #include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
@@ -58,13 +58,19 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     WavHeaderChunk header(*reinterpret_cast<const WavHeaderChunk*>(data.begin()));
 
     /* Check RIFF/WAV file signature */
-    if(std::strncmp(header.chunk.chunkId, "RIFF", 4) != 0 ||
+    if((std::strncmp(header.chunk.chunkId, "RIFF", 4) != 0 && std::strncmp(header.chunk.chunkId, "RIFX", 4) != 0) ||
        std::strncmp(header.format, "WAVE", 4) != 0) {
         Error() << "Audio::WavImporter::openData(): the file signature is invalid";
         return;
     }
 
-    Utility::Endianness::littleEndianInPlace(header.chunk.chunkSize);
+    /* Check if the file is Big-Endian. While RIFX files are extremely rare,
+       this actually allows us to test Big-Endian platform support on LE
+       platforms. So not a cruft, useful! */
+    const bool hasBigEndianData = std::strncmp(header.chunk.chunkId, "RIFX", 4) == 0;
+
+    if(hasBigEndianData != Utility::Endianness::isBigEndian())
+        Utility::Endianness::swapInPlace(header.chunk.chunkSize);
 
     /* Check file size */
     if(header.chunk.chunkSize < 36 || header.chunk.chunkSize + 8 != data.size()) {
@@ -74,7 +80,9 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     }
 
     const RiffChunk* dataChunk = nullptr;
-    const WavFormatChunk* formatChunk = nullptr;
+    /* We're doing endian-swapping on this, thus can't be just a reference to
+       the original data */
+    Containers::Optional<WavFormatChunk> formatChunk;
     UnsignedInt dataChunkSize = 0;
 
     const UnsignedInt headerSize = sizeof(WavHeaderChunk);
@@ -83,15 +91,19 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Skip any chunks that aren't the format or data chunk */
     while(headerSize + offset <= header.chunk.chunkSize) {
         const RiffChunk* currChunk = reinterpret_cast<const RiffChunk*>(data.begin() + headerSize + offset);
-        offset += Utility::Endianness::littleEndian(currChunk->chunkSize) + sizeof(RiffChunk);
+        UnsignedInt chunkSize = currChunk->chunkSize;
+        if(hasBigEndianData != Utility::Endianness::isBigEndian())
+            Utility::Endianness::swapInPlace(chunkSize);
+
+        offset += chunkSize + sizeof(RiffChunk);
 
         if(std::strncmp(currChunk->chunkId, "fmt ", 4) == 0) {
-            if(formatChunk != nullptr) {
+            if(formatChunk) {
                 Error() << "Audio::WavImporter::openData(): the file contains too many format chunks";
                 return;
             }
 
-            formatChunk = reinterpret_cast<const WavFormatChunk*>(currChunk);
+            formatChunk = WavFormatChunk{*reinterpret_cast<const WavFormatChunk*>(currChunk)};
 
         } else if(std::strncmp(currChunk->chunkId, "data", 4) == 0) {
             if(dataChunk != nullptr) {
@@ -100,14 +112,13 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
             }
 
             dataChunk = currChunk;
-            dataChunkSize = Utility::Endianness::littleEndian(currChunk->chunkSize);
-
+            dataChunkSize = chunkSize;
             break;
         }
     }
 
     /* Make sure we actually got a format chunk */
-    if(formatChunk == nullptr) {
+    if(!formatChunk) {
         Error() << "Audio::WavImporter::openData(): the file contains no format chunk";
         return;
     }
@@ -119,10 +130,12 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     }
 
     /* Fix endianness on Format chunk */
-    Utility::Endianness::littleEndianInPlace(
-        formatChunk->chunk.chunkSize, formatChunk->audioFormat, formatChunk->numChannels,
-        formatChunk->sampleRate, formatChunk->byteRate, formatChunk->blockAlign,
-        formatChunk->bitsPerSample);
+    if(hasBigEndianData != Utility::Endianness::isBigEndian())
+        Utility::Endianness::swapInPlace(
+            formatChunk->chunk.chunkSize, formatChunk->audioFormat,
+            formatChunk->numChannels, formatChunk->sampleRate,
+            formatChunk->byteRate, formatChunk->blockAlign,
+            formatChunk->bitsPerSample);
 
     /* Check PCM format */
     if(formatChunk->audioFormat == WavAudioFormat::Pcm) {
@@ -207,13 +220,21 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Save frequency */
     _frequency = formatChunk->sampleRate;
 
-    /** @todo Convert the data from little endian too */
-    CORRADE_INTERNAL_ASSERT(!Utility::Endianness::isBigEndian());
-
     /* Copy the data */
     const char* dataChunkPtr = reinterpret_cast<const char*>(dataChunk + 1);
     _data = Containers::Array<char>(dataChunkSize);
     std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data->begin());
+
+    /* Fix the data endianness */
+    if(hasBigEndianData != Utility::Endianness::isBigEndian()) {
+        if(formatChunk->bitsPerSample == 16)
+            Utility::Endianness::swapInPlace(Containers::arrayCast<std::uint16_t>(*_data));
+        else if(formatChunk->bitsPerSample == 32)
+            Utility::Endianness::swapInPlace(Containers::arrayCast<std::uint32_t>(*_data));
+        else if(formatChunk->bitsPerSample == 64)
+            Utility::Endianness::swapInPlace(Containers::arrayCast<std::uint64_t>(*_data));
+        else CORRADE_INTERNAL_ASSERT(formatChunk->bitsPerSample == 8);
+    }
 }
 
 void WavImporter::doClose() { _data = Containers::NullOpt; }

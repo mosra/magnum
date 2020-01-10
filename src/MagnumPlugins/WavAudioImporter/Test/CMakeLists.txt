@@ -57,12 +57,23 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
 
         zeroSamples.wav
 
+        # The *be.wav files are created with artisanal bit-crafting from the
+        # little-endian counterparts and a good portion of wishful thinking
+        # (I can only hope those are correct), because ffpeg can't create them
+        # on its own:
+        #
+        # $ ffmpeg -i mono16.wav -f wav -acodec pcm_s16be mono16be.wav
+        # ...
+        # [wav @ 0x7fbdd301a200] pcm_s32be codec not supported in WAVE format
+        # Could not write header for output file #0 (incorrect codec parameters ?): Function not implemented
+
         mono4.wav
         mono8.wav
         mono8junk.wav
         mono8ALaw.wav
         mono8MuLaw.wav
         mono16.wav
+        mono16be.wav
         mono24.wav
 
         stereo4.wav
@@ -75,8 +86,10 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
         stereo32.wav
 
         mono32f.wav
+        mono32fbe.wav
         stereo32f.wav
         stereo64f.wav
+        stereo64fbe.wav
 
         surround51Channel16.wav
         surround71Channel24.wav)

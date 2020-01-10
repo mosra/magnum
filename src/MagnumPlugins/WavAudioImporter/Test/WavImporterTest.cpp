@@ -58,6 +58,7 @@ struct WavImporterTest: TestSuite::Tester {
     void mono8ALaw();
     void mono8MuLaw();
     void mono16();
+    void mono16BigEndian();
 
     void stereo4();
     void stereo8();
@@ -69,8 +70,10 @@ struct WavImporterTest: TestSuite::Tester {
     void stereo32();
 
     void mono32f();
+    void mono32fBigEndian();
     void stereo32f();
     void stereo64f();
+    void stereo64fBigEndian();
 
     void surround51Channel16();
     void surround71Channel24();
@@ -98,6 +101,7 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::mono8ALaw,
               &WavImporterTest::mono8MuLaw,
               &WavImporterTest::mono16,
+              &WavImporterTest::mono16BigEndian,
 
               &WavImporterTest::stereo4,
               &WavImporterTest::stereo8,
@@ -109,8 +113,10 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::stereo32,
 
               &WavImporterTest::mono32f,
+              &WavImporterTest::mono32fBigEndian,
               &WavImporterTest::stereo32f,
               &WavImporterTest::stereo64f,
+              &WavImporterTest::stereo64fBigEndian,
 
               &WavImporterTest::surround51Channel16,
               &WavImporterTest::surround71Channel24});
@@ -286,6 +292,19 @@ void WavImporterTest::mono16() {
         TestSuite::Compare::Container<Containers::ArrayView<const char>>);
 }
 
+void WavImporterTest::mono16BigEndian() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono16be.wav")));
+
+    CORRADE_COMPARE(importer->format(), BufferFormat::Mono16);
+    CORRADE_COMPARE(importer->frequency(), 44000);
+
+    CORRADE_COMPARE_AS(importer->data(),
+        (Containers::Array<char>{Containers::InPlaceInit, {
+            '\x1d', '\x10', '\x71', '\xc5'}}),
+        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+}
+
 void WavImporterTest::stereo4() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -389,6 +408,19 @@ void WavImporterTest::mono32f() {
         TestSuite::Compare::Container<Containers::ArrayView<const char>>);
 }
 
+void WavImporterTest::mono32fBigEndian() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono32fbe.wav")));
+
+    CORRADE_COMPARE(importer->format(), BufferFormat::MonoFloat);
+    CORRADE_COMPARE(importer->frequency(), 48000);
+
+    CORRADE_COMPARE_AS(importer->data(),
+        (Containers::Array<char>{Containers::InPlaceInit, {
+            0, 0, 0, 0, 108, 57, -103, 59, 3, 63, 42, 60, -33, -81, -120, 60}}),
+        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+}
+
 void WavImporterTest::stereo32f() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo32f.wav")));
@@ -412,6 +444,22 @@ void WavImporterTest::stereo64f() {
 
     CORRADE_COMPARE(importer->data().size(), 375888);
     CORRADE_COMPARE_AS(importer->data().prefix(64),
+        (Containers::Array<char>{Containers::InPlaceInit, {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 16, 63,
+            0, 0, 0, 0, 0, 0, 24, -65, 0, 0, 0, 0, 0, 0, 0, 0}}),
+        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+}
+
+void WavImporterTest::stereo64fBigEndian() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo64fbe.wav")));
+
+    CORRADE_COMPARE(importer->format(), BufferFormat::StereoDouble);
+    CORRADE_COMPARE(importer->frequency(), 8000);
+
+    CORRADE_COMPARE_AS(importer->data(),
         (Containers::Array<char>{Containers::InPlaceInit, {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

@@ -109,6 +109,12 @@ See also:
 -   @ref Resource is now nothrow-movable and thus can be used with growable
     @ref Corrade::Containers::Array instances
 
+@subsubsection changelog-latest-changes-audio Audio library
+
+-   @ref Audio::WavImporter "WavAudioImporter" now supports also Big-Endian
+    `RIFX` files and was fixed to work on Big-Endian platforms (see
+    [mosra/corrade#87](https://github.com/mosra/corrade/issues/87))
+
 @subsubsection changelog-latest-changes-gl GL library
 
 -   Added @ref GL::AbstractTexture::bind() and

@@ -73,6 +73,9 @@ Supports mono and stereo files of the following formats:
 -   A-Law, imported as @ref BufferFormat::MonoALaw / @ref BufferFormat::StereoALaw
 -   μ-Law, imported as @ref BufferFormat::MonoMuLaw / @ref BufferFormat::StereoMuLaw
 
+Both Little-Endian files (with a `RIFF` header) and Big-Endian files (with
+a `RIFX` header) are supported, data is converted to machine endian on import.
+
 @section Audio-WavImporter-usage Usage
 
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
