@@ -68,7 +68,7 @@ std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> com
             break;
 
         default:
-            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << minmax.second << "elements.", {});
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << minmax.second << "elements.", {}); /* LCOV_EXCL_LINE */
     }
 
     return std::make_tuple(std::move(data), type, minmax.first, minmax.second);
