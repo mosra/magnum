@@ -561,8 +561,34 @@ class GlfwApplication {
             Arrow,          /**< Arrow */
             TextInput,      /**< Text input */
             Crosshair,      /**< Crosshair */
+
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
+            /** Double arrow pointing northwest and southeast
+             * @note Supported since GLFW 3.4.
+             */
+            ResizeNWSE,
+
+            /** Double arrow pointing northeast and southwest
+             * @note Supported since GLFW 3.4.
+             */
+            ResizeNESW,
+            #endif
+
             ResizeWE,       /**< Double arrow pointing west and east */
             ResizeNS,       /**< Double arrow pointing north and south */
+
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
+            /** Four pointed arrow pointing north, south, east, and west
+             * @note Supported since GLFW 3.4.
+             */
+            ResizeAll,
+
+            /** Slashed circle or crossbones
+             * @note Supported since GLFW 3.4.
+             */
+            No,
+            #endif
+
             Hand,           /**< Hand */
             Hidden,         /**< Hidden */
             HiddenLocked    /**< Hidden and locked */
