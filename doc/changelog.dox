@@ -76,7 +76,8 @@ See also:
 -   Cursor management using @ref Platform::Sdl2Application::setCursor(),
     @ref Platform::GlfwApplication::setCursor() and
     @ref Platform::EmscriptenApplication::setCursor() (see
-    [mosra/magnum#383](https://github.com/mosra/magnum/pull/383))
+    [mosra/magnum#383](https://github.com/mosra/magnum/pull/383) and
+    [mosra/magnum#415](https://github.com/mosra/magnum/pull/415))
 -   Added @ref Platform::GlfwApplication::setWindowSize() and
     @ref Platform::Sdl2Application::setWindowSize()
 -   Window icon management using @ref Platform::Sdl2Application::setWindowIcon()

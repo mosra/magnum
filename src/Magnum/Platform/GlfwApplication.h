@@ -563,13 +563,15 @@ class GlfwApplication {
             Crosshair,      /**< Crosshair */
 
             #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
-            /** Double arrow pointing northwest and southeast
-             * @note Supported since GLFW 3.4.
+            /**
+             * Double arrow pointing northwest and southeast
+             * @note Available since GLFW 3.4.
              */
             ResizeNWSE,
 
-            /** Double arrow pointing northeast and southwest
-             * @note Supported since GLFW 3.4.
+            /**
+             * Double arrow pointing northeast and southwest
+             * @note Available since GLFW 3.4.
              */
             ResizeNESW,
             #endif
@@ -578,13 +580,15 @@ class GlfwApplication {
             ResizeNS,       /**< Double arrow pointing north and south */
 
             #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
-            /** Four pointed arrow pointing north, south, east, and west
-             * @note Supported since GLFW 3.4.
+            /**
+             * Four pointed arrow pointing north, south, east, and west
+             * @note Available since GLFW 3.4.
              */
             ResizeAll,
 
-            /** Slashed circle or crossbones
-             * @note Supported since GLFW 3.4.
+            /**
+             * Slashed circle or crossbones
+             * @note Available since GLFW 3.4.
              */
             No,
             #endif
