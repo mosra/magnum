@@ -318,9 +318,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see @ref real(), @ref dual()
          */
         T* data() { return Dual<Quaternion<T>>::data()->data(); }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return Dual<Quaternion<T>>::data()->data(); }
+        constexpr const T* data() const { return Dual<Quaternion<T>>::data()->data(); } /**< @overload */
 
         /**
          * @brief Whether the dual quaternion is normalized

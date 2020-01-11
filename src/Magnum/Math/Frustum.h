@@ -130,9 +130,7 @@ template<class T> class Frustum {
          * @return One-dimensional array of length `24`.
          */
         T* data() { return _data[0].data(); }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return _data[0].data(); }
+        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

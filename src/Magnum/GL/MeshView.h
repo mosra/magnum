@@ -112,9 +112,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         /** @brief Original mesh */
         Mesh& mesh() { return _original; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        const Mesh& mesh() const { return _original; }
+        const Mesh& mesh() const { return _original; } /**< @overload */
 
         /** @brief Vertex/index count */
         Int count() const { return _count; }
@@ -259,11 +257,9 @@ class MAGNUM_GL_EXPORT MeshView {
          *      available in OpenGL ES or WebGL.
          */
         MeshView& draw(AbstractShaderProgram& shader);
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         MeshView& draw(AbstractShaderProgram&& shader) {
             return draw(shader);
-        }
+        } /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -284,11 +280,9 @@ class MAGNUM_GL_EXPORT MeshView {
          *      if @ref instanceCount() is more than `1`.
          */
         MeshView& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         MeshView& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
             return draw(shader, xfb, stream);
-        }
+        } /**< @overload */
         #endif
 
     private:

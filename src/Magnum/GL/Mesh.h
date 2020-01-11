@@ -890,11 +890,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, type, 0, 0);
         }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), 0, 0);
-        }
+        } /**< @overload */
 
         /**
          * @brief Draw the mesh
@@ -942,11 +940,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      available in OpenGL ES or WebGL.
          */
         Mesh& draw(AbstractShaderProgram& shader);
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         Mesh& draw(AbstractShaderProgram&& shader) {
             return draw(shader);
-        }
+        } /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -979,11 +975,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      if @ref instanceCount() is more than `1`.
          */
         Mesh& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         Mesh& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
             return draw(shader, xfb, stream);
-        }
+        } /**< @overload */
         #endif
 
     private:

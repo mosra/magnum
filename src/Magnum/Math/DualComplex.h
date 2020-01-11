@@ -171,9 +171,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @see @ref real(), @ref dual()
          */
         T* data() { return Dual<Complex<T>>::data()->data(); }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return Dual<Complex<T>>::data()->data(); }
+        constexpr const T* data() const { return Dual<Complex<T>>::data()->data(); } /**< @overload */
 
         /**
          * @brief Whether the dual complex number is normalized

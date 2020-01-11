@@ -151,9 +151,7 @@ template<class T> class CubicHermite {
          * @see @ref inTangent(), @ref point(), @ref outTangent()
          */
         T* data() { return &_inTangent; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return &_inTangent; }
+        constexpr const T* data() const { return &_inTangent; } /**< @overload */
 
         /** @brief Equality comparison */
         bool operator==(const CubicHermite<T>& other) const;
@@ -165,24 +163,18 @@ template<class T> class CubicHermite {
 
         /** @brief In-tangent @f$ \boldsymbol{m} @f$ */
         T& inTangent() { return _inTangent; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* returns const& so [] operations are also constexpr */
-        constexpr const T& inTangent() const { return _inTangent; }
+        constexpr const T& inTangent() const { return _inTangent; } /**< @overload */
 
         /** @brief Point @f$ \boldsymbol{p} @f$ */
         T& point() { return _point; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* returns const& so [] operations are also constexpr */
-        constexpr const T& point() const { return _point; }
+        constexpr const T& point() const { return _point; } /**< @overload */
 
         /** @brief Out-tangent @f$ \boldsymbol{n} @f$ */
         T& outTangent() { return _outTangent; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* returns const& so [] operations are also constexpr */
-        constexpr const T& outTangent() const { return _outTangent; }
+        constexpr const T& outTangent() const { return _outTangent; } /**< @overload */
 
     private:
         template<class> friend class CubicHermite;

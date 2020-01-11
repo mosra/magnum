@@ -150,9 +150,7 @@ template<std::size_t size> class BoolVector {
          * @see @ref operator[](), @ref set()
          */
         UnsignedByte* data() { return _data; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const UnsignedByte* data() const { return _data; }
+        constexpr const UnsignedByte* data() const { return _data; } /**< @overload */
 
         /** @brief Bit at given position */
         constexpr bool operator[](std::size_t i) const {

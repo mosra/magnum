@@ -121,9 +121,7 @@ template<class T> class Dual {
          * @see @ref real(), @ref dual()
          */
         T* data() { return &_real; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return &_real; }
+        constexpr const T* data() const { return &_real; } /**< @overload */
 
         /** @brief Equality comparison */
         bool operator==(const Dual<T>& other) const {
@@ -142,11 +140,9 @@ template<class T> class Dual {
          * @see @ref data()
          */
         T& real() { return _real; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
-        constexpr const T real() const { return _real; }
+        constexpr const T real() const { return _real; } /**< @overload */
 
         /**
          * @brief Dual part (@f$ a_\epsilon @f$)
@@ -154,11 +150,9 @@ template<class T> class Dual {
          * @see @ref data()
          */
         T& dual() { return _dual; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
-        constexpr const T dual() const { return _dual; }
+        constexpr const T dual() const { return _dual; } /**< @overload */
 
         /**
          * @brief Add and assign dual number

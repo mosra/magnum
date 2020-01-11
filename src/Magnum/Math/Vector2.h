@@ -141,17 +141,10 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Vector2(const Vector<2, T>& other) noexcept: Vector<2, T>(other) {}
 
-        /** @brief X component */
-        T& x() { return Vector<2, T>::_data[0]; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr T x() const { return Vector<2, T>::_data[0]; }
-
-        /** @brief Y component */
-        T& y() { return Vector<2, T>::_data[1]; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr T y() const { return Vector<2, T>::_data[1]; }
+        T& x() { return Vector<2, T>::_data[0]; } /**< @brief X component */
+        constexpr T x() const { return Vector<2, T>::_data[0]; } /**< @overload */
+        T& y() { return Vector<2, T>::_data[1]; } /**< @brief Y component */
+        constexpr T y() const { return Vector<2, T>::_data[1]; } /**< @overload */
 
         /**
          * @brief Perpendicular vector

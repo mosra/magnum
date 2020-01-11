@@ -335,9 +335,7 @@ template<class T> class Quaternion {
          * @see @ref vector(), @ref scalar()
          */
         T* data() { return _vector.data(); }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr const T* data() const { return _vector.data(); }
+        constexpr const T* data() const { return _vector.data(); } /**< @overload */
 
         /** @brief Equality comparison */
         bool operator==(const Quaternion<T>& other) const {
@@ -363,17 +361,13 @@ template<class T> class Quaternion {
 
         /** @brief Vector part (@f$ \boldsymbol{q}_V @f$) */
         Vector3<T>& vector() { return _vector; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
-        constexpr const Vector3<T> vector() const { return _vector; }
+        constexpr const Vector3<T> vector() const { return _vector; } /**< @overload */
 
         /** @brief Scalar part (@f$ q_S @f$) */
         T& scalar() { return _scalar; }
-
-        /** @overload */ /* https://github.com/doxygen/doxygen/issues/7472 */
-        constexpr T scalar() const { return _scalar; }
+        constexpr T scalar() const { return _scalar; } /**< @overload */
 
         /**
          * @brief Rotation angle of a unit quaternion
