@@ -612,6 +612,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::ArrayView<char> mutableIndexData() && = delete;
 
         /**
+         * @brief Raw attribute metadata
+         *
+         * Useful mainly for passing particular attributes to @ref MeshTools
+         * algorithms, everything is otherwise exposed directly through various
+         * `attribute*()` getters. Returns @cpp nullptr @ce if the mesh has no
+         * attributes.
+         * @see @ref attributeCount(), @ref attributeName(),
+         *      @ref attributeFormat(), @ref attribute()
+         */
+        Containers::ArrayView<const MeshAttributeData> attributeData() const { return _attributes; }
+
+        /**
          * @brief Raw vertex data
          *
          * Contains data for all vertex attributes. Returns @cpp nullptr @ce if

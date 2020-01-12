@@ -489,6 +489,7 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(!data.attributeData().empty());
     CORRADE_COMPARE(static_cast<const void*>(data.indexData()), indexView.data());
     CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView.data());
     CORRADE_COMPARE(static_cast<void*>(data.mutableIndexData()), indexView.data());
@@ -684,6 +685,7 @@ void MeshDataTest::constructAttributeless() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.vertexData(), nullptr);
     CORRADE_COMPARE(data.importerState(), &importerState);
 
@@ -879,6 +881,7 @@ void MeshDataTest::constructAttributelessNotOwned() {
     CORRADE_COMPARE(data.indexDataFlags(), instanceData.dataFlags);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.vertexData(), nullptr);
     if(instanceData.dataFlags & DataFlag::Mutable)
         CORRADE_COMPARE(data.mutableVertexData(), nullptr);
@@ -908,6 +911,7 @@ void MeshDataTest::constructIndexlessAttributeless() {
     CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.indexData(), nullptr);
     CORRADE_COMPARE(data.vertexData(), nullptr);
     CORRADE_COMPARE(data.importerState(), &importerState);
@@ -921,6 +925,7 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
     int importerState;
     MeshData data{MeshPrimitive::TriangleStrip, 0, &importerState};
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!data.attributeData());
     CORRADE_COMPARE(data.indexData(), nullptr);
     CORRADE_COMPARE(data.vertexData(), nullptr);
     CORRADE_COMPARE(data.importerState(), &importerState);
