@@ -55,6 +55,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeTypeErased();
     void constructAttributeTypeErasedWrongStride();
     void constructAttributeNullptr();
+    void constructAttributePadding();
     void constructAttributeNonOwningArray();
 
     void construct();
@@ -83,6 +84,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructVerticesNotOwnedFlagOwned();
     void constructIndexlessNotOwnedFlagOwned();
     void constructAttributelessNotOwnedFlagOwned();
+    void constructInvalidAttributeData();
 
     void constructCopy();
     void constructMove();
@@ -150,6 +152,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeTypeErased,
               &MeshDataTest::constructAttributeTypeErasedWrongStride,
               &MeshDataTest::constructAttributeNullptr,
+              &MeshDataTest::constructAttributePadding,
               &MeshDataTest::constructAttributeNonOwningArray,
 
               &MeshDataTest::construct,
@@ -180,6 +183,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructVerticesNotOwnedFlagOwned,
               &MeshDataTest::constructIndexlessNotOwnedFlagOwned,
               &MeshDataTest::constructAttributelessNotOwnedFlagOwned,
+              &MeshDataTest::constructInvalidAttributeData,
 
               &MeshDataTest::constructCopy,
               &MeshDataTest::constructMove,
@@ -416,6 +420,15 @@ void MeshDataTest::constructAttributeNullptr() {
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_VERIFY(!positions.data().data());
+}
+
+void MeshDataTest::constructAttributePadding() {
+    MeshAttributeData padding{-35};
+    CORRADE_COMPARE(padding.name(), MeshAttribute{});
+    CORRADE_COMPARE(padding.format(), VertexFormat{});
+    CORRADE_COMPARE(padding.data().size(), 0);
+    CORRADE_COMPARE(padding.data().stride(), -35);
+    CORRADE_VERIFY(!padding.data());
 }
 
 void MeshDataTest::constructAttributeNonOwningArray() {
@@ -1078,6 +1091,19 @@ void MeshDataTest::constructAttributelessNotOwnedFlagOwned() {
     MeshData data{MeshPrimitive::Triangles, DataFlag::Owned, indexData, indices};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: can't construct with non-owned index data but Trade::DataFlag::Owned\n");
+}
+
+void MeshDataTest::constructInvalidAttributeData() {
+    MeshAttributeData a;
+    MeshAttributeData b{3};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshData{MeshPrimitive::Triangles, nullptr, {a}};
+    MeshData{MeshPrimitive::Triangles, nullptr, {b}};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData: attribute 0 doesn't specify anything\n"
+        "Trade::MeshData: attribute 0 doesn't specify anything\n");
 }
 
 void MeshDataTest::constructCopy() {

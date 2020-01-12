@@ -88,6 +88,9 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
        constructors */
     for(std::size_t i = 0; i != _attributes.size(); ++i) {
         const MeshAttributeData& attribute = _attributes[i];
+        CORRADE_ASSERT(attribute._format != VertexFormat{},
+            "Trade::MeshData: attribute" << i << "doesn't specify anything", );
+
         const Containers::StridedArrayView1D<const char> data = Containers::arrayCast<const char>(attribute._data);
         CORRADE_ASSERT(data.size() == _vertexCount,
             "Trade::MeshData: attribute" << i << "has" << data.size() << "vertices but" << _vertexCount << "expected", );
