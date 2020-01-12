@@ -201,10 +201,9 @@ void WavImporterTest::invalidFactChunk() {
     CORRADE_COMPARE(importer->frequency(), 22050);
 
     CORRADE_COMPARE(importer->data().size(), 3724);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            -27, -11, -1, -9, 24, -6, 127, -5}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(importer->data()).prefix(4),
+        Containers::arrayView<UnsignedShort>({0xf5e5, 0xf7ff, 0xfa18, 0xfb7f}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::zeroSamples() {
@@ -234,9 +233,9 @@ void WavImporterTest::mono8() {
     CORRADE_COMPARE(importer->frequency(), 22050);
 
     CORRADE_COMPARE(importer->data().size(), 2136);
-    CORRADE_COMPARE_AS(importer->data().prefix(4),
-        (Containers::Array<char>{Containers::InPlaceInit, {127, 127, 127, 127}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(4), Containers::arrayView<char>({
+        '\x7f', '\x7f', '\x7f', '\x7f'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono8junk() {
@@ -246,9 +245,9 @@ void WavImporterTest::mono8junk() {
     CORRADE_COMPARE(importer->format(), BufferFormat::Mono8);
     CORRADE_COMPARE(importer->frequency(), 22050);
 
-    CORRADE_COMPARE_AS(importer->data().prefix(4),
-        (Containers::Array<char>{Containers::InPlaceInit, {127, 127, 127, 127}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(4), Containers::arrayView<char>({
+        '\x7f', '\x7f', '\x7f', '\x7f'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono8ALaw() {
@@ -259,10 +258,9 @@ void WavImporterTest::mono8ALaw() {
     CORRADE_COMPARE(importer->frequency(), 8000);
 
     CORRADE_COMPARE(importer->data().size(), 4096);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            87, 84, 85, 85, 85, -43, -43, -43}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(8), Containers::arrayView<char>({
+        '\x57', '\x54', '\x55', '\x55', '\x55', '\xd5', '\xd5', '\xd5'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono8MuLaw() {
@@ -273,10 +271,9 @@ void WavImporterTest::mono8MuLaw() {
     CORRADE_COMPARE(importer->frequency(), 8000);
 
     CORRADE_COMPARE(importer->data().size(), 4096);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            -5, -3, -1, -2, -1, 127, 127, 126}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(8), Containers::arrayView<char>({
+        '\xfb', '\xfd', '\xff', '\xfe', '\xff', '\x7f', '\x7f', '\x7e'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono16() {
@@ -286,10 +283,9 @@ void WavImporterTest::mono16() {
     CORRADE_COMPARE(importer->format(), BufferFormat::Mono16);
     CORRADE_COMPARE(importer->frequency(), 44000);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            '\x1d', '\x10', '\x71', '\xc5'}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(importer->data()),
+        Containers::arrayView<UnsignedShort>({0x101d, 0xc571}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono16BigEndian() {
@@ -299,10 +295,9 @@ void WavImporterTest::mono16BigEndian() {
     CORRADE_COMPARE(importer->format(), BufferFormat::Mono16);
     CORRADE_COMPARE(importer->frequency(), 44000);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            '\x1d', '\x10', '\x71', '\xc5'}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(importer->data()),
+        Containers::arrayView<UnsignedShort>({0x101d, 0xc571}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo4() {
@@ -321,10 +316,9 @@ void WavImporterTest::stereo8() {
     CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
     CORRADE_COMPARE(importer->frequency(), 96000);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            '\xde', '\xfe', '\xca', '\x7e'}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data(), Containers::arrayView<char>({
+        '\xde', '\xfe', '\xca', '\x7e'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo8ALaw() {
@@ -335,10 +329,9 @@ void WavImporterTest::stereo8ALaw() {
     CORRADE_COMPARE(importer->frequency(), 8000);
 
     CORRADE_COMPARE(importer->data().size(), 4096);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            -43, -43, -43, -43, -43, -43, 85, -43}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(8), Containers::arrayView<char>({
+        '\xd5', '\xd5', '\xd5', '\xd5', '\xd5', '\xd5', '\x55', '\xd5'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo8MuLaw() {
@@ -349,10 +342,9 @@ void WavImporterTest::stereo8MuLaw() {
     CORRADE_COMPARE(importer->frequency(), 8000);
 
     CORRADE_COMPARE(importer->data().size(), 4096);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            -1, -1, -1, -1, -1, -1, 127, -1}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(importer->data().prefix(8), Containers::arrayView<char>({
+        '\xff', '\xff', '\xff', '\xff', '\xff', '\xff', '\x7f', '\xff'
+    }), TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo12() {
@@ -371,9 +363,9 @@ void WavImporterTest::stereo16() {
     CORRADE_COMPARE(importer->format(), BufferFormat::Stereo16);
     CORRADE_COMPARE(importer->frequency(), 44100);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {39, 79, 39, 79}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(importer->data()),
+        Containers::arrayView<UnsignedShort>({0x4f27, 0x4f27}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo24() {
@@ -402,10 +394,9 @@ void WavImporterTest::mono32f() {
     CORRADE_COMPARE(importer->frequency(), 48000);
 
     CORRADE_COMPARE(importer->data().size(), 3920);
-    CORRADE_COMPARE_AS(importer->data().prefix(16),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            0, 0, 0, 0, 108, 57, -103, 59, 3, 63, 42, 60, -33, -81, -120, 60}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(importer->data()).prefix(4),
+        Containers::arrayView<Float>({0.0f, 0.00467603f, 0.010391f, 0.0166854f}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::mono32fBigEndian() {
@@ -415,10 +406,9 @@ void WavImporterTest::mono32fBigEndian() {
     CORRADE_COMPARE(importer->format(), BufferFormat::MonoFloat);
     CORRADE_COMPARE(importer->frequency(), 48000);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            0, 0, 0, 0, 108, 57, -103, 59, 3, 63, 42, 60, -33, -81, -120, 60}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(importer->data()),
+        Containers::arrayView<Float>({0.0f, 0.00467603f, 0.010391f, 0.0166854f}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo32f() {
@@ -429,10 +419,9 @@ void WavImporterTest::stereo32f() {
     CORRADE_COMPARE(importer->frequency(), 44100);
 
     CORRADE_COMPARE(importer->data().size(), 1352);
-    CORRADE_COMPARE_AS(importer->data().prefix(8),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            17, -77, -103, 56, 5, 50, 72, 56}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(importer->data()).prefix(2),
+        Containers::arrayView<Float>({7.32896e-05f, 4.77303e-05f}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo64f() {
@@ -443,13 +432,10 @@ void WavImporterTest::stereo64f() {
     CORRADE_COMPARE(importer->frequency(), 8000);
 
     CORRADE_COMPARE(importer->data().size(), 375888);
-    CORRADE_COMPARE_AS(importer->data().prefix(64),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 16, 63,
-            0, 0, 0, 0, 0, 0, 24, -65, 0, 0, 0, 0, 0, 0, 0, 0}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Double>(importer->data()).prefix(8),
+        Containers::arrayView<Double>({
+            0.0, 0.0, 0.0, 0.0, 3.0517578125e-05, 6.103515625e-05, -9.1552734375e-05, 0.0}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo64fBigEndian() {
@@ -459,13 +445,10 @@ void WavImporterTest::stereo64fBigEndian() {
     CORRADE_COMPARE(importer->format(), BufferFormat::StereoDouble);
     CORRADE_COMPARE(importer->frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer->data(),
-        (Containers::Array<char>{Containers::InPlaceInit, {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 16, 63,
-            0, 0, 0, 0, 0, 0, 24, -65, 0, 0, 0, 0, 0, 0, 0, 0}}),
-        TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Double>(importer->data()),
+        Containers::arrayView<Double>({
+            0.0, 0.0, 0.0, 0.0, 3.0517578125e-05, 6.103515625e-05, -9.1552734375e-05, 0.0}),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::surround51Channel16() {
