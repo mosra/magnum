@@ -133,6 +133,17 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const C
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
 
 /**
+@brief Generate smooth normals using a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+
+/**
 @brief Generate smooth normals into an existing array
 @param[in] indices      Triangle face indices
 @param[in] positions    Triangle vertex positions
@@ -166,6 +177,18 @@ MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::Strided
  * @m_since{2019,10}
  */
 MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
+
+/**
+@brief Generate smooth normals into an existing array using a type-erased index array
+@m_since_latest
+
+Expects that @p normals has the same size as @p positions and that the second
+dimension of @p indices is contiguous and represents the actual 1/2/4-byte
+index type. Based on its size then calls one of the
+@ref generateSmoothNormalsInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
 
 }}
 

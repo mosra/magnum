@@ -234,6 +234,18 @@ void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const Unsign
     generateSmoothNormalsIntoImplementation(indices, positions, normals);
 }
 
+void generateSmoothNormalsInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::generateSmoothNormalsInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return generateSmoothNormalsIntoImplementation(Containers::arrayCast<1, const UnsignedInt>(indices), positions, normals);
+    else if(indices.size()[1] == 2)
+        return generateSmoothNormalsIntoImplementation(Containers::arrayCast<1, const UnsignedShort>(indices), positions, normals);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::generateSmoothNormalsInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+        return generateSmoothNormalsIntoImplementation(Containers::arrayCast<1, const UnsignedByte>(indices), positions, normals);
+    }
+}
+
 namespace {
 
 template<class T> inline Containers::Array<Vector3> generateSmoothNormalsImplementation(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
@@ -255,6 +267,12 @@ Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayV
 }
 Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
     return generateSmoothNormalsImplementation(indices, positions);
+}
+
+Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView1D<const Vector3>& positions) {
+    Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
+    generateSmoothNormalsInto(indices, positions, out);
+    return out;
 }
 
 }}

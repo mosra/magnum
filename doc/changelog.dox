@@ -212,6 +212,9 @@ See also:
     @ref MeshTools::removeDuplicatesInPlace() variant
 -   Added @ref MeshTools::duplicateInto() variants that take type-erased
     2D strided array views
+-   Added @ref MeshTools::generateSmoothNormals() and
+    @ref MeshTools::generateSmoothNormalsInto() variants taking type-erased
+    index arrays
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

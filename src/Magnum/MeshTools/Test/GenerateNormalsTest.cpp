@@ -61,6 +61,10 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothOutOfBounds();
     void smoothIntoWrongSize();
 
+    template<class T> void smoothErased();
+    void smoothErasedNonContiguous();
+    void smoothErasedWrongIndexSize();
+
     void benchmarkFlat();
     void benchmarkSmooth();
 };
@@ -83,7 +87,13 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothNanPosition,
               &GenerateNormalsTest::smoothWrongCount,
               &GenerateNormalsTest::smoothOutOfBounds,
-              &GenerateNormalsTest::smoothIntoWrongSize});
+              &GenerateNormalsTest::smoothIntoWrongSize,
+
+              &GenerateNormalsTest::smoothErased<UnsignedByte>,
+              &GenerateNormalsTest::smoothErased<UnsignedShort>,
+              &GenerateNormalsTest::smoothErased<UnsignedInt>,
+              &GenerateNormalsTest::smoothErasedNonContiguous,
+              &GenerateNormalsTest::smoothErasedWrongIndexSize});
 
     addBenchmarks({&GenerateNormalsTest::benchmarkFlat,
                    &GenerateNormalsTest::benchmarkSmooth}, 150);
@@ -423,6 +433,45 @@ void GenerateNormalsTest::benchmarkSmooth() {
     }
 
     CORRADE_COMPARE(Math::min(normals), (Vector3{-0.996072f, -0.997808f, -0.996072f}));
+}
+
+template<class T> void GenerateNormalsTest::smoothErased() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const T indices[]{0, 1, 2, 3, 4, 5};
+
+    /* Should generate the same output as flat normals */
+    CORRADE_COMPARE_AS(generateSmoothNormals(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)), TwoTriangles),
+        Containers::arrayView<Vector3>({
+            Vector3::zAxis(),
+            Vector3::zAxis(),
+            Vector3::zAxis(),
+            -Vector3::zAxis(),
+            -Vector3::zAxis(),
+            -Vector3::zAxis()
+        }), TestSuite::Compare::Container);
+}
+
+void GenerateNormalsTest::smoothErasedNonContiguous() {
+    const char indices[6*4]{};
+    const Vector3 positions[3];
+
+    std::stringstream out;
+    Error redirectError{&out};
+    generateSmoothNormals(Containers::StridedArrayView2D<const char>{indices, {6, 2}, {4, 2}}, positions);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateSmoothNormalsInto(): second index view dimension is not contiguous\n");
+}
+
+void GenerateNormalsTest::smoothErasedWrongIndexSize() {
+    const char indices[6*3]{};
+    const Vector3 positions[3];
+
+    std::stringstream out;
+    Error redirectError{&out};
+    generateSmoothNormals(Containers::StridedArrayView2D<const char>{indices, {6, 3}}.every(2), positions);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateSmoothNormalsInto(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 }}}}
