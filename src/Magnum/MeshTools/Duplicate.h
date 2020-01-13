@@ -115,6 +115,17 @@ MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<
  */
 MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
 
+/**
+@brief Duplicate type-erased data using a type-erased index array into given output array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref duplicateInto(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView2D<const char>&, const Containers::StridedArrayView2D<char>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
+
 template<class IndexType, class T> inline void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out) {
     duplicateInto(indices, Containers::arrayCast<2, const char>(data), Containers::arrayCast<2, char>(out));
 }

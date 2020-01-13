@@ -61,4 +61,16 @@ void duplicateInto(const Containers::StridedArrayView1D<const UnsignedInt>& indi
     duplicateIntoImplementation(indices, data, out);
 }
 
+void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::duplicateInto(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return duplicateIntoImplementation(Containers::arrayCast<1, const UnsignedInt>(indices), data, out);
+    else if(indices.size()[1] == 2)
+        return duplicateIntoImplementation(Containers::arrayCast<1, const UnsignedShort>(indices), data, out);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::duplicateInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+        return duplicateIntoImplementation(Containers::arrayCast<1, const UnsignedByte>(indices), data, out);
+    }
+}
+
 }}

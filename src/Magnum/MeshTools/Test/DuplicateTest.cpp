@@ -47,6 +47,10 @@ struct DuplicateTest: TestSuite::Tester {
     template<class T> void duplicateIntoErased();
     void duplicateIntoErasedWrongTypeSize();
     void duplicateIntoErasedNonContiguous();
+
+    template<class T> void duplicateErasedIndicesIntoErased();
+    void duplicateErasedIndicesIntoErasedNonContiguous();
+    void duplicateErasedIndicesIntoErasedWrongTypeSize();
 };
 
 DuplicateTest::DuplicateTest() {
@@ -61,7 +65,13 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateIntoErased<UnsignedShort>,
               &DuplicateTest::duplicateIntoErased<UnsignedInt>,
               &DuplicateTest::duplicateIntoErasedWrongTypeSize,
-              &DuplicateTest::duplicateIntoErasedNonContiguous});
+              &DuplicateTest::duplicateIntoErasedNonContiguous,
+
+              &DuplicateTest::duplicateErasedIndicesIntoErased<UnsignedByte>,
+              &DuplicateTest::duplicateErasedIndicesIntoErased<UnsignedShort>,
+              &DuplicateTest::duplicateErasedIndicesIntoErased<UnsignedInt>,
+              &DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous,
+              &DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize});
 }
 
 void DuplicateTest::duplicate() {
@@ -160,6 +170,54 @@ void DuplicateTest::duplicateIntoErasedNonContiguous() {
         Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
     CORRADE_COMPARE(out.str(),
         "MeshTools::duplicateInto(): second view dimension is not contiguous\n");
+}
+
+template<class T> void DuplicateTest::duplicateErasedIndicesIntoErased() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    constexpr T indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Int output[6];
+
+    MeshTools::duplicateInto(
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE_AS(Containers::arrayView<const Int>(output),
+        Containers::arrayView({35, 35, -7, -18, 12, 12}),
+        TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize() {
+    constexpr char indices[6*3]{};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Short output[6];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicateInto(
+        Containers::StridedArrayView2D<const char>{indices, {6, 3}}.every(2),
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): expected index type size 1, 2 or 4 but got 3\n");
+}
+
+void DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous() {
+    constexpr char indices[3*6]{};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Short output[6];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicateInto(
+        Containers::StridedArrayView2D<const char>{indices, {3, 3}, {6, 2}},
+        Containers::arrayCast<2, const char>(Containers::stridedArrayView(data)).every({1, 2}),
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): second index view dimension is not contiguous\n");
 }
 
 }}}}
