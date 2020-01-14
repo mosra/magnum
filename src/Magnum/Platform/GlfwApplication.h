@@ -562,7 +562,11 @@ class GlfwApplication {
             TextInput,      /**< Text input */
             Crosshair,      /**< Crosshair */
 
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
+            /* Checking for GLFW_RESIZE_NWSE_CURSOR being defined instead of a
+               version check because older Git clones have version set to 3.4
+               but don't contain those defines. All new cursors were added in
+               the same commit, so it's okay to test for just one define. */
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_RESIZE_NWSE_CURSOR)
             /**
              * Double arrow pointing northwest and southeast
              * @note Available since GLFW 3.4.
@@ -579,7 +583,7 @@ class GlfwApplication {
             ResizeWE,       /**< Double arrow pointing west and east */
             ResizeNS,       /**< Double arrow pointing north and south */
 
-            #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 304
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_RESIZE_NWSE_CURSOR)
             /**
              * Four pointed arrow pointing north, south, east, and west
              * @note Available since GLFW 3.4.
