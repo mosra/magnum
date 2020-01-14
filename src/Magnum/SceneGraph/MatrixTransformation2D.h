@@ -233,7 +233,7 @@ template<class T> struct Transformation<BasicMatrixTransformation2D<T>> {
 
 }
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float>>;
 #endif
 

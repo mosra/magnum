@@ -109,7 +109,7 @@ template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
 */
 typedef BasicAnimableGroup3D<Float> AnimableGroup3D;
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AnimableGroup<3, Float>;
 #endif

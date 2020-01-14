@@ -197,7 +197,7 @@ template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions
     return *this;
 }
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractFeatureGroup<3, Float>;
 #endif
