@@ -122,7 +122,7 @@ template<class T> using AbstractBasicTransformation3D = AbstractTransformation<3
 */
 typedef AbstractBasicTransformation3D<Float> AbstractTransformation3D;
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractTransformation<3, Float>;
 #endif

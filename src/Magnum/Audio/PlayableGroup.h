@@ -128,7 +128,7 @@ typedef PlayableGroup<2> PlayableGroup2D;
  */
 typedef PlayableGroup<3> PlayableGroup3D;
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_AUDIO_EXPORT PlayableGroup<2>;
 extern template class MAGNUM_AUDIO_EXPORT PlayableGroup<3>;
 #endif

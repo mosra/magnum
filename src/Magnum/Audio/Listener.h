@@ -157,7 +157,7 @@ typedef Listener<2> Listener2D;
  */
 typedef Listener<3> Listener3D;
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_AUDIO_EXPORT Listener<2>;
 extern template class MAGNUM_AUDIO_EXPORT Listener<3>;
 #endif

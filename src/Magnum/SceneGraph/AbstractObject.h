@@ -313,7 +313,7 @@ typedef AbstractBasicObject3D<Float> AbstractObject3D;
 typedef AbstractObject<3, Float> AbstractObject3D;
 #endif
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<2, Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT AbstractObject<3, Float>;
 #endif

@@ -872,7 +872,7 @@ template<class T, class K> template<class V, class R, class Callback> Player<T, 
 }
 #endif
 
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+#if defined(CORRADE_TARGET_WINDOWS) && !(defined(CORRADE_TARGET_MINGW) && !defined(CORRADE_TARGET_CLANG))
 extern template class MAGNUM_EXPORT Player<Float, Float>;
 extern template class MAGNUM_EXPORT Player<std::chrono::nanoseconds, Float>;
 #endif
