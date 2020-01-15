@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto()
+ * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto(), @ref Magnum::MeshTools::isInterleaved()
  */
 
 #include <cstring>
@@ -35,6 +35,8 @@
 #include <Corrade/Utility/TypeTraits.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/MeshTools/visibility.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -183,6 +185,19 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> bu
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
 }
+
+/**
+@brief If the mesh data is interleaved
+@m_since_latest
+
+Returns @cpp true @ce if all attributes have the same stride and the difference
+between minimal and maximal offset is not larger than the stride, @cpp false @ce
+otherwise. In particular, returns @cpp true @ce also if the mesh has just one
+or no attributes.
+@see @ref Trade::MeshData::attributeStride(),
+    @ref Trade::MeshData::attributeOffset()
+*/
+MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
 
 }}
 

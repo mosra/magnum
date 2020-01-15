@@ -109,6 +109,8 @@ See also:
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
+-   New @ref MeshTools::isInterleaved() utility for checking if
+    @ref Trade::MeshData is interleaved
 -   Added @ref MeshTools::subdivideInPlace() for allocation-less mesh
     subdivision
 -   New @ref MeshTools::removeDuplicatesInPlace() variant that works on

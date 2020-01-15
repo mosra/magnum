@@ -25,6 +25,7 @@
 
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
+    Interleave.cpp
     Tipsify.cpp)
 
 # Files compiled with different flags for main library and unit test library
