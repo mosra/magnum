@@ -39,7 +39,7 @@ See also:
 @section changelog-latest Changes since 2019.10
 
 -   Clang-CL is now a supported compiler on Windows. See also
-    @ref platforms-windows-clang-cl and [mosra/magnum#227](https://github.com/mosra/magnum/issues/227).
+    @ref platforms-windows-clang-cl.
 
 @subsection changelog-latest-new New features
 
