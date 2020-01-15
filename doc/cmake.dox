@@ -65,16 +65,17 @@ separate them with semicolons.
 
 @section cmake-subproject Using Magnum as a CMake subproject
 
-A self-contained alternative to the above is adding Corrade and Magnum
-repositories into your project (as a Git submodule, bundling a downloaded
-archive etc.) and use @cb{.cmake} add_subdirectory() @ce. With that approach
-you don't need to care about `FindCorrade.cmake` / `FindMagnum.cmake`, however
-the usual tradeoffs when bundling code apply --- slower full rebuilds, IDEs
-having more to parse etc. In this case, the
-@ref building-features "build-time options" are @cmake set() @ce before
-the @cmake add_subdirectory() @ce call. Note that, unless you require CMake
-3.13 at least, it's needed to use the `CACHE ... FORCE` arguments
-[in order to have the options set properly](https://cmake.org/cmake/help/latest/policy/CMP0077.html). For example:
+A self-contained alternative to a shared instance of the libraries, is to add
+the repositories directly into your project (as Git submodules, bundling
+downloaded archives etc.), and then to use CMake's @cb{.cmake} add_subdirectory() @ce
+command to compile them on demand. With this approach, you don't need to care
+about manually installing Magnum and Corrade, however the usual tradeoffs when
+bundling code apply --- slower full rebuilds, IDEs having more to parse etc. In
+this case, @ref building-features "build-time options" can be @cmake set() @ce
+before calling @cmake add_subdirectory() @ce. Note that, unless you require
+CMake 3.13 at least, it's necessary to use the `CACHE ... FORCE` arguments
+[in order to have the options set properly](https://cmake.org/cmake/help/latest/policy/CMP0077.html).
+For example:
 
 @code{.cmake}
 add_subdirectory(corrade EXCLUDE_FROM_ALL) # so only things you use are built
@@ -85,7 +86,9 @@ add_subdirectory(magnum EXCLUDE_FROM_ALL)
 find_package(Magnum REQUIRED ...) # see below
 @endcode
 
-Note that the @cb{.cmake} find_package() @ce call is needed in both the
+Note that the use of @cb{.cmake} add_subdirectory() @ce does not replace the
+configuration necessary for an installed version of Magnum. The `modules/`
+directory and calls to @cb{.cmake} find_package() @ce are needed in both the
 installed and the subproject case for a properly configured environment.
 
 To simplify your project setup, the subproject globally configures
