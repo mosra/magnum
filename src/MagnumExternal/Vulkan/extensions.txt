@@ -1,4 +1,4 @@
-version 1.1 vulkan
+version 1.2 vulkan
 
 extension KHR_16bit_storage optional
 extension KHR_bind_memory2 optional

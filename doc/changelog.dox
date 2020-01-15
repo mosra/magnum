@@ -101,6 +101,10 @@ See also:
     @ref Platform::GlfwApplication::KeyEvent::Key::World2
 -   Added @ref Platform::EmscriptenApplication::KeyEvent::Key::Semicolon
 
+@subsubsection changelog-latest-new-vk Vk library
+
+-   Updated Vulkan headers for version 1.2
+
 @subsection changelog-latest-changes Changes and improvements
 
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved

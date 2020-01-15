@@ -113,6 +113,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 #define vkGetPhysicalDeviceQueueFamilyProperties2 flextVkInstance.GetPhysicalDeviceQueueFamilyProperties2
 #define vkGetPhysicalDeviceSparseImageFormatProperties2 flextVkInstance.GetPhysicalDeviceSparseImageFormatProperties2
 
+/* VK_VERSION_1_2 */
+
+
 /* Per-device function pointers */
 extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
@@ -308,6 +311,22 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 #define vkGetImageSparseMemoryRequirements2 flextVkDevice.GetImageSparseMemoryRequirements2
 #define vkTrimCommandPool flextVkDevice.TrimCommandPool
 #define vkUpdateDescriptorSetWithTemplate flextVkDevice.UpdateDescriptorSetWithTemplate
+
+/* VK_VERSION_1_2 */
+
+#define vkCmdBeginRenderPass2 flextVkDevice.CmdBeginRenderPass2
+#define vkCmdDrawIndexedIndirectCount flextVkDevice.CmdDrawIndexedIndirectCount
+#define vkCmdDrawIndirectCount flextVkDevice.CmdDrawIndirectCount
+#define vkCmdEndRenderPass2 flextVkDevice.CmdEndRenderPass2
+#define vkCmdNextSubpass2 flextVkDevice.CmdNextSubpass2
+#define vkCreateRenderPass2 flextVkDevice.CreateRenderPass2
+#define vkGetBufferDeviceAddress flextVkDevice.GetBufferDeviceAddress
+#define vkGetBufferOpaqueCaptureAddress flextVkDevice.GetBufferOpaqueCaptureAddress
+#define vkGetDeviceMemoryOpaqueCaptureAddress flextVkDevice.GetDeviceMemoryOpaqueCaptureAddress
+#define vkGetSemaphoreCounterValue flextVkDevice.GetSemaphoreCounterValue
+#define vkResetQueryPool flextVkDevice.ResetQueryPool
+#define vkSignalSemaphore flextVkDevice.SignalSemaphore
+#define vkWaitSemaphores flextVkDevice.WaitSemaphores
 
 #endif
 

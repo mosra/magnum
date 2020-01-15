@@ -226,4 +226,17 @@ void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(
     data->GetImageSparseMemoryRequirements2 = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkImageSparseMemoryRequirementsInfo2*, uint32_t*, VkSparseImageMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements2"));
     data->TrimCommandPool = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkCommandPool, VkCommandPoolTrimFlags)>(getDeviceProcAddr(device, "vkTrimCommandPool"));
     data->UpdateDescriptorSetWithTemplate = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorSet, VkDescriptorUpdateTemplate, const void*)>(getDeviceProcAddr(device, "vkUpdateDescriptorSetWithTemplate"));
+    data->CmdBeginRenderPass2 = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkRenderPassBeginInfo*, const VkSubpassBeginInfo*)>(getDeviceProcAddr(device, "vkCmdBeginRenderPass2"));
+    data->CmdDrawIndexedIndirectCount = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, VkBuffer, VkDeviceSize, VkBuffer, VkDeviceSize, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCount"));
+    data->CmdDrawIndirectCount = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, VkBuffer, VkDeviceSize, VkBuffer, VkDeviceSize, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDrawIndirectCount"));
+    data->CmdEndRenderPass2 = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdEndRenderPass2"));
+    data->CmdNextSubpass2 = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassBeginInfo*, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdNextSubpass2"));
+    data->CreateRenderPass2 = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkRenderPassCreateInfo2*, const VkAllocationCallbacks*, VkRenderPass*)>(getDeviceProcAddr(device, "vkCreateRenderPass2"));
+    data->GetBufferDeviceAddress = reinterpret_cast<VkDeviceAddress(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferDeviceAddress"));
+    data->GetBufferOpaqueCaptureAddress = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferOpaqueCaptureAddress"));
+    data->GetDeviceMemoryOpaqueCaptureAddress = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkDeviceMemoryOpaqueCaptureAddressInfo*)>(getDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddress"));
+    data->GetSemaphoreCounterValue = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, VkSemaphore, uint64_t*)>(getDeviceProcAddr(device, "vkGetSemaphoreCounterValue"));
+    data->ResetQueryPool = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkQueryPool, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkResetQueryPool"));
+    data->SignalSemaphore = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSemaphoreSignalInfo*)>(getDeviceProcAddr(device, "vkSignalSemaphore"));
+    data->WaitSemaphores = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSemaphoreWaitInfo*, uint64_t)>(getDeviceProcAddr(device, "vkWaitSemaphores"));
 }
