@@ -139,27 +139,39 @@ void PixelFormatTest::mapFormatTypeTextureFormat() {
                     ++nextHandled; \
                     continue;
             #define _n(format, expectedFormat, expectedType) \
-                case Magnum::PixelFormat::format: \
+                case Magnum::PixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), Magnum::GL::PixelFormat::expectedFormat); \
                     CORRADE_COMPARE(pixelType(Magnum::PixelFormat::format), Magnum::GL::PixelType::expectedType); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
-                    textureFormat(Magnum::PixelFormat::format); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        textureFormat(Magnum::PixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
                     ++nextHandled; \
-                    continue;
+                    continue; \
+                }
             #define _s(format) \
-                case Magnum::PixelFormat::format: \
+                case Magnum::PixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::PixelFormat::format)); \
-                    pixelFormat(Magnum::PixelFormat::format); \
-                    pixelType(Magnum::PixelFormat::format); \
-                    textureFormat(Magnum::PixelFormat::format); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        pixelFormat(Magnum::PixelFormat::format); \
+                        pixelType(Magnum::PixelFormat::format); \
+                        textureFormat(Magnum::PixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
                     ++nextHandled; \
-                    continue;
+                    continue; \
+                }
             #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
             #undef _s
             #undef _n
@@ -348,15 +360,21 @@ void PixelFormatTest::mapCompressedFormatTextureFormat() {
                     ++nextHandled; \
                     continue;
             #define _s(format) \
-                case Magnum::CompressedPixelFormat::format: \
+                case Magnum::CompressedPixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::format)); \
                     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::format)); \
-                    compressedPixelFormat(Magnum::CompressedPixelFormat::format); \
-                    textureFormat(Magnum::CompressedPixelFormat::format); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        compressedPixelFormat(Magnum::CompressedPixelFormat::format); \
+                        textureFormat(Magnum::CompressedPixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
                     ++nextHandled; \
-                    continue;
+                    continue; \
+                }
             #include "Magnum/GL/Implementation/compressedPixelFormatMapping.hpp"
             #undef _s
             #undef _c

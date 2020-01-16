@@ -204,13 +204,19 @@ void EnumsTest::mapVkFormat() {
                     ++nextHandled; \
                     continue;
             #define _s(format) \
-                case Magnum::PixelFormat::format: \
+                case Magnum::PixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasVkFormat(Magnum::PixelFormat::format)); \
-                    vkFormat(Magnum::PixelFormat::format); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        vkFormat(Magnum::PixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
                     ++nextHandled; \
-                    continue;
+                    continue; \
+                }
             #include "Magnum/Vk/Implementation/formatMapping.hpp"
             #undef _s
             #undef _c
@@ -292,13 +298,19 @@ void EnumsTest::mapVkFormatCompressed() {
                     ++nextHandled; \
                     continue;
             #define _s(format) \
-                case Magnum::CompressedPixelFormat::format: \
+                case Magnum::CompressedPixelFormat::format: { \
                     CORRADE_COMPARE(nextHandled, i); \
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(!hasVkFormat(Magnum::CompressedPixelFormat::format)); \
-                    vkFormat(Magnum::CompressedPixelFormat::format); \
+                    std::ostringstream out; \
+                    { /* Redirected otherwise graceful assert would abort */ \
+                        Error redirectError{&out}; \
+                        vkFormat(Magnum::CompressedPixelFormat::format); \
+                    } \
+                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
                     ++nextHandled; \
-                    continue;
+                    continue; \
+                }
             #include "Magnum/Vk/Implementation/compressedFormatMapping.hpp"
             #undef _s
             #undef _c

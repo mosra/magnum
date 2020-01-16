@@ -254,7 +254,7 @@ void ObjectTest::transformations() {
 }
 
 void ObjectTest::transformationsRelative() {
-    CORRADE_EXPECT_FAIL("Transformations not relative to scene are not yet implemented.");
+    CORRADE_SKIP("Transformations not relative to scene are not implemented yet.");
 
     Scene3D s;
     Object3D first(&s);
