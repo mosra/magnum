@@ -55,6 +55,16 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void isInterleavedAliased();
     void isInterleavedUnordered();
     void isInterleavedAttributeAcrossStride();
+
+    void interleavedLayout();
+    void interleavedLayoutExtra();
+    void interleavedLayoutExtraAliased();
+    void interleavedLayoutExtraTooNegativePadding();
+    void interleavedLayoutExtraOnly();
+    void interleavedLayoutAlreadyInterleaved();
+    void interleavedLayoutAlreadyInterleavedAliased();
+    void interleavedLayoutAlreadyInterleavedExtra();
+    void interleavedLayoutNothing();
 };
 
 InterleaveTest::InterleaveTest() {
@@ -73,7 +83,17 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::isInterleavedGaps,
               &InterleaveTest::isInterleavedAliased,
               &InterleaveTest::isInterleavedUnordered,
-              &InterleaveTest::isInterleavedAttributeAcrossStride});
+              &InterleaveTest::isInterleavedAttributeAcrossStride,
+
+              &InterleaveTest::interleavedLayout,
+              &InterleaveTest::interleavedLayoutExtra,
+              &InterleaveTest::interleavedLayoutExtraAliased,
+              &InterleaveTest::interleavedLayoutExtraTooNegativePadding,
+              &InterleaveTest::interleavedLayoutExtraOnly,
+              &InterleaveTest::interleavedLayoutAlreadyInterleaved,
+              &InterleaveTest::interleavedLayoutAlreadyInterleavedAliased,
+              &InterleaveTest::interleavedLayoutAlreadyInterleavedExtra,
+              &InterleaveTest::interleavedLayoutNothing});
 }
 
 void InterleaveTest::attributeCount() {
@@ -283,6 +303,267 @@ void InterleaveTest::isInterleavedAttributeAcrossStride() {
     Trade::MeshData data2{MeshPrimitive::Triangles,
         std::move(vertexData), {positions, normals2}};
     CORRADE_VERIFY(!MeshTools::isInterleaved(data2));
+}
+
+void InterleaveTest::interleavedLayout() {
+    Containers::Array<char> indexData{6};
+    Containers::Array<char> vertexData{3*20};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+
+    Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        std::move(indexData), indices,
+        std::move(vertexData), {positions, normals}};
+    CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 10);
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.primitive(), MeshPrimitive::TriangleFan);
+    CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 20);
+    CORRADE_COMPARE(layout.attributeStride(1), 20);
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 8);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    /* Needs to be like this so we can modify the data */
+    CORRADE_COMPARE(layout.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_VERIFY(layout.vertexData());
+    CORRADE_COMPARE(layout.vertexData().size(), 10*20);
+}
+
+void InterleaveTest::interleavedLayoutExtra() {
+    Containers::Array<char> vertexData{3*20};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(vertexData), {positions, normals}};
+    CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 7, {
+        Trade::MeshAttributeData{1},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(15),
+            VertexFormat::UnsignedShort, nullptr},
+        Trade::MeshAttributeData{1},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{4}
+    });
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.attributeCount(), 4);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeName(2), Trade::meshAttributeCustom(15));
+    CORRADE_COMPARE(layout.attributeName(3), Trade::MeshAttribute::Color);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeFormat(2), VertexFormat::UnsignedShort);
+    CORRADE_COMPARE(layout.attributeFormat(3), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 40);
+    CORRADE_COMPARE(layout.attributeStride(1), 40);
+    CORRADE_COMPARE(layout.attributeStride(2), 40);
+    CORRADE_COMPARE(layout.attributeStride(3), 40);
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 8);
+    CORRADE_COMPARE(layout.attributeOffset(2), 21);
+    CORRADE_COMPARE(layout.attributeOffset(3), 24);
+    CORRADE_COMPARE(layout.vertexCount(), 7);
+    CORRADE_COMPARE(layout.vertexData().size(), 7*40);
+}
+
+void InterleaveTest::interleavedLayoutExtraAliased() {
+    Containers::Array<char> vertexData{3*12};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(vertexData), {positions}};
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 100, {
+        /* Normals at the same place as positions */
+        Trade::MeshAttributeData{-12},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, positions.data()}
+    });
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 12);
+    CORRADE_COMPARE(layout.attributeStride(1), 12);
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 0); /* aliases */
+    CORRADE_COMPARE(layout.vertexCount(), 100);
+    CORRADE_COMPARE(layout.vertexData().size(), 100*12);
+}
+
+void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
+    Containers::Array<char> vertexData{3*12};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(vertexData), {positions}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleavedLayout(data, 100, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, positions.data()},
+        Trade::MeshAttributeData{-25}
+    });
+    CORRADE_COMPARE(out.str(), "MeshTools::interleavedLayout(): negative padding -25 in extra attribute 1 too large for stride 24\n");
+}
+
+void InterleaveTest::interleavedLayoutExtraOnly() {
+    Trade::MeshData data{MeshPrimitive::Triangles, 0};
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 10, {
+        Trade::MeshAttributeData{4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector2, nullptr},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, nullptr}
+    });
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 24);
+    CORRADE_COMPARE(layout.attributeStride(1), 24);
+    CORRADE_COMPARE(layout.attributeOffset(0), 4);
+    CORRADE_COMPARE(layout.attributeOffset(1), 12);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    CORRADE_COMPARE(layout.vertexData().size(), 10*24);
+}
+
+void InterleaveTest::interleavedLayoutAlreadyInterleaved() {
+    Containers::Array<char> indexData{6};
+    /* Test also removing the initial offset */
+    Containers::Array<char> vertexData{100 + 3*24};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 24}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::StridedArrayView1D<Vector3>{vertexData, reinterpret_cast<Vector3*>(vertexData.data() + 100 + 10), 3, 24}};
+
+    Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(indexData), indices,
+        std::move(vertexData), {positions, normals}};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 10);
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    /* Original stride should be preserved */
+    CORRADE_COMPARE(layout.attributeStride(0), 24);
+    CORRADE_COMPARE(layout.attributeStride(1), 24);
+    /* Relative offsets should be preserved, but the initial one removed */
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 10);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    CORRADE_COMPARE(layout.vertexData().size(), 10*24);
+}
+
+void InterleaveTest::interleavedLayoutAlreadyInterleavedAliased() {
+    Containers::Array<char> indexData{6};
+    Containers::Array<char> vertexData{3*12};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::StridedArrayView1D<Vector3>{vertexData, reinterpret_cast<Vector3*>(vertexData.data()), 3, 12}};
+
+    Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(indexData), indices,
+        std::move(vertexData), {positions, normals}};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 10);
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 12);
+    CORRADE_COMPARE(layout.attributeStride(1), 12);
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 0); /* aliases */
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    CORRADE_COMPARE(layout.vertexData().size(), 10*12);
+}
+
+void InterleaveTest::interleavedLayoutAlreadyInterleavedExtra() {
+    Containers::Array<char> vertexData{100 + 3*24};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 24}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::StridedArrayView1D<Vector3>{vertexData, reinterpret_cast<Vector3*>(vertexData.data() + 100 + 10), 3, 24}};
+
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        std::move(vertexData), {positions, normals}};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+
+    Trade::MeshData layout = MeshTools::interleavedLayout(data, 10, {
+        Trade::MeshAttributeData{1},
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(15),
+            VertexFormat::UnsignedShort, nullptr},
+        Trade::MeshAttributeData{1},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector3, nullptr},
+        Trade::MeshAttributeData{4}
+    });
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.attributeCount(), 4);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeName(2), Trade::meshAttributeCustom(15));
+    CORRADE_COMPARE(layout.attributeName(3), Trade::MeshAttribute::Color);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeFormat(2), VertexFormat::UnsignedShort);
+    CORRADE_COMPARE(layout.attributeFormat(3), VertexFormat::Vector3);
+    /* Original stride should be preserved, with stride from extra attribs
+       added */
+    CORRADE_COMPARE(layout.attributeStride(0), 24 + 20);
+    CORRADE_COMPARE(layout.attributeStride(1), 24 + 20);
+    CORRADE_COMPARE(layout.attributeStride(2), 24 + 20);
+    CORRADE_COMPARE(layout.attributeStride(3), 24 + 20);
+    /* Relative offsets should be preserved, but the initial one removed */
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 10);
+    CORRADE_COMPARE(layout.attributeOffset(2), 25);
+    CORRADE_COMPARE(layout.attributeOffset(3), 28);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    CORRADE_COMPARE(layout.vertexData().size(), 10*44);
+}
+
+void InterleaveTest::interleavedLayoutNothing() {
+    Trade::MeshData layout = MeshTools::interleavedLayout(Trade::MeshData{MeshPrimitive::Points, 25}, 10);
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.attributeCount(), 0);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    CORRADE_VERIFY(!layout.vertexData());
+    CORRADE_COMPARE(layout.vertexData().size(), 0);
 }
 
 }}}}

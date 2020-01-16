@@ -32,6 +32,7 @@
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
+#include "Magnum/Trade/MeshData.h"
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -94,6 +95,40 @@ std::vector<Color3ub> vertexColors;
 
 auto data = MeshTools::interleave(positions, weights, 2, vertexColors, 1);
 /* [interleave2] */
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Lines, 0};
+UnsignedInt vertexCount{};
+Containers::Array<char> indexData;
+/* [interleavedLayout-extra] */
+Containers::ArrayView<const Trade::MeshAttributeData> attributes =
+    data.attributeData();
+
+/* Take just positions and normals and add a four-byte padding in between */
+Trade::MeshData layout = MeshTools::interleavedLayout(
+    Trade::MeshData{MeshPrimitive::Triangles, 0}, vertexCount, {
+        attributes[data.attributeId(Trade::MeshAttribute::Position)],
+        Trade::MeshAttributeData{4},
+        attributes[data.attributeId(Trade::MeshAttribute::Normal)]
+    });
+/* [interleavedLayout-extra] */
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Lines, 0};
+Containers::ArrayView<Trade::MeshAttributeData> extraAttributes;
+UnsignedInt vertexCount{};
+Containers::Array<char> indexData;
+/* [interleavedLayout-indices] */
+Trade::MeshData layout =
+    MeshTools::interleavedLayout(data, vertexCount, extraAttributes);
+
+Trade::MeshIndexData indices;
+Trade::MeshData indexed{data.primitive(),
+    std::move(indexData), indices,
+    layout.releaseVertexData(), layout.releaseAttributeData()};
+/* [interleavedLayout-indices] */
 }
 
 {

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto(), @ref Magnum::MeshTools::isInterleaved()
+ * @brief Function @ref Magnum::MeshTools::interleave(), @ref Magnum::MeshTools::interleaveInto(), @ref Magnum::MeshTools::isInterleaved(), @ref Magnum::MeshTools::interleavedLayout()
  */
 
 #include <cstring>
@@ -198,6 +198,41 @@ or no attributes.
     @ref Trade::MeshData::attributeOffset()
 */
 MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
+
+/**
+@brief Create an interleaved mesh layout
+@m_since_latest
+
+Returns a @ref Trade::MeshData instance with its vertex data allocated for
+@p vertexCount vertices containing attributes from both @p data and @p extra
+interleaved together. No data is actually copied, only an interleaved layout is
+created. If @p data is already interleaved, keeps the attributes in the same
+layout, potentially extending them with @p extra. The @p extra attributes, if
+any, are interleaved together with existing attributes. Returned instance
+vertex data flags have both @ref Trade::DataFlag::Mutable and @ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
+
+For greater control you can also pass an empty @ref Trade::MeshData instance
+and fill @p extra with attributes cherry-picked from
+@ref Trade::MeshData::attributeData() of an existing instance. By default the
+attributes are tightly packed, you can add arbitrary padding using instances
+constructed via @ref Trade::MeshAttributeData::MeshAttributeData(Int).
+Example:
+
+@snippet MagnumMeshTools.cpp interleavedLayout-extra
+
+This function doesn't preserve index data information in any way, making the
+output non-indexed. If you want to preserve index data, create a new indexed
+instance with attribute and vertex data transferred from the returned instance:
+
+@snippet MagnumMeshTools.cpp interleavedLayout-indices
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
 
 }}
 
