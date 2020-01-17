@@ -407,7 +407,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
-10.  Push to a temporary branch (e.g., `next`)
+10. Push to a temporary branch (e.g., `next`)
 11. Iterate until the CIs are green
 12. Merge to `master`
 13. If possible, trigger builds of dependent projects (where they are still
@@ -487,6 +487,61 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 7.  Merge to `master`
 8.  If possible, trigger builds of dependent projects and verify they are still
     green (or wait for the scheduled builds)
+
+@section developers-adding-attribute Checklist for adding a new mesh attribute
+
+1.  Extend @ref Trade::MeshAttribute with the new entry
+2.  Add a corresponding reserved type to @ref Shaders::Generic, if not there
+    already
+    -   Also update `src/Magnum/Shaders/generic.glsl` with the reserved ID
+3.  Update the type assertion in the @ref Trade::MeshAttributeData constructor
+    to account for the new type
+4.  Add a pair of convenience getters to @ref Trade::MeshData similar to e.g.
+    @ref Trade::MeshData::normalsInto() / @ref Trade::MeshData::normalsAsArray()
+    with a type that's the same as the one used in the @ref Shaders::Generic
+    definition, test that it does the right thing for every supported type
+5.  Update @ref Trade::operator<<(Debug&, MeshAttribute) for the new entry
+6.  Update @ref MeshTools::compile() to recognize the new attribute. If there
+    is already a builtin shader capable of using this attribute, add new test
+    to `MeshToolsCompileGLTest`.
+7.  Push to a temporary branch (e.g., `next`)
+8.  Iterate until the CIs are green
+9.  Merge to `master`
+
+@section developers-adding-vertex-format Checklist for adding a new vertex format
+
+1.  Extend @ref VertexFormat with the new entry, if it's not there already,
+    document mapping to GL, Vulkan, D3D and Metal (if exists)
+2.  Update docs of @ref Trade::MeshAttribute to mention where the format can be
+    newly used
+3.  Appropriately relax the assertion in the @ref Trade::MeshAttributeData
+    constructor
+3.  Extend `Trade::Implementation::vertexFormatFor()`, add a mapping between
+    this entry and a C++ type, optionally also
+    `isVertexFormatCompatibleWithAttribute()` if there's more than one entry
+    corresponding to a particular C++ type. If the mapping is unconventional,
+    be sure to mention it in the
+    @ref Trade::MeshAttributeData::MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
+    constructor docs.
+4.  Update corresponding `Trade::MeshData::*Into()` convenience getters to
+    ensure they can handle this type
+5.  Update `src/Magnum/Implementation/vertexFormatMapping.hpp` and
+    `src/Magnum/Vk/Implementation/vertexFormatMapping.hpp` with the new entry
+6.  Update @ref vertexFormatSize(), @ref vertexFormatComponentFormat(),
+    @ref vertexFormatComponentCount() and @ref isVertexFormatNormalized() to
+    handle this format
+7.  Update the @ref GL::hasVertexFormat() utility and
+    @ref GL::DynamicAttribute::DynamicAttribute(Kind, UnsignedInt, VertexFormat)
+    constructor to provide mapping of the new type to GL; add a test for the
+    new type, if it's special in some way, otherwise the all-catching loop will
+    check it
+8.  Update @ref MeshTools::compile() to recognize the new type (if anything
+    extra needs to be done, usually doesn't as everything is handled by
+    @ref GL::DynamicAttribute already); add corresponding new test(s) to
+    `MeshToolsCompileGLTest`.
+9.  Push to a temporary branch (e.g., `next`)
+10. Iterate until the CIs are green
+11. Merge to `master`
 
 @section developers-gl-extensions Checklist for adding / removing GL versions and extensions
 
