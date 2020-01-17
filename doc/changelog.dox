@@ -170,6 +170,10 @@ See also:
 
 @subsection changelog-latest-bugfixes Bug fixes
 
+-   The variadic versions of @ref GL::Mesh::addVertexBuffer() and
+    @ref GL::Mesh::addVertexBufferInstanced() were sometimes errorneously
+    picked up instead of the @ref GL::DynamicAttribute overloads when stride
+    and offset were of a slightly different type.
 -   @ref Platform::Sdl2Application::viewportEvent() gets properly fired also
     when window size changes programmatically (such as through
     @ref Platform::Sdl2Application::setMinWindowSize() "setMinWindowSize()")

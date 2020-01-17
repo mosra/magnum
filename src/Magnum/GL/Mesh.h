@@ -171,7 +171,14 @@ enum class MeshIndexType: GLenum {
 */
 MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType type);
 
-namespace Implementation { struct MeshState; }
+namespace Implementation {
+
+struct MeshState;
+
+template<class...> struct IsDynamicAttribute: std::false_type {};
+template<class T> struct IsDynamicAttribute<T, DynamicAttribute>: std::true_type {};
+
+}
 
 /**
 @brief Mesh
@@ -688,7 +695,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      This is not required anywhere else, but doing so may have
          *      performance benefits.
          */
-        template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
+        template<class ...T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* So it doesn't clash with the DynamicAttribute overload */
+            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            #endif
+        > Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), 0, attributes...);
             return *this;
         }
@@ -724,7 +736,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
          */
-        template<class ...T> inline Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
+        template<class ...T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* So it doesn't clash with the DynamicAttribute overload */
+            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            #endif
+        > inline Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), divisor, attributes...);
             return *this;
         }
@@ -763,7 +780,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * this function takes ownership of @p buffer. See
          * @ref GL-Mesh-buffer-ownership for more information.
          */
-        template<class ...T> inline Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
+        template<class ...T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* So it doesn't clash with the DynamicAttribute overload */
+            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            #endif
+        > inline Mesh& addVertexBuffer(Buffer&& buffer, GLintptr offset, const T&... attributes) {
             addVertexBuffer<T...>(buffer, offset, attributes...);
             acquireVertexBuffer(std::move(buffer));
             return *this;
@@ -777,7 +799,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * this function takes ownership of @p buffer. See
          * @ref GL-Mesh-buffer-ownership for more information.
          */
-        template<class ...T> inline Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
+        template<class ...T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* So it doesn't clash with the DynamicAttribute overload */
+            , class = typename std::enable_if<!Implementation::IsDynamicAttribute<T...>::value>::type
+            #endif
+        > inline Mesh& addVertexBufferInstanced(Buffer&& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInstanced<T...>(buffer, divisor, offset, attributes...);
             acquireVertexBuffer(std::move(buffer));
             return *this;
