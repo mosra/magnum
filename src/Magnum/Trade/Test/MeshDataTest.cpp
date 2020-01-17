@@ -628,6 +628,11 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(13)), 1);
     CORRADE_COMPARE(data.attributeCount(MeshAttribute::Color), 0);
     CORRADE_COMPARE(data.attributeCount(meshAttributeCustom(23)), 0);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::Position), 0);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::Normal), 2);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::TextureCoordinates), 1);
+    CORRADE_COMPARE(data.attributeId(MeshAttribute::TextureCoordinates, 1), 3);
+    CORRADE_COMPARE(data.attributeId(meshAttributeCustom(13)), 4);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position),
         VertexFormat::Vector3);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Normal),
@@ -1533,6 +1538,8 @@ void MeshDataTest::attributeNotFound() {
     data.attributeStride(2);
     data.attribute(2);
     data.attribute<Vector2>(2);
+    data.attributeId(MeshAttribute::Position);
+    data.attributeId(MeshAttribute::Color, 2);
     data.attributeFormat(MeshAttribute::Position);
     data.attributeFormat(MeshAttribute::Color, 2);
     data.attributeOffset(MeshAttribute::Position);
@@ -1555,6 +1562,8 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::attributeStride(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attribute(): index 2 out of range for 2 attributes\n"
+        "Trade::MeshData::attributeId(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
+        "Trade::MeshData::attributeId(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
         "Trade::MeshData::attributeFormat(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"
         "Trade::MeshData::attributeFormat(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
         "Trade::MeshData::attributeOffset(): index 0 out of range for 0 Trade::MeshAttribute::Position attributes\n"

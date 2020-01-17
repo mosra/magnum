@@ -261,6 +261,12 @@ UnsignedInt MeshData::attributeFor(const MeshAttribute name, UnsignedInt id) con
     #endif
 }
 
+UnsignedInt MeshData::attributeId(const MeshAttribute name, UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeId(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    return attributeId;
+}
+
 VertexFormat MeshData::attributeFormat(MeshAttribute name, UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeFormat(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
