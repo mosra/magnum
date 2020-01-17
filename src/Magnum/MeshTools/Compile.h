@@ -58,7 +58,9 @@ enum class CompileFlag: UnsignedByte {
      * If the mesh is @ref MeshPrimitive::Triangles, generates normals using
      * @ref MeshTools::generateFlatNormals(). If the mesh is not a triangle
      * mesh or doesn't have 3D positions, this flag does nothing. If the mesh
-     * already has its own normals, these get replaced.
+     * already has its own normals, these get replaced. If
+     * @ref CompileFlag::GenerateSmoothNormals is specified together with this
+     * flag, this flag gets a priority.
      */
     GenerateFlatNormals = 1 << 0,
 

@@ -122,6 +122,7 @@ constexpr struct {
     {"positions + normals + texcoords", Flag::Normals|Flag::TextureCoordinates2D},
     {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors},
     {"positions + gen flat normals", Flag::GeneratedFlatNormals},
+    {"positions + gen both smooth and flat normals", Flag::GeneratedSmoothNormals|Flag::GeneratedFlatNormals},
     {"positions + normals, gen flat normals", Flag::Normals|Flag::GeneratedFlatNormals},
     {"positions + gen flat normals + colors", Flag::GeneratedFlatNormals|Flag::Colors},
     {"positions + gen flat normals + texcoords", Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
