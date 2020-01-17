@@ -25,6 +25,8 @@
 
 #include "Interleave.h"
 
+#include <Corrade/Utility/Algorithms.h>
+
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -132,6 +134,107 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra) {
     return interleavedLayout(data, vertexCount, Containers::arrayView(extra));
+}
+
+Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+    /* If there are no attributes and no index buffer, bail -- the vertex count
+       is the only property we can transfer. If this wouldn't be done, the
+       return at the end would assert as vertex count is only passed implicitly
+       via attributes (which there are none). */
+    if(!data.attributeCount() && extra.empty() && !data.isIndexed())
+        return Trade::MeshData{data.primitive(), data.vertexCount()};
+
+    /* Transfer the indices unchanged, in case the mesh is indexed */
+    Containers::Array<char> indexData;
+    Trade::MeshIndexData indices;
+    if(data.isIndexed()) {
+        /* If we can steal the data, do it */
+        if(data.indexDataFlags() & Trade::DataFlag::Owned) {
+            indices = Trade::MeshIndexData{data.indices()};
+            indexData = data.releaseIndexData();
+        } else {
+            indexData = Containers::Array<char>{data.indexData().size()};
+            Utility::copy(data.indexData(), indexData);
+            indices = Trade::MeshIndexData{data.indexType(),
+                Containers::ArrayView<const void>{indexData + data.indexOffset(), data.indices().size()[0]*data.indices().size()[1]}};
+        }
+    }
+
+    const bool interleaved = isInterleaved(data);
+
+    /* If the mesh is already interleaved and we don't have anything extra,
+       steal that data as well */
+    Containers::Array<char> vertexData;
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    if(interleaved && extra.empty() && (data.vertexDataFlags() & Trade::DataFlag::Owned)) {
+        attributeData = data.releaseAttributeData();
+        vertexData = data.releaseVertexData();
+
+    /* Otherwise do it the hard way */
+    } else {
+        /* Calculate the layout */
+        Trade::MeshData layout = interleavedLayout(data, data.vertexCount(), extra);
+
+        /* Copy existing attributes to new locations */
+        for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
+            Utility::copy(data.attribute(i), layout.mutableAttribute(i));
+
+        /* Mix in the extra attributes */
+        UnsignedInt attributeIndex = data.attributeCount();
+        for(UnsignedInt i = 0; i != extra.size(); ++i) {
+            /* Padding, ignore */
+            if(extra[i].format() == VertexFormat{}) continue;
+
+            /* Copy the attribute in, if it is non-empty, otherwise keep the
+               memory uninitialized */
+            if(extra[i].data()) {
+                CORRADE_ASSERT(extra[i].data().size() == data.vertexCount(),
+                    "MeshTools::interleave(): extra attribute" << i << "expected to have" << data.vertexCount() << "items but got" << extra[i].data().size(),
+                    (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+                const Containers::StridedArrayView2D<const char> attribute =
+                    Containers::arrayCast<2, const char>(extra[i].data(), vertexFormatSize(extra[i].format()));
+                Utility::copy(attribute, layout.mutableAttribute(attributeIndex));
+            }
+
+            ++attributeIndex;
+        }
+
+        /* Release the data from the layout to pack them into the output */
+        vertexData = layout.releaseVertexData();
+        attributeData = layout.releaseAttributeData();
+    }
+
+    return Trade::MeshData{data.primitive(), std::move(indexData), indices,
+        std::move(vertexData), std::move(attributeData)};
+}
+
+Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<Trade::MeshAttributeData> extra) {
+    return interleave(std::move(data), Containers::arrayView(extra));
+}
+
+Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+    Containers::ArrayView<const char> indexData;
+    Trade::MeshIndexData indices;
+    if(data.isIndexed()) {
+        indexData = data.indexData();
+        indices = Trade::MeshIndexData{data.indices()};
+
+    /* If there's neither an index array nor any attributes in the original
+       mesh, we need to pass vertex count explicitly (MeshData asserts on that
+       to avoid it getting lost.) */
+    } else if(!data.attributeCount()) {
+        return interleave(Trade::MeshData{data.primitive(), data.vertexCount()}, extra);
+    }
+
+    return interleave(Trade::MeshData{data.primitive(),
+        {}, indexData, indices,
+        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData())
+    }, extra);
+
+}
+
+Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra) {
+    return interleave(std::move(data), Containers::arrayView(extra));
 }
 
 }}

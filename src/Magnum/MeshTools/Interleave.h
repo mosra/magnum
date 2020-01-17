@@ -145,7 +145,12 @@ would be 21 bytes, causing possible performance loss.
 
 @see @ref interleaveInto()
 */
-template<class T, class ...U> Containers::Array<char> interleave(const T& first, const U&... next)
+template<class T, class ...U
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    /* So it doesn't clash with the MeshData variant */
+    , class = typename std::enable_if<Utility::IsIterable<T>::value>::type
+    #endif
+> Containers::Array<char> interleave(const T& first, const U&... next)
 {
     /* Compute buffer size and stride */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
@@ -233,6 +238,51 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData&
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
+
+/**
+@brief Interleave mesh data
+@m_since_latest
+
+Returns a copy of @p data with all attributes interleaved but everything else
+(indices, primitive type, ...) kept as-is. The @p extra attributes, if any, are
+interleaved together with existing attributes (or, in case the attribute view
+is empty, only the corresponding space for given attribute type is reserved,
+with memory left uninitialized). The data layouting is done by
+@ref interleavedLayout(), see its documentation for detailed behavior
+description.
+
+Expects that each attribute in @p extra has either the same amount of elements
+as @p data vertex count or has none.
+@see @ref isInterleaved(), @ref Trade::MeshData::attributeData()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra);
+
+/**
+@brief Interleave mesh data
+@m_since_latest
+
+Compared to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+this function can transfer ownership of @p data index buffer (in case it is
+owned) and vertex buffer (in case it is owned, already interleaved and there's
+no @p extra attributes) to the returned instance instead of making copies of
+them.
+@see @ref isInterleaved(), @ref Trade::MeshData::indexDataFlags(),
+    @ref Trade::MeshData::vertexDataFlags(),
+    @ref Trade::MeshData::attributeData()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, std::initializer_list<Trade::MeshAttributeData> extra);
 
 }}
 
