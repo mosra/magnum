@@ -36,6 +36,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -125,6 +126,31 @@ the actual 1/2/4-byte index type. Based on its size then calls one of the
 etc. overloads.
 */
 MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
+
+/**
+@brief Duplicate indexed mesh data
+@m_since_latest
+
+Returns a copy of @p data that's not indexed and has all attributes interleaved
+and duplicated according to @p data's index buffer. The @p extra attributes, if
+any, are duplicated and interleaved together with existing attributes (or, in
+case the attribute view is empty, only the corresponding space for given
+attribute type is reserved, with memory left uninitialized). The data layouting
+is done by @ref interleavedLayout(), see its documentation for detailed
+behavior description.
+
+Expects that @p data is indexed and each attribute in @p extra has either the
+same amount of elements as @p data vertex count (*not* index count) or has
+none.
+@see @ref Trade::MeshData::attributeData()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra);
 
 template<class IndexType, class T> inline void duplicateInto(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data, const Containers::StridedArrayView1D<T>& out) {
     duplicateInto(indices, Containers::arrayCast<2, const char>(data), Containers::arrayCast<2, char>(out));

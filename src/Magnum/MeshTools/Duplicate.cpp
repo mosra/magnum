@@ -26,6 +26,10 @@
 #include "Duplicate.h"
 
 #include <cstring>
+#include <Corrade/Utility/Algorithms.h>
+
+#include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -71,6 +75,43 @@ void duplicateInto(const Containers::StridedArrayView2D<const char>& indices, co
         CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::duplicateInto(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
         return duplicateIntoImplementation(Containers::arrayCast<1, const UnsignedByte>(indices), data, out);
     }
+}
+
+Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+    CORRADE_ASSERT(data.isIndexed(), "MeshTools::duplicate(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    /* Calculate the layout */
+    Trade::MeshData layout = interleavedLayout(data, data.indexCount(), extra);
+
+    /* Copy existing attributes to new locations */
+    for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
+        duplicateInto(data.indices(), data.attribute(i), layout.mutableAttribute(i));
+
+    /* Mix in the extra attributes */
+    UnsignedInt attributeIndex = data.attributeCount();
+    for(UnsignedInt i = 0; i != extra.size(); ++i) {
+        /* Padding, ignore */
+        if(extra[i].format() == VertexFormat{}) continue;
+
+        /* Copy the attribute in, if it is non-empty, otherwise keep the
+           memory uninitialized */
+        if(extra[i].data()) {
+            CORRADE_ASSERT(extra[i].data().size() == data.vertexCount(),
+                "MeshTools::duplicate(): extra attribute" << i << "expected to have" << data.vertexCount() << "items but got" << extra[i].data().size(),
+                (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+            const Containers::StridedArrayView2D<const char> attributeData =
+                    Containers::arrayCast<2, const char>(extra[i].data(), vertexFormatSize(extra[i].format()));
+            duplicateInto(data.indices(), attributeData, layout.mutableAttribute(attributeIndex));
+        }
+
+        ++attributeIndex;
+    }
+
+    return layout;
+}
+
+Trade::MeshData duplicate(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra) {
+    return duplicate(data, Containers::arrayView(extra));
 }
 
 }}

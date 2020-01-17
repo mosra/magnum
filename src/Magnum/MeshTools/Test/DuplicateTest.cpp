@@ -27,10 +27,13 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -51,6 +54,13 @@ struct DuplicateTest: TestSuite::Tester {
     template<class T> void duplicateErasedIndicesIntoErased();
     void duplicateErasedIndicesIntoErasedNonContiguous();
     void duplicateErasedIndicesIntoErasedWrongTypeSize();
+
+    template<class T> void duplicateMeshData();
+    void duplicateMeshDataNotIndexed();
+    void duplicateMeshDataExtra();
+    void duplicateMeshDataExtraEmpty();
+    void duplicateMeshDataExtraWrongCount();
+    void duplicateMeshDataNoAttributes();
 };
 
 DuplicateTest::DuplicateTest() {
@@ -71,7 +81,16 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateErasedIndicesIntoErased<UnsignedShort>,
               &DuplicateTest::duplicateErasedIndicesIntoErased<UnsignedInt>,
               &DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous,
-              &DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize});
+              &DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize,
+
+              &DuplicateTest::duplicateMeshData<UnsignedByte>,
+              &DuplicateTest::duplicateMeshData<UnsignedShort>,
+              &DuplicateTest::duplicateMeshData<UnsignedInt>,
+              &DuplicateTest::duplicateMeshDataNotIndexed,
+              &DuplicateTest::duplicateMeshDataExtra,
+              &DuplicateTest::duplicateMeshDataExtraEmpty,
+              &DuplicateTest::duplicateMeshDataExtraWrongCount,
+              &DuplicateTest::duplicateMeshDataNoAttributes});
 }
 
 void DuplicateTest::duplicate() {
@@ -218,6 +237,139 @@ void DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous() {
         Containers::arrayCast<2, char>(Containers::stridedArrayView(output)));
     CORRADE_COMPARE(out.str(),
         "MeshTools::duplicateInto(): second index view dimension is not contiguous\n");
+}
+
+template<class T> void DuplicateTest::duplicateMeshData() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    T indices[]{0, 1, 2, 2, 1, 0};
+    struct {
+        Vector2 positions[3];
+        Vector3 normals[3];
+    } vertexData{
+        {{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}},
+        {Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()}
+    };
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, Containers::arrayView(&vertexData, 1), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,    Containers::arrayView(vertexData.positions)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData.normals)}
+        }};
+
+    Trade::MeshData duplicated = MeshTools::duplicate(data);
+    CORRADE_VERIFY(MeshTools::isInterleaved(duplicated));
+    CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::TriangleFan);
+    CORRADE_VERIFY(!duplicated.isIndexed());
+    CORRADE_COMPARE(duplicated.vertexCount(), 6);
+    CORRADE_COMPARE(duplicated.attributeCount(), 2);
+    CORRADE_COMPARE_AS(duplicated.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f},
+            {1.0f, -0.5f}, {0.87f, 1.1f}, {1.3f, 0.3f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(duplicated.attribute<Vector3>(Trade::MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
+            Vector3::zAxis(), Vector3::yAxis(), Vector3::xAxis()
+        }), TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateMeshDataNotIndexed() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(Trade::MeshData{MeshPrimitive::Points, 0});
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): mesh data not indexed\n");
+}
+
+void DuplicateTest::duplicateMeshDataExtra() {
+    UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
+    Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
+    Trade::MeshData data{MeshPrimitive::Lines,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+        }};
+
+    const Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
+    Trade::MeshData duplicated = MeshTools::duplicate(data, {
+        Trade::MeshAttributeData{4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(normals)}
+    });
+    CORRADE_VERIFY(MeshTools::isInterleaved(duplicated));
+    CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(!duplicated.isIndexed());
+    CORRADE_COMPARE(duplicated.vertexCount(), 6);
+    CORRADE_COMPARE(duplicated.attributeCount(), 2);
+    CORRADE_COMPARE_AS(duplicated.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f},
+            {1.0f, -0.5f}, {0.87f, 1.1f}, {1.3f, 0.3f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(duplicated.attribute<Vector3>(Trade::MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({
+            Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
+            Vector3::zAxis(), Vector3::yAxis(), Vector3::xAxis()
+        }), TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateMeshDataExtraEmpty() {
+    UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
+    Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
+    Trade::MeshData data{MeshPrimitive::Lines,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+        }};
+
+    Trade::MeshData duplicated = MeshTools::duplicate(data, {
+        Trade::MeshAttributeData{4},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, nullptr}
+    });
+    CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(!duplicated.isIndexed());
+    CORRADE_COMPARE(duplicated.vertexCount(), 6);
+    CORRADE_COMPARE(duplicated.attributeCount(), 2);
+    CORRADE_COMPARE_AS(duplicated.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f},
+            {1.0f, -0.5f}, {0.87f, 1.1f}, {1.3f, 0.3f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE(duplicated.attributeStride(Trade::MeshAttribute::Normal), 24);
+    CORRADE_COMPARE(duplicated.attributeOffset(Trade::MeshAttribute::Normal), 12);
+}
+
+void DuplicateTest::duplicateMeshDataExtraWrongCount() {
+    UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
+    Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
+    Trade::MeshData data{MeshPrimitive::Lines,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+        }};
+    const Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis()};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(data, {
+        Trade::MeshAttributeData{10},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(normals)}
+    });
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): extra attribute 1 expected to have 3 items but got 2\n");
+}
+
+void DuplicateTest::duplicateMeshDataNoAttributes() {
+    UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
+    Trade::MeshData data{MeshPrimitive::Lines,
+        {}, indices, Trade::MeshIndexData{indices}};
+
+    Trade::MeshData duplicated = MeshTools::duplicate(data, {});
+    CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(!duplicated.isIndexed());
+    CORRADE_COMPARE(duplicated.vertexCount(), 6);
+    CORRADE_COMPARE(duplicated.attributeCount(), 0);
+    CORRADE_VERIFY(!duplicated.vertexData());
 }
 
 }}}}
