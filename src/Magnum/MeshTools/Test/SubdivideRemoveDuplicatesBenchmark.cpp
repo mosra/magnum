@@ -23,14 +23,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Subdivide.h"
 #include "Magnum/Primitives/Icosphere.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -57,43 +59,69 @@ namespace {
 }
 
 void SubdivideRemoveDuplicatesBenchmark::subdivide() {
+    Trade::MeshData icosphere = Primitives::icosphereSolid(0);
+
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
+        Containers::Array<UnsignedInt> indices;
+        arrayResize(indices, Containers::NoInit, icosphere.indexCount());
+        Utility::copy(icosphere.indices<UnsignedInt>(), indices);
+
+        Containers::Array<Vector3> positions;
+        arrayResize(positions, Containers::NoInit, icosphere.vertexCount());
+        Utility::copy(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), positions);
 
         /* Subdivide 5 times */
         for(std::size_t i = 0; i != 5; ++i)
-            MeshTools::subdivide(icosphere.indices(), icosphere.positions(0), interpolator);
+            MeshTools::subdivide(indices, positions, interpolator);
     }
 }
 
 void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter() {
+    Trade::MeshData icosphere = Primitives::icosphereSolid(0);
+
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
+        Containers::Array<UnsignedInt> indices;
+        arrayResize(indices, Containers::NoInit, icosphere.indexCount());
+        Utility::copy(icosphere.indices<UnsignedInt>(), indices);
+
+        Containers::Array<Vector3> positions;
+        arrayResize(positions, Containers::NoInit, icosphere.vertexCount());
+        Utility::copy(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), positions);
 
         /* Subdivide 5 times */
         for(std::size_t i = 0; i != 5; ++i)
-            MeshTools::subdivide(icosphere.indices(), icosphere.positions(0), interpolator);
+            MeshTools::subdivide(indices, positions, interpolator);
 
         /* Remove duplicates after */
-        icosphere.indices() = MeshTools::duplicate(icosphere.indices(), MeshTools::removeDuplicates(icosphere.positions(0)));
+        arrayResize(positions, MeshTools::removeDuplicatesIndexedInPlace(
+            stridedArrayView(indices), stridedArrayView(positions)));
     }
 }
 
 void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfterInPlace() {
     CORRADE_BENCHMARK(3) {
         /* Because that's what this thing does */
-        Trade::MeshData3D icosphere = Primitives::icosphereSolid(5);
+        Trade::MeshData icosphere = Primitives::icosphereSolid(5);
     }
 }
 
 void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween() {
+    Trade::MeshData icosphere = Primitives::icosphereSolid(0);
+
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
+        Containers::Array<UnsignedInt> indices;
+        arrayResize(indices, Containers::NoInit, icosphere.indexCount());
+        Utility::copy(icosphere.indices<UnsignedInt>(), indices);
+
+        Containers::Array<Vector3> positions;
+        arrayResize(positions, Containers::NoInit, icosphere.vertexCount());
+        Utility::copy(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), positions);
 
         /* Subdivide 5 times and remove duplicates during the operation */
         for(std::size_t i = 0; i != 5; ++i) {
-            MeshTools::subdivide(icosphere.indices(), icosphere.positions(0), interpolator);
-            icosphere.indices() = MeshTools::duplicate(icosphere.indices(), MeshTools::removeDuplicates(icosphere.positions(0)));
+            MeshTools::subdivide(indices, positions, interpolator);
+            arrayResize(positions, MeshTools::removeDuplicatesIndexedInPlace(
+                stridedArrayView(indices), stridedArrayView(positions)));
         }
     }
 }

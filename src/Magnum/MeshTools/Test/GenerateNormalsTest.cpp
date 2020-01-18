@@ -37,7 +37,7 @@
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/Primitives/Cylinder.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -331,13 +331,14 @@ void GenerateNormalsTest::smoothBeveledCube() {
 }
 
 void GenerateNormalsTest::smoothCylinder() {
-    const Trade::MeshData3D data = Primitives::cylinderSolid(1, 5, 1.0f);
+    const Trade::MeshData data = Primitives::cylinderSolid(1, 5, 1.0f);
 
     /* Output should be exactly the same as the cylinder normals */
     CORRADE_COMPARE_AS(Containers::arrayView(generateSmoothNormals(
-        Containers::stridedArrayView(data.indices()),
-        Containers::stridedArrayView(data.positions(0)))),
-        Containers::arrayView(data.normals(0)), TestSuite::Compare::Container);
+        data.indices(),
+        data.attribute<Vector3>(Trade::MeshAttribute::Position))),
+        data.attribute<Vector3>(Trade::MeshAttribute::Normal),
+        TestSuite::Compare::Container);
 }
 
 void GenerateNormalsTest::smoothZeroAreaTriangle() {
