@@ -48,8 +48,7 @@
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 #include "configure.h"
 

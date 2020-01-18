@@ -44,8 +44,7 @@
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Shaders/VertexColor.h"
 #include "Magnum/Trade/AbstractImporter.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 #include "configure.h"
 
@@ -197,11 +196,11 @@ void VertexColorGLTest::renderTeardown() {
 template<class T> void VertexColorGLTest::renderDefaults2D() {
     setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
 
-    Trade::MeshData2D circleData = Primitives::circle2DSolid(32,
+    Trade::MeshData circleData = Primitives::circle2DSolid(32,
         Primitives::CircleTextureCoords::Generate);
 
     /* All a single color */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.positions(0).size(), 0xffffff_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
 
     GL::Buffer colors;
     colors.setData(colorData);
@@ -238,11 +237,11 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereTextureCoords::Generate);
 
     /* All a single color */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0xffffff_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0xffffff_rgbf};
 
     GL::Buffer colors;
     colors.setData(colorData);
@@ -271,11 +270,11 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
 template<class T> void VertexColorGLTest::render2D() {
     setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
 
-    Trade::MeshData2D circleData = Primitives::circle2DSolid(32,
+    Trade::MeshData circleData = Primitives::circle2DSolid(32,
         Primitives::CircleTextureCoords::Generate);
 
     /* Highlight a quarter */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.positions(0).size(), 0x9999ff_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x9999ff_rgbf};
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 
@@ -316,11 +315,11 @@ template<class T> void VertexColorGLTest::render3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereTextureCoords::Generate);
 
     /* Highlight the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0x9999ff_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x9999ff_rgbf};
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf;
 

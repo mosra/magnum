@@ -51,8 +51,7 @@
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
 #include "Magnum/Trade/AbstractImporter.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 #include "configure.h"
 
@@ -409,24 +408,19 @@ void MeshVisualizerGLTest::renderWireframe() {
     #endif
     #endif
 
-    const Trade::MeshData3D sphereData = Primitives::icosphereSolid(1);
+    const Trade::MeshData sphereData = Primitives::icosphereSolid(1);
 
     GL::Mesh sphere{NoCreate};
     if(data.flags & MeshVisualizer::Flag::NoGeometryShader) {
-        sphere = GL::Mesh{};
-        sphere.setCount(sphereData.indices().size());
-
         /* Duplicate the vertices */
-        GL::Buffer positions;
-        positions.setData(MeshTools::duplicate(Containers::stridedArrayView(sphereData.indices()), Containers::stridedArrayView(sphereData.positions(0))));
-        sphere.addVertexBuffer(std::move(positions), 0, MeshVisualizer::Position{});
+        sphere = MeshTools::compile(MeshTools::duplicate(sphereData));
 
         /* Supply also the vertex ID, if needed */
         #ifndef MAGNUM_TARGET_GLES2
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
         #endif
         {
-            Containers::Array<Float> vertexIndex{sphereData.indices().size()};
+            Containers::Array<Float> vertexIndex{sphereData.indexCount()};
             std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
             GL::Buffer vertexId;

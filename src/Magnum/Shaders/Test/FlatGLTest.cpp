@@ -52,8 +52,7 @@
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 #include "configure.h"
 
@@ -640,11 +639,11 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    Trade::MeshData2D circleData = Primitives::circle2DSolid(32,
+    Trade::MeshData circleData = Primitives::circle2DSolid(32,
         Primitives::CircleTextureCoords::Generate);
 
     /* Highlight a quarter */
-    Containers::Array<T> colorData{Containers::DirectInit, circleData.positions(0).size(), 0x999999_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 8; i != 16; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
@@ -694,11 +693,11 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereTextureCoords::Generate);
 
     /* Highlight the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0x999999_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 

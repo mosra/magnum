@@ -51,8 +51,8 @@
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Shaders/Phong.h"
 #include "Magnum/Trade/AbstractImporter.h"
-#include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/MeshData.h"
 
 #include "configure.h"
 
@@ -506,12 +506,12 @@ void PhongGLTest::renderDefaults() {
     /* The light is at the center by default, so we scale the sphere to half
        and  move the vertices back a bit to avoid a fully-black render but
        still have the thing in the default [-1; 1] cube */
-    Trade::MeshData3D meshData = Primitives::uvSphereSolid(16, 32);
+    Trade::MeshData meshData = Primitives::uvSphereSolid(16, 32);
     Matrix4 transformation =
         Matrix4::translation(Vector3::zAxis(-1.0f))*Matrix4::scaling(Vector3(1.0f, 1.0f, 0.25f));
-    MeshTools::transformPointsInPlace(transformation, meshData.positions(0));
+    MeshTools::transformPointsInPlace(transformation, meshData.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
     /** @todo use Matrix4::normalMatrix() */
-    MeshTools::transformVectorsInPlace(transformation.inverted().transposed(), meshData.normals(0));
+    MeshTools::transformVectorsInPlace(transformation.inverted().transposed(), meshData.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
     GL::Mesh sphere = MeshTools::compile(meshData);
 
     Phong shader;
@@ -854,11 +854,11 @@ template<class T> void PhongGLTest::renderVertexColor() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+    Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereTextureCoords::Generate);
 
     /* Highlight the middle rings */
-    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0x999999_rgbf};
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
