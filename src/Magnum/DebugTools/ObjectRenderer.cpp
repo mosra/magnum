@@ -31,8 +31,7 @@
 #include "Magnum/Primitives/Axis.h"
 #include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/Shaders/VertexColor.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -43,13 +42,13 @@ template<UnsignedInt> struct Renderer;
 template<> struct Renderer<2> {
     static ResourceKey shader() { return {"VertexColorShader2D"}; }
     static ResourceKey mesh() { return {"object2d"}; }
-    static Trade::MeshData2D meshData() { return Primitives::axis2D(); }
+    static Trade::MeshData meshData() { return Primitives::axis2D(); }
 };
 
 template<> struct Renderer<3> {
     static ResourceKey shader() { return {"VertexColorShader3D"}; }
     static ResourceKey mesh() { return {"object3d"}; }
-    static Trade::MeshData3D meshData() { return Primitives::axis3D(); }
+    static Trade::MeshData meshData() { return Primitives::axis3D(); }
 };
 
 }
