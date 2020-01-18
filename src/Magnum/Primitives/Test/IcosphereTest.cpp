@@ -28,7 +28,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Icosphere.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,25 +47,30 @@ IcosphereTest::IcosphereTest() {
 }
 
 void IcosphereTest::count0() {
-    Trade::MeshData3D data = Primitives::icosphereSolid(0);
+    Trade::MeshData icosphere = Primitives::icosphereSolid(0);
 
-    CORRADE_COMPARE(data.positionArrayCount(), 1);
-    CORRADE_COMPARE(data.normalArrayCount(), 1);
-
-    CORRADE_COMPARE(data.indices().size(), 60);
-    CORRADE_COMPARE(data.positions(0).size(), 12);
-    CORRADE_COMPARE(data.normals(0).size(), 12);
+    CORRADE_COMPARE(icosphere.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(icosphere.isIndexed());
+    CORRADE_COMPARE(icosphere.indexCount(), 60);
+    CORRADE_COMPARE(icosphere.vertexCount(), 12);
+    CORRADE_COMPARE(icosphere.attributeCount(), 2);
+    CORRADE_COMPARE(icosphere.indices<UnsignedInt>()[18], 9);
+    CORRADE_COMPARE(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position)[8],
+        (Vector3{-0.525731f, -0.850651f, 0.0f}));
+    CORRADE_COMPARE(icosphere.attribute<Vector3>(Trade::MeshAttribute::Normal)[8],
+        (Vector3{-0.525731f, -0.850651f, 0.0f}));
 }
 
 void IcosphereTest::data1() {
     /* This also tests the subdivide() and removeDuplicates() mesh tools */
 
-    Trade::MeshData3D data = Primitives::icosphereSolid(1);
+    Trade::MeshData icosphere = Primitives::icosphereSolid(1);
 
-    CORRADE_COMPARE(data.positionArrayCount(), 1);
-    CORRADE_COMPARE(data.normalArrayCount(), 1);
+    CORRADE_COMPARE(icosphere.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(icosphere.isIndexed());
+    CORRADE_COMPARE(icosphere.attributeCount(), 2);
 
-    CORRADE_COMPARE_AS(data.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(icosphere.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         12, 13, 14, 15, 16, 12, 17, 18, 19, 17, 20, 21, 22, 23, 24, 22, 25, 26,
         27, 28, 29, 27, 30, 31, 32, 33, 34, 32, 35, 36, 37, 38, 39, 37, 40, 41,
         13, 28, 25, 14, 24, 39, 19, 26, 31, 18, 40, 23, 16, 34, 29, 15, 38, 35,
@@ -80,7 +85,8 @@ void IcosphereTest::data1() {
         16, 29, 16, 7, 34, 29, 34, 9, 7, 15, 35, 15, 1, 38, 35, 38, 0, 3, 30,
         20, 30, 9, 33, 20, 33, 8, 4, 21, 41, 21, 8, 36, 41, 36, 0}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(data.positions(0), (std::vector<Vector3>{
+
+    CORRADE_COMPARE_AS(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -0.525731f, 0.850651f},
         {0.850651f, 0.0f, 0.525731f},
         {0.850651f, 0.0f, -0.525731f},
@@ -124,19 +130,20 @@ void IcosphereTest::data1() {
         {-0.5f, 0.309017f, 0.809017f},
         {-0.5f, -0.309017f, 0.809017f}}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(data.normals(0), data.positions(0),
+    CORRADE_COMPARE_AS(
+        icosphere.attribute<Vector3>(Trade::MeshAttribute::Position),
+        icosphere.attribute<Vector3>(Trade::MeshAttribute::Normal),
         TestSuite::Compare::Container);
 }
 
 void IcosphereTest::count2() {
-    Trade::MeshData3D data = Primitives::icosphereSolid(2);
+    Trade::MeshData icosphere = Primitives::icosphereSolid(2);
 
-    CORRADE_COMPARE(data.positionArrayCount(), 1);
-    CORRADE_COMPARE(data.normalArrayCount(), 1);
-
-    CORRADE_COMPARE(data.indices().size(), 960);
-    CORRADE_COMPARE(data.positions(0).size(), 162);
-    CORRADE_COMPARE(data.normals(0).size(), 162);
+    CORRADE_COMPARE(icosphere.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(icosphere.isIndexed());
+    CORRADE_COMPARE(icosphere.indexCount(), 960);
+    CORRADE_COMPARE(icosphere.vertexCount(), 162);
+    CORRADE_COMPARE(icosphere.attributeCount(), 2);
 }
 
 }}}}

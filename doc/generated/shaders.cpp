@@ -66,8 +66,7 @@
 #include <Magnum/Shaders/DistanceFieldVector.h>
 #include <Magnum/Trade/AbstractImageConverter.h>
 #include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData2D.h>
-#include <Magnum/Trade/MeshData3D.h>
+#include <Magnum/Trade/MeshData.h>
 #include <Magnum/Trade/AbstractImporter.h>
 
 using namespace Magnum;
@@ -192,22 +191,22 @@ std::string ShaderVisualizer::flat() {
 }
 
 std::string ShaderVisualizer::vertexColor() {
-    Trade::MeshData3D sphere = Primitives::uvSphereSolid(32, 64);
+    Trade::MeshData sphere = Primitives::uvSphereSolid(32, 64);
 
     /* Color vertices nearest to given position */
     auto target = Vector3{2.0f, 2.0f, 7.0f}.normalized();
     std::vector<Color3> colors;
-    colors.reserve(sphere.positions(0).size());
-    for(Vector3 position: sphere.positions(0))
+    colors.reserve(sphere.vertexCount());
+    for(Vector3 position: sphere.attribute<Vector3>(Trade::MeshAttribute::Position))
         colors.push_back(Color3::fromHsv({Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.666f}));
 
     GL::Buffer vertices, indices;
-    vertices.setData(MeshTools::interleave(sphere.positions(0), colors), GL::BufferUsage::StaticDraw);
-    indices.setData(sphere.indices(), GL::BufferUsage::StaticDraw);
+    vertices.setData(MeshTools::interleave(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), colors), GL::BufferUsage::StaticDraw);
+    indices.setData(sphere.indices<UnsignedInt>(), GL::BufferUsage::StaticDraw);
 
     GL::Mesh mesh;
     mesh.setPrimitive(GL::MeshPrimitive::Triangles)
-        .setCount(sphere.indices().size())
+        .setCount(sphere.indexCount())
         .addVertexBuffer(vertices, 0,
             Shaders::VertexColor3D::Position{},
             Shaders::VertexColor3D::Color3{})

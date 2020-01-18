@@ -28,7 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Primitives/Square.h"
-#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,30 +47,38 @@ SquareTest::SquareTest() {
 }
 
 void SquareTest::solid() {
-    Trade::MeshData2D square = Primitives::squareSolid();
+    Trade::MeshData square = Primitives::squareSolid();
 
-    CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_COMPARE(square.positions(0).size(), 4);
-    CORRADE_COMPARE(square.textureCoords2DArrayCount(), 0);
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.vertexCount(), 4);
+    CORRADE_COMPARE(square.attributeCount(), 1);
+    CORRADE_COMPARE(square.attribute<Vector2>(Trade::MeshAttribute::Position)[3],
+        (Vector2{-1.0f, 1.0f}));
 }
 
 void SquareTest::solidTextured() {
-    Trade::MeshData2D square = Primitives::squareSolid(Primitives::SquareTextureCoords::Generate);
+    Trade::MeshData square = Primitives::squareSolid(Primitives::SquareTextureCoords::Generate);
 
-    CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_COMPARE(square.positions(0).size(), 4);
-    CORRADE_COMPARE(square.textureCoords2DArrayCount(), 1);
-    CORRADE_COMPARE(square.textureCoords2D(0).size(), 4);
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.vertexCount(), 4);
+    CORRADE_COMPARE(square.attributeCount(), 2);
+    CORRADE_COMPARE(square.attribute<Vector2>(Trade::MeshAttribute::Position)[3],
+        (Vector2{-1.0f, 1.0f}));
+    CORRADE_COMPARE(square.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates)[1],
+        (Vector2{1.0f, 1.0f}));
 }
 
 void SquareTest::wireframe() {
-    Trade::MeshData2D square = Primitives::squareWireframe();
+    Trade::MeshData square = Primitives::squareWireframe();
 
-    CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(square.positions(0).size(), 4);
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.vertexCount(), 4);
+    CORRADE_COMPARE(square.attributeCount(), 1);
+    CORRADE_COMPARE(square.attribute<Vector2>(Trade::MeshAttribute::Position)[3],
+        (Vector2{-1.0f, 1.0f}));
 }
 
 }}}}

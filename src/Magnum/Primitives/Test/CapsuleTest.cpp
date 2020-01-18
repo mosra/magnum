@@ -27,8 +27,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 #include "Magnum/Primitives/Capsule.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
@@ -51,9 +50,13 @@ CapsuleTest::CapsuleTest() {
 }
 
 void CapsuleTest::wireframe2D() {
-    Trade::MeshData2D capsule = capsule2DWireframe(2, 4, 0.5f);
+    Trade::MeshData capsule = capsule2DWireframe(2, 4, 0.5f);
 
-    CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE(capsule.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(capsule.isIndexed());
+    CORRADE_COMPARE(capsule.attributeCount(), 1);
+
+    CORRADE_COMPARE_AS(capsule.attribute<Vector2>(Trade::MeshAttribute::Position), Containers::arrayView<Vector2>({
         {0.0f, -1.5f},
 
         {-0.707107f, -1.20711f},
@@ -80,7 +83,7 @@ void CapsuleTest::wireframe2D() {
         {0.0f, 1.5f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(capsule.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(capsule.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 1, 0, 2,
 
         1, 3, 2, 4,
@@ -95,9 +98,13 @@ void CapsuleTest::wireframe2D() {
 }
 
 void CapsuleTest::solid3DWithoutTextureCoords() {
-    Trade::MeshData3D capsule = capsule3DSolid(2, 4, 3, 0.5f);
+    Trade::MeshData capsule = capsule3DSolid(2, 4, 3, 0.5f);
 
-    CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(capsule.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(capsule.isIndexed());
+    CORRADE_COMPARE(capsule.attributeCount(), 2);
+
+    CORRADE_COMPARE_AS(capsule.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.5f, 0.0f},
 
         {0.0f, -1.20711f, 0.707107f},
@@ -131,7 +138,7 @@ void CapsuleTest::solid3DWithoutTextureCoords() {
         {0.0f, 1.5f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(capsule.normals(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(capsule.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.707107f, 0.707107f},
@@ -165,7 +172,7 @@ void CapsuleTest::solid3DWithoutTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(capsule.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(capsule.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 2, 1, 0, 3, 2, 0, 1, 3,
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 8, 4, 8, 7, 5, 6, 9, 5, 9, 8, 6, 4, 7, 6, 7, 9,
@@ -178,9 +185,13 @@ void CapsuleTest::solid3DWithoutTextureCoords() {
 }
 
 void CapsuleTest::solid3DWithTextureCoords() {
-    Trade::MeshData3D capsule = capsule3DSolid(2, 2, 3, 0.5f, CapsuleTextureCoords::Generate);
+    Trade::MeshData capsule = capsule3DSolid(2, 2, 3, 0.5f, CapsuleTextureCoords::Generate);
 
-    CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(capsule.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(capsule.isIndexed());
+    CORRADE_COMPARE(capsule.attributeCount(), 3);
+
+    CORRADE_COMPARE_AS(capsule.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.5f, 0.0f},
 
         {0.0f, -1.20711f, 0.707107f},
@@ -211,7 +222,7 @@ void CapsuleTest::solid3DWithTextureCoords() {
         {0.0f, 1.5f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(capsule.textureCoords2D(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(capsule.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
         {0.5f, 0.0f},
 
         {0.0f, 0.166667f},
@@ -242,7 +253,7 @@ void CapsuleTest::solid3DWithTextureCoords() {
         {0.5f, 1.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(capsule.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(capsule.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 10, 5, 10, 9, 6, 7, 11, 6, 11, 10, 7, 8, 12, 7, 12, 11,
@@ -253,9 +264,13 @@ void CapsuleTest::solid3DWithTextureCoords() {
 }
 
 void CapsuleTest::wireframe3D() {
-    Trade::MeshData3D capsule = capsule3DWireframe(2, 2, 8, 0.5f);
+    Trade::MeshData capsule = capsule3DWireframe(2, 2, 8, 0.5f);
 
-    CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(capsule.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(capsule.isIndexed());
+    CORRADE_COMPARE(capsule.attributeCount(), 1);
+
+    CORRADE_COMPARE_AS(capsule.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.5f, 0.0f},
 
         {0.0f, -1.20711f, 0.707107f},
@@ -298,9 +313,7 @@ void CapsuleTest::wireframe3D() {
         {0.0f, 1.5f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(capsule.normalArrayCount(), 0);
-
-    CORRADE_COMPARE_AS(capsule.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(capsule.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 1, 0, 2, 0, 3, 0, 4,
         1, 5, 2, 6, 3, 7, 4, 8,
         5, 9, 6, 10, 7, 11, 8, 12,

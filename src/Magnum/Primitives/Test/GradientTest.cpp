@@ -29,8 +29,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Primitives/Gradient.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 #include "Magnum/Primitives/Square.h"
 #include "Magnum/Primitives/Plane.h"
 
@@ -62,23 +61,30 @@ using namespace Magnum::Math::Literals;
 
 void GradientTest::gradient2D() {
     /* The corners sould have 0.2, 0.4, 0.6, 0.8 blends */
-    Trade::MeshData2D gradient = Primitives::gradient2D(
+    Trade::MeshData gradient = Primitives::gradient2D(
         {-1.0f, 2.0f}, {0.2f, 0.6f, 1.0f},
         {1.0f, -2.0f}, {0.4f, 1.0f, 0.0f});
 
+    CORRADE_COMPARE(gradient.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!gradient.isIndexed());
+    CORRADE_COMPARE(gradient.attributeCount(), 2);
+
     /* Positions should be the same as for a square */
-    Trade::MeshData2D square = Primitives::squareSolid();
+    Trade::MeshData square = Primitives::squareSolid();
     CORRADE_COMPARE(gradient.primitive(), square.primitive());
-    CORRADE_COMPARE_AS(gradient.positions(0), square.positions(0), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(gradient.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(
+        gradient.attribute<Vector2>(Trade::MeshAttribute::Position),
+        square.attribute<Vector2>(Trade::MeshAttribute::Position),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(gradient.attribute<Vector2>(Trade::MeshAttribute::Position), Containers::arrayView<Vector2>({
         { 1.0f, -1.0f}, /* Bottom right */
         { 1.0f,  1.0f}, /* Top right */
         {-1.0f, -1.0f}, /* Bottom left */
         {-1.0f,  1.0f}  /* Top left */
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         {0.36f, 0.92f, 0.2f}, /* 80% */
         {0.28f, 0.76f, 0.6f}, /* 40% */
         {0.32f, 0.84f, 0.4f}, /* 60% */
@@ -87,10 +93,9 @@ void GradientTest::gradient2D() {
 }
 
 void GradientTest::gradient2DHorizontal() {
-    Trade::MeshData2D gradient = Primitives::gradient2DHorizontal(0xfabcde_srgbf, 0xdeab09_srgbf);
+    Trade::MeshData gradient = Primitives::gradient2DHorizontal(0xfabcde_srgbf, 0xdeab09_srgbf);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         0xdeab09_srgbf,
         0xdeab09_srgbf,
         0xfabcde_srgbf,
@@ -99,10 +104,9 @@ void GradientTest::gradient2DHorizontal() {
 }
 
 void GradientTest::gradient2DVertical() {
-    Trade::MeshData2D gradient = Primitives::gradient2DVertical(0xfabcde_srgbf, 0xdeab09_srgbf);
+    Trade::MeshData gradient = Primitives::gradient2DVertical(0xfabcde_srgbf, 0xdeab09_srgbf);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         0xfabcde_srgbf,
         0xdeab09_srgbf,
         0xfabcde_srgbf,
@@ -112,25 +116,37 @@ void GradientTest::gradient2DVertical() {
 
 void GradientTest::gradient3D() {
     /* The corners sould have 0.2, 0.4, 0.6, 0.8 blends */
-    Trade::MeshData3D gradient = Primitives::gradient3D(
+    Trade::MeshData gradient = Primitives::gradient3D(
         {-1.0f, 2.0f, -1.5f}, {0.2f, 0.6f, 1.0f},
         {1.0f, -2.0f, -1.5f}, {0.4f, 1.0f, 0.0f});
 
+    CORRADE_COMPARE(gradient.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_VERIFY(!gradient.isIndexed());
+    CORRADE_COMPARE(gradient.attributeCount(), 3);
+
     /* Positions should be the same as for a plane */
-    Trade::MeshData3D plane = Primitives::planeSolid();
+    Trade::MeshData plane = Primitives::planeSolid();
     CORRADE_COMPARE(gradient.primitive(), plane.primitive());
-    CORRADE_COMPARE_AS(gradient.positions(0), plane.positions(0), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(gradient.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(
+        gradient.attribute<Vector3>(Trade::MeshAttribute::Position),
+        plane.attribute<Vector3>(Trade::MeshAttribute::Position),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(gradient.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         { 1.0f, -1.0f, 0.0f}, /* Bottom right */
         { 1.0f,  1.0f, 0.0f}, /* Top right */
         {-1.0f, -1.0f, 0.0f}, /* Bottom left */
         {-1.0f,  1.0f, 0.0f}  /* Top left */
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(gradient.normalArrayCount(), 1);
+    CORRADE_COMPARE_AS(gradient.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f}
+    }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         {0.36f, 0.92f, 0.2f}, /* 80% */
         {0.28f, 0.76f, 0.6f}, /* 40% */
         {0.32f, 0.84f, 0.4f}, /* 60% */
@@ -139,10 +155,9 @@ void GradientTest::gradient3D() {
 }
 
 void GradientTest::gradient3DHorizontal() {
-    Trade::MeshData3D gradient = Primitives::gradient3DHorizontal(0xfabcde_srgbf, 0xdeab09_srgbf);
+    Trade::MeshData gradient = Primitives::gradient3DHorizontal(0xfabcde_srgbf, 0xdeab09_srgbf);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         0xdeab09_srgbf,
         0xdeab09_srgbf,
         0xfabcde_srgbf,
@@ -151,10 +166,9 @@ void GradientTest::gradient3DHorizontal() {
 }
 
 void GradientTest::gradient3DVertical() {
-    Trade::MeshData3D gradient = Primitives::gradient3DVertical(0xfabcde_srgbf, 0xdeab09_srgbf);
+    Trade::MeshData gradient = Primitives::gradient3DVertical(0xfabcde_srgbf, 0xdeab09_srgbf);
 
-    CORRADE_COMPARE(gradient.colorArrayCount(), 1);
-    CORRADE_COMPARE_AS(gradient.colors(0), (std::vector<Color4>{
+    CORRADE_COMPARE_AS(gradient.attribute<Color4>(Trade::MeshAttribute::Color), Containers::arrayView<Color4>({
         0xfabcde_srgbf,
         0xdeab09_srgbf,
         0xfabcde_srgbf,

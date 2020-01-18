@@ -28,7 +28,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Grid.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,9 +47,13 @@ GridTest::GridTest() {
 }
 
 void GridTest::solid3DWithoutAnything() {
-    Trade::MeshData3D grid = grid3DSolid({5, 3}, {});
+    Trade::MeshData grid = grid3DSolid({5, 3}, {});
 
-    CORRADE_COMPARE_AS(grid.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(grid.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(grid.isIndexed());
+    CORRADE_COMPARE(grid.attributeCount(), 1);
+
+    CORRADE_COMPARE_AS(grid.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {-1.0f, -1.0f, 0.0f},
         {-0.666667f, -1.0f, 0.0f},
         {-0.333333f, -1.0f, 0.0f},
@@ -91,10 +95,7 @@ void GridTest::solid3DWithoutAnything() {
         {1.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(grid.normalArrayCount(), 0);
-    CORRADE_COMPARE(grid.textureCoords2DArrayCount(), 0);
-
-    CORRADE_COMPARE_AS(grid.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(grid.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 8, 7, 0, 1, 8,
         1, 9, 8, 1, 2, 9,
         2, 10, 9, 2, 3, 10,
@@ -126,9 +127,13 @@ void GridTest::solid3DWithoutAnything() {
 }
 
 void GridTest::solid3DWithNormalsAndTextureCoords() {
-    Trade::MeshData3D grid = grid3DSolid({5, 3}, GridFlag::GenerateNormals|GridFlag::GenerateTextureCoords);
+    Trade::MeshData grid = grid3DSolid({5, 3}, GridFlag::GenerateNormals|GridFlag::GenerateTextureCoords);
 
-    CORRADE_COMPARE_AS(grid.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(grid.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(grid.isIndexed());
+    CORRADE_COMPARE(grid.attributeCount(), 3);
+
+    CORRADE_COMPARE_AS(grid.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {-1.0f, -1.0f, 0.0f},
         {-0.666667f, -1.0f, 0.0f},
         {-0.333333f, -1.0f, 0.0f},
@@ -170,7 +175,7 @@ void GridTest::solid3DWithNormalsAndTextureCoords() {
         {1.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(grid.normals(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(grid.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
@@ -212,7 +217,7 @@ void GridTest::solid3DWithNormalsAndTextureCoords() {
         {0.0f, 0.0f, 1.0f},
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(grid.textureCoords2D(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(grid.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
         {0.0f, 0.0f},
         {0.166667f, 0.0f},
         {0.333333f, 0.0f},
@@ -254,7 +259,7 @@ void GridTest::solid3DWithNormalsAndTextureCoords() {
         {1.0f, 1.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(grid.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(grid.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 8, 7, 0, 1, 8,
         1, 9, 8, 1, 2, 9,
         2, 10, 9, 2, 3, 10,
@@ -286,9 +291,13 @@ void GridTest::solid3DWithNormalsAndTextureCoords() {
 }
 
 void GridTest::wireframe3D() {
-    Trade::MeshData3D grid = grid3DWireframe({5, 3});
+    Trade::MeshData grid = grid3DWireframe({5, 3});
 
-    CORRADE_COMPARE_AS(grid.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(grid.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(grid.isIndexed());
+    CORRADE_COMPARE(grid.attributeCount(), 1);
+
+    CORRADE_COMPARE_AS(grid.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {-1.0f, -1.0f, 0.0f},
         {-0.666667f, -1.0f, 0.0f},
         {-0.333333f, -1.0f, 0.0f},
@@ -330,7 +339,7 @@ void GridTest::wireframe3D() {
         {1.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(grid.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(grid.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 1, 0, 7,
         1, 2, 1, 8,
         2, 3, 2, 9,

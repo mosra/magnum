@@ -28,7 +28,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/UVSphere.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,9 +47,13 @@ UVSphereTest::UVSphereTest() {
 }
 
 void UVSphereTest::solidWithoutTextureCoords() {
-    Trade::MeshData3D sphere = uvSphereSolid(3, 3);
+    Trade::MeshData sphere = uvSphereSolid(3, 3);
 
-    CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(sphere.isIndexed());
+    CORRADE_COMPARE(sphere.attributeCount(), 2);
+
+    CORRADE_COMPARE_AS(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.5f, 0.866025f},
@@ -63,7 +67,7 @@ void UVSphereTest::solidWithoutTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(sphere.normals(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(sphere.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.5f, 0.866025f},
@@ -77,7 +81,7 @@ void UVSphereTest::solidWithoutTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(sphere.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(sphere.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 2, 1, 0, 3, 2, 0, 1, 3,
         1, 2, 5, 1, 5, 4, 2, 3, 6, 2, 6, 5, 3, 1, 4, 3, 4, 6,
         4, 5, 7, 5, 6, 7, 6, 4, 7
@@ -85,9 +89,13 @@ void UVSphereTest::solidWithoutTextureCoords() {
 }
 
 void UVSphereTest::solidWithTextureCoords() {
-    Trade::MeshData3D sphere = uvSphereSolid(3, 3, UVSphereTextureCoords::Generate);
+    Trade::MeshData sphere = uvSphereSolid(3, 3, UVSphereTextureCoords::Generate);
 
-    CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Triangles);
+    CORRADE_VERIFY(sphere.isIndexed());
+    CORRADE_COMPARE(sphere.attributeCount(), 3);
+
+    CORRADE_COMPARE_AS(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.5f, 0.866025f},
@@ -103,7 +111,7 @@ void UVSphereTest::solidWithTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(sphere.textureCoords2D(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(sphere.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
         {0.5f, 0.0f},
 
         {0.0f, 0.333333f},
@@ -119,7 +127,7 @@ void UVSphereTest::solidWithTextureCoords() {
         {0.5f, 1.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(sphere.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(sphere.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 2, 1, 0, 3, 2, 0, 4, 3,
         1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 4, 8, 3, 8, 7,
         5, 6, 9, 6, 7, 9, 7, 8, 9
@@ -127,9 +135,13 @@ void UVSphereTest::solidWithTextureCoords() {
 }
 
 void UVSphereTest::wireframe() {
-    Trade::MeshData3D sphere = uvSphereWireframe(6, 8);
+    Trade::MeshData sphere = uvSphereWireframe(6, 8);
 
-    CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(sphere.isIndexed());
+    CORRADE_COMPARE(sphere.attributeCount(), 1);
+
+    CORRADE_COMPARE_AS(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
 
         {0.0f, -0.866025f, 0.5f},
@@ -167,9 +179,7 @@ void UVSphereTest::wireframe() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(sphere.normalArrayCount(), 0);
-
-    CORRADE_COMPARE_AS(sphere.indices(), (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(sphere.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 1, 0, 2, 0, 3, 0, 4,
         1, 5, 2, 6, 3, 7, 4, 8,
 

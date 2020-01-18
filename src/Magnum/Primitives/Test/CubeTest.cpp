@@ -28,7 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Cube.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,29 +47,42 @@ CubeTest::CubeTest() {
 }
 
 void CubeTest::solid() {
-    Trade::MeshData3D cube = Primitives::cubeSolid();
+    Trade::MeshData cube = Primitives::cubeSolid();
 
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::Triangles);
-    CORRADE_COMPARE(cube.indices().size(), 36);
-    CORRADE_COMPARE(cube.positions(0).size(), 24);
-    CORRADE_COMPARE(cube.normals(0).size(), 24);
+    CORRADE_VERIFY(cube.isIndexed());
+    CORRADE_COMPARE(cube.indexCount(), 36);
+    CORRADE_COMPARE(cube.vertexCount(), 24);
+    CORRADE_COMPARE(cube.attributeCount(), 2);
+    CORRADE_COMPARE(cube.indices<UnsignedShort>()[17], 11);
+    CORRADE_COMPARE(cube.attribute<Vector3>(Trade::MeshAttribute::Position)[4],
+        (Vector3{1.0f, -1.0f, 1.0f}));
+    CORRADE_COMPARE(cube.attribute<Vector3>(Trade::MeshAttribute::Normal)[6],
+        (Vector3{1.0f, 0.0f, 0.0f}));
 }
 
 void CubeTest::solidStrip() {
-    Trade::MeshData3D cube = Primitives::cubeSolidStrip();
+    Trade::MeshData cube = Primitives::cubeSolidStrip();
 
-    CORRADE_VERIFY(!cube.isIndexed());
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_COMPARE(cube.positions(0).size(), 14);
-    CORRADE_COMPARE(cube.normalArrayCount(), 0);
+    CORRADE_VERIFY(!cube.isIndexed());
+    CORRADE_COMPARE(cube.vertexCount(), 14);
+    CORRADE_COMPARE(cube.attributeCount(), 1);
+    CORRADE_COMPARE(cube.attribute<Vector3>(Trade::MeshAttribute::Position)[4],
+        (Vector3{-1.0f, -1.0f, -1.0f}));
 }
 
 void CubeTest::wireframe() {
-    Trade::MeshData3D cube = Primitives::cubeWireframe();
+    Trade::MeshData cube = Primitives::cubeWireframe();
 
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(cube.indices().size(), 24);
-    CORRADE_COMPARE(cube.positions(0).size(), 8);
+    CORRADE_VERIFY(cube.isIndexed());
+    CORRADE_COMPARE(cube.indexCount(), 24);
+    CORRADE_COMPARE(cube.vertexCount(), 8);
+    CORRADE_COMPARE(cube.attributeCount(), 1);
+    CORRADE_COMPARE(cube.indices<UnsignedShort>()[5], 3);
+    CORRADE_COMPARE(cube.attribute<Vector3>(Trade::MeshAttribute::Position)[5],
+        (Vector3{1.0f, -1.0f, -1.0f}));
 }
 
 }}}}

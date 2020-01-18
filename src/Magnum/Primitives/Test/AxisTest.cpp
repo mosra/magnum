@@ -28,8 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Primitives/Axis.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -46,21 +45,33 @@ AxisTest::AxisTest() {
 }
 
 void AxisTest::twoDimensions() {
-    Trade::MeshData2D axis = Primitives::axis2D();
+    Trade::MeshData axis = Primitives::axis2D();
 
     CORRADE_COMPARE(axis.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(axis.indices().size(), 12);
-    CORRADE_COMPARE(axis.positions(0).size(), 8);
-    CORRADE_COMPARE(axis.colors(0).size(), 8);
+    CORRADE_VERIFY(axis.isIndexed());
+    CORRADE_COMPARE(axis.indexCount(), 12);
+    CORRADE_COMPARE(axis.vertexCount(), 8);
+    CORRADE_COMPARE(axis.attributeCount(), 2);
+    CORRADE_COMPARE(axis.indices<UnsignedShort>()[5], 3);
+    CORRADE_COMPARE(axis.attribute<Vector2>(Trade::MeshAttribute::Position)[3],
+        (Vector2{0.9f, -0.1f}));
+    CORRADE_COMPARE(axis.attribute<Color3>(Trade::MeshAttribute::Color)[6],
+        (Color3{0.0f, 1.0f, 0.0f}));
 }
 
 void AxisTest::threeDimensions() {
-    Trade::MeshData3D axis = Primitives::axis3D();
+    Trade::MeshData axis = Primitives::axis3D();
 
     CORRADE_COMPARE(axis.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(axis.indices().size(), 18);
-    CORRADE_COMPARE(axis.positions(0).size(), 12);
-    CORRADE_COMPARE(axis.colors(0).size(), 12);
+    CORRADE_VERIFY(axis.isIndexed());
+    CORRADE_COMPARE(axis.indexCount(), 18);
+    CORRADE_COMPARE(axis.vertexCount(), 12);
+    CORRADE_COMPARE(axis.attributeCount(), 2);
+    CORRADE_COMPARE(axis.indices<UnsignedShort>()[12], 8);
+    CORRADE_COMPARE(axis.attribute<Vector3>(Trade::MeshAttribute::Position)[6],
+        (Vector3{0.1f, 0.9f, 0.0f}));
+    CORRADE_COMPARE(axis.attribute<Color3>(Trade::MeshAttribute::Color)[4],
+        (Color3{0.0f, 1.0f, 0.0f}));
 }
 
 }}}}

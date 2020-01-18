@@ -28,8 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Crosshair.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -46,19 +45,25 @@ CrosshairTest::CrosshairTest() {
 }
 
 void CrosshairTest::twoDimensions() {
-    Trade::MeshData2D crosshair = Primitives::crosshair2D();
+    Trade::MeshData crosshair = Primitives::crosshair2D();
 
-    CORRADE_VERIFY(!crosshair.isIndexed());
     CORRADE_COMPARE(crosshair.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(crosshair.positions(0).size(), 4);
+    CORRADE_VERIFY(!crosshair.isIndexed());
+    CORRADE_COMPARE(crosshair.vertexCount(), 4);
+    CORRADE_COMPARE(crosshair.attributeCount(), 1);
+    CORRADE_COMPARE(crosshair.attribute<Vector2>(Trade::MeshAttribute::Position)[3],
+        (Vector2{0.0f, 1.0f}));
 }
 
 void CrosshairTest::threeDimensions() {
-    Trade::MeshData3D crosshair = Primitives::crosshair3D();
+    Trade::MeshData crosshair = Primitives::crosshair3D();
 
-    CORRADE_VERIFY(!crosshair.isIndexed());
     CORRADE_COMPARE(crosshair.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(crosshair.positions(0).size(), 6);
+    CORRADE_VERIFY(!crosshair.isIndexed());
+    CORRADE_COMPARE(crosshair.vertexCount(), 6);
+    CORRADE_COMPARE(crosshair.attributeCount(), 1);
+    CORRADE_COMPARE(crosshair.attribute<Vector3>(Trade::MeshAttribute::Position)[4],
+        (Vector3{ 0.0f,  0.0f, -1.0f}));
 }
 
 }}}}

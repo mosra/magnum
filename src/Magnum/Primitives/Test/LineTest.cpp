@@ -28,8 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Line.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -46,19 +45,25 @@ LineTest::LineTest() {
 }
 
 void LineTest::twoDimensions() {
-    Trade::MeshData2D line = Primitives::line2D();
+    Trade::MeshData line = Primitives::line2D();
 
-    CORRADE_VERIFY(!line.isIndexed());
     CORRADE_COMPARE(line.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(line.positions(0).size(), 2);
+    CORRADE_VERIFY(!line.isIndexed());
+    CORRADE_COMPARE(line.vertexCount(), 2);
+    CORRADE_COMPARE(line.attributeCount(), 1);
+    CORRADE_COMPARE(line.attribute<Vector2>(Trade::MeshAttribute::Position)[1],
+        (Vector2{1.0f, 0.0f}));
 }
 
 void LineTest::threeDimensions() {
-    Trade::MeshData3D line = Primitives::line3D();
+    Trade::MeshData line = Primitives::line3D();
 
-    CORRADE_VERIFY(!line.isIndexed());
     CORRADE_COMPARE(line.primitive(), MeshPrimitive::Lines);
-    CORRADE_COMPARE(line.positions(0).size(), 2);
+    CORRADE_VERIFY(!line.isIndexed());
+    CORRADE_COMPARE(line.vertexCount(), 2);
+    CORRADE_COMPARE(line.attributeCount(), 1);
+    CORRADE_COMPARE(line.attribute<Vector3>(Trade::MeshAttribute::Position)[1],
+        (Vector3{1.0f, 0.0f, 0.0f}));
 }
 
 }}}}

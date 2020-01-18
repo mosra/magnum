@@ -28,7 +28,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Plane.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives { namespace Test { namespace {
 
@@ -47,32 +47,42 @@ PlaneTest::PlaneTest() {
 }
 
 void PlaneTest::solid() {
-    Trade::MeshData3D plane = Primitives::planeSolid();
+    Trade::MeshData plane = Primitives::planeSolid();
 
-    CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_COMPARE(plane.positions(0).size(), 4);
-    CORRADE_COMPARE(plane.normals(0).size(), 4);
-    CORRADE_COMPARE(plane.textureCoords2DArrayCount(), 0);
+    CORRADE_VERIFY(!plane.isIndexed());
+    CORRADE_COMPARE(plane.vertexCount(), 4);
+    CORRADE_COMPARE(plane.attributeCount(), 2);
+    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Position)[3],
+        (Vector3{-1.0f, 1.0f, 0.0f}));
+    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Normal)[2],
+        (Vector3{0.0f, 0.0f, 1.0f}));
 }
 
 void PlaneTest::solidTextured() {
-    Trade::MeshData3D plane = Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate);
+    Trade::MeshData plane = Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate);
 
-    CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_COMPARE(plane.positions(0).size(), 4);
-    CORRADE_COMPARE(plane.normals(0).size(), 4);
-    CORRADE_COMPARE(plane.textureCoords2DArrayCount(), 1);
-    CORRADE_COMPARE(plane.textureCoords2D(0).size(), 4);
+    CORRADE_VERIFY(!plane.isIndexed());
+    CORRADE_COMPARE(plane.vertexCount(), 4);
+    CORRADE_COMPARE(plane.attributeCount(), 3);
+    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Position)[3],
+        (Vector3{-1.0f, 1.0f, 0.0f}));
+    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Normal)[2],
+        (Vector3{0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(plane.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates)[1],
+        (Vector2{1.0f, 1.0f}));
 }
 
 void PlaneTest::wireframe() {
-    Trade::MeshData3D plane = Primitives::planeWireframe();
+    Trade::MeshData plane = Primitives::planeWireframe();
 
-    CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(plane.positions(0).size(), 4);
+    CORRADE_VERIFY(!plane.isIndexed());
+    CORRADE_COMPARE(plane.vertexCount(), 4);
+    CORRADE_COMPARE(plane.attributeCount(), 1);
+    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Position)[3],
+        (Vector3{-1.0f, 1.0f, 0.0f}));
 }
 
 }}}}
