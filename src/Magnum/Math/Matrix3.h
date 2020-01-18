@@ -430,11 +430,11 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief Non-uniform scaling part of the matrix
          *
-         * Length of vectors in upper-left 2x2 part of the matrix. Use the
-         * faster alternative @ref scalingSquared() where possible. Assuming
-         * the following matrix, with the upper-left 2x2 part represented by
-         * column vectors @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$:
-         * @f[
+         * *Signed* length of vectors in upper-left 2x2 part of the matrix. Use
+         * the faster alternative @ref scalingSquared() where possible.
+         * Assuming the following matrix, with the upper-left 2x2 part
+         * represented by column vectors @f$ \boldsymbol{a} @f$ and
+         * @f$ \boldsymbol{b} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
@@ -446,8 +446,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *
          * the resulting scaling vector is: @f[
          *      \boldsymbol{s} = \begin{pmatrix}
-         *          | \boldsymbol{a} | \\
-         *          | \boldsymbol{b} |
+         *          \operatorname{sgn}(a_x) | \boldsymbol{a} | \\
+         *          \operatorname{sgn}(a_y) | \boldsymbol{b} |
          *      \end{pmatrix}
          * @f]
          *
@@ -455,8 +455,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      @ref rotation() const, @ref Matrix4::scaling() const
          */
         Vector2<T> scaling() const {
-            return {(*this)[0].xy().length(),
-                    (*this)[1].xy().length()};
+            return {(*this)[0].xy().length()*T((*this)[0][0] < T(0) ? -1 : 1),
+                    (*this)[1].xy().length()*T((*this)[1][1] < T(0) ? -1 : 1)};
         }
 
         /**

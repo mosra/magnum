@@ -127,6 +127,12 @@ See also:
     in order to allow passing runtime-sized lists (see
     [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
 
+@subsubsection changelog-latest-changes-math Math library
+
+-   @ref Math::Matrix3::scaling() const and @ref Math::Matrix4::scaling() const
+    now return a signed scaling vector, taking into account negative scaling as
+    well
+
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
 -   Added @ref MeshTools::subdivideInPlace() that operates on a partially
@@ -223,6 +229,10 @@ See also:
     @ref Animation library was changed to allow mutable access to the keys &
     values it references. Existing code needs to be changed to say
     @cpp TrackView<const K, const V> @ce instead of @cpp TrackView<K, V> @ce.
+-   @ref Math::Matrix3::scaling() const and @ref Math::Matrix4::scaling() const
+    now return a signed scaling vector instead of unsigned in order to prevent
+    information loss. To restore the old behavior, apply @ref Math::abs() on
+    the result.
 -   @ref Platform::GlfwApplication::setMinWindowSize() /
     @ref Platform::GlfwApplication::setMaxWindowSize() and equivalent APIs in
     @ref Platform::Sdl2Application now premultiply the value with

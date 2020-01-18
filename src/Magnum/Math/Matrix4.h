@@ -684,11 +684,11 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief Non-uniform scaling part of the matrix
          *
-         * Length of vectors in upper-left 3x3 part of the matrix. Use the
-         * faster alternative @ref scalingSquared() where possible. Assuming
-         * the following matrix, with the upper-left 3x3 part represented by
-         * column vectors @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and
-         * @f$ \boldsymbol{c} @f$: @f[
+         * *Signed* length of vectors in upper-left 3x3 part of the matrix. Use
+         * the faster alternative @ref scalingSquared() where possible.
+         * Assuming the following matrix, with the upper-left 3x3 part
+         * represented by column vectors @f$ \boldsymbol{a} @f$,
+         * @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & \color{m-warning} c_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & \color{m-warning} c_y & t_y \\
@@ -701,9 +701,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * the resulting scaling vector is: @f[
          *      \boldsymbol{s} = \begin{pmatrix}
-         *          | \boldsymbol{a} | \\
-         *          | \boldsymbol{b} | \\
-         *          | \boldsymbol{c} |
+         *          \operatorname{sgn}(a_x) | \boldsymbol{a} | \\
+         *          \operatorname{sgn}(b_y) | \boldsymbol{b} | \\
+         *          \operatorname{sgn}(c_z) | \boldsymbol{c} |
          *      \end{pmatrix}
          * @f]
          *
@@ -711,9 +711,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      @ref rotation() const, @ref Matrix3::scaling() const
          */
         Vector3<T> scaling() const {
-            return {(*this)[0].xyz().length(),
-                    (*this)[1].xyz().length(),
-                    (*this)[2].xyz().length()};
+            return {(*this)[0].xyz().length()*T((*this)[0][0] < T(0) ? -1 : 1),
+                    (*this)[1].xyz().length()*T((*this)[1][1] < T(0) ? -1 : 1),
+                    (*this)[2].xyz().length()*T((*this)[2][2] < T(0) ? -1 : 1)};
         }
 
         /**

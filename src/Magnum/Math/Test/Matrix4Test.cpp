@@ -760,10 +760,18 @@ void Matrix4Test::scalingPart() {
     Matrix4 translationRotationScaling =
         Matrix4::translation({2.0f, 5.0f, -3.0f})*
         Matrix4::rotation(-74.0_degf, Vector3(-1.0f, 2.0f, 2.0f).normalized())*
-        Matrix4::scaling({0.5f, 3.5f, 1.2f});
+        Matrix4::scaling({0.5f, -3.5f, 1.2f});
 
-    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector3{0.5f, 3.5f, 1.2f}));
+    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector3{0.5f, -3.5f, 1.2f}));
     CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector3{0.25f, 12.25f, 1.44f}));
+
+    Matrix4 rotationScaling =
+        Matrix4::rotation(-174.0_degf, Vector3(-1.0f, 2.0f, 2.0f).normalized())*
+        Matrix4::scaling({-0.5f, 3.5f, 1.2f});
+
+    /* Sign inverted because of the rotation */
+    CORRADE_COMPARE(rotationScaling.scaling(), (Vector3{0.5f, -3.5f, -1.2f}));
+    CORRADE_COMPARE(rotationScaling.scalingSquared(), (Vector3{0.25f, 12.25f, 1.44f}));
 }
 
 void Matrix4Test::uniformScalingPart() {

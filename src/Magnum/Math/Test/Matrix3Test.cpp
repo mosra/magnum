@@ -526,10 +526,18 @@ void Matrix3Test::scalingPart() {
     Matrix3 translationRotationScaling =
         Matrix3::translation({2.0f, -3.0f})*
         Matrix3::rotation(15.0_degf)*
-        Matrix3::scaling({0.5f, 3.5f});
+        Matrix3::scaling({0.5f, -3.5f});
 
-    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector2{0.5f, 3.5f}));
+    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector2{0.5f, -3.5f}));
     CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector2{0.25f, 12.25f}));
+
+    Matrix3 rotationScaling =
+        Matrix3::rotation(215.0_degf)*
+        Matrix3::scaling({-0.5f, 3.5f});
+
+    /* Sign inverted because of the rotation */
+    CORRADE_COMPARE(rotationScaling.scaling(), (Vector2{0.5f, -3.5f}));
+    CORRADE_COMPARE(rotationScaling.scalingSquared(), (Vector2{0.25f, 12.25f}));
 }
 
 void Matrix3Test::uniformScalingPart() {
