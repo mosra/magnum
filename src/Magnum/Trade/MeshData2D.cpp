@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
 #include "MeshData2D.h"
 
 #include <Corrade/Containers/ArrayViewStl.h>
@@ -64,19 +66,23 @@ MeshData2D::MeshData2D(const MeshData& other): _primitive{other.primitive()}, _i
 }
 #endif
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
 MeshData2D::MeshData2D(MeshData2D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
     noexcept
     #endif
     = default;
+CORRADE_IGNORE_DEPRECATED_POP
 
 MeshData2D::~MeshData2D() = default;
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* GCC why you warn on return and not on param */
 MeshData2D& MeshData2D::operator=(MeshData2D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
     noexcept
     #endif
     = default;
+CORRADE_IGNORE_DEPRECATED_POP
 
 std::vector<UnsignedInt>& MeshData2D::indices() {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData2D::indices(): the mesh is not indexed", _indices);

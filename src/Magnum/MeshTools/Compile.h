@@ -51,7 +51,7 @@ namespace Magnum { namespace MeshTools {
 @brief Mesh compilation flag
 @m_since{2019,10}
 
-@see @ref CompileFlags, @ref compile(const Trade::MeshData3D&, CompileFlags)
+@see @ref CompileFlags, @ref compile(const Trade::MeshData&, CompileFlags)
 */
 enum class CompileFlag: UnsignedByte {
     /**
@@ -79,7 +79,7 @@ enum class CompileFlag: UnsignedByte {
 @brief Mesh compilation flags
 @m_since{2019,10}
 
-@see @ref compile(const Trade::MeshData3D&, CompileFlags)
+@see @ref compile(const Trade::MeshData&, CompileFlags)
 */
 typedef Containers::EnumSet<CompileFlag> CompileFlags;
 
@@ -176,8 +176,11 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Bu
  */
 MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices);
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Compile 2D mesh data
+@m_deprecated_since_latest Use @ref compile(const Trade::MeshData&, CompileFlags)
+    instead.
 
 Configures a mesh for @ref Shaders::Generic2D shader with vertex buffer and
 possibly also an index buffer, if the mesh is indexed. Positions are bound to
@@ -200,19 +203,23 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData2D& meshData);
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData2D& meshData);
+CORRADE_IGNORE_DEPRECATED_POP
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief compile(const Trade::MeshData2D&)
- * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData2D&)
+/** @brief Compile 2D mesh data
+ * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData&)
  *      instead. The @p usage parameter is ignored and returned buffer
  *      instances are empty.
  */
-CORRADE_DEPRECATED("use compile(const Trade::MeshData2D&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
-#endif
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
+CORRADE_IGNORE_DEPRECATED_POP
 
 /**
 @brief Compile 3D mesh data
+@m_deprecated_since_latest Use @ref compile(const Trade::MeshData&, CompileFlags)
+    instead.
 
 Configures mesh for @ref Shaders::Generic3D shader with vertex buffer and
 possibly also index buffer, if the mesh is indexed. Positions are bound to
@@ -236,15 +243,18 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags = {});
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_DEPRECATED("use compile(const Trade::MeshData&, CompileFlags) instead") MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags = {});
+CORRADE_IGNORE_DEPRECATED_POP
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief compile(const Trade::MeshData3D&, CompileFlags)
- * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData3D&, CompileFlags)
+/** @brief Compile 3D mesh data
+ * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData&, CompileFlags)
  *      instead. The @p usage parameter is ignored and returned buffer
  *      instances are empty.
  */
-CORRADE_DEPRECATED("use compile(const Trade::MeshData3D&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 }}

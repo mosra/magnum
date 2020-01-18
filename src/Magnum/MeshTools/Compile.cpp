@@ -27,19 +27,24 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
-#include <Corrade/Containers/ArrayViewStl.h> /** @todo remove once MeshDataXD is gone */
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/ArrayViewStl.h>
+
+#include "Magnum/Math/Color.h"
+#include "Magnum/MeshTools/CompressIndices.h"
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
+#endif
 
 /* This header is included only privately and doesn't introduce any linker
    dependency, thus it's completely safe */
@@ -191,6 +196,8 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
     return mesh;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 GL::Mesh compile(const Trade::MeshData2D& meshData) {
     GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
@@ -264,13 +271,11 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
     return mesh;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage) {
     return std::make_tuple(compile(meshData),
         std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
         std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
 }
-#endif
 
 GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     GL::Mesh mesh;
@@ -426,12 +431,12 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     return mesh;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage) {
     return std::make_tuple(compile(meshData),
         std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
         std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
 }
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 }}

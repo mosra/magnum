@@ -50,8 +50,14 @@
 #include "Magnum/Shaders/Phong.h"
 #include "Magnum/Shaders/VertexColor.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
+#endif
 
 #include "configure.h"
 
@@ -81,6 +87,7 @@ struct CompileGLTest: GL::OpenGLTester {
     public:
         explicit CompileGLTest();
 
+        /** @todo remove the template once MeshDataXD is gone */
         template<class T> void twoDimensions();
         template<class T> void threeDimensions();
         void unknownAttribute();
@@ -169,14 +176,27 @@ constexpr Color4ub ImageData[] {
 
 CompileGLTest::CompileGLTest() {
     addInstancedTests<CompileGLTest>({
-        &CompileGLTest::twoDimensions<Trade::MeshData>,
+        &CompileGLTest::twoDimensions<Trade::MeshData>}, Containers::arraySize(Data2D));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    addInstancedTests<CompileGLTest>({
         &CompileGLTest::twoDimensions<Trade::MeshData2D>},
         Containers::arraySize(Data2D));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     addInstancedTests<CompileGLTest>({
-        &CompileGLTest::threeDimensions<Trade::MeshData>,
+        &CompileGLTest::threeDimensions<Trade::MeshData>},
+        Containers::arraySize(Data3D));
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    addInstancedTests<CompileGLTest>({
         &CompileGLTest::threeDimensions<Trade::MeshData3D>},
         Containers::arraySize(Data3D));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     addTests({&CompileGLTest::unknownAttribute,
               &CompileGLTest::generateNormalsNoPosition,
@@ -224,12 +244,16 @@ template<class T> struct MeshTypeName;
 template<> struct MeshTypeName<Trade::MeshData> {
     static const char* name() { return "Trade::MeshData"; }
 };
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<> struct MeshTypeName<Trade::MeshData2D> {
     static const char* name() { return "Trade::MeshData2D"; }
 };
 template<> struct MeshTypeName<Trade::MeshData3D> {
     static const char* name() { return "Trade::MeshData3D"; }
 };
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 template<class T> void CompileGLTest::twoDimensions() {
     setTestCaseTemplateName(MeshTypeName<T>::name());
@@ -297,7 +321,13 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
+    #endif
     GL::Mesh mesh = compile(T{std::move(meshData)});
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -431,7 +461,13 @@ template<class T> void CompileGLTest::threeDimensions() {
         flags |= CompileFlag::GenerateFlatNormals;
     if(data.flags & Flag::GeneratedSmoothNormals)
         flags |= CompileFlag::GenerateSmoothNormals;
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
+    #endif
     GL::Mesh mesh = compile(T{std::move(meshData)}, flags);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* There's no better way to disable file deprecation warnings */
+#define _MAGNUM_NO_DEPRECATED_MESHDATA
+
 #include "MeshData3D.h"
 
 #include <Corrade/Containers/ArrayViewStl.h>
@@ -69,19 +72,23 @@ MeshData3D::MeshData3D(const MeshData& other): _primitive{other.primitive()}, _i
 }
 #endif
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* MSVC warns here */
 MeshData3D::MeshData3D(MeshData3D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
     noexcept
     #endif
     = default;
+CORRADE_IGNORE_DEPRECATED_POP
 
 MeshData3D::~MeshData3D() = default;
 
+CORRADE_IGNORE_DEPRECATED_PUSH /* GCC why you warn on return and not on param */
 MeshData3D& MeshData3D::operator=(MeshData3D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
     noexcept
     #endif
     = default;
+CORRADE_IGNORE_DEPRECATED_POP
 
 std::vector<UnsignedInt>& MeshData3D::indices() {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);

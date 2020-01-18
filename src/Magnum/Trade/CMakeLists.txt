@@ -42,16 +42,6 @@ set(MagnumTrade_GracefulAssert_SRCS
     CameraData.cpp
     ImageData.cpp
     MeshData.cpp
-
-    # These have to be here instead of in MagnumTrade_SRCS because they include
-    # MeshData.h and call (and thus instantiate) various functions with inline
-    # asserts. We need the linker to pick the variant with graceful asserts for
-    # tests, and if there would be two different copies, it may happen it picks
-    # the non-graceful-assert variant, causing the tests to blow up. Happens
-    # only on the MSVC linker, but let's be safe and do this everywhere.
-    MeshData2D.cpp
-    MeshData3D.cpp
-
     ObjectData2D.cpp
     ObjectData3D.cpp
     PhongMaterialData.cpp)
@@ -67,8 +57,6 @@ set(MagnumTrade_HEADERS
     ImageData.h
     LightData.h
     MeshData.h
-    MeshData2D.h
-    MeshData3D.h
     MeshObjectData2D.h
     MeshObjectData3D.h
     ObjectData2D.h
@@ -82,6 +70,22 @@ set(MagnumTrade_HEADERS
 
 set(MagnumTrade_PRIVATE_HEADERS
     Implementation/arrayUtilities.h)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumTrade_GracefulAssert_SRCS
+        # These have to be here instead of in MagnumTrade_SRCS because they
+        # include MeshData.h and call (and thus instantiate) various functions
+        # with inline asserts. We need the linker to pick the variant with
+        # graceful asserts for tests, and if there would be two different
+        # copies, it may happen it picks the non-graceful-assert variant,
+        # causing the tests to blow up. Happens only on the MSVC linker, but
+        # let's be safe and do this everywhere.
+        MeshData2D.cpp
+        MeshData3D.cpp)
+    list(APPEND MagnumTrade_HEADERS
+        MeshData2D.h
+        MeshData3D.h)
+endif()
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake

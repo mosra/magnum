@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* There's no better way to disable file deprecation warnings */
+#define _MAGNUM_NO_DEPRECATED_MESHDATA
+
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
@@ -42,6 +45,8 @@ struct MeshData3DTest: TestSuite::Tester {
     void constructCopy();
     void constructMove();
 };
+
+CORRADE_IGNORE_DEPRECATED_PUSH
 
 using namespace Math::Literals;
 
@@ -63,7 +68,6 @@ const struct Vertex {
 };
 const int State = 3;
 
-CORRADE_IGNORE_DEPRECATED_PUSH
 struct {
     const char* name;
     const MeshData3D data, dataNonIndexed;
@@ -113,7 +117,6 @@ struct {
             },  &State}
     }
 };
-CORRADE_IGNORE_DEPRECATED_POP
 
 MeshData3DTest::MeshData3DTest() {
     addInstancedTests({&MeshData3DTest::construct,
@@ -253,6 +256,8 @@ void MeshData3DTest::constructMove() {
     CORRADE_COMPARE(d.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
     CORRADE_COMPARE(d.importerState(), &a);
 }
+
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}}
 

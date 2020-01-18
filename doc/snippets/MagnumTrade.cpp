@@ -39,8 +39,6 @@
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
@@ -48,6 +46,13 @@
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Shaders/Phong.h"
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 #endif
 
 using namespace Magnum;
@@ -312,7 +317,9 @@ MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{2.0f}),
 /* [MeshData-usage-mutable] */
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 Trade::MeshData2D& foo();
 Trade::MeshData2D& data = foo();
 /* [MeshData2D-transform] */
@@ -322,7 +329,9 @@ Matrix3 transformation =
     Matrix3::rotation(45.0_degf);
 MeshTools::transformPointsInPlace(transformation, data.positions(0));
 /* [MeshData2D-transform] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 Trade::ObjectData2D& baz();
@@ -335,7 +344,9 @@ Matrix3 transformation =
 static_cast<void>(transformation);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 Trade::MeshData3D& bar();
 Trade::MeshData3D& data = bar();
 /* [MeshData3D-transform] */
@@ -345,7 +356,9 @@ Matrix4 transformation =
 MeshTools::transformPointsInPlace(transformation, data.positions(0));
 MeshTools::transformVectorsInPlace(transformation, data.normals(0));
 /* [MeshData3D-transform] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 Trade::ObjectData3D& fizz();

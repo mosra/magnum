@@ -25,13 +25,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Trade::MeshData3D
+ * @m_deprecated_since_latest Use @ref Magnum/Trade/MeshData.h and the
+ *      @ref Magnum::Trade::MeshData "MeshData" class instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <vector>
 
 #include "Magnum/Trade/MeshData.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_MESHDATA
+CORRADE_DEPRECATED_FILE("use Magnum/Trade/MeshData.h and the MeshData class instead")
+#endif
 
 namespace Magnum { namespace Trade {
 
@@ -48,9 +59,11 @@ to positions and normals:
 
 @snippet MagnumTrade.cpp MeshData3D-transform
 
+@m_deprecated_since_latest Use @ref MeshData instead.
+
 @see @ref AbstractImporter::mesh3D(), @ref MeshData2D
 */
-class MAGNUM_TRADE_EXPORT MeshData3D {
+class CORRADE_DEPRECATED("use MeshData instead") MAGNUM_TRADE_EXPORT MeshData3D {
     public:
         /**
          * @brief Constructor
@@ -198,5 +211,8 @@ class MAGNUM_TRADE_EXPORT MeshData3D {
 };
 
 }}
+#else
+#error use Magnum/Trade/MeshData.h and the MeshData class instead
+#endif
 
 #endif

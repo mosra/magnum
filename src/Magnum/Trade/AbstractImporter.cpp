@@ -46,6 +46,8 @@
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 #endif
@@ -497,17 +499,17 @@ std::string AbstractImporter::mesh2DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMesh2DName(UnsignedInt) { return {}; }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Containers::Optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2D(): no file opened", {});
-    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2D(): index" << id << "out of range for" << doMesh2DCount() << "entries", {});
     return doMesh2D(id);
-    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh2D(): not implemented", {});
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 UnsignedInt AbstractImporter::mesh3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DCount(): no file opened", {});
@@ -543,21 +545,19 @@ std::string AbstractImporter::doMesh3DName(const UnsignedInt id) {
     return doMeshName(id);
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3D(): no file opened", {});
-    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3D(): index" << id << "out of range for" << doMesh3DCount() << "entries", {});
     return doMesh3D(id);
-    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(const UnsignedInt id) {
     Containers::Optional<MeshData> out = doMesh(id);
-    CORRADE_IGNORE_DEPRECATED_PUSH
     if(out) return MeshData3D{*out};
-    CORRADE_IGNORE_DEPRECATED_POP
     return Containers::NullOpt;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 UnsignedInt AbstractImporter::materialCount() const {

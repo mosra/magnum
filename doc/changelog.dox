@@ -379,6 +379,8 @@ See also:
     @ref GL::DynamicAttribute::DataType::Half and @ref GL::PixelType::Half that
     are consistent with the @ref Half type used elsewhere.
 -   @cpp Trade::AbstractImporter::mesh2D() @ce,
+    @cpp Trade::MeshData2D @ce, @cpp Trade::MeshData3D @ce,
+    @cpp Trade::AbstractImporter::mesh2D() @ce,
     @cpp Trade::AbstractImporter::mesh3D() @ce and related APIs are
     deprecated in favor of @ref Trade::AbstractImporter::mesh() and the new
     @ref Trade::MeshData API. For backwards compatibility, importers
@@ -721,8 +723,8 @@ Released 2019-10-24, tagged as
     location
 -   @ref MeshTools::generateSmoothNormals() for generating weighted smooth
     normals of indexed meshes (see [mosra/magnum#229](https://github.com/mosra/magnum/pull/229))
--   @ref MeshTools::compile(const Trade::MeshData3D&, CompileFlags) now accepts
-    optional flags to control normal generation
+-   @cpp MeshTools::compile(const Trade::MeshData3D&, CompileFlags) @ce now
+    accepts optional flags to control normal generation
 
 @subsubsection changelog-2019-10-new-platform Platform libraries
 
@@ -1108,7 +1110,7 @@ Released 2019-10-24, tagged as
 -   Reading of float textures on ES3 contexts using
     @ref DebugTools::textureSubImage() returned a zero-sized image by accident
 -   @ref MeshTools::compile() was producing an incorrect mesh when
-    @ref Trade::MeshData3D had both colors and texture coordinates
+    @cpp Trade::MeshData @ce had both colors and texture coordinates
 -   Properly zero-initializing the UTF-8 buffer in
     @ref Platform::GlfwApplication::textInputEvent() (see
     [mosra/magnum#324](https://github.com/mosra/magnum/pull/324))
@@ -1514,9 +1516,9 @@ Released 2019-02-04, tagged as
     @ref GL::OpenGLTester library instead. Note that the deprecated
     `Magnum/OpenGLTester.h` header is still present, along with all other
     deprecated GL-specific headers and APIs in the project root.
--   Removed five-argument @ref Trade::MeshData2D and six-argument
-    @ref Trade::MeshData3D constructors that were deprecated since
-    February 2017. Use the full six/seven-argument versions instead.
+-   Removed five-argument @cpp Trade::MeshData2D @ce and six-argument
+    @cpp Trade::MeshData3D @ce constructors that were deprecated since February
+    2017. Use the full six/seven-argument versions instead.
 -   Removed @ref Platform application constructors taking @cpp nullptr @ce,
     deprecated in June 2016 for windowless apps and in March 2017 for windowed
     apps. Use constructors taking the @ref NoCreate tag instead.
@@ -2016,8 +2018,8 @@ Released 2018-10-23, tagged as
     clearer naming
 -   @ref MeshTools::compile() taking a @ref GL::BufferUsage and returning a
     tuple was deprecated, use the simpler version taking just
-    @ref Trade::MeshData2D / @ref Trade::MeshData3D and directly returning a
-    @ref GL::Mesh instead
+    @cpp Trade::MeshData2D @ce / @cpp Trade::MeshData3D @ce and directly
+    returning a @ref GL::Mesh instead
 -   `Shaders::VertexColor::Color` is deprecated, use the direct
     @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
     alternatives instead
@@ -2427,9 +2429,8 @@ Released 2018-05-01, tagged as
     In particular, @ref GL::Mesh::primitive() now returns
     @ref GL::MeshPrimitive instead of @ref Magnum::MeshPrimitive, code
     depending on the return type being implicitly convertible to
-    @ref Magnum::MeshPrimitive may break. IN all other cases,
-    @ref Trade::MeshData2D::primitive() "Trade::MeshData*D::primitive()" etc.
-    returns @ref Magnum::MeshPrimitive.
+    @ref Magnum::MeshPrimitive may break. In all other cases,
+    `Trade::MeshData*D::primitive()` etc. returns @ref Magnum::MeshPrimitive.
 -   Configuration value reader/writers are now for only
     @ref Magnum::MeshPrimitive and @ref Magnum::MeshIndexType, not for
     @ref GL::MeshPrimitive or @ref GL::MeshIndexType
@@ -2864,7 +2865,8 @@ a high-level overview.
 
 -   New @ref magnum-imageconverter "magnum-imageconverter" utility
 -   Initial implementation of @ref Trade::CameraData and @ref Trade::LightData
--   Vertex color support in @ref Trade::MeshData2D and @ref Trade::MeshData3D
+-   Vertex color support in @cpp Trade::MeshData2D @ce and
+    @cpp Trade::MeshData3D @ce
 -   @ref Trade::AbstractImageConverter member functions were changed to
     non-@cpp const @ce to make implementation of complex converter plugins possible
 -   New @ref Trade::AbstractImageConverter::exportToCompressedImage() plugin
@@ -3163,8 +3165,8 @@ a high-level overview.
 -   `Math::normalize()` and `Math::denormalize()` had confusing naming and thus
     are deprecated, use @ref Math::pack() and @ref Math::unpack() from the
     @ref Magnum/Math/Packing.h header instead
--   @ref Trade::MeshData2D and @ref Trade::MeshData3D constructors without the
-    `colors` parameter are deprecated, use the full ones instead
+-   @cpp Trade::MeshData2D @ce and @cpp Trade::MeshData3D @ce constructors
+    without the `colors` parameter are deprecated, use the full ones instead
 -   @cpp Shaders::Generic::Color @ce vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
 -   The bundled @ref std::optional implementation was causing serious conflicts

@@ -510,8 +510,8 @@ No dependency changes in this release.
 -   New @ref Shaders::Generic class with common definitions, so you can
     configure mesh for the generic shader and render it with any other
     compatible shader
--   Convenience @cpp hasNormals() @ce, @cpp hasTextureCoords2D() @ce functions to
-    @ref Trade::MeshData2D and @ref Trade::MeshData3D
+-   Convenience @cpp hasNormals() @ce, @cpp hasTextureCoords2D() @ce functions
+    in @cpp Trade::MeshData2D @ce and @cpp Trade::MeshData3D @ce
 -   OpenGL ES 3.0 build now shares list of vendor extensions with OpenGL ES 2.0
     build (i.e. only those extensions that aren't part of ES 3.0 are present in
     @cpp Extensions @ce)

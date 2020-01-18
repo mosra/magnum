@@ -74,8 +74,10 @@ class MeshIndexData;
 class MeshAttributeData;
 class MeshData;
 
-class MeshData2D;
-class MeshData3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+class CORRADE_DEPRECATED("use MeshData instead") MeshData2D;
+class CORRADE_DEPRECATED("use MeshData instead") MeshData3D;
+#endif
 class MeshObjectData2D;
 class MeshObjectData3D;
 class ObjectData2D;

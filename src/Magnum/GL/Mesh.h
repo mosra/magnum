@@ -196,8 +196,8 @@ layout using @ref setIndexBuffer(). You can also use @ref MeshTools::compressInd
 to conveniently compress the indices based on the range used.
 
 There is also @ref MeshTools::compile() function which operates directly on
-@ref Trade::MeshData2D / @ref Trade::MeshData3D and returns fully configured
-mesh and vertex/index buffers for use with stock shaders.
+@ref Trade::MeshData and returns fully configured mesh and vertex/index buffers
+for use with stock shaders.
 
 @attention Note that, by default, neither vertex buffers nor index buffer is
     managed (e.g. deleted on destruction) by the mesh, so you have to manage

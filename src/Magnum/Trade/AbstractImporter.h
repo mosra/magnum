@@ -1049,7 +1049,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @see @ref AbstractMaterialData::importerState(),
          *      @ref AnimationData::importerState(), @ref CameraData::importerState(),
          *      @ref ImageData::importerState(), @ref LightData::importerState(),
-         *      @ref MeshData2D::importerState(), @ref MeshData3D::importerState(),
+         *      @ref MeshData::importerState(),
          *      @ref ObjectData2D::importerState(), @ref ObjectData3D::importerState(),
          *      @ref SceneData::importerState(), @ref TextureData::importerState()
          */
@@ -1400,7 +1400,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref mesh3D()
          *
          * Default implementation returns @ref doMesh() converted to
-         * @ref MeshData3D for backwards compatibility.
+         * @cpp MeshData3D @ce for backwards compatibility.
          * @m_deprecated_since_latest Implement @ref doMesh() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
