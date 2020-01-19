@@ -44,6 +44,9 @@ struct CompressIndicesTest: TestSuite::Tester {
     template<class T> void compressUnsignedShort();
     template<class T> void compressUnsignedInt();
     void compressUnsignedByteInflateToShort();
+    /* No compressErased(), as that's tested in the templates above */
+    void compressErasedNonContiguous();
+    void compressErasedWrongIndexSize();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void compressDeprecated();
     #endif
@@ -59,6 +62,8 @@ CompressIndicesTest::CompressIndicesTest() {
               &CompressIndicesTest::compressUnsignedShort<UnsignedInt>,
               &CompressIndicesTest::compressUnsignedInt<UnsignedInt>,
               &CompressIndicesTest::compressUnsignedByteInflateToShort,
+              &CompressIndicesTest::compressErasedNonContiguous,
+              &CompressIndicesTest::compressErasedWrongIndexSize,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &CompressIndicesTest::compressDeprecated,
@@ -79,6 +84,14 @@ template<class T> void CompressIndicesTest::compressUnsignedByte() {
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first),
         Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
+
+    /* Test the type-erased variant as well */
+    out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)), MeshIndexType::UnsignedByte);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first),
+        Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
+        TestSuite::Compare::Container);
 }
 
 template<class T> void CompressIndicesTest::compressUnsignedShort() {
@@ -86,6 +99,14 @@ template<class T> void CompressIndicesTest::compressUnsignedShort() {
 
     const T indices[]{1, 256, 0, 5};
     std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+        Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
+        TestSuite::Compare::Container);
+
+    /* Test the type-erased variant as well */
+    out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)));
 
     CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
@@ -103,6 +124,14 @@ template<class T> void CompressIndicesTest::compressUnsignedInt() {
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
         Containers::arrayView<UnsignedInt>({65536, 3, 2}),
         TestSuite::Compare::Container);
+
+    /* Test the type-erased variant as well */
+    out = compressIndices(Containers::arrayCast<2, const char>(Containers::stridedArrayView(indices)));
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+        Containers::arrayView<UnsignedInt>({65536, 3, 2}),
+        TestSuite::Compare::Container);
 }
 
 void CompressIndicesTest::compressUnsignedByteInflateToShort() {
@@ -114,6 +143,26 @@ void CompressIndicesTest::compressUnsignedByteInflateToShort() {
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
         Containers::arrayView<UnsignedShort>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
+}
+
+void CompressIndicesTest::compressErasedNonContiguous() {
+    const char indices[6*4]{};
+
+    std::stringstream out;
+    Error redirectError{&out};
+    compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 2}, {4, 2}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): second view dimension is not contiguous\n");
+}
+
+void CompressIndicesTest::compressErasedWrongIndexSize() {
+    const char indices[6*3]{};
+
+    std::stringstream out;
+    Error redirectError{&out};
+    compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 3}}.every(2));
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

@@ -77,6 +77,17 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
 
+/**
+@brief Compress a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Compress vertex indices

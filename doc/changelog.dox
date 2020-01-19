@@ -211,9 +211,9 @@ See also:
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
 -   Added @ref MeshTools::compressIndices() that takes a
-    @ref Containers::StridedArrayView instead of a @ref std::vector and
-    additionally allows you to specify the smallest allowed type and is working
-    with 8- and 16-byte index types as well
+    @ref Corrade::Containers::StridedArrayView instead of a @ref std::vector
+    and additionally allows you to specify the smallest allowed type and is
+    working with 8- and 16-byte index types as well
 -   Added @ref MeshTools::subdivide() that operates on a (growable)
     @ref Corrade::Containers::Array instead of a @ref std::vector
 -   Added @ref MeshTools::subdivideInPlace() that operates on a partially

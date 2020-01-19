@@ -87,6 +87,18 @@ std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containe
     return compressIndicesImplementation(indices, atLeast);
 }
 
+std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const MeshIndexType atLeast) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::compressIndices(): second view dimension is not contiguous", {});
+    if(indices.size()[1] == 4)
+        return compressIndicesImplementation(Containers::arrayCast<1, const UnsignedInt>(indices), atLeast);
+    else if(indices.size()[1] == 2)
+        return compressIndicesImplementation(Containers::arrayCast<1, const UnsignedShort>(indices), atLeast);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::compressIndices(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
+        return compressIndicesImplementation(Containers::arrayCast<1, const UnsignedByte>(indices), atLeast);
+    }
+}
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     /** @todo Performance hint when range can be represented by smaller value? */
