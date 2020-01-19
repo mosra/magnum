@@ -28,6 +28,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/TypeTraits.h"
 #include "Magnum/MeshTools/Tipsify.h"
 #include "Magnum/MeshTools/Implementation/Tipsify.h"
 
@@ -37,7 +38,7 @@ struct TipsifyTest: TestSuite::Tester {
     explicit TipsifyTest();
 
     void buildAdjacency();
-    void tipsify();
+    template<class T> void tipsify();
     void oneDegenerateTriangle();
 };
 
@@ -85,7 +86,9 @@ constexpr std::size_t VertexCount = 19;
 
 TipsifyTest::TipsifyTest() {
     addTests({&TipsifyTest::buildAdjacency,
-              &TipsifyTest::tipsify,
+              &TipsifyTest::tipsify<UnsignedByte>,
+              &TipsifyTest::tipsify<UnsignedShort>,
+              &TipsifyTest::tipsify<UnsignedInt>,
               &TipsifyTest::oneDegenerateTriangle});
 }
 
@@ -134,11 +137,15 @@ void TipsifyTest::buildAdjacency() {
     }), TestSuite::Compare::Container);
 }
 
-void TipsifyTest::tipsify() {
-    std::vector<UnsignedInt> indices{std::begin(Indices), std::end(Indices)};
-    MeshTools::tipsify(indices, VertexCount, 3);
+template<class T> void TipsifyTest::tipsify() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
+    T indices[Containers::arraySize(Indices)];
+    for(std::size_t i = 0; i != Containers::arraySize(Indices); ++i)
+        indices[i] = Indices[i];
+    MeshTools::tipsifyInPlace(indices, VertexCount, 3);
+
+    CORRADE_COMPARE_AS(Containers::arrayView(indices), Containers::arrayView<T>({
         4, 1, 0,
         9, 5, 4,
         1, 4, 5,
@@ -158,16 +165,18 @@ void TipsifyTest::tipsify() {
         2, 1, 5,
         14, 15, 11, /* from dead-end vertex stack */
         16, 17, 18 /* arbitrary vertex */
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void TipsifyTest::oneDegenerateTriangle() {
     /* There used to be an OOB access (neighbors[++ti]) caught by ASan, this
        triggers it */
-    std::vector<UnsignedInt> indices{0, 0, 0};
-    MeshTools::tipsify(indices, 1, 2);
+    UnsignedInt indices[]{0, 0, 0};
+    MeshTools::tipsifyInPlace(indices, 1, 2);
 
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{0, 0, 0}));
+    CORRADE_COMPARE_AS(Containers::arrayView(indices),
+        Containers::arrayView<UnsignedInt>({0, 0, 0}),
+        TestSuite::Compare::Container);
 }
 
 }}}}
