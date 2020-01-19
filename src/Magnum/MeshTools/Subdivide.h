@@ -30,6 +30,7 @@
  */
 
 #include <vector>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Assert.h>
@@ -43,17 +44,33 @@ template<class IndexType, class Vertex, class Interpolator> void subdivideInPlac
 #endif
 
 /**
-@brief Subdivide the mesh
+@brief Subdivide a mesh
 @tparam Vertex          Vertex data type
 @tparam Interpolator    See the @p interpolator function parameter
 @param[in,out] indices  Index array to operate on
 @param[in,out] vertices Vertex array to operate on
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: @cpp Vertex interpolator(Vertex a, Vertex b) @ce
+@m_since_latest
 
-Goes through all triangle faces and subdivides them into four new. Removing
-duplicate vertices in the mesh is up to the user.
+Goes through all triangle faces and subdivides them into four new, enlarging
+the @p indices and @p vertices arrays as appropriate. Removing duplicate
+vertices in the mesh is up to the user.
 @see @ref subdivideInPlace(), @ref removeDuplicatesInPlace()
+*/
+template<class IndexType, class Vertex, class Interpolator> void subdivide(Containers::Array<IndexType>& indices, Containers::Array<Vertex>& vertices, Interpolator interpolator) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3", );
+
+    arrayResize(vertices, Containers::NoInit, vertices.size() + indices.size());
+    arrayResize(indices, Containers::NoInit, indices.size()*4);
+    subdivideInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(vertices), interpolator);
+}
+
+/**
+@brief Subdivide a mesh
+
+Same as @ref subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator), only
+working on a @ref std::vector.
 */
 template<class Vertex, class Interpolator> void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3", );
@@ -64,7 +81,7 @@ template<class Vertex, class Interpolator> void subdivide(std::vector<UnsignedIn
 }
 
 /**
-@brief Subdivide the mesh in-place
+@brief Subdivide a mesh in-place
 @tparam Vertex          Vertex data type
 @tparam Interpolator    See the @p interpolator function parameter
 @param[in,out] indices  Index array to operate on

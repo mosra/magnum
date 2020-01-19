@@ -37,6 +37,7 @@ struct SubdivideTest: TestSuite::Tester {
     explicit SubdivideTest();
 
     void subdivide();
+    void subdivideStl();
     void subdivideWrongIndexCount();
     template<class T> void subdivideInPlace();
     void subdivideInPlaceWrongIndexCount();
@@ -51,6 +52,7 @@ inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
 
 SubdivideTest::SubdivideTest() {
     addTests({&SubdivideTest::subdivide,
+              &SubdivideTest::subdivideStl,
               &SubdivideTest::subdivideWrongIndexCount,
               &SubdivideTest::subdivideInPlace<UnsignedByte>,
               &SubdivideTest::subdivideInPlace<UnsignedShort>,
@@ -60,6 +62,19 @@ SubdivideTest::SubdivideTest() {
 }
 
 void SubdivideTest::subdivide() {
+    auto positions = Containers::array<Vector1>({0, 2, 6, 8});
+    auto indices = Containers::array<UnsignedInt>({0, 1, 2, 1, 2, 3});
+    MeshTools::subdivide(indices, positions, interpolator);
+
+    CORRADE_COMPARE_AS(indices, Containers::arrayView<UnsignedInt>({
+        4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(positions, Containers::arrayView<Vector1>({
+        0, 2, 6, 8, 1, 4, 3, 4, 7, 5
+    }), TestSuite::Compare::Container);
+}
+
+void SubdivideTest::subdivideStl() {
     std::vector<Vector1> positions{0, 2, 6, 8};
     std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
     MeshTools::subdivide(indices, positions, interpolator);

@@ -106,6 +106,11 @@ See also:
 -   Added @ref Math::reflect() and @ref Math::refract() (see
     [mosra/magnum#420](https://github.com/mosra/magnum/pull/420))
 
+@subsubsection changelog-latest-new-meshtools MeshTools library
+
+-   Added @ref MeshTools::subdivideInPlace() for allocation-less mesh
+    subdivision
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Cursor management using @ref Platform::Sdl2Application::setCursor(),
@@ -205,6 +210,8 @@ See also:
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
+-   Added @ref MeshTools::subdivide() that operates on a (growable)
+    @ref Corrade::Containers::Array instead of a @ref std::vector
 -   Added @ref MeshTools::subdivideInPlace() that operates on a partially
     filled array view instead of a @ref std::vector
 -   Added @ref MeshTools::removeDuplicatesIndexedInPlace() that operates
