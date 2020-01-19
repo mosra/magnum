@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple> /* for std::tie() :( */
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -52,7 +53,7 @@
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Shaders/Phong.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 #include "Magnum/GL/SampleQuery.h"
@@ -1019,16 +1020,17 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 {
 /* [Mesh-interleaved] */
 /* Non-indexed primitive with positions and normals */
-Trade::MeshData3D plane = Primitives::planeSolid();
+Trade::MeshData plane = Primitives::planeSolid();
 
 /* Fill a vertex buffer with interleaved position and normal data */
 GL::Buffer buffer;
-buffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), GL::BufferUsage::StaticDraw);
+buffer.setData(MeshTools::interleave(plane.positions3DAsArray(),
+                                     plane.normalsAsArray()));
 
 /* Configure the mesh, add the vertex buffer */
 GL::Mesh mesh;
 mesh.setPrimitive(plane.primitive())
-    .setCount(plane.positions(0).size())
+    .setCount(plane.vertexCount())
     .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
 /* [Mesh-interleaved] */
 }
@@ -1048,14 +1050,14 @@ Vector3 positions[240]{
     // ...
 };
 GL::Buffer vertexBuffer;
-vertexBuffer.setData(positions, GL::BufferUsage::StaticDraw);
+vertexBuffer.setData(positions);
 
 /* Fill index buffer with index data */
 UnsignedByte indices[75]{
     // ...
 };
 GL::Buffer indexBuffer;
-indexBuffer.setData(indices, GL::BufferUsage::StaticDraw);
+indexBuffer.setData(indices);
 
 /* Configure the mesh, add both vertex and index buffer */
 GL::Mesh mesh;
@@ -1069,28 +1071,28 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 {
 /* [Mesh-indexed-tools] */
 // Indexed primitive
-Trade::MeshData3D cube = Primitives::cubeSolid();
+Trade::MeshData cube = Primitives::cubeSolid();
 
 // Fill vertex buffer with interleaved position and normal data
 GL::Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), GL::BufferUsage::StaticDraw);
+vertexBuffer.setData(MeshTools::interleave(cube.positions3DAsArray(),
+                                           cube.normalsAsArray()));
 
 // Compress index data
 Containers::Array<char> indexData;
 MeshIndexType indexType;
-UnsignedInt indexStart, indexEnd;
-std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
+std::tie(indexData, indexType) = MeshTools::compressIndices(cube.indices());
 
 // Fill index buffer
 GL::Buffer indexBuffer;
-indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
+indexBuffer.setData(indexData);
 
 // Configure the mesh, add both vertex and index buffer
 GL::Mesh mesh;
 mesh.setPrimitive(cube.primitive())
-    .setCount(cube.indices().size())
+    .setCount(cube.indexCount())
     .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
+    .setIndexBuffer(indexBuffer, 0, indexType);
 /* [Mesh-indexed-tools] */
 }
 
