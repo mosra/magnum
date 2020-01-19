@@ -26,30 +26,59 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::tipsify()
+ * @brief Function @ref Magnum::MeshTools::tipsifyInPlace()
  */
 
-#include <vector>
+#include <Corrade/Containers/Containers.h>
 
-#include "Magnum/Types.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Tipsify the mesh
+@brief Tipsify the mesh in-place
 @param[in,out] indices  Indices array to operate on
 @param[in] vertexCount  Vertex count
 @param[in] cacheSize    Post-transform vertex cache size
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
 array for beter usage of post-transform vertex cache. Algorithm used:
-*Pedro V. Sander, Diego Nehab, and Joshua Barczak --- Fast Triangle Reordering
+* *Pedro V. Sander, Diego Nehab, and Joshua Barczak --- Fast Triangle Reordering
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 @todo Ability to compute vertex count automatically
 */
-MAGNUM_MESHTOOLS_EXPORT void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
+MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief tipsifyInPlace()
+ * @m_deprecated_since_latest Use @ref tipsifyInPlace() instead.
+ */
+inline CORRADE_DEPRECATED("use tipsifyInPlace() instead") void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize) {
+    tipsifyInPlace(indices, vertexCount, cacheSize);
+}
+#endif
 
 }}
 

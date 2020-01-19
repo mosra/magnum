@@ -25,7 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
 
@@ -33,11 +34,10 @@ namespace Magnum { namespace MeshTools { namespace Implementation { namespace {
 
 /* Vertex-triangle adjacency. Computes count and indices of adjacent triangles
    for each vertex (used internally by tipsify()) */
-void buildAdjacency(const std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, std::vector<UnsignedInt>& liveTriangleCount, std::vector<UnsignedInt>& neighborOffset, std::vector<UnsignedInt>& neighbors) {
+template<class T> void buildAdjacency(const Containers::StridedArrayView1D<const T>& indices, const UnsignedInt vertexCount, Containers::Array<UnsignedInt>& liveTriangleCount, Containers::Array<UnsignedInt>& neighborOffset, Containers::Array<UnsignedInt>& neighbors) {
     /* How many times is each vertex referenced == count of neighboring
        triangles for each vertex */
-    liveTriangleCount.clear();
-    liveTriangleCount.resize(vertexCount);
+    liveTriangleCount = Containers::Array<UnsignedInt>{vertexCount};
     for(std::size_t i = 0; i != indices.size(); ++i)
         ++liveTriangleCount[indices[i]];
 
@@ -45,19 +45,17 @@ void buildAdjacency(const std::vector<UnsignedInt>& indices, const UnsignedInt v
        the end be in interval neighbors[neighborOffset[i]] ;
        neighbors[neighborOffset[i+1]]. Currently the values are shifted to
        right, because the next loop will shift them back left. */
-    neighborOffset.clear();
-    neighborOffset.reserve(vertexCount+1);
-    neighborOffset.push_back(0);
+    neighborOffset = Containers::Array<UnsignedInt>{Containers::NoInit, vertexCount + 1};
+    neighborOffset[0] = 0;
     UnsignedInt sum = 0;
     for(std::size_t i = 0; i != vertexCount; ++i) {
-        neighborOffset.push_back(sum);
+        neighborOffset[i + 1] = sum;
         sum += liveTriangleCount[i];
     }
 
     /* Array of neighbors, using (and changing) neighborOffset array for
        positioning */
-    neighbors.clear();
-    neighbors.resize(sum);
+    neighbors = Containers::Array<UnsignedInt>{Containers::NoInit, sum};
     for(std::size_t i = 0; i != indices.size(); ++i)
         neighbors[neighborOffset[indices[i]+1]++] = i/3;
 }

@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Tipsify.h"
@@ -54,7 +56,7 @@ struct TipsifyTest: TestSuite::Tester {
 
 */
 
-const std::vector<UnsignedInt> Indices{
+constexpr UnsignedInt Indices[]{
     4, 1, 0,
     10, 9, 13,
     6, 3, 2,
@@ -88,27 +90,26 @@ TipsifyTest::TipsifyTest() {
 }
 
 void TipsifyTest::buildAdjacency() {
-    std::vector<UnsignedInt> indices = Indices;
-    std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
-    Implementation::buildAdjacency(indices, VertexCount, liveTriangleCount, neighborOffset, neighbors);
+    Containers::Array<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
+    Implementation::buildAdjacency(Containers::stridedArrayView(Indices), VertexCount, liveTriangleCount, neighborOffset, neighbors);
 
-    CORRADE_COMPARE(liveTriangleCount, (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(liveTriangleCount, Containers::arrayView<UnsignedInt>({
         1, 3, 3, 2,
         4, 6, 6, 2,
         2, 6, 6, 4,
         2, 3, 3, 1,
         1, 1, 1
-    }));
+    }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(neighborOffset, (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(neighborOffset, Containers::arrayView<UnsignedInt>({
         0, 1, 4, 7,
         9, 13, 19, 25,
         27, 29, 35, 41,
         45, 47, 50, 53,
         54, 55, 56, 57
-    }));
+    }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(neighbors, (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(neighbors, Containers::arrayView<UnsignedInt>({
         0,
         0, 7, 11,
         2, 7, 13,
@@ -130,11 +131,11 @@ void TipsifyTest::buildAdjacency() {
         6,
 
         18, 18, 18
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void TipsifyTest::tipsify() {
-    std::vector<UnsignedInt> indices = Indices;
+    std::vector<UnsignedInt> indices{std::begin(Indices), std::end(Indices)};
     MeshTools::tipsify(indices, VertexCount, 3);
 
     CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{

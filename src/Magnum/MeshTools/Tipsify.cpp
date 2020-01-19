@@ -25,36 +25,43 @@
 
 #include "Tipsify.h"
 
-#include <stack>
+#include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/MeshTools/Implementation/Tipsify.h"
 
 namespace Magnum { namespace MeshTools {
 
-void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
+namespace {
+
+template<class T> void tipsifyInPlaceImplementation(const Containers::StridedArrayView1D<T>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
     /* Neighboring triangles for each vertex, per-vertex live triangle count */
-    std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
-    Implementation::buildAdjacency(indices, vertexCount, liveTriangleCount, neighborOffset, neighbors);
+    Containers::Array<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
+    Implementation::buildAdjacency<T>(indices, vertexCount, liveTriangleCount, neighborOffset, neighbors);
 
     /* Global time, per-vertex caching timestamps, per-triangle emmited flag */
     UnsignedInt time = cacheSize+1;
-    std::vector<UnsignedInt> timestamp(vertexCount);
-    std::vector<bool> emitted(indices.size()/3);
+    Containers::Array<UnsignedInt> timestamp{vertexCount};
+    /** @todo Have some bitset/staticbitset class for this */
+    Containers::Array<bool> emitted{indices.size()/3};
 
     /* Dead-end vertex stack */
-    std::stack<UnsignedInt> deadEndStack;
+    Containers::Array<UnsignedInt> deadEndStack;
 
     /* Output index buffer */
-    std::vector<UnsignedInt> outputIndices;
-    outputIndices.reserve(indices.size());
+    Containers::Array<T> outputIndices{Containers::NoInit, indices.size()};
+    std::size_t outputIndex = 0;
+
+    /* Array with candidates for next fanning vertex (in 1-ring around
+       fanning vertex) */
+    Containers::Array<UnsignedInt> candidates;
 
     /* Starting vertex for fanning, cursor */
     UnsignedInt fanningVertex = 0;
     UnsignedInt i = 0;
     while(fanningVertex != 0xFFFFFFFFu) {
-        /* Array with candidates for next fanning vertex (in 1-ring around
-           fanning vertex) */
-        std::vector<UnsignedInt> candidates;
+        /* Reset the candidates for this vertex */
+        arrayResize(candidates, 0);
 
         /* For all neighbors of fanning vertex */
         for(UnsignedInt ti = neighborOffset[fanningVertex]; ti != neighborOffset[fanningVertex+1]; ++ti) {
@@ -68,12 +75,12 @@ void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, c
             for(UnsignedInt vi = 0; vi != 3; ++vi) {
                 const UnsignedInt v = indices[vi + t*3];
 
-                outputIndices.push_back(v);
+                outputIndices[outputIndex++] = v;
 
                 /* Add to dead end stack and candidates array */
                 /** @todo Limit size of dead end stack to cache size */
-                deadEndStack.push(v);
-                candidates.push_back(v);
+                arrayAppend(deadEndStack, v);
+                arrayAppend(candidates, v);
 
                 /* Decrease live triangle count */
                 --liveTriangleCount[v];
@@ -109,8 +116,8 @@ void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, c
         if(fanningVertex == 0xFFFFFFFFu) {
             /* Find vertex with live triangles in dead-end stack */
             while(!deadEndStack.empty()) {
-                unsigned int d = deadEndStack.top();
-                deadEndStack.pop();
+                UnsignedInt d = deadEndStack.back();
+                arrayRemoveSuffix(deadEndStack);
 
                 if(!liveTriangleCount[d]) continue;
                 fanningVertex = d;
@@ -129,8 +136,21 @@ void tipsify(std::vector<UnsignedInt>& indices, const UnsignedInt vertexCount, c
     }
 
     /* Swap original index buffer with optimized */
-    using std::swap;
-    swap(indices, outputIndices);
+    Utility::copy(outputIndices, indices);
+}
+
+}
+
+void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
+    tipsifyInPlaceImplementation(indices, vertexCount, cacheSize);
+}
+
+void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
+    tipsifyInPlaceImplementation(indices, vertexCount, cacheSize);
+}
+
+void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const UnsignedInt vertexCount, const std::size_t cacheSize) {
+    tipsifyInPlaceImplementation(indices, vertexCount, cacheSize);
 }
 
 }}

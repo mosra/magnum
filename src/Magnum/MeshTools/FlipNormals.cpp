@@ -25,11 +25,16 @@
 
 #include "FlipNormals.h"
 
+#include <vector>
+#include <Corrade/Containers/StridedArrayView.h>
+
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace MeshTools {
 
-void flipFaceWinding(std::vector<UnsignedInt>& indices) {
+namespace {
+
+template<class T> inline void flipFaceWindingInPlaceImplementation(const Containers::StridedArrayView1D<T>& indices) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
 
     using std::swap;
@@ -37,9 +42,37 @@ void flipFaceWinding(std::vector<UnsignedInt>& indices) {
         swap(indices[i+1], indices[i+2]);
 }
 
-void flipNormals(std::vector<Vector3>& normals) {
+}
+
+void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices) {
+    flipFaceWindingInPlaceImplementation(indices);
+}
+
+void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices) {
+    flipFaceWindingInPlaceImplementation(indices);
+}
+
+void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices) {
+    flipFaceWindingInPlaceImplementation(indices);
+}
+
+void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals) {
     for(Vector3& normal: normals)
         normal = -normal;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals) {
+    flipNormalsInPlace(indices, normals);
+}
+
+void flipFaceWinding(std::vector<UnsignedInt>& indices) {
+    flipFaceWindingInPlace(indices);
+}
+
+void flipNormals(std::vector<Vector3>& normals) {
+    flipNormalsInPlace(normals);
+}
+#endif
 
 }}

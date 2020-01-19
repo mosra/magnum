@@ -26,52 +26,119 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::flipFaceWinding(), @ref Magnum::MeshTools::flipNormals()
+ * @brief Function @ref Magnum::MeshTools::flipFaceWindingInPlace(), @ref Magnum::MeshTools::flipNormalsInPlace()
  */
 
-#include <vector>
+#include <Corrade/Containers/Containers.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/StlForwardVector.h>
+#include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace MeshTools {
 
 /**
-@brief Flip face winding
-@param[in,out] indices  Index array to operate on
-
-The same as @ref flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
-but flips only face winding.
-
-@attention The function requires the mesh to have triangle faces, thus index
-    count must be divisible by 3.
-*/
-void MAGNUM_MESHTOOLS_EXPORT flipFaceWinding(std::vector<UnsignedInt>& indices);
-
-/**
-@brief Flip mesh normals
-@param[in,out] normals  Normal array to operate on
-
-The same as @ref flipNormals(std::vector<UnsignedInt>&, std::vector<Vector3>&),
-but flips only normals, not face winding.
-*/
-void MAGNUM_MESHTOOLS_EXPORT flipNormals(std::vector<Vector3>& normals);
-
-/**
-@brief Flip mesh normals and face winding
+@brief Flip mesh normals and face winding in-place
 @param[in,out] indices  Index array to operate on
 @param[in,out] normals  Normal array to operate on
 
 Flips normal vectors and face winding in index array for face culling to work
-properly too. See also @ref flipNormals(std::vector<Vector3>&) and
-@ref flipFaceWinding(), which flip normals or face winding only.
-
-@attention The function requires the mesh to have triangle faces, thus index
-    count must be divisible by 3.
+properly too. See also @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+and @ref flipFaceWindingInPlace(), which flip normals or face winding only.
+Expects a triangle mesh, thus the index count has to be divisible by 3.
 */
-inline void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals) {
-    flipFaceWinding(indices);
-    flipNormals(normals);
+void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since_latest Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+    instead.
+*/
+CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals);
+#endif
+
+/**
+@brief Flip face winding in-place
+@param[in,out] indices  Index array to operate on
+@m_since_latest
+
+Same as @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&),
+but flips only face winding. Expects a triangle mesh, thus the index count has
+to be divisible by 3.
+*/
+void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+@m_deprecated_since_latest Use @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+    instead.
+*/
+CORRADE_DEPRECATED("use flipFaceWindingInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipFaceWinding(std::vector<UnsignedInt>& indices);
+#endif
+
+/**
+@brief Flip mesh normals in-place
+@param[in,out] normals  Normal array to operate on
+
+Same as @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&),
+but flips only normals, not face winding.
+*/
+void MAGNUM_MESHTOOLS_EXPORT flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since_latest Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+    instead.
+*/
+CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<Vector3>& normals);
+#endif
+
+inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
+    flipFaceWindingInPlace(indices);
+    flipNormalsInPlace(normals);
+}
+
+inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
+    flipFaceWindingInPlace(indices);
+    flipNormalsInPlace(normals);
+}
+
+inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
+    flipFaceWindingInPlace(indices);
+    flipNormalsInPlace(normals);
 }
 
 }}

@@ -219,6 +219,13 @@ See also:
     @ref MeshTools::removeDuplicatesInPlace() variant
 -   Added @ref MeshTools::duplicateInto() variants that take type-erased
     2D strided array views
+-   @ref MeshTools::flipNormalsInPlace() and @ref MeshTools::flipFaceWindingInPlace()
+    were renamed for clarity and now accept a
+    @ref Corrade::Containers::StridedArrayView instead of a @ref std::vector,
+    additionally working on 8- and 16-byte index types as well
+-   @ref MeshTools::tipsifyInPlace() was renamed for clarity and now accepts a
+    @ref Corrade::Containers::StridedArrayView instead of a @ref std::vector,
+    additionally working on 8- and 16-byte index types as well
 -   Added @ref MeshTools::generateSmoothNormals() and
     @ref MeshTools::generateSmoothNormalsInto() variants taking type-erased
     index arrays
@@ -313,8 +320,8 @@ See also:
 -   It was not possible to override DPI scaling using
     @ref Platform::Sdl2Application::Configuration as command-line arguments
     always got a priority (see [mosra/magnum#416](https://github.com/mosra/magnum/issues/416))
--   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsify() that
-    could trigger ASan or debug iterator errors
+-   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsifyInPlace()
+    that could trigger ASan or debug iterator errors
 -   With @ref Corrade/Utility/DebugStl.h not being included, @ref std::string
     instances could get accidentally printed as @ref ResourceKey instances.
     Added and explicit header dependency to avoid such cases.
@@ -356,6 +363,12 @@ See also:
     @ref Text::FontConverterFeatures, @ref Trade::ImporterFeatures,
     @ref Trade::ImageConverterFeatures enum sets and their corresponding enums
     placed directly in the namespace to have them shorter and unambiguous
+-   @cpp MeshTools::flipNormals() @ce and @cpp MeshTools::flipFaceWinding() @ce
+    and @cpp MeshTools::tipsify() @ce are deprecated in favor of
+    @ref MeshTools::flipNormalsInPlace(),
+    @ref MeshTools::flipFaceWindingInPlace() and @ref MeshTools::tipsifyInPlace()
+    that accept a @ref Corrade::Containers::StridedArrayView instead of a
+    @ref std::vector and work with 8- and 16-byte index types as well.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
