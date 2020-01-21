@@ -102,12 +102,12 @@ template<class T> inline auto isNan(Corrade::Containers::StridedArrayView1D<cons
 }
 
 /** @overload */
-template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
+template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isNan(std::declval<T>())) {
     return isNan<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
-template<class T, std::size_t size> inline bool isNan(const T(&array)[size]) {
+template<class T, std::size_t size> inline auto isNan(const T(&array)[size]) -> decltype(isNan(std::declval<T>())) {
     return isNan<T>(Corrade::Containers::arrayView(array));
 }
 

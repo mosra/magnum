@@ -82,6 +82,9 @@ void FunctionsBatchTest::isInf() {
 
     const Float b[]{5.0f, -2.0f, -1.0};
     CORRADE_VERIFY(!Math::isInf(b));
+
+    Vector2 c[]{{5.0f, -3.0f}, {-2.0f, 14.0f}, {Constants::inf(), -5.0f}};
+    CORRADE_COMPARE(Math::isInf(c), BoolVector<2>{1});
 }
 
 void FunctionsBatchTest::isNan() {
@@ -103,6 +106,9 @@ void FunctionsBatchTest::isNan() {
 
     const Float b[]{5.0f, -2.0f, -1.0};
     CORRADE_VERIFY(!Math::isNan(b));
+
+    Vector2 c[]{{5.0f, -3.0f}, {14.0f, Constants::nan()}, {-2.0f, -5.0f}};
+    CORRADE_COMPARE(Math::isNan(c), BoolVector<2>{2});
 }
 
 void FunctionsBatchTest::min() {
