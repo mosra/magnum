@@ -39,6 +39,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/MeshTools/visibility.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -50,6 +51,55 @@ namespace Implementation {
             }
     };
 }
+
+/**
+@brief Remove duplicate data from given array in-place
+@param[in,out] data Data array, duplicate items will be cut away with order
+    preserved
+@return Size of unique prefix in the cleaned up @p data array and the resulting
+    index array
+@m_since_latest
+
+Removes duplicate data from given array by comparing the second dimension of
+each item, the second dimension is expected to be contiguous. A plain bit-exact
+matching is used, if you need fuzzy comparison for floating-point data, use
+@ref removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
+instead. If you want to remove duplicate data from an already indexed array,
+use @ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<char>&)
+instead. Usage example:
+
+@snippet MagnumMeshTools.cpp removeDuplicates
+
+@see @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
+
+/**
+@brief Remove duplicates from indexed data in-place
+@param[in,out] indices  Index array, which will get remapped to list just
+    unique data
+@param[in,out] data     Data array, duplicate items will be cut away with order
+    preserved
+@return Size of unique prefix in the cleaned up @p data array
+@m_since_latest
+
+Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
+this variant is more suited for data that are already indexed as it works on
+the existing index array instead of allocating a new one.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<char>& data);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<char>& data);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<char>& data);
 
 /**
 @brief Remove duplicate floating-point vector data from given array in-place
@@ -64,13 +114,14 @@ namespace Implementation {
 Removes duplicate data from the array by collapsing them into buckets of size
 @p epsilon. First vector in given bucket is used, other ones are thrown away,
 no interpolation is done. Note that this function is meant to be used for
-floating-point data (or generally with non-zero @p epsilon), for discrete data
-the usual sorting method is much more efficient.
+floating-point data (or generally with non-zero @p epsilon), for data where
+bit-exact matching is sufficient use @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
+instead.
 
 If you want to remove duplicate data from an already indexed array, use
-@ref removeDuplicatesIndexedInPlace() instead. See also
-@ref removeDuplicates(std::vector<Vector>&, typename Vector::Type) for a
-variant operating on a STL vector.
+@ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>&, const Containers::StridedArrayView1D<Vector>&, typename Vector::Type) instead.
+See also @ref removeDuplicates(std::vector<Vector>&, typename Vector::Type) for
+a variant operating on a STL vector.
 */
 template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
 
@@ -104,9 +155,9 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
 @return Size of unique prefix in the cleaned up @p data array
 @m_since_latest
 
-Compared to @ref removeDuplicatesInPlace() this variant is more suited for data
-that is already indexed as it works on the existing index array instead of
-allocating a new one.
+Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
+this variant is more suited for data that are already indexed as it works on
+the existing index array instead of allocating a new one.
 */
 template<class IndexType, class Vector> std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
     /* Somehow ~IndexType{} doesn't work for < 4byte types, as the result is

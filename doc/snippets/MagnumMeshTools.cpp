@@ -97,6 +97,18 @@ auto data = MeshTools::interleave(positions, weights, 2, vertexColors, 1);
 }
 
 {
+/* [removeDuplicates] */
+Containers::ArrayView<Vector3i> data;
+
+std::size_t size;
+Containers::Array<UnsignedInt> indices;
+std::tie(indices, size) = MeshTools::removeDuplicatesInPlace(
+    Containers::arrayCast<2, char>(data));
+data = data.prefix(size);
+/* [removeDuplicates] */
+}
+
+{
 /* [removeDuplicates-multiple] */
 std::vector<Vector3> positions;
 std::vector<Vector2> texCoords;

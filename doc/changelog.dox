@@ -110,6 +110,8 @@ See also:
 
 -   Added @ref MeshTools::subdivideInPlace() for allocation-less mesh
     subdivision
+-   New @ref MeshTools::removeDuplicatesInPlace() variant that works on
+    discrete data in addition to floating-point
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

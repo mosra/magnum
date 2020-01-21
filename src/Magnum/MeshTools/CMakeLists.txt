@@ -33,7 +33,8 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     CompressIndices.cpp
     Duplicate.cpp
     FlipNormals.cpp
-    GenerateNormals.cpp)
+    GenerateNormals.cpp
+    RemoveDuplicates.cpp)
 
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
