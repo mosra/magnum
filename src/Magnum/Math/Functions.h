@@ -658,8 +658,4 @@ template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Ve
 
 }}
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Math/FunctionsBatch.h" /** @todo remove once compat is dropped */
-#endif
-
 #endif

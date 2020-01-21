@@ -233,6 +233,9 @@ See also:
     now return a signed scaling vector instead of unsigned in order to prevent
     information loss. To restore the old behavior, apply @ref Math::abs() on
     the result.
+-   The @ref Magnum/Math/FunctionsBatch.h header is no longer included from
+    @ref Magnum/Math/Functions.h for backwards compatibility in order to speed
+    up compile times.
 -   @ref Platform::GlfwApplication::setMinWindowSize() /
     @ref Platform::GlfwApplication::setMaxWindowSize() and equivalent APIs in
     @ref Platform::Sdl2Application now premultiply the value with
