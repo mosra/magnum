@@ -36,6 +36,16 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+
+/** @todo Utility/Algorithms.h has a similar (but different) variant of this,
+    maybe turn that into some public utility once we have one more use case? */
+template<class T, class View = decltype(Corrade::Containers::Implementation::ErasedArrayViewConverter<typename std::remove_reference<T&&>::type>::from(std::declval<T&&>()))> static auto stridedArrayViewTypeFor(T&&) -> typename View::Type;
+template<class T> static T stridedArrayViewTypeFor(const Corrade::Containers::ArrayView<T>&);
+template<class T> static T stridedArrayViewTypeFor(const Corrade::Containers::StridedArrayView1D<T>&);
+
+}
+
 /**
 @{ @name Batch functions
 
@@ -67,14 +77,26 @@ template<class T> auto isInf(Corrade::Containers::StridedArrayView1D<const T> ra
     return out;
 }
 
+/**
+@overload
+@m_since_latest
+
+Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
+above overload. Works with any type that's convertible to
+@ref Corrade::Containers::StridedArrayView.
+*/
+template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline auto isInf(Iterable&& range) -> decltype(isInf(std::declval<T>())) {
+    return isInf(Corrade::Containers::StridedArrayView1D<const T>{range});
+}
+
 /** @overload */
 template<class T> inline auto isInf(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
-    return isInf<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return isInf(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline auto isInf(const T(&array)[size]) -> decltype(isInf(std::declval<T>())) {
-    return isInf<T>(Corrade::Containers::arrayView(array));
+    return isInf(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /**
@@ -101,14 +123,27 @@ template<class T> inline auto isNan(Corrade::Containers::StridedArrayView1D<cons
     return out;
 }
 
+/**
+@overload
+@m_since_latest
+
+Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
+above overload. Works with any type that's convertible to
+@ref Corrade::Containers::StridedArrayView.
+*/
+/* See isInf() for why arrayView() and not stridedArrayView() */
+template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline auto isNan(Iterable&& range) -> decltype(isNan(std::declval<T>())) {
+    return isNan(Corrade::Containers::StridedArrayView1D<const T>{range});
+}
+
 /** @overload */
 template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isNan(std::declval<T>())) {
-    return isNan<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return isNan(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline auto isNan(const T(&array)[size]) -> decltype(isNan(std::declval<T>())) {
-    return isNan<T>(Corrade::Containers::arrayView(array));
+    return isNan(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 namespace Implementation {
@@ -162,14 +197,26 @@ template<class T> inline T min(Corrade::Containers::StridedArrayView1D<const T> 
     return iOut.second;
 }
 
+/**
+@overload
+@m_since_latest
+
+Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
+above overload. Works with any type that's convertible to
+@ref Corrade::Containers::StridedArrayView.
+*/
+template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T min(Iterable&& range) {
+    return min(Corrade::Containers::StridedArrayView1D<const T>{range});
+}
+
 /** @overload */
 template<class T> inline T min(std::initializer_list<T> list) {
-    return min<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return min(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T min(const T(&array)[size]) {
-    return min<T>(Corrade::Containers::arrayView(array));
+    return min(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /**
@@ -189,14 +236,26 @@ template<class T> inline T max(Corrade::Containers::StridedArrayView1D<const T> 
     return iOut.second;
 }
 
+/**
+@overload
+@m_since_latest
+
+Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
+above overload. Works with any type that's convertible to
+@ref Corrade::Containers::StridedArrayView.
+*/
+template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T max(Iterable&& range) {
+    return max(Corrade::Containers::StridedArrayView1D<const T>{range});
+}
+
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
-    return max<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return max(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T max(const T(&array)[size]) {
-    return max<T>(Corrade::Containers::arrayView(array));
+    return max(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 namespace Implementation {
@@ -232,14 +291,26 @@ template<class T> inline std::pair<T, T> minmax(Corrade::Containers::StridedArra
     return {min, max};
 }
 
+/**
+@overload
+@m_since_latest
+
+Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
+above overload. Works with any type that's convertible to
+@ref Corrade::Containers::StridedArrayView.
+*/
+template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline std::pair<T, T> minmax(Iterable&& range) {
+    return minmax(Corrade::Containers::StridedArrayView1D<const T>{range});
+}
+
 /** @overload */
 template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
-    return minmax<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return minmax(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
-    return minmax<T>(Corrade::Containers::arrayView(array));
+    return minmax(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /*@}*/

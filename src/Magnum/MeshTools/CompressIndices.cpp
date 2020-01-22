@@ -49,7 +49,7 @@ template<class T> inline Containers::Array<char> compress(const std::vector<Unsi
 
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     /** @todo Performance hint when range can be represented by smaller value? */
-    const auto minmax = Math::minmax<UnsignedInt>(indices);
+    const auto minmax = Math::minmax(indices);
     Containers::Array<char> data;
     MeshIndexType type;
     switch(Math::log(256, minmax.second)) {
@@ -76,7 +76,7 @@ std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> com
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
     #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
-    const auto max = Math::max<UnsignedInt>(indices);
+    const auto max = Math::max(indices);
     CORRADE_ASSERT(Math::log(256, max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << max, {});
     #endif
 

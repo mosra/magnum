@@ -132,6 +132,9 @@ See also:
 -   @ref Math::Matrix3::scaling() const and @ref Math::Matrix4::scaling() const
     now return a signed scaling vector, taking into account negative scaling as
     well
+-   Functions in @ref Magnum/Math/FunctionsBatch.h now accept any type that's
+    convertible to a @ref Corrade::Containers::StridedArrayView without having
+    to add explicit casts or template parameters
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

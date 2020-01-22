@@ -406,7 +406,7 @@ void GenerateNormalsTest::benchmarkFlat() {
         generateFlatNormalsInto(positions, normals);
     }
 
-    CORRADE_COMPARE(Math::min<Vector3>(normals), (Vector3{-1.0f, -1.0f, -1.0f}));
+    CORRADE_COMPARE(Math::min(normals), (Vector3{-1.0f, -1.0f, -1.0f}));
 }
 
 void GenerateNormalsTest::benchmarkSmooth() {
@@ -417,7 +417,7 @@ void GenerateNormalsTest::benchmarkSmooth() {
             BeveledCubePositions, normals);
     }
 
-    CORRADE_COMPARE(Math::min<Vector3>(normals), (Vector3{-0.996072f, -0.997808f, -0.996072f}));
+    CORRADE_COMPARE(Math::min(normals), (Vector3{-0.996072f, -0.997808f, -0.996072f}));
 }
 
 }}}}
