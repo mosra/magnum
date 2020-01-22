@@ -24,12 +24,15 @@
 */
 
 #include <sstream>
+#include <vector>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Endianness.h>
 
+#include "Magnum/Math/TypeTraits.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
@@ -37,42 +40,91 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct CompressIndicesTest: TestSuite::Tester {
     explicit CompressIndicesTest();
 
-    void compressChar();
-    void compressShort();
-    void compressInt();
+    template<class T> void compressUnsignedByte();
+    template<class T> void compressUnsignedShort();
+    template<class T> void compressUnsignedInt();
+    void compressUnsignedByteInflateToShort();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void compressDeprecated();
+    #endif
 
     void compressAsShort();
 };
 
 CompressIndicesTest::CompressIndicesTest() {
-    addTests({&CompressIndicesTest::compressChar,
-              &CompressIndicesTest::compressShort,
-              &CompressIndicesTest::compressInt,
+    addTests({&CompressIndicesTest::compressUnsignedByte<UnsignedByte>,
+              &CompressIndicesTest::compressUnsignedByte<UnsignedShort>,
+              &CompressIndicesTest::compressUnsignedByte<UnsignedInt>,
+              &CompressIndicesTest::compressUnsignedShort<UnsignedShort>,
+              &CompressIndicesTest::compressUnsignedShort<UnsignedInt>,
+              &CompressIndicesTest::compressUnsignedInt<UnsignedInt>,
+              &CompressIndicesTest::compressUnsignedByteInflateToShort,
+
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &CompressIndicesTest::compressDeprecated,
+              #endif
 
               &CompressIndicesTest::compressAsShort});
 }
 
-void CompressIndicesTest::compressChar() {
-    Containers::Array<char> data;
-    MeshIndexType type;
-    UnsignedInt start, end;
-    std::tie(data, type, start, end) = MeshTools::compressIndices(
-        std::vector<UnsignedInt>{1, 2, 3, 0, 4});
+template<class T> void CompressIndicesTest::compressUnsignedByte() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
-    CORRADE_COMPARE(start, 0);
-    CORRADE_COMPARE(end, 4);
-    CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(data),
+    const T indices[]{1, 2, 3, 0, 4};
+    /* By default it has 16-byte type as minimum, override */
+    std::pair<Containers::Array<char>, MeshIndexType> out =
+        compressIndices(indices, MeshIndexType::UnsignedByte);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(out.first),
         Containers::arrayView<UnsignedByte>({1, 2, 3, 0, 4}),
         TestSuite::Compare::Container);
 }
 
-void CompressIndicesTest::compressShort() {
+template<class T> void CompressIndicesTest::compressUnsignedShort() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const T indices[]{1, 256, 0, 5};
+    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+        Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
+        TestSuite::Compare::Container);
+}
+
+template<class T> void CompressIndicesTest::compressUnsignedInt() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const T indices[]{65536, 3, 2};
+    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(out.first),
+        Containers::arrayView<UnsignedInt>({65536, 3, 2}),
+        TestSuite::Compare::Container);
+}
+
+void CompressIndicesTest::compressUnsignedByteInflateToShort() {
+    const UnsignedByte indices[]{1, 2, 3, 0, 4};
+    /* That's the default */
+    std::pair<Containers::Array<char>, MeshIndexType> out = compressIndices(indices);
+
+    CORRADE_COMPARE(out.second, MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(out.first),
+        Containers::arrayView<UnsignedShort>({1, 2, 3, 0, 4}),
+        TestSuite::Compare::Container);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void CompressIndicesTest::compressDeprecated() {
     Containers::Array<char> data;
     MeshIndexType type;
     UnsignedInt start, end;
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{1, 256, 0, 5});
+    CORRADE_IGNORE_DEPRECATED_POP
 
     CORRADE_COMPARE(start, 0);
     CORRADE_COMPARE(end, 256);
@@ -81,21 +133,7 @@ void CompressIndicesTest::compressShort() {
         Containers::arrayView<UnsignedShort>({1, 256, 0, 5}),
         TestSuite::Compare::Container);
 }
-
-void CompressIndicesTest::compressInt() {
-    Containers::Array<char> data;
-    MeshIndexType type;
-    UnsignedInt start, end;
-    std::tie(data, type, start, end) = MeshTools::compressIndices(
-        std::vector<UnsignedInt>{65536, 3, 2});
-
-    CORRADE_COMPARE(start, 2);
-    CORRADE_COMPARE(end, 65536);
-    CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(data),
-        Containers::arrayView<UnsignedInt>({65536, 3, 2}),
-        TestSuite::Compare::Container);
-}
+#endif
 
 void CompressIndicesTest::compressAsShort() {
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),

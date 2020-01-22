@@ -26,21 +26,65 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::compressIndices()
+ * @brief Function @ref Magnum::MeshTools::compressIndices(), @ref Magnum::MeshTools::compressIndicesAs()
  */
 
-#include <tuple>
-#include <vector>
+#include <utility>
+#include <Corrade/Containers/Containers.h>
+#include <Corrade/Utility/StlForwardVector.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace MeshTools {
 
+/**
+@brief Compress an index array
+@param indices  Index array
+@param atLeast  Smallest allowed type
+@return Compressed index array and corresponding type
+@m_since_latest
+
+This function compresses @p indices to the smallest possible size. For example
+when your indices have the maximum vertex index 463, it's wasteful to store
+them in array of 32bit integers, array of 16bit integers is sufficient. The
+@p atLeast parameter allows you to specify the smallest type to use and it
+defaults to @ref MeshIndexType::UnsignedShort as 8-bit types are not friendly
+to many GPUs (and for example unextended Vulkan or D3D12 don't even support
+them). It's also possible to choose a type larger than the input type to
+"inflate" an index buffer of a smaller type.
+
+Example usage:
+
+@snippet MagnumMeshTools-gl.cpp compressIndices
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Compress vertex indices
 @param indices  Index array
 @return Index range, type and compressed index array
+@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType)
+    instead. The index range isn't returned anymore, use @ref Math::minmax(const Containers::StridedArrayView1D<const T>&)
+    to get it if needed.
 
 This function takes index array and outputs them compressed to smallest
 possible size. For example when your indices have maximum number 463, it's
@@ -49,11 +93,12 @@ sufficient.
 
 Example usage:
 
-@snippet MagnumMeshTools-gl.cpp compressIndices
+@snippet MagnumMeshTools-gl.cpp compressIndices-stl
 
 @see @ref compressIndicesAs()
 */
-std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
+CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices);
+#endif
 
 /**
 @brief Compress vertex indices as given type

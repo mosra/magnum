@@ -35,7 +35,9 @@ namespace Magnum { namespace MeshTools {
 
 namespace {
 
-template<class T> inline Containers::Array<char> compress(const std::vector<UnsignedInt>& indices) {
+template<class T, class U> inline Containers::Array<char> compress(const Containers::StridedArrayView1D<const U>& indices) {
+    /* Can't use Utility::copy() here because we're copying from a larger type
+       to a smaller one */
     Containers::Array<char> buffer(indices.size()*sizeof(T));
     for(std::size_t i = 0; i != indices.size(); ++i) {
         T index = static_cast<T>(indices[i]);
@@ -45,34 +47,56 @@ template<class T> inline Containers::Array<char> compress(const std::vector<Unsi
     return buffer;
 }
 
+template<class T> std::pair<Containers::Array<char>, MeshIndexType> compressIndicesImplementation(const Containers::StridedArrayView1D<const T>& indices, const MeshIndexType atLeast) {
+    const T max = Math::max(indices);
+    Containers::Array<char> out;
+    MeshIndexType type;
+    const UnsignedInt log = Math::log(256, max);
+
+    /* If it fits into 8 bytes and 8 bytes are allowed, pack into 8 */
+    if(log == 0 && atLeast == MeshIndexType::UnsignedByte) {
+        out = compress<UnsignedByte>(indices);
+        type = MeshIndexType::UnsignedByte;
+
+    /* Otherwise, if it fits into either 8 or 16 bytes and we allow either 8 or
+       16, pack into 16 */
+    } else if(log <= 1 && atLeast != MeshIndexType::UnsignedInt) {
+        out = compress<UnsignedShort>(indices);
+        type = MeshIndexType::UnsignedShort;
+
+    /* Otherwise pack into 32 */
+    } else {
+        out = compress<UnsignedInt>(indices);
+        type = MeshIndexType::UnsignedInt;
+    }
+
+    return {std::move(out), type};
 }
 
+}
+
+std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const MeshIndexType atLeast) {
+    return compressIndicesImplementation(indices, atLeast);
+}
+
+std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const MeshIndexType atLeast) {
+    return compressIndicesImplementation(indices, atLeast);
+}
+
+std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const MeshIndexType atLeast) {
+    return compressIndicesImplementation(indices, atLeast);
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     /** @todo Performance hint when range can be represented by smaller value? */
     const auto minmax = Math::minmax(indices);
     Containers::Array<char> data;
     MeshIndexType type;
-    switch(Math::log(256, minmax.second)) {
-        case 0:
-            data = compress<UnsignedByte>(indices);
-            type = MeshIndexType::UnsignedByte;
-            break;
-        case 1:
-            data = compress<UnsignedShort>(indices);
-            type = MeshIndexType::UnsignedShort;
-            break;
-        case 2:
-        case 3:
-            data = compress<UnsignedInt>(indices);
-            type = MeshIndexType::UnsignedInt;
-            break;
-
-        default:
-            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << minmax.second << "elements.", {}); /* LCOV_EXCL_LINE */
-    }
-
+    std::tie(data, type) = compressIndices(indices, MeshIndexType::UnsignedByte);
     return std::make_tuple(std::move(data), type, minmax.first, minmax.second);
 }
+#endif
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
     #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
