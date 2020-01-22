@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Duplicate.h"
@@ -51,6 +52,17 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
     std::make_pair(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 /* [combineIndexedArrays] */
+}
+
+{
+/* [compressIndices-offset] */
+Containers::ArrayView<const UnsignedInt> indices;
+UnsignedInt offset = Math::min(indices);
+std::pair<Containers::Array<char>, MeshIndexType> result =
+    MeshTools::compressIndices(indices, offset);
+
+// use `offset` to adjust vertex attribute offset …
+/* [compressIndices-offset] */
 }
 
 {

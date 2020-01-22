@@ -212,8 +212,8 @@ See also:
 
 -   Added @ref MeshTools::compressIndices() that takes a
     @ref Corrade::Containers::StridedArrayView instead of a @ref std::vector
-    and additionally allows you to specify the smallest allowed type and is
-    working with 8- and 16-byte index types as well
+    and additionally allows you to specify the smallest allowed type, offset to
+    apply to each index and is working with 8- and 16-byte index types as well
 -   Added @ref MeshTools::subdivide() that operates on a (growable)
     @ref Corrade::Containers::Array instead of a @ref std::vector
 -   Added @ref MeshTools::subdivideInPlace() that operates on a partially
@@ -368,8 +368,8 @@ See also:
     @ref Trade::ImageConverterFeatures enum sets and their corresponding enums
     placed directly in the namespace to have them shorter and unambiguous
 -   @cpp MeshTools::compressIndices() @ce taking a @ref std::vector is
-    deprecated in favor of @ref MeshTools::compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType) and
-    its 8- and 16-byte overloads
+    deprecated in favor of @ref MeshTools::compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
+    and its 8- and 16-byte overloads
 -   @cpp MeshTools::flipNormals() @ce and @cpp MeshTools::flipFaceWinding() @ce
     and @cpp MeshTools::tipsify() @ce are deprecated in favor of
     @ref MeshTools::flipNormalsInPlace(),

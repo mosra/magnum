@@ -47,35 +47,74 @@ namespace Magnum { namespace MeshTools {
 @brief Compress an index array
 @param indices  Index array
 @param atLeast  Smallest allowed type
+@param offset   Offset to subtract from each index
 @return Compressed index array and corresponding type
 @m_since_latest
 
 This function compresses @p indices to the smallest possible size. For example
 when your indices have the maximum vertex index 463, it's wasteful to store
-them in array of 32bit integers, array of 16bit integers is sufficient. The
+them in array of 32-bit integers, array of 16-bit integers is sufficient. The
 @p atLeast parameter allows you to specify the smallest type to use and it
 defaults to @ref MeshIndexType::UnsignedShort as 8-bit types are not friendly
 to many GPUs (and for example unextended Vulkan or D3D12 don't even support
 them). It's also possible to choose a type larger than the input type to
-"inflate" an index buffer of a smaller type.
-
-Example usage:
+"inflate" an index buffer of a smaller type. Example usage:
 
 @snippet MagnumMeshTools-gl.cpp compressIndices
+
+In case the indices all start from a large offset, the @p offset parameter can
+be used to subtract it, allowing them to be compressed even further. For
+example, if all indices are in range @f$ [ 75000 ; 96000 ] @f$ (which fits only
+into a 32-bit type), subtracting 75000 makes them in range @f$ [ 0; 21000 ] @f$
+which fits into 16 bits. Note that you also need to update vertex attribute
+offsets accordingly. Example:
+
+@snippet MagnumMeshTools.cpp compressIndices-offset
+
+A negative @p offset value will do an operation inverse to the above. See also
+@ref compressIndices(const Trade::MeshData&, MeshIndexType) that can do this
+operation directly on a @ref Trade::MeshData instance.
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
 /**
 @overload
 @m_since_latest
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
 /**
 @overload
 @m_since_latest
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
+
+/**
+@overload
+@m_since_latest
+
+Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
+with @p atLeast set to @ref MeshIndexType::UnsignedShort.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>& indices, Long offset);
+
+/**
+@overload
+@m_since_latest
+
+Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>&, MeshIndexType, Long)
+with @p atLeast set to @ref MeshIndexType::UnsignedShort.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, Long offset);
+
+/**
+@overload
+@m_since_latest
+
+Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>&, MeshIndexType, Long)
+with @p atLeast set to @ref MeshIndexType::UnsignedShort.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, Long offset);
 
 /**
 @brief Compress a type-erased index array
@@ -83,17 +122,26 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
-@ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType)
+@ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
 etc. overloads.
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort);
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
+
+/**
+@overload
+@m_since_latest
+
+Same as @ref compressIndices(const Containers::StridedArrayView2D<const char>&, MeshIndexType, Long)
+with @p atLeast set to @ref MeshIndexType::UnsignedShort.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, Long offset);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Compress vertex indices
 @param indices  Index array
 @return Index range, type and compressed index array
-@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType)
+@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
     instead. The index range isn't returned anymore, use @ref Math::minmax(const Containers::StridedArrayView1D<const T>&)
     to get it if needed.
 
@@ -108,7 +156,7 @@ Example usage:
 
 @see @ref compressIndicesAs()
 */
-CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices);
+CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices);
 #endif
 
 /**
