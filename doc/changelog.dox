@@ -115,8 +115,9 @@ See also:
     @ref Trade::MeshData is interleaved
 -   Added @ref MeshTools::interleavedLayout() for convenient creation of an
     interleaved mesh layout using the new @ref Trade::MeshData API
--   Added @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
-    and @ref MeshTools::duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+-   Added @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),
+    @ref MeshTools::duplicate(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
+    and @ref MeshTools::compressIndices(const Trade::MeshData&, MeshIndexType)
     that work directly on the new @ref Trade::MeshData API
 -   Added @ref MeshTools::subdivideInPlace() for allocation-less mesh
     subdivision

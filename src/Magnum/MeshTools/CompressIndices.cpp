@@ -28,8 +28,10 @@
 #include <cstring>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -113,6 +115,59 @@ std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containe
 
 std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView2D<const char>& indices, const Long offset) {
     return compressIndices(indices, MeshIndexType::UnsignedShort, offset);
+}
+
+Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
+    CORRADE_ASSERT(data.isIndexed(), "MeshTools::compressIndices(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    /* Transfer vertex data as-is, as those don't need any changes. Release if
+       possible. */
+    Containers::Array<char> vertexData;
+    const UnsignedInt vertexCount = data.vertexCount();
+    if(data.vertexDataFlags() & Trade::DataFlag::Owned)
+        vertexData = data.releaseVertexData();
+    else {
+        vertexData = Containers::Array<char>{Containers::NoInit, data.vertexData().size()};
+        Utility::copy(data.vertexData(), vertexData);
+    }
+
+    /* Compress the indices */
+    UnsignedInt offset;
+    std::pair<Containers::Array<char>, MeshIndexType> result;
+    if(data.indexType() == MeshIndexType::UnsignedInt) {
+        auto indices = data.indices<UnsignedInt>();
+        offset = Math::min(indices);
+        result = compressIndicesImplementation<UnsignedInt>(indices, atLeast, offset);
+    } else if(data.indexType() == MeshIndexType::UnsignedShort) {
+        auto indices = data.indices<UnsignedShort>();
+        offset = Math::min(indices);
+        result = compressIndicesImplementation<UnsignedShort>(indices, atLeast, offset);
+    } else {
+        CORRADE_INTERNAL_ASSERT(data.indexType() == MeshIndexType::UnsignedByte);
+        auto indices = data.indices<UnsignedByte>();
+        offset = Math::min(indices);
+        result = compressIndicesImplementation<UnsignedByte>(indices, atLeast, offset);
+    }
+
+    /* Recreate the attribute array */
+    const UnsignedInt newVertexCount = vertexCount - offset;
+    Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount()};
+    for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
+        const UnsignedInt stride = data.attributeStride(i);
+        attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
+            data.attributeFormat(i),
+            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i) + offset*stride, newVertexCount, stride}};
+    }
+
+    Trade::MeshIndexData indices{result.second, result.first};
+    return Trade::MeshData{data.primitive(), std::move(result.first), indices,
+        std::move(vertexData), std::move(attributeData)};
+}
+
+Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast) {
+    return compressIndices(Trade::MeshData{data.primitive(),
+        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
+        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData())}, atLeast);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

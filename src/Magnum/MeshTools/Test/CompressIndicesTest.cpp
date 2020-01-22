@@ -32,8 +32,9 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -53,6 +54,10 @@ struct CompressIndicesTest: TestSuite::Tester {
     void compressDeprecated();
     #endif
 
+    template<class T> void compressMeshData();
+    void compressMeshDataMove();
+    void compressMeshDataNonIndexed();
+
     void compressAsShort();
 };
 
@@ -70,10 +75,15 @@ CompressIndicesTest::CompressIndicesTest() {
               &CompressIndicesTest::compressOffsetNegative<UnsignedInt>,
               &CompressIndicesTest::compressErasedNonContiguous,
               &CompressIndicesTest::compressErasedWrongIndexSize,
-
               #ifdef MAGNUM_BUILD_DEPRECATED
               &CompressIndicesTest::compressDeprecated,
               #endif
+
+              &CompressIndicesTest::compressMeshData<UnsignedByte>,
+              &CompressIndicesTest::compressMeshData<UnsignedShort>,
+              &CompressIndicesTest::compressMeshData<UnsignedInt>,
+              &CompressIndicesTest::compressMeshDataMove,
+              &CompressIndicesTest::compressMeshDataNonIndexed,
 
               &CompressIndicesTest::compressAsShort});
 }
@@ -227,6 +237,86 @@ void CompressIndicesTest::compressDeprecated() {
         TestSuite::Compare::Container);
 }
 #endif
+
+template<class T> void CompressIndicesTest::compressMeshData() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    struct {
+        Vector2 positions[103];
+        Vector3 normals[103];
+    } vertexData{};
+    vertexData.positions[100] = {1.3f, 0.3f};
+    vertexData.positions[101] = {0.87f, 1.1f};
+    vertexData.positions[102] = {1.0f, -0.5f};
+    vertexData.normals[100] = Vector3::xAxis();
+    vertexData.normals[101] = Vector3::yAxis();
+    vertexData.normals[102] = Vector3::zAxis();
+
+    T indices[] = {102, 101, 100, 101, 102};
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, Containers::arrayView(&vertexData, 1), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertexData.positions)},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData.normals)}
+        }};
+    CORRADE_COMPARE(data.vertexCount(), 103);
+    CORRADE_COMPARE(data.attributeOffset(0), 0);
+    CORRADE_COMPARE(data.attributeOffset(1), 103*sizeof(Vector2));
+
+    Trade::MeshData compressed = compressIndices(data);
+    CORRADE_COMPARE(compressed.indexCount(), 5);
+    CORRADE_COMPARE(compressed.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(compressed.indices<UnsignedShort>(),
+        Containers::arrayView<UnsignedShort>({2, 1, 0, 1, 2}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(compressed.vertexCount(), 3);
+    CORRADE_COMPARE(compressed.attributeOffset(0), 100*sizeof(Vector2));
+    CORRADE_COMPARE(compressed.attributeOffset(1), 103*sizeof(Vector2) + 100*sizeof(Vector3));
+    CORRADE_COMPARE_AS(compressed.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(compressed.attribute<Vector3>(Trade::MeshAttribute::Normal),
+        Containers::arrayView<Vector3>({Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()}),
+        TestSuite::Compare::Container);
+}
+
+void CompressIndicesTest::compressMeshDataMove() {
+    Containers::Array<char> vertexData{103*24};
+    Containers::StridedArrayView1D<Vector2> positionView{vertexData,
+        reinterpret_cast<Vector2*>(vertexData.data()), 103, 8};
+    Containers::StridedArrayView1D<Vector3> normalView{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + 103*sizeof(Vector2)), 103, 12};
+    UnsignedInt indices[] = {102, 101, 100, 101, 102};
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices},
+        std::move(vertexData), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position, positionView},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normalView}
+        }};
+    CORRADE_COMPARE(data.vertexCount(), 103);
+    CORRADE_COMPARE(data.attributeOffset(0), 0);
+    CORRADE_COMPARE(data.attributeOffset(1), 103*sizeof(Vector2));
+
+    Trade::MeshData compressed = compressIndices(std::move(data));
+    CORRADE_COMPARE(compressed.indexCount(), 5);
+    CORRADE_COMPARE(compressed.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE_AS(compressed.indices<UnsignedShort>(),
+        Containers::arrayView<UnsignedShort>({2, 1, 0, 1, 2}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(compressed.vertexCount(), 3);
+    CORRADE_COMPARE(compressed.attributeOffset(0), 100*sizeof(Vector2));
+    CORRADE_COMPARE(compressed.attributeOffset(1), 103*sizeof(Vector2) + 100*sizeof(Vector3));
+    /* The vertex data should be moved, not copied */
+    CORRADE_VERIFY(compressed.vertexData().data() == positionView.data());
+}
+
+void CompressIndicesTest::compressMeshDataNonIndexed() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compressIndices(Trade::MeshData{MeshPrimitive::TriangleFan, 5});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): mesh data not indexed\n");
+}
 
 void CompressIndicesTest::compressAsShort() {
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
