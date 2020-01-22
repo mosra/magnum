@@ -160,13 +160,15 @@ void ObjImporterTest::pointMesh() {
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
+    /* The points get reordered according to the index buffer. Might not be a
+       problem in general but it is when relying on the order */
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
         {0.5f, 2.0f, 3.0f},
-        {0.0f, 1.5f, 1.0f},
-        {2.0f, 3.0f, 5.0f}
+        {2.0f, 3.0f, 5.0f},
+        {0.0f, 1.5f, 1.0f}
     }));
     CORRADE_COMPARE(data->indices(), (std::vector<UnsignedInt>{
-        0, 2, 1, 0
+        0, 1, 2, 0
     }));
 }
 
@@ -217,7 +219,7 @@ void ObjImporterTest::mixedPrimitives() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(0));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines\n");
 }
 
 void ObjImporterTest::positionsOnly() {
@@ -417,7 +419,7 @@ void ObjImporterTest::wrongFloat() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): error while converting numeric data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): error while converting numeric data\n");
 }
 
 void ObjImporterTest::wrongInteger() {
@@ -429,7 +431,7 @@ void ObjImporterTest::wrongInteger() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): error while converting numeric data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): error while converting numeric data\n");
 }
 
 void ObjImporterTest::unmergedIndexOutOfRange() {
@@ -441,7 +443,7 @@ void ObjImporterTest::unmergedIndexOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): index out of range\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): index 1 out of range for 1 vertices\n");
 }
 
 void ObjImporterTest::mergedIndexOutOfRange() {
@@ -453,7 +455,7 @@ void ObjImporterTest::mergedIndexOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): index out of range\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): index 2 out of range for 1 vertices\n");
 }
 
 void ObjImporterTest::zeroIndex() {
@@ -465,7 +467,7 @@ void ObjImporterTest::zeroIndex() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): index out of range\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): index 0 out of range for 1 vertices\n");
 }
 
 void ObjImporterTest::explicitOptionalPositionCoordinate() {
@@ -505,7 +507,7 @@ void ObjImporterTest::unsupportedOptionalPositionCoordinate() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): homogeneous coordinates are not supported\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): homogeneous coordinates are not supported\n");
 }
 
 void ObjImporterTest::unsupportedOptionalTextureCoordinate() {
@@ -517,7 +519,7 @@ void ObjImporterTest::unsupportedOptionalTextureCoordinate() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): 3D texture coordinates are not supported\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): 3D texture coordinates are not supported\n");
 }
 
 void ObjImporterTest::shortFloatData() {
@@ -529,7 +531,7 @@ void ObjImporterTest::shortFloatData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): invalid float array size\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): invalid float array size\n");
 }
 
 void ObjImporterTest::longFloatData() {
@@ -541,7 +543,7 @@ void ObjImporterTest::longFloatData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): invalid float array size\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): invalid float array size\n");
 }
 
 void ObjImporterTest::longOptionalFloatData() {
@@ -553,7 +555,7 @@ void ObjImporterTest::longOptionalFloatData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): invalid float array size\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): invalid float array size\n");
 }
 
 void ObjImporterTest::longIndexData() {
@@ -565,7 +567,7 @@ void ObjImporterTest::longIndexData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): invalid index data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): invalid index data\n");
 }
 
 void ObjImporterTest::wrongPointIndexData() {
@@ -577,7 +579,7 @@ void ObjImporterTest::wrongPointIndexData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): wrong index count for point\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): wrong index count for point\n");
 }
 
 void ObjImporterTest::wrongLineIndexData() {
@@ -589,7 +591,7 @@ void ObjImporterTest::wrongLineIndexData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): wrong index count for line\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): wrong index count for line\n");
 }
 
 void ObjImporterTest::wrongTriangleIndexData() {
@@ -601,7 +603,7 @@ void ObjImporterTest::wrongTriangleIndexData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): wrong index count for triangle\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): wrong index count for triangle\n");
 }
 
 void ObjImporterTest::polygonIndexData() {
@@ -613,7 +615,7 @@ void ObjImporterTest::polygonIndexData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): polygons are not supported\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): polygons are not supported\n");
 }
 
 void ObjImporterTest::missingPositionData() {
@@ -625,7 +627,7 @@ void ObjImporterTest::missingPositionData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete position data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete position data\n");
 }
 
 void ObjImporterTest::missingPositionIndices() {
@@ -637,7 +639,7 @@ void ObjImporterTest::missingPositionIndices() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete position data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete position data\n");
 }
 
 void ObjImporterTest::missingNormalData() {
@@ -649,7 +651,7 @@ void ObjImporterTest::missingNormalData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete normal data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete normal data\n");
 }
 
 void ObjImporterTest::missingNormalIndices() {
@@ -661,7 +663,7 @@ void ObjImporterTest::missingNormalIndices() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete normal data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete normal data\n");
 }
 
 void ObjImporterTest::missingTextureCoordinateData() {
@@ -673,7 +675,7 @@ void ObjImporterTest::missingTextureCoordinateData() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete texture coordinate data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete texture coordinate data\n");
 }
 
 void ObjImporterTest::missingTextureCoordinateIndices() {
@@ -685,7 +687,7 @@ void ObjImporterTest::missingTextureCoordinateIndices() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): incomplete texture coordinate data\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): incomplete texture coordinate data\n");
 }
 
 void ObjImporterTest::wrongNormalIndexCount() {
@@ -697,7 +699,7 @@ void ObjImporterTest::wrongNormalIndexCount() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): some normal indices are missing\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): some normal indices are missing\n");
 }
 
 void ObjImporterTest::wrongTextureCoordinateIndexCount() {
@@ -709,7 +711,7 @@ void ObjImporterTest::wrongTextureCoordinateIndexCount() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): some texture coordinate indices are missing\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): some texture coordinate indices are missing\n");
 }
 
 void ObjImporterTest::unsupportedKeyword() {
@@ -738,7 +740,7 @@ void ObjImporterTest::unknownKeyword() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(id));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): unknown keyword bleh\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh(): unknown keyword bleh\n");
 }
 
 }}}}

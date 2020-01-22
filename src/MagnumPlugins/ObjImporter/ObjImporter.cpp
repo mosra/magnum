@@ -29,16 +29,18 @@
 #include <limits>
 #include <sstream>
 #include <unordered_map>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/MeshTools/CombineIndexedArrays.h"
+#include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Trade {
 
@@ -58,7 +60,7 @@ void ignoreLine(std::istream& in) {
 template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std::string& str, Float* extra = nullptr) {
     std::vector<std::string> data = Utility::String::splitWithoutEmptyParts(str, ' ');
     if(data.size() < size || data.size() > size + (extra ? 1 : 0)) {
-        Error() << "Trade::ObjImporter::mesh3D(): invalid float array size";
+        Error() << "Trade::ObjImporter::mesh(): invalid float array size";
         throw 0;
     }
 
@@ -76,16 +78,6 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std:
     }
 
     return output;
-}
-
-template<class T> void reindex(const std::vector<UnsignedInt>& indices, std::vector<T>& data) {
-    /* Check that indices are in range */
-    for(UnsignedInt i: indices) if(i >= data.size()) {
-        Error() << "Trade::ObjImporter::mesh3D(): index out of range";
-        throw 0;
-    }
-
-    data = MeshTools::duplicate(indices, data);
 }
 
 }
@@ -214,18 +206,34 @@ void ObjImporter::parseMeshNames() {
     std::get<1>(_file->meshes.back()) = _file->in->tellg();
 }
 
-UnsignedInt ObjImporter::doMesh3DCount() const { return _file->meshes.size(); }
+UnsignedInt ObjImporter::doMeshCount() const { return _file->meshes.size(); }
 
-Int ObjImporter::doMesh3DForName(const std::string& name) {
+Int ObjImporter::doMeshForName(const std::string& name) {
     const auto it = _file->meshesForName.find(name);
     return it == _file->meshesForName.end() ? -1 : it->second;
 }
 
-std::string ObjImporter::doMesh3DName(UnsignedInt id) {
+std::string ObjImporter::doMeshName(UnsignedInt id) {
     return _file->meshNames[id];
 }
 
-Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
+namespace {
+
+template<class T> bool checkAndDuplicateInto(const Containers::StridedArrayView1D<const UnsignedInt>& indices, const Containers::Array<T>& data, const Containers::StridedArrayView1D<T>& out, UnsignedInt offset) {
+    /* Check that indices are in range. Add back the original index offset for
+       easier data debugging. */
+    for(UnsignedInt i: indices) if(i >= data.size()) {
+        Error{} << "Trade::ObjImporter::mesh(): index" << (i + offset) << "out of range for" << data.size() << "vertices";
+        return false;
+    }
+
+    MeshTools::duplicateInto(indices, stridedArrayView(data), out);
+    return true;
+}
+
+}
+
+Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) {
     /* Seek the file, set mesh parsing parameters */
     std::streampos begin, end;
     UnsignedInt positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset;
@@ -233,12 +241,13 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
     _file->in->seekg(begin);
 
     Containers::Optional<MeshPrimitive> primitive;
-    std::vector<Vector3> positions;
-    std::vector<std::vector<Vector2>> textureCoordinates;
-    std::vector<std::vector<Vector3>> normals;
-    std::vector<UnsignedInt> positionIndices;
-    std::vector<UnsignedInt> textureCoordinateIndices;
-    std::vector<UnsignedInt> normalIndices;
+    Containers::Array<Vector3> positions;
+    Containers::Array<Vector3> normals;
+    Containers::Array<Vector2> textureCoordinates;
+    /* Taking a shortcut as there's fortunately nothing else than just 3 types
+       of data. First positions, then normals, then texture coordinates. */
+    Containers::Array<Vector3ui> indices;
+    std::size_t textureCoordinateIndexCount = 0, normalIndexCount = 0;
 
     try { while(_file->in->good() && _file->in->tellg() < end) {
         /* Ignore comments */
@@ -266,28 +275,26 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             Float extra{1.0f};
             const Vector3 data = extractFloatData<3>(contents, &extra);
             if(!Math::TypeTraits<Float>::equals(extra, 1.0f)) {
-                Error() << "Trade::ObjImporter::mesh3D(): homogeneous coordinates are not supported";
+                Error() << "Trade::ObjImporter::mesh(): homogeneous coordinates are not supported";
                 return Containers::NullOpt;
             }
 
-            positions.push_back(data);
+            arrayAppend(positions, data);
 
         /* Texture coordinate */
         } else if(keyword == "vt") {
             Float extra{0.0f};
-            const auto data = extractFloatData<2>(contents, &extra);
+            const Vector2 data = extractFloatData<2>(contents, &extra);
             if(!Math::TypeTraits<Float>::equals(extra, 0.0f)) {
-                Error() << "Trade::ObjImporter::mesh3D(): 3D texture coordinates are not supported";
+                Error() << "Trade::ObjImporter::mesh(): 3D texture coordinates are not supported";
                 return Containers::NullOpt;
             }
 
-            if(textureCoordinates.empty()) textureCoordinates.emplace_back();
-            textureCoordinates.front().emplace_back(data);
+            arrayAppend(textureCoordinates, data);
 
         /* Normal */
         } else if(keyword == "vn") {
-            if(normals.empty()) normals.emplace_back();
-            normals.front().emplace_back(extractFloatData<3>(contents));
+            arrayAppend(normals, Vector3{extractFloatData<3>(contents)});
 
         /* Indices */
         } else if(keyword == "p" || keyword == "l" || keyword == "f") {
@@ -297,13 +304,13 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             if(keyword == "p") {
                 /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Points) {
-                    Error() << "Trade::ObjImporter::mesh3D(): mixed primitive" << *primitive << "and" << MeshPrimitive::Points;
+                    Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Points;
                     return Containers::NullOpt;
                 }
 
                 /* Check vertex count per primitive */
                 if(indexTuples.size() != 1) {
-                    Error() << "Trade::ObjImporter::mesh3D(): wrong index count for point";
+                    Error() << "Trade::ObjImporter::mesh(): wrong index count for point";
                     return Containers::NullOpt;
                 }
 
@@ -313,13 +320,13 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             } else if(keyword == "l") {
                 /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Lines) {
-                    Error() << "Trade::ObjImporter::mesh3D(): mixed primitive" << *primitive << "and" << MeshPrimitive::Lines;
+                    Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Lines;
                     return Containers::NullOpt;
                 }
 
                 /* Check vertex count per primitive */
                 if(indexTuples.size() != 2) {
-                    Error() << "Trade::ObjImporter::mesh3D(): wrong index count for line";
+                    Error() << "Trade::ObjImporter::mesh(): wrong index count for line";
                     return Containers::NullOpt;
                 }
 
@@ -329,16 +336,16 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             } else if(keyword == "f") {
                 /* Check that we don't mix the primitives in one mesh */
                 if(primitive && primitive != MeshPrimitive::Triangles) {
-                    Error() << "Trade::ObjImporter::mesh3D(): mixed primitive" << *primitive << "and" << MeshPrimitive::Triangles;
+                    Error() << "Trade::ObjImporter::mesh(): mixed primitive" << *primitive << "and" << MeshPrimitive::Triangles;
                     return Containers::NullOpt;
                 }
 
                 /* Check vertex count per primitive */
                 if(indexTuples.size() < 3) {
-                    Error() << "Trade::ObjImporter::mesh3D(): wrong index count for triangle";
+                    Error() << "Trade::ObjImporter::mesh(): wrong index count for triangle";
                     return Containers::NullOpt;
                 } else if(indexTuples.size() != 3) {
-                    Error() << "Trade::ObjImporter::mesh3D(): polygons are not supported";
+                    Error() << "Trade::ObjImporter::mesh(): polygons are not supported";
                     return Containers::NullOpt;
                 }
 
@@ -347,22 +354,30 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             for(const std::string& indexTuple: indexTuples) {
-                std::vector<std::string> indices = Utility::String::split(indexTuple, '/');
-                if(indices.size() > 3) {
-                    Error() << "Trade::ObjImporter::mesh3D(): invalid index data";
+                std::vector<std::string> indexStrings = Utility::String::split(indexTuple, '/');
+                if(indexStrings.size() > 3) {
+                    Error() << "Trade::ObjImporter::mesh(): invalid index data";
                     return Containers::NullOpt;
                 }
 
+                Vector3ui index;
+
                 /* Position indices */
-                positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
+                index[0] = std::stoul(indexStrings[0]) - positionIndexOffset;
 
                 /* Texture coordinates */
-                if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty()))
-                    textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
+                if(indexStrings.size() == 2 || (indexStrings.size() == 3 && !indexStrings[1].empty())) {
+                    index[2] = std::stoul(indexStrings[1]) - textureCoordinateIndexOffset;
+                    ++textureCoordinateIndexCount;
+                }
 
                 /* Normal indices */
-                if(indices.size() == 3)
-                    normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
+                if(indexStrings.size() == 3) {
+                    index[1] = std::stoul(indexStrings[2]) - normalIndexOffset;
+                    ++normalIndexCount;
+                }
+
+                arrayAppend(indices, index);
             }
 
         /* Ignore unsupported keywords, error out on unknown keywords */
@@ -372,12 +387,12 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                 if(keyword == expected) return true;
             return false;
         }()) {
-            Error() << "Trade::ObjImporter::mesh3D(): unknown keyword" << keyword;
+            Error() << "Trade::ObjImporter::mesh(): unknown keyword" << keyword;
             return Containers::NullOpt;
         }
 
     }} catch(const std::exception&) {
-        Error() << "Trade::ObjImporter::mesh3D(): error while converting numeric data";
+        Error() << "Trade::ObjImporter::mesh(): error while converting numeric data";
         return Containers::NullOpt;
     } catch(...) {
         /* Error message already printed */
@@ -385,64 +400,87 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
     }
 
     /* There should be at least indexed position data */
-    if(positions.empty() || positionIndices.empty()) {
-        Error() << "Trade::ObjImporter::mesh3D(): incomplete position data";
+    if(positions.empty() || indices.empty()) {
+        Error() << "Trade::ObjImporter::mesh(): incomplete position data";
         return Containers::NullOpt;
     }
 
     /* If there are index data, there should be also vertex data (and also the other way) */
-    if(normals.empty() != normalIndices.empty()) {
-        Error() << "Trade::ObjImporter::mesh3D(): incomplete normal data";
+    if(normals.empty() != (normalIndexCount == 0)) {
+        Error() << "Trade::ObjImporter::mesh(): incomplete normal data";
         return Containers::NullOpt;
     }
-    if(textureCoordinates.empty() != textureCoordinateIndices.empty()) {
-        Error() << "Trade::ObjImporter::mesh3D(): incomplete texture coordinate data";
+    if(textureCoordinates.empty() != (textureCoordinateIndexCount == 0)) {
+        Error() << "Trade::ObjImporter::mesh(): incomplete texture coordinate data";
         return Containers::NullOpt;
     }
 
     /* All index arrays should have the same length */
-    if(!normalIndices.empty() && normalIndices.size() != positionIndices.size()) {
-        CORRADE_INTERNAL_ASSERT(normalIndices.size() < positionIndices.size());
-        Error() << "Trade::ObjImporter::mesh3D(): some normal indices are missing";
+    if(normalIndexCount && normalIndexCount != indices.size()) {
+        CORRADE_INTERNAL_ASSERT(normalIndexCount < indices.size());
+        Error() << "Trade::ObjImporter::mesh(): some normal indices are missing";
         return Containers::NullOpt;
     }
-    if(!textureCoordinates.empty() && textureCoordinateIndices.size() != positionIndices.size()) {
-        CORRADE_INTERNAL_ASSERT(textureCoordinateIndices.size() < positionIndices.size());
-        Error() << "Trade::ObjImporter::mesh3D(): some texture coordinate indices are missing";
+    if(textureCoordinateIndexCount && textureCoordinateIndexCount != indices.size()) {
+        CORRADE_INTERNAL_ASSERT(textureCoordinateIndexCount < indices.size());
+        Error() << "Trade::ObjImporter::mesh(): some texture coordinate indices are missing";
         return Containers::NullOpt;
     }
 
-    /* Merge index arrays, if there aren't just the positions */
-    std::vector<UnsignedInt> indices;
-    if(!normalIndices.empty() || !textureCoordinateIndices.empty()) {
-        std::vector<std::reference_wrapper<std::vector<UnsignedInt>>> arrays;
-        arrays.reserve(3);
-        arrays.emplace_back(positionIndices);
-        if(!normalIndices.empty()) arrays.emplace_back(normalIndices);
-        if(!textureCoordinateIndices.empty()) arrays.emplace_back(textureCoordinateIndices);
-        indices = MeshTools::combineIndexArrays(arrays);
+    /* Merge index arrays. If any of the attributes was not there, the whole
+       index array has zeros, not affecting the uniqueness in any way. */
+    Containers::Array<char> indexData{Containers::NoInit, indices.size()*sizeof(UnsignedInt)};
+    const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
+    const std::size_t vertexCount = MeshTools::removeDuplicatesInPlaceInto(
+        Containers::arrayCast<2, char>(arrayView(indices)), indexDataI);
 
-        /* Reindex data arrays */
-        try {
-            reindex(positionIndices, positions);
-            if(!normalIndices.empty()) reindex(normalIndices, normals.front());
-            if(!textureCoordinateIndices.empty()) reindex(textureCoordinateIndices, textureCoordinates.front());
-        } catch(...) {
-            /* Error message already printed */
-            return Containers::NullOpt;
-        }
-
-    /* Otherwise just use the original position index array. Don't forget to
-       check range */
-    } else {
-        indices = std::move(positionIndices);
-        for(UnsignedInt i: indices) if(i >= positions.size()) {
-            Error() << "Trade::ObjImporter::mesh3D(): index out of range";
-            return Containers::NullOpt;
-        }
+    /* Allocate attribute and vertex data */
+    std::size_t attributeCount = 1;
+    UnsignedInt stride = sizeof(Vector3);
+    if(normalIndexCount) {
+        ++attributeCount;
+        stride += sizeof(Vector3);
     }
+    if(textureCoordinateIndexCount) {
+        ++attributeCount;
+        stride += sizeof(Vector2);
+    }
+    Containers::Array<MeshAttributeData> attributeData{attributeCount};
+    Containers::Array<char> vertexData{Containers::NoInit, vertexCount*stride};
 
-    return MeshData3D{*primitive, std::move(indices), {std::move(positions)}, std::move(normals), std::move(textureCoordinates), {}, nullptr};
+    /* Duplicate the vertices into the output */
+    const auto indicesPerAttribute = Containers::arrayCast<2, const UnsignedInt>(stridedArrayView(indices)).transposed<0, 1>();
+    std::size_t attributeIndex = 0;
+    std::size_t offset = 0;
+    {
+        Containers::StridedArrayView1D<Vector3> view{vertexData,
+            reinterpret_cast<Vector3*>(vertexData.data()), vertexCount, stride};
+        if(!checkAndDuplicateInto(indicesPerAttribute[0].prefix(vertexCount), positions, view, positionIndexOffset))
+            return Containers::NullOpt;
+        attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Position, view};
+        offset += sizeof(Vector3);
+    }
+    if(normalIndexCount) {
+        Containers::StridedArrayView1D<Vector3> view{vertexData,
+            reinterpret_cast<Vector3*>(vertexData.data() + offset), vertexCount, stride};
+        if(!checkAndDuplicateInto(indicesPerAttribute[1].prefix(vertexCount), normals, view, normalIndexOffset))
+            return Containers::NullOpt;
+        attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::Normal, view};
+        offset += sizeof(Vector3);
+    }
+    if(textureCoordinateIndexCount) {
+        Containers::StridedArrayView1D<Vector2> view{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.data() + offset), vertexCount, stride};
+        if(!checkAndDuplicateInto(indicesPerAttribute[2].prefix(vertexCount), textureCoordinates, view, textureCoordinateIndexOffset))
+            return Containers::NullOpt;
+        attributeData[attributeIndex++] = MeshAttributeData{MeshAttribute::TextureCoordinates, view};
+        offset += sizeof(Vector2);
+    }
+    CORRADE_INTERNAL_ASSERT(offset == stride && attributeIndex == attributeCount);
+
+    return MeshData{*primitive,
+        std::move(indexData), Trade::MeshIndexData{indexDataI},
+        std::move(vertexData), std::move(attributeData)};
 }
 
 }}
