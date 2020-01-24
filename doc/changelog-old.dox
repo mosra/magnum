@@ -422,7 +422,7 @@ for a high-level overview.
     -   Removed deprecated @cpp Matrix2 @ce and @cpp Matrix2d @ce typedefs, use
         @ref Matrix2x2 and @ref Matrix2x2d instead
     -   Removed deprecated `Magnum/Swizzle.h` header and @cpp Magnum::swizzle() @ce
-        function, use @ref Magnum/Math/Swizzle.h and @ref Math::swizzle()
+        function, use @ref Magnum/Math/Swizzle.h and @cpp Math::swizzle() @ce
         instead
     -   Removed deprecated @cpp *::maxSupported*() @ce limit queries, use the
         less verbose @cpp *::max*() @ce versions instead
@@ -708,7 +708,7 @@ for a high-level overview.
 -   @cpp Matrix2 @ce and @cpp Matrix2d @ce is deprecated, use @ref Matrix2x2
     and @ref Matrix2x2d instead
 -   @cpp swizzle() @ce is deprecated, all of its functionality has been moved
-    into @ref Math::swizzle()
+    into @cpp Math::swizzle() @ce
 -   @cpp Buffer::setData() @ce and @cpp Buffer::setSubData() @ce overloads
     taking pair of data pointer and size are deprecated, use
     @cpp Containers::ArrayReference @ce-based @cpp Buffer::setData() @ce and

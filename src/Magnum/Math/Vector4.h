@@ -182,7 +182,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @brief XYZ part of the vector
          * @return First three components of the vector
          *
-         * @see @ref swizzle(), @ref rgb()
+         * @see @ref rgb(), @ref gather(), @ref scatter()
          */
         Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
         constexpr const Vector3<T> xyz() const {
@@ -194,7 +194,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @return First three components of the vector
          *
          * Equivalent to @ref xyz().
-         * @see @ref swizzle()
+         * @see @ref gather(), @ref scatter()
          */
         Vector3<T>& rgb() { return Vector3<T>::from(Vector<4, T>::data()); }
         constexpr const Vector3<T> rgb() const {
@@ -205,7 +205,7 @@ template<class T> class Vector4: public Vector<4, T> {
          * @brief XY part of the vector
          * @return First two components of the vector
          *
-         * @see @ref swizzle()
+         * @see @ref gather(), @ref scatter()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
         constexpr const Vector2<T> xy() const {

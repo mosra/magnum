@@ -601,7 +601,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * You can use letters @cpp 'r' @ce, @cpp 'g' @ce, @cpp 'b' @ce,
          * @cpp 'a' @ce for addressing components or letters @cpp '0' @ce and
          * @cpp '1' @ce for zero and one, similarly as in the
-         * @ref Math::swizzle() function. Example usage:
+         * @ref Math::gather() function. Example usage:
          *
          * @snippet MagnumGL.cpp Texture-setSwizzle
          *

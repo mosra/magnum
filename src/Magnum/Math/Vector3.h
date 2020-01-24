@@ -223,7 +223,7 @@ template<class T> class Vector3: public Vector<3, T> {
          * @brief XY part of the vector
          * @return First two components of the vector
          *
-         * @see @ref swizzle()
+         * @see @ref gather(), @ref scatter()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<3, T>::data()); }
         constexpr const Vector2<T> xy() const {
