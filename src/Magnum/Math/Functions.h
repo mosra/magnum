@@ -189,7 +189,7 @@ the operations component-wise.
 @m_since{2019,10}
 
 @see @ref isNan(), @ref Constants::inf(),
-    @ref isInf(Corrade::Containers::StridedArrayView1D<const T>)
+    @ref isInf(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
     return std::isinf(UnderlyingTypeOf<T>(value));
@@ -212,7 +212,7 @@ template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<s
 
 Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan(),
-    @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
+    @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
 /* defined in Vector.h */
 template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value);
@@ -233,7 +233,7 @@ template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<s
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(),
-    @ref min(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref min(const Corrade::Containers::StridedArrayView1D<const T>&),
     @ref Vector::min()
 */
 /* defined in Vector.h */
@@ -260,7 +260,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(),
-    @ref max(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref max(const Corrade::Containers::StridedArrayView1D<const T>&),
     @ref Vector::max()
 */
 /* defined in Vector.h */
@@ -286,7 +286,7 @@ template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size
 @brief Minimum and maximum of two values
 
 @see @ref min(), @ref max(), @ref clamp(),
-    @ref minmax(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref minmax(const Corrade::Containers::StridedArrayView1D<const T>&),
     @ref Vector::minmax(),
     @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */

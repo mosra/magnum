@@ -62,7 +62,7 @@ set to @cpp 1 @ce if any value has that component infinite. If the range is
 empty, returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isInf(T), @ref Constants::inf()
 */
-template<class T> auto isInf(Corrade::Containers::StridedArrayView1D<const T> range) -> decltype(isInf(std::declval<T>())) {
+template<class T> auto isInf(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isInf(std::declval<T>())) {
     if(range.empty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
@@ -86,17 +86,23 @@ above overload. Works with any type that's convertible to
 @ref Corrade::Containers::StridedArrayView.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline auto isInf(Iterable&& range) -> decltype(isInf(std::declval<T>())) {
-    return isInf(Corrade::Containers::StridedArrayView1D<const T>{range});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isInf<T>(Corrade::Containers::StridedArrayView1D<const T>{range});
 }
 
 /** @overload */
 template<class T> inline auto isInf(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
-    return isInf(Corrade::Containers::stridedArrayView(list));
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isInf<T>(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline auto isInf(const T(&array)[size]) -> decltype(isInf(std::declval<T>())) {
-    return isInf(Corrade::Containers::StridedArrayView1D<const T>{array});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isInf<T>(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /**
@@ -108,7 +114,7 @@ set to @cpp 1 @ce if any value has that component NaN. If the range is empty,
 returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isNan(T), @ref Constants::nan()
 */
-template<class T> inline auto isNan(Corrade::Containers::StridedArrayView1D<const T> range) -> decltype(isNan(std::declval<T>())) {
+template<class T> inline auto isNan(const Corrade::Containers::StridedArrayView1D<const T>& range) -> decltype(isNan(std::declval<T>())) {
     if(range.empty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
@@ -133,17 +139,23 @@ above overload. Works with any type that's convertible to
 */
 /* See isInf() for why arrayView() and not stridedArrayView() */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline auto isNan(Iterable&& range) -> decltype(isNan(std::declval<T>())) {
-    return isNan(Corrade::Containers::StridedArrayView1D<const T>{range});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isNan<T>(Corrade::Containers::StridedArrayView1D<const T>{range});
 }
 
 /** @overload */
 template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isNan(std::declval<T>())) {
-    return isNan(Corrade::Containers::stridedArrayView(list));
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isNan<T>(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline auto isNan(const T(&array)[size]) -> decltype(isNan(std::declval<T>())) {
-    return isNan(Corrade::Containers::StridedArrayView1D<const T>{array});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return isNan<T>(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 namespace Implementation {
@@ -185,9 +197,9 @@ namespace Implementation {
 
 If the range is empty, returns default-constructed value. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
-@see @ref min(T, T), @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
+@see @ref min(T, T), @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
-template<class T> inline T min(Corrade::Containers::StridedArrayView1D<const T> range) {
+template<class T> inline T min(const Corrade::Containers::StridedArrayView1D<const T>& range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -206,17 +218,23 @@ above overload. Works with any type that's convertible to
 @ref Corrade::Containers::StridedArrayView.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T min(Iterable&& range) {
-    return min(Corrade::Containers::StridedArrayView1D<const T>{range});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return min<T>(Corrade::Containers::StridedArrayView1D<const T>{range});
 }
 
 /** @overload */
 template<class T> inline T min(std::initializer_list<T> list) {
-    return min(Corrade::Containers::stridedArrayView(list));
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return min<T>(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T min(const T(&array)[size]) {
-    return min(Corrade::Containers::StridedArrayView1D<const T>{array});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return min<T>(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /**
@@ -224,9 +242,9 @@ template<class T, std::size_t size> inline T min(const T(&array)[size]) {
 
 If the range is empty, returns default-constructed value. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
-@see @ref max(T, T), @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
+@see @ref max(T, T), @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
-template<class T> inline T max(Corrade::Containers::StridedArrayView1D<const T> range) {
+template<class T> inline T max(const Corrade::Containers::StridedArrayView1D<const T>& range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -245,17 +263,23 @@ above overload. Works with any type that's convertible to
 @ref Corrade::Containers::StridedArrayView.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline T max(Iterable&& range) {
-    return max(Corrade::Containers::StridedArrayView1D<const T>{range});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return max<T>(Corrade::Containers::StridedArrayView1D<const T>{range});
 }
 
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
-    return max(Corrade::Containers::stridedArrayView(list));
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return max<T>(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T max(const T(&array)[size]) {
-    return max(Corrade::Containers::StridedArrayView1D<const T>{array});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return max<T>(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 namespace Implementation {
@@ -278,9 +302,9 @@ If the range is empty, returns default-constructed values. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
 @see @ref minmax(T, T),
     @ref Range::Range(const std::pair<VectorType, VectorType>&),
-    @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
+    @ref isNan(const Corrade::Containers::StridedArrayView1D<const T>&)
 */
-template<class T> inline std::pair<T, T> minmax(Corrade::Containers::StridedArrayView1D<const T> range) {
+template<class T> inline std::pair<T, T> minmax(const Corrade::Containers::StridedArrayView1D<const T>& range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -300,17 +324,23 @@ above overload. Works with any type that's convertible to
 @ref Corrade::Containers::StridedArrayView.
 */
 template<class Iterable, class T = decltype(Implementation::stridedArrayViewTypeFor(std::declval<Iterable&&>()))> inline std::pair<T, T> minmax(Iterable&& range) {
-    return minmax(Corrade::Containers::StridedArrayView1D<const T>{range});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return minmax<T>(Corrade::Containers::StridedArrayView1D<const T>{range});
 }
 
 /** @overload */
 template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
-    return minmax(Corrade::Containers::stridedArrayView(list));
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return minmax<T>(Corrade::Containers::stridedArrayView(list));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
-    return minmax(Corrade::Containers::StridedArrayView1D<const T>{array});
+    /* Specifying the template explicitly to avoid recursion into the generic
+       function again */
+    return minmax<T>(Corrade::Containers::StridedArrayView1D<const T>{array});
 }
 
 /*@}*/

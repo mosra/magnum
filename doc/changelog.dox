@@ -686,12 +686,12 @@ Released 2019-10-24, tagged as
     make them usable in more contexts
 -   @ref Math::Vector::min(), @ref Math::Vector::max(),
     @ref Math::Vector::minmax() and batch
-    @ref Math::min(Containers::StridedArrayView1D<const T>),
-    @ref Math::max(Containers::StridedArrayView1D<const T>) and
-    @ref Math::minmax(Containers::StridedArrayView1D<const T>) functions now
+    @ref Math::min(const Containers::StridedArrayView1D<const T>&),
+    @ref Math::max(const Containers::StridedArrayView1D<const T>&) and
+    @ref Math::minmax(const Containers::StridedArrayView1D<const T>&) functions now
     ignore NaNs in the data, if possible. Use
     @ref Math::isNan(const Vector<size, T>&) or the batch
-    @ref Math::isNan(Containers::StridedArrayView1D<const T>) to detect
+    @ref Math::isNan(const Containers::StridedArrayView1D<const T>&) to detect
     presence of NaN values if needed.
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
     works --- the output now has the same bit order as when constructing it
@@ -963,13 +963,13 @@ Released 2019-10-24, tagged as
 -   @cpp Math::Frustum::planes() @ce are deprecated due to redundancy, use
     either @ref Math::Frustum::operator[](), @ref Math::Frustum::data() or
     range access using @ref Math::Frustum::begin() / @ref Math::Frustum::end()
--   Batch @ref Math::min(Containers::StridedArrayView1D<const T>),
-    @ref Math::max(Containers::StridedArrayView1D<const T>) and
-    @ref Math::minmax(Containers::StridedArrayView1D<const T>) are moved to a
-    new @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
-    times. This header is included from @ref Magnum/Math/FunctionsBatch.h when
-    building with @ref MAGNUM_BUILD_DEPRECATED enabled, include it explicitly
-    to ensure forward compatibility
+-   Batch @ref Math::min(const Containers::StridedArrayView1D<const T>&),
+    @ref Math::max(const Containers::StridedArrayView1D<const T>&) and
+    @ref Math::minmax(const Containers::StridedArrayView1D<const T>&) are moved
+    to a new @ref Magnum/Math/FunctionsBatch.h header in order to speed up
+    compile times. This header is included from @ref Magnum/Math/FunctionsBatch.h
+    when building with @ref MAGNUM_BUILD_DEPRECATED enabled, include it
+    explicitly to ensure forward compatibility
 -   @cpp Trade::ImporterFileCallbackPolicy @ce is deprecated as it was moved
     to @ref InputFileCallbackPolicy in the root namespace to be shared with
     APIs outside of the @ref Trade namespace. Moreover,
