@@ -26,7 +26,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/AbstractResourceLoader.h"

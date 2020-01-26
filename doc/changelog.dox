@@ -217,6 +217,9 @@ See also:
     to be ignored even though Vsync was in fact not enabled.
 -   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsify() that
     could trigger ASan or debug iterator errors
+-   With @ref Corrade/Utility/DebugStl.h not being included, @ref std::string
+    instances could get accidentally printed as @ref ResourceKey instances.
+    Added and explicit header dependency to avoid such cases.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

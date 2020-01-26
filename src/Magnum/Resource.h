@@ -33,6 +33,13 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/MurmurHash2.h>
 
+/* This is needed because ResourceKey is implicitly convertible from a
+   std::string -- and if DebugStl.h wouldn't be included, an attempt to print a
+   std::string would choose the ResourceKey printer instead, producing unwanted
+   results. */
+/** @todo remove when we have a StringView and ResourceKey is ported to it */
+#include <Corrade/Utility/DebugStl.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
@@ -91,7 +98,7 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
         explicit ResourceKey(std::size_t key): Utility::MurmurHash2::Digest{Utility::MurmurHash2::Digest::fromByteArray(reinterpret_cast<const char*>(&key))} {}
 
         /** @brief Constructor */
-        ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
+        /*implicit*/ ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
 
         /**
          * @brief Constructor
