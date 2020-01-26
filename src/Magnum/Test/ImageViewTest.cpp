@@ -23,14 +23,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/* Included as first to check that we *really* don't need the StridedArrayView
+   header for definition of pixels() */
+#include "Magnum/ImageView.h"
+
 #include <sstream>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Math/Color.h"
-#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Color.h"
 
 namespace Magnum { namespace Test { namespace {
 
