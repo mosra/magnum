@@ -24,7 +24,8 @@
 */
 
 /* Included as first to check that we *really* don't need the StridedArrayView
-   header for definition of pixels() */
+   header for definition of pixels(). We actually need, but just for the
+   arrayCast() template, which is forward-declared. */
 #include "Magnum/Trade/ImageData.h"
 
 #include <sstream>

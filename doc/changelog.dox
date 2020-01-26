@@ -220,6 +220,11 @@ See also:
 -   With @ref Corrade/Utility/DebugStl.h not being included, @ref std::string
     instances could get accidentally printed as @ref ResourceKey instances.
     Added and explicit header dependency to avoid such cases.
+-   The @ref Magnum/Image.h, @ref Magnum/ImageView.h and
+    @ref Magnum/Trade/ImageData.h headers required
+    @ref Corrade/Containers/StridedArrayView.h to be included *before* in order
+    to use the @ref ImageView::pixels() "pixels()" function. Now it's enough
+    to just include it at any point, with no order dependency anymore.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

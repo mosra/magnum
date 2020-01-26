@@ -35,6 +35,17 @@
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Math/Vector3.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Corrade { namespace Containers {
+
+/* Forward declaration of an utility used in pixels() to avoid forcing users to
+   include the relatively large StridedArrayView header *before* the Image
+   class definition. */
+template<unsigned newDimensions, class U, unsigned dimensions, class T> StridedArrayView<newDimensions, U> arrayCast(const StridedArrayView<dimensions, T>& view);
+
+}}
+#endif
+
 namespace Magnum {
 
 /**
@@ -460,7 +471,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
         template<class U> Containers::StridedArrayView<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type> pixels() const {
             if(!_data && !_data.size()) return {};
             /* Deliberately not adding a StridedArrayView include, it should
-               work without since this is a templated function */
+               work without since this is a templated function and we declare
+               arrayCast() above to satisfy two-phase lookup. */
             return Containers::arrayCast<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type>(pixels());
         }
 

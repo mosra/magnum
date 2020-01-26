@@ -36,6 +36,17 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Corrade { namespace Containers {
+
+/* Forward declaration of an utility used in pixels() to avoid forcing users to
+   include the relatively large StridedArrayView header *before* the Image
+   class definition. */
+template<unsigned newDimensions, class U, unsigned dimensions, class T> StridedArrayView<newDimensions, U> arrayCast(const StridedArrayView<dimensions, T>& view);
+
+}}
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -417,7 +428,8 @@ template<UnsignedInt dimensions> class ImageData {
          */
         template<class T> Containers::StridedArrayView<dimensions, T> pixels() {
             /* Deliberately not adding a StridedArrayView include, it should
-               work without since this is a templated function */
+               work without since this is a templated function and we declare
+               arrayCast() above to satisfy two-phase lookup. */
             return Containers::arrayCast<dimensions, T>(pixels());
         }
 
