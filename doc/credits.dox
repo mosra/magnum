@@ -131,6 +131,9 @@ Are the below lists missing your name or something's wrong?
     improvements
 -   **Ivan Sanz Carasa** ([\@isc30](https://github.com/isc30)) --- buildsystem
     improvements
+-   **Jackson Campolattaro** ([\@JacksonCampolattaro](https://github.com/JacksonCampolattaro))
+    --- documentation improvements, [base-gtkmm](https://github.com/mosra/magnum-bootstrap/tree/base-gtkmm)
+    bootstrap project
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- Homebrew
     package for `magnum-bindings`
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
