@@ -101,9 +101,7 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
 };
 
 /** @debugoperator{ResourceKey} */
-inline Debug& operator<<(Debug& debug, const ResourceKey& value) {
-    return debug << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value);
-}
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, const ResourceKey& value);
 
 namespace Implementation {
     template<class> class ResourceManagerData;

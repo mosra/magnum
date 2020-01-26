@@ -27,6 +27,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/AbstractResourceLoader.h"
 #include "Magnum/ResourceManager.h"
@@ -57,6 +58,7 @@ struct ResourceManagerTest: TestSuite::Tester {
     void loaderSetNullptr();
 
     void debugResourceState();
+    void debugResourceKey();
 };
 
 struct Data {
@@ -91,7 +93,8 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::loader,
               &ResourceManagerTest::loaderSetNullptr,
 
-              &ResourceManagerTest::debugResourceState});
+              &ResourceManagerTest::debugResourceState,
+              &ResourceManagerTest::debugResourceKey});
 }
 
 void ResourceManagerTest::constructResource() {
@@ -283,7 +286,7 @@ void ResourceManagerTest::basic() {
     int a = 43; /* Done this way to prevent a memory leak on assert (yes, the code is bad) */
     rm.set(answerKey, &a, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
-    CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
+    CORRADE_COMPARE(out.str(), Utility::formatString("ResourceManager::set(): cannot change already final resource ResourceKey(0x{})\n", answerKey.hexString()));
 
     /* But non-final can be changed */
     rm.set(questionKey, 20, ResourceDataState::Final, ResourcePolicy::Resident);
@@ -501,6 +504,13 @@ void ResourceManagerTest::debugResourceState() {
     std::ostringstream out;
     Debug{&out} << ResourceState::Loading << ResourceState(0xbe);
     CORRADE_COMPARE(out.str(), "ResourceState::Loading ResourceState(0xbe)\n");
+}
+
+void ResourceManagerTest::debugResourceKey() {
+    std::ostringstream out;
+    ResourceKey hello = "hello";
+    Debug{&out} << hello;
+    CORRADE_COMPARE(out.str(), Utility::formatString("ResourceKey(0x{})\n", hello.hexString()));
 }
 
 }}}

@@ -48,6 +48,10 @@ Debug& operator<<(Debug& debug, const ResourceState value) {
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
+
+Debug& operator<<(Debug& debug, const ResourceKey& value) {
+    return debug << "ResourceKey(0x" << Debug::nospace << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value) << Debug::nospace << ")";
+}
 #endif
 
 }
