@@ -58,10 +58,8 @@ if(WITH_GLFWAPPLICATION)
     # HiDPi.manifest not needed, as GLFW sets that on its own
     target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumGlfwApplication Corrade::Main)
     # Window icon loading
-    if(NOT CORRADE_TARGET_EMSCRIPTEN)
-        target_sources(PlatformGlfwApplicationTest PRIVATE ${Platform_RESOURCES})
-        target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumTrade)
-    endif()
+    target_sources(PlatformGlfwApplicationTest PRIVATE ${Platform_RESOURCES})
+    target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumTrade)
     set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
