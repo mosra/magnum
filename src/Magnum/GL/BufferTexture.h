@@ -81,8 +81,6 @@ and respective function documentation for more information.
 @requires_gles Texture buffers are not available in WebGL.
 */
 class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
-    friend Implementation::TextureState;
-
     public:
         /**
          * @brief Max supported buffer texture size
@@ -259,6 +257,8 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
 
     private:
+        friend Implementation::TextureState;
+
         explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
 
         void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);

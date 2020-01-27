@@ -139,10 +139,6 @@ functions do nothing.
 @todo Query for immutable levels (@gl_extension{ARB,ES3_compatibility})
 */
 class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
-    friend Implementation::TextureState;
-    friend AbstractFramebuffer;
-    friend CubeMapTexture;
-
     public:
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -519,6 +515,10 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         GLenum _target;
 
     private:
+        friend Implementation::TextureState;
+        friend AbstractFramebuffer;
+        friend CubeMapTexture;
+
         #ifndef MAGNUM_TARGET_GLES
         static Int MAGNUM_GL_LOCAL compressedBlockDataSizeImplementationDefault(GLenum target, TextureFormat format);
         static Int MAGNUM_GL_LOCAL compressedBlockDataSizeImplementationBitsWorkaround(GLenum target, TextureFormat format);
