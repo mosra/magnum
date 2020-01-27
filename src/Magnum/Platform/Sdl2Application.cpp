@@ -87,7 +87,10 @@ enum class Sdl2Application::Flag: UnsignedByte {
     Exit = 1 << 4,
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     TextInputActive = 1 << 5,
-    Resizable = 1 << 6
+    Resizable = 1 << 6,
+    #endif
+    #ifdef CORRADE_TARGET_APPLE
+    HiDpiWarningPrinted = 1 << 7
     #endif
 };
 
@@ -180,16 +183,18 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 }
 #endif
 
-Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
+Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
     /* Print a helpful warning in case some extra steps are needed for HiDPI
        support */
     #ifdef CORRADE_TARGET_APPLE
-    if(!Implementation::isAppleBundleHiDpiEnabled())
+    if(!Implementation::isAppleBundleHiDpiEnabled() && !(_flags & Flag::HiDpiWarningPrinted)) {
         Warning{} << "Platform::Sdl2Application: warning: the executable is not a HiDPI-enabled app bundle";
+        _flags |= Flag::HiDpiWarningPrinted;
+    }
     #elif defined(CORRADE_TARGET_WINDOWS)
-    /** @todo */
+    /* Handled below, warning printed only when using virtual DPI scaling */
     #endif
 
     /* Use values from the configuration only if not overriden on command line.

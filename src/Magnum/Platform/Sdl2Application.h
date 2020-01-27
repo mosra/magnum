@@ -730,7 +730,7 @@ class Sdl2Application {
          *
          * How the content should be scaled relative to system defaults for
          * given @ref windowSize(). If a window is not created yet, returns
-         * zero vector, use @ref dpiScaling(const Configuration&) const for
+         * zero vector, use @ref dpiScaling(const Configuration&) for
          * calculating a value independently. See @ref Platform-Sdl2Application-dpi
          * for more information.
          * @see @ref framebufferSize()
@@ -745,7 +745,7 @@ class Sdl2Application {
          * and custom scaling specified on the command-line. See
          * @ref Platform-Sdl2Application-dpi for more information.
          */
-        Vector2 dpiScaling(const Configuration& configuration) const;
+        Vector2 dpiScaling(const Configuration& configuration);
 
         /**
          * @brief Set window title

@@ -54,7 +54,10 @@ static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane
 
 enum class GlfwApplication::Flag: UnsignedByte {
     Redraw = 1 << 0,
-    TextInputActive = 1 << 1
+    TextInputActive = 1 << 1,
+    #ifdef CORRADE_TARGET_APPLE
+    HiDpiWarningPrinted = 1 << 2
+    #endif
 };
 
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
@@ -127,14 +130,16 @@ void GlfwApplication::create(const Configuration& configuration, const GLConfigu
 }
 #endif
 
-Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
+Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
     /* Print a helpful warning in case some extra steps are needed for HiDPI
        support */
     #ifdef CORRADE_TARGET_APPLE
-    if(!Implementation::isAppleBundleHiDpiEnabled())
+    if(!Implementation::isAppleBundleHiDpiEnabled() && !(_flags & Flag::HiDpiWarningPrinted)) {
         Warning{} << "Platform::GlfwApplication: warning: the executable is not a HiDPI-enabled app bundle";
+        _flags |= Flag::HiDpiWarningPrinted;
+    }
     #elif defined(CORRADE_TARGET_WINDOWS)
     /** @todo */
     #endif
