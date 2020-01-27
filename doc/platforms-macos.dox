@@ -108,9 +108,9 @@ example.
 @section platforms-macos-hidpi HiDPI (Retina) support
 
 macOS and iOS is the only platform where HiDPI support of an app can't be
-advertised programmatically. In case of CMake, you have to supply a custom
-`*.plist` file with `NSHighResolutionCapable` enabled
-(@ref platforms-macos-bundle "see above for details about creating bundles"):
+advertised programmatically. According to various sources, this capability is
+enabled by default on macOS 10.15+ and iOS 13+, for older versions you need to
+supply a custom `*.plist` file with `NSHighResolutionCapable` enabled:
 
 @code{.xml}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -123,6 +123,10 @@ advertised programmatically. In case of CMake, you have to supply a custom
 </dict>
 </plist>
 @endcode
+
+If you are using CMake, you can use the @ref platforms-macos-bundle "method described above"
+to create a bundle with given file. Also note that this property is already
+included in CMake's builtin `Info.plist` on [version 3.9 and newer](https://gitlab.kitware.com/cmake/cmake/merge_requests/682).
 
 @section platforms-macos-clang-version-mapping Clang version mapping
 
