@@ -61,6 +61,13 @@ if(WITH_GLFWAPPLICATION)
     target_sources(PlatformGlfwApplicationTest PRIVATE ${Platform_RESOURCES})
     target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumTrade)
     set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
+    if(CORRADE_TARGET_APPLE)
+        # The plist is needed in order to mark the app as DPI-aware
+        set_target_properties(PlatformGlfwApplicationTest PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/GlfwApplicationTest.plist
+            MACOSX_BUNDLE ON
+            XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+    endif()
 endif()
 
 if(WITH_GLXAPPLICATION)
