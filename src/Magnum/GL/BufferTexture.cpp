@@ -27,6 +27,7 @@
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/BufferTextureFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/State.h"
@@ -80,7 +81,7 @@ Int BufferTexture::size() {
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
     buffer.createIfNotAlready();
-    (this->*Context::current().state().texture->setBufferImplementation)(internalFormat, buffer);
+    (this->*Context::current().state().texture->setBufferImplementation)(internalFormat, &buffer);
     return *this;
 }
 
@@ -90,21 +91,21 @@ BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat
     return *this;
 }
 
-void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer) {
+void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer) {
     bindInternal();
-    glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
+    glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 
 #ifdef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer) {
+void BufferTexture::setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer) {
     bindInternal();
-    glTexBufferEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
+    glTexBufferEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void BufferTexture::setBufferImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer) {
-    glTextureBuffer(id(), GLenum(internalFormat), buffer.id());
+void BufferTexture::setBufferImplementationDSA(const BufferTextureFormat internalFormat, Buffer* buffer) {
+    glTextureBuffer(id(), GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 #endif
 
@@ -125,6 +126,13 @@ void BufferTexture::setBufferRangeImplementationDSA(const BufferTextureFormat in
     glTextureBufferRange(id(), GLenum(internalFormat), buffer.id(), offset, size);
 }
 #endif
+
+BufferTexture& BufferTexture::resetBuffer() {
+    /* R8 is the default state according to ARB_texture_buffer_object, so use
+       that */
+    (this->*Context::current().state().texture->setBufferImplementation)(BufferTextureFormat::R8, nullptr);
+    return *this;
+}
 
 }}
 #endif

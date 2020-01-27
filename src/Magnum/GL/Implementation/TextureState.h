@@ -105,7 +105,7 @@ struct TextureState {
     void(AbstractTexture::*invalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer&);
+    void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer*);
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 

@@ -129,6 +129,8 @@ See also:
     @ref Corrade::Containers::ArrayView instead of @ref std::initializer_list
     in order to allow passing runtime-sized lists (see
     [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
+-   Added an ability to remove a buffer from a @ref GL::BufferTexture using
+    @ref GL::BufferTexture::resetBuffer() "resetBuffer()"
 
 @subsubsection changelog-latest-changes-math Math library
 

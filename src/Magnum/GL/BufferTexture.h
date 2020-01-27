@@ -209,8 +209,9 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          * own data setting functions. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is bound before
          * the operation (if not already).
-         * @see @ref maxSize(), @fn_gl2_keyword{TextureBuffer,TexBuffer},
-         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @ref resetBuffer(),
+         *      @fn_gl2_keyword{TextureBuffer,TexBuffer}, eventually
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexBuffer}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
@@ -228,12 +229,22 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          * own data setting functions. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is bound before
          * the operation (if not already).
-         * @see @ref maxSize(), @fn_gl2_keyword{TextureBufferRange,TexBufferRange},
-         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         * @see @ref maxSize(), @ref resetBuffer(),
+         *      @fn_gl2_keyword{TextureBufferRange,TexBufferRange}, eventually
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexBufferRange}
          * @requires_gl43 Extension @gl_extension{ARB,texture_buffer_range}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+
+        /**
+         * @brief Remove existing buffer from the texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * @see @ref setBuffer()
+         */
+        BufferTexture& resetBuffer();
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -250,12 +261,12 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
     private:
         explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
 
-        void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
         #ifdef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_GL_LOCAL setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
+        void MAGNUM_GL_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer* buffer);
         #endif
 
         void MAGNUM_GL_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
