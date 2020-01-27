@@ -483,6 +483,15 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
     #endif
 
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-detach-on-data-modify")) {
+        setBufferImplementation = &BufferTexture::setBufferImplementationApple;
+        /* No need for Apple-specific setBufferRangeImplementation, as the
+           extension is not supported anyway */
+        CORRADE_INTERNAL_ASSERT(!context.isExtensionSupported<Extensions::ARB::texture_buffer_range>());
+    }
+    #endif
+
     /* Allocate texture bindings array to hold all possible texture units */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);

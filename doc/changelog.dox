@@ -65,6 +65,10 @@ See also:
     that attempted to fix this by doing an explicit buffer binding in some
     cases. See @ref opengl-workarounds and [mosra/magnum#405](https://github.com/mosra/magnum/pull/405)
     for more information.
+-   A @cpp "apple-buffer-texture-detach-on-data-modify" @ce workaround that
+    fixes crashes on Apple macOS when attempting to modify a @ref GL::Buffer
+    that's attached to a @ref GL::BufferTexture. See @ref opengl-workarounds
+    for more information.
 
 @subsubsection changelog-latest-new-math Math library
 

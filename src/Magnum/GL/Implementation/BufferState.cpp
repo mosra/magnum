@@ -177,6 +177,19 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         setTargetHintImplementation = &Buffer::setTargetHintImplementationDefault;
     }
 
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-detach-on-data-modify")) {
+        dataImplementation = &Buffer::dataImplementationApple;
+        subDataImplementation = &Buffer::subDataImplementationApple;
+        mapImplementation = &Buffer::mapImplementationApple;
+        mapRangeImplementation = &Buffer::mapRangeImplementationApple;
+        unmapImplementation = &Buffer::unmapImplementationApple;
+        /* No need for Apple-specific invalidate*Implementation, as the
+           extension isn't supported anyway */
+        CORRADE_INTERNAL_ASSERT(!context.isExtensionSupported<Extensions::ARB::invalidate_subdata>());
+    }
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     static_cast<void>(context);
     static_cast<void>(extensions);

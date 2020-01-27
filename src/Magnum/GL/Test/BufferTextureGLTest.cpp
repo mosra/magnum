@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/GL/Buffer.h"
@@ -49,6 +50,16 @@ struct BufferTextureGLTest: OpenGLTester {
     void setBufferOffset();
 
     void resetBuffer();
+
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    void appleSetBufferSubData();
+    void appleSetBufferQueryData();
+    void appleSetBufferMap();
+    void appleSetBufferMapRange();
+    void appleSetBufferDataMoved();
+    void appleSetBufferDataBufferDetached();
+    void appleSetBufferDataTextureDeleted();
+    #endif
 };
 
 BufferTextureGLTest::BufferTextureGLTest() {
@@ -62,7 +73,18 @@ BufferTextureGLTest::BufferTextureGLTest() {
               &BufferTextureGLTest::setBufferEmptyFirst,
               &BufferTextureGLTest::setBufferOffset,
 
-              &BufferTextureGLTest::resetBuffer});
+              &BufferTextureGLTest::resetBuffer,
+
+              #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+              &BufferTextureGLTest::appleSetBufferSubData,
+              &BufferTextureGLTest::appleSetBufferQueryData,
+              &BufferTextureGLTest::appleSetBufferMap,
+              &BufferTextureGLTest::appleSetBufferMapRange,
+              &BufferTextureGLTest::appleSetBufferDataMoved,
+              &BufferTextureGLTest::appleSetBufferDataBufferDetached,
+              &BufferTextureGLTest::appleSetBufferDataTextureDeleted
+              #endif
+              });
 }
 
 void BufferTextureGLTest::construct() {
@@ -311,6 +333,199 @@ void BufferTextureGLTest::resetBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+void BufferTextureGLTest::appleSetBufferSubData() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This also crashes unless worked around. Ugh. */
+    buffer.setSubData<UnsignedByte>(2, {0xf3, 0xab, 0x01, 0x57});
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleSetBufferQueryData() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This shouldn't suffer from the same problem as setData() and so isn't
+       worked around in any way */
+    buffer.data();
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleSetBufferMap() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This also crashes unless worked around. Ugh. */
+    const char* ptr = buffer.mapRead();
+    CORRADE_VERIFY(ptr);
+
+    /* This too */
+    buffer.unmap();
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleSetBufferMapRange() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This also crashes unless worked around. Ugh. */
+    char* ptr = buffer.map(0, 16, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
+    CORRADE_VERIFY(ptr);
+
+    ptr[12] = 0x35;
+
+    /* This doesn't, it seems (yay!) */
+    buffer.flushMappedRange(8, 8);
+
+    /* This would crash again unless worked around */
+    buffer.unmap();
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleSetBufferDataMoved() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
+
+    BufferTexture texture;
+    Buffer a;
+    texture.setBuffer(BufferTextureFormat::RG8UI, a);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_COMPARE(texture.size(), 0);
+
+    /* Verify that the texture relation info survives moving the buffer */
+
+    a.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.size(), 8);
+
+    Buffer b{std::move(a)};
+    b.setData<UnsignedByte>({0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.size(), 4);
+
+    Buffer c;
+    c = std::move(b);
+    c.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.size(), 8);
+}
+
+void BufferTextureGLTest::appleSetBufferDataBufferDetached() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer;
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.size(), 8);
+
+    texture.resetBuffer();
+    CORRADE_COMPARE(texture.size(), 0);
+
+    /* The buffer is no longer attached to the texture, so it should not
+       attempt to attach itself again */
+    buffer.setData<UnsignedByte>({0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(texture.size(), 0);
+}
+
+void BufferTextureGLTest::appleSetBufferDataTextureDeleted() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    Buffer buffer;
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+
+    {
+        BufferTexture texture;
+        texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE(texture.size(), 8);
+    }
+
+    /* The texture no longer exists, so the buffer should not attempt to
+       access it */
+    buffer.setData<UnsignedByte>({0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 }}}}
 

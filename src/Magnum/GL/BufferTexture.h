@@ -258,10 +258,16 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
 
     private:
         friend Implementation::TextureState;
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        friend Buffer;
+        #endif
 
         explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
 
         void MAGNUM_GL_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer* buffer);
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL setBufferImplementationApple(BufferTextureFormat internalFormat, Buffer* buffer);
+        #endif
         #ifdef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer);
         #endif
@@ -270,6 +276,8 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
 
         void MAGNUM_GL_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        /* No need for Apple-specific setBufferRangeImplementation, as the
+           extension is not supported anyway */
         #ifdef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL setBufferRangeImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif

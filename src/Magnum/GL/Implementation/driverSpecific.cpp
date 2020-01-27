@@ -38,6 +38,21 @@ namespace {
     /* Search the code for the following strings to see where they are implemented. */
     std::vector<std::string> KnownWorkarounds{
 /* [workarounds] */
+#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+/* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
+   on a buffer that's attached to a GL_TEXTURE_BUFFER crashes in
+   gleUpdateCtxDirtyStateForBufStampChange deep inside Apple's GLengine. A
+   workaround is to remember if a buffer is attached to a buffer texture,
+   temporarily detaching it, calling given data-modifying API and then
+   attaching it back with the same parameters. Unfortunately we need to cache
+   also the internal texture format, as GL_TEXTURE_INTERNAL_FORMAT query is
+   broken for buffer textures as well, returning always GL_R8 (the
+   spec-mandated default). "Fortunately" macOS doesn't support
+   ARB_texture_buffer_range so we don't need to store also offset/size, only
+   texture ID and its internal format, wasting 8 bytes per Buffer instance. */
+"apple-buffer-texture-detach-on-data-modify",
+#endif
+
 #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
 /* glBeginQuery() with GL_TIME_ELAPSED causes a GL_OUT_OF_MEMORY error when
    running from the Android shell (through ADB). No such error happens in an

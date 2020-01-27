@@ -1214,43 +1214,69 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL textureWorkaroundAppleBefore();
+        void MAGNUM_GL_LOCAL textureWorkaroundAppleAfter();
+        #endif
+
         void MAGNUM_GL_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL dataImplementationApple(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
 
         void MAGNUM_GL_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL subDataImplementationApple(GLintptr offset, GLsizeiptr size, const GLvoid* data);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
 
         void MAGNUM_GL_LOCAL invalidateImplementationNoOp();
+        /* No need for Apple-specific invalidateImplementation, as
+           GL_ARB_invalidate_subdata isn't supported */
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL invalidateImplementationARB();
         #endif
 
         void MAGNUM_GL_LOCAL invalidateSubImplementationNoOp(GLintptr offset, GLsizeiptr length);
+        /* No need for Apple-specific invalidateSubImplementation, as
+           GL_ARB_invalidate_subdata isn't supported */
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_GL_LOCAL * mapImplementationDefault(MapAccess access);
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL * mapImplementationApple(MapAccess access);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL * mapImplementationDSA(MapAccess access);
         #endif
 
         void MAGNUM_GL_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        void MAGNUM_GL_LOCAL * mapRangeImplementationApple(GLintptr offset, GLsizeiptr length, MapFlags access);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
 
         void MAGNUM_GL_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
+        /* No need for Apple-specific flushMappedRangeImplementation, as this
+           doesn't seem to hit the crashy code path */
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
         #endif
 
         bool MAGNUM_GL_LOCAL unmapImplementationDefault();
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        bool MAGNUM_GL_LOCAL unmapImplementationApple();
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         bool MAGNUM_GL_LOCAL unmapImplementationDSA();
         #endif
@@ -1259,6 +1285,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         GLuint _id;
         TargetHint _targetHint;
         ObjectFlags _flags;
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        GLuint _bufferTexture{};
+        GLenum _bufferTextureFormat{};
+        #endif
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -1275,8 +1305,16 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 
 inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
-inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _flags{other._flags} {
+inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _flags{other._flags}
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    , _bufferTexture{other._bufferTexture}, _bufferTextureFormat{other._bufferTextureFormat}
+    #endif
+{
     other._id = 0;
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    other._bufferTexture = 0;
+    other._bufferTextureFormat = 0;
+    #endif
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
@@ -1284,12 +1322,20 @@ inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     swap(_id, other._id);
     swap(_targetHint, other._targetHint);
     swap(_flags, other._flags);
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    swap(_bufferTexture, other._bufferTexture);
+    swap(_bufferTextureFormat, other._bufferTextureFormat);
+    #endif
     return *this;
 }
 
 inline GLuint Buffer::release() {
     const GLuint id = _id;
     _id = 0;
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    _bufferTexture = 0;
+    _bufferTextureFormat = 0;
+    #endif
     return id;
 }
 
