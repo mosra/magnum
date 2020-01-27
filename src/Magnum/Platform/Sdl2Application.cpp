@@ -79,6 +79,18 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
+enum class Sdl2Application::Flag: UnsignedByte {
+    Redraw = 1 << 0,
+    VSyncEnabled = 1 << 1,
+    NoTickEvent = 1 << 2,
+    NoAnyEvent = 1 << 3,
+    Exit = 1 << 4,
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    TextInputActive = 1 << 5,
+    Resizable = 1 << 6
+    #endif
+};
+
 Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
 
 Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
@@ -723,6 +735,8 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
     else _flags &= ~Flag::VSyncEnabled;
     return true;
 }
+
+void Sdl2Application::redraw() { _flags |= Flag::Redraw; }
 
 Sdl2Application::~Sdl2Application() {
     #ifdef MAGNUM_TARGET_GL

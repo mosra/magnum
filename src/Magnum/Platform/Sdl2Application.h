@@ -840,7 +840,7 @@ class Sdl2Application {
          * in the next iteration. You can call it from @ref drawEvent() itself
          * to redraw immediately without waiting for user input.
          */
-        void redraw() { _flags |= Flag::Redraw; }
+        void redraw();
 
     private:
         /**
@@ -1142,18 +1142,7 @@ class Sdl2Application {
         /*@}*/
 
     private:
-        enum class Flag: UnsignedByte {
-            Redraw = 1 << 0,
-            VSyncEnabled = 1 << 1,
-            NoTickEvent = 1 << 2,
-            NoAnyEvent = 1 << 3,
-            Exit = 1 << 4,
-            #ifdef CORRADE_TARGET_EMSCRIPTEN
-            TextInputActive = 1 << 5,
-            Resizable = 1 << 6
-            #endif
-        };
-
+        enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 

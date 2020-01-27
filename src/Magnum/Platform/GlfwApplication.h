@@ -498,7 +498,7 @@ class GlfwApplication {
         void setSwapInterval(Int interval);
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { _flags |= Flag::Redraw; }
+        void redraw();
 
     private:
         /**
@@ -653,7 +653,7 @@ class GlfwApplication {
          * @ref textInputEvent().
          * @see @ref startTextInput(), @ref stopTextInput()
          */
-        bool isTextInputActive() const { return !!(_flags & Flag::TextInputActive); }
+        bool isTextInputActive() const;
 
         /**
          * @brief Start text input
@@ -661,7 +661,7 @@ class GlfwApplication {
          * Starts text input that will go to @ref textInputEvent().
          * @see @ref stopTextInput(), @ref isTextInputActive()
          */
-        void startTextInput() { _flags |= Flag::TextInputActive; }
+        void startTextInput();
 
         /**
          * @brief Stop text input
@@ -670,7 +670,7 @@ class GlfwApplication {
          * @see @ref startTextInput(), @ref isTextInputActive(),
          *      @ref textInputEvent()
          */
-        void stopTextInput() { _flags &= ~Flag::TextInputActive; }
+        void stopTextInput();
 
     private:
         /**
@@ -699,11 +699,7 @@ class GlfwApplication {
         /*@}*/
 
     private:
-        enum class Flag: UnsignedByte {
-            Redraw = 1 << 0,
-            TextInputActive = 1 << 1
-        };
-
+        enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 

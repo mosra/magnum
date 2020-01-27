@@ -52,6 +52,11 @@ namespace Magnum { namespace Platform {
 static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values");
 #endif
 
+enum class GlfwApplication::Flag: UnsignedByte {
+    Redraw = 1 << 0,
+    TextInputActive = 1 << 1
+};
+
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration): GlfwApplication{arguments, NoCreate} {
@@ -686,6 +691,8 @@ void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);
 }
 
+void GlfwApplication::redraw() { _flags |= Flag::Redraw; }
+
 int GlfwApplication::exec() {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::exec(): no window opened", {});
 
@@ -809,6 +816,18 @@ void GlfwApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void GlfwApplication::textInputEvent(TextInputEvent&) {}
+
+bool GlfwApplication::isTextInputActive() const {
+    return !!(_flags & Flag::TextInputActive);
+}
+
+void GlfwApplication::startTextInput() {
+    _flags |= Flag::TextInputActive;
+}
+
+void GlfwApplication::stopTextInput() {
+    _flags &= ~Flag::TextInputActive;
+}
 
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
