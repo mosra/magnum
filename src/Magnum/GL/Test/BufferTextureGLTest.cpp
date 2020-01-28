@@ -53,6 +53,7 @@ struct BufferTextureGLTest: OpenGLTester {
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
     void appleSetBufferSubData();
+    void appleSetUnrelatedBufferData();
     void appleSetBufferQueryData();
     void appleSetBufferMap();
     void appleSetBufferMapRange();
@@ -77,6 +78,7 @@ BufferTextureGLTest::BufferTextureGLTest() {
 
               #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
               &BufferTextureGLTest::appleSetBufferSubData,
+              &BufferTextureGLTest::appleSetUnrelatedBufferData,
               &BufferTextureGLTest::appleSetBufferQueryData,
               &BufferTextureGLTest::appleSetBufferMap,
               &BufferTextureGLTest::appleSetBufferMapRange,
@@ -351,6 +353,29 @@ void BufferTextureGLTest::appleSetBufferSubData() {
 
     /* This also crashes unless worked around. Ugh. */
     buffer.setSubData<UnsignedByte>(2, {0xf3, 0xab, 0x01, 0x57});
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleSetUnrelatedBufferData() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This crashes even though there is no relation to the texture. */
+    Buffer another;
+    another.setData<UnsignedByte>({0xf3, 0xab, 0x01, 0x57});
 
     CORRADE_COMPARE(texture.size(), 8);
 
