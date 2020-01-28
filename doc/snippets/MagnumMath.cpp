@@ -1131,6 +1131,19 @@ Vector4i integral{floatingPoint}; // {1, 2, -15, 7}
 }
 
 {
+/* [Vector-length-integer] */
+Vector2i a{25, -1};
+Float length = Vector2{a}.length();         // ~25.099
+/* [Vector-length-integer] */
+static_cast<void>(length);
+
+/* [Vector-length-manhattan] */
+Int manhattanLength = Math::abs(a).sum();   // 26
+/* [Vector-length-manhattan] */
+static_cast<void>(manhattanLength);
+}
+
+{
 Vector2 vec;
 Float length{};
 /* [Vector-resized] */

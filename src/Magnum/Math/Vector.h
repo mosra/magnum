@@ -501,11 +501,24 @@ template<std::size_t size, class T> class Vector {
          * other values. @f[
          *      |\boldsymbol a| = \sqrt{\boldsymbol a \cdot \boldsymbol a}
          * @f]
+         *
+         * For integral types the result may be imprecise, to get a
+         * floating-point value of desired precision, cast to a floating-point
+         * vector first:
+         *
+         * @snippet MagnumMath.cpp Vector-length-integer
+         *
+         * A [Manhattan length](https://en.wikipedia.org/wiki/Taxicab_geometry)
+         * might be more suitable than @ref length() in certain cases where the
+         * square root is undesirable --- it's a sum of absolute values:
+         *
+         * @snippet MagnumMath.cpp Vector-length-manhattan
+         *
          * @see @ref lengthInverted(), @ref Math::sqrt(), @ref normalized(),
          *      @ref resized()
          * @todo something like std::hypot() for possibly better precision?
          */
-        T length() const { return std::sqrt(dot()); }
+        T length() const { return T(std::sqrt(dot())); }
 
         /**
          * @brief Inverse vector length
@@ -606,7 +619,7 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Sum of values in the vector
          *
-         * @see @ref operator+()
+         * @see @ref operator+(), @ref length()
          */
         T sum() const;
 
