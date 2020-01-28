@@ -58,11 +58,12 @@ std::string AbstractImporter::pluginInterface() {
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
     return {
+        /* Debug build */
         #ifdef CORRADE_IS_DEBUG_BUILD
         #ifndef MAGNUM_BUILD_STATIC
         Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/importers"),
         #else
-        #ifndef MAGNUM_TARGET_WINDOWS
+        #ifndef CORRADE_TARGET_WINDOWS
         /* On Windows, the plugin DLLs are next to the executable, so the one
            below works. Elsewhere the plugins are in the lib dir instead */
         "../lib/magnum-d/importers",
@@ -70,13 +71,13 @@ std::vector<std::string> AbstractImporter::pluginSearchPaths() {
         "magnum-d/importers",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "importers")
-        #ifdef CORRADE_TARGET_WINDOWS
-        #endif
+
+        /* Release build */
         #else
         #ifndef MAGNUM_BUILD_STATIC
         Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/importers"),
         #else
-        #ifndef MAGNUM_TARGET_WINDOWS
+        #ifndef CORRADE_TARGET_WINDOWS
         "../lib/magnum/importers",
         #endif
         "magnum/importers",

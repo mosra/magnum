@@ -237,6 +237,9 @@ See also:
     @ref Corrade/Containers/StridedArrayView.h to be included *before* in order
     to use the @ref ImageView::pixels() "pixels()" function. Now it's enough
     to just include it at any point, with no order dependency anymore.
+-   Dynamic plugins on static Magnum builds on Windows were accidentally
+    searched for in the `lib/` directory instead of `bin/`, and in some cases
+    in `bin/` instead of `lib/` on Unix platforms.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

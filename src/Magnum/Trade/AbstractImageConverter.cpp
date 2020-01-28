@@ -49,11 +49,12 @@ std::string AbstractImageConverter::pluginInterface() {
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
     return {
+        /* Debug build */
         #ifdef CORRADE_IS_DEBUG_BUILD
         #ifndef MAGNUM_BUILD_STATIC
         Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/imageconverters"),
         #else
-        #ifndef MAGNUM_TARGET_WINDOWS
+        #ifndef CORRADE_TARGET_WINDOWS
         /* On Windows, the plugin DLLs are next to the executable, so the one
            below works. Elsewhere the plugins are in the lib dir instead */
         "../lib/magnum-d/imageconverters",
@@ -61,11 +62,13 @@ std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
         "magnum-d/imageconverters",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "imageconverters")
+
+        /* Release build */
         #else
         #ifndef MAGNUM_BUILD_STATIC
         Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/imageconverters"),
         #else
-        #ifndef MAGNUM_TARGET_WINDOWS
+        #ifndef CORRADE_TARGET_WINDOWS
         "../lib/magnum/imageconverters",
         #endif
         "magnum/imageconverters",
