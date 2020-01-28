@@ -1285,10 +1285,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         GLuint _id;
         TargetHint _targetHint;
         ObjectFlags _flags;
-        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        GLuint _bufferTexture{};
-        GLenum _bufferTextureFormat{};
-        #endif
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -1305,16 +1301,8 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 
 inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
-inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _flags{other._flags}
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-    , _bufferTexture{other._bufferTexture}, _bufferTextureFormat{other._bufferTextureFormat}
-    #endif
-{
+inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _flags{other._flags} {
     other._id = 0;
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-    other._bufferTexture = 0;
-    other._bufferTextureFormat = 0;
-    #endif
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
@@ -1322,20 +1310,12 @@ inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     swap(_id, other._id);
     swap(_targetHint, other._targetHint);
     swap(_flags, other._flags);
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-    swap(_bufferTexture, other._bufferTexture);
-    swap(_bufferTextureFormat, other._bufferTextureFormat);
-    #endif
     return *this;
 }
 
 inline GLuint Buffer::release() {
     const GLuint id = _id;
     _id = 0;
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-    _bufferTexture = 0;
-    _bufferTextureFormat = 0;
-    #endif
     return id;
 }
 

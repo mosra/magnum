@@ -40,17 +40,27 @@ namespace {
 /* [workarounds] */
 #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
-   on a buffer that's attached to a GL_TEXTURE_BUFFER crashes in
-   gleUpdateCtxDirtyStateForBufStampChange deep inside Apple's GLengine. A
-   workaround is to remember if a buffer is attached to a buffer texture,
-   temporarily detaching it, calling given data-modifying API and then
-   attaching it back with the same parameters. Unfortunately we need to cache
-   also the internal texture format, as GL_TEXTURE_INTERNAL_FORMAT query is
-   broken for buffer textures as well, returning always GL_R8 (the
-   spec-mandated default). "Fortunately" macOS doesn't support
-   ARB_texture_buffer_range so we don't need to store also offset/size, only
-   texture ID and its internal format, wasting 8 bytes per Buffer instance. */
-"apple-buffer-texture-detach-on-data-modify",
+   on ANY buffer when ANY buffer is attached to a currently bound
+   GL_TEXTURE_BUFFER crashes in gleUpdateCtxDirtyStateForBufStampChange deep
+   inside Apple's GLengine. This can be worked around by unbinding all buffer
+   textures before attempting to do such operation.
+
+   A previous iteration of this workaround was to remember if a buffer is
+   attached to a buffer texture, temporarily detaching it, calling given
+   data-modifying API and then attaching it back with the same parameters.
+   Unfortunately we also had to cache the internal texture format, as
+   GL_TEXTURE_INTERNAL_FORMAT query is broken for buffer textures as well,
+   returning always GL_R8 (the spec-mandated default). "Fortunately" macOS
+   doesn't support ARB_texture_buffer_range so we didn't need to store also
+   offset/size, only texture ID and its internal format, wasting 8 bytes per
+   Buffer instance. HOWEVER, then we discovered this is not enough and also
+   completely unrelated buffers suffer from the same crash. Fixing that
+   properly in a similar manner would mean going through all live buffer
+   texture instances and temporarily detaching their buffer when doing *any*
+   data modification on *any* buffer, which would have extreme perf
+   implications. So FORTUNATELY unbinding the textures worked around this too,
+   and is a much nicer workaround after all. */
+"apple-buffer-texture-unbind-on-buffer-modify",
 #endif
 
 #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)

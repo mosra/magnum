@@ -29,9 +29,6 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Debug.h>
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-#include "Magnum/GL/BufferTexture.h"
-#endif
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/State.h"
@@ -40,6 +37,10 @@
 #include "Magnum/GL/Implementation/DebugState.h"
 #endif
 #include "Magnum/GL/Implementation/MeshState.h"
+
+#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#include "Magnum/GL/Implementation/TextureState.h"
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -550,88 +551,51 @@ bool Buffer::unmapImplementationDSA() {
 #endif
 
 #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-/* If this buffer is attached to a buffer texture, we need to temporarily
-   detach it to avoid crashes in the macOS driver when doing buffer-modifying
-   operations. See the apple-buffer-texture-detach-on-setdata workaround for
-   more info. */
+/* See apple-buffer-texture-detach-on-data-modify for the gory details. */
 void Buffer::textureWorkaroundAppleBefore() {
-    /* No buffer texture attached or the texture no longer exists, nothing to
-       do */
-    if(!_bufferTexture || !glIsTexture(_bufferTexture)) {
-        _bufferTexture = 0; /* Avoid doing unnecessary work next time */
-        return;
+    /* Apple "fortunately" supports just 16 texture units, so this doesn't take
+       too long. */
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+    for(GLint textureUnit = 0; textureUnit != GLint(textureState.bindings.size()); ++textureUnit) {
+        std::pair<GLenum, GLuint>& binding = textureState.bindings[textureUnit];
+        if(binding.first != GL_TEXTURE_BUFFER) continue;
+
+        /* Activate given texture unit if not already active, update state
+           tracker */
+        if(textureState.currentTextureUnit != textureUnit)
+            glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = textureUnit));
+
+        /* Unbind the texture, reset state tracker */
+        glBindTexture(GL_TEXTURE_BUFFER, 0);
+        /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload
+           of operator=) */
+        binding = std::pair<GLenum, GLuint>{};
     }
-
-    /* Bind the buffer texture so we can ask for its state (as there's no
-       DSA on Apple to have a shortcut). The state tracking is a bit
-       complicated for textures, so playing it safe and using (friended)
-       private AbstractTexture APIs for that. */
-    BufferTexture t = BufferTexture::wrap(_bufferTexture);
-    t.bindInternal();
-
-    /* Check the current buffer binding for the texture. If it is no longer
-       our buffer, the buffer might get detached since or replaced with
-       another (which is fine, and much easier than maintaining the state
-       explicitly). */
-    GLuint currentBufferBinding;
-    glGetTexLevelParameteriv(GL_TEXTURE_BUFFER, 0, GL_TEXTURE_BUFFER_DATA_STORE_BINDING, reinterpret_cast<GLint*>(&currentBufferBinding));
-    if(currentBufferBinding != _id) {
-        _bufferTexture = 0; /* Avoid doing unnecessary work next time */
-        return;
-    }
-
-     /* In a saner bug workaround, i would just query
-        GL_TEXTURE_INTERNAL_FORMAT here. However, that's also broken,
-        returning GL_R8 always, so instead we have to cache it in the
-        Buffer instance. "Fortunately" macOS doesn't support
-        ARB_texture_range, so we don't need to store the offset + size,
-        just the format. */
-     CORRADE_INTERNAL_ASSERT(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_range>());
-
-     /* Temporarily detach the buffer. To avoid hitting more corner
-        cases, keep the same format as before. */
-     glTexBuffer(GL_TEXTURE_BUFFER, _bufferTextureFormat, 0);
-}
-
-void Buffer::textureWorkaroundAppleAfter() {
-    /* Put the buffer back, if we are supposed to be attached to a texture.
-       Assumes textureWorkaroundAppleBefore() was called and thus the texture
-       is bound. In case the state was stale, _bufferTexture was set to 0, so
-       this will get executed only when needed. */
-    if(_bufferTexture) glTexBuffer(GL_TEXTURE_BUFFER, _bufferTextureFormat, _id);
 }
 
 void Buffer::dataImplementationApple(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
     textureWorkaroundAppleBefore();
     dataImplementationDefault(size, data, usage);
-    textureWorkaroundAppleAfter();
 }
 
 void Buffer::subDataImplementationApple(const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
     textureWorkaroundAppleBefore();
     subDataImplementationDefault(offset, size, data);
-    textureWorkaroundAppleAfter();
 }
 
 void* Buffer::mapImplementationApple(const MapAccess access) {
     textureWorkaroundAppleBefore();
-    void* const out = mapImplementationDefault(access);
-    textureWorkaroundAppleAfter();
-    return out;
+    return mapImplementationDefault(access);
 }
 
 void* Buffer::mapRangeImplementationApple(const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
     textureWorkaroundAppleBefore();
-    void* const out = mapRangeImplementationDefault(offset, length, access);
-    textureWorkaroundAppleAfter();
-    return out;
+    return mapRangeImplementationDefault(offset, length, access);
 }
 
 bool Buffer::unmapImplementationApple() {
     textureWorkaroundAppleBefore();
-    const bool out = unmapImplementationDefault();
-    textureWorkaroundAppleAfter();
-    return out;
+    return unmapImplementationDefault();
 }
 #endif
 

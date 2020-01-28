@@ -96,21 +96,6 @@ void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalF
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
 }
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-void BufferTexture::setBufferImplementationApple(BufferTextureFormat internalFormat, Buffer* buffer) {
-    /* Reference this texture from the buffer so next time setData() is called
-       we can temporarily detach it. See apple-buffer-texture-detach-on-setdata
-       for more information. */
-    if(buffer) {
-        buffer->_bufferTexture = id();
-        buffer->_bufferTextureFormat = GLenum(internalFormat);
-    }
-
-    bindInternal();
-    glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer ? buffer->id() : 0);
-}
-#endif
-
 #ifdef MAGNUM_TARGET_GLES
 void BufferTexture::setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer* buffer) {
     bindInternal();

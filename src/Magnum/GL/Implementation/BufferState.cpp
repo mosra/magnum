@@ -178,7 +178,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     }
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-detach-on-data-modify")) {
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
         dataImplementation = &Buffer::dataImplementationApple;
         subDataImplementation = &Buffer::subDataImplementationApple;
         mapImplementation = &Buffer::mapImplementationApple;
