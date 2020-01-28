@@ -43,7 +43,7 @@ and @ref Magnum::Math::Rad "Rad".
 
 namespace Implementation {
 
-template<class T, UnsignedInt bits = sizeof(T)*8> inline constexpr T bitMax() {
+template<class T, UnsignedInt bits = sizeof(T)*8> constexpr T bitMax() {
     return T(typename std::make_unsigned<T>::type(~T{}) >> (sizeof(T)*8 - (std::is_signed<T>::value ? bits - 1 : bits)));
 }
 
