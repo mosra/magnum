@@ -38,8 +38,9 @@ namespace Magnum { namespace Math {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see @ref Magnum::Vector4, @ref Magnum::Vector4i, @ref Magnum::Vector4ui,
-    @ref Magnum::Vector4d
+@see @ref Magnum::Vector4, @ref Magnum::Vector4h, @ref Magnum::Vector4d,
+    @ref Magnum::Vector4ub, @ref Magnum::Vector4b, @ref Magnum::Vector4us,
+    @ref Magnum::Vector4s, @ref Magnum::Vector4ui, @ref Magnum::Vector4i
 @configurationvalueref{Magnum::Math::Vector4}
 */
 template<class T> class Vector4: public Vector<4, T> {

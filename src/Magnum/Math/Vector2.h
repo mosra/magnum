@@ -56,8 +56,9 @@ template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see @ref Magnum::Vector2, @ref Magnum::Vector2i, @ref Magnum::Vector2ui,
-    @ref Magnum::Vector2d
+@see @ref Magnum::Vector2, @ref Magnum::Vector3h, @ref Magnum::Vector2d,
+    @ref Magnum::Vector2ub, @ref Magnum::Vector2b, @ref Magnum::Vector2us,
+    @ref Magnum::Vector2s, @ref Magnum::Vector2ui, @ref Magnum::Vector2i
 @configurationvalueref{Magnum::Math::Vector2}
 */
 template<class T> class Vector2: public Vector<2, T> {

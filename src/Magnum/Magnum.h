@@ -270,6 +270,78 @@ Equivalent to GLSL @glsl vec4 @ce.
 typedef Math::Vector4<Float> Vector4;
 
 /**
+@brief Two-component unsigned byte vector
+@m_since_latest
+*/
+typedef Math::Vector2<UnsignedByte> Vector2ub;
+
+/**
+@brief Three-component unsigned byte vector
+@m_since_latest
+*/
+typedef Math::Vector3<UnsignedByte> Vector3ub;
+
+/**
+@brief Four-component unsigned byte vector
+@m_since_latest
+*/
+typedef Math::Vector4<UnsignedByte> Vector4ub;
+
+/**
+@brief Two-component signed byte vector
+@m_since_latest
+*/
+typedef Math::Vector2<Byte> Vector2b;
+
+/**
+@brief Three-component signed byte vector
+@m_since_latest
+*/
+typedef Math::Vector3<Byte> Vector3b;
+
+/**
+@brief Four-component signed byte vector
+@m_since_latest
+*/
+typedef Math::Vector4<Byte> Vector4b;
+
+/**
+@brief Two-component unsigned short vector
+@m_since_latest
+*/
+typedef Math::Vector2<UnsignedShort> Vector2us;
+
+/**
+@brief Three-component unsigned short vector
+@m_since_latest
+*/
+typedef Math::Vector3<UnsignedShort> Vector3us;
+
+/**
+@brief Four-component unsigned short vector
+@m_since_latest
+*/
+typedef Math::Vector4<UnsignedShort> Vector4us;
+
+/**
+@brief Two-component signed short vector
+@m_since_latest
+*/
+typedef Math::Vector2<Short> Vector2s;
+
+/**
+@brief Three-component signed short vector
+@m_since_latest
+*/
+typedef Math::Vector3<Short> Vector3s;
+
+/**
+@brief Four-component signed short vector
+@m_since_latest
+*/
+typedef Math::Vector4<Short> Vector4s;
+
+/**
 @brief Two-component unsigned integer vector
 
 Equivalent to GLSL @glsl uvec2 @ce.
@@ -337,6 +409,12 @@ typedef Math::ColorHsv<Float> ColorHsv;
 typedef Math::Color3<UnsignedByte> Color3ub;
 
 /**
+@brief Three-component (RGB) unsigned short color
+@m_since_latest
+*/
+typedef Math::Color3<UnsignedShort> Color3us;
+
+/**
 @brief Four-component (RGBA) unsigned byte color
 
 @attention 8bit-per-channel colors are commonly treated as being in sRGB color
@@ -345,6 +423,12 @@ typedef Math::Color3<UnsignedByte> Color3ub;
     @ref Color4::toSrgbAlpha() for proper sRGB handling.
 */
 typedef Math::Color4<UnsignedByte> Color4ub;
+
+/**
+@brief Four-component (RGB) unsigned short color
+@m_since_latest
+*/
+typedef Math::Color4<UnsignedShort> Color4us;
 
 /**
 @brief 3x3 float transformation matrix
@@ -506,6 +590,44 @@ typedef Math::Range3D<Int> Range3Di;
 
 /** @brief Float frustum */
 typedef Math::Frustum<Float> Frustum;
+
+/*@}*/
+
+/** @{ @name Half-precision types
+
+These types are for storage and conversion from / to single-precision types,
+no arithmetic operations are implemented. See @ref types for more information.
+*/
+
+/**
+@brief Two-component half-float vector
+@m_since_latest
+*/
+typedef Math::Vector2<Half> Vector2h;
+
+/**
+@brief Three-component half-float vector
+@m_since_latest
+*/
+typedef Math::Vector3<Half> Vector3h;
+
+/**
+@brief Four-component half-float vector
+@m_since_latest
+*/
+typedef Math::Vector4<Half> Vector4h;
+
+/**
+@brief Three-component (RGB) half-float color
+@m_since_latest
+*/
+typedef Math::Color3<Half> Color3h;
+
+/**
+@brief Four-component (RGBA) half-float color
+@m_since_latest
+*/
+typedef Math::Color4<Half> Color4h;
 
 /*@}*/
 

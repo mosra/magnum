@@ -43,6 +43,13 @@ See also:
 
 @subsection changelog-latest-new New features
 
+-   New @ref Vector2h, @ref Vector3h, @ref Vector4h, @ref Vector2ub,
+    @ref Vector3ub, @ref Vector4ub, @ref Vector2b, @ref Vector3b,
+    @ref Vector4b, @ref Vector2us, @ref Vector3us, @ref Vector4us,
+    @ref Vector2s, @ref Vector3s, @ref Vector4s, @ref Color3h, @ref Color4h,
+    @ref Color3us, @ref Color4us convenience typedefs for half-float, 8- and
+    16-bit integer vector and color types
+
 @subsubsection changelog-latest-new-audio Audio library
 
 -   Added a @ref Audio::Buffer::frequency() getter

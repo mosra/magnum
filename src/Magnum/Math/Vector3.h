@@ -60,8 +60,9 @@ template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>&
 @tparam T   Data type
 
 See @ref matrix-vector for brief introduction.
-@see @ref Magnum::Vector3, @ref Magnum::Vector3i, @ref Magnum::Vector3ui,
-    @ref Magnum::Vector3d
+@see @ref Magnum::Vector3, @ref Magnum::Vector3h, @ref Magnum::Vector3d,
+    @ref Magnum::Vector3ub, @ref Magnum::Vector3b, @ref Magnum::Vector3us,
+    @ref Magnum::Vector3s, @ref Magnum::Vector3ui, @ref Magnum::Vector3i
 @configurationvalueref{Magnum::Math::Vector3}
 */
 template<class T> class Vector3: public Vector<3, T> {

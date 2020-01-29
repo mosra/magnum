@@ -242,7 +242,8 @@ value in range @f$ [0.0, 1.0] @f$.
 
 @see @link operator""_rgb() @endlink, @link operator""_rgbf() @endlink,
     @link operator""_srgb() @endlink, @link operator""_srgbf() @endlink,
-    @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3ub
+    @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3h,
+    @ref Magnum::Color3ub, @ref Magnum::Color3us
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -619,7 +620,8 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 See @ref Color3 for more information.
 @see @link operator""_rgba() @endlink, @link operator""_rgbaf() @endlink,
     @link operator""_srgba() @endlink, @link operator""_srgbaf() @endlink,
-    @ref Magnum::Color4, @ref Magnum::Color4ub
+    @ref Magnum::Color4, @ref Magnum::Color4h, @ref Magnum::Color4ub,
+    @ref Magnum::Color4us
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */

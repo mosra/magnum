@@ -61,9 +61,9 @@ Types not meant to be used in arithmetic (such as @cpp bool @ce or
 
 Types from the above table are then used to define other types. All following
 types are aliases of corresponding types in @ref Math namespace. No suffix
-after type name means @ref Float underlying type, `ui` means @ref UnsignedInt
-underlying type, `i` is @ref Int underlying type and `d` is for @ref Double
-underlying type.
+after type name means @ref Float underlying type, `h` means @ref Half, `d` is
+@ref Double, `ub` @ref UnsignedByte, `b` @ref Byte, `us` @ref UnsignedShort,
+`s` @ref Short, `ui` @ref UnsignedInt  and `i` is @ref Int.
 
 @section types-matrix Matrix/vector types
 
@@ -71,10 +71,14 @@ underlying type.
 | ---------------------------------------------- | ------------------------- |
 | @ref BoolVector2, @ref BoolVector3, @ref BoolVector4 | @glsl bvec2 @ce, @glsl bvec3 @ce, @glsl bvec4 @ce |
 | @ref Vector2, @ref Vector3, @ref Color3, @ref Vector4, @ref Color4 | @glsl vec2 @ce, @glsl vec3 @ce, @glsl vec4 @ce |
+| @ref Vector2h, @ref Vector3h, @ref Color3h, @ref Vector4h, @ref Color4h | (*none*) |
+| @ref Vector2d, @ref Vector3d, @ref Vector4d    | @glsl dvec2 @ce, @glsl dvec3 @ce, @glsl dvec4 @ce |
+| @ref Vector2ub, @ref Vector3ub, @ref Vector4ub, @ref Color3ub, @ref Color4ub | (*none*) |
+| @ref Vector2b, @ref Vector3b, @ref Vector4b    | (*none*) |
+| @ref Vector2us, @ref Vector3us, @ref Vector4us, @ref Color3us, @ref Color4us | (*none*) |
+| @ref Vector2s, @ref Vector3s, @ref Vector4s    | (*none*) |
 | @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | @glsl uvec2 @ce, @glsl uvec3 @ce, @glsl uvec4 @ce |
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | @glsl ivec2 @ce, @glsl ivec3 @ce, @glsl ivec4 @ce |
-| @ref Vector2d, @ref Vector3d, @ref Vector4d    | @glsl dvec2 @ce, @glsl dvec3 @ce, @glsl dvec4 @ce |
-| @ref Color3ub, @ref Color4ub                   | (*none*)                  |
 
 | Magnum matrix type                                               | Equivalent GLSL type                  |
 | ---------------------------------------------------------------- | ------------------------------------- |
