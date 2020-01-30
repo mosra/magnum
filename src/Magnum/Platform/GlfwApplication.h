@@ -625,6 +625,10 @@ class GlfwApplication {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
         }
 
+        /** @todo GLFW_CURSOR_CAPTURED, currently only in a branch:
+            https://github.com/glfw/glfw/issues/58
+            https://github.com/glfw/glfw/compare/captured-cursor-mode-r2 */
+
     private:
         /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);

@@ -97,7 +97,10 @@ struct Sdl2ApplicationTest: Platform::Application {
             setWindowTitle("This is a UTF-8 Window Title™!");
         }
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        else if(event.key() == KeyEvent::Key::S) {
+        else if(event.key() == KeyEvent::Key::C) {
+            Debug{} << "toggling mouse capture to" << !isMouseCaptured();
+            setMouseCaptured(!isMouseCaptured());
+        } else if(event.key() == KeyEvent::Key::S) {
             Debug{} << "setting window size, which should trigger a viewport event";
             setWindowSize(Vector2i{300, 200});
         } else if(event.key() == KeyEvent::Key::W) {

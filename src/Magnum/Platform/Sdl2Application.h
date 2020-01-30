@@ -967,6 +967,26 @@ class Sdl2Application {
         void warpCursor(const Vector2i& position) {
             SDL_WarpMouseInWindow(_window, position.x(), position.y());
         }
+
+        /**
+         * @brief Whether the mouse is captured
+         * @m_since_latest
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        bool isMouseCaptured() {
+            return SDL_GetWindowFlags(_window) & SDL_WINDOW_MOUSE_CAPTURE;
+        }
+
+        /**
+         * @brief Capture mouse
+         * @m_since_latest
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        void setMouseCaptured(bool enabled) {
+            SDL_CaptureMouse(enabled ? SDL_TRUE : SDL_FALSE);
+        }
         #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
