@@ -237,8 +237,8 @@ need to use either @ref pack() / @ref unpack() or the integer variants of
 @snippet MagnumMath.cpp Color3-pack
 
 Conversion from and to HSV is done always using floating-point types, so hue
-is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
-range @f$ [0.0, 1.0] @f$.
+is always in range in range @f$ [0.0\degree, 360.0\degree] @f$, saturation and
+value in range @f$ [0.0, 1.0] @f$.
 
 @see @link operator""_rgb() @endlink, @link operator""_rgbf() @endlink,
     @link operator""_srgb() @endlink, @link operator""_srgbf() @endlink,
@@ -332,7 +332,8 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Create RGB color from HSV representation
          * @param hsv   Color in HSV color space
          *
-         * Hue can overflow the range @f$ [0.0, 360.0] @f$.
+         * Hue is allowed to overflow the range @f$ [0.0\degree, 360.0\degree] @f$,
+         * in which case it will be wrapped back to this range.
          * @see @ref toHsv()
          */
         static Color3<T> fromHsv(const ColorHsv<FloatingPointType>& hsv) {
@@ -503,7 +504,7 @@ template<class T> class Color3: public Vector3<T> {
 
         /**
          * @brief Hue
-         * @return Hue in range @f$ [0.0, 360.0] @f$.
+         * @return Hue in range @f$ [0.0\degree, 360.0\degree] @f$.
          *
          * @see @ref saturation(), @ref value(), @ref toHsv(), @ref fromHsv()
          */
