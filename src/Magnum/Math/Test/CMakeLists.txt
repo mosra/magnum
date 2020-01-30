@@ -29,6 +29,7 @@ corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib
 corrade_add_test(MathFunctionsBatchTest FunctionsBatchTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathHalfTest HalfTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathPackingTest PackingTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathPackingBatchTest PackingBatchTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathTagsTest TagsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathTypeTraitsTest TypeTraitsTest.cpp LIBRARIES MagnumMathTestLib)
 
@@ -90,8 +91,10 @@ set_target_properties(
     MathBoolVectorTest
     MathConstantsTest
     MathFunctionsTest
+    MathFunctionsBatchTest
     MathHalfTest
     MathPackingTest
+    MathPackingBatchTest
     MathTagsTest
     MathTypeTraitsTest
 

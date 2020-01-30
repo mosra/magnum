@@ -85,6 +85,9 @@ set(MagnumMath_SRCS
     Math/Packing.cpp
     Math/instantiation.cpp)
 
+set(MagnumMath_GracefulAssert_SRCS
+    Math/PackingBatch.cpp)
+
 # Objects shared between main and math test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 target_include_directories(MagnumMathObjects PUBLIC
@@ -120,6 +123,7 @@ set_target_properties(MagnumObjects PROPERTIES FOLDER "Magnum")
 add_library(Magnum ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMathObjects>
     $<TARGET_OBJECTS:MagnumObjects>
+    ${MagnumMath_GracefulAssert_SRCS}
     ${Magnum_GracefulAssert_SRCS})
 set_target_properties(Magnum PROPERTIES
     DEBUG_POSTFIX "-d"
@@ -194,11 +198,12 @@ if(BUILD_TESTS)
     # Math library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+        ${MagnumMath_GracefulAssert_SRCS})
     target_include_directories(MagnumMathTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
-    target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
+    target_compile_definitions(MagnumMathTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
     set_target_properties(MagnumMathTestLib PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/Math")

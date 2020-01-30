@@ -67,7 +67,7 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
 @attention
     @snippet MagnumMath.cpp unpack-template-explicit
 
-@see @ref pack()
+@see @ref pack(), @ref unpackInto()
 */
 template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const Integral& value);
 
@@ -133,7 +133,7 @@ given *signed* integral type.
 @attention Return value for floating point numbers outside the normalized
     range is undefined.
 
-@see @ref unpack()
+@see @ref unpack(), @ref packInto()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline Integral pack(const FloatingPoint& value);
