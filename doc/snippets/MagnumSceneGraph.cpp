@@ -138,11 +138,11 @@ class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
 
 namespace {
 
-/* [transformation] */
 #ifdef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-private-field"
 #endif
+/* [transformation] */
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> explicit TransformingFeature(SceneGraph::Object<T>& object):
@@ -151,10 +151,10 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
     private:
         SceneGraph::AbstractTranslationRotation3D& _transformation;
 };
+/* [transformation] */
 #ifdef __clang__
 #pragma GCC diagnostic pop
 #endif
-/* [transformation] */
 
 }
 
