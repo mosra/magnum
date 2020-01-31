@@ -75,10 +75,13 @@ of the toolchain files from above:
 @code{.sh}
 mkdir build-emscripten-wasm && cd build-emscripten-wasm
 cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" \
+    -DCMAKE_TOOLCHAIN_FILE="path/to/toolchains/generic/Emscripten-wasm.cmake" \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 @endcode
+
+Note that the `CMAKE_TOOLCHAIN_FILE` path needs to be absolute --- otherwise
+CMake will silently ignore it and continue compiling natively.
 
 After that you can run the generated JavaScript file using Node.js. Note that
 it looks for the corresponding `*.wasm` file in the current directory, so you
