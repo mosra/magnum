@@ -130,6 +130,8 @@ class XEglApplication: public AbstractXApplication {
 @brief Entry point for X/EGL-based applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::XEglApplication "Platform::XEglApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more

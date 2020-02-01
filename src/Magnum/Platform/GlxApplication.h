@@ -127,6 +127,8 @@ class GlxApplication: public AbstractXApplication {
 @brief Entry point for GLX-based applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::GlxApplication "Platform::GlxApplication" for usage
 information. This macro abstracts out platform-specific entry point code and is
 equivalent to the following, see @ref portability-applications for more

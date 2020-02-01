@@ -52,7 +52,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless EGL context
 
-@m_keywords{WindowlessGLContext}
+@m_keywords{WindowlessGLContext EGL}
 
 GL context using EGL without any windowing system, used in
 @ref WindowlessEglApplication. Does not have any default framebuffer.
@@ -271,7 +271,7 @@ CORRADE_ENUMSET_OPERATORS(WindowlessEglContext::Configuration::Flags)
 /**
 @brief Windowless EGL application
 
-@m_keywords{WindowlessApplication}
+@m_keywords{WindowlessApplication EGL}
 
 Application for offscreen rendering using @ref WindowlessEglContext. This
 application library is in theory available for all platforms for which EGL
@@ -538,6 +538,8 @@ class WindowlessEglApplication {
 /** @hideinitializer
 @brief Entry point for windowless EGL application
 @param className Class name
+
+@m_keywords{MAGNUM_WINDOWLESSAPPLICATION_MAIN()}
 
 See @ref Magnum::Platform::WindowlessEglApplication "Platform::WindowlessEglApplication"
 for usage information. This macro abstracts out platform-specific entry point

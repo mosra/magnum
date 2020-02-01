@@ -1921,6 +1921,8 @@ class GlfwApplication::TextInputEvent {
 @brief Entry point for GLFW-based applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::GlfwApplication "Platform::GlfwApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more

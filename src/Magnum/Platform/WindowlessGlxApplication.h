@@ -56,7 +56,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless GLX context
 
-@m_keywords{WindowlessGLContext}
+@m_keywords{WindowlessGLContext GLX}
 
 GL context using pure X11 and GLX, used in @ref WindowlessGlxApplication. Does
 not have any default framebuffer.
@@ -242,7 +242,7 @@ CORRADE_ENUMSET_OPERATORS(WindowlessGlxContext::Configuration::Flags)
 /**
 @brief Windowless GLX application
 
-@m_keywords{WindowlessApplication}
+@m_keywords{WindowlessApplication GLX}
 
 Application for offscreen rendering using @ref WindowlessGlxContext. This
 application library is available on desktop OpenGL and
@@ -425,6 +425,8 @@ class WindowlessGlxApplication {
 /** @hideinitializer
 @brief Entry point for windowless GLX application
 @param className Class name
+
+@m_keywords{MAGNUM_WINDOWLESSAPPLICATION_MAIN()}
 
 See @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxApplication"
 for usage information. This macro abstracts out platform-specific entry point

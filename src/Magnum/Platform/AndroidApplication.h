@@ -812,6 +812,8 @@ CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
 @brief Entry point for Android applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::AndroidApplication "Platform::AndroidApplication"
 for usage information. This macro abstracts out platform-specific entry point
 code (the classic @cpp main() @ce function cannot be used in Android). See

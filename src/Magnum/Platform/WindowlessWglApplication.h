@@ -57,7 +57,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless WGL context
 
-@m_keywords{WindowlessGLContext}
+@m_keywords{WindowlessGLContext WGL}
 
 GL context using pure WINAPI, used in @ref WindowlessWglApplication.
 
@@ -242,7 +242,7 @@ CORRADE_ENUMSET_OPERATORS(WindowlessWglContext::Configuration::Flags)
 /**
 @brief Windowless WGL application
 
-@m_keywords{WindowlessApplication}
+@m_keywords{WindowlessApplication WGL}
 
 Application for offscreen rendering using @ref WindowlessWglContext. This
 application library is available on desktop OpenGL on Windows.
@@ -423,6 +423,8 @@ class WindowlessWglApplication {
 /** @hideinitializer
 @brief Entry point for windowless WGL application
 @param className Class name
+
+@m_keywords{MAGNUM_WINDOWLESSAPPLICATION_MAIN()}
 
 See @ref Magnum::Platform::WindowlessWglApplication "Platform::WindowlessWglApplication"
 for usage information. This macro abstracts out platform-specific entry point

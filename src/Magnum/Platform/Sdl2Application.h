@@ -2650,6 +2650,8 @@ class Sdl2Application::TextEditingEvent {
 @brief Entry point for SDL2-based applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following on all supported platforms except

@@ -1789,6 +1789,8 @@ class EmscriptenApplication::TextInputEvent {
 @brief Entry point for Emscripten applications
 @param className Class name
 
+@m_keywords{MAGNUM_APPLICATION_MAIN()}
+
 See @ref Magnum::Platform::EmscriptenApplication "Platform::EmscriptenApplication"
 for usage information. This macro abstracts out platform-specific entry point
 code. See @ref portability-applications for more information.

@@ -53,7 +53,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless CGL context
 
-@m_keywords{WindowlessGLContext}
+@m_keywords{WindowlessGLContext CGL}
 
 GL context used in @ref WindowlessCglApplication. Does not have any default
 framebuffer.
@@ -147,7 +147,7 @@ class WindowlessCglContext::Configuration {
 /**
 @brief Windowless CGL application
 
-@m_keywords{WindowlessApplication}
+@m_keywords{WindowlessApplication CGL}
 
 Application for offscreen rendering using @ref WindowlessCglContext. This
 application library is available on desktop OpenGL on macOS.
@@ -327,6 +327,8 @@ class WindowlessCglApplication {
 /** @hideinitializer
 @brief Entry point for windowless CGL application
 @param className Class name
+
+@m_keywords{MAGNUM_WINDOWLESSAPPLICATION_MAIN()}
 
 See @ref Magnum::Platform::WindowlessCglApplication "Platform::WindowlessCglApplication"
 for usage information. This macro abstracts out platform-specific entry point

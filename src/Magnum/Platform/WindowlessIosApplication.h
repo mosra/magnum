@@ -51,7 +51,7 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless iOS context
 
-@m_keywords{WindowlessGLContext}
+@m_keywords{WindowlessGLContext EGL EAGL}
 
 GL context using EAGL on iOS, used in @ref WindowlessIosApplication. Does not
 have any default framebuffer.
@@ -139,7 +139,7 @@ class WindowlessIosContext::Configuration {
 /**
 @brief Windowless iOS application
 
-@m_keywords{WindowlessApplication}
+@m_keywords{WindowlessApplication EGL EAGL}
 
 Application for offscreen rendering using @ref WindowlessIosContext. Does not
 have any default framebuffer.
@@ -321,6 +321,8 @@ class WindowlessIosApplication {
 /** @hideinitializer
 @brief Entry point for windowless EGL application
 @param className Class name
+
+@m_keywords{MAGNUM_WINDOWLESSAPPLICATION_MAIN()}
 
 See @ref Magnum::Platform::WindowlessIosApplication "Platform::WindowlessIosApplication"
 for usage information. This macro abstracts out platform-specific entry point
