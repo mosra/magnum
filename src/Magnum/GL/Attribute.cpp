@@ -28,6 +28,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/VertexFormat.h"
+
 namespace Magnum { namespace GL {
 
 Debug& operator<<(Debug& debug, const DynamicAttribute::Kind value) {
@@ -465,6 +467,62 @@ Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::DataTyp
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
+}
+
+DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))} {
+    /* Translate component type to a GL-specific value */
+    switch(vertexFormatComponentFormat(format)) {
+        #define _c(format)                                                  \
+            case VertexFormat::format:                                      \
+                _dataType = DataType::format;                               \
+                break;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        _c(Float)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        _c(Half)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        #endif
+        #undef _c
+
+        /* Nothing else expected to be returned from
+           vertexFormatComponentFormat() */
+        default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
+
+    /* If the type is normalized, switch the type to GenericNormalized (if not
+       already), and check that the attribute isn't expected to be integral or
+       long */
+    if(isVertexFormatNormalized(format)) {
+        CORRADE_ASSERT(kind == Kind::Generic || kind == Kind::GenericNormalized,
+            "GL::DynamicAttribute: can't use" << format << "for a" << kind << "attribute", );
+        _kind = Kind::GenericNormalized;
+    /* Otherwise check that non-normalized types aren't used for attributes
+       that are expected to be normalized. Float is an exception. */
+    } else if(_dataType != DataType::Float) {
+        CORRADE_ASSERT(kind != Kind::GenericNormalized,
+            "GL::DynamicAttribute: can't use" << format << "for a normalized attribute", );
+    /* Finally, float data types can't be used for integer attributes */
+    } else {
+        #ifndef MAGNUM_TARGET_GLES2
+        CORRADE_ASSERT(kind != Kind::Integral,
+            "GL::DynamicAttribute: can't use" << format << "for an integral attribute", );
+        #endif
+    }
+
+    #ifndef CORRADE_NO_DEBUG
+    /* Should pass also if maxComponents is GL_BGRA */
+    CORRADE_ASSERT(GLint(_components) <= maxComponents,
+        "GL::DynamicAttribute: can't use" << format << "for a" << maxComponents << Debug::nospace << "-component attribute", );
+    #else
+    static_cast<void>(maxComponents);
+    #endif
 }
 
 }}

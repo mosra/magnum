@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGL)
+corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLAbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLBufferTest BufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLContextTest ContextTest.cpp LIBRARIES MagnumGL)

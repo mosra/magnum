@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/VertexFormat.h"
 #include "Magnum/GL/Attribute.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
@@ -52,6 +53,23 @@ struct AttributeTest: TestSuite::Tester {
     #endif
     void attributeMatrixNxNd();
     void attributeMatrixMxNd();
+
+    void attributeFromGenericFormat();
+    #ifndef MAGNUM_TARGET_GLES2
+    void attributeFromGenericFormatIntegral();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attributeFromGenericFormatLong();
+    #endif
+    void attributeFromGenericFormatEnableNormalized();
+    void attributeFromGenericFormatUnexpectedForNormalizedKind();
+    #ifndef MAGNUM_TARGET_GLES2
+    void attributeFromGenericFormatUnexpectedForIntegralKind();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attributeFromGenericFormatUnexpectedForLongKind();
+    #endif
+    void attributeFromGenericFormatTooManyComponents();
 
     void debugComponents1();
     void debugComponents2();
@@ -97,6 +115,23 @@ AttributeTest::AttributeTest() {
               #endif
               &AttributeTest::attributeMatrixNxNd,
               &AttributeTest::attributeMatrixMxNd,
+
+              &AttributeTest::attributeFromGenericFormat,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::attributeFromGenericFormatIntegral,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &AttributeTest::attributeFromGenericFormatLong,
+              #endif
+              &AttributeTest::attributeFromGenericFormatEnableNormalized,
+              &AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &AttributeTest::attributeFromGenericFormatUnexpectedForLongKind,
+              #endif
+              &AttributeTest::attributeFromGenericFormatTooManyComponents,
 
               &AttributeTest::debugComponents1,
               &AttributeTest::debugComponents2,
@@ -489,6 +524,120 @@ void AttributeTest::attributeMatrixMxNd() {
     #else
     CORRADE_SKIP("Double attributes are not available in OpenGL ES.");
     #endif
+}
+
+void AttributeTest::attributeFromGenericFormat() {
+    DynamicAttribute a{DynamicAttribute::Kind::Generic, 3,
+        VertexFormat::UnsignedShort};
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(a.location(), 3);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::UnsignedShort);
+
+    /* Check that compile-time attribs work too */
+    DynamicAttribute a2{Attribute<7, Vector3>{},
+        VertexFormat::UnsignedShort};
+    CORRADE_COMPARE(a2.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(a2.location(), 7);
+    CORRADE_COMPARE(a2.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(a2.dataType(), DynamicAttribute::DataType::UnsignedShort);
+
+    DynamicAttribute b{DynamicAttribute::Kind::GenericNormalized, 3,
+        VertexFormat::Vector2bNormalized};
+    CORRADE_COMPARE(b.kind(), DynamicAttribute::Kind::GenericNormalized);
+    CORRADE_COMPARE(b.location(), 3);
+    CORRADE_COMPARE(b.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(b.dataType(), DynamicAttribute::DataType::Byte);
+
+    DynamicAttribute c{DynamicAttribute::Kind::Generic, 3,
+        VertexFormat::Vector4ui};
+    CORRADE_COMPARE(c.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(c.location(), 3);
+    CORRADE_COMPARE(c.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(c.dataType(), DynamicAttribute::DataType::UnsignedInt);
+
+    /* This one shouldn't fail even though the normalization is (probably?)
+       ignored. Not exactly sure. */
+    DynamicAttribute d{DynamicAttribute::Kind::GenericNormalized, 3,
+        VertexFormat::Float};
+    CORRADE_COMPARE(d.kind(), DynamicAttribute::Kind::GenericNormalized);
+    CORRADE_COMPARE(d.location(), 3);
+    CORRADE_COMPARE(d.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(d.dataType(), DynamicAttribute::DataType::Float);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::attributeFromGenericFormatIntegral() {
+    DynamicAttribute a{DynamicAttribute::Kind::Integral, 3,
+        VertexFormat::Vector3s};
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::Integral);
+    CORRADE_COMPARE(a.location(), 3);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::Short);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AttributeTest::attributeFromGenericFormatLong() {
+    DynamicAttribute a{DynamicAttribute::Kind::Long, 15,
+        VertexFormat::Vector2d};
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::Long);
+    CORRADE_COMPARE(a.location(), 15);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::Double);
+}
+#endif
+
+void AttributeTest::attributeFromGenericFormatEnableNormalized() {
+    DynamicAttribute a{DynamicAttribute::Kind::Generic, 3,
+        VertexFormat::Vector3ubNormalized};
+    /* Generic is automatically switched to GenericNormalized */
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::GenericNormalized);
+    CORRADE_COMPARE(a.location(), 3);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::UnsignedByte);
+}
+
+void AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{DynamicAttribute::Kind::GenericNormalized, 3,
+        VertexFormat::Int};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: can't use VertexFormat::Int for a normalized attribute\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::attributeFromGenericFormatUnexpectedForIntegralKind() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{DynamicAttribute::Kind::Integral, 3,
+        VertexFormat::Vector2bNormalized};
+    DynamicAttribute{DynamicAttribute::Kind::Integral, 3,
+        VertexFormat::Vector3};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: can't use VertexFormat::Vector2bNormalized for a GL::DynamicAttribute::Kind::Integral attribute\n"
+        "GL::DynamicAttribute: can't use VertexFormat::Vector3 for an integral attribute\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{DynamicAttribute::Kind::Long, 3,
+        VertexFormat::UnsignedShortNormalized};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: can't use VertexFormat::UnsignedShortNormalized for a GL::DynamicAttribute::Kind::Long attribute\n");
+}
+#endif
+
+void AttributeTest::attributeFromGenericFormatTooManyComponents() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Vector3};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: can't use VertexFormat::Vector3 for a 2-component attribute\n");
 }
 
 void AttributeTest::debugComponents1() {

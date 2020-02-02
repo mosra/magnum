@@ -373,7 +373,11 @@ cases, sometimes you may want to minimize the import time of a large model or
 the imported data may be already in a well-optimized layout and format that you
 want to preserve. The @ref MeshData class internally stores a contiguous blob
 of data, which you can directly upload, and then use provided metadata to let
-the GPU know of the format and layout:
+the GPU know of the format and layout. Because there's a lot of possible types
+of each attribute (floats, packed integers, ...), the @ref GL::DynamicAttribute
+can accept a pair of @ref GL::Attribute defined by the shader and the actual
+@ref VertexFormat, figuring out all properties such as component count and
+element data type without having to explicitly handle all relevant types:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
 

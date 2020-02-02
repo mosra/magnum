@@ -346,7 +346,7 @@ location and base type. Note that unlike the compile-time specification, this
 class doesn't do any sanity verification and leaves most of the responsibility
 on the user.
 */
-class DynamicAttribute {
+class MAGNUM_GL_EXPORT DynamicAttribute {
     public:
         /**
          * @brief Attribute kind
@@ -543,6 +543,31 @@ class DynamicAttribute {
          */
         template<UnsignedInt location_, class T> constexpr /*implicit*/ DynamicAttribute(const Attribute<location_, T>& attribute);
 
+        /**
+         * @brief Construct from a generic mesh attribute type
+         * @m_since_latest
+         *
+         * The @p type is expected to be compatible with @p kind --- i.e.,
+         * normalized or floating-point for @ref Kind::GenericNormalized,
+         * non-normalized for @ref Kind::Integral / @ref Kind::Long and
+         * integral for @ref Kind::Integral.
+         */
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format): DynamicAttribute{kind, location, format, 4} {}
+
+        /**
+         * @brief Construct from a compile-time attribute with a generic mesh attribute type override
+         * @m_since_latest
+         *
+         * Extracts kind and location from passed @ref Attribute type and calls
+         * @ref DynamicAttribute(Kind, UnsignedInt, VertexFormat). Expects that
+         * @p type's component count is not larger than the component count
+         * defined in the @p Attribute type. Note that only the
+         * compile-time-defined properties of the @p Attribute type are used,
+         * the instance-specific data type, options and component count is
+         * ignored.
+         */
+        template<UnsignedInt location_, class T> explicit DynamicAttribute(const Attribute<location_, T>&, VertexFormat format);
+
         /** @brief Attribute kind */
         constexpr Kind kind() const { return _kind; }
 
@@ -556,6 +581,10 @@ class DynamicAttribute {
         constexpr DataType dataType() const { return _dataType; }
 
     private:
+        /* Used by the constructor taking Attribute, defined in cpp to avoid
+           a dependency on <Magnum/Mesh.h> for the assertion */
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format, GLint maxComponents);
+
         Kind _kind;
         UnsignedInt _location;
         Components _components;
@@ -891,6 +920,8 @@ template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, 
 }
 
 template<UnsignedInt location_, class T> constexpr DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute): _kind{Implementation::kindFor<location_, T>(attribute.dataOptions())}, _location{location_}, _components{Components(GLint(attribute.components()))}, _dataType{DataType(GLenum(attribute.dataType()))} {}
+
+template<UnsignedInt location_, class T> DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute, const VertexFormat format): DynamicAttribute{Implementation::kindFor<location_, T>(attribute.dataOptions()), location_, format, GLint(Implementation::Attribute<T>::DefaultComponents)} {}
 
 }}
 

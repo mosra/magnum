@@ -277,17 +277,17 @@ GL::Mesh mesh{data.primitive()};
 GL::Buffer vertices;
 vertices.setData(data.vertexData());
 
-/* Set up the position attribute */
-Shaders::Phong::Position position;
-auto positionFormat = data.attributeFormat(Trade::MeshAttribute::Position);
-if(positionFormat == VertexFormat::Vector2)
-    position = {Shaders::Phong::Position::Components::Two};
-else if(positionFormat == VertexFormat::Vector3)
-    position = {Shaders::Phong::Position::Components::Three};
-else Fatal{} << "Huh?";
+/* Set up the position and normal attributes */
 mesh.addVertexBuffer(vertices,
     data.attributeOffset(Trade::MeshAttribute::Position),
-    data.attributeStride(Trade::MeshAttribute::Position), position);
+    data.attributeStride(Trade::MeshAttribute::Position),
+    GL::DynamicAttribute{Shaders::Phong::Position{},
+        data.attributeFormat(Trade::MeshAttribute::Position)});
+mesh.addVertexBuffer(vertices,
+    data.attributeOffset(Trade::MeshAttribute::Normal),
+    data.attributeStride(Trade::MeshAttribute::Normal),
+    GL::DynamicAttribute{Shaders::Phong::Normal{},
+        data.attributeFormat(Trade::MeshAttribute::Normal)});
 
 // Set up other attributes ...
 
