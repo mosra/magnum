@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Attribute.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
