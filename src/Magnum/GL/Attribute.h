@@ -513,13 +513,13 @@ class DynamicAttribute {
          * @param components    Component count
          * @param dataType      Type of passed data
          */
-        constexpr DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
+        constexpr explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
 
         /**
          * @brief Construct from a compile-time attribute
          * @m_since{2019,10}
          */
-        template<UnsignedInt location_, class T> constexpr DynamicAttribute(const Attribute<location_, T>& attribute);
+        template<UnsignedInt location_, class T> constexpr /*implicit*/ DynamicAttribute(const Attribute<location_, T>& attribute);
 
         /** @brief Attribute kind */
         constexpr Kind kind() const { return _kind; }
