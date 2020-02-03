@@ -106,7 +106,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Translate object
+         * @brief Translate the object
          * @return Reference to self (for method chaining)
          *
          * Note that translation is always applied last, after rotation and
@@ -119,7 +119,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Translate object as a local transformation
+         * @brief Translate the object as a local transformation
          *
          * Equivalent to the above, as translation is commutative. Note that
          * translation is always applied last, after rotation and scaling.
@@ -129,7 +129,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Rotate object using a complex number
+         * @brief Rotate the object using a complex number
          * @param complex       Normalized complex number
          * @return Reference to self (for method chaining)
          *
@@ -143,7 +143,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Rotate object using a complex number as a local transformation
+         * @brief Rotate the object using a complex number as a local transformation
          *
          * Equivalent to the above, as 2D rotation is commutative. Note that
          * rotation is always applied after scaling and before translation.
@@ -153,7 +153,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -167,7 +167,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -180,7 +180,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Scale object
+         * @brief Scale the object
          * @return Reference to self (for method chaining)
          *
          * Note that scaling is always applied first, before rotation and
@@ -193,7 +193,7 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         }
 
         /**
-         * @brief Scale object as a local transformation
+         * @brief Scale the object as a local transformation
          *
          * Equivalent to the above, as scaling is commutative. Note that
          * scaling is always first, before rotation and translation.

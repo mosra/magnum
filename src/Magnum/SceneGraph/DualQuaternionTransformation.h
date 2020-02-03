@@ -83,7 +83,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Transform object
+         * @brief Transform the object
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual quaternion is normalized.
@@ -97,7 +97,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Transform object as a local transformation
+         * @brief Transform the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -110,7 +110,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Translate object
+         * @brief Translate the object
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::DualQuaternion::translation().
@@ -122,7 +122,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Translate object as a local transformation
+         * @brief Translate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -132,7 +132,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @return Reference to self (for method chaining)
@@ -147,7 +147,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.

@@ -48,7 +48,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         explicit AbstractBasicTranslationRotation3D() = default;
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @return Reference to self (for method chaining)
@@ -63,7 +63,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -74,7 +74,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around X axis
+         * @brief Rotate the object around X axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -89,7 +89,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around X axis as a local transformation
+         * @brief Rotate the object around X axis as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. In some implementations faster than calling
@@ -102,7 +102,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around Y axis
+         * @brief Rotate the object around Y axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -117,7 +117,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around Y axis as a local transformation
+         * @brief Rotate the object around Y axis as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. In some implementations faster than calling
@@ -130,7 +130,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around Z axis
+         * @brief Rotate the object around Z axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -145,7 +145,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object around Z axis as a local transformation
+         * @brief Rotate the object around Z axis as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. In some implementations faster than calling
@@ -176,11 +176,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
     protected:
         ~AbstractBasicTranslationRotation3D() = default;
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @brief Polymorphic implementation for @ref rotate() */
         virtual void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) = 0;
 

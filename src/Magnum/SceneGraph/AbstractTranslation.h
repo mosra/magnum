@@ -58,7 +58,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         explicit AbstractTranslation() = default;
 
         /**
-         * @brief Translate object
+         * @brief Translate the object
          * @return Reference to self (for method chaining)
          *
          * @see @ref translateLocal(), @ref Math::Vector2::xAxis(),
@@ -71,7 +71,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         }
 
         /**
-         * @brief Translate object as a local transformation
+         * @brief Translate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.

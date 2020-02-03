@@ -47,7 +47,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         explicit AbstractBasicTranslationRotation2D() = default;
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle     Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -59,7 +59,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -88,11 +88,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
     protected:
         ~AbstractBasicTranslationRotation2D() = default;
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @brief Polymorphic implementation for @ref rotate() */
         virtual void doRotate(Math::Rad<T> angle) = 0;
 

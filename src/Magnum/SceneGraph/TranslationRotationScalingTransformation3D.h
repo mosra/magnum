@@ -106,7 +106,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Translate object
+         * @brief Translate the object
          * @return Reference to self (for method chaining)
          *
          * Note that translation is always applied last, after rotation and
@@ -119,7 +119,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Translate object as a local transformation
+         * @brief Translate the object as a local transformation
          *
          * Equivalent to the above, as translation is commutative. Note that
          * translation is always applied last, after rotation and scaling.
@@ -129,7 +129,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object using a quaternion
+         * @brief Rotate the object using a quaternion
          * @param quaternion    Normalized quaternion
          * @return Reference to self (for method chaining)
          *
@@ -137,15 +137,14 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
          * translation. Expects that the quaternion is normalized.
          * @see @ref rotate(Math::Rad<T>, const Math::Vector3<T>&),
          *      @ref rotateLocal(const Math::Quaternion<T>&), @ref rotateX(),
-         *      @ref rotateY(), @ref rotateZ(), @ref Math::Vector3::xAxis(),
-         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
+         *      @ref rotateY(), @ref rotateZ()
          */
         Object<BasicTranslationRotationScalingTransformation3D<T>>& rotate(const Math::Quaternion<T>& quaternion) {
             return setRotation(quaternion*_rotation);
         }
 
         /**
-         * @brief Rotate object using a quaternion as a local transformation
+         * @brief Rotate the object using a quaternion as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -156,7 +155,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @return Reference to self (for method chaining)
@@ -173,7 +172,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -186,7 +185,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around X axis
+         * @brief Rotate the object around X axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -199,7 +198,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around X axis as a local transformation
+         * @brief Rotate the object around X axis as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -211,7 +210,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around Y axis
+         * @brief Rotate the object around Y axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -224,7 +223,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around Y axis as a local transformation
+         * @brief Rotate the object around Y axis as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -236,7 +235,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around Z axis
+         * @brief Rotate the object around Z axis
          * @param angle             Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -249,7 +248,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Rotate object around Z axis as a local transformation
+         * @brief Rotate the object around Z axis as a local transformation
          *
          * Similar to the above, except that the rotation is applied before all
          * other rotations. Note that rotation is always applied after scaling
@@ -261,7 +260,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Scale object
+         * @brief Scale the object
          * @return Reference to self (for method chaining)
          *
          * Note that scaling is always applied first, before rotation and
@@ -274,7 +273,7 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         }
 
         /**
-         * @brief Scale object as a local transformation
+         * @brief Scale the object as a local transformation
          *
          * Equivalent to the above, as scaling is commutative. Note that
          * scaling is always first, before rotation and translation.

@@ -83,7 +83,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         }
 
         /**
-         * @brief Transform object
+         * @brief Transform the object
          * @return Reference to self (for method chaining)
          *
          * Equivalent to @ref translate(), provided only for compatibility with
@@ -95,7 +95,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         }
 
         /**
-         * @brief Translate object
+         * @brief Translate the object
          * @return Reference to self (for method chaining)
          *
          * There is no difference between global and local translation.

@@ -47,7 +47,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         explicit AbstractBasicTranslationRotationScaling2D() = default;
 
         /**
-         * @brief Scale object
+         * @brief Scale the object
          * @return Reference to self (for method chaining)
          *
          * @see @ref scaleLocal(), @ref Math::Vector2::xScale(),
@@ -59,7 +59,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         }
 
         /**
-         * @brief Scale object as a local transformation
+         * @brief Scale the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -96,11 +96,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
     protected:
         ~AbstractBasicTranslationRotationScaling2D() = default;
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @brief Polymorphic implementation for @ref scale() */
         virtual void doScale(const Math::Vector2<T>& vector) = 0;
 
