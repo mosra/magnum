@@ -340,13 +340,24 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
+         * @brief Rotate a vector with a dual complex number
+         * @m_since_latest
+         *
+         * Calls @ref Complex::transformVector() on the @ref real() part,
+         * see its documentation for more information.
+         */
+        Vector2<T> transformVector(const Vector2<T>& vector) const {
+            return Dual<Complex<T>>::real().transformVector(vector);
+        }
+
+        /**
          * @brief Rotate and translate point with dual complex number
          *
          * @f[
          *      v' = \hat c v = \hat c ((0 + i) + \epsilon(v_x + iv_y))
          * @f]
          * @see @ref DualComplex(const Vector2<T>&), @ref dual(),
-         *      @ref Matrix3::transformPoint(), @ref Complex::transformVector(),
+         *      @ref Matrix3::transformPoint(),
          *      @ref DualQuaternion::transformPoint()
          */
         Vector2<T> transformPoint(const Vector2<T>& vector) const {

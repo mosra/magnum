@@ -475,6 +475,28 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
+         * @brief Rotate a vector with a dual quaternion
+         * @m_since_latest
+         *
+         * Calls @ref Quaternion::transformVector() on the @ref real() part,
+         * see its documentation for more information.
+         */
+        Vector3<T> transformVector(const Vector3<T>& vector) const {
+            return Dual<Quaternion<T>>::real().transformVector(vector);
+        }
+
+        /**
+         * @brief Rotate a vector with a normalized dual quaternion
+         * @m_since_latest
+         *
+         * Calls @ref Quaternion::transformVectorNormalized() on the
+         * @ref real() part, see its documentation for more information.
+         */
+        Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const {
+            return Dual<Quaternion<T>>::real().transformVectorNormalized(vector);
+        }
+
+        /**
          * @brief Rotate and translate point with dual quaternion
          *
          * See @ref transformPointNormalized(), which is faster for normalized
@@ -483,7 +505,6 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see @ref DualQuaternion(const Vector3<T>&), @ref dual(),
          *      @ref Matrix4::transformPoint(),
-         *      @ref Quaternion::transformVector(),
          *      @ref DualComplex::transformPoint()
          */
         Vector3<T> transformPoint(const Vector3<T>& vector) const {

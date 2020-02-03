@@ -76,6 +76,11 @@ See also:
 
 -   Added @ref Math::Quaternion::toEuler() and documented how to convert Euler
     angles to a quaternion (see [mosra/magnum#397](https://github.com/mosra/magnum/pull/397))
+-   Added @ref Math::DualComplex::transformVector(),
+    @ref Math::DualQuaternion::transformVector(),
+    @ref Math::DualQuaternion::transformVectorNormalized() delegating to
+    respective APIs in the underlying @ref Complex / @ref Quaternion to make
+    the transformation API more consistent with @ref Matrix3 / @ref Matrix4
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

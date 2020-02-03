@@ -92,6 +92,9 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void combinedTransformParts();
     void matrix();
     void matrixNotOrthogonal();
+    void transformVector();
+    void transformVectorNormalized();
+    void transformVectorNormalizedNotNormalized();
     void transformPoint();
     void transformPointNormalized();
     void transformPointNormalizedNotNormalized();
@@ -154,6 +157,9 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::combinedTransformParts,
               &DualQuaternionTest::matrix,
               &DualQuaternionTest::matrixNotOrthogonal,
+              &DualQuaternionTest::transformVector,
+              &DualQuaternionTest::transformVectorNormalized,
+              &DualQuaternionTest::transformVectorNormalizedNotNormalized,
               &DualQuaternionTest::transformPoint,
               &DualQuaternionTest::transformPointNormalized,
               &DualQuaternionTest::transformPointNormalizedNotNormalized,
@@ -491,6 +497,38 @@ void DualQuaternionTest::matrixNotOrthogonal() {
         "       0, 1.84101, -0.781462, 1.33763,\n"
         "       0, 0.781462, 1.84101, 7.08595,\n"
         "       0, 0, 0, 2)\n");
+}
+
+void DualQuaternionTest::transformVector() {
+    DualQuaternion a = DualQuaternion::rotation(23.0_degf, Vector3::xAxis());
+    Quaternion q = Quaternion::rotation(23.0_degf, Vector3::xAxis());
+    Vector3 v(5.0f, -3.6f, 0.7f);
+
+    Vector3 rotated = a.transformVector(v);
+    /* Delegates to Quaternion, so should give the same result */
+    CORRADE_COMPARE(rotated, q.transformVector(v));
+    CORRADE_COMPARE(rotated, (Vector3{5.0f, -3.58733f, -0.762279f}));
+}
+
+void DualQuaternionTest::transformVectorNormalized() {
+    DualQuaternion a = DualQuaternion::rotation(23.0_degf, Vector3::xAxis());
+    Quaternion q = Quaternion::rotation(23.0_degf, Vector3::xAxis());
+    Vector3 v(5.0f, -3.6f, 0.7f);
+
+    Vector3 rotated = a.transformVectorNormalized(v);
+    /* Delegates to Quaternion, so should give the same result */
+    CORRADE_COMPARE(rotated, q.transformVector(v));
+    CORRADE_COMPARE(rotated, a.transformVector(v));
+}
+
+void DualQuaternionTest::transformVectorNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Quaternion a = Quaternion::rotation(23.0_degf, Vector3::xAxis());
+    (a*2).transformVectorNormalized({});
+    /* Delegates to quaternion, so the assert prints Quaternion */
+    CORRADE_COMPARE(out.str(), "Math::Quaternion::transformVectorNormalized(): Quaternion({0.398736, 0, 0}, 1.95985) is not normalized\n");
 }
 
 void DualQuaternionTest::transformPoint() {

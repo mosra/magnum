@@ -744,6 +744,7 @@ void QuaternionTest::transformVectorNormalized() {
     Quaternion a = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
     Matrix4 m = Matrix4::rotationX(Deg(23.0f));
     Vector3 v(5.0f, -3.6f, 0.7f);
+
     Vector3 rotated = a.transformVectorNormalized(v);
     CORRADE_COMPARE(rotated, m.transformVector(v));
     CORRADE_COMPARE(rotated, a.transformVector(v));
