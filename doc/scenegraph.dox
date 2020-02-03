@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page scenegraph Using the scene graph
 @brief Overview of scene management capabilities.
 
+@m_keywords{SceneGraph}
+
 The scene graph provides a way to hierarchically manage your objects, their
 transformation, animation and rendering, among other things. The library is
 contained in the @ref SceneGraph namespace, see its documentation for more
