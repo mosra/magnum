@@ -69,6 +69,8 @@ See also:
     fixes crashes on Apple macOS when attempting to modify a @ref GL::Buffer
     when a @ref GL::BufferTexture is bound. See @ref opengl-workarounds for
     more information.
+-   New @ref GL::Buffer::Buffer(Containers::ArrayView<const void>, BufferUsage)
+    constructor for directly creating buffers filled with data.
 
 @subsubsection changelog-latest-new-math Math library
 

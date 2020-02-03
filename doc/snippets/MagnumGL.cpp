@@ -425,7 +425,9 @@ GL::BufferImage2D image = framebuffer.read(framebuffer.viewport(),
 GL::Buffer buffer;
 /* [Buffer-setdata] */
 Containers::ArrayView<Vector3> data;
-buffer.setData(data, GL::BufferUsage::StaticDraw);
+buffer.setData(data);
+
+GL::Buffer buffer2{data}; // or construct & fill in a single step
 /* [Buffer-setdata] */
 }
 
@@ -433,11 +435,11 @@ buffer.setData(data, GL::BufferUsage::StaticDraw);
 GL::Buffer buffer;
 /* [Buffer-setdata-stl] */
 std::vector<Vector3> data;
-buffer.setData(data, GL::BufferUsage::StaticDraw);
+buffer.setData(data);
 /* [Buffer-setdata-stl] */
 
 /* [Buffer-setdata-allocate] */
-buffer.setData({nullptr, 200*sizeof(Vector3)}, GL::BufferUsage::StaticDraw);
+buffer.setData({nullptr, 200*sizeof(Vector3)});
 /* [Buffer-setdata-allocate] */
 }
 

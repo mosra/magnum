@@ -145,9 +145,10 @@ data updates.
 
 @section GL-Buffer-data-updating Data updating
 
-Default way to set or update buffer data with @ref setData() or @ref setSubData()
-is to use @ref Corrade::Containers::ArrayView. See its documentation for
-more information about automatic conversions etc.
+Default way to set or update buffer data with @ref setData(), @ref setSubData()
+or the shorthand @ref Buffer() constructor is to use
+@ref Corrade::Containers::ArrayView. See its documentation for more information
+about automatic conversions etc.
 
 @snippet MagnumGL.cpp Buffer-setdata
 
@@ -783,6 +784,42 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @see @ref Buffer(TargetHint), @ref wrap()
          */
         explicit Buffer(NoCreateT) noexcept;
+
+        /**
+         * @brief Construct and directly fill with data
+         * @param targetHint    Target hint, see @ref setTargetHint() for more
+         *      information
+         * @param data          Data
+         * @param usage         Buffer usage
+         * @m_since_latest
+         *
+         * Equivalent to constructing via @ref Buffer(TargetHint) and then
+         * calling @ref setData().
+         */
+        explicit Buffer(TargetHint targetHint, Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw): Buffer{targetHint} {
+            setData(data, usage);
+        }
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        template<class T> explicit Buffer(TargetHint targetHint, std::initializer_list<T> data, BufferUsage usage = BufferUsage::StaticDraw): Buffer{targetHint, Containers::arrayView(data), usage} {}
+
+        /**
+         * @overload
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref Buffer(TargetHint, Containers::ArrayView<const void>, BufferUsage)
+         * with @ref TargetHint::Array. Unlike with
+         * @ref Buffer(TargetHint, std::initializer_list<T>, BufferUsage) an
+         * @ref std::initializer_list overload isn't provided in this case as
+         * it would cause a lot of undesired implicit conversions when using
+         * the `{}`-style construction. Use the above overload or the
+         * @ref Corrade::Containers::arrayView(std::initializer_list<T>) helper
+         * instead.
+         */
+        explicit Buffer(Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw): Buffer{TargetHint::Array, data, usage} {}
 
         /** @brief Copying is not allowed */
         Buffer(const Buffer&) = delete;

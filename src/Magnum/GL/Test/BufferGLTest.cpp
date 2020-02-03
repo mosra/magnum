@@ -41,6 +41,7 @@ struct BufferGLTest: OpenGLTester {
     explicit BufferGLTest();
 
     void construct();
+    void constructFromData();
     void constructMove();
     void wrap();
 
@@ -67,6 +68,7 @@ struct BufferGLTest: OpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::constructFromData,
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
 
@@ -102,6 +104,36 @@ void BufferGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferGLTest::constructFromData() {
+    constexpr Int data[] = {2, 7, 5, 13, 25};
+
+    Buffer a{Buffer::TargetHint::ElementArray, data};
+    Buffer b{Buffer::TargetHint::ElementArray, {2, 7, 5, 13, 25}};
+    Buffer c{data};
+    Buffer d{{nullptr, 5*4}}; /* This should work too for reserving memory */
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(a.size(), 5*4);
+    CORRADE_COMPARE(b.size(), 5*4);
+    CORRADE_COMPARE(c.size(), 5*4);
+    CORRADE_COMPARE(d.size(), 5*4);
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(a.data()),
+        Containers::arrayView(data),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(b.data()),
+        Containers::arrayView(data),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(c.data()),
+        Containers::arrayView(data),
+        TestSuite::Compare::Container);
+    /* d's data is undefined, not testing */
+    #endif
 }
 
 void BufferGLTest::constructMove() {
