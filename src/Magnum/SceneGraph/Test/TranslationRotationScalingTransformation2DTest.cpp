@@ -166,7 +166,7 @@ void TranslationRotationScalingTransformation2DTest::rotate() {
     {
         Object2D o;
         o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(17.0_degf)
+        o.rotate(Complex::rotation(17.0_degf))
          .rotate(-96.0_degf);
         CORRADE_COMPARE(o.translation(), (Vector2{1.0f, -0.3f}));
         CORRADE_COMPARE(o.rotation(), Complex::rotation(-79.0_degf));
@@ -178,7 +178,7 @@ void TranslationRotationScalingTransformation2DTest::rotate() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotateLocal(17.0_degf)
+        o.rotateLocal(Complex::rotation(17.0_degf))
          .rotateLocal(-96.0_degf);
         CORRADE_COMPARE(o.translation(), (Vector2{1.0f, -0.3f}));
         CORRADE_COMPARE(o.rotation(), Complex::rotation(-79.0_degf));

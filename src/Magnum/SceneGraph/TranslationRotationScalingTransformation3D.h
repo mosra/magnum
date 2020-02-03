@@ -292,6 +292,13 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
         void doTranslate(const Math::Vector3<T>& vector) override final { translate(vector); }
         void doTranslateLocal(const Math::Vector3<T>& vector) override final { translateLocal(vector); }
 
+        void doRotate(const Math::Quaternion<T>& quaternion) override final {
+            rotate(quaternion);
+        }
+        void doRotateLocal(const Math::Quaternion<T>& quaternion) override final {
+            rotateLocal(quaternion);
+        }
+
         void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) override final {
             rotate(angle, normalizedAxis);
         }

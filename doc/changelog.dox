@@ -110,6 +110,17 @@ See also:
     bootstrap project for using Magnum together with gtkmm (see
     [mosra/magnum-bootstrap#24](https://github.com/mosra/magnum-bootstrap/pull/24))
 
+@subsubsection changelog-latest-new-scenegraph SceneGraph library
+
+-   All 2D transformation implementations that support rotation now have a
+    @ref SceneGraph::AbstractBasicTranslationRotation2D::rotate(const Math::Complex<T>&) "rotate()"
+    and @ref SceneGraph::AbstractBasicTranslationRotation2D::rotateLocal(const Math::Complex<T>&) "rotateLocal()"
+    overloads taking a @ref Math::Complex
+-   All 3D transformation implementations that support rotation now have a
+    @ref SceneGraph::AbstractBasicTranslationRotation3D::rotate(const Math::Quaternion<T>&) "rotate()"
+    and @ref SceneGraph::AbstractBasicTranslationRotation3D::rotateLocal(const Math::Quaternion<T>&) "rotateLocal()"
+    overloads taking a @ref Math::Quaternion
+
 @subsubsection changelog-latest-new-vk Vk library
 
 -   Updated Vulkan headers for version 1.2

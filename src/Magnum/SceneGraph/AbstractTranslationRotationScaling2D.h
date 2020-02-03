@@ -83,6 +83,14 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
             AbstractBasicTranslationRotation2D<T>::translateLocal(vector);
             return *this;
         }
+        AbstractBasicTranslationRotationScaling2D<T>& rotate(const Math::Complex<T>& complex) {
+            AbstractBasicTranslationRotation2D<T>::rotate(complex);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling2D<T>& rotateLocal(const Math::Complex<T>& complex) {
+            AbstractBasicTranslationRotation2D<T>::rotateLocal(complex);
+            return *this;
+        }
         AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle) {
             AbstractBasicTranslationRotation2D<T>::rotate(angle);
             return *this;

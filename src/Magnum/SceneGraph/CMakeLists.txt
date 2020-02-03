@@ -52,11 +52,15 @@ set(MagnumSceneGraph_HEADERS
     DualComplexTransformation.h
     DualQuaternionTransformation.h
     RigidMatrixTransformation2D.h
+    RigidMatrixTransformation2D.hpp
     RigidMatrixTransformation3D.h
+    RigidMatrixTransformation3D.hpp
     FeatureGroup.h
     FeatureGroup.hpp
     MatrixTransformation2D.h
+    MatrixTransformation2D.hpp
     MatrixTransformation3D.h
+    MatrixTransformation3D.hpp
     Object.h
     Object.hpp
     Scene.h

@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/Complex.h"
 #include "Magnum/SceneGraph/MatrixTransformation2D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
@@ -64,6 +65,8 @@ MatrixTransformation2DTest::MatrixTransformation2DTest() {
               &MatrixTransformation2DTest::scale,
               &MatrixTransformation2DTest::reflect});
 }
+
+using namespace Math::Literals;
 
 void MatrixTransformation2DTest::fromMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
@@ -143,13 +146,15 @@ void MatrixTransformation2DTest::translate() {
 void MatrixTransformation2DTest::rotate() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f));
+        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
+         .rotate(Complex::rotation(7.0_degf))
+         .rotate(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotateLocal(Deg(17.0f));
+        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
+         .rotateLocal(Complex::rotation(7.0_degf))
+         .rotateLocal(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }

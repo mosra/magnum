@@ -47,11 +47,38 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         explicit AbstractBasicTranslationRotation2D() = default;
 
         /**
+         * @brief Rotate the object using a complex number
+         * @param complex       Normalized complex number
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the complex number is normalized.
+         * @see @ref rotate(Math::Rad<T>),
+         *      @ref rotateLocal(const Math::Complex<T>&)
+         */
+        AbstractBasicTranslationRotation2D<T>& rotate(const Math::Complex<T>& complex) {
+            doRotate(complex);
+            return *this;
+        }
+
+        /**
+         * @brief Rotate the object using a complex number as a local transformation
+         * @m_since_latest
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractBasicTranslationRotation2D<T>& rotateLocal(const Math::Complex<T>& complex) {
+            doRotateLocal(complex);
+            return *this;
+        }
+
+        /**
          * @brief Rotate the object
          * @param angle     Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
-         * @see @ref rotateLocal()
+         * @see @ref rotate(const Math::Complex<T>&), @ref rotateLocal()
          */
         AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle) {
             doRotate(angle);
@@ -89,10 +116,22 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         ~AbstractBasicTranslationRotation2D() = default;
 
     private:
-        /** @brief Polymorphic implementation for @ref rotate() */
+        /**
+         * @brief Polymorphic implementation for @ref rotate(const Math::Complex<T>&)
+         * @m_since_latest
+         */
+        virtual void doRotate(const Math::Complex<T>&) = 0;
+
+        /**
+         * @brief Polymorphic implementation for @ref rotateLocal(const Math::Complex<T>&)
+         * @m_since_latest
+         */
+        virtual void doRotateLocal(const Math::Complex<T>&) = 0;
+
+        /** @brief Polymorphic implementation for @ref rotate(Math::Rad<T>) */
         virtual void doRotate(Math::Rad<T> angle) = 0;
 
-        /** @brief Polymorphic implementation for @ref rotateLocal() */
+        /** @brief Polymorphic implementation for @ref rotateLocal(Math::Rad<T>) */
         virtual void doRotateLocal(Math::Rad<T> angle) = 0;
 };
 

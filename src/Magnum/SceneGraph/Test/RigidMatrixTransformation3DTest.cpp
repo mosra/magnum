@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Quaternion.h"
 #include "Magnum/SceneGraph/RigidMatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
@@ -66,6 +67,8 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
               &RigidMatrixTransformation3DTest::reflect,
               &RigidMatrixTransformation3DTest::normalizeRotation});
 }
+
+using namespace Math::Literals;
 
 void RigidMatrixTransformation3DTest::fromMatrix() {
     std::ostringstream o;
@@ -164,11 +167,12 @@ void RigidMatrixTransformation3DTest::translate() {
 void RigidMatrixTransformation3DTest::rotate() {
     {
         Object3D o;
-        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}));
-        o.rotateX(Deg(17.0f))
-            .rotateY(Deg(25.0f))
-            .rotateZ(Deg(-23.0f))
-            .rotate(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()));
+        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}))
+         .rotateX(17.0_degf)
+         .rotateY(25.0_degf)
+         .rotateZ(-23.0_degf)
+         .rotate(Quaternion::rotation(36.0_degf, Vector3{1.0f/Constants::sqrt3()}))
+         .rotate(60.0_degf, Vector3{1.0f/Constants::sqrt3()});
         CORRADE_COMPARE(o.transformationMatrix(),
             Matrix4::rotation(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()))*
             Matrix4::rotationZ(Deg(-23.0f))*
@@ -177,11 +181,12 @@ void RigidMatrixTransformation3DTest::rotate() {
             Matrix4::translation({1.0f, -0.3f, 2.3f}));
     } {
         Object3D o;
-        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}));
-        o.rotateXLocal(Deg(17.0f))
-            .rotateYLocal(Deg(25.0f))
-            .rotateZLocal(Deg(-23.0f))
-            .rotateLocal(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()));
+        o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}))
+         .rotateXLocal(17.0_degf)
+         .rotateYLocal(25.0_degf)
+         .rotateZLocal(-23.0_degf)
+         .rotateLocal(Quaternion::rotation(36.0_degf, Vector3{1.0f/Constants::sqrt3()}))
+         .rotateLocal(60.0_degf, Vector3{1.0f/Constants::sqrt3()});
         CORRADE_COMPARE(o.transformationMatrix(),
             Matrix4::translation({1.0f, -0.3f, 2.3f})*
             Matrix4::rotationX(Deg(17.0f))*

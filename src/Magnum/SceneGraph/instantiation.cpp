@@ -30,11 +30,11 @@
 #include "Magnum/SceneGraph/DualComplexTransformation.h"
 #include "Magnum/SceneGraph/DualQuaternionTransformation.h"
 #include "Magnum/SceneGraph/FeatureGroup.hpp"
-#include "Magnum/SceneGraph/MatrixTransformation2D.h"
-#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/MatrixTransformation2D.hpp"
+#include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
 #include "Magnum/SceneGraph/Object.hpp"
-#include "Magnum/SceneGraph/RigidMatrixTransformation2D.h"
-#include "Magnum/SceneGraph/RigidMatrixTransformation3D.h"
+#include "Magnum/SceneGraph/RigidMatrixTransformation2D.hpp"
+#include "Magnum/SceneGraph/RigidMatrixTransformation3D.hpp"
 #include "Magnum/SceneGraph/TranslationTransformation.h"
 #include "Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h"
 #include "Magnum/SceneGraph/TranslationRotationScalingTransformation3D.h"
@@ -71,6 +71,13 @@ template class MAGNUM_SCENEGRAPH_EXPORT_HPP Camera<3, Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Drawable<2, Float>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Drawable<3, Float>;
+
+/* These have rotation(const Complex&) and rotation(const Quaternion&) defined
+   in a hpp to avoid dragging in Complex / Quaternion for every user */
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicMatrixTransformation2D<Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicMatrixTransformation3D<Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicRigidMatrixTransformation2D<Float>;
+template class MAGNUM_SCENEGRAPH_EXPORT_HPP BasicRigidMatrixTransformation3D<Float>;
 
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualComplexTransformation<Float>>;
 template class MAGNUM_SCENEGRAPH_EXPORT_HPP Object<BasicDualQuaternionTransformation<Float>>;

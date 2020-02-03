@@ -212,6 +212,13 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
         void doTranslate(const Math::Vector2<T>& vector) override final { translate(vector); }
         void doTranslateLocal(const Math::Vector2<T>& vector) override final { translateLocal(vector); }
 
+        void doRotate(const Math::Complex<T>& complex) override final {
+            rotate(complex);
+        }
+        void doRotateLocal(const Math::Complex<T>& complex) override final {
+            rotateLocal(complex);
+        }
+
         void doRotate(Math::Rad<T> angle) override final {
             rotate(angle);
         }

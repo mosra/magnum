@@ -65,6 +65,8 @@ DualComplexTransformationTest::DualComplexTransformationTest() {
               &DualComplexTransformationTest::normalizeRotation});
 }
 
+using namespace Math::Literals;
+
 void DualComplexTransformationTest::fromMatrix() {
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
@@ -158,13 +160,15 @@ void DualComplexTransformationTest::translate() {
 void DualComplexTransformationTest::rotate() {
     {
         Object2D o;
-        o.setTransformation(DualComplex::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f));
+        o.setTransformation(DualComplex::translation({1.0f, -0.3f}))
+         .rotate(Complex::rotation(7.0_degf))
+         .rotate(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     } {
         Object2D o;
-        o.setTransformation(DualComplex::translation({1.0f, -0.3f}));
-        o.rotateLocal(Deg(17.0f));
+        o.setTransformation(DualComplex::translation({1.0f, -0.3f}))
+         .rotateLocal(Complex::rotation(7.0_degf))
+         .rotateLocal(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }

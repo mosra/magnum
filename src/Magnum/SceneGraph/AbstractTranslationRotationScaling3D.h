@@ -83,6 +83,14 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
             AbstractBasicTranslationRotation3D<T>::translateLocal(vector);
             return *this;
         }
+        AbstractBasicTranslationRotationScaling3D<T>& rotate(const Math::Quaternion<T>& quaternion) {
+            AbstractBasicTranslationRotation3D<T>::rotate(quaternion);
+            return *this;
+        }
+        AbstractBasicTranslationRotationScaling3D<T>& rotateLocal(const Math::Quaternion<T>& quaternion) {
+            AbstractBasicTranslationRotation3D<T>::rotateLocal(quaternion);
+            return *this;
+        }
         AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
             AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis);
             return *this;

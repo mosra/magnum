@@ -115,15 +115,38 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         }
 
         /**
+         * @brief Rotate the object using a quaternion
+         * @param quaternion    Normalized quaternion
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the quaternion is normalized.
+         * @see @ref rotate(Math::Rad<T>, const Math::Vector3<T>&),
+         *      @ref rotateLocal(const Math::Quaternion<T>&), @ref rotateX(),
+         *      @ref rotateY(), @ref rotateZ()
+         */
+        Object<BasicMatrixTransformation3D<T>>& rotate(const Math::Quaternion<T>& quaternion);
+
+        /**
+         * @brief Rotate the object using a quaternion as a local transformation
+         * @m_since_latest
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicMatrixTransformation3D<T>>& rotateLocal(const Math::Quaternion<T>& quaternion);
+
+        /**
          * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::Matrix4::rotation().
-         * @see @ref rotateLocal(), @ref rotateX(), @ref rotateY(),
-         *      @ref rotateZ(), @ref Math::Vector3::xAxis(),
-         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
+         * @see @ref rotate(const Math::Quaternion<T>&), @ref rotateLocal(),
+         *      @ref rotateX(), @ref rotateY(), @ref rotateZ(),
+         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
+         *      @ref Math::Vector3::zAxis()
          */
         Object<BasicMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
             return transform(Math::Matrix4<T>::rotation(angle, normalizedAxis));
@@ -266,6 +289,13 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         void doTranslate(const Math::Vector3<T>& vector) override final { translate(vector); }
         void doTranslateLocal(const Math::Vector3<T>& vector) override final { translateLocal(vector); }
 
+        void doRotate(const Math::Quaternion<T>& quaternion) override final {
+            rotate(quaternion);
+        }
+        void doRotateLocal(const Math::Quaternion<T>& quaternion) override final {
+            rotateLocal(quaternion);
+        }
+
         void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) override final {
             rotate(angle, normalizedAxis);
         }
@@ -318,6 +348,7 @@ template<class T> struct Transformation<BasicMatrixTransformation3D<T>> {
 }
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template class MAGNUM_SCENEGRAPH_EXPORT BasicMatrixTransformation3D<Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation3D<Float>>;
 #endif
 

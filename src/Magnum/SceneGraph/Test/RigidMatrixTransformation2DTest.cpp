@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Complex.h"
 #include "Magnum/SceneGraph/RigidMatrixTransformation2D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
@@ -66,6 +67,8 @@ RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
               &RigidMatrixTransformation2DTest::reflect,
               &RigidMatrixTransformation2DTest::normalizeRotation});
 }
+
+using namespace Math::Literals;
 
 void RigidMatrixTransformation2DTest::fromMatrix() {
     std::ostringstream o;
@@ -163,13 +166,15 @@ void RigidMatrixTransformation2DTest::translate() {
 void RigidMatrixTransformation2DTest::rotate() {
     {
         Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f));
+        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
+         .rotate(Complex::rotation(7.0_degf))
+         .rotate(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     } {
         Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotateLocal(Deg(17.0f));
+        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
+         .rotateLocal(Complex::rotation(7.0_degf))
+         .rotateLocal(10.0_degf);
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }

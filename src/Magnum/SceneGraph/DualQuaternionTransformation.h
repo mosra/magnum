@@ -132,15 +132,42 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
+         * @brief Rotate the object using a quaternion
+         * @param quaternion    Normalized quaternion
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Same as calling @ref transform() with @p quaternion. Expects that
+         * the quaternion is normalized.
+         * @see @ref rotate(Math::Rad<T>, const Math::Vector3<T>&),
+         *      @ref rotateLocal(const Math::Quaternion<T>&), @ref rotateX(),
+         *      @ref rotateY(), @ref rotateZ()
+         */
+        Object<BasicDualQuaternionTransformation<T>>& rotate(const Math::Quaternion<T>& quaternion) {
+            return transformInternal(quaternion);
+        }
+
+        /**
+         * @brief Rotate the object using a quaternion as a local transformation
+         * @m_since_latest
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicDualQuaternionTransformation<T>>& rotateLocal(const Math::Quaternion<T>& quaternion) {
+            return transformLocalInternal(quaternion);
+        }
+
+        /**
          * @brief Rotate the object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::DualQuaternion::rotation().
-         * @see @ref rotateLocal(), @ref Math::Vector3::xAxis(),
-         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis(),
-         *      @ref normalizeRotation()
+         * @see @ref rotate(const Math::Quaternion<T>&), @ref rotateLocal(),
+         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
+         *      @ref Math::Vector3::zAxis(), @ref normalizeRotation()
          */
         Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
             return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis));
@@ -190,6 +217,13 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         void doTranslateLocal(const Math::Vector3<T>& vector) override final {
             translateLocal(vector);
+        }
+
+        void doRotate(const Math::Quaternion<T>& quaternion) override final {
+            rotate(quaternion);
+        }
+        void doRotateLocal(const Math::Quaternion<T>& quaternion) override final {
+            rotateLocal(quaternion);
         }
 
         void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) override final {

@@ -115,6 +115,27 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
+         * @brief Rotate the object using a complex number
+         * @param complex       Normalized complex number
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the complex number is normalized.
+         * @see @ref rotate(Math::Rad<T>),
+         *      @ref rotateLocal(const Math::Complex<T>&)
+         */
+        Object<BasicMatrixTransformation2D<T>>& rotate(const Math::Complex<T>& complex);
+
+        /**
+         * @brief Rotate the object using a complex number as a local transformation
+         * @m_since_latest
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicMatrixTransformation2D<T>>& rotateLocal(const Math::Complex<T>& complex);
+
+        /**
          * @brief Rotate the object
          * @param angle     Angle (counterclockwise)
          * @return Reference to self (for method chaining)
@@ -195,6 +216,13 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         void doTranslate(const Math::Vector2<T>& vector) override final { translate(vector); }
         void doTranslateLocal(const Math::Vector2<T>& vector) override final { translateLocal(vector); }
 
+        void doRotate(const Math::Complex<T>& complex) override final {
+            rotate(complex);
+        }
+        void doRotateLocal(const Math::Complex<T>& complex) override final {
+            rotateLocal(complex);
+        }
+
         void doRotate(Math::Rad<T> angle) override final { rotate(angle); }
         void doRotateLocal(Math::Rad<T> angle) override final { rotateLocal(angle); }
 
@@ -234,6 +262,7 @@ template<class T> struct Transformation<BasicMatrixTransformation2D<T>> {
 }
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template class MAGNUM_SCENEGRAPH_EXPORT BasicMatrixTransformation2D<Float>;
 extern template class MAGNUM_SCENEGRAPH_EXPORT Object<BasicMatrixTransformation2D<Float>>;
 #endif
 

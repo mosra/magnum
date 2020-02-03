@@ -76,20 +76,24 @@ and @ref previousSibling().
 
 @section SceneGraph-Object-explicit-specializations Explicit template specializations
 
-The following specializations are explicitly compiled into @ref SceneGraph
+The following specializations are explicitly compiled into the @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"
-type or special transformation class) you have to use @ref Object.hpp
-implementation file to avoid linker errors. See also relevant sections in
-@ref SceneGraph-AbstractObject-explicit-specializations "AbstractObject" and
+type or special transformation class) you have to use the @ref Object.hpp
+implementation file (and possibly others) to avoid linker errors. See also
+relevant sections in the @ref SceneGraph-AbstractObject-explicit-specializations "AbstractObject" and
 @ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref DualComplexTransformation "Object<DualComplexTransformation>"
 -   @ref DualQuaternionTransformation "Object<DualQuaternionTransformation>"
--   @ref MatrixTransformation2D "Object<MatrixTransformation2D>"
--   @ref MatrixTransformation3D "Object<MatrixTransformation3D>"
+-   @ref MatrixTransformation2D "Object<MatrixTransformation2D>" (custom
+    specializations need also @ref MatrixTransformation2D.hpp)
+-   @ref MatrixTransformation3D "Object<MatrixTransformation3D>" (custom
+    specializations need also @ref MatrixTransformation3D.hpp)
 -   @ref RigidMatrixTransformation2D "Object<RigidMatrixTransformation2D>"
+    (custom specializations need also @ref RigidMatrixTransformation2D.hpp)
 -   @ref RigidMatrixTransformation3D "Object<RigidMatrixTransformation3D>"
+    (custom specializations need also @ref RigidMatrixTransformation3D.hpp)
 -   @ref TranslationTransformation2D "Object<TranslationTransformation2D>"
 -   @ref TranslationTransformation3D "Object<TranslationTransformation3D>"
 
