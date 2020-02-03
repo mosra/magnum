@@ -67,6 +67,10 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (\cos(\theta) + i \sin(\theta)) + \epsilon (0 + i0)
          * @f]
+         *
+         * For creating a dual complex number from a rotation @ref Complex, use
+         * the implicit conversion provided by
+         * @ref DualComplex(const Complex<T>&, const Complex<T>&).
          * @see @ref Complex::rotation(), @ref Matrix3::rotation(),
          *      @ref DualQuaternion::rotation()
          */
@@ -130,6 +134,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = c_0 + \epsilon c_\epsilon
          * @f]
+         *
+         * This constructor can be also used to implicitly convert a rotation
+         * complex number to a rotation dual complex number.
          */
         constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))) noexcept: Dual<Complex<T>>(real, dual) {}
 

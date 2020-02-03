@@ -200,6 +200,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot \sin(\frac{\theta}{2}), \cos(\frac{\theta}{2})] + \epsilon [\boldsymbol 0, 0]
          * @f]
+         *
+         * For creating a dual quaternion from a rotation @ref Quaternion, use
+         * the implicit conversion provided by
+         * @ref DualQuaternion(const Quaternion<T>&, const Quaternion<T>&).
          * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref DualComplex::rotation(),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
@@ -270,6 +274,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q = q_0 + \epsilon q_\epsilon
          * @f]
+         *
+         * This constructor can be also used to implicitly convert a rotation
+         * quaternion to a rotation dual quaternion.
          */
         constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))) noexcept: Dual<Quaternion<T>>(real, dual) {}
 

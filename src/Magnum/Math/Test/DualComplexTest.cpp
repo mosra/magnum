@@ -395,6 +395,9 @@ void DualComplexTest::rotation() {
     constexpr DualComplex b({-1.0f, 2.0f}, {});
     constexpr Complex c = b.rotation();
     CORRADE_COMPARE(c, Complex(-1.0f, 2.0f));
+
+    /* Conversion from a rotation complex should give the same result */
+    CORRADE_COMPARE(DualComplex{Complex::rotation(120.0_degf)}, a);
 }
 
 void DualComplexTest::translation() {

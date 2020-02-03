@@ -434,6 +434,9 @@ void DualQuaternionTest::rotation() {
     constexpr DualQuaternion b({{-1.0f, 2.0f, 3.0f}, 4.0f}, {});
     constexpr Quaternion c = b.rotation();
     CORRADE_COMPARE(c, Quaternion({-1.0f, 2.0f, 3.0f}, 4.0f));
+
+    /* Conversion from a rotation quaternion should give the same result */
+    CORRADE_COMPARE(DualQuaternion{Quaternion::rotation(120.0_degf, axis)}, q);
 }
 
 void DualQuaternionTest::rotationNotNormalized() {
