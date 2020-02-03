@@ -162,6 +162,10 @@ See also:
 -   Functions in @ref Magnum/Math/FunctionsBatch.h now accept any type that's
     convertible to a @ref Corrade::Containers::StridedArrayView without having
     to add explicit casts or template parameters
+-   @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) and
+    @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
+    now fall back to linear interpolation when the quaternions are close to
+    each other, instead of unconditionally returning the first argument
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
