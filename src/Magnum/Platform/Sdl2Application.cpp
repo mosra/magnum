@@ -1174,28 +1174,25 @@ std::string Sdl2Application::KeyEvent::keyName() const {
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
-    if(_modifiersLoaded) return _modifiers;
-    _modifiersLoaded = true;
-    return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
-    if(_modifiersLoaded) return _modifiers;
-    _modifiersLoaded = true;
-    return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 
 Vector2i Sdl2Application::MouseScrollEvent::position() {
-    if(_positionLoaded) return _position;
-    _positionLoaded = true;
-    SDL_GetMouseState(&_position.x(), &_position.y());
-    return _position;
+    if(_position) return *_position;
+    _position = Vector2i{};
+    SDL_GetMouseState(&_position->x(), &_position->y());
+    return *_position;
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
-    if(_modifiersLoaded) return _modifiers;
-    _modifiersLoaded = true;
-    return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+    if(_modifiers) return *_modifiers;
+    return *(_modifiers = fixedModifiers(Uint16(SDL_GetModState())));
 }
 
 template class BasicScreen<Sdl2Application>;

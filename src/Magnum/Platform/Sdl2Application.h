@@ -33,6 +33,7 @@
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
@@ -2341,19 +2342,18 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
             #endif
-            ): InputEvent{event}, _button{button}, _position{position},
+            ): InputEvent{event}, _button{button}, _position{position}
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            _clickCount{clickCount},
+            , _clickCount{clickCount}
             #endif
-            _modifiersLoaded{false} {}
+            {}
 
         const Button _button;
         const Vector2i _position;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         const Int _clickCount;
         #endif
-        bool _modifiersLoaded;
-        Modifiers _modifiers;
+        Containers::Optional<Modifiers> _modifiers;
 };
 
 /**
@@ -2410,12 +2410,11 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit MouseMoveEvent(const SDL_Event& event, const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): InputEvent{event}, _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
+        explicit MouseMoveEvent(const SDL_Event& event, const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): InputEvent{event}, _position{position}, _relativePosition{relativePosition}, _buttons{buttons} {}
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
-        bool _modifiersLoaded;
-        Modifiers _modifiers;
+        Containers::Optional<Modifiers> _modifiers;
 };
 
 /**
@@ -2445,13 +2444,11 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
     private:
         friend Sdl2Application;
 
-        explicit MouseScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset}, _positionLoaded{false}, _modifiersLoaded{false} {}
+        explicit MouseScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset} {}
 
         const Vector2 _offset;
-        bool _positionLoaded;
-        bool _modifiersLoaded;
-        Vector2i _position;
-        Modifiers _modifiers;
+        Containers::Optional<Vector2i> _position;
+        Containers::Optional<Modifiers> _modifiers;
 };
 
 /**
