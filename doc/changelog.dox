@@ -95,6 +95,8 @@ See also:
     @ref Math::DualQuaternion::transformVectorNormalized() delegating to
     respective APIs in the underlying @ref Complex / @ref Quaternion to make
     the transformation API more consistent with @ref Matrix3 / @ref Matrix4
+-   Added @ref Math::reflect() and @ref Math::refract() (see
+    [mosra/magnum#420](https://github.com/mosra/magnum/pull/420))
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
