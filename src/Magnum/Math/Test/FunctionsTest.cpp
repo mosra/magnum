@@ -68,6 +68,9 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void isInfVector();
     void isNan();
     void isNanfVector();
+	
+	void reflect();
+	void refract();
 
     void trigonometric();
     void trigonometricWithBase();
@@ -124,6 +127,9 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::isInfVector,
               &FunctionsTest::isNan,
               &FunctionsTest::isNanfVector,
+			  
+			  &FunctionsTest::reflect,
+              &FunctionsTest::refract,
 
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase,
@@ -438,6 +444,16 @@ void FunctionsTest::isNan() {
 void FunctionsTest::isNanfVector() {
     CORRADE_COMPARE(Math::isNan(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x04});
     CORRADE_COMPARE(Math::isNan(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x00});
+}
+
+void FunctionsTest::reflect() {
+    CORRADE_COMPARE(Math::reflect(Vector3{1.0f, 2.0f, 3.0f}, Vector3{0.0f, 1.0f, 0.0f}), (Vector3{1.0f, -2.0f, 3.0f}));
+    CORRADE_COMPARE(Math::reflect(Vector3{2.0f, 1.0f, 1.0f}, Vector3{1.0f, -1.0f, 1.0f}.normalized()), (Vector3{2.0f / 3.0f, 2.0f + 1.0f/3.0f, -1.0f/3.0f}));
+}
+
+void FunctionsTest::refract() {
+    CORRADE_COMPARE(Math::refract(Vector3{1.0f, 0.0f, 1.0f}, Vector3{0.0f, 0.0f, -1.0f}, Float{1.0f / 1.5f}), (Vector3{0.471405, 0, 0.881917}));
+	CORRADE_COMPARE(Math::refract(Vector3{4.0f, 1.0f, 1.0f}, Vector3{0.0f, -2.0f, -1.0f}.normalized(), Float{1.0f / 1.5f}), (Vector3{0.628539, 0.661393, 0.409264}));
 }
 
 void FunctionsTest::trigonometric() {

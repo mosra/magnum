@@ -654,6 +654,32 @@ template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Ve
     return Vector<size, T>(T(1))/Math::sqrt(a);
 }
 
+
+/**
+@brief Reflect a vector off a surface given the surface outward normal. Note that the normal vector must be normalized.
+
+@m_keyword{reflect(),GLSL reflect(),}
+*/
+template<std::size_t size, class T> inline Vector<size, T> reflect(const Vector<size, T>& v, const Vector<size, T>& n) {
+    return v - T(2) * dot(v, n) * n;
+}
+
+
+/**
+@brief Refract a vector through a medium given the surface outward normal and ratio of indices of refraction eta. Note that the normal vector must be normalized.
+
+@m_keyword{refract(),GLSL refract(),}
+*/
+template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<size, T>& v, const Vector<size, T>& n, T eta) {
+    const Vector<size, T> vi = v.normalized();
+    const T dt = dot(vi, n);
+    const T k  = T(1) - eta * eta * (T(1) - dt * dt);
+    if(k > 0) {
+        return eta * (vi - n * dt) - n * std::sqrt(k);
+    }
+	return Vector<size, T>{};
+}
+
 /*@}*/
 
 }}
