@@ -102,7 +102,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set all contained Playables clean
-         * @deprecated Use @ref Listener::update() instead.
+         * @m_deprecated_since{2018,10} Use @ref Listener::update() instead.
          */
         CORRADE_DEPRECATED("use Listener::update() instead") void setClean();
         #endif
