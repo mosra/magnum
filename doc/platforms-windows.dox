@@ -124,6 +124,31 @@ much as possible:
     simply link to the @ref main "Corrade::Main" library, which will do needed
     conversion implicitly for you
 
+@section platform-windows-icon Executable icon
+
+In order to supply an icon for the executable, make an `*.ico` file
+(preferrably out of multiple different sizes) and create a `*.rc` file
+referencing it. The first argument can be anything (it can be used for
+retrieving the icon later at runtime via Windows APIs), Windows always pick the
+first icon in the `*.rc` file for the executable.
+
+@code{.txt}
+MYICON ICON "my-icon.ico"
+@endcode
+
+Then add the `*.rc` file to your application sources and CMake will take care
+of the rest:
+
+@code{.cmake}
+if(CORRADE_TARGET_WINDOWS)
+    target_sources(my-application PRIVATE icon.rc)
+endif()
+@endcode
+
+Note that this doesn't have any effect on the *window* icon --- there it has to
+be specified at runtime, for example via
+@ref Platform::Sdl2Application::setWindowIcon().
+
 @section platform-windows-terminal-colors Colored terminal output
 
 There's two options for colored terminal output --- either using the classic
