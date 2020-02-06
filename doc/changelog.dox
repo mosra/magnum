@@ -43,6 +43,10 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-audio Audio library
+
+-   Added a @ref Audio::Buffer::frequency() getter
+
 @subsubsection changelog-latest-new-gl GL library
 
 -   Exposed new entry points. Note that no wrapper API in the @ref GL namespace

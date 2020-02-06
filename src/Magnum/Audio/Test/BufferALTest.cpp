@@ -77,6 +77,7 @@ void BufferALTest::properties() {
 
     CORRADE_COMPARE(buf.size(), 8);
     CORRADE_COMPARE(buf.channels(), 1);
+    CORRADE_COMPARE(buf.frequency(), 22050);
     CORRADE_COMPARE(buf.bitDepth(), 8);
     CORRADE_COMPARE(buf.sampleCount(), 8);
 }

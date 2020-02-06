@@ -96,7 +96,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @brief Buffer size in bytes
          * @m_since{2019,10}
          *
-         * @see @ref channels(), @ref bitDepth(), @ref sampleCount()
+         * @see @ref channels(), @ref frequency(), @ref bitDepth(),
+         *      @ref sampleCount()
          */
         Int size() const {
             Int size;
@@ -108,7 +109,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @brief Buffer channel count
          * @m_since{2019,10}
          *
-         * @see @ref size(), @ref bitDepth(), @ref sampleCount()
+         * @see @ref size(), @ref frequency(), @ref bitDepth(),
+         *      @ref sampleCount()
          */
         Int channels() const {
             ALint channels;
@@ -117,10 +119,24 @@ class MAGNUM_AUDIO_EXPORT Buffer {
         }
 
         /**
+         * @brief Buffer frequency
+         * @m_since_latest
+         *
+         * @see @ref size(), @ref channels(), @ref bitDepth(),
+         *      @ref sampleCount()
+         */
+        Int frequency() const {
+            ALsizei frequency;
+            alGetBufferi(_id, AL_FREQUENCY, &frequency);
+            return frequency;
+        }
+
+        /**
          * @brief Buffer bit depth
          * @m_since{2019,10}
          *
-         * @see @ref size(), @ref channels(), @ref sampleCount()
+         * @see @ref size(), @ref channels(), @ref frequency(),
+         *      @ref sampleCount()
          */
         Int bitDepth() const {
             ALint bitDepth;
