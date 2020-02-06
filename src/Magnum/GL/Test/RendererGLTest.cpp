@@ -55,6 +55,9 @@ struct RendererGLTest: OpenGLTester {
 
     void maxLineWidth();
     void pointCoord();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void patchParameters();
+    #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void drawBuffersIndexed();
     void drawBuffersBlend();
@@ -73,6 +76,9 @@ using namespace Math::Literals;
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::maxLineWidth,
               &RendererGLTest::pointCoord,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &RendererGLTest::patchParameters,
+              #endif
               #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &RendererGLTest::drawBuffersIndexed,
               &RendererGLTest::drawBuffersBlend
@@ -229,6 +235,26 @@ void RendererGLTest::pointCoord() {
         Utility::Directory::join(_testDir, "pointcoord.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void RendererGLTest::patchParameters() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
+        CORRADE_SKIP(Extensions::ARB::tessellation_shader::string() + std::string(" is not available."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
+        CORRADE_SKIP(Extensions::EXT::tessellation_shader::string() + std::string(" is not available."));
+    #endif
+
+    /* All we can do is check for GL errors */
+    Renderer::setPatchVertexCount(Renderer::maxPatchVertexCount());
+    #ifndef MAGNUM_TARGET_GLES
+    Renderer::setPatchDefaultInnerLevel({0.3f, 1.2f});
+    Renderer::setPatchDefaultOuterLevel({0.3f, 2.2f, 1.0f, 1.2f});
+    #endif
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void RendererGLTest::drawBuffersIndexed() {

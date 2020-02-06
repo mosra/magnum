@@ -149,7 +149,7 @@ GLSL 4.00                                   | done
 @gl_extension{ARB,gpu_shader5}              | missing limit queries
 @gl_extension{ARB,gpu_shader_fp64}          | done
 @gl_extension{ARB,shader_subroutine}        | |
-@gl_extension{ARB,tessellation_shader}      | missing some limit queries and patch parameter specification function
+@gl_extension{ARB,tessellation_shader}      | done except for `MAX_TESS_GEN_LEVEL` and `MAX_TESS_PATCH_COMPONENTS` queries
 @gl_extension{ARB,texture_buffer_object_rgb32} | done
 @gl_extension{ARB,transform_feedback2}      | done
 @gl_extension{ARB,transform_feedback3}      | missing indexed properties query
@@ -358,7 +358,7 @@ Extension                                   | Status
 @gl_extension{EXT,geometry_shader}          | missing some ES-specific limit queries
 @gl_extension{EXT,gpu_shader5}              | done (shading language only)
 @gl_extension{EXT,shader_io_blocks}         | done (shading language only)
-@gl_extension{EXT,tessellation_shader}      | see above
+@gl_extension{EXT,tessellation_shader}      | done except for `MAX_TESS_GEN_LEVEL` and `MAX_TESS_PATCH_COMPONENTS` queries
 @gl_extension{EXT,texture_border_clamp}     | done
 @gl_extension{EXT,texture_buffer}           | done
 @gl_extension{EXT,texture_cube_map_array}   | done

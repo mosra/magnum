@@ -309,7 +309,7 @@ OpenGL function                         | Matching API
 
 OpenGL function                         | Matching API
 --------------------------------------- | ------------
-@fn_gl{PatchParameter}                  | |
+@fn_gl{PatchParameter}                  | @ref GL::Renderer::setPatchVertexCount(), \n @ref GL::Renderer::setPatchDefaultInnerLevel(), \n @ref GL::Renderer::setPatchDefaultOuterLevel()
 @fn_gl{PauseTransformFeedback}, @fn_gl{ResumeTransformFeedback} | @ref GL::TransformFeedback::pause(), @ref GL::TransformFeedback::resume()
 @fn_gl{PixelStore}                      | @ref GL::Texture::setImage(), \n @ref GL::TextureArray::setImage(), \n @ref GL::CubeMapTexture::setImage(), \n @ref GL::CubeMapTextureArray::setImage(), \n @ref GL::RectangleTexture::setImage(), \n @ref GL::Texture::setSubImage(), \n @ref GL::TextureArray::setSubImage(), \n @ref GL::CubeMapTexture::setSubImage(), \n @ref GL::CubeMapTextureArray::setSubImage(), \n @ref GL::RectangleTexture::setSubImage(), \n @ref GL::Texture::image(), @ref GL::TextureArray::image(), \n @ref GL::CubeMapTexture::image(), \n @ref GL::CubeMapTextureArray::image(), \n @ref GL::RectangleTexture::image(), \n @ref GL::Texture::subImage(), \n @ref GL::TextureArray::subImage(), \n @ref GL::CubeMapTexture::subImage(), \n @ref GL::CubeMapTextureArray::subImage(), \n @ref GL::RectangleTexture::subImage(), \n @ref GL::Texture::setCompressedImage(), \n @ref GL::TextureArray::setCompressedImage(), \n @ref GL::CubeMapTexture::setCompressedImage(), \n @ref GL::CubeMapTextureArray::setCompressedImage(), \n @ref GL::Texture::setCompressedSubImage(), \n @ref GL::TextureArray::setCompressedSubImage(), \n @ref GL::CubeMapTexture::setCompressedSubImage(), \n @ref GL::CubeMapTextureArray::setCompressedSubImage(), \n @ref GL::RectangleTexture::setCompressedSubImage(), \n @ref GL::Texture::compressedImage(), \n @ref GL::TextureArray::compressedImage(), \n @ref GL::CubeMapTexture::compressedImage(), \n @ref GL::CubeMapTextureArray::compressedImage(), \n @ref GL::RectangleTexture::compressedImage(), \n @ref GL::DefaultFramebuffer::read(), \n @ref GL::Framebuffer::read()
 @fn_gl{PointParameter}                  | |
@@ -501,7 +501,7 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_IMAGE_SAMPLES}              | @ref GL::AbstractShaderProgram::maxImageSamples()
 @def_gl{MAX_IMAGE_UNITS}                | @ref GL::AbstractShaderProgram::maxImageUnits()
 @def_gl{MAX_LABEL_LENGTH}               | @ref GL::AbstractObject::maxLabelLength()
-@def_gl{MAX_PATCH_VERTICES}             | |
+@def_gl{MAX_PATCH_VERTICES}             | @ref GL::Renderer::maxPatchVertexCount()
 @def_gl{MAX_RENDERBUFFER_SIZE}          | @ref GL::Renderbuffer::maxSize()
 @def_gl{MAX_SAMPLE_MASK_WORDS}          | |
 @def_gl{MAX_SERVER_WAIT_TIMEOUT}        | |

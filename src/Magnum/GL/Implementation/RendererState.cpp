@@ -107,6 +107,23 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
         minSampleShadingImplementation = nullptr;
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_GLES
+    if(context.isVersionSupported(Version::GLES320))
+    #endif
+    {
+        patchParameteriImplementation = glPatchParameteri;
+    }
+    #ifdef MAGNUM_TARGET_GLES
+    else {
+        /* Not checking for the extension (nor adding it to the extension list)
+           as this is not any optional feature -- it can be only used when
+           the extension is present, and if it's not, the pointers are null */
+        patchParameteriImplementation = glPatchParameteriEXT;
+    }
+    #endif
+    #endif
+
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifdef MAGNUM_TARGET_GLES

@@ -685,6 +685,69 @@ class MAGNUM_GL_EXPORT Renderer {
         static void setMinSampleShading(Float value);
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Max supported component patch vertex count
+         * @m_since_latest
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither @gl_extension{ARB,tessellation_shader} (part
+         * of OpenGL 4.0) nor @gl_extension{ANDROID,extension_pack_es31a} /
+         * @gl_extension{EXT,tessellation_shader} ES extension is available,
+         * returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_PATCH_VERTICES}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Tessellation shaders are not available in WebGL.
+         */
+        static UnsignedInt maxPatchVertexCount();
+
+        /**
+         * @brief Set tessellation patch vertex count
+         * @m_since_latest
+         *
+         * Specifies number of vertices that will be used to make up a single
+         * tessellation patch primitive.
+         * @see @ref maxPatchVertexCount(),
+         *      @fn_gl_keyword{PatchParameter} with @def_gl{PATCH_VERTICES}
+         * @requires_gl40 Extension @gl_extension{ARB,tessellation_shader}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,tessellation_shader}
+         * @requires_gles Tessellation shaders are not available in WebGL.
+         */
+        static void setPatchVertexCount(UnsignedInt count);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set default patch inner tessellation level
+         * @m_since_latest
+         *
+         * When no tessellation control shader is present, specifies the
+         * default inner tessellation levels to be used.
+         * @see @fn_gl_keyword{PatchParameter} with
+         *      @def_gl{PATCH_DEFAULT_INNER_LEVEL}
+         * @requires_gl40 Extension @gl_extension{ARB,tessellation_shader}
+         * @requires_gl A tessellation control shader has to be always present
+         *      in OpenGL ES.
+         */
+        static void setPatchDefaultInnerLevel(const Vector2& levels);
+
+        /**
+         * @brief Set default patch outer tessellation level
+         * @m_since_latest
+         *
+         * When no tessellation control shader is present, specifies the
+         * default outer tessellation levels to be used.
+         * @see @fn_gl_keyword{PatchParameter} with
+         *      @def_gl{PATCH_DEFAULT_OUTER_LEVEL}
+         * @requires_gl40 Extension @gl_extension{ARB,tessellation_shader}
+         * @requires_gl A tessellation control shader has to be always present
+         *      in OpenGL ES.
+         */
+        static void setPatchDefaultOuterLevel(const Vector4& levels);
+        #endif
+
         /*@}*/
 
         /** @{ @name Scissor operations */

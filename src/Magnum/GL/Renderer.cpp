@@ -163,6 +163,40 @@ void Renderer::minSampleShadingImplementationOES(const GLfloat value) {
 #endif
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+UnsignedInt Renderer::maxPatchVertexCount() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
+        return 0;
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current().state().renderer->maxPatchVertexCount;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_PATCH_VERTICES, &value);
+
+    return value;
+}
+
+void Renderer::setPatchVertexCount(UnsignedInt count) {
+    Context::current().state().renderer->patchParameteriImplementation(GL_PATCH_VERTICES, count);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Renderer::setPatchDefaultInnerLevel(const Vector2& levels) {
+    glPatchParameterfv(GL_PATCH_DEFAULT_INNER_LEVEL, levels.data());
+}
+
+void Renderer::setPatchDefaultOuterLevel(const Vector4& levels) {
+    glPatchParameterfv(GL_PATCH_DEFAULT_OUTER_LEVEL, levels.data());
+}
+#endif
+
 void Renderer::setScissor(const Range2Di& rectangle) {
     glScissor(rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }

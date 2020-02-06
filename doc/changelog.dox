@@ -57,6 +57,11 @@ See also:
     @gl_extension{EXT,draw_buffers_indexed} ES extension and
     @webgl_extension{EXT,draw_buffers_indexed} WebGL 2 extension in
     @ref GL::Renderer
+-   Implemented @ref GL::Renderer::setPatchVertexCount(),
+    @ref GL::Renderer::setPatchDefaultInnerLevel() and
+    @ref GL::Renderer::setPatchDefaultOuterLevel() as the last missing bits for
+    @gl_extension{ARB,tessellation_shader} / @gl_extension{EXT,tessellation_shader}
+    support (see [mosra/magnum#164](https://github.com/mosra/magnum/issues/164))
 -   Recognizing @gl_extension{AMD,shader_explicit_vertex_parameter} desktop
     and @gl_extension{NV,fragment_shader_barycentric} desktop / ES extensions.
     These add only shading language features.

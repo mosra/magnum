@@ -43,6 +43,9 @@ struct RendererState {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(*minSampleShadingImplementation)(GLfloat);
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void (*patchParameteriImplementation)(GLenum, GLint);
+    #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(*enableiImplementation)(GLenum, GLuint);
     void(*disableiImplementation)(GLenum, GLuint);
@@ -85,6 +88,9 @@ struct RendererState {
 
     PixelStorage packPixelStorage, unpackPixelStorage;
     Range1D lineWidthRange;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    GLint maxPatchVertexCount{};
+    #endif
 
     /* Bool parameter is ugly, but this is implementation detail of internal
        API so who cares */

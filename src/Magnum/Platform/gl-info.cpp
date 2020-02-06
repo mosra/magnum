@@ -710,6 +710,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(GL::Shader::maxTessellationControlTotalOutputComponents())
         _l(GL::Shader::maxTessellationEvaluationInputComponents())
         _l(GL::Shader::maxTessellationEvaluationOutputComponents())
+        _l(GL::Renderer::maxPatchVertexCount())
     }
     #endif
 
