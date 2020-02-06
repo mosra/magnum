@@ -864,7 +864,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * @see @ref maxElementIndex(), @ref maxElementsIndices(),
          *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer}
+         *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} or
+         *      @fn_gl_keyword{VertexArrayElementBuffer}
          */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end);
 

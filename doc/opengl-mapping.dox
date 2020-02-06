@@ -186,7 +186,7 @@ OpenGL function                         | Matching API
 @fn_gl{GenRenderbuffers}, \n @fn_gl{CreateRenderbuffers}, \n @fn_gl{DeleteRenderbuffers} | @ref GL::Renderbuffer constructor and destructor
 @fn_gl{GenSamplers}, \n @fn_gl{CreateSamplers}, \n @fn_gl{DeleteSamplers} | |
 @fn_gl{GenTextures}, \n @fn_gl{CreateTextures}, \n @fn_gl{DeleteTextures} | @ref GL::AbstractTexture constructor and destructor
-@fn_gl{GenTransformFeedbacks}, \n @fn_gl{CreateTransformFeedbacks}, \n @fn_gl{DeleteTransformFeedbacks} | |
+@fn_gl{GenTransformFeedbacks}, \n @fn_gl{CreateTransformFeedbacks}, \n @fn_gl{DeleteTransformFeedbacks} | @ref GL::TransformFeedback constructor and destructor
 @fn_gl{GenVertexArrays}, \n @fn_gl{CreateVertexArrays}, \n @fn_gl{DeleteVertexArrays} | @ref GL::Mesh constructor and destructor
 @fn_gl{GenerateMipmap}, \n `glGenerateTextureMipmap()` | @ref GL::Texture::generateMipmap(), \n @ref GL::TextureArray::generateMipmap(), \n @ref GL::CubeMapTexture::generateMipmap(), \n @ref GL::CubeMapTextureArray::generateMipmap()
 @fn_gl{Get}                             | see @ref opengl-mapping-state "table below"
@@ -405,7 +405,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{ValidateProgram}                 | @ref GL::AbstractShaderProgram::validate()
 @fn_gl{ValidateProgramPipeline}         | |
-@fn_gl{VertexArrayElementBuffer}        | |
+@fn_gl{VertexArrayElementBuffer}        | @ref GL::Mesh::setIndexBuffer()
 @fn_gl{VertexAttrib}                    | not supported (@ref opengl-unsupported "details")
 @fn_gl{VertexAttribBinding}, \n `glVertexArrayAttribBinding()` | |
 @fn_gl{VertexAttribDivisor} | @ref GL::Mesh::addVertexBufferInstanced()
@@ -555,8 +555,7 @@ glGet() parameter                       | Matching API
 @def_gl{SHADER_COMPILER}                | not supported (@ref opengl-unsupported "details")
 @def_gl{SHADER_STORAGE_BUFFER_BINDING}, \n @def_gl{SHADER_STORAGE_BUFFER_SIZE}, \n @def_gl{SHADER_STORAGE_BUFFER_START} | not queryable
 @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT} | @ref GL::Buffer::shaderStorageOffsetAlignment()
-@def_gl{SMOOTH_LINE_WIDTH_GRANULARITY} / @def_gl{LINE_WIDTH_GRANULARITY}, \n
-@def_gl{SMOOTH_LINE_WIDTH_RANGE} / @def_gl{LINE_WIDTH_RANGE} | not supported (@ref opengl-unsupported "details")
+@def_gl{SMOOTH_LINE_WIDTH_GRANULARITY}, @def_gl{LINE_WIDTH_GRANULARITY}, \n @def_gl{SMOOTH_LINE_WIDTH_RANGE}, @def_gl{LINE_WIDTH_RANGE} | not supported (@ref opengl-unsupported "details")
 @def_gl{STENCIL_BACK_FUNC}, \n @def_gl{STENCIL_BACK_REF}, \n @def_gl{STENCIL_BACK_VALUE_MASK}, \n @def_gl{STENCIL_FUNC}, \n @def_gl{STENCIL_REF}, \n @def_gl{STENCIL_VALUE_MASK} | not queryable, @ref GL::Renderer::setStencilFunction() setter only
 @def_gl{STENCIL_BACK_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_PASS}, \n @def_gl{STENCIL_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_PASS} | not queryable, @ref GL::Renderer::setStencilOperation() setter only
 @def_gl{SUBPIXEL_BITS}                  | |
