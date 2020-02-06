@@ -654,6 +654,58 @@ template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Ve
     return Vector<size, T>(T(1))/Math::sqrt(a);
 }
 
+/**
+@brief Reflect a vector
+@m_since_latest
+
+Reflects the vector off a surface given the surface outward normal. Expects
+that the normal vector is normalized. For a vector @f$ \boldsymbol{v} @f$ and a
+normal @f$ \boldsymbol{n} @f$, the reflection vector @f$ \boldsymbol{r} @f$ is
+calculated as: @f[
+    \boldsymbol{r} = \boldsymbol{v} - 2 (\boldsymbol{n} \cdot \boldsymbol{v}) \boldsymbol{n}
+@f]
+@see @ref dot(const Vector<size, T>&, const Vector<size, T>&), @ref refract(),
+    @ref Vector::isNormalized(), @ref Matrix3::reflection(),
+    @ref Matrix4::reflection()
+*/
+template<std::size_t size, class T> inline Vector<size, T> reflect(const Vector<size, T>& vector, const Vector<size, T>& normal) {
+    CORRADE_ASSERT(normal.isNormalized(),
+        "Math::reflect(): normal" << normal << "is not normalized", {});
+    return vector - T(2.0)*dot(vector, normal)*normal;
+}
+
+/**
+@brief Refract a vector
+@m_since_latest
+
+Refracts a vector through a medium given the surface outward normal and ratio
+of indices of refraction eta. Expects that both @p vector and @p normal is
+normalized. For a vector @f$ \boldsymbol{v} @f$, normal @f$ \boldsymbol{n} @f$
+and a ratio of indices of refraction @f$ \eta @f$, the refraction vector
+@f$ \boldsymbol{r} @f$ is calculated as: @f[
+    \begin{array}{rcl}
+        \eta & = & \cfrac{\text{IOR}_\text{source}}{\text{IOR}_\text{destination}} \\[10pt]
+        k & = & 1 - \eta^2 (1 - (\boldsymbol{n} \cdot \boldsymbol{v})^2) \\
+        \boldsymbol{r} & = & \begin{cases}
+            \boldsymbol{0}, & \text{if} ~ k < 0 \\
+            \eta \boldsymbol{v} - (\eta (\boldsymbol{n} \cdot \boldsymbol{v}) + \sqrt{k}) \boldsymbol{n}, & \text{if} ~ k \ge 0
+        \end{cases}
+    \end{array}
+@f]
+
+Wikipedia has a [List of refractive indices](https://en.wikipedia.org/wiki/List_of_refractive_indices).
+@see @ref dot(const Vector<size, T>&, const Vector<size, T>&), @ref reflect(),
+    @ref Vector::isNormalized()
+*/
+template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<size, T>& vector, const Vector<size, T>& normal, T eta) {
+    CORRADE_ASSERT(vector.isNormalized() && normal.isNormalized(),
+        "Math::refract(): vectors" << vector << "and" << normal << "are not normalized", {});
+    const T dot = Math::dot(vector, normal);
+    const T k  = T(1.0) - eta*eta*(T(1.0) - dot*dot);
+    if(k < T(0.0)) return {};
+    return eta*vector - (eta*dot + std::sqrt(k))*normal;
+}
+
 /*@}*/
 
 }}

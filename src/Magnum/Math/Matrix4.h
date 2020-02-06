@@ -183,7 +183,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @cpp Matrix4::scaling(Vector3::yScale(-1.0f)) @ce. @f[
          *      \boldsymbol{A} = \boldsymbol{I} - 2 \boldsymbol{NN}^T ~~~~~ \boldsymbol{N} = \begin{pmatrix} n_x \\ n_y \\ n_z \end{pmatrix}
          * @f]
-         * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
+         * @see @ref Matrix3::reflection(), @ref Vector::isNormalized(),
+         *      @ref reflect()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal);
 

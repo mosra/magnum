@@ -23,8 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector4.h"
@@ -68,6 +70,11 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void isInfVector();
     void isNan();
     void isNanfVector();
+
+    void reflect();
+    void reflectNotNormalized();
+    void refract();
+    void refractNotNormalized();
 
     void trigonometric();
     void trigonometricWithBase();
@@ -124,6 +131,11 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::isInfVector,
               &FunctionsTest::isNan,
               &FunctionsTest::isNanfVector,
+
+              &FunctionsTest::reflect,
+              &FunctionsTest::reflectNotNormalized,
+              &FunctionsTest::refract,
+              &FunctionsTest::refractNotNormalized,
 
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase,
@@ -438,6 +450,52 @@ void FunctionsTest::isNan() {
 void FunctionsTest::isNanfVector() {
     CORRADE_COMPARE(Math::isNan(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x04});
     CORRADE_COMPARE(Math::isNan(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x00});
+}
+
+void FunctionsTest::reflect() {
+    /* Reflection along Y will simply flip the Y component */
+    CORRADE_COMPARE(Math::reflect(
+        Vector3{1.0f, 2.0f, 3.0f},
+        Vector3::yAxis()),
+        (Vector3{1.0f, -2.0f, 3.0f}));
+
+    CORRADE_COMPARE(Math::reflect(
+        Vector3{2.0f, 1.0f, 1.0f},
+        Vector3{1.0f, -1.0f, 1.0f}.normalized()),
+        (Vector3{0.666667f, 2.33333f, -0.333333f}));
+}
+
+void FunctionsTest::reflectNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::reflect(Vector3{}, Vector3{1.0f});
+    CORRADE_COMPARE(out.str(),
+        "Math::reflect(): normal Vector(1, 1, 1) is not normalized\n");
+}
+
+void FunctionsTest::refract() {
+    CORRADE_COMPARE(Math::refract(
+        Vector3{1.0f, 0.0f, 1.0f}.normalized(),
+        Vector3{0.0f, 0.0f, -1.0f}, 1.0f/1.5f),
+        (Vector3{0.471405f, 0.0f, 0.881917f}));
+    CORRADE_COMPARE(Math::refract(
+        Vector3{4.0f, 1.0f, 1.0f}.normalized(),
+        Vector3{0.0f, -2.0f, -1.0f}.normalized(), 1.0f/1.5f),
+        (Vector3{0.628539f, 0.661393f, 0.409264f}));
+
+    /* Total absorption */
+    CORRADE_COMPARE(Math::refract(
+        Vector3{1.0f, 0.1f, 0.0f}.normalized(),
+        Vector3::yAxis(), 1.5f),
+        Vector3{0.0f});
+}
+
+void FunctionsTest::refractNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::refract(Vector3{}, Vector3{1.0f}, 0.0f);
+    CORRADE_COMPARE(out.str(),
+        "Math::refract(): vectors Vector(0, 0, 0) and Vector(1, 1, 1) are not normalized\n");
 }
 
 void FunctionsTest::trigonometric() {

@@ -113,7 +113,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @cpp Matrix3::scaling(Vector2::yScale(-1.0f)) @ce. @f[
          *      \boldsymbol{A} = \boldsymbol{I} - 2 \boldsymbol{NN}^T ~~~~~ \boldsymbol{N} = \begin{pmatrix} n_x \\ n_y \end{pmatrix}
          * @f]
-         * @see @ref Matrix4::reflection(), @ref Vector::isNormalized()
+         * @see @ref Matrix4::reflection(), @ref Vector::isNormalized(),
+         *      @ref reflect()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
             CORRADE_ASSERT(normal.isNormalized(),
