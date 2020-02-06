@@ -265,6 +265,9 @@ constexpr Extension ExtensionList[]{
     #endif
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_compression_bptc),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,draw_buffers_indexed),
+    #endif
     _extension(OES,texture_float_linear),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OVR,multiview2),

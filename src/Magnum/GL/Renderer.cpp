@@ -72,6 +72,20 @@ void Renderer::setFeature(const Feature feature, const bool enabled) {
     enabled ? enable(feature) : disable(feature);
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void Renderer::enable(const Feature feature, const UnsignedInt drawBuffer) {
+    Context::current().state().renderer->enableiImplementation(GLenum(feature), drawBuffer);
+}
+
+void Renderer::disable(const Feature feature, const UnsignedInt drawBuffer) {
+    Context::current().state().renderer->disableiImplementation(GLenum(feature), drawBuffer);
+}
+
+void Renderer::setFeature(const Feature feature, const UnsignedInt drawBuffer, const bool enabled) {
+    enabled ? enable(feature, drawBuffer) : disable(feature, drawBuffer);
+}
+#endif
+
 void Renderer::setHint(const Hint target, const HintMode mode) {
     glHint(GLenum(target), GLenum(mode));
 }
@@ -177,6 +191,12 @@ void Renderer::setColorMask(const GLboolean allowRed, const GLboolean allowGreen
     glColorMask(allowRed, allowGreen, allowBlue, allowAlpha);
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void Renderer::setColorMask(const UnsignedInt drawBuffer, const GLboolean allowRed, const GLboolean allowGreen, const GLboolean allowBlue, const GLboolean allowAlpha) {
+    Context::current().state().renderer->colorMaskiImplementation(drawBuffer, allowRed, allowGreen, allowBlue, allowAlpha);
+}
+#endif
+
 void Renderer::setDepthMask(const GLboolean allow) {
     glDepthMask(allow);
 }
@@ -204,6 +224,24 @@ void Renderer::setBlendFunction(const BlendFunction source, const BlendFunction 
 void Renderer::setBlendFunction(const BlendFunction sourceRgb, const BlendFunction destinationRgb, const BlendFunction sourceAlpha, const BlendFunction destinationAlpha) {
     glBlendFuncSeparate(GLenum(sourceRgb), GLenum(destinationRgb), GLenum(sourceAlpha), GLenum(destinationAlpha));
 }
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void Renderer::setBlendEquation(const UnsignedInt drawBuffer, const BlendEquation equation) {
+    Context::current().state().renderer->blendEquationiImplementation(drawBuffer, GLenum(equation));
+}
+
+void Renderer::setBlendEquation(const UnsignedInt drawBuffer, const BlendEquation rgb, const BlendEquation alpha) {
+    Context::current().state().renderer->blendEquationSeparateiImplementation(drawBuffer, GLenum(rgb), GLenum(alpha));
+}
+
+void Renderer::setBlendFunction(const UnsignedInt drawBuffer, const BlendFunction source, const BlendFunction destination) {
+    Context::current().state().renderer->blendFunciImplementation(drawBuffer, GLenum(source), GLenum(destination));
+}
+
+void Renderer::setBlendFunction(const UnsignedInt drawBuffer, const BlendFunction sourceRgb, const BlendFunction destinationRgb, const BlendFunction sourceAlpha, const BlendFunction destinationAlpha) {
+    Context::current().state().renderer->blendFuncSeparateiImplementation(drawBuffer, GLenum(sourceRgb), GLenum(destinationRgb), GLenum(sourceAlpha), GLenum(destinationAlpha));
+}
+#endif
 
 void Renderer::setBlendColor(const Color4& color) {
     glBlendColor(color.r(), color.g(), color.b(), color.a());

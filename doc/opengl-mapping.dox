@@ -80,8 +80,8 @@ OpenGL function                         | Matching API
 @fn_gl{BindVertexBuffer}, \n `glVertexArrayVertexBuffer()`, \n @fn_gl{BindVertexBuffers}, \n `glVertexArrayVertexBuffers()` | |
 @fn_gl_extension{BlendBarrier,KHR,blend_equation_advanced} | @ref GL::Renderer::blendBarrier()
 @fn_gl{BlendColor}                      | @ref GL::Renderer::setBlendColor()
-@fn_gl{BlendEquation}, \n @fn_gl{BlendEquationSeparate} | @ref GL::Renderer::setBlendEquation()
-@fn_gl{BlendFunc}, \n @fn_gl{BlendFuncSeparate} | @ref GL::Renderer::setBlendFunction()
+@fn_gl{BlendEquation}, \n `glBlendEquationi()`, \n @fn_gl{BlendEquationSeparate}, \n `glBlendEquationSeparatei()` | @ref GL::Renderer::setBlendEquation()
+@fn_gl{BlendFunc}, \n `glBlendFunci()`, \n @fn_gl{BlendFuncSeparate}, \n `glBlendFuncSeparatei()` | @ref GL::Renderer::setBlendFunction()
 @fn_gl{BlitFramebuffer}, \n `glBlitNamedFramebuffer()` | @ref GL::AbstractFramebuffer::blit()
 @fn_gl{BufferData}, \n `glNamedBufferData()` | @ref GL::Buffer::setData()
 @fn_gl_extension{BufferPageCommitment,ARB,sparse_buffer}, \n `glNamedBufferPageCommitmentEXT()`, \n `glNamedBufferPageCommitmentARB()` | |
@@ -107,7 +107,7 @@ OpenGL function                         | Matching API
 @fn_gl{ClearTexSubImage}                | |
 @fn_gl{ClientWaitSync}                  | |
 @fn_gl{ClipControl}                     | |
-@fn_gl{ColorMask}                       | @ref GL::Renderer::setColorMask()
+@fn_gl{ColorMask}, \n `glColorMaski()`  | @ref GL::Renderer::setColorMask()
 @fn_gl{CompileShader}                   | @ref GL::Shader::compile()
 @fn_gl{CompressedTexImage1D}, \n @fn_gl{CompressedTexImage2D}, \n @fn_gl{CompressedTexImage3D} | @ref GL::Texture::setCompressedImage(), \n @ref GL::TextureArray::setCompressedImage(), \n @ref GL::CubeMapTexture::setCompressedImage(), \n @ref GL::CubeMapTextureArray::setCompressedImage(), \n @ref GL::RectangleTexture::setCompressedImage()
 @fn_gl{CompressedTexSubImage1D}, \n `glCompressedTextureSubImage1D()`, \n @fn_gl{CompressedTexSubImage2D}, \n `glCompressedTextureSubImage2D()`, \n @fn_gl{CompressedTexSubImage3D}, \n `glCompressedTextureSubImage3D()` | @ref GL::Texture::setCompressedSubImage(), \n @ref GL::TextureArray::setCompressedSubImage(), \n @ref GL::CubeMapTexture::setCompressedSubImage(), \n @ref GL::CubeMapTextureArray::setCompressedSubImage(), \n @ref GL::RectangleTexture::setCompressedSubImage()
@@ -149,7 +149,7 @@ OpenGL function                         | Matching API
 
 OpenGL function                         | Matching API
 --------------------------------------- | ------------
-@fn_gl{Enable}, `glDisable()`           | @ref GL::Renderer::setFeature()
+@fn_gl{Enable} `glEnablei()`, \n `glDisable()`, `glDisablei()` | @ref GL::Renderer::enable(), \n @ref GL::Renderer::disable(), \n @ref GL::Renderer::setFeature()
 @fn_gl{EnableVertexAttribArray}, \n `glEnableVertexArrayAttrib()`, \n `glDisableVertexAttribArray()`, \n `glDisableVertexArrayAttrib()`, \n `glDisableVertexArrayAttribEXT()` | @ref GL::Mesh::addVertexBuffer()
 @fn_gl_extension{EvaluateDepthValues,ARB,sample_locations} | |
 
@@ -265,7 +265,7 @@ OpenGL function                         | Matching API
 @fn_gl{InvalidateTexImage}              | @ref GL::Texture::invalidateImage(), \n @ref GL::TextureArray::invalidateImage(), \n @ref GL::CubeMapTexture::invalidateImage(), \n @ref GL::CubeMapTextureArray::invalidateImage(), \n @ref GL::RectangleTexture::invalidateImage(), \n @ref GL::MultisampleTexture::invalidateImage()
 @fn_gl{InvalidateTexSubImage}           | @ref GL::Texture::invalidateSubImage(), \n @ref GL::TextureArray::invalidateSubImage(), \n @ref GL::CubeMapTexture::invalidateSubImage(), \n @ref GL::CubeMapTextureArray::invalidateSubImage(), \n @ref GL::RectangleTexture::invalidateSubImage(), \n @ref GL::MultisampleTexture::invalidateSubImage()
 @fn_gl{IsBuffer}, \n @fn_gl{IsFramebuffer}, \n @fn_gl{IsProgram}, \n @fn_gl{IsProgramPipeline}, \n @fn_gl{IsQuery}, \n @fn_gl{IsRenderbuffer}, \n @fn_gl{IsSampler}, \n @fn_gl{IsShader}, \n @fn_gl{IsSync}, \n @fn_gl{IsTexture}, \n @fn_gl{IsTransformFeedback}, \n @fn_gl{IsVertexArray} | not needed, objects are strongly typed
-@fn_gl{IsEnabled}                       | not queryable, @ref GL::Renderer::setFeature() setter only
+@fn_gl{IsEnabled}, `glIsEnabledi()` | not queryable, @ref GL::Renderer::setFeature() setter only
 @fn_gl_extension{IsImageHandleResident,ARB,bindless_texture} | |
 @fn_gl_extension{IsTextureHandleResident,ARB,bindless_texture} | |
 

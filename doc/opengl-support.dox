@@ -76,7 +76,7 @@ GLSL 1.30                                   | done
 @gl_extension{EXT,texture_array}            | done
 @gl_extension{EXT,texture_compression_rgtc} | done
 @gl_extension{EXT,texture_shared_exponent}  | done
-@gl_extension{EXT,draw_buffers2}            | |
+@gl_extension{EXT,draw_buffers2}            | done (GL 3.0 subset)
 @gl_extension{EXT,texture_integer}          | done (GL 3.0 subset)
 @gl_extension{EXT,transform_feedback}       | done
 `MAGNUM_shader_vertex_id` \n @m_span{m-text m-dim} Pseudo-extension denoting support for the @glsl gl_VertexID @ce GLSL builtin. @m_endspan | done
@@ -140,7 +140,7 @@ GLSL 3.30                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.00                                   | done
-@gl_extension{ARB,draw_buffers_blend}       | |
+@gl_extension{ARB,draw_buffers_blend}       | done
 @gl_extension{ARB,sample_shading}           | done
 @gl_extension{ARB,texture_cube_map_array}   | done
 @gl_extension{ARB,texture_gather}           | missing limit queries
@@ -354,7 +354,7 @@ Extension                                   | Status
 @gl_extension{EXT,color_buffer_half_float}  | |
 @gl_extension{EXT,color_buffer_float}       | |
 @gl_extension{EXT,copy_image}               | |
-@gl_extension{EXT,draw_buffers_indexed}     | |
+@gl_extension{EXT,draw_buffers_indexed}     | done
 @gl_extension{EXT,geometry_shader}          | missing some ES-specific limit queries
 @gl_extension{EXT,gpu_shader5}              | done (shading language only)
 @gl_extension{EXT,shader_io_blocks}         | done (shading language only)
@@ -546,6 +546,7 @@ Extension                                   | Status
 @webgl_extension{EXT,color_buffer_float}    | |
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
+@webgl_extension{EXT,draw_buffers_indexed}  | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OVR,multiview2}            | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done

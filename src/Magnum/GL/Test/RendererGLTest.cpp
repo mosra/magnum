@@ -32,6 +32,7 @@
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -54,6 +55,10 @@ struct RendererGLTest: OpenGLTester {
 
     void maxLineWidth();
     void pointCoord();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void drawBuffersIndexed();
+    void drawBuffersBlend();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -67,7 +72,12 @@ using namespace Math::Literals;
 
 RendererGLTest::RendererGLTest() {
     addTests({&RendererGLTest::maxLineWidth,
-              &RendererGLTest::pointCoord});
+              &RendererGLTest::pointCoord,
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+              &RendererGLTest::drawBuffersIndexed,
+              &RendererGLTest::drawBuffersBlend
+              #endif
+              });
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -219,6 +229,43 @@ void RendererGLTest::pointCoord() {
         Utility::Directory::join(_testDir, "pointcoord.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void RendererGLTest::drawBuffersIndexed() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers2>())
+        CORRADE_SKIP(Extensions::EXT::draw_buffers2::string() + std::string(" is not available."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers_indexed>())
+        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() + std::string(" is not available."));
+    #endif
+
+    /* Call the draw-buffer dependent functions, only expect that no GL error
+       is emitted to ensure we didn't mess up argument order or something */
+    Renderer::enable(Renderer::Feature::Blending, 1);
+    Renderer::disable(Renderer::Feature::Blending, 1);
+    Renderer::setColorMask(1, true, false, true, false);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void RendererGLTest::drawBuffersBlend() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_buffers_blend>())
+        CORRADE_SKIP(Extensions::ARB::draw_buffers_blend::string() + std::string(" is not available."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers_indexed>())
+        CORRADE_SKIP(Extensions::EXT::draw_buffers_indexed::string() + std::string(" is not available."));
+    #endif
+
+    /* Call the draw-buffer dependent functions, only expect that no GL error
+       is emitted to ensure we didn't mess up argument order or something */
+    Renderer::setBlendFunction(1, Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
+    Renderer::setBlendFunction(1, Renderer::BlendFunction::One, Renderer::BlendFunction::Zero, Renderer::BlendFunction::OneMinusSourceAlpha, Renderer::BlendFunction::SourceAlpha);
+    Renderer::setBlendEquation(1, Renderer::BlendEquation::Subtract);
+    Renderer::setBlendEquation(1, Renderer::BlendEquation::Add, Renderer::BlendEquation::Subtract);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 }}}}
 

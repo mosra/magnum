@@ -295,6 +295,9 @@ namespace ANGLE {
     #endif
     _extension(10,EXT,texture_compression_rgtc,     GLES200,    None) // #38
     _extension(11,EXT,texture_compression_bptc,     GLES200,    None) // #39
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(12,EXT,draw_buffers_indexed,         GLES300,    None) // #45
+    #endif
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(15,OES,texture_float,                GLES200, GLES300) // #1

@@ -80,7 +80,7 @@ possible to achieve the same with a @ref MultisampleTexture2D, support for it
 is rather sparse on OpenGL ES and completely nonexistent on WebGL or
 macOS / iOS.
 
-@section GL-Framebuffer-usage-multiple-output Multiple fragment shader outputs
+@section GL-Framebuffer-usage-multiple-outputs Multiple fragment shader outputs
 
 In a deferred rendering setup for example, a shader usually has more than one
 output. That's finally where non-zero @ref ColorAttachment and @ref mapForDraw()

@@ -745,6 +745,37 @@ typedef struct __GLsync *GLsync;
 #define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT 0x8E8E
 #define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT 0x8E8F
 
+/* GL_EXT_draw_buffers_indexed */
+
+#define GL_BLEND_EQUATION_RGB 0x8009
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_BLEND_SRC_RGB 0x80C9
+#define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_BLEND_DST_RGB 0x80C8
+#define GL_BLEND_DST_ALPHA 0x80CA
+#define GL_COLOR_WRITEMASK 0x0C23
+#define GL_BLEND 0x0BE2
+#define GL_FUNC_ADD 0x8006
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
+#define GL_ZERO 0
+#define GL_ONE 1
+#define GL_SRC_COLOR 0x0300
+#define GL_ONE_MINUS_SRC_COLOR 0x0301
+#define GL_DST_COLOR 0x0306
+#define GL_ONE_MINUS_DST_COLOR 0x0307
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
+#define GL_DST_ALPHA 0x0304
+#define GL_ONE_MINUS_DST_ALPHA 0x0305
+#define GL_CONSTANT_COLOR 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
+#define GL_CONSTANT_ALPHA 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_SRC_ALPHA_SATURATE 0x0308
+
 /* GL_OVR_multiview */
 
 #define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR 0x9630
@@ -1072,6 +1103,17 @@ GLAPI void glGetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
 GLAPI void glGetQueryivEXT(GLenum, GLenum, GLint *);
 GLAPI GLboolean glIsQueryEXT(GLuint);
 GLAPI void glQueryCounterEXT(GLuint, GLenum);
+
+/* GL_EXT_draw_buffers_indexed */
+
+GLAPI void glBlendEquationSeparateiEXT(GLuint, GLenum, GLenum);
+GLAPI void glBlendEquationiEXT(GLuint, GLenum);
+GLAPI void glBlendFuncSeparateiEXT(GLuint, GLenum, GLenum, GLenum, GLenum);
+GLAPI void glBlendFunciEXT(GLuint, GLenum, GLenum);
+GLAPI void glColorMaskiEXT(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+GLAPI void glDisableiEXT(GLenum, GLuint);
+GLAPI void glEnableiEXT(GLenum, GLuint);
+GLAPI GLboolean glIsEnablediEXT(GLenum, GLuint);
 
 /* GL_OVR_multiview */
 

@@ -107,6 +107,51 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
         minSampleShadingImplementation = nullptr;
     #endif
 
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_GLES
+    if(context.isVersionSupported(Version::GLES320))
+    #endif
+    {
+        enableiImplementation = glEnablei;
+        disableiImplementation = glDisablei;
+        colorMaskiImplementation = glColorMaski;
+        blendFunciImplementation = glBlendFunci;
+        blendFuncSeparateiImplementation = glBlendFuncSeparatei;
+        blendEquationiImplementation = glBlendEquationi;
+        blendEquationSeparateiImplementation = glBlendEquationSeparatei;
+    }
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    else
+    #endif
+    {
+        /* Not checking for the extension (nor adding it to the extension list)
+           as this is not any optional feature -- it can be only used when
+           the extension is present, and if it's not, the pointers are null */
+        #ifndef MAGNUM_TARGET_WEBGL
+        enableiImplementation = glEnableiEXT;
+        disableiImplementation = glDisableiEXT;
+        colorMaskiImplementation = glColorMaskiEXT;
+        blendFunciImplementation = glBlendFunciEXT;
+        blendFuncSeparateiImplementation = glBlendFuncSeparateiEXT;
+        blendEquationiImplementation = glBlendEquationiEXT;
+        blendEquationSeparateiImplementation = glBlendEquationSeparateiEXT;
+        #else
+        /* Emscripten doesn't support these yet (last checked Feb 2020) */
+        enableiImplementation = nullptr;
+        disableiImplementation = nullptr;
+        colorMaskiImplementation = nullptr;
+        blendFunciImplementation = nullptr;
+        blendFuncSeparateiImplementation = nullptr;
+        blendEquationiImplementation = nullptr;
+        blendEquationSeparateiImplementation = nullptr;
+        #endif
+    }
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /* On compatibility profile we need to explicitly enable GL_POINT_SPRITE
        in order to have gl_PointCoord working (on NVidia at least, Mesa behaves

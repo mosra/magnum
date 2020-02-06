@@ -43,6 +43,15 @@ struct RendererState {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(*minSampleShadingImplementation)(GLfloat);
     #endif
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void(*enableiImplementation)(GLenum, GLuint);
+    void(*disableiImplementation)(GLenum, GLuint);
+    void(*blendEquationiImplementation)(GLuint, GLenum);
+    void(*blendEquationSeparateiImplementation)(GLuint, GLenum, GLenum);
+    void(*blendFunciImplementation)(GLuint, GLenum, GLenum);
+    void(*blendFuncSeparateiImplementation)(GLuint, GLenum, GLenum, GLenum, GLenum);
+    void(*colorMaskiImplementation)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
 
