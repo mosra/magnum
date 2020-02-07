@@ -229,6 +229,8 @@ See also:
 -   `FindMagnum.cmake` now properly recognizes an optional dependency between
     @ref DebugTools and @ref Trade on GL-less builds
 -   Various compiler warning fixes (see [mosra/magnum#406](https://github.com/mosra/magnum/pull/406))
+-   Added a 32-bit Windows build to the CI matrix to avoid random compilation
+    issues (see [mosra/magnum#421](https://github.com/mosra/magnum/issues/421))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

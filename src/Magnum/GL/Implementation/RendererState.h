@@ -43,17 +43,19 @@ struct RendererState {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(*minSampleShadingImplementation)(GLfloat);
     #endif
+    /* These are direct pointers to the GL functions, so need a __stdcall on
+       Windows to compile properly on 32 bits */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void (*patchParameteriImplementation)(GLenum, GLint);
+    void(APIENTRY *patchParameteriImplementation)(GLenum, GLint);
     #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(*enableiImplementation)(GLenum, GLuint);
-    void(*disableiImplementation)(GLenum, GLuint);
-    void(*blendEquationiImplementation)(GLuint, GLenum);
-    void(*blendEquationSeparateiImplementation)(GLuint, GLenum, GLenum);
-    void(*blendFunciImplementation)(GLuint, GLenum, GLenum);
-    void(*blendFuncSeparateiImplementation)(GLuint, GLenum, GLenum, GLenum, GLenum);
-    void(*colorMaskiImplementation)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+    void(APIENTRY *enableiImplementation)(GLenum, GLuint);
+    void(APIENTRY *disableiImplementation)(GLenum, GLuint);
+    void(APIENTRY *blendEquationiImplementation)(GLuint, GLenum);
+    void(APIENTRY *blendEquationSeparateiImplementation)(GLuint, GLenum, GLenum);
+    void(APIENTRY *blendFunciImplementation)(GLuint, GLenum, GLenum);
+    void(APIENTRY *blendFuncSeparateiImplementation)(GLuint, GLenum, GLenum, GLenum, GLenum);
+    void(APIENTRY *colorMaskiImplementation)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
     Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
