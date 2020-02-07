@@ -166,7 +166,7 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableP
         return {TweakableState::Recompile, {}};
     }
 
-    if(value.size() != (isSrgb ? 13 : 12)) {
+    if(value.size() != std::size_t(isSrgb ? 13 : 12)) {
         Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
@@ -196,7 +196,7 @@ std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableP
         return {TweakableState::Recompile, {}};
     }
 
-    if(value.size() != (isSrgb ? 16 : 15)) {
+    if(value.size() != std::size_t(isSrgb ? 16 : 15)) {
         Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
@@ -226,7 +226,7 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<M
         return {TweakableState::Recompile, {}};
     }
 
-    if(value.size() != (isSrgb ? 14 : 13)) {
+    if(value.size() != std::size_t(isSrgb ? 14 : 13)) {
         Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
