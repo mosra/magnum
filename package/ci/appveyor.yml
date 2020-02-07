@@ -4,29 +4,50 @@ environment:
   matrix:
   - TARGET: desktop
     COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     APPVEYOR_JOB_NAME: windows-gl-msvc2015
+    CONFIGURATION: Debug
   - TARGET: desktop
     COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gl-msvc2017
+    CONFIGURATION: Debug
   - TARGET: desktop
     COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-gl-msvc2019
+    CONFIGURATION: Debug
   - TARGET: desktop-vulkan
     COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-vulkan-msvc2019
+    CONFIGURATION: Debug
   - TARGET: desktop
     COMPILER: msvc
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-static-msvc2019
+    CONFIGURATION: Debug
     BUILD_STATIC: ON
   - TARGET: desktop
     COMPILER: msvc-clang
+    PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-msvc2019-clang
+    CONFIGURATION: Debug
+  # Build at least one 32bit Release build, so we catch things that are not a
+  # problem on either 64bit or Debug.
+  - TARGET: desktop
+    COMPILER: msvc
+    ANSI_COLORS: ON
+    PLATFORM:
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    APPVEYOR_JOB_NAME: windows-32b-msvc2015
+    CONFIGURATION: Release
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -80,6 +101,7 @@ install:
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.19.1-bin.zip appveyor DownloadFile https://openal-soft.org/openal-binaries/openal-soft-1.19.1-bin.zip
 - IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.19.1-bin.zip && ren openal-soft-1.19.1-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
 - IF "%TARGET%" == "desktop" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
+- IF "%TARGET%" == "desktop" ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
 - IF "%TARGET%" == "desktop-gles" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
 
 # Build apps on both GL and Vulkan to verify these can build w/o GL as well.
@@ -95,8 +117,10 @@ install:
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
 
 # GLFW
-- IF "%BUILD_APPLICATIONS%" == "YES" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
-- IF "%BUILD_APPLICATIONS%" == "YES" 7z x glfw-3.2.1.bin.WIN64.zip && ren glfw-3.2.1.bin.WIN64 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN32.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN32.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "x64" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "" 7z x glfw-3.2.1.bin.WIN32.zip && ren glfw-3.2.1.bin.WIN32 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
+- IF "%BUILD_APPLICATIONS%" == "YES" IF "%PLATFORM%" == "x64" 7z x glfw-3.2.1.bin.WIN64.zip && ren glfw-3.2.1.bin.WIN64 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
