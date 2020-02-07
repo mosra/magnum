@@ -700,8 +700,10 @@ void CompareImageTest::compareSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, and
+       differently on 32/64bit builds. */
     #elif defined(CORRADE_TARGET_MSVC)
+    #ifdef _M_X64
     CORRADE_COMPARE(out.str(),
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
@@ -712,6 +714,18 @@ void CompareImageTest::compareSpecials() {
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have both max and mean delta above threshold, actual 3.1/nan but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
+        "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
 
     /* Linux, Emscripten */
     #else
@@ -768,8 +782,10 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
 
-    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes, and
+       differently on 32/64bit builds. */
     #elif defined(CORRADE_TARGET_MSVC)
+    #ifdef _M_X64
     CORRADE_COMPARE(out.str(),
         "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
@@ -780,6 +796,18 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
+        "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
 
     /* Linux, Emscripten */
     #else
