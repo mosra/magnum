@@ -77,12 +77,6 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(Resour
     manager.set(_mesh.key(), std::move(mesh), ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): ForceRenderer<dimensions>{static_cast<ResourceManager&>(ResourceManager::instance()), object, forcePosition, force, options, drawables} {}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::~ForceRenderer() = default;
 

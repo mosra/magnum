@@ -56,7 +56,6 @@ set(Magnum_HEADERS
     PixelStorage.h
     Resource.h
     ResourceManager.h
-    ResourceManager.hpp
     Sampler.h
     Tags.h
     Timeline.h

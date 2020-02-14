@@ -327,6 +327,10 @@ See also:
     @p segments parameter isn't divisible by four. Before it mistakenly
     asserted only if @p segments wasn't divisible by two, and now code that
     mistakenly used a disallowed value will start asserting.
+-   @ref ResourceManager singleton accessible through @cpp instance() @ce that
+    was deprecated in 2019.10 is now removed. Usually a deprecated feature is
+    kept for at least a year before removal, but in this case it was severely
+    limiting multithreaded applications and removing it was necessary.
 -   Removed remaining APIs deprecated in version 2018.04:
     -   @cpp Audio::Buffer::Format @ce, use @ref Audio::BufferFormat instead
     -   @cpp Shaders::*Vector::setVectorTexture() @ce,

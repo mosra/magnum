@@ -25,7 +25,6 @@
 
 #include "ResourceManager.h"
 
-#include "Magnum/ResourceManager.hpp"
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -33,13 +32,7 @@
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/MeshView.h"
 
-namespace Magnum {
-
-namespace Implementation {
-    template struct MAGNUM_DEBUGTOOLS_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>;
-}
-
-namespace DebugTools {
+namespace Magnum { namespace DebugTools {
 
 ResourceManager::ResourceManager() {
     setFallback(new ForceRendererOptions);

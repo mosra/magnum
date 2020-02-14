@@ -65,12 +65,6 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Reso
     if(!_mesh) manager.set<GL::Mesh>(_mesh.key(), MeshTools::compile(Renderer<dimensions>::meshData()));
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): ObjectRenderer<dimensions>{static_cast<ResourceManager&>(ResourceManager::instance()), object, options, drawables} {}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
-
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;
 

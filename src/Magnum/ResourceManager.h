@@ -159,33 +159,12 @@ template<class T> class ResourceManagerData {
 /* Helper class for defining which real types are in the type pack */
 template<class...> struct ResourceTypePack {};
 
-/* Common resource manager implementation with inline internal instance (for
-   use in user code), definition of internalInstance() is in this header */
-template<class... Types> struct ResourceManagerInlineInstanceImplementation {
-    static ResourceManager<Types...>*& internalInstance();
-};
-template<class ...Types> struct ResourceManagerImplementation: ResourceManagerInlineInstanceImplementation<Types...>, ResourceManagerData<Types>... {
-    typedef ResourceTypePack<Types...> TypePack;
-};
-
-/* Resource manager implementation with file-local internal instance (for use
-   in code where the manager is used across library boundaries), definition
-   of internalInstance() is in ResourceManager.hpp, see it for usage details */
-template<class... Types> struct ResourceManagerLocalInstanceImplementation {
-    static ResourceManager<Types...>*& internalInstance();
-};
-struct ResourceManagerLocalInstance;
-template<class ...Types> struct ResourceManagerImplementation<ResourceManagerLocalInstance, Types...>: ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Types...>, ResourceManagerData<Types>... {
-    typedef ResourceTypePack<Types...> TypePack;
-};
-
 }
 
 /**
 @brief Resource manager
 
-Provides storage for arbitrary set of types, accessible globally using
-@ref instance().
+Provides storage for arbitrary set of types.
 
 @section ResourceMananger-usage Usage
 
@@ -244,35 +223,16 @@ Basic usage is:
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
    template implementation file. */
-template<class... Types> class ResourceManager: private Implementation::ResourceManagerImplementation<Types>... {
+template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Global instance
-         *
-         * Assumes that the instance exists.
-         *
-         * @m_deprecated_since{2019,10} Implicit @ref ResourceManager singleton
-         *      is deprecated, make your own or pass a reference around instead
-         */
-        static CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, make your own or pass a reference around instead") ResourceManager<Types...>& instance();
-        #endif
-
-        /**
-         * @brief Constructor
-         *
-         * Sets global instance pointer to itself.
-         * @attention Only one instance of given ResourceManager type can be
-         *      created.
-         * @see @ref instance()
-         */
+        /** @brief Constructor */
         explicit ResourceManager();
 
         /**
          * @brief Destructor
          *
-         * Sets global instance pointer to @cpp nullptr @ce.
-         * @see @ref instance()
+         * Expects that all resources are not referenced anymore at the point
+         * of destruction.
          */
         ~ResourceManager();
 
@@ -413,7 +373,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @return Reference to self (for method chaining)
          */
         ResourceManager<Types...>& free() {
-            freeInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
+            freeInternal(Implementation::ResourceTypePack<Types...>{});
             return *this;
         }
 
@@ -437,7 +397,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * referenced.
          */
         ResourceManager<Types...>& clear() {
-            clearInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
+            clearInternal(Implementation::ResourceTypePack<Types...>{});
             return *this;
         }
 
@@ -492,11 +452,6 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 };
 
 namespace Implementation {
-
-template<class ...Types> ResourceManager<Types...>*& ResourceManagerInlineInstanceImplementation<Types...>::internalInstance() {
-    static ResourceManager<Types...>* _instance(nullptr);
-    return _instance;
-}
 
 template<class T> void safeDelete(T* data) {
     static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
@@ -636,29 +591,10 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
 
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
-    CORRADE_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
-        "ResourceManager::instance(): no instance exists",
-        static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance()));
-    return static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance());
-}
-#endif
-
-template<class ...Types> ResourceManager<Types...>::ResourceManager() {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_ASSERT(!Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
-        "ResourceManager::ResourceManager(): another instance is already created", );
-    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = this;
-    #endif
-}
+template<class ...Types> ResourceManager<Types...>::ResourceManager() = default;
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
-    freeLoaders(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance() == this);
-    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = nullptr;
-    #endif
+    freeLoaders(typename Implementation::ResourceTypePack<Types...>{});
 }
 
 }
