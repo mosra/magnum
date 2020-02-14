@@ -292,8 +292,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Plugin search paths
          *
          * First looks in `magnum/importers/` or `magnum-d/importers/` next to
-         * the executable (or, in case of Windows and a non-static build, next
-         * to the DLL of the @ref Trade library) and as a fallback in
+         * the dynamic @ref Trade library (unless it's a static build), then in
+         * the same location next to the executable and as a fallback in
          * `magnum/importers/` or `magnum-d/importers/` in the runtime install
          * location (`lib[64]/` on Unix-like systems, `bin/` on Windows). The
          * system-wide plugin search directory is configurable using the

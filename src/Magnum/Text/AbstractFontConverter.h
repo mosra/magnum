@@ -183,8 +183,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @brief Plugin search paths
          *
          * First looks in `magnum/fontconverters/` or `magnum-d/fontconverters/`
-         * next to the executable (or, in case of Windows and a non-static
-         * build, next to the DLL of the @ref Text library) and as a fallback
+         * next to the dynamic @ref Text library (unless it's a static build),
+         * then in the same location next to the executable and as a fallback
          * in `magnum/fontconverters/` or `magnum-d/fontconverters/` in the
          * runtime install location (`lib[64]/` on Unix-like systems, `bin/` on
          * Windows). The system-wide plugin search directory is configurable

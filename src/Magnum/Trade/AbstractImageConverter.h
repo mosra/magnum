@@ -173,8 +173,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * @brief Plugin search paths
          *
          * First looks in `magnum/imageconverters/` or `magnum-d/imageconverters/`
-         * next to the executable (or, in case of Windows and a non-static
-         * build, next to the DLL of the @ref Trade library) and as a fallback
+         * next to the dynamic @ref Trade library (unless it's a static build),
+         * then in the same location next to the executable and as a fallback
          * in `magnum/imageconverters/` or `magnum-d/imageconverters/` in the
          * runtime install location (`lib[64]/` on Unix-like systems, `bin/` on
          * Windows). The system-wide plugin search directory is configurable

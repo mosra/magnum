@@ -199,8 +199,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Plugin search paths
          *
          * First looks in `magnum/fonts/` or `magnum-d/fonts/` next to the
-         * executable (or, in case of Windows and a non-static build, next to
-         * the DLL of the @ref Text library) and as a fallback in
+         * dynamic @ref Text library (unless it's a static build), then in the
+         * same location next to the executable and as a fallback in
          * `magnum/fonts/` or `magnum-d/fonts/` in the runtime install location
          * (`lib[64]/` on Unix-like systems, `bin/` on Windows). The
          * system-wide plugin search directory is configurable using the
