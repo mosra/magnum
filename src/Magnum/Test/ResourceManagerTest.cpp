@@ -221,9 +221,15 @@ void ResourceManagerTest::state() {
 void ResourceManagerTest::stateFallback() {
     {
         ResourceManager rm;
-        rm.setFallback(Containers::pointer<Data>());
 
+        /* Fetching a resource that's not loaded first */
         Resource<Data> data = rm.get<Data>("data");
+        CORRADE_VERIFY(!data);
+        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
+        CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotLoaded);
+
+        /* Setting a fallback should make the resource fetch it */
+        rm.setFallback(Containers::pointer<Data>());
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data.state(), ResourceState::NotLoadedFallback);
         CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotLoadedFallback);
@@ -240,6 +246,12 @@ void ResourceManagerTest::stateFallback() {
 
         /* Only fallback is here */
         CORRADE_COMPARE(Data::count, 1);
+
+        /* Unsetting a fallback should make the resource go back to empty */
+        rm.setFallback<Data>(nullptr);
+        CORRADE_VERIFY(!data);
+        CORRADE_COMPARE(data.state(), ResourceState::NotFound);
+        CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::NotFound);
     }
 
     /* Fallback gets destroyed */
