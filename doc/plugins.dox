@@ -195,6 +195,8 @@ So far, the following plugins have the "any format" ability:
     format
 -   @ref Trade::AnySceneImporter "AnySceneImporter" --- imports any scene
     format
+-   @ref Trade::AnySceneConverter "AnySceneConverter" --- converts to any scene
+    format
 -   @ref Audio::AnyImporter "AnyImporter" --- imports any audio format
 
 @section plugins-configuration Plugin-specific configuration

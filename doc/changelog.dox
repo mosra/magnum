@@ -271,7 +271,8 @@ See also:
 -   New @ref magnum-sceneconverter "magnum-sceneconverter" tool, similar to
     @ref magnum-imageconverter "magnum-imageconverter" but suited for general
     scene formats
--   New @ref Trade::AbstractSceneConverter plugin interface
+-   New @ref Trade::AbstractSceneConverter plugin interface and an
+    @ref Trade::AnySceneConverter "AnySceneConverter" plugin
 -   Ability to import image mip levels via an additional parameter in
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
