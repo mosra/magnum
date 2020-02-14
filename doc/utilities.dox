@@ -54,6 +54,7 @@ namespace Magnum {
 -   @subpage magnum-distancefieldconverter --- @copybrief magnum-distancefieldconverter
 -   @subpage magnum-fontconverter --- @copybrief magnum-fontconverter
 -   @subpage magnum-imageconverter --- @copybrief magnum-imageconverter
+-   @subpage magnum-sceneconverter --- @copybrief magnum-sceneconverter
 
 */
 }

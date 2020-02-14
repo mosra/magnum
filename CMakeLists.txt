@@ -71,6 +71,7 @@ endif()
 
 # API-independent utilities
 option(WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
+option(WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
 
 # Magnum AL Info
 option(WITH_AL_INFO "Build magnum-al-info utility" OFF)

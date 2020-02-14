@@ -149,6 +149,19 @@ if(WITH_IMAGECONVERTER)
     add_executable(Magnum::imageconverter ALIAS magnum-imageconverter)
 endif()
 
+if(WITH_SCENECONVERTER)
+    add_executable(magnum-sceneconverter sceneconverter.cpp)
+    target_link_libraries(magnum-sceneconverter PRIVATE
+        Magnum
+        MagnumTrade)
+    set_target_properties(magnum-sceneconverter PROPERTIES FOLDER "Magnum/Trade")
+
+    install(TARGETS magnum-sceneconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    # Magnum sceneconverter target alias for superprojects
+    add_executable(Magnum::sceneconverter ALIAS magnum-sceneconverter)
+endif()
+
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumTradeTestLib ${SHARED_OR_STATIC}

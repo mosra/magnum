@@ -126,6 +126,8 @@ inspection:
 @code{.sh}
 magnum-imageconverter image.dds --converter raw data.dat
 @endcode
+
+@see @ref magnum-sceneconverter
 */
 
 }
