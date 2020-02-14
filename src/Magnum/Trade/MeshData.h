@@ -1780,6 +1780,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
            the restriction is pointless when used outside of plugin
            implementations. */
         friend AbstractImporter;
+        friend AbstractSceneConverter;
 
         /* Internal helper that doesn't assert, unlike attributeId() */
         UnsignedInt attributeFor(MeshAttribute name, UnsignedInt id) const;

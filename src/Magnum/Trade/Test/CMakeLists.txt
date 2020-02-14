@@ -42,6 +42,10 @@ corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp
     FILES file.bin)
 target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
+corrade_add_test(TradeAbstractSceneConverterTest AbstractSceneConverterTest.cpp
+    LIBRARIES MagnumTradeTestLib)
+target_include_directories(TradeAbstractSceneConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 corrade_add_test(TradeAnimationDataTest AnimationDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeDataTest DataTest.cpp LIBRARIES MagnumTrade)
@@ -62,6 +66,7 @@ set_property(TARGET
 set_target_properties(
     TradeAbstractImageConverterTest
     TradeAbstractImporterTest
+    TradeAbstractSceneConverterTest
     TradeAnimationDataTest
     TradeCameraDataTest
     TradeImageDataTest
