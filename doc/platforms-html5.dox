@@ -335,6 +335,39 @@ need more advanced styling, check out [m.css](http://mcss.mosra.cz).
     using @ref Platform::EmscriptenApplication::setContainerCssClass() /
     @ref Platform::Sdl2Application::setContainerCssClass().
 
+@section platforms-html5-files Bundling files
+
+Emscripten applications don't have access to a filesystem, which means you need
+to bundle the files explicitly. One possibility is via
+@ref Corrade::Utility::Resource (basically the same way as you probably already
+bundle shader code etc., as shown in the @ref examples-textured-triangle
+example). In this case the file is compiled directly into the `*.wasm` binary,
+which is the most optimal way, but accessing the files needs extra effort
+compared to a desktop application. Another possibility is via the
+@cmake emscripten_embed_file() @ce CMake macro, which is implicitly available
+when you build for Emscripten, coming from the [UseEmscripten.cmake](https://github.com/mosra/toolchains/blob/master/modules/UseEmscripten.cmake)
+module:
+
+@code{.cmake}
+add_executable(MyApplication main.cpp)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    emscripten_embed_file(MyApplication file.dat /path/in/virtual/fs/file.dat)
+endif()
+@endcode
+
+This approach will make the file available in Emscripten's virtual filesystem,
+meaning you can use the usual filesystem APIs to get it. However, the file will
+be Base64-encoded in the `*.js` file (and not the `*.wasm` binary), inflating
+the file size much more. This approach is thus most useful for quick demos or
+test executables where size doesn't matter that much. If you use
+@ref Corrade::TestSuite, files can be bundled this way also using the `FILES`
+option in the @ref corrade-cmake-add-test "corrade_add_test()" macro.
+
+Among other possibilities for bundling and accessing files is Emscripten's
+[file_packager.py](https://emscripten.org/docs/porting/files/packaging_files.html#packaging-using-the-file-packager-tool)
+or the various @m_class{m-doc-external} [emscripten_async_wget()](https://emscripten.org/docs/api_reference/emscripten.h.html#c.emscripten_async_wget)
+functions, retrieving files from a URL.
+
 @section platforms-html5-events Controlling event behavior
 
 @subsection platforms-html5-events-keyboard Keyboard events
