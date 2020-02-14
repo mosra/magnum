@@ -55,6 +55,7 @@
 #  AnyAudioImporter             - Any audio importer
 #  AnyImageConverter            - Any image converter
 #  AnyImageImporter             - Any image importer
+#  AnySceneConverter            - Any scene converter
 #  AnySceneImporter             - Any scene importer
 #  Audio                        - Audio library
 #  DebugTools                   - DebugTools library
@@ -360,9 +361,9 @@ set(_MAGNUM_LIBRARY_COMPONENT_LIST
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
-    AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneImporter
-    MagnumFont MagnumFontConverter ObjImporter TgaImageConverter TgaImporter
-    WavAudioImporter)
+    AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
+    AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
+    TgaImageConverter TgaImporter WavAudioImporter)
 set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
     distancefieldconverter fontconverter imageconverter sceneconverter gl-info
     al-info)
