@@ -36,6 +36,7 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/Implementation/converterUtilities.h"
 
 namespace Magnum {
 
@@ -124,33 +125,6 @@ magnum-imageconverter image.dds --converter raw data.dat
 
 using namespace Magnum;
 
-namespace {
-
-void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& options) {
-    for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ',')) {
-        auto keyValue = Utility::String::partition(option, '=');
-        Utility::String::trimInPlace(keyValue[0]);
-        Utility::String::trimInPlace(keyValue[2]);
-
-        /* Provide a warning message in case the plugin doesn't define given
-           option in its default config. The plugin is not *required* to have
-           those tho (could be backward compatibility entries, for example), so
-           not an error. */
-        if(!plugin.configuration().valueCount(keyValue[0]))
-            Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
-
-        /* If the option doesn't have an =, treat it as a boolean flag that's
-           set to true. While there's no similar way to do an inverse, it's
-           still nicer than causing a fatal error with those. */
-        if(keyValue[1].empty())
-            plugin.configuration().setValue(keyValue[0], true);
-        else
-            plugin.configuration().setValue(keyValue[0], keyValue[2]);
-    }
-}
-
-}
-
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input image")
@@ -214,7 +188,7 @@ key=true.)")
         }
 
         /* Set options, if passed */
-        setOptions(*importer, args.value("importer-options"));
+        Trade::Implementation::setOptions(*importer, args.value("importer-options"));
 
         /* Open input file */
         if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
@@ -252,7 +226,7 @@ key=true.)")
     }
 
     /* Set options, if passed */
-    setOptions(*converter, args.value("converter-options"));
+    Trade::Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
     if(!converter->exportToFile(*image, args.value("output"))) {

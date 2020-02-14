@@ -69,7 +69,8 @@ set(MagnumTrade_HEADERS
     visibility.h)
 
 set(MagnumTrade_PRIVATE_HEADERS
-    Implementation/arrayUtilities.h)
+    Implementation/arrayUtilities.h
+    Implementation/converterUtilities.h)
 
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumTrade_GracefulAssert_SRCS
