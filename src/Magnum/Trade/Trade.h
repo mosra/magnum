@@ -42,6 +42,7 @@ namespace Magnum { namespace Trade {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImageConverter;
 class AbstractImporter;
+class AbstractSceneConverter;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
