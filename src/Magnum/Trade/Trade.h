@@ -62,6 +62,10 @@ class CameraData;
 
 enum class DataFlag: UnsignedByte;
 typedef Containers::EnumSet<DataFlag> DataFlags;
+struct DataChunkHeader;
+class DataChunk;
+enum class DataChunkSignature: UnsignedInt;
+enum class DataChunkType: UnsignedInt;
 
 template<UnsignedInt> class ImageData;
 typedef ImageData<1> ImageData1D;
