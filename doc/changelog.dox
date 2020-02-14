@@ -280,6 +280,9 @@ See also:
 -   Dynamic plugins on static Magnum builds on Windows were accidentally
     searched for in the `lib/` directory instead of `bin/`, and in some cases
     in `bin/` instead of `lib/` on Unix platforms.
+-   @ref Resource was unnecessarily querying the @ref ResourceManager for
+    updated data even in cases where no resource update was done since last
+    check
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

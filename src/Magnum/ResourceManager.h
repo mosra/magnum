@@ -527,6 +527,9 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
 template<class T> void ResourceManagerData<T>::setFallback(T* const data) {
     safeDelete(_fallback);
     _fallback = data;
+    /* Notify resources also in this case, as some of them could go from empty
+       to a fallback (or from a fallback to empty) */
+    ++_lastChange;
 }
 
 template<class T> void ResourceManagerData<T>::free() {

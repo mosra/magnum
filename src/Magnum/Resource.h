@@ -285,7 +285,7 @@ template<class T, class U> void Resource<T, U>::acquire() {
     if(_state == ResourceState::Final) return;
 
     /* Nothing changed since last check */
-    if(_manager->lastChange() < _lastCheck) return;
+    if(_manager->lastChange() <= _lastCheck) return;
 
     /* Acquire new data and save last check time */
     const typename Implementation::ResourceManagerData<T>::Data& d = _manager->data(_key);
