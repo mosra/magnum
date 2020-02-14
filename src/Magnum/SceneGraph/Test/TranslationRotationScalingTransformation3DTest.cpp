@@ -43,6 +43,7 @@ struct TranslationRotationScalingTransformation3DTest: TestSuite::Tester {
 
     void defaults();
     void setTransformation();
+    void setTransformationRotateALot();
     void resetTransformation();
 
     void translate();
@@ -58,6 +59,7 @@ TranslationRotationScalingTransformation3DTest::TranslationRotationScalingTransf
 
               &TranslationRotationScalingTransformation3DTest::defaults,
               &TranslationRotationScalingTransformation3DTest::setTransformation,
+              &TranslationRotationScalingTransformation3DTest::setTransformationRotateALot,
               &TranslationRotationScalingTransformation3DTest::resetTransformation,
 
               &TranslationRotationScalingTransformation3DTest::translate,
@@ -121,6 +123,23 @@ void TranslationRotationScalingTransformation3DTest::setTransformation() {
     s.setTransformation(Matrix4::rotationX(17.0_degf));
     CORRADE_VERIFY(!s.isDirty());
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
+}
+
+void TranslationRotationScalingTransformation3DTest::setTransformationRotateALot() {
+    Object3D o;
+    o.setTransformation(
+        Matrix4::translation({7.0f, -1.0f, 2.2f})*
+        Matrix4::rotationX(225.0_degf)*
+        Matrix4::scaling({1.5f, 0.5f, 3.0f}));
+    CORRADE_COMPARE(o.translation(), (Vector3{7.0f, -1.0f, 2.2f}));
+    /* Rotation of more than 180° causes either the rotation matrix or scaling
+       to contain negative signs, verify we get a proper matrix back again */
+    CORRADE_COMPARE(o.rotation(), Quaternion::rotation(225.0_degf, Vector3::xAxis()));
+    CORRADE_COMPARE(o.scaling(), (Vector3{1.5f, 0.5f, 3.0f}));
+    CORRADE_COMPARE(o.transformationMatrix(),
+        Matrix4::translation({7.0f, -1.0f, 2.2f})*
+        Matrix4::rotationX(225.0_degf)*
+        Matrix4::scaling({1.5f, 0.5f, 3.0f}));
 }
 
 void TranslationRotationScalingTransformation3DTest::resetTransformation() {
