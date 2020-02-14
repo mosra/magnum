@@ -105,6 +105,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void rotationNormalizedPart();
     void rotationNormalizedPartNotOrthogonal();
     void scalingPart();
+    void rotationScalingPartNegative();
     void uniformScalingPart();
     void uniformScalingPartNotUniform();
     void normalMatrixPart();
@@ -173,6 +174,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::rotationNormalizedPart,
               &Matrix4Test::rotationNormalizedPartNotOrthogonal,
               &Matrix4Test::scalingPart,
+              &Matrix4Test::rotationScalingPartNegative,
               &Matrix4Test::uniformScalingPart,
               &Matrix4Test::uniformScalingPartNotUniform,
               &Matrix4Test::normalMatrixPart,
@@ -760,18 +762,39 @@ void Matrix4Test::scalingPart() {
     Matrix4 translationRotationScaling =
         Matrix4::translation({2.0f, 5.0f, -3.0f})*
         Matrix4::rotation(-74.0_degf, Vector3(-1.0f, 2.0f, 2.0f).normalized())*
-        Matrix4::scaling({0.5f, -3.5f, 1.2f});
+        Matrix4::scaling({0.5f, 3.5f, 1.2f});
 
-    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector3{0.5f, -3.5f, 1.2f}));
+    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector3{0.5f, 3.5f, 1.2f}));
     CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector3{0.25f, 12.25f, 1.44f}));
+}
 
-    Matrix4 rotationScaling =
-        Matrix4::rotation(-174.0_degf, Vector3(-1.0f, 2.0f, 2.0f).normalized())*
-        Matrix4::scaling({-0.5f, 3.5f, 1.2f});
+void Matrix4Test::rotationScalingPartNegative() {
+    /* Large angle */
+    Matrix4 largeAngle =
+        Matrix4::rotationY(215.0_degf)*
+        Matrix4::scaling({0.5f, 3.5f, 1.2f});
+    CORRADE_COMPARE(Matrix4::from(largeAngle.rotation(), {}),
+        Matrix4::rotationY(215.0_degf));
+    CORRADE_COMPARE(largeAngle.scaling(), (Vector3{0.5f, 3.5f, 1.2f}));
+    /* The parts should combine back to the same matrix */
+    CORRADE_COMPARE(
+        Matrix4::from(largeAngle.rotation(), {})*
+        Matrix4::scaling(largeAngle.scaling()),
+        largeAngle);
 
-    /* Sign inverted because of the rotation */
-    CORRADE_COMPARE(rotationScaling.scaling(), (Vector3{0.5f, -3.5f, -1.2f}));
-    CORRADE_COMPARE(rotationScaling.scalingSquared(), (Vector3{0.25f, 12.25f, 1.44f}));
+    /* The sign gets contained in the rotation */
+    Matrix4 negativeScaling =
+        Matrix4::rotationY(15.0_degf)*
+        Matrix4::scaling({0.5f, -3.5f, 1.2f});
+    CORRADE_COMPARE(Matrix4::from(negativeScaling.rotation(), {}),
+        Matrix4::rotationY(15.0_degf)*
+        Matrix4::scaling(Vector3::yScale(-1)));
+    CORRADE_COMPARE(negativeScaling.scaling(), (Vector3{0.5f, 3.5f, 1.2f}));
+    /* The parts should combine back to the same matrix */
+    CORRADE_COMPARE(
+        Matrix4::from(negativeScaling.rotation(), {})*
+        Matrix4::scaling(negativeScaling.scaling()),
+        negativeScaling);
 }
 
 void Matrix4Test::uniformScalingPart() {

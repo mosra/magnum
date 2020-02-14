@@ -431,11 +431,11 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief Non-uniform scaling part of the matrix
          *
-         * *Signed* length of vectors in upper-left 2x2 part of the matrix. Use
-         * the faster alternative @ref scalingSquared() where possible.
-         * Assuming the following matrix, with the upper-left 2x2 part
-         * represented by column vectors @f$ \boldsymbol{a} @f$ and
-         * @f$ \boldsymbol{b} @f$: @f[
+         * Length of vectors in upper-left 2x2 part of the matrix. Use the
+         * faster alternative @ref scalingSquared() where possible. Assuming
+         * the following matrix, with the upper-left 2x2 part represented by
+         * column vectors @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$:
+         * @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
@@ -447,17 +447,25 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *
          * the resulting scaling vector is: @f[
          *      \boldsymbol{s} = \begin{pmatrix}
-         *          \operatorname{sgn}(a_x) | \boldsymbol{a} | \\
-         *          \operatorname{sgn}(a_y) | \boldsymbol{b} |
+         *          | \boldsymbol{a} | \\
+         *          | \boldsymbol{b} |
          *      \end{pmatrix}
          * @f]
+         *
+         * Note that the returned vector is sign-less and the signs are instead
+         * contained in @ref rotation() const / @ref rotationShear() const in
+         * order to ensure @f$ \boldsymbol{R} \boldsymbol{S} = \boldsymbol{M} @f$
+         * for @f$ \boldsymbol{R} @f$ and @f$ \boldsymbol{S} @f$ extracted out
+         * of @f$ \boldsymbol{M} @f$. The signs can be extracted for example by
+         * applying @ref Math::sign() on a @ref diagonal(), but keep in mind
+         * that the signs can be negative even for pure rotation matrices.
          *
          * @see @ref scalingSquared(), @ref uniformScaling(),
          *      @ref rotation() const, @ref Matrix4::scaling() const
          */
         Vector2<T> scaling() const {
-            return {(*this)[0].xy().length()*T((*this)[0][0] < T(0) ? -1 : 1),
-                    (*this)[1].xy().length()*T((*this)[1][1] < T(0) ? -1 : 1)};
+            return {(*this)[0].xy().length(),
+                    (*this)[1].xy().length()};
         }
 
         /**

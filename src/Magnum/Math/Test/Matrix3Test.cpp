@@ -90,6 +90,7 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void rotationNormalizedPart();
     void rotationNormalizedPartNotOrthogonal();
     void scalingPart();
+    void rotationScalingPartNegative();
     void uniformScalingPart();
     void uniformScalingPartNotUniform();
     void vectorParts();
@@ -140,6 +141,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::rotationNormalizedPart,
               &Matrix3Test::rotationNormalizedPartNotOrthogonal,
               &Matrix3Test::scalingPart,
+              &Matrix3Test::rotationScalingPartNegative,
               &Matrix3Test::uniformScalingPart,
               &Matrix3Test::uniformScalingPartNotUniform,
               &Matrix3Test::vectorParts,
@@ -526,18 +528,39 @@ void Matrix3Test::scalingPart() {
     Matrix3 translationRotationScaling =
         Matrix3::translation({2.0f, -3.0f})*
         Matrix3::rotation(15.0_degf)*
-        Matrix3::scaling({0.5f, -3.5f});
+        Matrix3::scaling({0.5f, 3.5f});
 
-    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector2{0.5f, -3.5f}));
+    CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector2{0.5f, 3.5f}));
     CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector2{0.25f, 12.25f}));
+}
 
-    Matrix3 rotationScaling =
+void Matrix3Test::rotationScalingPartNegative() {
+    /* Large angle */
+    Matrix3 largeAngle =
         Matrix3::rotation(215.0_degf)*
-        Matrix3::scaling({-0.5f, 3.5f});
+        Matrix3::scaling({0.5f, 3.5f});
+    CORRADE_COMPARE(Matrix3::from(largeAngle.rotation(), {}),
+        Matrix3::rotation(215.0_degf));
+    CORRADE_COMPARE(largeAngle.scaling(), (Vector2{0.5f, 3.5f}));
+    /* The parts should combine back to the same matrix */
+    CORRADE_COMPARE(
+        Matrix3::from(largeAngle.rotation(), {})*
+        Matrix3::scaling(largeAngle.scaling()),
+        largeAngle);
 
-    /* Sign inverted because of the rotation */
-    CORRADE_COMPARE(rotationScaling.scaling(), (Vector2{0.5f, -3.5f}));
-    CORRADE_COMPARE(rotationScaling.scalingSquared(), (Vector2{0.25f, 12.25f}));
+    /* The sign gets contained in the rotation */
+    Matrix3 negativeScaling =
+        Matrix3::rotation(15.0_degf)*
+        Matrix3::scaling({0.5f, -3.5f});
+    CORRADE_COMPARE(Matrix3::from(negativeScaling.rotation(), {}),
+        Matrix3::rotation(15.0_degf)*
+        Matrix3::scaling(Vector2::yScale(-1)));
+    CORRADE_COMPARE(negativeScaling.scaling(), (Vector2{0.5f, 3.5f}));
+    /* The parts should combine back to the same matrix */
+    CORRADE_COMPARE(
+        Matrix3::from(negativeScaling.rotation(), {})*
+        Matrix3::scaling(negativeScaling.scaling()),
+        negativeScaling);
 }
 
 void Matrix3Test::uniformScalingPart() {

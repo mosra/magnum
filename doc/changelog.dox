@@ -172,9 +172,6 @@ See also:
 
 @subsubsection changelog-latest-changes-math Math library
 
--   @ref Math::Matrix3::scaling() const and @ref Math::Matrix4::scaling() const
-    now return a signed scaling vector, taking into account negative scaling as
-    well
 -   Functions in @ref Magnum/Math/FunctionsBatch.h now accept any type that's
     convertible to a @ref Corrade::Containers::StridedArrayView without having
     to add explicit casts or template parameters
@@ -314,10 +311,6 @@ See also:
 -   The 4-argument @ref GL::DynamicAttribute constructor was not marked as
     @cpp explicit @ce by mistake, it's done now to enforce readability in long
     expressions.
--   @ref Math::Matrix3::scaling() const and @ref Math::Matrix4::scaling() const
-    now return a signed scaling vector instead of unsigned in order to prevent
-    information loss. To restore the old behavior, apply @ref Math::abs() on
-    the result.
 -   The @ref Magnum/Math/FunctionsBatch.h header is no longer included from
     @ref Magnum/Math/Functions.h for backwards compatibility in order to speed
     up compile times.

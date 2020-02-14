@@ -685,11 +685,11 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief Non-uniform scaling part of the matrix
          *
-         * *Signed* length of vectors in upper-left 3x3 part of the matrix. Use
-         * the faster alternative @ref scalingSquared() where possible.
-         * Assuming the following matrix, with the upper-left 3x3 part
-         * represented by column vectors @f$ \boldsymbol{a} @f$,
-         * @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$: @f[
+         * Length of vectors in upper-left 3x3 part of the matrix. Use the
+         * faster alternative @ref scalingSquared() where possible. Assuming
+         * the following matrix, with the upper-left 3x3 part represented by
+         * column vectors @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and
+         * @f$ \boldsymbol{c} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & \color{m-warning} c_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & \color{m-warning} c_y & t_y \\
@@ -702,19 +702,27 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * the resulting scaling vector is: @f[
          *      \boldsymbol{s} = \begin{pmatrix}
-         *          \operatorname{sgn}(a_x) | \boldsymbol{a} | \\
-         *          \operatorname{sgn}(b_y) | \boldsymbol{b} | \\
-         *          \operatorname{sgn}(c_z) | \boldsymbol{c} |
+         *          | \boldsymbol{a} | \\
+         *          | \boldsymbol{b} | \\
+         *          | \boldsymbol{c} |
          *      \end{pmatrix}
          * @f]
+         *
+         * Note that the returned vector is sign-less and the signs are instead
+         * contained in @ref rotation() const / @ref rotationShear() const in
+         * order to ensure @f$ \boldsymbol{R} \boldsymbol{S} = \boldsymbol{M} @f$
+         * for @f$ \boldsymbol{R} @f$ and @f$ \boldsymbol{S} @f$ extracted out
+         * of @f$ \boldsymbol{M} @f$. The signs can be extracted for example by
+         * applying @ref Math::sign() on a @ref diagonal(), but keep in mind
+         * that the signs can be negative even for pure rotation matrices.
          *
          * @see @ref scalingSquared(), @ref uniformScaling(),
          *      @ref rotation() const, @ref Matrix3::scaling() const
          */
         Vector3<T> scaling() const {
-            return {(*this)[0].xyz().length()*T((*this)[0][0] < T(0) ? -1 : 1),
-                    (*this)[1].xyz().length()*T((*this)[1][1] < T(0) ? -1 : 1),
-                    (*this)[2].xyz().length()*T((*this)[2][2] < T(0) ? -1 : 1)};
+            return {(*this)[0].xyz().length(),
+                    (*this)[1].xyz().length(),
+                    (*this)[2].xyz().length()};
         }
 
         /**
