@@ -268,6 +268,9 @@ See also:
 -   Calling @ref Platform::Sdl2Application::setSwapInterval() with @cpp 0 @ce
     caused @ref Platform::Sdl2Application::setMinimalLoopPeriod() "setMinimalLoopPeriod()"
     to be ignored even though Vsync was in fact not enabled.
+-   It was not possible to override DPI scaling using
+    @ref Platform::Sdl2Application::Configuration as command-line arguments
+    always got a priority (see [mosra/magnum#416](https://github.com/mosra/magnum/issues/416))
 -   Fixed an otherwise harmless OOB access in @ref MeshTools::tipsify() that
     could trigger ASan or debug iterator errors
 -   With @ref Corrade/Utility/DebugStl.h not being included, @ref std::string

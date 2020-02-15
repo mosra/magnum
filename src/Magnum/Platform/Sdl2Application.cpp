@@ -206,13 +206,14 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     /* Handled below, warning printed only when using virtual DPI scaling */
     #endif
 
-    /* Use values from the configuration only if not overriden on command line.
-       In any case explicit scaling has a precedence before the policy. */
+    /* Use values from the configuration only if not overriden on command line
+       to something non-default. In any case explicit scaling has a precedence
+       before the policy. */
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling.x();
         return _commandLineDpiScaling;
-    } else if(UnsignedByte(_commandLineDpiScalingPolicy)) {
+    } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
     } else if(!configuration.dpiScaling().isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << _commandLineDpiScaling.x();

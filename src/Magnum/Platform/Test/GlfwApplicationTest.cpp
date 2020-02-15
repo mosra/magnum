@@ -25,10 +25,12 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/ImageView.h"
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Platform/GlfwApplication.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -96,7 +98,17 @@ struct GlfwApplicationTest: Platform::Application {
     void drawEvent() override {}
 };
 
-GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
+GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    Utility::Arguments args;
+    args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
+        .parse(arguments.argc, arguments.argv);
+
+    Configuration conf;
+    conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    if(!args.value("dpi-scaling").empty())
+        conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
+    create(conf);
+
     /* For testing resize events */
     Debug{} << "window size" << windowSize()
         #ifdef MAGNUM_TARGET_GL

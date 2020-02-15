@@ -145,13 +145,14 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
     /** @todo */
     #endif
 
-    /* Use values from the configuration only if not overriden on command line.
-       In any case explicit scaling has a precedence before the policy. */
+    /* Use values from the configuration only if not overriden on command line
+       to something non-default. In any case explicit scaling has a precedence
+       before the policy. */
     Implementation::GlfwDpiScalingPolicy dpiScalingPolicy{};
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling.x();
         return _commandLineDpiScaling;
-    } else if(UnsignedByte(_commandLineDpiScalingPolicy)) {
+    } else if(_commandLineDpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Default) {
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
     } else if(!configuration.dpiScaling().isZero()) {
         Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << _commandLineDpiScaling.x();
