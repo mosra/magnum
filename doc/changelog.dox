@@ -202,6 +202,8 @@ See also:
     enabled by default on macOS 10.15+ and iOS 13+. Applications running on
     these platforms no longer need to supply a custom `Info.plist` in order to
     enable HiDPI. See @ref platforms-macos-hidpi for more information.
+-   Implemented virtual DPI scaling in @ref Platform::GlfwApplication (was
+    behaving like physical before) (see [mosra/magnum#243](https://github.com/mosra/magnum/issues/243))
 
 @subsubsection changelog-latest-changes-trade Trade library
 

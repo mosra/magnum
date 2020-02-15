@@ -169,9 +169,12 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
     /* Otherwise there's a choice between virtual and physical DPI scaling */
     #else
     /* Try to get virtual DPI scaling first, if supported and requested */
-    /** @todo Revisit this for GLFW 3.3 -- https://github.com/glfw/glfw/issues/677 */
     if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual) {
-        /* Use Xft.dpi on X11 */
+        /* Use Xft.dpi on X11. This could probably be dropped for GLFW 3.3+
+           as glfwGetMonitorContentScale() does the same, but I'd still need to
+           keep it for 2.2 and below, plus the same code needs to be used for
+           SDL anyway. So keeping it to reduce the chance for unexpected minor
+           differences across app implementations. */
         #ifdef _MAGNUM_PLATFORM_USE_X11
         const Vector2 dpiScaling{Implementation::x11DpiScaling()};
         if(!dpiScaling.isZero()) {
@@ -179,10 +182,10 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
             return dpiScaling;
         }
 
-        /* Check for DPI awareness on non-RT Windows and then ask for DPI. GLFW
-           is advertising the application to be DPI-aware on its own even
-           without supplying an explicit manifest --
-           https://github.com/glfw/glfw/blob/089ea9af227fdffdf872348923e1c12682e63029/src/win32_init.c#L564-L569
+        /* Check for DPI awareness on non-RT Windows and then ask for content
+           scale (available since GLFW 3.3). GLFW is advertising the
+           application to be DPI-aware on its own even without supplying an
+           explicit manifest -- https://github.com/glfw/glfw/blob/089ea9af227fdffdf872348923e1c12682e63029/src/win32_init.c#L564-L569
            If, for some reason, the app is still not DPI-aware, tell that to
            the user explicitly and don't even attempt to query the value if the
            app is not DPI aware. If it's desired to get the DPI value
@@ -192,18 +195,15 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
             Warning{verbose} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
             return Vector2{1.0f};
         }
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
         GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
-        Vector2i monitorSize;
-        glfwGetMonitorPhysicalSize(monitor, &monitorSize.x(), &monitorSize.y());
-        if(monitorSize.isZero()) {
-            Warning{verbose} << "Platform::GlfwApplication: the physical monitor size is zero? DPI scaling won't be used";
-            return Vector2{1.0f};
-        }
-        auto dpi = Vector2{Vector2i{mode->width, mode->height}*25.4f/Vector2{monitorSize}};
-        const Vector2 dpiScaling{dpi/96.0f};
+        Vector2 dpiScaling;
+        glfwGetMonitorContentScale(monitor, &dpiScaling.x(), &dpiScaling.y());
         Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling;
         return dpiScaling;
+        #else
+        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling only available on GLFW 3.3+, falling back to physical DPI scaling";
+        #endif
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
@@ -215,10 +215,9 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
        scaling is requested */
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Physical);
 
-    /* Take display DPI elsewhere. Enable only on Linux (where it gets the
-       usually very-off value from X11) and on non-RT Windows (where it takes
-       the UI scale value like with virtual DPI scaling, but without checking
-       for DPI awareness first). */
+    /* Physical DPI scaling. Enable only on Linux (where it gets the usually
+       very-off value from X11) and on non-RT Windows (where it calculates it
+       from actual monitor dimensions). */
     #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
