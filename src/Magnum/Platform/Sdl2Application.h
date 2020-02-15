@@ -1829,6 +1829,11 @@ class Sdl2Application::ExitEvent {
 */
 class Sdl2Application::ViewportEvent {
     public:
+        enum class Type: UnsignedByte {
+            Resized,
+            DpiScalingChanged
+        };
+
         /** @brief Copying is not allowed */
         ViewportEvent(const ViewportEvent&) = delete;
 
@@ -1840,6 +1845,9 @@ class Sdl2Application::ViewportEvent {
 
         /** @brief Moving is not allowed */
         ViewportEvent& operator=(ViewportEvent&&) = delete;
+
+        /** @brief Event type */
+        Type type() const { return _type; }
 
         /**
          * @brief Window size
@@ -1893,7 +1901,7 @@ class Sdl2Application::ViewportEvent {
     private:
         friend Sdl2Application;
 
-        explicit ViewportEvent(
+        explicit ViewportEvent(Type type,
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             const SDL_Event& event,
             #endif
@@ -1901,7 +1909,7 @@ class Sdl2Application::ViewportEvent {
             #ifdef MAGNUM_TARGET_GL
             const Vector2i& framebufferSize,
             #endif
-            const Vector2& dpiScaling):
+            const Vector2& dpiScaling): _type{type},
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
                 _event(event),
                 #endif
@@ -1911,6 +1919,7 @@ class Sdl2Application::ViewportEvent {
                 #endif
                 _dpiScaling{dpiScaling} {}
 
+        Type _type;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         const SDL_Event& _event;
         #endif

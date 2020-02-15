@@ -1300,6 +1300,11 @@ class GlfwApplication::ExitEvent {
 */
 class GlfwApplication::ViewportEvent {
     public:
+        enum class Type: UnsignedByte {
+            Resized,
+            DpiScalingChanged
+        };
+
         /** @brief Copying is not allowed */
         ViewportEvent(const ViewportEvent&) = delete;
 
@@ -1311,6 +1316,9 @@ class GlfwApplication::ViewportEvent {
 
         /** @brief Moving is not allowed */
         ViewportEvent& operator=(ViewportEvent&&) = delete;
+
+        /** @brief Event type */
+        Type type() const { return _type; }
 
         /**
          * @brief Window size
@@ -1353,16 +1361,17 @@ class GlfwApplication::ViewportEvent {
     private:
         friend GlfwApplication;
 
-        explicit ViewportEvent(const Vector2i& windowSize,
+        explicit ViewportEvent(Type type, const Vector2i& windowSize,
             #ifdef MAGNUM_TARGET_GL
             const Vector2i& framebufferSize,
             #endif
-            const Vector2& dpiScaling): _windowSize{windowSize},
+            const Vector2& dpiScaling): _type{type}, _windowSize{windowSize},
                 #ifdef MAGNUM_TARGET_GL
                 _framebufferSize{framebufferSize},
                 #endif
                 _dpiScaling{dpiScaling} {}
 
+        Type _type;
         const Vector2i _windowSize;
         #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;

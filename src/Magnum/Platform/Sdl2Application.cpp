@@ -65,6 +65,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
+/* For capturing the WM_DPICHANGED event */
+#include <SDL_syswm.h>
 #endif
 
 namespace Magnum { namespace Platform {
@@ -154,6 +156,11 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
         Error() << "Cannot initialize SDL:" << SDL_GetError();
         std::exit(1);
     }
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* Enable SysWM events to get the WM_DPICHANGED event on Windows */
+    SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+    #endif
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
@@ -834,7 +841,8 @@ bool Sdl2Application::mainLoopIteration() {
             _lastKnownCanvasSize = canvasSizei;
             const Vector2i size = _dpiScaling*canvasSizei;
             emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-            ViewportEvent e{
+            /** @todo dpi scaling changed? */
+            ViewportEvent e{ViewportEvent::Type::Resized,
                 #ifdef MAGNUM_TARGET_GL
                 size,
                 #endif
@@ -864,7 +872,7 @@ bool Sdl2Application::mainLoopIteration() {
                            framebuffer size and not window size on macOS, which
                            is weird. Query the values directly instead to be
                            really sure. */
-                        ViewportEvent e{event, windowSize(),
+                        ViewportEvent e{ViewportEvent::Type::Resized, event, windowSize(),
                             #ifdef MAGNUM_TARGET_GL
                             framebufferSize(),
                             #endif
@@ -941,6 +949,21 @@ bool Sdl2Application::mainLoopIteration() {
                     return !(_flags & Flag::Exit);
                 }
             } break;
+
+            #ifdef CORRADE_TARGET_WINDOWS
+            case SDL_SYSWMEVENT: {
+                if(event.syswm.msg->msg.win.msg == WM_DPICHANGED) {
+                    DWORD dpi = event.syswm.msg->msg.win.wParam;
+                    ViewportEvent e{ViewportEvent::Type::DpiScalingChanged, event, windowSize(),
+                        #ifdef MAGNUM_TARGET_GL
+                        framebufferSize(),
+                        #endif
+                        /* Update the cached DPI scaling value as well */
+                        _dpiScaling = Vector2{Vector2i{LOWORD(dpi), HIWORD(dpi)}}/96.0f};
+                    viewportEvent(e);
+                }
+            } break;
+            #endif
 
             /* Direct everything else to anyEvent(), so users can implement
                event handling for things not present in the Application APIs */

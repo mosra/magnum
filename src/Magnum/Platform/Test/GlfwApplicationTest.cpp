@@ -47,6 +47,11 @@ struct GlfwApplicationTest: Platform::Application {
             << event.framebufferSize()
             #endif
             << event.dpiScaling();
+
+        if(event.type() == ViewportEvent::Type::DpiScalingChanged) {
+            Debug{} << "DPI scaling changed, resizing to" << _lastUnscaledWindowSize;
+            setWindowSize(_lastUnscaledWindowSize);
+        } else _lastUnscaledWindowSize = event.windowSize()/event.dpiScaling();
     }
 
     void keyPressEvent(KeyEvent& event) override {
@@ -96,6 +101,9 @@ struct GlfwApplicationTest: Platform::Application {
     }
 
     void drawEvent() override {}
+
+    private:
+        Vector2i _lastUnscaledWindowSize;
 };
 
 GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
@@ -115,6 +123,10 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         << framebufferSize()
         #endif
         << dpiScaling();
+
+    /* Save desired window size for resizing when going between differently
+       dense displays */
+    _lastUnscaledWindowSize = windowSize()/dpiScaling();
 
     #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
     Utility::Resource rs{"icons"};
