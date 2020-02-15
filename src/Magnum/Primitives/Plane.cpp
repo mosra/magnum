@@ -90,15 +90,20 @@ Trade::MeshData planeSolid(const PlaneTextureCoords textureCoords) {
 
 namespace {
 
-constexpr Vector3 VerticesWireframe[]{
-    {-1.0f, -1.0f, 0.0f},
-    { 1.0f, -1.0f, 0.0f},
-    { 1.0f,  1.0f, 0.0f},
-    {-1.0f,  1.0f, 0.0f}
+/* Can't be just an array of Vector3 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexWireframe {
+    Vector3 position;
+} VerticesWireframe[]{
+    {{-1.0f, -1.0f, 0.0f}},
+    {{ 1.0f, -1.0f, 0.0f}},
+    {{ 1.0f,  1.0f, 0.0f}},
+    {{-1.0f,  1.0f, 0.0f}}
 };
 constexpr Trade::MeshAttributeData AttributesWireframe[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::arrayView(VerticesWireframe)}
+        Containers::stridedArrayView(VerticesWireframe, &VerticesWireframe[0].position,
+            Containers::arraySize(VerticesWireframe), sizeof(VertexWireframe))}
 };
 
 }

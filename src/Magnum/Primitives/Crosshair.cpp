@@ -33,32 +33,50 @@ namespace Magnum { namespace Primitives {
 
 namespace {
 
-constexpr Vector2 Positions2D[]{
-    {-1.0f,  0.0f}, {1.0f, 0.0f},
-    { 0.0f, -1.0f}, {0.0f, 1.0f}
+/* Can't be just an array of Vector2 but has to be a struct, because then MSVC
+   2015 fails with an assertion like
+
+    Trade::MeshData: attribute 0 [0x7ffd6c4fb290:0x7ffd6c4fb338] is not contained in passed vertexData array [0x7ffd6c4fb170:0x7ffd6c4fb218]
+
+   which leads me to believe that it will make two copies of the data, one for
+   the MeshAttributeData constructor and one for the MeshData constructor. Same
+   for the Cube, Square and Plane primitives. Interestingly enough, this isn't
+   a problem for index arrays (maybe because those are integers and not
+   constexpr classes?). Also not a problem for MSVC 2017 and up. */
+constexpr struct Vertex2D {
+    Vector2 position;
+} Vertices2D[]{
+    {{-1.0f,  0.0f}}, {{1.0f, 0.0f}},
+    {{ 0.0f, -1.0f}}, {{0.0f, 1.0f}}
 };
-constexpr Vector3 Positions3D[]{
-    {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
-    { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
-    { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
+constexpr struct Vertex3D {
+    Vector3 position;
+} Vertices3D[]{
+    {{-1.0f,  0.0f,  0.0f}}, {{1.0f, 0.0f, 0.0f}},
+    {{ 0.0f, -1.0f,  0.0f}}, {{0.0f, 1.0f, 0.0f}},
+    {{ 0.0f,  0.0f, -1.0f}}, {{0.0f, 0.0f, 1.0f}}
 };
 
 constexpr Trade::MeshAttributeData Attributes2D[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(Positions2D)}
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(Vertices2D, &Vertices2D[0].position,
+            Containers::arraySize(Vertices2D), sizeof(Vertex2D))}
 };
 constexpr Trade::MeshAttributeData Attributes3D[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(Positions3D)}
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(Vertices3D, &Vertices3D[0].position,
+            Containers::arraySize(Vertices3D), sizeof(Vertex3D))}
 };
 
 }
 
 Trade::MeshData crosshair2D() {
-    return Trade::MeshData{MeshPrimitive::Lines, {}, Positions2D,
+    return Trade::MeshData{MeshPrimitive::Lines, {}, Vertices2D,
         Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
 Trade::MeshData crosshair3D() {
-    return Trade::MeshData{MeshPrimitive::Lines, {}, Positions3D,
+    return Trade::MeshData{MeshPrimitive::Lines, {}, Vertices3D,
         Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 

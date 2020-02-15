@@ -95,7 +95,11 @@ Trade::MeshData cubeSolid() {
 
 namespace {
 
-constexpr Vector3 VerticesSolidStrip[]{
+/* Can't be just an array of Vector3 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexSolidStrip {
+    Vector3 position;
+} VerticesSolidStrip[]{
     /* Sources:
         https://twitter.com/Donzanoid/status/436843034966507520
         http://www.asmcommunity.net/forums/topic/?id=6284#post-45209
@@ -119,24 +123,25 @@ constexpr Vector3 VerticesSolidStrip[]{
             |F \|
             2---3
     */
-    { 1.0f,  1.0f,  1.0f}, /* 3 */
-    {-1.0f,  1.0f,  1.0f}, /* 2 */
-    { 1.0f, -1.0f,  1.0f}, /* 6 */
-    {-1.0f, -1.0f,  1.0f}, /* 7 */
-    {-1.0f, -1.0f, -1.0f}, /* 4 */
-    {-1.0f,  1.0f,  1.0f}, /* 2 */
-    {-1.0f,  1.0f, -1.0f}, /* 0 */
-    { 1.0f,  1.0f,  1.0f}, /* 3 */
-    { 1.0f,  1.0f, -1.0f}, /* 1 */
-    { 1.0f, -1.0f,  1.0f}, /* 6 */
-    { 1.0f, -1.0f, -1.0f}, /* 5 */
-    {-1.0f, -1.0f, -1.0f}, /* 4 */
-    { 1.0f,  1.0f, -1.0f}, /* 1 */
-    {-1.0f,  1.0f, -1.0f}  /* 0 */
+    {{ 1.0f,  1.0f,  1.0f}}, /* 3 */
+    {{-1.0f,  1.0f,  1.0f}}, /* 2 */
+    {{ 1.0f, -1.0f,  1.0f}}, /* 6 */
+    {{-1.0f, -1.0f,  1.0f}}, /* 7 */
+    {{-1.0f, -1.0f, -1.0f}}, /* 4 */
+    {{-1.0f,  1.0f,  1.0f}}, /* 2 */
+    {{-1.0f,  1.0f, -1.0f}}, /* 0 */
+    {{ 1.0f,  1.0f,  1.0f}}, /* 3 */
+    {{ 1.0f,  1.0f, -1.0f}}, /* 1 */
+    {{ 1.0f, -1.0f,  1.0f}}, /* 6 */
+    {{ 1.0f, -1.0f, -1.0f}}, /* 5 */
+    {{-1.0f, -1.0f, -1.0f}}, /* 4 */
+    {{ 1.0f,  1.0f, -1.0f}}, /* 1 */
+    {{-1.0f,  1.0f, -1.0f}}  /* 0 */
 };
 constexpr Trade::MeshAttributeData AttributesSolidStrip[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(VerticesSolidStrip)}
+        Containers::stridedArrayView(VerticesSolidStrip, &VerticesSolidStrip[0].position,
+            Containers::arraySize(VerticesSolidStrip), sizeof(VertexSolidStrip))}
 };
 
 }
@@ -155,20 +160,25 @@ constexpr UnsignedShort IndicesWireframe[]{
     1, 5, 2, 6,             /* +X */
     0, 4, 3, 7              /* -X */
 };
-constexpr Vector3 VerticesWireframe[]{
-    {-1.0f, -1.0f,  1.0f},
-    { 1.0f, -1.0f,  1.0f},
-    { 1.0f,  1.0f,  1.0f},
-    {-1.0f,  1.0f,  1.0f},
+/* Can't be just an array of Vector3 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexWireframe {
+    Vector3 position;
+} VerticesWireframe[]{
+    {{-1.0f, -1.0f,  1.0f}},
+    {{ 1.0f, -1.0f,  1.0f}},
+    {{ 1.0f,  1.0f,  1.0f}},
+    {{-1.0f,  1.0f,  1.0f}},
 
-    {-1.0f, -1.0f, -1.0f},
-    { 1.0f, -1.0f, -1.0f},
-    { 1.0f,  1.0f, -1.0f},
-    {-1.0f,  1.0f, -1.0f}
+    {{-1.0f, -1.0f, -1.0f}},
+    {{ 1.0f, -1.0f, -1.0f}},
+    {{ 1.0f,  1.0f, -1.0f}},
+    {{-1.0f,  1.0f, -1.0f}}
 };
 constexpr Trade::MeshAttributeData AttributesWireframe[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(VerticesWireframe)}
+        Containers::stridedArrayView(VerticesWireframe, &VerticesWireframe[0].position,
+            Containers::arraySize(VerticesWireframe), sizeof(VertexWireframe))}
 };
 
 }

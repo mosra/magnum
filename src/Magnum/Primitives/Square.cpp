@@ -33,11 +33,15 @@ namespace Magnum { namespace Primitives {
 
 namespace {
 
-constexpr Vector2 VerticesSolid[] {
-    { 1.0f, -1.0f},
-    { 1.0f,  1.0f},
-    {-1.0f, -1.0f},
-    {-1.0f,  1.0f}
+/* Can't be just an array of Vector2 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexSolid {
+    Vector2 position;
+} VerticesSolid[] {
+    {{ 1.0f, -1.0f}},
+    {{ 1.0f,  1.0f}},
+    {{-1.0f, -1.0f}},
+    {{-1.0f,  1.0f}}
 };
 constexpr struct VertexSolidTextureCoords {
     Vector2 position;
@@ -50,7 +54,8 @@ constexpr struct VertexSolidTextureCoords {
 };
 constexpr Trade::MeshAttributeData AttributesSolid[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(VerticesSolid)}
+        Containers::stridedArrayView(VerticesSolid, &VerticesSolid[0].position,
+            Containers::arraySize(VerticesSolid), sizeof(VertexSolid))},
 };
 constexpr Trade::MeshAttributeData AttributesSolidTextureCoords[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
@@ -78,15 +83,20 @@ Trade::MeshData squareSolid(const SquareTextureCoords textureCoords) {
 
 namespace {
 
-constexpr Vector2 VerticesWireframe[]{
-    {-1.0f, -1.0f},
-    { 1.0f, -1.0f},
-    { 1.0f,  1.0f},
-    {-1.0f,  1.0f}
+/* Can't be just an array of Vector2 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexWireframe {
+    Vector2 position;
+} VerticesWireframe[]{
+    {{-1.0f, -1.0f}},
+    {{ 1.0f, -1.0f}},
+    {{ 1.0f,  1.0f}},
+    {{-1.0f,  1.0f}}
 };
 constexpr Trade::MeshAttributeData AttributesWireframe[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(VerticesWireframe)}
+        Containers::stridedArrayView(VerticesWireframe, &VerticesWireframe[0].position,
+            Containers::arraySize(VerticesWireframe), sizeof(VertexWireframe))}
 };
 
 }
