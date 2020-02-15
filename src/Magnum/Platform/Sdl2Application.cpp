@@ -59,6 +59,14 @@
 #include "Magnum/Platform/GLContext.h"
 #endif
 
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+/* For physical DPI scaling */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+
 namespace Magnum { namespace Platform {
 
 namespace {
@@ -224,7 +232,8 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     /* Try to get virtual DPI scaling first, if supported and requested */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
     if(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual) {
-        /* Use Xft.dpi on X11 */
+        /* Use Xft.dpi on X11, because SDL_GetDisplayDPI() returns the useless
+           physical value on Linux, while the virtual value on Windows. */
         #ifdef _MAGNUM_PLATFORM_USE_X11
         const Vector2 dpiScaling{Implementation::x11DpiScaling()};
         if(!dpiScaling.isZero()) {
@@ -237,9 +246,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
            https://github.com/spurious/SDL-mirror/blob/17af4584cb28cdb3c2feba17e7d989a806007d9f/src/video/windows/SDL_windowsmodes.c#L266
            and GetDpiForMonitor() returns 96 if the application is DPI unaware.
            So we instead check for DPI awareness first (and tell the user if
-           not), and only if the app is, then we use SDL_GetDisplayDPI(). If
-           it's for some reason desired to get the DPI value unconditionally,
-           the user should use physical DPI scaling instead. */
+           not), and only if the app is, then we use SDL_GetDisplayDPI(). */
         #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
         if(!Implementation::isWindowsAppDpiAware()) {
             Warning{verbose} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
@@ -273,11 +280,10 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling.x();
     return dpiScaling;
 
-    /* Take display DPI elsewhere. Enable only on Linux (where it gets the
-       usually very-off value from X11) and on non-RT Windows (where it takes
-       the UI scale value like with virtual DPI scaling, but without checking
-       for DPI awareness first). Also only since SDL 2.0.4. */
-    #elif (defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))) && SDL_VERSION_ATLEAST(2, 0, 4)
+    /* Take a physical display DPI. On Linux it gets the (usually very off)
+       physical value from X11. Also only since SDL 2.0.4. */
+    #elif defined(CORRADE_TARGET_UNIX)
+    #if SDL_VERSION_ATLEAST(2, 0, 4)
     Vector2 dpi;
     if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
         const Vector2 dpiScaling{dpi/96.0f};
@@ -286,7 +292,24 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
     }
 
     Warning{} << "Platform::Sdl2Application: can't get physical display DPI, falling back to no scaling:" << SDL_GetError();
+    #else
+    Debug{verbose} << "Platform::Sdl2Application: sorry, physical DPI scaling only available on SDL 2.0.4+";
+    #endif
     return Vector2{1.0f};
+
+    /* HOWEVER, on Windows it gets the virtual DPI scaling, which we don't
+       want, so we need to call Windows APIs directly instead. Consistency my
+       ass. Related bug report that will probably never get actually
+       implemented: https://bugzilla.libsdl.org/show_bug.cgi?id=2473 */
+    #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+    HDC hDC = GetWindowDC(nullptr);
+    Vector2i monitorSize{GetDeviceCaps(hDC, HORZSIZE), GetDeviceCaps(hDC, VERTSIZE)};
+    SDL_DisplayMode mode;
+    CORRADE_INTERNAL_ASSERT(SDL_GetDesktopDisplayMode(0, &mode) == 0);
+    auto dpi = Vector2{Vector2i{mode.w, mode.h}*25.4f/Vector2{monitorSize}};
+    const Vector2 dpiScaling{dpi/96.0f};
+    Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling;
+    return dpiScaling;
 
     /* Not implemented otherwise */
     #else
