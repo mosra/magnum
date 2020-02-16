@@ -72,6 +72,9 @@ struct MeshState {
     #endif
 
     GLuint currentVAO;
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    GLint maxVertexAttributeStride{};
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
     GLint64 maxElementIndex;

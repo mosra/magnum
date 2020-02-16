@@ -301,6 +301,19 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
     friend Implementation::MeshState;
 
     public:
+        /**
+         * @brief Max vertex attribute stride
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If OpenGL 4.4 or OpenGL 3.1 supporting this query
+         * isn't available, returns max representable 32-bit value
+         * (@cpp 0xffffffffu @ce). On WebGL 1 and 2 the max stride is specified
+         * to be @cpp 255 @ce with no corresponding limit query.
+         * @see @ref addVertexBuffer(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_VERTEX_ATTRIB_STRIDE}
+         */
+        static UnsignedInt maxVertexAttributeStride();
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported index value
@@ -682,7 +695,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      mesh and delete it afterwards.
          *
          * @see @ref addVertexBufferInstanced(), @ref setPrimitive(),
-         *      @ref setCount(), @fn_gl_keyword{BindVertexArray},
+         *      @ref setCount(), @ref maxVertexAttributeStride(),
+         *      @fn_gl_keyword{BindVertexArray},
          *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl_keyword{VertexAttribPointer} or
          *      @fn_gl2{EnableVertexArrayAttrib,EnableVertexAttribArray},
@@ -720,7 +734,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * available, the vertex array object is used to hold the parameters.
          *
          * @see @ref setPrimitive(), @ref setCount(), @ref setInstanceCount(),
-         *      @ref setBaseInstance(),
+         *      @ref setBaseInstance(), @ref maxVertexAttributeStride(),
          *      @fn_gl{BindVertexArray}, @fn_gl_keyword{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
          *      @fn_gl_keyword{VertexAttribDivisor} or

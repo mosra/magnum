@@ -523,7 +523,7 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}    | @ref GL::Buffer::maxUniformBindings()
 @def_gl{MAX_UNIFORM_LOCATIONS}          | @ref GL::AbstractShaderProgram::maxUniformLocations()
 @def_gl{MAX_VERTEX_ATTRIBS}             | @ref GL::AbstractShaderProgram::maxVertexAttributes()
-@def_gl{MAX_VERTEX_ATTRIB_STRIDE}       | |
+@def_gl{MAX_VERTEX_ATTRIB_STRIDE}       | @ref GL::Mesh::maxVertexAttributeStride()
 @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}     | |
 @def_gl{MAX_VERTEX_ATTRIB_RELATIVE_OFFSET} | |
 @def_gl{MAX_VERTEX_STREAMS}             | @ref GL::TransformFeedback::maxVertexStreams()

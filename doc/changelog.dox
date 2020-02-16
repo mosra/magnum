@@ -85,6 +85,7 @@ See also:
     more information.
 -   New @ref GL::Buffer::Buffer(Containers::ArrayView<const void>, BufferUsage)
     constructor for directly creating buffers filled with data.
+-   New @ref GL::Mesh::maxVertexAttributeStride() limit query
 
 @subsubsection changelog-latest-new-math Math library
 

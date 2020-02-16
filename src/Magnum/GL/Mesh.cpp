@@ -142,6 +142,35 @@ struct Mesh::AttributeLayout {
     GLuint divisor;
 };
 
+UnsignedInt Mesh::maxVertexAttributeStride() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    /* Defined for WebGL 1 and for the new vertexAttribIPointer in WebGL 2 too:
+        https://www.khronos.org/registry/webgl/specs/latest/1.0/index.html#5.14.10
+        https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7.8
+    */
+    return 255;
+    #else
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL440))
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isVersionSupported(Version::GLES310))
+    #endif
+    {
+        return 0xffffffffu;
+    }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint& value = Context::current().state().mesh->maxVertexAttributeStride;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIB_STRIDE, &value);
+
+    return value;
+    #endif
+    #endif
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 #ifndef MAGNUM_TARGET_WEBGL
 Long Mesh::maxElementIndex()

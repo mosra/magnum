@@ -410,6 +410,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _lvec(GL::AbstractFramebuffer::maxViewportSize())
     _l(GL::AbstractFramebuffer::maxDrawBuffers())
     _l(GL::Framebuffer::maxColorAttachments())
+    _l(GL::Mesh::maxVertexAttributeStride())
     #ifndef MAGNUM_TARGET_GLES2
     _l(GL::Mesh::maxElementIndex())
     _l(GL::Mesh::maxElementsIndices())
