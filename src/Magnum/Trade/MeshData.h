@@ -244,7 +244,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: _name{}, _format{}, _data{} {}
+        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{} {}
 
         /**
          * @brief Type-erased constructor
@@ -313,7 +313,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * multiple different attributes onto each other. Not meant to be
          * passed to @ref MeshData.
          */
-        constexpr explicit MeshAttributeData(Int padding): _name{}, _format{}, _data{nullptr, 0, padding} {}
+        constexpr explicit MeshAttributeData(Int padding): _data{nullptr}, _vertexCount{0}, _format{}, _stride{
+            (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
+                "Trade::MeshAttributeData: at most 32k padding supported, got" << padding), Short(padding))
+        }, _name{} {}
 
         /** @brief Attribute name */
         constexpr MeshAttribute name() const { return _name; }
@@ -322,16 +325,29 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         constexpr VertexFormat format() const { return _format; }
 
         /** @brief Type-erased attribute data */
-        constexpr Containers::StridedArrayView1D<const void> data() const { return _data; }
+        constexpr Containers::StridedArrayView1D<const void> data() const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                {_data, ~std::size_t{}},
+                _vertexCount, _stride};
+        }
 
     private:
         constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
 
         friend MeshData;
-        MeshAttribute _name;
-        /* Here's some room for flags */
+        const void* _data;
+        /* Vertex count in MeshData is currently 32-bit, so this doesn't need
+           to be 64-bit either */
+        UnsignedInt _vertexCount;
         VertexFormat _format;
-        Containers::StridedArrayView1D<const void> _data;
+        /* According to https://opengl.gpuinfo.org/displaycapability.php?name=GL_MAX_VERTEX_ATTRIB_STRIDE,
+           current largest reported stride is 4k so 32k should be enough */
+        Short _stride;
+        MeshAttribute _name;
+        /* 4 bytes free for more stuff on 64b (20, aligned to 24); nothing on
+           32b */
 };
 
 /** @relatesalso MeshAttributeData
@@ -1183,6 +1199,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /* Internal helper that doesn't assert, unlike attributeId() */
         UnsignedInt attributeFor(MeshAttribute name, UnsignedInt id) const;
 
+        /* Like attribute(), but returning just a 1D view */
+        Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
+
+        /* GPUs don't currently support more than 32-bit index types / vertex
+           counts so this should be enough. Sanity check:
+           https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkIndexType.html */
         UnsignedInt _vertexCount;
         MeshIndexType _indexType;
         MeshPrimitive _primitive;
@@ -1298,9 +1320,14 @@ namespace Implementation {
 #endif
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
-    _name{name},  _format{format}, _data{(CORRADE_CONSTEXPR_ASSERT(
-        /* Double formats intentionally not supported for any builtin attributes
-           right now -- only for custom formats */
+    _data{data.data()}, _vertexCount{UnsignedInt(data.size())}, _format{format},
+    /** @todo support zero / negative stride? would be hard to transfer to GL */
+    _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(data.stride()) & 0xffff8000),
+        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << data.stride()),
+        Short(data.stride()))
+    }, _name{(CORRADE_CONSTEXPR_ASSERT(
+        /* Double types intentionally not supported for any builtin attributes
+           right now -- only for custom types */
         (name == MeshAttribute::Position &&
             (format == VertexFormat::Vector2 ||
              format == VertexFormat::Vector2h ||
@@ -1348,8 +1375,8 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
              format == VertexFormat::Vector2s ||
              format == VertexFormat::Vector2sNormalized)) ||
         isMeshAttributeCustom(name) /* can be any format */,
-        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), data)}
-    {}
+        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
+    } {}
 
 template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, nullptr} {}
 

@@ -57,10 +57,10 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttribute2DWrongSize();
     void constructAttribute2DNonContiguous();
     void constructAttributeTypeErased();
-    void constructAttributeTypeErasedWrongStride();
     void constructAttributeNullptr();
     void constructAttributePadding();
     void constructAttributeNonOwningArray();
+    void constructAttributeWrongStride();
 
     void construct();
     void constructZeroIndices();
@@ -173,10 +173,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttribute2DWrongSize,
               &MeshDataTest::constructAttribute2DNonContiguous,
               &MeshDataTest::constructAttributeTypeErased,
-              &MeshDataTest::constructAttributeTypeErasedWrongStride,
               &MeshDataTest::constructAttributeNullptr,
               &MeshDataTest::constructAttributePadding,
               &MeshDataTest::constructAttributeNonOwningArray,
+              &MeshDataTest::constructAttributeWrongStride,
 
               &MeshDataTest::construct,
               &MeshDataTest::constructZeroIndices,
@@ -521,15 +521,6 @@ void MeshDataTest::constructAttributeTypeErased() {
     CORRADE_VERIFY(positions.data().data() == positionData);
 }
 
-void MeshDataTest::constructAttributeTypeErasedWrongStride() {
-    char positionData[3*sizeof(Vector3)]{};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: view stride 1 is not large enough to contain VertexFormat::Vector3\n");
-}
-
 void MeshDataTest::constructAttributeNullptr() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
@@ -551,6 +542,23 @@ void MeshDataTest::constructAttributeNonOwningArray() {
     Containers::Array<MeshAttributeData> array = meshAttributeDataNonOwningArray(data);
     CORRADE_COMPARE(array.size(), 3);
     CORRADE_COMPARE(static_cast<const void*>(array.data()), data);
+}
+
+void MeshDataTest::constructAttributeWrongStride() {
+    char positionData[3*sizeof(Vector3)]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, -16}};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, 65000}};
+    MeshAttributeData{65000};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: expected stride to be positive and enough to fit VertexFormat::Vector3, got 1\n"
+        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got -16\n"
+        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got 65000\n"
+        "Trade::MeshAttributeData: at most 32k padding supported, got 65000\n"
+    );
 }
 
 void MeshDataTest::construct() {
