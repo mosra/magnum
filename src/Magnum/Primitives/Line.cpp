@@ -31,6 +31,15 @@
 
 namespace Magnum { namespace Primitives {
 
+namespace {
+
+constexpr Trade::MeshAttributeData Attributes2D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector2, 0, 2, sizeof(Vector2)},
+};
+
+}
+
 Trade::MeshData line2D(const Vector2& a, const Vector2& b) {
     Containers::Array<char> vertexData{sizeof(Vector2)*2};
     auto positions = Containers::arrayCast<Vector2>(vertexData);
@@ -38,7 +47,16 @@ Trade::MeshData line2D(const Vector2& a, const Vector2& b) {
     positions[1] = b;
 
     return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
-        {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
+        Trade::meshAttributeDataNonOwningArray(Attributes2D)};
+}
+
+namespace {
+
+constexpr Trade::MeshAttributeData Attributes3D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector3, 0, 2, sizeof(Vector3)},
+};
+
 }
 
 Trade::MeshData line3D(const Vector3& a, const Vector3& b) {
@@ -48,7 +66,7 @@ Trade::MeshData line3D(const Vector3& a, const Vector3& b) {
     positions[1] = b;
 
     return Trade::MeshData{MeshPrimitive::Lines, std::move(vertexData),
-        {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
+        Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 
 Trade::MeshData line2D() {

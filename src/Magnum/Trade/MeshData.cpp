@@ -302,12 +302,22 @@ UnsignedInt MeshData::attributeStride(MeshAttribute name, UnsignedInt id) const 
     return attributeStride(attributeId);
 }
 
+Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
+    return Containers::StridedArrayView1D<const void>{
+        /* We're *sure* the view is correct, so faking the view size */
+        /** @todo better ideas for the StridedArrayView API? */
+        {attribute._isOffsetOnly ? _vertexData.data() + attribute._data.offset :
+            attribute._data.pointer, ~std::size_t{}},
+        /* Not using attribute._vertexCount because that gets stale after
+           releaseVertexData() gets called, and then we would need to slice the
+           result inside attribute() and elsewhere anyway */
+        _vertexCount, attribute._stride};
+}
+
 Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
-    /* Build a 2D view using information about attribute type size, return only
-       a prefix of the actual vertex count (which is zero in case vertex data
-       is released) */
+    /* Build a 2D view using information about attribute type size */
     return Containers::arrayCast<2, const char>(
         attributeDataViewInternal(_attributes[id]),
         vertexFormatSize(_attributes[id]._format));
@@ -318,9 +328,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) 
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
-    /* Build a 2D view using information about attribute type size, return only
-       a prefix of the actual vertex count (which is zero in case vertex data
-       is released) */
+    /* Build a 2D view using information about attribute type size */
     auto out = Containers::arrayCast<2, const char>(
         attributeDataViewInternal(_attributes[id]),
         vertexFormatSize(_attributes[id]._format));
@@ -376,18 +384,6 @@ Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
     Containers::Array<UnsignedInt> output{indexCount()};
     indicesInto(output);
     return output;
-}
-
-Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
-    return Containers::StridedArrayView1D<const void>{
-        /* We're *sure* the view is correct, so faking the view size */
-        /** @todo better ideas for the StridedArrayView API? */
-        {attribute._isOffsetOnly ? _vertexData.data() + attribute._data.offset :
-            attribute._data.pointer, ~std::size_t{}},
-        /* Not using attribute._vertexCount because that gets stale after
-           releaseVertexData() gets called, and then we would need to slice the
-           result inside attribute() and elsewhere */
-        _vertexCount, attribute._stride};
 }
 
 void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> destination, const UnsignedInt id) const {

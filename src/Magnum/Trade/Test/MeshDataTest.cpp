@@ -486,6 +486,7 @@ void MeshDataTest::constructAttribute2D() {
         {4, sizeof(Vector2)}}.every(2);
 
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, positionView};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_COMPARE(positions.data().data(), positionView.data());
@@ -516,6 +517,7 @@ void MeshDataTest::constructAttribute2DNonContiguous() {
 void MeshDataTest::constructAttributeTypeErased() {
     const Vector3 positionData[3]{};
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(Containers::stridedArrayView(positionData))};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector3);
     CORRADE_VERIFY(positions.data().data() == positionData);
@@ -523,6 +525,7 @@ void MeshDataTest::constructAttributeTypeErased() {
 
 void MeshDataTest::constructAttributeNullptr() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_VERIFY(!positions.data().data());
@@ -530,6 +533,7 @@ void MeshDataTest::constructAttributeNullptr() {
 
 void MeshDataTest::constructAttributePadding() {
     MeshAttributeData padding{-35};
+    CORRADE_VERIFY(!padding.isOffsetOnly());
     CORRADE_COMPARE(padding.name(), MeshAttribute{});
     CORRADE_COMPARE(padding.format(), VertexFormat{});
     CORRADE_COMPARE(padding.data().size(), 0);

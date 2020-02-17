@@ -32,14 +32,27 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB) {
-    struct Vertex {
-        Vector2 position;
-        Color4 color;
-    };
+namespace {
 
-    Containers::Array<char> vertexData{sizeof(Vertex)*4};
-    auto vertices = Containers::arrayCast<Vertex>(vertexData);
+struct Vertex2D {
+    Vector2 position;
+    Color4 color;
+};
+
+constexpr Trade::MeshAttributeData Attributes2D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector2, offsetof(Vertex2D, position),
+        4, sizeof(Vertex2D)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+        VertexFormat::Vector4, offsetof(Vertex2D, color),
+        4, sizeof(Vertex2D)},
+};
+
+}
+
+Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB) {
+    Containers::Array<char> vertexData{sizeof(Vertex2D)*4};
+    auto vertices = Containers::arrayCast<Vertex2D>(vertexData);
     vertices[0].position = { 1.0f, -1.0f};
     vertices[1].position = { 1.0f,  1.0f};
     vertices[2].position = {-1.0f, -1.0f};
@@ -56,14 +69,8 @@ Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2
         vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(vertices, &vertices[0].position,
-            vertices.size(), sizeof(Vertex))};
-    Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
-        Containers::stridedArrayView(vertices, &vertices[0].color,
-            vertices.size(), sizeof(Vertex))};
-    return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        std::move(vertexData), {positions, colors}};
+    return Trade::MeshData{MeshPrimitive::TriangleStrip, std::move(vertexData),
+        Trade::meshAttributeDataNonOwningArray(Attributes2D)};
 }
 
 Trade::MeshData gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
@@ -74,15 +81,31 @@ Trade::MeshData gradient2DVertical(const Color4& colorBottom, const Color4& colo
     return Primitives::gradient2D({0.0f, -1.0f}, colorBottom, {0.0f, 1.0f}, colorTop);
 }
 
-Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
-    struct Vertex {
-        Vector3 position;
-        Vector3 normal;
-        Color4 color;
-    };
+namespace {
 
-    Containers::Array<char> vertexData{sizeof(Vertex)*4};
-    auto vertices = Containers::arrayCast<Vertex>(vertexData);
+struct Vertex3D {
+    Vector3 position;
+    Vector3 normal;
+    Color4 color;
+};
+
+constexpr Trade::MeshAttributeData Attributes3D[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        VertexFormat::Vector3, offsetof(Vertex3D, position),
+        4, sizeof(Vertex3D)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+        VertexFormat::Vector3, offsetof(Vertex3D, normal),
+        4, sizeof(Vertex3D)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+        VertexFormat::Vector4, offsetof(Vertex3D, color),
+        4, sizeof(Vertex3D)},
+};
+
+}
+
+Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
+    Containers::Array<char> vertexData{sizeof(Vertex3D)*4};
+    auto vertices = Containers::arrayCast<Vertex3D>(vertexData);
     vertices[0].position = { 1.0f, -1.0f, 0};
     vertices[1].position = { 1.0f,  1.0f, 0};
     vertices[2].position = {-1.0f, -1.0f, 0};
@@ -103,17 +126,8 @@ Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3
         vertices[i].color = Math::lerp(colorA, colorB, t);
     }
 
-    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(vertices, &vertices[0].position,
-            vertices.size(), sizeof(Vertex))};
-    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
-        Containers::stridedArrayView(vertices, &vertices[0].normal,
-            vertices.size(), sizeof(Vertex))};
-    Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
-        Containers::stridedArrayView(vertices, &vertices[0].color,
-            vertices.size(), sizeof(Vertex))};
-    return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        std::move(vertexData), {positions, normals, colors}};
+    return Trade::MeshData{MeshPrimitive::TriangleStrip, std::move(vertexData),
+        Trade::meshAttributeDataNonOwningArray(Attributes3D)};
 }
 
 Trade::MeshData gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
