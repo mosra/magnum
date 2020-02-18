@@ -218,7 +218,7 @@ void PixelFormatTest::sizeImplementationSpecific() {
 
     pixelSize(pixelFormatWrap(0xdead));
 
-    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format\n");
+    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::compressedBlockSize() {
@@ -258,8 +258,8 @@ void PixelFormatTest::compressedBlockSizeImplementationSpecific() {
     compressedBlockDataSize(compressedPixelFormatWrap(0xdead));
 
     CORRADE_COMPARE(out.str(),
-        "compressedBlockSize(): can't determine size of an implementation-specific format\n"
-        "compressedBlockDataSize(): can't determine size of an implementation-specific format\n");
+        "compressedBlockSize(): can't determine size of an implementation-specific format 0xdead\n"
+        "compressedBlockDataSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void PixelFormatTest::isImplementationSpecific() {
@@ -280,7 +280,7 @@ void PixelFormatTest::wrapInvalid() {
 
     pixelFormatWrap(0xdeadbeef);
 
-    CORRADE_COMPARE(out.str(), "pixelFormatWrap(): implementation-specific value already wrapped or too large\n");
+    CORRADE_COMPARE(out.str(), "pixelFormatWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void PixelFormatTest::unwrap() {
@@ -292,9 +292,9 @@ void PixelFormatTest::unwrapInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    pixelFormatUnwrap(PixelFormat(0xdead));
+    pixelFormatUnwrap(PixelFormat::R8Snorm);
 
-    CORRADE_COMPARE(out.str(), "pixelFormatUnwrap(): format doesn't contain a wrapped implementation-specific value\n");
+    CORRADE_COMPARE(out.str(), "pixelFormatUnwrap(): PixelFormat::R8Snorm isn't a wrapped implementation-specific value\n");
 }
 
 void PixelFormatTest::compressedIsImplementationSpecific() {
@@ -312,7 +312,7 @@ void PixelFormatTest::compressedWrapInvalid() {
 
     compressedPixelFormatWrap(0xdeadbeef);
 
-    CORRADE_COMPARE(out.str(), "compressedPixelFormatWrap(): implementation-specific value already wrapped or too large\n");
+    CORRADE_COMPARE(out.str(), "compressedPixelFormatWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void PixelFormatTest::compressedUnwrap() {
@@ -323,9 +323,9 @@ void PixelFormatTest::compressedUnwrapInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    compressedPixelFormatUnwrap(CompressedPixelFormat(0xdead));
+    compressedPixelFormatUnwrap(CompressedPixelFormat::EacR11Snorm);
 
-    CORRADE_COMPARE(out.str(), "compressedPixelFormatUnwrap(): format doesn't contain a wrapped implementation-specific value\n");
+    CORRADE_COMPARE(out.str(), "compressedPixelFormatUnwrap(): CompressedPixelFormat::EacR11Snorm isn't a wrapped implementation-specific value\n");
 }
 
 void PixelFormatTest::debug() {

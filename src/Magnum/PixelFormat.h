@@ -712,7 +712,7 @@ template<class T> constexpr PixelFormat pixelFormatWrap(T implementationSpecific
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
     return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
-        "pixelFormatWrap(): implementation-specific value already wrapped or too large"),
+        "pixelFormatWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
         PixelFormat((1u << 31)|UnsignedInt(implementationSpecific));
 }
 
@@ -726,7 +726,7 @@ inverse operation.
 */
 template<class T = UnsignedInt> constexpr T pixelFormatUnwrap(PixelFormat format) {
     return CORRADE_CONSTEXPR_ASSERT(UnsignedInt(format) & (1u << 31),
-        "pixelFormatUnwrap(): format doesn't contain a wrapped implementation-specific value"),
+        "pixelFormatUnwrap():" << format << "isn't a wrapped implementation-specific value"),
         T(UnsignedInt(format) & ~(1u << 31));
 }
 
@@ -2286,7 +2286,7 @@ template<class T> constexpr CompressedPixelFormat compressedPixelFormatWrap(T im
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
     return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
-        "compressedPixelFormatWrap(): implementation-specific value already wrapped or too large"),
+        "compressedPixelFormatWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
         CompressedPixelFormat((1u << 31)|UnsignedInt(implementationSpecific));
 }
 
@@ -2300,7 +2300,7 @@ inverse operation.
 */
 template<class T = UnsignedInt> constexpr T compressedPixelFormatUnwrap(CompressedPixelFormat format) {
     return CORRADE_CONSTEXPR_ASSERT(UnsignedInt(format) & (1u << 31),
-        "compressedPixelFormatUnwrap(): format doesn't contain a wrapped implementation-specific value"),
+        "compressedPixelFormatUnwrap():" << format << "isn't a wrapped implementation-specific value"),
         T(UnsignedInt(format) & ~(1u << 31));
 }
 

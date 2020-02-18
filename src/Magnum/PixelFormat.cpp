@@ -35,8 +35,8 @@
 namespace Magnum {
 
 UnsignedInt pixelSize(const PixelFormat format) {
-    CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "pixelSize(): can't determine size of an implementation-specific format", {});
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(format),
+        "pixelSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(pixelFormatUnwrap(format)), {});
 
     #ifdef __GNUC__
     #pragma GCC diagnostic push
@@ -168,7 +168,7 @@ constexpr UnsignedShort CompressedBlockData[] {
 
 Vector3i compressedBlockSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedBlockSize(): can't determine size of an implementation-specific format", {});
+        "compressedBlockSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
         "compressedBlockSize(): invalid format" << format, {});
@@ -182,7 +182,7 @@ Vector3i compressedBlockSize(const CompressedPixelFormat format) {
 
 UnsignedInt compressedBlockDataSize(const CompressedPixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "compressedBlockDataSize(): can't determine size of an implementation-specific format", {});
+        "compressedBlockDataSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(compressedPixelFormatUnwrap(format)), {});
 
     CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
         "compressedBlockDataSize(): invalid format" << format, {});
