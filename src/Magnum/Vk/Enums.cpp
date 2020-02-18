@@ -54,18 +54,18 @@ constexpr VkIndexType IndexTypeMapping[]{
 #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
 static_assert(VK_FORMAT_UNDEFINED == 0, "VK_FORMAT_UNDEFINED is assumed to be 0");
 
-constexpr VkFormat FormatMapping[] {
+constexpr VkFormat PixelFormatMapping[] {
     #define _c(input, format) VK_FORMAT_ ## format,
     #define _s(input) {},
-    #include "Magnum/Vk/Implementation/formatMapping.hpp"
+    #include "Magnum/Vk/Implementation/pixelFormatMapping.hpp"
     #undef _s
     #undef _c
 };
 
-constexpr VkFormat CompressedFormatMapping[] {
+constexpr VkFormat CompressedPixelFormatMapping[] {
     #define _c(input, format) VK_FORMAT_ ## format,
     #define _s(input) {},
-    #include "Magnum/Vk/Implementation/compressedFormatMapping.hpp"
+    #include "Magnum/Vk/Implementation/compressedPixelFormatMapping.hpp"
     #undef _s
     #undef _c
 };
@@ -126,27 +126,27 @@ bool hasVkFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(PixelFormatMapping),
         "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(FormatMapping[UnsignedInt(format) - 1]);
+    return UnsignedInt(PixelFormatMapping[UnsignedInt(format) - 1]);
 }
 
 bool hasVkFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedPixelFormatMapping),
         "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(CompressedFormatMapping[UnsignedInt(format) - 1]);
+    return UnsignedInt(CompressedPixelFormatMapping[UnsignedInt(format) - 1]);
 }
 
 VkFormat vkFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return pixelFormatUnwrap<VkFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(PixelFormatMapping),
         "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = FormatMapping[UnsignedInt(format) - 1];
+    const VkFormat out = PixelFormatMapping[UnsignedInt(format) - 1];
     CORRADE_ASSERT(UnsignedInt(out),
         "Vk::vkFormat(): unsupported format" << format, {});
     return out;
@@ -156,9 +156,9 @@ VkFormat vkFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return compressedPixelFormatUnwrap<VkFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedPixelFormatMapping),
         "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = CompressedFormatMapping[UnsignedInt(format) - 1];
+    const VkFormat out = CompressedPixelFormatMapping[UnsignedInt(format) - 1];
     CORRADE_ASSERT(UnsignedInt(out),
         "Vk::vkFormat(): unsupported format" << format, {});
     return out;

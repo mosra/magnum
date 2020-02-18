@@ -47,15 +47,15 @@ struct EnumsTest: TestSuite::Tester {
     void mapVkIndexTypeUnsupported();
     void mapVkIndexTypeInvalid();
 
-    void mapVkFormat();
-    void mapVkFormatImplementationSpecific();
-    void mapVkFormatUnsupported();
-    void mapVkFormatInvalid();
+    void mapVkFormatPixelFormat();
+    void mapVkFormatPixelFormatImplementationSpecific();
+    void mapVkFormatPixelFormatUnsupported();
+    void mapVkFormatPixelFormatInvalid();
 
-    void mapVkFormatCompressed();
-    void mapVkFormatCompressedImplementationSpecific();
-    void mapVkFormatCompressedUnsupported();
-    void mapVkFormatCompressedInvalid();
+    void mapVkFormatCompressedPixelFormat();
+    void mapVkFormatCompressedPixelFormatImplementationSpecific();
+    void mapVkFormatCompressedPixelFormatUnsupported();
+    void mapVkFormatCompressedPixelFormatInvalid();
 
     void mapVkFilter();
     void mapVkFilterInvalid();
@@ -78,15 +78,15 @@ EnumsTest::EnumsTest() {
               &EnumsTest::mapVkIndexTypeUnsupported,
               &EnumsTest::mapVkIndexTypeInvalid,
 
-              &EnumsTest::mapVkFormat,
-              &EnumsTest::mapVkFormatImplementationSpecific,
-              &EnumsTest::mapVkFormatUnsupported,
-              &EnumsTest::mapVkFormatInvalid,
+              &EnumsTest::mapVkFormatPixelFormat,
+              &EnumsTest::mapVkFormatPixelFormatImplementationSpecific,
+              &EnumsTest::mapVkFormatPixelFormatUnsupported,
+              &EnumsTest::mapVkFormatPixelFormatInvalid,
 
-              &EnumsTest::mapVkFormatCompressed,
-              &EnumsTest::mapVkFormatCompressedImplementationSpecific,
-              &EnumsTest::mapVkFormatCompressedUnsupported,
-              &EnumsTest::mapVkFormatCompressedInvalid,
+              &EnumsTest::mapVkFormatCompressedPixelFormat,
+              &EnumsTest::mapVkFormatCompressedPixelFormatImplementationSpecific,
+              &EnumsTest::mapVkFormatCompressedPixelFormatUnsupported,
+              &EnumsTest::mapVkFormatCompressedPixelFormatInvalid,
 
               &EnumsTest::mapVkFilter,
               &EnumsTest::mapVkFilterInvalid,
@@ -173,7 +173,7 @@ void EnumsTest::mapVkIndexTypeInvalid() {
         "Vk::vkIndexType(): invalid type MeshIndexType(0x123)\n");
 }
 
-void EnumsTest::mapVkFormat() {
+void EnumsTest::mapVkFormatPixelFormat() {
     /* Touchstone verification */
     CORRADE_VERIFY(hasVkFormat(Magnum::PixelFormat::RGBA8Unorm));
     CORRADE_COMPARE(vkFormat(Magnum::PixelFormat::RGBA8Unorm), VK_FORMAT_R8G8B8A8_UNORM);
@@ -217,7 +217,7 @@ void EnumsTest::mapVkFormat() {
                     ++nextHandled; \
                     continue; \
                 }
-            #include "Magnum/Vk/Implementation/formatMapping.hpp"
+            #include "Magnum/Vk/Implementation/pixelFormatMapping.hpp"
             #undef _s
             #undef _c
         }
@@ -234,13 +234,13 @@ void EnumsTest::mapVkFormat() {
     CORRADE_COMPARE(firstUnhandled, 0xffff);
 }
 
-void EnumsTest::mapVkFormatImplementationSpecific() {
+void EnumsTest::mapVkFormatPixelFormatImplementationSpecific() {
     CORRADE_VERIFY(hasVkFormat(Magnum::pixelFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)));
     CORRADE_COMPARE(vkFormat(Magnum::pixelFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)),
         VK_FORMAT_A8B8G8R8_SINT_PACK32);
 }
 
-void EnumsTest::mapVkFormatUnsupported() {
+void EnumsTest::mapVkFormatPixelFormatUnsupported() {
     #if 1
     CORRADE_SKIP("All pixel formats are supported.");
     #else
@@ -252,7 +252,7 @@ void EnumsTest::mapVkFormatUnsupported() {
     #endif
 }
 
-void EnumsTest::mapVkFormatInvalid() {
+void EnumsTest::mapVkFormatPixelFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -267,7 +267,7 @@ void EnumsTest::mapVkFormatInvalid() {
         "Vk::vkFormat(): invalid format PixelFormat(0x123)\n");
 }
 
-void EnumsTest::mapVkFormatCompressed() {
+void EnumsTest::mapVkFormatCompressedPixelFormat() {
     /* Touchstone verification */
     CORRADE_VERIFY(hasVkFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
     CORRADE_COMPARE(vkFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm), VK_FORMAT_BC1_RGBA_UNORM_BLOCK);
@@ -311,7 +311,7 @@ void EnumsTest::mapVkFormatCompressed() {
                     ++nextHandled; \
                     continue; \
                 }
-            #include "Magnum/Vk/Implementation/compressedFormatMapping.hpp"
+            #include "Magnum/Vk/Implementation/compressedPixelFormatMapping.hpp"
             #undef _s
             #undef _c
         }
@@ -328,13 +328,13 @@ void EnumsTest::mapVkFormatCompressed() {
     CORRADE_COMPARE(firstUnhandled, 0xffff);
 }
 
-void EnumsTest::mapVkFormatCompressedImplementationSpecific() {
+void EnumsTest::mapVkFormatCompressedPixelFormatImplementationSpecific() {
     CORRADE_VERIFY(hasVkFormat(Magnum::compressedPixelFormatWrap(VK_FORMAT_ASTC_10x6_UNORM_BLOCK)));
     CORRADE_COMPARE(vkFormat(Magnum::compressedPixelFormatWrap(VK_FORMAT_ASTC_10x6_UNORM_BLOCK)),
         VK_FORMAT_ASTC_10x6_UNORM_BLOCK);
 }
 
-void EnumsTest::mapVkFormatCompressedUnsupported() {
+void EnumsTest::mapVkFormatCompressedPixelFormatUnsupported() {
     CORRADE_VERIFY(!hasVkFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
     std::ostringstream out;
@@ -343,7 +343,7 @@ void EnumsTest::mapVkFormatCompressedUnsupported() {
     CORRADE_COMPARE(out.str(), "Vk::vkFormat(): unsupported format CompressedPixelFormat::Astc3x3x3RGBAUnorm\n");
 }
 
-void EnumsTest::mapVkFormatCompressedInvalid() {
+void EnumsTest::mapVkFormatCompressedPixelFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
