@@ -188,8 +188,7 @@ void EnumsTest::mapVkFormatPixelFormat() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that a particular pixel format maps to a particular vkFormat */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -282,8 +281,7 @@ void EnumsTest::mapVkFormatCompressedPixelFormat() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular GL format
-           - that a particular pixel type maps to a particular GL type */
+           - that a particular pixel format maps to a particular VkFormat */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
