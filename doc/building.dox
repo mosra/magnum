@@ -88,7 +88,7 @@ Starting from version 2019.01, stable releases of Magnum are available in the
 [magnum package documentation](https://docs.hunter.sh/en/latest/packages/pkg/magnum.html)
 for details.
 
-@subsection building-packages-vcpkg Vcpkg packages on Windows
+@subsection building-packages-vcpkg Vcpkg package
 
 Magnum is available as a [Vcpkg](https://github.com/Microsoft/vcpkg) package.
 After setting up Vcpkg as described in their README, it is recommended to set
