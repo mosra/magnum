@@ -140,7 +140,16 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
     GL::Buffer verticesRef = GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array);
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
         Containers::Optional<GL::DynamicAttribute> attribute;
+
+        /* Ignore implementation-specific formats because GL needs three
+           separate values to describe them so there's no way to put them in a
+           single 32-bit value :( */
         const VertexFormat format = meshData.attributeFormat(i);
+        if(isVertexFormatImplementationSpecific(format)) {
+            Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format));
+            continue;
+        }
+
         switch(meshData.attributeName(i)) {
             case Trade::MeshAttribute::Position:
                 /* Pick 3D position always, the type will properly reduce it to

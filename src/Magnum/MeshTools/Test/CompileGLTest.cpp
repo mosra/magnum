@@ -94,6 +94,7 @@ struct CompileGLTest: GL::OpenGLTester {
         void packedAttributes();
 
         void unknownAttribute();
+        void implementationSpecificAttributeFormat();
         void generateNormalsNoPosition();
         void generateNormals2DPosition();
         void generateNormalsNoFloats();
@@ -205,6 +206,7 @@ CompileGLTest::CompileGLTest() {
     addTests({&CompileGLTest::packedAttributes,
 
               &CompileGLTest::unknownAttribute,
+              &CompileGLTest::implementationSpecificAttributeFormat,
               &CompileGLTest::generateNormalsNoPosition,
               &CompileGLTest::generateNormals2DPosition,
               &CompileGLTest::generateNormalsNoFloats});
@@ -722,6 +724,18 @@ void CompileGLTest::unknownAttribute() {
     MeshTools::compile(data);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): ignoring unknown attribute Trade::MeshAttribute::Custom(115)\n");
+}
+
+void CompileGLTest::implementationSpecificAttributeFormat() {
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertexFormatWrap(0xdead), nullptr}}};
+
+    std::ostringstream out;
+    Warning redirectError{&out};
+    MeshTools::compile(data);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): ignoring attribute Trade::MeshAttribute::Position with an implementation-specific format 0xdead\n");
 }
 
 void CompileGLTest::generateNormalsNoPosition() {

@@ -103,6 +103,9 @@ possibly also an index buffer, if the mesh is indexed.
 -   If the mesh contains colors, these are bound to
     @ref Shaders::Generic::Color3 / @ref Shaders::Generic::Color4 based on
     their type.
+-   Custom attributes and known attributes of implementation-specific types
+    are ignored with a warning. See the @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+    for an example showing how to bind them manually.
 
 If normal generation is not requested, @ref Trade::MeshData::indexData() and
 @ref Trade::MeshData::vertexData() are uploaded as-is without any further
