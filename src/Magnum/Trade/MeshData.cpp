@@ -32,7 +32,7 @@
 
 namespace Magnum { namespace Trade {
 
-MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: MeshIndexData{type, data, nullptr} {
+MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: _type{type}, _data{data} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
@@ -84,14 +84,10 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         _vertexCount = 0;
     } else _vertexCount = _attributes[0]._data.size();
 
-    CORRADE_ASSERT(!_indices.empty() || !_indexData,
+    CORRADE_ASSERT(!_indices.empty() || _indexData.empty(),
         "Trade::MeshData: indexData passed for a non-indexed mesh", );
-    CORRADE_ASSERT(_indices.empty() || (_indices.begin() >= _indexData.begin() && _indices.end() <= _indexData.end()),
+    CORRADE_ASSERT(!_indices || (_indices.begin() >= _indexData.begin() && _indices.end() <= _indexData.end()),
         "Trade::MeshData: indices [" << Debug::nospace << static_cast<const void*>(_indices.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indices.end()) << Debug::nospace << "] are not contained in passed indexData array [" << Debug::nospace << static_cast<const void*>(_indexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_indexData.end()) << Debug::nospace << "]", );
-    CORRADE_ASSERT(!_attributes.empty() || !_vertexData,
-        "Trade::MeshData: vertexData passed for an attribute-less mesh", );
-    CORRADE_ASSERT(_vertexCount || !_vertexData,
-        "Trade::MeshData: vertexData passed for a mesh with zero vertices", );
 
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already checked in MeshIndexData / MeshAttributeData

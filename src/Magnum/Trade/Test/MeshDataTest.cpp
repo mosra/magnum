@@ -42,7 +42,6 @@ struct MeshDataTest: TestSuite::Tester {
     void debugAttributeName();
 
     void constructIndex();
-    void constructIndexZeroCount();
     void constructIndexTypeErased();
     void constructIndexTypeErasedWrongSize();
     void constructIndex2D();
@@ -63,6 +62,9 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeNonOwningArray();
 
     void construct();
+    void constructZeroIndices();
+    void constructZeroAttributes();
+    void constructZeroVertices();
     void constructIndexless();
     void constructIndexlessZeroVertices();
     void constructAttributeless();
@@ -76,8 +78,6 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributelessNotOwned();
 
     void constructIndexDataButNotIndexed();
-    void constructVertexDataButNoAttributes();
-    void constructVertexDataButNoVertices();
     void constructAttributelessInvalidIndices();
     void constructIndicesNotContained();
     void constructAttributeNotContained();
@@ -143,7 +143,6 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::debugAttributeName,
 
               &MeshDataTest::constructIndex,
-              &MeshDataTest::constructIndexZeroCount,
               &MeshDataTest::constructIndexTypeErased,
               &MeshDataTest::constructIndexTypeErasedWrongSize,
               &MeshDataTest::constructIndex2D,
@@ -164,6 +163,9 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeNonOwningArray,
 
               &MeshDataTest::construct,
+              &MeshDataTest::constructZeroIndices,
+              &MeshDataTest::constructZeroAttributes,
+              &MeshDataTest::constructZeroVertices,
               &MeshDataTest::constructIndexless,
               &MeshDataTest::constructIndexlessZeroVertices,
               &MeshDataTest::constructAttributeless,
@@ -179,8 +181,6 @@ MeshDataTest::MeshDataTest() {
         Containers::arraySize(SingleNotOwnedData));
 
     addTests({&MeshDataTest::constructIndexDataButNotIndexed,
-              &MeshDataTest::constructVertexDataButNoAttributes,
-              &MeshDataTest::constructVertexDataButNoVertices,
               &MeshDataTest::constructAttributelessInvalidIndices,
               &MeshDataTest::constructIndicesNotContained,
               &MeshDataTest::constructAttributeNotContained,
@@ -309,13 +309,6 @@ void MeshDataTest::constructIndex() {
         CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
         CORRADE_COMPARE(data.data(), IndexInts);
     }
-}
-
-void MeshDataTest::constructIndexZeroCount() {
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshIndexData{MeshIndexType::UnsignedInt, nullptr};
-    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead\n");
 }
 
 void MeshDataTest::constructIndexTypeErased() {
@@ -688,6 +681,66 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.attribute<Short>(meshAttributeCustom(13))[2], 22);
 }
 
+void MeshDataTest::constructZeroIndices() {
+    /* This is a valid use case because this could be an empty slice of a
+       well-defined indexed mesh. Explicitly use a non-null zero-sized array
+       to check the importer is checking size and not pointer. */
+    Containers::Array<char> vertexData{3*sizeof(Vector3)};
+    auto vertices = Containers::arrayCast<Vector3>(vertexData);
+    char i;
+    Containers::Array<char> indexData{&i, 0, [](char*, std::size_t){}};
+    auto indices = Containers::arrayCast<UnsignedInt>(indexData);
+    MeshAttributeData positions{MeshAttribute::Position, vertices};
+    MeshData data{MeshPrimitive::Triangles,
+        std::move(indexData), MeshIndexData{indices},
+        std::move(vertexData), {positions}};
+
+    CORRADE_COMPARE(data.indexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE(data.indexCount(), 0);
+    CORRADE_COMPARE(data.vertexCount(), 3);
+}
+
+void MeshDataTest::constructZeroAttributes() {
+    /* This is a valid use case because e.g. the index/vertex data can be
+       shared by multiple meshes and this particular one is just a plain
+       index array */
+    Containers::Array<char> indexData{3*sizeof(UnsignedInt)};
+    Containers::Array<char> vertexData{3};
+    auto indexView = Containers::arrayCast<UnsignedInt>(indexData);
+    MeshData data{MeshPrimitive::Triangles,
+        std::move(indexData), MeshIndexData{indexView},
+        std::move(vertexData), {}};
+
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.attributeCount(), 0);
+    CORRADE_VERIFY(!data.attributeData());
+    CORRADE_COMPARE(data.vertexData().size(), 3);
+    CORRADE_COMPARE(data.vertexCount(), 0);
+}
+
+void MeshDataTest::constructZeroVertices() {
+    /* This is a valid use case because this could be an empty slice of a
+       well-defined indexed mesh */
+    Containers::Array<char> indexData{3*sizeof(UnsignedInt)};
+    auto indexView = Containers::arrayCast<UnsignedInt>(indexData);
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, nullptr};
+    MeshData data{MeshPrimitive::Triangles,
+        std::move(indexData), MeshIndexData{indexView},
+        nullptr, {positions}};
+
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
+    CORRADE_COMPARE(data.attributeCount(), 1);
+    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector3);
+    CORRADE_COMPARE(data.attribute<Vector3>(0).size(), 0);
+    CORRADE_VERIFY(!data.vertexData());
+    CORRADE_COMPARE(data.vertexCount(), 0);
+}
+
 void MeshDataTest::constructIndexless() {
     Containers::Array<char> vertexData{3*sizeof(Vector2)};
     auto vertexView = Containers::arrayCast<Vector2>(vertexData);
@@ -1002,26 +1055,6 @@ void MeshDataTest::constructIndexDataButNotIndexed() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
     MeshData{MeshPrimitive::Points, std::move(indexData), MeshIndexData{}, nullptr, {positions}};
     CORRADE_COMPARE(out.str(), "Trade::MeshData: indexData passed for a non-indexed mesh\n");
-}
-
-void MeshDataTest::constructVertexDataButNoAttributes() {
-    Containers::Array<char> indexData{6};
-    Containers::Array<char> vertexData{6};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshData{MeshPrimitive::Points, std::move(indexData), MeshIndexData{Containers::arrayCast<UnsignedShort>(indexData)}, std::move(vertexData), {}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: vertexData passed for an attribute-less mesh\n");
-}
-
-void MeshDataTest::constructVertexDataButNoVertices() {
-    Containers::Array<char> vertexData{6};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
-    MeshData{MeshPrimitive::LineLoop, std::move(vertexData), {positions}};
-    CORRADE_COMPARE(out.str(), "Trade::MeshData: vertexData passed for a mesh with zero vertices\n");
 }
 
 void MeshDataTest::constructAttributelessInvalidIndices() {
