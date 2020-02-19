@@ -45,6 +45,10 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexZeroCount();
     void constructIndexTypeErased();
     void constructIndexTypeErasedWrongSize();
+    void constructIndex2D();
+    void constructIndex2DWrongSize();
+    void constructIndex2DNonContiguous();
+    void constructIndexNullptr();
 
     void constructAttribute();
     void constructAttributeCustom();
@@ -142,6 +146,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexZeroCount,
               &MeshDataTest::constructIndexTypeErased,
               &MeshDataTest::constructIndexTypeErasedWrongSize,
+              &MeshDataTest::constructIndex2D,
+              &MeshDataTest::constructIndex2DWrongSize,
+              &MeshDataTest::constructIndex2DNonContiguous,
+              &MeshDataTest::constructIndexNullptr,
 
               &MeshDataTest::constructAttribute,
               &MeshDataTest::constructAttributeCustom,
@@ -326,6 +334,49 @@ void MeshDataTest::constructIndexTypeErasedWrongSize() {
     CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view size 6 does not correspond to MeshIndexType::UnsignedInt\n");
 }
 
+void MeshDataTest::constructIndex2D() {
+    {
+        const UnsignedByte indexData[]{25, 132, 3};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(indices.data().data(), indexData);
+    } {
+        const UnsignedShort indexData[]{2575, 13224, 3};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(indices.data().data(), indexData);
+    } {
+        const UnsignedInt indexData[]{2110122, 132257, 3};
+        MeshIndexData indices{Containers::arrayCast<2, const char>(Containers::stridedArrayView(indexData))};
+        CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(indices.data().data(), indexData);
+    }
+}
+
+void MeshDataTest::constructIndex2DWrongSize() {
+    const char data[3*3]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 3}}};
+    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: expected index type size 1, 2 or 4 but got 3\n");
+}
+
+void MeshDataTest::constructIndex2DNonContiguous() {
+    const char data[3*4]{};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshIndexData{Containers::StridedArrayView2D<const char>{data, {3, 2}, {4, 2}}};
+    CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view is not contiguous\n");
+}
+
+void MeshDataTest::constructIndexNullptr() {
+    /* Just verify it's not ambiguous */
+    MeshIndexData data{nullptr};
+    CORRADE_VERIFY(!data.data());
+}
+
 constexpr Vector2 Positions[] {
     {1.2f, 0.2f},
     {2.2f, 1.1f},
@@ -500,6 +551,13 @@ void MeshDataTest::construct() {
     CORRADE_VERIFY(data.isIndexed());
     CORRADE_COMPARE(data.indexCount(), 6);
     CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+
+    /* Typeless index access with a cast later */
+    CORRADE_COMPARE((Containers::arrayCast<1, const UnsignedShort>(data.indices())[1]), 1);
+    CORRADE_COMPARE((Containers::arrayCast<1, const UnsignedShort>(data.indices())[3]), 0);
+    CORRADE_COMPARE((Containers::arrayCast<1, const UnsignedShort>(data.indices())[4]), 2);
+
+    /* Typed index access */
     CORRADE_COMPARE(data.indices<UnsignedShort>()[0], 0);
     CORRADE_COMPARE(data.indices<UnsignedShort>()[2], 2);
     CORRADE_COMPARE(data.indices<UnsignedShort>()[5], 1);
@@ -1374,6 +1432,7 @@ void MeshDataTest::mutableAccessNotAllowed() {
     Error redirectError{&out};
     data.mutableIndexData();
     data.mutableVertexData();
+    data.mutableIndices();
     data.mutableIndices<UnsignedShort>();
     data.mutableAttribute(0);
     data.mutableAttribute<Vector2>(0);
@@ -1382,6 +1441,7 @@ void MeshDataTest::mutableAccessNotAllowed() {
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::mutableIndexData(): index data not mutable\n"
         "Trade::MeshData::mutableVertexData(): vertex data not mutable\n"
+        "Trade::MeshData::mutableIndices(): index data not mutable\n"
         "Trade::MeshData::mutableIndices(): index data not mutable\n"
         "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
         "Trade::MeshData::mutableAttribute(): vertex data not mutable\n"
@@ -1396,6 +1456,7 @@ void MeshDataTest::indicesNotIndexed() {
     Error redirectError{&out};
     data.indexCount();
     data.indexType();
+    data.indices();
     data.indices<UnsignedInt>();
     data.indicesAsArray();
     UnsignedInt a[1];
@@ -1403,6 +1464,7 @@ void MeshDataTest::indicesNotIndexed() {
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::indexCount(): the mesh is not indexed\n"
         "Trade::MeshData::indexType(): the mesh is not indexed\n"
+        "Trade::MeshData::indices(): the mesh is not indexed\n"
         "Trade::MeshData::indices(): the mesh is not indexed\n"
         "Trade::MeshData::indicesAsArray(): the mesh is not indexed\n"
         "Trade::MeshData::indicesInto(): the mesh is not indexed\n");

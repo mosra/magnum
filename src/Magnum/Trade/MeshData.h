@@ -159,7 +159,7 @@ introduction.
 class MAGNUM_TRADE_EXPORT MeshIndexData {
     public:
         /** @brief Construct for a non-indexed mesh */
-        explicit MeshIndexData() noexcept: _type{} {}
+        explicit MeshIndexData(std::nullptr_t = nullptr) noexcept: _type{} {}
 
         /**
          * @brief Construct with a runtime-specified index type
@@ -184,6 +184,15 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 
         /** @brief Construct with unsigned int indices */
         constexpr explicit MeshIndexData(Containers::ArrayView<const UnsignedInt> data) noexcept: MeshIndexData{MeshIndexType::UnsignedInt, data, nullptr} {}
+
+        /**
+         * @brief Constructor
+         *
+         * Expects that @p data is contiguous and size of the second dimension
+         * is either 1, 2 or 4, corresponding to one of the @ref MeshIndexType
+         * values.
+         */
+        explicit MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept;
 
         /** @brief Index type */
         constexpr MeshIndexType type() const { return _type; }
@@ -675,6 +684,26 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Mesh indices
          *
+         * The view is guaranteed to be contiguous and its second dimension
+         * represents the actual data type (its size is equal to type size).
+         * Use the templated overload below to get the indices in a concrete
+         * type.
+         * @see @ref Corrade::Containers::StridedArrayView::isContiguous()
+         */
+        Containers::StridedArrayView2D<const char> indices() const;
+
+        /**
+         * @brief Mutable mesh indices
+         *
+         * Like @ref indices() const, but returns a mutable view. Expects that
+         * the mesh is mutable.
+         * @see @ref indexDataFlags()
+         */
+        Containers::StridedArrayView2D<char> mutableIndices();
+
+        /**
+         * @brief Mesh indices in a concrete type
+         *
          * Expects that the mesh is indexed and that @p T corresponds to
          * @ref indexType(). You can also use the non-templated
          * @ref indicesAsArray() accessor to get indices converted to 32-bit,
@@ -685,7 +714,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         template<class T> Containers::ArrayView<const T> indices() const;
 
         /**
-         * @brief Mutable mesh indices
+         * @brief Mutable mesh indices in a concrete type
          *
          * Like @ref indices() const, but returns a mutable view. Expects that
          * the mesh is mutable.
@@ -1140,21 +1169,23 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
 template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, nullptr} {}
 
 template<class T> Containers::ArrayView<const T> MeshData::indices() const {
-    CORRADE_ASSERT(isIndexed(),
-        "Trade::MeshData::indices(): the mesh is not indexed", {});
+    Containers::StridedArrayView2D<const char> data = indices();
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::indices(): improper type requested for" << _indexType, nullptr);
-    return Containers::arrayCast<const T>(_indices);
+    return Containers::arrayCast<1, const T>(data).asContiguous();
 }
 
 template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
-    CORRADE_ASSERT(_indexDataFlags & DataFlag::Mutable,
-        "Trade::MeshData::mutableIndices(): index data not mutable", {});
-    CORRADE_ASSERT(isIndexed(),
-        "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
+    Containers::StridedArrayView2D<char> data = mutableIndices();
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
     CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
         "Trade::MeshData::mutableIndices(): improper type requested for" << _indexType, nullptr);
-    return Containers::arrayCast<T>(reinterpret_cast<Containers::ArrayView<char>&>(_indices));
+    return Containers::arrayCast<1, T>(data).asContiguous();
 }
 
 template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(UnsignedInt id) const {
