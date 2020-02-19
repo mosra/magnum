@@ -115,6 +115,7 @@ struct MeshDataTest: TestSuite::Tester {
     void attributeWrongType();
 
     void releaseIndexData();
+    void releaseAttributeData();
     void releaseVertexData();
 };
 
@@ -223,6 +224,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::attributeWrongType,
 
               &MeshDataTest::releaseIndexData,
+              &MeshDataTest::releaseAttributeData,
               &MeshDataTest::releaseVertexData});
 }
 
@@ -1581,19 +1583,26 @@ void MeshDataTest::attributeWrongType() {
 }
 
 void MeshDataTest::releaseIndexData() {
-    Containers::Array<char> indexData{6};
-    auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
+    Containers::Array<char> indexData{23};
+    auto indexView = Containers::arrayCast<UnsignedShort>(indexData.slice(6, 12));
 
     MeshData data{MeshPrimitive::TriangleStrip, std::move(indexData), MeshIndexData{indexView}};
     CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 3);
+    CORRADE_COMPARE(data.indexOffset(), 6);
 
     Containers::Array<char> released = data.releaseIndexData();
-    CORRADE_COMPARE(static_cast<void*>(released.data()), indexView.data());
-    CORRADE_COMPARE(data.indexData(), nullptr);
-    CORRADE_VERIFY(!data.isIndexed());
+    CORRADE_COMPARE(static_cast<void*>(released.data() + 6), indexView.data());
+    /* This is not null as we still need the value for calculating offsets */
+    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), released.data());
+    CORRADE_COMPARE(data.indexData().size(), 0);
+    CORRADE_VERIFY(data.isIndexed());
+    CORRADE_COMPARE(data.indexCount(), 0);
+    CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indexOffset(), 6);
 }
 
-void MeshDataTest::releaseVertexData() {
+void MeshDataTest::releaseAttributeData() {
     Containers::Array<char> vertexData{16};
     auto vertexView = Containers::arrayCast<Vector2>(vertexData);
 
@@ -1601,9 +1610,43 @@ void MeshDataTest::releaseVertexData() {
     MeshData data{MeshPrimitive::LineLoop, std::move(vertexData), {positions, positions}};
     CORRADE_COMPARE(data.attributeCount(), 2);
 
-    Containers::Array<char> released = data.releaseVertexData();
-    CORRADE_COMPARE(data.vertexData(), nullptr);
+    Containers::Array<MeshAttributeData> released = data.releaseAttributeData();
+    CORRADE_COMPARE(released.size(), 2);
+    CORRADE_COMPARE(static_cast<const void*>(released[0].data().data()), vertexView.data());
+    CORRADE_COMPARE(released[0].data().size(), 2);
+    /* Unlike the other two, this is null as we don't need the value for
+       calculating anything */
+    CORRADE_COMPARE(static_cast<const void*>(data.attributeData()), nullptr);
     CORRADE_COMPARE(data.attributeCount(), 0);
+    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView);
+    CORRADE_COMPARE(data.vertexCount(), 2);
+}
+
+void MeshDataTest::releaseVertexData() {
+    Containers::Array<char> vertexData{80};
+    auto vertexView = Containers::arrayCast<Vector2>(vertexData.slice(48, 72));
+
+    MeshAttributeData positions{MeshAttribute::Position, vertexView};
+    MeshData data{MeshPrimitive::LineLoop, std::move(vertexData), {positions, positions}};
+    CORRADE_COMPARE(data.attributeCount(), 2);
+    CORRADE_COMPARE(data.vertexCount(), 3);
+    CORRADE_COMPARE(data.attributeOffset(0), 48);
+
+    Containers::Array<char> released = data.releaseVertexData();
+    CORRADE_VERIFY(data.attributeData());
+    CORRADE_COMPARE(data.attributeCount(), 2);
+    CORRADE_COMPARE(static_cast<const void*>(static_cast<const char*>(data.attribute(0).data())), vertexView.data());
+    CORRADE_COMPARE(static_cast<const void*>(static_cast<const char*>(data.mutableAttribute(0).data())), vertexView.data());
+    /* Returned views should be patched to have zero size (but not the direct
+       access, there it stays as it's an internal API really) */
+    CORRADE_COMPARE(data.attribute(0).size()[0], 0);
+    CORRADE_COMPARE(data.mutableAttribute(0).size()[0], 0);
+    CORRADE_COMPARE(data.attributeData()[0].data().size(), 3);
+    CORRADE_COMPARE(static_cast<void*>(released.data() + 48), vertexView.data());
+    /* This is not null as we still need the value for calculating offsets */
+    CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), released.data());
+    CORRADE_COMPARE(data.vertexCount(), 0);
+    CORRADE_COMPARE(data.attributeOffset(0), 48);
 }
 
 }}}}

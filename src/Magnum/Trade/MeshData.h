@@ -1073,21 +1073,45 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Releases the ownership of the index data array and resets internal
          * index-related state to default. The mesh then behaves like
-         * non-indexed. Note that the returned array has a custom no-op deleter
-         * when the data are not owned by the mesh, and while the returned
-         * array type is mutable, the actual memory might be not.
+         * it has zero indices (but it can still have a non-zero vertex count),
+         * however @ref indexData() still return a zero-sized non-null array so
+         * index offset calculation continues to work as expected.
+         *
+         * Note that the returned array has a custom no-op deleter when the
+         * data are not owned by the mesh, and while the returned array type is
+         * mutable, the actual memory might be not.
          * @see @ref indexData(), @ref indexDataFlags()
          */
         Containers::Array<char> releaseIndexData();
 
         /**
+         * @brief Release attribute data storage
+         *
+         * Releases the ownership of the attribute data array and resets
+         * internal attribute-related state to default. The mesh then behaves
+         * like if it has no attributes (but it can still have a non-zero
+         * vertex count). Note that the returned array has a custom no-op
+         * deleter when the data are not owned by the mesh, and while the
+         * returned array type is mutable, the actual memory might be not ---
+         * use this function only if you are sure about the origin of the
+         * array.
+         * @see @ref attributeData()
+         */
+        Containers::Array<MeshAttributeData> releaseAttributeData();
+
+        /**
          * @brief Release vertex data storage
          *
-         * Releases the ownership of the index data array and resets internal
-         * attribute-related state to default. The mesh then behaves like if
-         * it has no attributes. Note that the returned array has a custom
-         * no-op deleter when the data are not owned by the mesh, and while the
-         * returned array type is mutable, the actual memory might be not.
+         * Releases the ownership of the vertex data array and resets internal
+         * attribute-related state to default. The mesh then behaves like it
+         * has zero vertices (but it can still have a non-zero amount of
+         * attributes), however @ref vertexData() will still return a zero-
+         * sized non-null array so attribute offset calculation continues to
+         * work as expected.
+         *
+         * Note that the returned array has a custom no-op deleter when the
+         * data are not owned by the mesh, and while the returned array type is
+         * mutable, the actual memory might be not.
          * @see @ref vertexData(), @ref vertexDataFlags()
          */
         Containers::Array<char> releaseVertexData();

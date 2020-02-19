@@ -282,9 +282,11 @@ UnsignedInt MeshData::attributeStride(MeshAttribute name, UnsignedInt id) const 
 Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
-    /* Build a 2D view using information about attribute type size */
+    /* Build a 2D view using information about attribute type size, return only
+       a prefix of the actual vertex count (which is zero in case vertex data
+       is released) */
     return Containers::arrayCast<2, const char>(_attributes[id]._data,
-        vertexFormatSize(_attributes[id]._format));
+        vertexFormatSize(_attributes[id]._format)).prefix(_vertexCount);
 }
 
 Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) {
@@ -292,9 +294,11 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) 
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
-    /* Build a 2D view using information about attribute type size */
+    /* Build a 2D view using information about attribute type size, return only
+       a prefix of the actual vertex count (which is zero in case vertex data
+       is released) */
     auto out = Containers::arrayCast<2, const char>(_attributes[id]._data,
-        vertexFormatSize(_attributes[id]._format));
+        vertexFormatSize(_attributes[id]._format)).prefix(_vertexCount);
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
@@ -458,14 +462,21 @@ Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
 }
 
 Containers::Array<char> MeshData::releaseIndexData() {
-    _indexType = MeshIndexType{}; /* so isIndexed() returns false */
-    _indices = nullptr;
-    return std::move(_indexData);
+    _indices = {_indices.data(), 0};
+    Containers::Array<char> out = std::move(_indexData);
+    _indexData = Containers::Array<char>{out.data(), 0, Implementation::nonOwnedArrayDeleter};
+    return out;
+}
+
+Containers::Array<MeshAttributeData> MeshData::releaseAttributeData() {
+    return std::move(_attributes);
 }
 
 Containers::Array<char> MeshData::releaseVertexData() {
-    _attributes = nullptr;
-    return std::move(_vertexData);
+    _vertexCount = 0;
+    Containers::Array<char> out = std::move(_vertexData);
+    _vertexData = Containers::Array<char>{out.data(), 0, Implementation::nonOwnedArrayDeleter};
+    return out;
 }
 
 Debug& operator<<(Debug& debug, const MeshAttribute value) {
