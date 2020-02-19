@@ -40,9 +40,38 @@ struct VertexFormatTest: TestSuite::Tester {
 
     void size();
     void sizeInvalid();
+    void componentCount();
+    void componentCountInvalid();
+    void componentFormat();
+    void componentFormatInvalid();
+    void isNormalized();
+    void isNormalizedInvalid();
+
+    void assemble();
+    void assembleRoundtrip();
+    void assembleCantNormalize();
+    void assembleInvalidComponentCount();
 
     void debug();
     void configuration();
+};
+
+constexpr struct {
+    VertexFormat componentType;
+    bool normalized;
+} CombineRoundtripData[] {
+    {VertexFormat::Float, false},
+    {VertexFormat::Double, false},
+    {VertexFormat::UnsignedByte, false},
+    {VertexFormat::UnsignedByte, true},
+    {VertexFormat::Byte, false},
+    {VertexFormat::Byte, true},
+    {VertexFormat::UnsignedShort, false},
+    {VertexFormat::UnsignedShort, true},
+    {VertexFormat::Short, false},
+    {VertexFormat::Short, true},
+    {VertexFormat::UnsignedInt, false},
+    {VertexFormat::Int, false}
 };
 
 VertexFormatTest::VertexFormatTest() {
@@ -50,6 +79,20 @@ VertexFormatTest::VertexFormatTest() {
 
               &VertexFormatTest::size,
               &VertexFormatTest::sizeInvalid,
+              &VertexFormatTest::componentCount,
+              &VertexFormatTest::componentCountInvalid,
+              &VertexFormatTest::componentFormat,
+              &VertexFormatTest::componentFormatInvalid,
+              &VertexFormatTest::isNormalized,
+              &VertexFormatTest::isNormalizedInvalid,
+
+              &VertexFormatTest::assemble});
+
+    addRepeatedInstancedTests({&VertexFormatTest::assembleRoundtrip}, 4,
+        Containers::arraySize(CombineRoundtripData));
+
+    addTests({&VertexFormatTest::assembleCantNormalize,
+              &VertexFormatTest::assembleInvalidComponentCount,
 
               &VertexFormatTest::debug,
               &VertexFormatTest::configuration});
@@ -110,6 +153,120 @@ void VertexFormatTest::sizeInvalid() {
     CORRADE_COMPARE(out.str(),
         "vertexFormatSize(): invalid format VertexFormat(0x0)\n"
         "vertexFormatSize(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::componentCount() {
+    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::UnsignedByteNormalized), 1);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector2us), 2);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector3bNormalized), 3);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector4), 4);
+}
+
+void VertexFormatTest::componentCountInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Magnum::vertexFormatComponentCount(VertexFormat{});
+    Magnum::vertexFormatComponentCount(VertexFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatComponentCount(): invalid format VertexFormat(0x0)\n"
+        "vertexFormatComponentCount(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::componentFormat() {
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector4), VertexFormat::Float);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3h), VertexFormat::Half);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2d), VertexFormat::Double);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::UnsignedByte), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::UnsignedByteNormalized), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3bNormalized), VertexFormat::Byte);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2us), VertexFormat::UnsignedShort);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2sNormalized), VertexFormat::Short);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2ui), VertexFormat::UnsignedInt);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3i), VertexFormat::Int);
+}
+
+void VertexFormatTest::componentFormatInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Magnum::vertexFormatComponentFormat(VertexFormat{});
+    Magnum::vertexFormatComponentFormat(VertexFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatComponentType(): invalid format VertexFormat(0x0)\n"
+        "vertexFormatComponentType(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::isNormalized() {
+    CORRADE_VERIFY(isVertexFormatNormalized(VertexFormat::UnsignedByteNormalized));
+    CORRADE_VERIFY(!isVertexFormatNormalized(VertexFormat::Vector2us));
+    CORRADE_VERIFY(isVertexFormatNormalized(VertexFormat::Vector3bNormalized));
+    CORRADE_VERIFY(!isVertexFormatNormalized(VertexFormat::Vector4));
+}
+
+void VertexFormatTest::isNormalizedInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    isVertexFormatNormalized(VertexFormat{});
+    isVertexFormatNormalized(VertexFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "isVertexFormatNormalized(): invalid format VertexFormat(0x0)\n"
+        "isVertexFormatNormalized(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::assemble() {
+    CORRADE_COMPARE(vertexFormat(VertexFormat::UnsignedShort, 3, true),
+        VertexFormat::Vector3usNormalized);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Int, 4, false),
+        VertexFormat::Vector4i);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Double, 1, false),
+        VertexFormat::Double);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Byte, 1, true),
+        VertexFormat::ByteNormalized);
+
+    /* Non-scalar types allowed too, as that makes the internal checking
+       much simpler than when requiring the type to be scalar non-normalized */
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Vector4bNormalized, 2, false),
+        VertexFormat::Vector2b);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Vector3h, 2, false),
+        VertexFormat::Vector2h);
+}
+
+void VertexFormatTest::assembleRoundtrip() {
+    auto&& data = CombineRoundtripData[testCaseInstanceId()];
+
+    std::ostringstream out;
+    {
+        Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
+        d << data.componentType;
+        if(data.normalized) d << Debug::nospace << ", normalized";
+    }
+    setTestCaseDescription(out.str());
+
+    VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 1, data.normalized);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(result), data.componentType);
+    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(result), testCaseRepeatId() + 1);
+    CORRADE_COMPARE(isVertexFormatNormalized(result), data.normalized);
+}
+
+void VertexFormatTest::assembleCantNormalize() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormat(VertexFormat::Vector2, 1, true);
+    CORRADE_COMPARE(out.str(),
+        "vertexFormat(): VertexFormat::Vector2 can't be made normalized\n");
+}
+
+void VertexFormatTest::assembleInvalidComponentCount() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormat(VertexFormat::Vector3, 5, false);
+    CORRADE_COMPARE(out.str(),
+        "vertexFormat(): invalid component count 5\n");
 }
 
 void VertexFormatTest::debug() {

@@ -35,21 +35,316 @@ namespace Magnum {
 UnsignedInt vertexFormatSize(const VertexFormat format) {
     switch(format) {
         case VertexFormat::UnsignedByte:
+        case VertexFormat::UnsignedByteNormalized:
         case VertexFormat::Byte:
+        case VertexFormat::ByteNormalized:
             return 1;
+        case VertexFormat::Half:
         case VertexFormat::UnsignedShort:
+        case VertexFormat::UnsignedShortNormalized:
         case VertexFormat::Short:
+        case VertexFormat::ShortNormalized:
+        case VertexFormat::Vector2ub:
+        case VertexFormat::Vector2ubNormalized:
+        case VertexFormat::Vector2b:
+        case VertexFormat::Vector2bNormalized:
             return 2;
+        case VertexFormat::Vector3ub:
+        case VertexFormat::Vector3ubNormalized:
+        case VertexFormat::Vector3b:
+        case VertexFormat::Vector3bNormalized:
+            return 3;
         case VertexFormat::Float:
         case VertexFormat::UnsignedInt:
         case VertexFormat::Int:
+        case VertexFormat::Vector2h:
+        case VertexFormat::Vector2us:
+        case VertexFormat::Vector2usNormalized:
+        case VertexFormat::Vector2s:
+        case VertexFormat::Vector2sNormalized:
+        case VertexFormat::Vector4ub:
+        case VertexFormat::Vector4ubNormalized:
+        case VertexFormat::Vector4b:
+        case VertexFormat::Vector4bNormalized:
             return 4;
-        case VertexFormat::Vector2: return 8;
-        case VertexFormat::Vector3: return 12;
-        case VertexFormat::Vector4: return 16;
+        case VertexFormat::Vector3h:
+        case VertexFormat::Vector3us:
+        case VertexFormat::Vector3usNormalized:
+        case VertexFormat::Vector3s:
+        case VertexFormat::Vector3sNormalized:
+            return 6;
+        case VertexFormat::Double:
+        case VertexFormat::Vector2:
+        case VertexFormat::Vector2ui:
+        case VertexFormat::Vector2i:
+        case VertexFormat::Vector4h:
+        case VertexFormat::Vector4us:
+        case VertexFormat::Vector4usNormalized:
+        case VertexFormat::Vector4s:
+        case VertexFormat::Vector4sNormalized:
+            return 8;
+        case VertexFormat::Vector3:
+        case VertexFormat::Vector3ui:
+        case VertexFormat::Vector3i:
+            return 12;
+        case VertexFormat::Vector2d:
+        case VertexFormat::Vector4:
+        case VertexFormat::Vector4ui:
+        case VertexFormat::Vector4i:
+            return 16;
+        case VertexFormat::Vector3d:
+            return 24;
+        case VertexFormat::Vector4d:
+            return 32;
     }
 
     CORRADE_ASSERT(false, "vertexFormatSize(): invalid format" << format, {});
+}
+
+UnsignedInt vertexFormatComponentCount(const VertexFormat format) {
+    switch(format) {
+        case VertexFormat::Float:
+        case VertexFormat::Half:
+        case VertexFormat::Double:
+        case VertexFormat::UnsignedByte:
+        case VertexFormat::UnsignedByteNormalized:
+        case VertexFormat::Byte:
+        case VertexFormat::ByteNormalized:
+        case VertexFormat::UnsignedShort:
+        case VertexFormat::UnsignedShortNormalized:
+        case VertexFormat::Short:
+        case VertexFormat::ShortNormalized:
+        case VertexFormat::UnsignedInt:
+        case VertexFormat::Int:
+            return 1;
+
+        case VertexFormat::Vector2:
+        case VertexFormat::Vector2h:
+        case VertexFormat::Vector2d:
+        case VertexFormat::Vector2ub:
+        case VertexFormat::Vector2ubNormalized:
+        case VertexFormat::Vector2b:
+        case VertexFormat::Vector2bNormalized:
+        case VertexFormat::Vector2us:
+        case VertexFormat::Vector2usNormalized:
+        case VertexFormat::Vector2s:
+        case VertexFormat::Vector2sNormalized:
+        case VertexFormat::Vector2ui:
+        case VertexFormat::Vector2i:
+            return 2;
+
+        case VertexFormat::Vector3:
+        case VertexFormat::Vector3h:
+        case VertexFormat::Vector3d:
+        case VertexFormat::Vector3ub:
+        case VertexFormat::Vector3ubNormalized:
+        case VertexFormat::Vector3b:
+        case VertexFormat::Vector3bNormalized:
+        case VertexFormat::Vector3us:
+        case VertexFormat::Vector3usNormalized:
+        case VertexFormat::Vector3s:
+        case VertexFormat::Vector3sNormalized:
+        case VertexFormat::Vector3ui:
+        case VertexFormat::Vector3i:
+            return 3;
+
+        case VertexFormat::Vector4:
+        case VertexFormat::Vector4h:
+        case VertexFormat::Vector4d:
+        case VertexFormat::Vector4ub:
+        case VertexFormat::Vector4ubNormalized:
+        case VertexFormat::Vector4b:
+        case VertexFormat::Vector4bNormalized:
+        case VertexFormat::Vector4us:
+        case VertexFormat::Vector4usNormalized:
+        case VertexFormat::Vector4s:
+        case VertexFormat::Vector4sNormalized:
+        case VertexFormat::Vector4ui:
+        case VertexFormat::Vector4i:
+            return 4;
+    }
+
+    CORRADE_ASSERT(false, "vertexFormatComponentCount(): invalid format" << format, {});
+}
+
+VertexFormat vertexFormatComponentFormat(const VertexFormat format) {
+    switch(format) {
+        case VertexFormat::Float:
+        case VertexFormat::Vector2:
+        case VertexFormat::Vector3:
+        case VertexFormat::Vector4:
+            return VertexFormat::Float;
+
+        case VertexFormat::Half:
+        case VertexFormat::Vector2h:
+        case VertexFormat::Vector3h:
+        case VertexFormat::Vector4h:
+            return VertexFormat::Half;
+
+        case VertexFormat::Double:
+        case VertexFormat::Vector2d:
+        case VertexFormat::Vector3d:
+        case VertexFormat::Vector4d:
+            return VertexFormat::Double;
+
+        case VertexFormat::UnsignedByte:
+        case VertexFormat::UnsignedByteNormalized:
+        case VertexFormat::Vector2ub:
+        case VertexFormat::Vector2ubNormalized:
+        case VertexFormat::Vector3ub:
+        case VertexFormat::Vector3ubNormalized:
+        case VertexFormat::Vector4ub:
+        case VertexFormat::Vector4ubNormalized:
+            return VertexFormat::UnsignedByte;
+
+        case VertexFormat::Byte:
+        case VertexFormat::ByteNormalized:
+        case VertexFormat::Vector2b:
+        case VertexFormat::Vector2bNormalized:
+        case VertexFormat::Vector3b:
+        case VertexFormat::Vector3bNormalized:
+        case VertexFormat::Vector4b:
+        case VertexFormat::Vector4bNormalized:
+            return VertexFormat::Byte;
+
+        case VertexFormat::UnsignedShort:
+        case VertexFormat::UnsignedShortNormalized:
+        case VertexFormat::Vector2us:
+        case VertexFormat::Vector2usNormalized:
+        case VertexFormat::Vector3us:
+        case VertexFormat::Vector3usNormalized:
+        case VertexFormat::Vector4us:
+        case VertexFormat::Vector4usNormalized:
+            return VertexFormat::UnsignedShort;
+
+        case VertexFormat::Short:
+        case VertexFormat::ShortNormalized:
+        case VertexFormat::Vector2s:
+        case VertexFormat::Vector2sNormalized:
+        case VertexFormat::Vector3s:
+        case VertexFormat::Vector3sNormalized:
+        case VertexFormat::Vector4s:
+        case VertexFormat::Vector4sNormalized:
+            return VertexFormat::Short;
+
+        case VertexFormat::UnsignedInt:
+        case VertexFormat::Vector2ui:
+        case VertexFormat::Vector3ui:
+        case VertexFormat::Vector4ui:
+            return VertexFormat::UnsignedInt;
+
+        case VertexFormat::Int:
+        case VertexFormat::Vector2i:
+        case VertexFormat::Vector3i:
+        case VertexFormat::Vector4i:
+            return VertexFormat::Int;
+    }
+
+    CORRADE_ASSERT(false, "vertexFormatComponentType(): invalid format" << format, {});
+}
+
+bool isVertexFormatNormalized(const VertexFormat format) {
+    switch(format) {
+        case VertexFormat::Float:
+        case VertexFormat::Half:
+        case VertexFormat::Double:
+        case VertexFormat::UnsignedByte:
+        case VertexFormat::Byte:
+        case VertexFormat::UnsignedShort:
+        case VertexFormat::Short:
+        case VertexFormat::UnsignedInt:
+        case VertexFormat::Int:
+        case VertexFormat::Vector2:
+        case VertexFormat::Vector2h:
+        case VertexFormat::Vector2d:
+        case VertexFormat::Vector2ub:
+        case VertexFormat::Vector2b:
+        case VertexFormat::Vector2us:
+        case VertexFormat::Vector2s:
+        case VertexFormat::Vector2ui:
+        case VertexFormat::Vector2i:
+        case VertexFormat::Vector3:
+        case VertexFormat::Vector3h:
+        case VertexFormat::Vector3d:
+        case VertexFormat::Vector3ub:
+        case VertexFormat::Vector3b:
+        case VertexFormat::Vector3us:
+        case VertexFormat::Vector3s:
+        case VertexFormat::Vector3ui:
+        case VertexFormat::Vector3i:
+        case VertexFormat::Vector4:
+        case VertexFormat::Vector4h:
+        case VertexFormat::Vector4d:
+        case VertexFormat::Vector4ub:
+        case VertexFormat::Vector4b:
+        case VertexFormat::Vector4us:
+        case VertexFormat::Vector4s:
+        case VertexFormat::Vector4ui:
+        case VertexFormat::Vector4i:
+            return false;
+
+        case VertexFormat::UnsignedByteNormalized:
+        case VertexFormat::ByteNormalized:
+        case VertexFormat::UnsignedShortNormalized:
+        case VertexFormat::ShortNormalized:
+        case VertexFormat::Vector2ubNormalized:
+        case VertexFormat::Vector2bNormalized:
+        case VertexFormat::Vector2usNormalized:
+        case VertexFormat::Vector2sNormalized:
+        case VertexFormat::Vector3ubNormalized:
+        case VertexFormat::Vector3bNormalized:
+        case VertexFormat::Vector3usNormalized:
+        case VertexFormat::Vector3sNormalized:
+        case VertexFormat::Vector4ubNormalized:
+        case VertexFormat::Vector4bNormalized:
+        case VertexFormat::Vector4usNormalized:
+        case VertexFormat::Vector4sNormalized:
+            return true;
+    }
+
+    CORRADE_ASSERT(false, "isVertexFormatNormalized(): invalid format" << format, {});
+}
+
+VertexFormat vertexFormat(const VertexFormat format, UnsignedInt componentCount, bool normalized) {
+    VertexFormat componentFormat = vertexFormatComponentFormat(format);
+
+    /* First turn the format into a normalized one, if requested */
+    if(normalized) {
+        switch(componentFormat) {
+            case VertexFormat::UnsignedByte:
+                componentFormat = VertexFormat::UnsignedByteNormalized;
+                break;
+            case VertexFormat::Byte:
+                componentFormat = VertexFormat::ByteNormalized;
+                break;
+            case VertexFormat::UnsignedShort:
+                componentFormat = VertexFormat::UnsignedShortNormalized;
+                break;
+            case VertexFormat::Short:
+                componentFormat = VertexFormat::ShortNormalized;
+                break;
+            default: CORRADE_ASSERT(false,
+                "vertexFormat():" << format << "can't be made normalized", {});
+        }
+    }
+
+    /* Then turn them into desired component count, assuming the initial order
+       is the same in all cases */
+    if(componentCount == 1)
+        return componentFormat;
+    else if(componentCount == 2)
+        return VertexFormat(UnsignedInt(VertexFormat::Vector2) +
+            UnsignedInt(componentFormat) - UnsignedInt(VertexFormat::Float));
+    else if(componentCount == 3)
+        return VertexFormat(UnsignedInt(VertexFormat::Vector3) +
+            UnsignedInt(componentFormat) - UnsignedInt(VertexFormat::Float));
+    else if(componentCount == 4)
+        return VertexFormat(UnsignedInt(VertexFormat::Vector4) +
+            UnsignedInt(componentFormat) - UnsignedInt(VertexFormat::Float));
+    else CORRADE_ASSERT(false,
+        "vertexFormat(): invalid component count" << componentCount, {});
+
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 namespace {
