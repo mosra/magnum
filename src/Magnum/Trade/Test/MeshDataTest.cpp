@@ -330,6 +330,12 @@ void MeshDataTest::constructIndexTypeErasedWrongSize() {
     CORRADE_COMPARE(out.str(), "Trade::MeshIndexData: view size 6 does not correspond to MeshIndexType::UnsignedInt\n");
 }
 
+constexpr Vector2 Positions[] {
+    {1.2f, 0.2f},
+    {2.2f, 1.1f},
+    {-0.2f, 7.2f}
+};
+
 void MeshDataTest::constructAttribute() {
     Containers::Array<char> positionData{3*sizeof(Vector2)};
     auto positionView = Containers::arrayCast<Vector2>(positionData);
@@ -340,6 +346,13 @@ void MeshDataTest::constructAttribute() {
     CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
     CORRADE_COMPARE(static_cast<const void*>(data.attribute<Vector2>(0).data()),
         positionView.data());
+
+    constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions)};
+    MeshData cdata{MeshPrimitive::Points, {}, Positions, {cpositions}};
+    CORRADE_COMPARE(cdata.attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(cdata.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(static_cast<const void*>(cdata.attribute<Vector2>(0).data()),
+        Positions);
 }
 
 void MeshDataTest::constructAttributeCustom() {

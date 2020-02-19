@@ -216,7 +216,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        explicit MeshAttributeData() noexcept: name{}, format{}, data{} {}
+        constexpr explicit MeshAttributeData() noexcept: name{}, format{}, data{} {}
 
         /**
          * @brief Type-erased constructor
@@ -227,7 +227,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Expects that @p data stride is large enough to fit @p type and that
          * @p type corresponds to @p name.
          */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const char>& data) noexcept;
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data) noexcept;
 
         /**
          * @brief Constructor
@@ -237,18 +237,20 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Detects @ref VertexFormat based on @p T and calls
          * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&).
          */
-        template<class T> explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept;
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept;
 
         /** @overload */
-        template<class T> explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
 
     private:
+        constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
+
         /* Not prefixed with _ because we use them like public in MeshData */
         friend MeshData;
         MeshAttribute name;
         /* Here's some room for flags */
         VertexFormat format;
-        Containers::StridedArrayView1D<const char> data;
+        Containers::StridedArrayView1D<const void> data;
 };
 
 /** @relatesalso MeshAttributeData
@@ -1027,7 +1029,23 @@ namespace Implementation {
 constexpr MeshIndexData::MeshIndexData(MeshIndexType type, Containers::ArrayView<const void> data, std::nullptr_t):
     type{type}, data{(CORRADE_CONSTEXPR_ASSERT(!data.empty(), "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead"), data)} {}
 
-template<class T> MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), Containers::arrayCast<const char>(data)} {}
+constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
+    name{name},  format{format}, data{(CORRADE_CONSTEXPR_ASSERT(
+        (name == MeshAttribute::Position &&
+            (format == VertexFormat::Vector2 ||
+             format == VertexFormat::Vector3)) ||
+        (name == MeshAttribute::Normal &&
+            (format == VertexFormat::Vector3)) ||
+        (name == MeshAttribute::Color &&
+            (format == VertexFormat::Vector3 ||
+             format == VertexFormat::Vector4)) ||
+        (name == MeshAttribute::TextureCoordinates &&
+            (format == VertexFormat::Vector2)) ||
+        isMeshAttributeCustom(name) /* can be any format */,
+        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), data)}
+    {}
+
+template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, nullptr} {}
 
 template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     CORRADE_ASSERT(isIndexed(),

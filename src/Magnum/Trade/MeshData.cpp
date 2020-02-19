@@ -40,23 +40,13 @@ MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayVi
         "Trade::MeshIndexData: view size" << data.size() << "does not correspond to" << type, );
 }
 
-MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const char>& data) noexcept: name{name}, format{format}, data{data} {
+MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data) noexcept: MeshAttributeData{name, format, data, nullptr} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
     /** @todo support zero / negative stride? would be hard to transfer to GL */
     CORRADE_ASSERT(data.empty() || std::ptrdiff_t(vertexFormatSize(format)) <= data.stride(),
         "Trade::MeshAttributeData: view stride" << data.stride() << "is not large enough to contain" << format, );
-    CORRADE_ASSERT(
-        (name == MeshAttribute::Position &&
-            (format == VertexFormat::Vector2 ||
-             format == VertexFormat::Vector3)) ||
-        (name == MeshAttribute::Normal &&
-            (format == VertexFormat::Vector3)) ||
-        (name == MeshAttribute::Color &&
-            (format == VertexFormat::Vector3 ||
-             format == VertexFormat::Vector4)) ||
-        (name == MeshAttribute::TextureCoordinates &&
-            (format == VertexFormat::Vector2)) ||
-        isMeshAttributeCustom(name) /* can be any format */,
-        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name, );
 }
 
 Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Containers::ArrayView<const MeshAttributeData> view) {
@@ -88,10 +78,11 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
        constructors */
     for(std::size_t i = 0; i != _attributes.size(); ++i) {
         const MeshAttributeData& attribute = _attributes[i];
-        CORRADE_ASSERT(attribute.data.size() == _vertexCount,
-            "Trade::MeshData: attribute" << i << "has" << attribute.data.size() << "vertices but" << _vertexCount << "expected", );
-        CORRADE_ASSERT(attribute.data.empty() || (&attribute.data.front() >= _vertexData.begin() && &attribute.data.back() + vertexFormatSize(attribute.format) <= _vertexData.end()),
-            "Trade::MeshData: attribute" << i << "[" << Debug::nospace << static_cast<const void*>(&attribute.data.front()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(&attribute.data.back() + vertexFormatSize(attribute.format)) << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
+        const Containers::StridedArrayView1D<const char> data = Containers::arrayCast<const char>(attribute.data);
+        CORRADE_ASSERT(data.size() == _vertexCount,
+            "Trade::MeshData: attribute" << i << "has" << data.size() << "vertices but" << _vertexCount << "expected", );
+        CORRADE_ASSERT(data.empty() || (&data.front() >= _vertexData.begin() && &data.back() + vertexFormatSize(attribute.format) <= _vertexData.end()),
+            "Trade::MeshData: attribute" << i << "[" << Debug::nospace << static_cast<const void*>(&data.front()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(&data.back() + vertexFormatSize(attribute.format)) << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
     }
     #endif
 }
