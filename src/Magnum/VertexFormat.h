@@ -26,9 +26,10 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::VertexFormat, @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::isVertexFormatNormalized()
+ * @brief Enum @ref Magnum::VertexFormat, function @ref Magnum::isVertexFormatImplementationSpecific(), @ref Magnum::vertexFormatWrap(), @ref Magnum::vertexFormatUnwrap(), @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::isVertexFormatNormalized()
  */
 
+#include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
@@ -41,7 +42,12 @@ namespace Magnum {
 @m_since_latest
 
 Like @ref PixelFormat, but for mesh attributes --- including double-precision
-types and matrices.
+types and matrices. Can act also as a wrapper for implementation-specific mesh
+attribute type values using @ref vertexFormatWrap() and
+@ref vertexFormatUnwrap(). Distinction between generic and
+implementation-specific types can be done using
+@ref isVertexFormatImplementationSpecific().
+
 @see @ref Trade::MeshData, @ref Trade::MeshAttributeData,
     @ref Trade::MeshAttribute
 */
@@ -312,6 +318,56 @@ enum class VertexFormat: UnsignedInt {
 };
 
 /**
+@debugoperatorenum{VertexFormat}
+@m_since_latest
+*/
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, VertexFormat value);
+
+/**
+@brief Whether a @ref VertexFormat value wraps an implementation-specific identifier
+@m_since_latest
+
+Returns @cpp true @ce if value of @p format has its highest bit set,
+@cpp false @ce otherwise. Use @ref vertexFormatWrap() and @ref vertexFormatUnwrap()
+to wrap/unwrap an implementation-specific indentifier to/from
+@ref VertexFormat.
+*/
+constexpr bool isVertexFormatImplementationSpecific(VertexFormat format) {
+    return UnsignedInt(format) & (1u << 31);
+}
+
+/**
+@brief Wrap an implementation-specific vertex format identifier in @ref VertexFormat
+@m_since_latest
+
+Sets the highest bit on @p type to mark it as implementation-specific. Expects
+that @p type fits into the remaining bits. Use @ref vertexFormatUnwrap()
+for the inverse operation.
+@see @ref isVertexFormatImplementationSpecific()
+*/
+template<class T> constexpr VertexFormat vertexFormatWrap(T implementationSpecific) {
+    static_assert(sizeof(T) <= 4, "types larger than 32bits are not supported");
+    return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
+        "vertexFormatWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
+        VertexFormat((1u << 31)|UnsignedInt(implementationSpecific));
+}
+
+/**
+@brief Unwrap an implementation-specific vertex format identifier from @ref VertexFormat
+@m_since_latest
+
+Unsets the highest bit from @p type to extract the implementation-specific
+value. Expects that @p type has it set. Use @ref vertexFormatWrap() for
+the inverse operation.
+@see @ref isVertexFormatImplementationSpecific()
+*/
+template<class T = UnsignedInt> constexpr T vertexFormatUnwrap(VertexFormat format) {
+    return CORRADE_CONSTEXPR_ASSERT(UnsignedInt(format) & (1u << 31),
+        "vertexFormatUnwrap():" << format << "isn't a wrapped implementation-specific value"),
+        T(UnsignedInt(format) & ~(1u << 31));
+}
+
+/**
 @brief Size of given vertex format
 @m_since_latest
 
@@ -369,12 +425,6 @@ normalization. Expects that @p componentCount is not larger than @cpp 4 @ce and
     @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt componentCount, bool normalized);
-
-/**
-@debugoperatorenum{VertexFormat}
-@m_since_latest
-*/
-MAGNUM_EXPORT Debug& operator<<(Debug& debug, VertexFormat value);
 
 }
 

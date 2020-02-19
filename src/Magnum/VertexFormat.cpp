@@ -33,6 +33,9 @@
 namespace Magnum {
 
 UnsignedInt vertexFormatSize(const VertexFormat format) {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+        "vertexFormatSize(): can't determine size of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+
     switch(format) {
         case VertexFormat::UnsignedByte:
         case VertexFormat::UnsignedByteNormalized:
@@ -102,6 +105,9 @@ UnsignedInt vertexFormatSize(const VertexFormat format) {
 }
 
 UnsignedInt vertexFormatComponentCount(const VertexFormat format) {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+        "vertexFormatComponentCount(): can't determine component count of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+
     switch(format) {
         case VertexFormat::Float:
         case VertexFormat::Half:
@@ -168,6 +174,9 @@ UnsignedInt vertexFormatComponentCount(const VertexFormat format) {
 }
 
 VertexFormat vertexFormatComponentFormat(const VertexFormat format) {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+        "vertexFormatComponentFormat(): can't determine component format of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+
     switch(format) {
         case VertexFormat::Float:
         case VertexFormat::Vector2:
@@ -244,6 +253,9 @@ VertexFormat vertexFormatComponentFormat(const VertexFormat format) {
 }
 
 bool isVertexFormatNormalized(const VertexFormat format) {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+        "isVertexFormatNormalized(): can't determine normalization of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+
     switch(format) {
         case VertexFormat::Float:
         case VertexFormat::Half:
@@ -306,6 +318,9 @@ bool isVertexFormatNormalized(const VertexFormat format) {
 }
 
 VertexFormat vertexFormat(const VertexFormat format, UnsignedInt componentCount, bool normalized) {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+        "vertexFormat(): can't assemble a format out of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
+
     VertexFormat componentFormat = vertexFormatComponentFormat(format);
 
     /* First turn the format into a normalized one, if requested */
@@ -359,6 +374,10 @@ constexpr const char* VertexFormatNames[] {
 
 Debug& operator<<(Debug& debug, const VertexFormat value) {
     debug << "VertexFormat" << Debug::nospace;
+
+    if(isVertexFormatImplementationSpecific(value)) {
+        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(vertexFormatUnwrap(value)) << Debug::nospace << ")";
+    }
 
     if(UnsignedInt(value) - 1 < Containers::arraySize(VertexFormatNames)) {
         return debug << "::" << Debug::nospace << VertexFormatNames[UnsignedInt(value) - 1];
