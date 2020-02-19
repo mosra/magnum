@@ -32,9 +32,10 @@
 
 namespace Magnum { namespace Trade {
 
-MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: type{type}, data{reinterpret_cast<const Containers::ArrayView<const char>&>(data)} {
-    CORRADE_ASSERT(!data.empty(),
-        "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead", );
+MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayView<const void> data) noexcept: MeshIndexData{type, data, nullptr} {
+    /* Yes, this calls into a constexpr function defined in the header --
+       because I feel that makes more sense than duplicating the full assert
+       logic */
     CORRADE_ASSERT(data.size()%meshIndexTypeSize(type) == 0,
         "Trade::MeshIndexData: view size" << data.size() << "does not correspond to" << type, );
 }
@@ -63,7 +64,7 @@ Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Conta
     return Containers::Array<Trade::MeshAttributeData>{const_cast<Trade::MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(Trade::MeshAttributeData*, std::size_t)>(Trade::Implementation::nonOwnedArrayDeleter)};
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: _indexType{indices.type}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)}, _attributes{std::move(attributes)}, _indices{indices.data} {
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: _indexType{indices.type}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)}, _attributes{std::move(attributes)}, _indices{Containers::arrayCast<const char>(indices.data)} {
     /* Save vertex count. It's a strided array view, so the size is not
        depending on type. */
     if(_attributes.empty()) {

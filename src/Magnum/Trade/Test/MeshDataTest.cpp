@@ -250,6 +250,10 @@ void MeshDataTest::debugAttributeName() {
 
 using namespace Math::Literals;
 
+constexpr UnsignedByte IndexBytes[]{25, 132, 3};
+constexpr UnsignedShort IndexShorts[]{2575, 13224, 3};
+constexpr UnsignedInt IndexInts[]{2110122, 132257, 3};
+
 void MeshDataTest::constructIndex() {
     {
         Containers::Array<char> indexData{3*1};
@@ -260,6 +264,12 @@ void MeshDataTest::constructIndex() {
         CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedByte);
         CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedByte>().data()), indexView.data());
         CORRADE_COMPARE(data.indexCount(), 3);
+
+        constexpr MeshIndexData cindices{IndexBytes};
+        MeshData cdata{MeshPrimitive::Points, {}, IndexBytes, cindices};
+        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedByte);
+        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedByte>().data()), IndexBytes);
+        CORRADE_COMPARE(data.indexCount(), 3);
     } {
         Containers::Array<char> indexData{3*2};
         auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
@@ -269,6 +279,12 @@ void MeshDataTest::constructIndex() {
         CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
         CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedShort>().data()), indexView.data());
         CORRADE_COMPARE(data.indexCount(), 3);
+
+        constexpr MeshIndexData cindices{IndexShorts};
+        MeshData cdata{MeshPrimitive::Points, {}, IndexShorts, cindices};
+        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedShort>().data()), IndexShorts);
+        CORRADE_COMPARE(data.indexCount(), 3);
     } {
         Containers::Array<char> indexData{3*4};
         auto indexView = Containers::arrayCast<UnsignedInt>(indexData);
@@ -277,6 +293,12 @@ void MeshDataTest::constructIndex() {
         MeshData data{MeshPrimitive::Points, std::move(indexData), indices};
         CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedInt);
         CORRADE_COMPARE(static_cast<const void*>(data.indices<UnsignedInt>().data()), indexView.data());
+        CORRADE_COMPARE(data.indexCount(), 3);
+
+        constexpr MeshIndexData cindices{IndexInts};
+        MeshData cdata{MeshPrimitive::Points, {}, IndexInts, cindices};
+        CORRADE_COMPARE(cdata.indexType(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(static_cast<const void*>(cdata.indices<UnsignedInt>().data()), IndexInts);
         CORRADE_COMPARE(data.indexCount(), 3);
     }
 }
