@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/PackingBatch.h"
 #include "Magnum/Trade/Implementation/arrayUtilities.h"
 
 namespace Magnum { namespace Trade {
@@ -365,10 +366,39 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> des
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
 
+    const auto destination2f = Containers::arrayCast<2, Float>(destination);
+
     /* Copy 2D positions as-is, for 3D positions ignore Z */
     if(attribute._format == VertexFormat::Vector2 ||
        attribute._format == VertexFormat::Vector3)
         Utility::copy(Containers::arrayCast<const Vector2>(attribute._data), destination);
+    else if(attribute._format == VertexFormat::Vector2h ||
+            attribute._format == VertexFormat::Vector3h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ub ||
+            attribute._format == VertexFormat::Vector3ub)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2b ||
+            attribute._format == VertexFormat::Vector3b)
+        Math::castInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2us ||
+            attribute._format == VertexFormat::Vector3us)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2s ||
+            attribute._format == VertexFormat::Vector3s)
+        Math::castInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ubNormalized ||
+            attribute._format == VertexFormat::Vector3ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2bNormalized ||
+            attribute._format == VertexFormat::Vector3bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2usNormalized ||
+            attribute._format == VertexFormat::Vector3usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2sNormalized ||
+            attribute._format == VertexFormat::Vector3sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
     else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
@@ -384,19 +414,71 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3> des
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
 
-    /* For 2D positions copy the XY part to the first two components and then
-       fill the Z with a single value */
-    if(attribute._format == VertexFormat::Vector2) {
+    const Containers::StridedArrayView2D<Float> destination2f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector2>(destination));
+    const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(destination);
+
+    /* For 2D positions copy the XY part to the first two components */
+    if(attribute._format == VertexFormat::Vector2)
         Utility::copy(Containers::arrayCast<const Vector2>(attribute._data),
                       Containers::arrayCast<Vector2>(destination));
+    else if(attribute._format == VertexFormat::Vector2h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ub)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2b)
+        Math::castInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2us)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2s)
+        Math::castInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
+
+    /* Copy 3D positions as-is */
+    else if(attribute._format == VertexFormat::Vector3)
+        Utility::copy(Containers::arrayCast<const Vector3>(attribute._data), destination);
+    else if(attribute._format == VertexFormat::Vector3h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3ub)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3b)
+        Math::castInto(Containers::arrayCast<2, const Byte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3us)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3s)
+        Math::castInto(Containers::arrayCast<2, const Short>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attribute._data, 3), destination3f);
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+    /* For 2D positions finally fill the Z with a single value */
+    if(attribute._format == VertexFormat::Vector2 ||
+       attribute._format == VertexFormat::Vector2h ||
+       attribute._format == VertexFormat::Vector2ub ||
+       attribute._format == VertexFormat::Vector2b ||
+       attribute._format == VertexFormat::Vector2us ||
+       attribute._format == VertexFormat::Vector2s ||
+       attribute._format == VertexFormat::Vector2ubNormalized ||
+       attribute._format == VertexFormat::Vector2bNormalized ||
+       attribute._format == VertexFormat::Vector2usNormalized ||
+       attribute._format == VertexFormat::Vector2sNormalized) {
         constexpr Float z[1]{0.0f};
         Utility::copy(
             Containers::stridedArrayView(z).broadcasted<0>(_vertexCount),
-            Containers::arrayCast<2, Float>(destination).transposed<0, 1>()[2]);
-    /* Copy 3D positions as-is */
-    } else if(attribute._format == VertexFormat::Vector3) {
-        Utility::copy(Containers::arrayCast<const Vector3>(attribute._data), destination);
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            destination3f.transposed<0, 1>()[2]);
+    }
 }
 
 Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id) const {
@@ -411,8 +493,16 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destina
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
 
+    const auto destination3f = Containers::arrayCast<2, Float>(destination);
+
     if(attribute._format == VertexFormat::Vector3)
         Utility::copy(Containers::arrayCast<const Vector3>(attribute._data), destination);
+    else if(attribute._format == VertexFormat::Vector3h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attribute._data, 3), destination3f);
     else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
@@ -428,8 +518,28 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
 
+    const auto destination2f = Containers::arrayCast<2, Float>(destination);
+
     if(attribute._format == VertexFormat::Vector2)
         Utility::copy(Containers::arrayCast<const Vector2>(attribute._data), destination);
+    else if(attribute._format == VertexFormat::Vector2h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ub)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2b)
+        Math::castInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2us)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2s)
+        Math::castInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 2), destination2f);
+    else if(attribute._format == VertexFormat::Vector2sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attribute._data, 2), destination2f);
     else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
@@ -445,20 +555,43 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4> destinati
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
 
+    const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector3>(destination));
+    const Containers::StridedArrayView2D<Float> destination4f = Containers::arrayCast<2, Float>(destination);
+
     /* For three-component colors copy the RGB part to the first three
-       components and then fill the alpha with a single value */
-    if(attribute._format == VertexFormat::Vector3) {
+       components */
+    if(attribute._format == VertexFormat::Vector3)
         Utility::copy(Containers::arrayCast<const Vector3>(attribute._data),
                       Containers::arrayCast<Vector3>(destination));
+    else if(attribute._format == VertexFormat::Vector3h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 3), destination3f);
+    else if(attribute._format == VertexFormat::Vector3usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 3), destination3f);
+
+    /* Copy four-component colors as-is */
+    else if(attribute._format == VertexFormat::Vector4)
+        Utility::copy(Containers::arrayCast<const Vector4>(attribute._data),
+                      Containers::arrayCast<Vector4>(destination));
+    else if(attribute._format == VertexFormat::Vector4h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attribute._data, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attribute._data, 4), destination4f);
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
+    /* For three-component colors finally fill the alpha with a single value */
+    if(attribute._format == VertexFormat::Vector3 ||
+       attribute._format == VertexFormat::Vector3h ||
+       attribute._format == VertexFormat::Vector3ubNormalized ||
+       attribute._format == VertexFormat::Vector3usNormalized) {
         constexpr Float alpha[1]{1.0f};
         Utility::copy(
             Containers::stridedArrayView(alpha).broadcasted<0>(_vertexCount),
-            Containers::arrayCast<2, Float>(destination).transposed<0, 1>()[3]);
-    /* Copy four-component colors as-is */
-    } else if(attribute._format == VertexFormat::Vector4) {
-        Utility::copy(Containers::arrayCast<const Vector4>(attribute._data),
-                      Containers::arrayCast<Vector4>(destination));
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            destination4f.transposed<0, 1>()[3]);
+    }
 }
 
 Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {

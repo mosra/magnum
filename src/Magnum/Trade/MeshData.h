@@ -55,37 +55,54 @@ enum class MeshAttribute: UnsignedShort {
        AbstractImporter::meshAttributeForName()) */
 
     /**
-     * Position. Type is usually @ref Magnum::Vector2 "Vector2" for 2D and
-     * @ref Magnum::Vector3 "Vector3" for 3D. Corresponds to
-     * @ref Shaders::Generic::Position.
-     * @see @ref VertexFormat::Vector2, @ref VertexFormat::Vector3,
-     *      @ref MeshData::positions2DAsArray(),
+     * Position. Type is usually @ref VertexFormat::Vector2 for 2D and
+     * @ref VertexFormat::Vector3 for 3D, but can be also any of
+     * @ref VertexFormat::Vector2h, @ref VertexFormat::Vector3h,
+     * @ref VertexFormat::Vector2ub, @ref VertexFormat::Vector2ubNormalized,
+     * @ref VertexFormat::Vector2b, @ref VertexFormat::Vector2bNormalized,
+     * @ref VertexFormat::Vector2us, @ref VertexFormat::Vector2usNormalized,
+     * @ref VertexFormat::Vector2s, @ref VertexFormat::Vector2sNormalized,
+     * @ref VertexFormat::Vector3ub, @ref VertexFormat::Vector3ubNormalized,
+     * @ref VertexFormat::Vector3b, @ref VertexFormat::Vector3bNormalized,
+     * @ref VertexFormat::Vector3us, @ref VertexFormat::Vector3usNormalized,
+     * @ref VertexFormat::Vector3s or @ref VertexFormat::Vector3sNormalized.
+     * Corresponds to @ref Shaders::Generic::Position.
+     * @see @ref MeshData::positions2DAsArray(),
      *      @ref MeshData::positions3DAsArray()
      */
     Position = 1,
 
     /**
-     * Normal. Type is usually @ref Magnum::Vector3 "Vector3". Corresponds to
+     * Normal. Type is usually @ref VertexFormat::Vector3, but can be also
+     * @ref VertexFormat::Vector3h. @ref VertexFormat::Vector3bNormalized or
+     * @ref VertexFormat::Vector3sNormalized. Corresponds to
      * @ref Shaders::Generic::Normal.
-     * @see @ref VertexFormat::Vector3, @ref MeshData::normalsAsArray()
+     * @see @ref MeshData::normalsAsArray()
      */
     Normal,
 
     /**
-     * Texture coordinates. Type is usually @ref Magnum::Vector2 "Vector2" for
-     * 2D coordinates. Corresponds to @ref Shaders::Generic::TextureCoordinates.
-     * @see @ref VertexFormat::Vector2,
-     *      @ref MeshData::textureCoordinates2DAsArray()
+     * Texture coordinates. Type is usually @ref VertexFormat::Vector2 for
+     * 2D coordinates, but can be also any of @ref VertexFormat::Vector2h,
+     * @ref VertexFormat::Vector2ub, @ref VertexFormat::Vector2ubNormalized,
+     * @ref VertexFormat::Vector2b, @ref VertexFormat::Vector2bNormalized,
+     * @ref VertexFormat::Vector2us, @ref VertexFormat::Vector2usNormalized,
+     * @ref VertexFormat::Vector2s or @ref VertexFormat::Vector2sNormalized.
+     * Corresponds to @ref Shaders::Generic::TextureCoordinates.
+     * @see @ref MeshData::textureCoordinates2DAsArray()
      */
     TextureCoordinates,
 
     /**
-     * Vertex color. Type is usually @ref Magnum::Vector3 "Vector3" or
-     * @ref Magnum::Vector4 "Vector4" (or @ref Color3 / @ref Color4).
-     * Corresponds to @ref Shaders::Generic::Color3 or
-     * @ref Shaders::Generic::Color4.
-     * @see @ref VertexFormat::Vector3, @ref VertexFormat::Vector4,
-     *      @ref MeshData::colorsAsArray()
+     * Vertex color. Type is usually @ref VertexFormat::Vector3 or
+     * @ref VertexFormat::Vector4, but can be also any of
+     * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector4h,
+     * @ref VertexFormat::Vector3ubNormalized,
+     * @ref VertexFormat::Vector3usNormalized,
+     * @ref VertexFormat::Vector4ubNormalized or
+     * @ref VertexFormat::Vector4usNormalized. Corresponds to
+     * @ref Shaders::Generic::Color3 or @ref Shaders::Generic::Color4.
+     * @see @ref MeshData::colorsAsArray()
      */
     Color,
 
@@ -261,6 +278,27 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *
          * Detects @ref VertexFormat based on @p T and calls
          * @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&).
+         * For most types known by Magnum, the detected @ref VertexFormat is of
+         * the same name as the type (so e.g. @ref Magnum::Vector3ui "Vector3ui"
+         * gets recognized as @ref VertexFormat::Vector3ui), with the
+         * following exceptions:
+         *
+         * -    @ref Color3ub is recognized as
+         *      @ref VertexFormat::Vector3ubNormalized
+         * -    @ref Color3us is recognized as
+         *      @ref VertexFormat::Vector3usNormalized
+         * -    @ref Color4ub is recognized as
+         *      @ref VertexFormat::Vector4ubNormalized
+         * -    @ref Color4us is recognized as
+         *      @ref VertexFormat::Vector4usNormalized
+         *
+         * This also means that if you have a @ref Magnum::Vector2s "Vector2s",
+         * for example, and want to pick a
+         * @ref VertexFormat::Vector2sNormalized instead of the
+         * (autodetected) @ref VertexFormat::Vector2s, you need to specify
+         * it explicitly --- there's no way the library can infer this from the
+         * type alone, except for the color types above (which are generally
+         * always normalized).
          */
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept;
 
@@ -1164,6 +1202,7 @@ namespace Implementation {
     template<> constexpr MeshIndexType meshIndexTypeFor<UnsignedShort>() { return MeshIndexType::UnsignedShort; }
     template<> constexpr MeshIndexType meshIndexTypeFor<UnsignedInt>() { return MeshIndexType::UnsignedInt; }
 
+    /* Implicit mapping from a format to enum (1:1) */
     template<class T> constexpr VertexFormat vertexFormatFor() {
         /* C++ why there isn't an obvious way to do such a thing?! */
         static_assert(sizeof(T) == 0, "unsupported attribute type");
@@ -1173,6 +1212,8 @@ namespace Implementation {
     #define _c(format) \
         template<> constexpr VertexFormat vertexFormatFor<format>() { return VertexFormat::format; }
     _c(Float)
+    _c(Half)
+    _c(Double)
     _c(UnsignedByte)
     _c(Byte)
     _c(UnsignedShort)
@@ -1180,28 +1221,128 @@ namespace Implementation {
     _c(UnsignedInt)
     _c(Int)
     _c(Vector2)
+    _c(Vector2h)
+    _c(Vector2d)
+    _c(Vector2ub)
+    _c(Vector2b)
+    _c(Vector2us)
+    _c(Vector2s)
+    _c(Vector2ui)
+    _c(Vector2i)
     _c(Vector3)
+    _c(Vector3h)
+    _c(Vector3d)
+    _c(Vector3ub)
+    _c(Vector3b)
+    _c(Vector3us)
+    _c(Vector3s)
+    _c(Vector3ui)
+    _c(Vector3i)
     _c(Vector4)
+    _c(Vector4h)
+    _c(Vector4d)
+    _c(Vector4ub)
+    _c(Vector4b)
+    _c(Vector4us)
+    _c(Vector4s)
+    _c(Vector4ui)
+    _c(Vector4i)
     #undef _c
     #endif
     template<> constexpr VertexFormat vertexFormatFor<Color3>() { return VertexFormat::Vector3; }
+    template<> constexpr VertexFormat vertexFormatFor<Color3h>() { return VertexFormat::Vector3h; }
+    template<> constexpr VertexFormat vertexFormatFor<Color3ub>() { return VertexFormat::Vector3ubNormalized; }
+    template<> constexpr VertexFormat vertexFormatFor<Color3us>() { return VertexFormat::Vector3usNormalized; }
     template<> constexpr VertexFormat vertexFormatFor<Color4>() { return VertexFormat::Vector4; }
+    template<> constexpr VertexFormat vertexFormatFor<Color4h>() { return VertexFormat::Vector4h; }
+    template<> constexpr VertexFormat vertexFormatFor<Color4ub>() { return VertexFormat::Vector4ubNormalized; }
+    template<> constexpr VertexFormat vertexFormatFor<Color4us>() { return VertexFormat::Vector4usNormalized; }
+
+    /* Check if enum is compatible with a format (1:n). Mostly just 1:1 mapping
+       tho, so reusing vertexFormatFor(), with a few exceptions. */
+    template<class T> constexpr bool isVertexFormatCompatible(VertexFormat type) {
+        return vertexFormatFor<T>() == type;
+    }
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    #define _c(format_)                                                     \
+        template<> constexpr bool isVertexFormatCompatible<format_>(VertexFormat format) { \
+            return format == VertexFormat::format_ ||                       \
+                   format == VertexFormat::format_ ## Normalized;           \
+        }
+    _c(UnsignedByte)
+    _c(Byte)
+    _c(UnsignedShort)
+    _c(Short)
+    _c(Vector2ub)
+    _c(Vector2b)
+    _c(Vector2us)
+    _c(Vector2s)
+    _c(Vector3ub)
+    _c(Vector3b)
+    _c(Vector3us)
+    _c(Vector3s)
+    _c(Vector4ub)
+    _c(Vector4b)
+    _c(Vector4us)
+    _c(Vector4s)
+    /* For Color[34]u[sb] we expect the format to be normalized, which is
+       handled by vertexFormatFor() properly already */
+    #undef _c
+    #endif
     /* LCOV_EXCL_STOP */
 }
 #endif
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
     _name{name},  _format{format}, _data{(CORRADE_CONSTEXPR_ASSERT(
+        /* Double formats intentionally not supported for any builtin attributes
+           right now -- only for custom formats */
         (name == MeshAttribute::Position &&
             (format == VertexFormat::Vector2 ||
-             format == VertexFormat::Vector3)) ||
+             format == VertexFormat::Vector2h ||
+             format == VertexFormat::Vector2ub ||
+             format == VertexFormat::Vector2ubNormalized ||
+             format == VertexFormat::Vector2b ||
+             format == VertexFormat::Vector2bNormalized ||
+             format == VertexFormat::Vector2us ||
+             format == VertexFormat::Vector2usNormalized ||
+             format == VertexFormat::Vector2s ||
+             format == VertexFormat::Vector2sNormalized ||
+             format == VertexFormat::Vector3 ||
+             format == VertexFormat::Vector3h ||
+             format == VertexFormat::Vector3ub ||
+             format == VertexFormat::Vector3ubNormalized ||
+             format == VertexFormat::Vector3b ||
+             format == VertexFormat::Vector3bNormalized ||
+             format == VertexFormat::Vector3us ||
+             format == VertexFormat::Vector3usNormalized ||
+             format == VertexFormat::Vector3s ||
+             format == VertexFormat::Vector3sNormalized)) ||
         (name == MeshAttribute::Normal &&
-            (format == VertexFormat::Vector3)) ||
+            (format == VertexFormat::Vector3 ||
+             format == VertexFormat::Vector3h ||
+             format == VertexFormat::Vector3bNormalized ||
+             format == VertexFormat::Vector3sNormalized)) ||
         (name == MeshAttribute::Color &&
             (format == VertexFormat::Vector3 ||
-             format == VertexFormat::Vector4)) ||
+             format == VertexFormat::Vector3h ||
+             format == VertexFormat::Vector3ubNormalized ||
+             format == VertexFormat::Vector3usNormalized ||
+             format == VertexFormat::Vector4 ||
+             format == VertexFormat::Vector4h ||
+             format == VertexFormat::Vector4ubNormalized ||
+             format == VertexFormat::Vector4usNormalized)) ||
         (name == MeshAttribute::TextureCoordinates &&
-            (format == VertexFormat::Vector2)) ||
+            (format == VertexFormat::Vector2 ||
+             format == VertexFormat::Vector2h ||
+             format == VertexFormat::Vector2ub ||
+             format == VertexFormat::Vector2ubNormalized ||
+             format == VertexFormat::Vector2b ||
+             format == VertexFormat::Vector2bNormalized ||
+             format == VertexFormat::Vector2us ||
+             format == VertexFormat::Vector2usNormalized ||
+             format == VertexFormat::Vector2s ||
+             format == VertexFormat::Vector2sNormalized)) ||
         isMeshAttributeCustom(name) /* can be any format */,
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), data)}
     {}
@@ -1233,7 +1374,7 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Un
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id]._format,
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[id]._format),
         "Trade::MeshData::attribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
@@ -1243,7 +1384,7 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(U
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id]._format,
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[id]._format),
         "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
@@ -1256,7 +1397,7 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Me
     #ifndef CORRADE_NO_ASSERT
     const UnsignedInt attributeId = attributeFor(name, id);
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId]._format,
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[attributeId]._format),
         "Trade::MeshData::attribute(): improper type requested for" << _attributes[attributeId]._name << "of format" << _attributes[attributeId]._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
@@ -1269,8 +1410,8 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(M
     #ifndef CORRADE_NO_ASSERT
     const UnsignedInt attributeId = attributeFor(name, id);
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId]._format,
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[attributeId]._name << "of type" << _attributes[attributeId]._format, nullptr);
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[attributeId]._format),
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[attributeId]._name << "of format" << _attributes[attributeId]._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 
