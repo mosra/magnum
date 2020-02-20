@@ -584,13 +584,27 @@ void GlfwApplication::setupCallbacks() {
     #ifdef MAGNUM_TARGET_GL
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        ViewportEvent e{app.windowSize(), {w, h}, app.dpiScaling()};
+        ViewportEvent e{ViewportEvent::Type::Resized, app.windowSize(), {w, h}, app.dpiScaling()};
         app.viewportEvent(e);
     });
     #else
     glfwSetWindowSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        ViewportEvent e{{w, h}, app.dpiScaling()};
+        ViewportEvent e{ViewportEvent::Type::Resized, {w, h}, app.dpiScaling()};
+        app.viewportEvent(e);
+    });
+    #endif
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 303
+    glfwSetWindowContentScaleCallback(_window, [](GLFWwindow* const window, float xScale, float yScale) {
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        ViewportEvent e{ViewportEvent::Type::DpiScalingChanged,
+            #ifdef MAGNUM_TARGET_GL
+            app.windowSize(), app.framebufferSize(),
+            #else
+            app.windowSize(),
+            #endif
+            /* Update the cached DPI scaling value as well */
+            app._dpiScaling = {xScale, yScale}};
         app.viewportEvent(e);
     });
     #endif

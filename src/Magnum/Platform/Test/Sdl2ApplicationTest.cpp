@@ -66,6 +66,11 @@ struct Sdl2ApplicationTest: Platform::Application {
             << event.framebufferSize()
             #endif
             << event.dpiScaling();
+
+        if(event.type() == ViewportEvent::Type::DpiScalingChanged) {
+            Debug{} << "DPI scaling changed, resizing to" << _lastUnscaledWindowSize;
+            setWindowSize(_lastUnscaledWindowSize);
+        } else _lastUnscaledWindowSize = event.windowSize()/event.dpiScaling();
     }
 
     /* For testing event coordinates */
@@ -137,10 +142,12 @@ struct Sdl2ApplicationTest: Platform::Application {
         if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
 
-    #ifdef CORRADE_TARGET_EMSCRIPTEN
     private:
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
         bool _fullscreen = false;
-    #endif
+        #else
+        Vector2i _lastUnscaledWindowSize;
+        #endif
 };
 
 Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
@@ -161,6 +168,10 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         << framebufferSize()
         #endif
         << dpiScaling();
+
+    /* Save desired window size for resizing when going between differently
+       dense displays */
+    _lastUnscaledWindowSize = windowSize()/dpiScaling();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
