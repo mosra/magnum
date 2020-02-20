@@ -497,8 +497,8 @@ void MeshDataTest::construct() {
         Short id;
     };
 
-    Containers::Array<char> indexData{6*sizeof(UnsignedShort)};
-    auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
+    Containers::Array<char> indexData{8*sizeof(UnsignedShort)};
+    auto indexView = Containers::arrayCast<UnsignedShort>(indexData).slice(1, 7);
     indexView[0] = 0;
     indexView[1] = 1;
     indexView[2] = 2;
@@ -541,9 +541,9 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(!data.attributeData().empty());
-    CORRADE_COMPARE(static_cast<const void*>(data.indexData()), indexView.data());
+    CORRADE_COMPARE(static_cast<const void*>(data.indexData() + 2), indexView.data());
     CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), vertexView.data());
-    CORRADE_COMPARE(static_cast<void*>(data.mutableIndexData()), indexView.data());
+    CORRADE_COMPARE(static_cast<void*>(data.mutableIndexData() + 2), indexView.data());
     CORRADE_COMPARE(static_cast<void*>(data.mutableVertexData()), vertexView.data());
     CORRADE_COMPARE(data.importerState(), &importerState);
 
@@ -551,6 +551,7 @@ void MeshDataTest::construct() {
     CORRADE_VERIFY(data.isIndexed());
     CORRADE_COMPARE(data.indexCount(), 6);
     CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(data.indexOffset(), 2);
 
     /* Typeless index access with a cast later */
     CORRADE_COMPARE((Containers::arrayCast<1, const UnsignedShort>(data.indices())[1]), 1);
@@ -1456,6 +1457,7 @@ void MeshDataTest::indicesNotIndexed() {
     Error redirectError{&out};
     data.indexCount();
     data.indexType();
+    data.indexOffset();
     data.indices();
     data.indices<UnsignedInt>();
     data.indicesAsArray();
@@ -1464,6 +1466,7 @@ void MeshDataTest::indicesNotIndexed() {
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::indexCount(): the mesh is not indexed\n"
         "Trade::MeshData::indexType(): the mesh is not indexed\n"
+        "Trade::MeshData::indexOffset(): the mesh is not indexed\n"
         "Trade::MeshData::indices(): the mesh is not indexed\n"
         "Trade::MeshData::indices(): the mesh is not indexed\n"
         "Trade::MeshData::indicesAsArray(): the mesh is not indexed\n"

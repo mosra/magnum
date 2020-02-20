@@ -682,6 +682,17 @@ class MAGNUM_TRADE_EXPORT MeshData {
         MeshIndexType indexType() const;
 
         /**
+         * @brief Index offset
+         *
+         * Byte offset of the first index from the beginning of the
+         * @ref indexData(), or a byte difference between pointers returned
+         * from @ref indexData() and @ref indices(). Expects that the mesh is
+         * indexed.
+         * @see @ref attributeOffset()
+         */
+        std::size_t indexOffset() const;
+
+        /**
          * @brief Mesh indices
          *
          * The view is guaranteed to be contiguous and its second dimension
@@ -775,6 +786,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeCount() const. You can also use
          * @ref attributeOffset(MeshAttribute, UnsignedInt) const to
          * directly get an offset of given named attribute.
+         * @see @ref indexOffset()
          */
         std::size_t attributeOffset(UnsignedInt id) const;
 

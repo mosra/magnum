@@ -191,6 +191,12 @@ MeshIndexType MeshData::indexType() const {
     return _indexType;
 }
 
+std::size_t MeshData::indexOffset() const {
+    CORRADE_ASSERT(isIndexed(),
+        "Trade::MeshData::indexOffset(): the mesh is not indexed", {});
+    return _indices.data() - _indexData.data();
+}
+
 Containers::StridedArrayView2D<const char> MeshData::indices() const {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indices(): the mesh is not indexed", {});
