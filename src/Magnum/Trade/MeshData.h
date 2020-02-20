@@ -44,11 +44,16 @@ namespace Magnum { namespace Trade {
 @brief Mesh attribute name
 @m_since_latest
 
-@see @ref MeshData, @ref MeshAttributeData, @ref VertexFormat
+@see @ref MeshData, @ref MeshAttributeData, @ref VertexFormat,
+    @ref AbstractImporter::meshAttributeForName(),
+    @ref AbstractImporter::meshAttributeName()
 */
 /* 16 bits because 8 bits is not enough to cover all potential per-edge,
    per-face, per-instance and per-meshlet attributes */
 enum class MeshAttribute: UnsignedShort {
+    /* 0 reserved for an invalid value (returned from
+       AbstractImporter::meshAttributeForName()) */
+
     /**
      * Position. Type is usually @ref Magnum::Vector2 "Vector2" for 2D and
      * @ref Magnum::Vector3 "Vector3" for 3D. Corresponds to
@@ -57,7 +62,7 @@ enum class MeshAttribute: UnsignedShort {
      *      @ref MeshData::positions2DAsArray(),
      *      @ref MeshData::positions3DAsArray()
      */
-    Position,
+    Position = 1,
 
     /**
      * Normal. Type is usually @ref Magnum::Vector3 "Vector3". Corresponds to
@@ -243,7 +248,8 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
 @m_since_latest
 
 Provides access to mesh vertex and index data, together with additional
-information such as primitive type.
+information such as primitive type. Populated instances of this class are
+returned from @ref AbstractImporter::mesh().
 
 @section Trade-MeshData-usage Basic usage
 
@@ -268,6 +274,8 @@ of data, which you can directly upload, and then use provided metadata to let
 the GPU know of the format and layout:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
+
+@see @ref AbstractImporter::mesh()
 */
 class MAGNUM_TRADE_EXPORT MeshData {
     public:
@@ -441,7 +449,9 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @brief Attribute name
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
-         * @see @ref attributeFormat(), @ref isMeshAttributeCustom()
+         * @see @ref attributeFormat(), @ref isMeshAttributeCustom(),
+         *      @ref AbstractImporter::meshAttributeForName(),
+         *      @ref AbstractImporter::meshAttributeName()
          */
         MeshAttribute attributeName(UnsignedInt id) const;
 
@@ -714,6 +724,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
         const void* importerState() const { return _importerState; }
 
     private:
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        friend AbstractImporter;
+
         UnsignedInt attributeFor(MeshAttribute name, UnsignedInt id) const;
 
         UnsignedInt _vertexCount;

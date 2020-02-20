@@ -162,7 +162,8 @@ See also:
 
 -   A new, redesigned @ref Trade::MeshData class that allows much more flexible
     access to vertex/index data without unnecessary allocations and data
-    conversions or copies
+    conversions or copies. Importers expose it through the new
+    @ref Trade::AbstractImporter::mesh() family of APIs.
 -   Ability to import image mip levels via an additional parameter in
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D

@@ -37,6 +37,7 @@
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/MeshObjectData2D.h"
@@ -155,6 +156,25 @@ struct AbstractImporterTest: TestSuite::Tester {
     void object3DNotImplemented();
     void object3DNoFile();
     void object3DOutOfRange();
+
+    void mesh();
+    void meshCountNotImplemented();
+    void meshCountNoFile();
+    void meshForNameNotImplemented();
+    void meshForNameNoFile();
+    void meshNameNotImplemented();
+    void meshNameNoFile();
+    void meshNameOutOfRange();
+    void meshNotImplemented();
+    void meshNoFile();
+    void meshOutOfRange();
+    void meshCustomIndexDataDeleter();
+    void meshCustomVertexDataDeleter();
+    void meshCustomAttributesDeleter();
+
+    void meshAttributeName();
+    void meshAttributeNameNotImplemented();
+    void meshAttributeNameNotCustom();
 
     void mesh2D();
     void mesh2DCountNotImplemented();
@@ -370,6 +390,25 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::object3DNotImplemented,
               &AbstractImporterTest::object3DNoFile,
               &AbstractImporterTest::object3DOutOfRange,
+
+              &AbstractImporterTest::mesh,
+              &AbstractImporterTest::meshCountNotImplemented,
+              &AbstractImporterTest::meshCountNoFile,
+              &AbstractImporterTest::meshForNameNotImplemented,
+              &AbstractImporterTest::meshForNameNoFile,
+              &AbstractImporterTest::meshNameNotImplemented,
+              &AbstractImporterTest::meshNameNoFile,
+              &AbstractImporterTest::meshNameOutOfRange,
+              &AbstractImporterTest::meshNotImplemented,
+              &AbstractImporterTest::meshNoFile,
+              &AbstractImporterTest::meshOutOfRange,
+              &AbstractImporterTest::meshCustomIndexDataDeleter,
+              &AbstractImporterTest::meshCustomVertexDataDeleter,
+              &AbstractImporterTest::meshCustomAttributesDeleter,
+
+              &AbstractImporterTest::meshAttributeName,
+              &AbstractImporterTest::meshAttributeNameNotImplemented,
+              &AbstractImporterTest::meshAttributeNameNotCustom,
 
               &AbstractImporterTest::mesh2D,
               &AbstractImporterTest::mesh2DCountNotImplemented,
@@ -2029,6 +2068,287 @@ void AbstractImporterTest::object3DOutOfRange() {
 
     importer.object3D(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::mesh() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        Int doMeshForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            else return -1;
+        }
+        std::string doMeshName(UnsignedInt id) override {
+            if(id == 7) return "eighth";
+            else return {};
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt id) override {
+            /* Verify that initializer list is converted to an array with
+               the default deleter and not something disallowed */
+            if(id == 7) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+            else return {};
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.meshCount(), 8);
+    CORRADE_COMPARE(importer.meshForName("eighth"), 7);
+    CORRADE_COMPARE(importer.meshName(7), "eighth");
+
+    auto data = importer.mesh(7);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->importerState(), &state);
+}
+
+void AbstractImporterTest::meshCountNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.meshCount(), 0);
+}
+
+void AbstractImporterTest::meshCountNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.meshCount();
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshCount(): no file opened\n");
+}
+
+void AbstractImporterTest::meshForNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.meshForName(""), -1);
+}
+
+void AbstractImporterTest::meshForNameNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.meshForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshForName(): no file opened\n");
+}
+
+void AbstractImporterTest::meshNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    CORRADE_COMPARE(importer.meshName(7), "");
+}
+
+void AbstractImporterTest::meshNameNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.meshName(42);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshName(): no file opened\n");
+}
+
+void AbstractImporterTest::meshNameOutOfRange() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.meshName(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshName(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::meshNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(7);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): not implemented\n");
+}
+
+void AbstractImporterTest::meshNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(42);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): no file opened\n");
+}
+
+void AbstractImporterTest::meshOutOfRange() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::meshCustomIndexDataDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 1; }
+        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+            return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{data, 1, [](char*, std::size_t) {}}, MeshIndexData{MeshIndexType::UnsignedByte, data}};
+        }
+
+        char data[1];
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::meshCustomVertexDataDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 1; }
+        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+            return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::meshCustomAttributesDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 1; }
+        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+            return MeshData{MeshPrimitive::Triangles, nullptr, Containers::Array<MeshAttributeData>{&positions, 1, [](MeshAttributeData*, std::size_t) {}}};
+        }
+
+        MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, nullptr};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.mesh(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::meshAttributeName() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        MeshAttribute doMeshAttributeForName(const std::string& name) override {
+            if(name == "SMOOTH_GROUP_ID") return meshAttributeCustom(37);
+            return MeshAttribute{};
+        }
+
+        std::string doMeshAttributeName(UnsignedShort id) override {
+            if(id == 37) return "SMOOTH_GROUP_ID";
+            return "";
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.meshAttributeForName("SMOOTH_GROUP_ID"), meshAttributeCustom(37));
+    CORRADE_COMPARE(importer.meshAttributeName(meshAttributeCustom(37)), "SMOOTH_GROUP_ID");
+}
+
+void AbstractImporterTest::meshAttributeNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.meshAttributeForName(""), MeshAttribute{});
+    CORRADE_COMPARE(importer.meshAttributeName(meshAttributeCustom(37)), "");
+}
+
+void AbstractImporterTest::meshAttributeNameNotCustom() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        MeshAttribute doMeshAttributeForName(const std::string&) override {
+            return MeshAttribute::Position;
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.meshAttributeForName("SMOOTH_GROUP_ID");
+    importer.meshAttributeName(MeshAttribute::Position);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::meshAttributeForName(): implementation-returned Trade::MeshAttribute::Position is neither custom nor invalid\n"
+        "Trade::AbstractImporter::meshAttributeName(): Trade::MeshAttribute::Position is not custom\n");
 }
 
 void AbstractImporterTest::mesh2D() {
