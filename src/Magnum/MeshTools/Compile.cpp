@@ -58,8 +58,7 @@ GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
     if(meshData.primitive() == MeshPrimitive::Triangles && (flags & (CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals))) {
         CORRADE_ASSERT(meshData.attributeCount(Trade::MeshAttribute::Position),
             "MeshTools::compile(): the mesh has no positions, can't generate normals", GL::Mesh{});
-        /* Right now this could fire only if we have 2D positions, which is
-           unlikely; in the future it might fire once packed formats are added */
+        /* This could fire if we have 2D positions or for packed formats */
         CORRADE_ASSERT(meshData.attributeFormat(Trade::MeshAttribute::Position) == VertexFormat::Vector3,
             "MeshTools::compile(): can't generate normals for" << meshData.attributeFormat(Trade::MeshAttribute::Position) << "positions", GL::Mesh{});
 
@@ -72,8 +71,7 @@ GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
                 Trade::MeshAttribute::Normal, VertexFormat::Vector3,
                 nullptr};
             extra = {&normalAttribute, 1};
-        /* If we reuse a normal location, expect correct type. Again this won't
-           fire now, but might in the future once packed formats are added */
+        /* If we reuse a normal location, expect correct type */
         } else CORRADE_ASSERT(meshData.attributeFormat(Trade::MeshAttribute::Normal) == VertexFormat::Vector3,
             "MeshTools::compile(): can't generate normals into" << meshData.attributeFormat(Trade::MeshAttribute::Normal), GL::Mesh{});
 
@@ -142,32 +140,27 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
     GL::Buffer verticesRef = GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array);
     for(UnsignedInt i = 0; i != meshData.attributeCount(); ++i) {
         Containers::Optional<GL::DynamicAttribute> attribute;
+        const VertexFormat format = meshData.attributeFormat(i);
         switch(meshData.attributeName(i)) {
             case Trade::MeshAttribute::Position:
-                if(meshData.attributeFormat(i) == VertexFormat::Vector2)
-                    attribute.emplace(Shaders::Generic2D::Position{});
-                else if(meshData.attributeFormat(i) == VertexFormat::Vector3)
-                    attribute.emplace(Shaders::Generic3D::Position{});
-                else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+                /* Pick 3D position always, the type will properly reduce it to
+                   a 2-component version if needed */
+                attribute.emplace(Shaders::Generic3D::Position{}, format);
                 break;
             case Trade::MeshAttribute::Normal:
-                CORRADE_INTERNAL_ASSERT(meshData.attributeFormat(i) == VertexFormat::Vector3);
-                attribute.emplace(Shaders::Generic3D::Normal{});
+                attribute.emplace(Shaders::Generic3D::Normal{}, format);
                 break;
             case Trade::MeshAttribute::TextureCoordinates:
-                CORRADE_INTERNAL_ASSERT(meshData.attributeFormat(i) == VertexFormat::Vector2);
                 /** @todo have Generic2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                attribute.emplace(Shaders::Generic2D::TextureCoordinates{});
+                attribute.emplace(Shaders::Generic2D::TextureCoordinates{}, format);
                 break;
             case Trade::MeshAttribute::Color:
                 /** @todo have Generic2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                if(meshData.attributeFormat(i) == VertexFormat::Vector3)
-                    attribute.emplace(Shaders::Generic2D::Color3{});
-                else if(meshData.attributeFormat(i) == VertexFormat::Vector4)
-                    attribute.emplace(Shaders::Generic2D::Color4{});
-                else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+                /* Pick Color4 always, the type will properly reduce it to a
+                   3-component version if needed */
+                attribute.emplace(Shaders::Generic2D::Color4{}, format);
                 break;
 
             /* So it doesn't yell that we didn't handle a known attribute */

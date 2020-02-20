@@ -90,9 +90,13 @@ struct CompileGLTest: GL::OpenGLTester {
         /** @todo remove the template once MeshDataXD is gone */
         template<class T> void twoDimensions();
         template<class T> void threeDimensions();
+
+        void packedAttributes();
+
         void unknownAttribute();
         void generateNormalsNoPosition();
         void generateNormals2DPosition();
+        void generateNormalsNoFloats();
 
         void externalBuffers();
         void externalBuffersInvalid();
@@ -198,9 +202,12 @@ CompileGLTest::CompileGLTest() {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    addTests({&CompileGLTest::unknownAttribute,
+    addTests({&CompileGLTest::packedAttributes,
+
+              &CompileGLTest::unknownAttribute,
               &CompileGLTest::generateNormalsNoPosition,
-              &CompileGLTest::generateNormals2DPosition});
+              &CompileGLTest::generateNormals2DPosition,
+              &CompileGLTest::generateNormalsNoFloats});
 
     addInstancedTests({&CompileGLTest::externalBuffers},
         Containers::arraySize(DataExternal));
@@ -578,6 +585,133 @@ template<class T> void CompileGLTest::threeDimensions() {
     }
 }
 
+void CompileGLTest::packedAttributes() {
+    /* Same as above, just packed */
+    const struct Vertex {
+        Vector3s position;
+        Vector3s normal;
+        Vector2us textureCoordinates;
+        Color4ub color;
+    } vertexData[]{
+        {Math::pack<Vector3s>(Vector3{-0.75f, -0.75f, -0.35f}),
+         Math::pack<Vector3s>(Vector3{-0.5f, -0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.0f, 0.0f}), 0x00ff00_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.00f, -0.75f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{ 0.0f, -0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.5f, 0.0f}), 0x808000_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.75f, -0.75f, -0.35f}),
+         Math::pack<Vector3s>(Vector3{ 0.5f, -0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{1.0f, 0.0f}), 0xff0000_rgb},
+
+        {Math::pack<Vector3s>(Vector3{-0.75f,  0.00f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{-0.5f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.00f,  0.00f,  0.00f}),
+         Math::pack<Vector3s>(Vector3{ 0.0f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.75f,  0.00f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{ 0.5f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb},
+
+        {Math::pack<Vector3s>(Vector3{-0.75f,  0.75f, -0.35f}),
+         Math::pack<Vector3s>(Vector3{-0.5f,  0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.0f, 1.0f}), 0x00ffff_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.0f,   0.75f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{ 0.0f,  0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.5f, 1.0f}), 0x8080ff_rgb},
+        {Math::pack<Vector3s>(Vector3{ 0.75f,  0.75f, -0.35f}),
+         Math::pack<Vector3s>(Vector3{ 0.5f,  0.5f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{1.0f, 1.0f}), 0xff00ff_rgb}
+    };
+    static_assert(sizeof(Vertex) % 4 == 0,
+        "the vertex is not 4-byte aligned and that's bad");
+
+    const UnsignedByte indexData[]{
+        0, 1, 4, 0, 4, 3,
+        1, 2, 5, 1, 5, 4,
+        3, 4, 7, 3, 7, 6,
+        4, 5, 8, 4, 8, 7
+    };
+
+    Trade::MeshData meshData{MeshPrimitive::Triangles, {}, indexData,
+        Trade::MeshIndexData{indexData}, {}, vertexData, {
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::Position,
+                VertexFormat::Vector3sNormalized,
+                Containers::stridedArrayView(vertexData, &vertexData[0].position,
+                    Containers::arraySize(vertexData), sizeof(Vertex))},
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::Normal,
+                VertexFormat::Vector3sNormalized,
+                Containers::stridedArrayView(vertexData, &vertexData[0].normal,
+                    Containers::arraySize(vertexData), sizeof(Vertex))},
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::TextureCoordinates,
+                VertexFormat::Vector2usNormalized,
+                Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
+                    Containers::arraySize(vertexData), sizeof(Vertex))},
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::Color,
+                /* It should figure out the type itself here */
+                Containers::stridedArrayView(vertexData, &vertexData[0].color,
+                    Containers::arraySize(vertexData), sizeof(Vertex))}
+    }};
+
+    GL::Mesh mesh = compile(meshData);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    Matrix4 projection = Matrix4::perspectiveProjection(45.0_degf, 1.0f, 0.1f, 10.0f);
+    Matrix4 transformation = Matrix4::translation(Vector3::zAxis(-2.0f));
+
+    /* In all checks below, the rendering should be practically 1:1 as above
+       with full-blown attribute types */
+
+    /* Check positions and normals */
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    _phong
+        .setDiffuseColor(0x33ff66_rgbf)
+        .setTransformationMatrix(transformation)
+        .setNormalMatrix(transformation.normalMatrix())
+        .setProjectionMatrix(projection);
+    mesh.draw(_phong);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
+        /* SwiftShader has some minor off-by-one precision differences */
+        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0113f}));
+
+    /* Check colors */
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    _color3D
+        .setTransformationProjectionMatrix(projection*transformation);
+    mesh.draw(_color3D);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "color3D.tga"),
+        /* SwiftShader has some minor off-by-one precision differences */
+        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0162f}));
+
+    /* Check texture coordinates */
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    _flatTextured3D
+        .setTransformationProjectionMatrix(projection*transformation)
+        .bindTexture(_texture);
+    mesh.draw(_flatTextured3D);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
+        /* SwiftShader has some minor off-by-one precision differences */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+}
+
 void CompileGLTest::unknownAttribute() {
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {Trade::MeshAttributeData{Trade::meshAttributeCustom(115),
@@ -610,6 +744,22 @@ void CompileGLTest::generateNormals2DPosition() {
     MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
     CORRADE_COMPARE(out.str(),
         "MeshTools::compile(): can't generate normals for VertexFormat::Vector2 positions\n");
+}
+
+void CompileGLTest::generateNormalsNoFloats() {
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        nullptr, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                VertexFormat::Vector3, nullptr},
+            Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+                VertexFormat::Vector3h, nullptr},
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): can't generate normals into VertexFormat::Vector3h\n");
 }
 
 void CompileGLTest::externalBuffers() {
