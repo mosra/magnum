@@ -209,8 +209,8 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 @brief Mesh attribute data
 @m_since_latest
 
-Convenience type for populating @ref MeshData. Has no accessors, as the data
-are then accessible through @ref MeshData APIs.
+Convenience type for populating @ref MeshData, see its documentation for an
+introduction.
 */
 class MAGNUM_TRADE_EXPORT MeshAttributeData {
     public:
@@ -221,7 +221,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: name{}, format{}, data{} {}
+        constexpr explicit MeshAttributeData() noexcept: _name{}, _format{}, _data{} {}
 
         /**
          * @brief Type-erased constructor
@@ -261,15 +261,23 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         /** @overload */
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
 
+        /** @brief Attribute name */
+        constexpr MeshAttribute name() const { return _name; }
+
+        /** @brief Attribute format */
+        constexpr VertexFormat format() const { return _format; }
+
+        /** @brief Type-erased attribute data */
+        constexpr Containers::StridedArrayView1D<const void> data() const { return _data; }
+
     private:
         constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
 
-        /* Not prefixed with _ because we use them like public in MeshData */
         friend MeshData;
-        MeshAttribute name;
+        MeshAttribute _name;
         /* Here's some room for flags */
-        VertexFormat format;
-        Containers::StridedArrayView1D<const void> data;
+        VertexFormat _format;
+        Containers::StridedArrayView1D<const void> _data;
 };
 
 /** @relatesalso MeshAttributeData
@@ -1092,7 +1100,7 @@ constexpr MeshIndexData::MeshIndexData(const MeshIndexType type, const Container
     _type{type}, _data{(CORRADE_CONSTEXPR_ASSERT(!data.empty(), "Trade::MeshIndexData: index array can't be empty, create a non-indexed mesh instead"), data)} {}
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
-    name{name},  format{format}, data{(CORRADE_CONSTEXPR_ASSERT(
+    _name{name},  _format{format}, _data{(CORRADE_CONSTEXPR_ASSERT(
         (name == MeshAttribute::Position &&
             (format == VertexFormat::Vector2 ||
              format == VertexFormat::Vector3)) ||
@@ -1132,8 +1140,8 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Un
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id].format,
-        "Trade::MeshData::attribute(): improper type requested for" << _attributes[id].name << "of format" << _attributes[id].format, nullptr);
+    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id]._format,
+        "Trade::MeshData::attribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
@@ -1142,8 +1150,8 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(U
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id].format,
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[id].name << "of format" << _attributes[id].format, nullptr);
+    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id]._format,
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 
@@ -1155,8 +1163,8 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Me
     #ifndef CORRADE_NO_ASSERT
     const UnsignedInt attributeId = attributeFor(name, id);
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId].format,
-        "Trade::MeshData::attribute(): improper type requested for" << _attributes[attributeId].name << "of format" << _attributes[attributeId].format, nullptr);
+    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId]._format,
+        "Trade::MeshData::attribute(): improper type requested for" << _attributes[attributeId]._name << "of format" << _attributes[attributeId]._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
@@ -1168,8 +1176,8 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(M
     #ifndef CORRADE_NO_ASSERT
     const UnsignedInt attributeId = attributeFor(name, id);
     #endif
-    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId].format,
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[attributeId].name << "of type" << _attributes[attributeId].format, nullptr);
+    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[attributeId]._format,
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[attributeId]._name << "of type" << _attributes[attributeId]._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 

@@ -329,60 +329,51 @@ constexpr Vector2 Positions[] {
 };
 
 void MeshDataTest::constructAttribute() {
-    Containers::Array<char> positionData{3*sizeof(Vector2)};
-    auto positionView = Containers::arrayCast<Vector2>(positionData);
-
-    MeshAttributeData positions{MeshAttribute::Position, positionView};
-    MeshData data{MeshPrimitive::Points, std::move(positionData), {positions}};
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(static_cast<const void*>(data.attribute<Vector2>(0).data()),
-        positionView.data());
+    const Vector2 positionData[3];
+    MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(positionData)};
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_VERIFY(positions.data().data() == positionData);
 
     constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions)};
-    MeshData cdata{MeshPrimitive::Points, {}, Positions, {cpositions}};
-    CORRADE_COMPARE(cdata.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(cdata.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(static_cast<const void*>(cdata.attribute<Vector2>(0).data()),
-        Positions);
+    constexpr MeshAttribute name = cpositions.name();
+    constexpr VertexFormat format = cpositions.format();
+    constexpr Containers::StridedArrayView1D<const void> data = cpositions.data();
+    CORRADE_COMPARE(name, MeshAttribute::Position);
+    CORRADE_COMPARE(format, VertexFormat::Vector2);
+    CORRADE_COMPARE(data.data(), Positions);
 }
 
 void MeshDataTest::constructAttributeCustom() {
-    Containers::Array<char> idData{3*sizeof(Short)};
-    auto idView = Containers::arrayCast<Short>(idData);
-
-    MeshAttributeData ids{meshAttributeCustom(13), idView};
-    MeshData data{MeshPrimitive::Points, std::move(idData), {ids}};
-    CORRADE_COMPARE(data.attributeName(0), meshAttributeCustom(13));
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Short);
-    CORRADE_COMPARE(static_cast<const void*>(data.attribute<Short>(0).data()),
-        idView.data());
+    const Short idData[3]{};
+    MeshAttributeData ids{meshAttributeCustom(13), Containers::arrayView(idData)};
+    CORRADE_COMPARE(ids.name(), meshAttributeCustom(13));
+    CORRADE_COMPARE(ids.format(), VertexFormat::Short);
+    CORRADE_VERIFY(ids.data().data() == idData);
 }
 
 void MeshDataTest::constructAttributeWrongFormat() {
-    Containers::Array<char> positionData{3*sizeof(Vector2)};
+    Vector2 positionData[3];
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Color, Containers::arrayCast<Vector2>(positionData)};
+    MeshAttributeData{MeshAttribute::Color, Containers::arrayView(positionData)};
     CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n");
 }
 
 void MeshDataTest::constructAttribute2D() {
-    Containers::Array<char> positionData{4*sizeof(Vector2)};
+    char positionData[4*sizeof(Vector2)]{};
     auto positionView = Containers::StridedArrayView2D<char>{positionData,
         {4, sizeof(Vector2)}}.every(2);
 
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, positionView};
-    MeshData data{MeshPrimitive::Points, std::move(positionData), {positions}};
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_COMPARE(static_cast<const void*>(data.attribute<Vector2>(0).data()),
-        positionView.data());
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(positions.data().data(), positionView.data());
 }
 
 void MeshDataTest::constructAttribute2DWrongSize() {
-    Containers::Array<char> positionData{4*sizeof(Vector2)};
+    char positionData[4*sizeof(Vector2)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -393,7 +384,7 @@ void MeshDataTest::constructAttribute2DWrongSize() {
 }
 
 void MeshDataTest::constructAttribute2DNonContiguous() {
-    Containers::Array<char> positionData{4*sizeof(Vector2)};
+    char positionData[4*sizeof(Vector2)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -404,19 +395,15 @@ void MeshDataTest::constructAttribute2DNonContiguous() {
 }
 
 void MeshDataTest::constructAttributeTypeErased() {
-    Containers::Array<char> positionData{3*sizeof(Vector3)};
-    auto positionView = Containers::arrayCast<Vector3>(positionData);
-
-    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(Containers::stridedArrayView(positionView))};
-    MeshData data{MeshPrimitive::Points, std::move(positionData), {positions}};
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector3);
-    CORRADE_COMPARE(static_cast<const void*>(data.attribute<Vector3>(0).data()),
-        positionView.data());
+    const Vector3 positionData[3]{};
+    MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(Containers::stridedArrayView(positionData))};
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector3);
+    CORRADE_VERIFY(positions.data().data() == positionData);
 }
 
 void MeshDataTest::constructAttributeTypeErasedWrongStride() {
-    Containers::Array<char> positionData{3*sizeof(Vector3)};
+    char positionData[3*sizeof(Vector3)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -426,10 +413,9 @@ void MeshDataTest::constructAttributeTypeErasedWrongStride() {
 
 void MeshDataTest::constructAttributeNullptr() {
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector2, nullptr};
-    MeshData data{MeshPrimitive::LineLoop, nullptr, {positions}};
-    CORRADE_COMPARE(data.attributeName(0), MeshAttribute::Position);
-    CORRADE_COMPARE(data.attributeFormat(0), VertexFormat::Vector2);
-    CORRADE_VERIFY(!data.attribute<Vector2>(0).data());
+    CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_VERIFY(!positions.data().data());
 }
 
 void MeshDataTest::constructAttributeNonOwningArray() {
