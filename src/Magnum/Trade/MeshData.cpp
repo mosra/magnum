@@ -99,10 +99,17 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
             "Trade::MeshData: attribute" << i << "doesn't specify anything", );
         CORRADE_ASSERT(attribute._vertexCount == _vertexCount,
             "Trade::MeshData: attribute" << i << "has" << attribute._vertexCount << "vertices but" << _vertexCount << "expected", );
-        const void* const begin = static_cast<const char*>(attribute._data);
-        const void* const end = static_cast<const char*>(attribute._data) + (_vertexCount - 1)*attribute._stride + vertexFormatSize(attribute._format);
-        CORRADE_ASSERT(!_vertexCount || (begin >= _vertexData.begin() && end <= _vertexData.end()),
-            "Trade::MeshData: attribute" << i << "[" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
+        const UnsignedInt typeSize = vertexFormatSize(attribute._format);
+        if(attribute._isOffsetOnly) {
+            const std::size_t size = attribute._data.offset + (_vertexCount - 1)*attribute._stride + typeSize;
+            CORRADE_ASSERT(!_vertexCount || size <= _vertexData.size(),
+                "Trade::MeshData: offset attribute" << i << "spans" << size << "bytes but passed vertexData array has only" << _vertexData.size(), );
+        } else {
+            const void* const begin = static_cast<const char*>(attribute._data.pointer);
+            const void* const end = static_cast<const char*>(attribute._data.pointer) + (_vertexCount - 1)*attribute._stride + typeSize;
+            CORRADE_ASSERT(!_vertexCount || (begin >= _vertexData.begin() && end <= _vertexData.end()),
+                "Trade::MeshData: attribute" << i << "[" << Debug::nospace << begin << Debug::nospace << ":" << Debug::nospace << end << Debug::nospace << "] is not contained in passed vertexData array [" << Debug::nospace << static_cast<const void*>(_vertexData.begin()) << Debug::nospace << ":" << Debug::nospace << static_cast<const void*>(_vertexData.end()) << Debug::nospace << "]", );
+        }
     }
     #endif
 }
@@ -218,6 +225,14 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
         out.size(), out.stride()};
 }
 
+MeshAttributeData MeshData::attributeData(UnsignedInt id) const {
+    CORRADE_ASSERT(id < _attributes.size(),
+        "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
+    const MeshAttributeData& attribute = _attributes[id];
+    return attribute._isOffsetOnly ? MeshAttributeData{attribute._name,
+        attribute._format, attributeDataViewInternal(attribute)} : attribute;
+}
+
 MeshAttribute MeshData::attributeName(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeName(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
@@ -233,7 +248,8 @@ VertexFormat MeshData::attributeFormat(UnsignedInt id) const {
 std::size_t MeshData::attributeOffset(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeOffset(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
-    return static_cast<const char*>(_attributes[id]._data) - _vertexData.data();
+    return _attributes[id]._isOffsetOnly ? _attributes[id]._data.offset :
+        static_cast<const char*>(_attributes[id]._data.pointer) - _vertexData.data();
 }
 
 UnsignedInt MeshData::attributeStride(UnsignedInt id) const {
@@ -366,7 +382,8 @@ Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(c
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
         /** @todo better ideas for the StridedArrayView API? */
-        {attribute._data, ~std::size_t{}},
+        {attribute._isOffsetOnly ? _vertexData.data() + attribute._data.offset :
+            attribute._data.pointer, ~std::size_t{}},
         /* Not using attribute._vertexCount because that gets stale after
            releaseVertexData() gets called, and then we would need to slice the
            result inside attribute() and elsewhere */

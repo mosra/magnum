@@ -52,7 +52,6 @@ struct MeshDataTest: TestSuite::Tester {
 
     void constructAttribute();
     void constructAttributeCustom();
-    void constructAttributeWrongFormat();
     void constructAttribute2D();
     void constructAttribute2DWrongSize();
     void constructAttribute2DNonContiguous();
@@ -60,7 +59,10 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributeNullptr();
     void constructAttributePadding();
     void constructAttributeNonOwningArray();
+    void constructAttributeOffsetOnly();
+    void constructAttributeWrongFormat();
     void constructAttributeWrongStride();
+    void constructAttributeWrongDataAccess();
 
     void construct();
     void constructZeroIndices();
@@ -168,7 +170,6 @@ MeshDataTest::MeshDataTest() {
 
               &MeshDataTest::constructAttribute,
               &MeshDataTest::constructAttributeCustom,
-              &MeshDataTest::constructAttributeWrongFormat,
               &MeshDataTest::constructAttribute2D,
               &MeshDataTest::constructAttribute2DWrongSize,
               &MeshDataTest::constructAttribute2DNonContiguous,
@@ -176,7 +177,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributeNullptr,
               &MeshDataTest::constructAttributePadding,
               &MeshDataTest::constructAttributeNonOwningArray,
+              &MeshDataTest::constructAttributeOffsetOnly,
+              &MeshDataTest::constructAttributeWrongFormat,
               &MeshDataTest::constructAttributeWrongStride,
+              &MeshDataTest::constructAttributeWrongDataAccess,
 
               &MeshDataTest::construct,
               &MeshDataTest::constructZeroIndices,
@@ -450,14 +454,19 @@ constexpr Vector2 Positions[] {
 void MeshDataTest::constructAttribute() {
     const Vector2 positionData[3];
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(positionData)};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
     CORRADE_VERIFY(positions.data().data() == positionData);
+    /* This is allowed too for simplicity, it just ignores the parameter */
+    CORRADE_VERIFY(positions.data(positionData).data() == positionData);
 
     constexpr MeshAttributeData cpositions{MeshAttribute::Position, Containers::arrayView(Positions)};
+    constexpr bool isOffsetOnly = cpositions.isOffsetOnly();
     constexpr MeshAttribute name = cpositions.name();
     constexpr VertexFormat format = cpositions.format();
     constexpr Containers::StridedArrayView1D<const void> data = cpositions.data();
+    CORRADE_VERIFY(!isOffsetOnly);
     CORRADE_COMPARE(name, MeshAttribute::Position);
     CORRADE_COMPARE(format, VertexFormat::Vector2);
     CORRADE_COMPARE(data.data(), Positions);
@@ -469,15 +478,6 @@ void MeshDataTest::constructAttributeCustom() {
     CORRADE_COMPARE(ids.name(), meshAttributeCustom(13));
     CORRADE_COMPARE(ids.format(), VertexFormat::Short);
     CORRADE_VERIFY(ids.data().data() == idData);
-}
-
-void MeshDataTest::constructAttributeWrongFormat() {
-    Vector2 positionData[3];
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Color, Containers::arrayView(positionData)};
-    CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n");
 }
 
 void MeshDataTest::constructAttribute2D() {
@@ -544,12 +544,53 @@ void MeshDataTest::constructAttributeNonOwningArray() {
     CORRADE_COMPARE(static_cast<const void*>(array.data()), data);
 }
 
+void MeshDataTest::constructAttributeOffsetOnly() {
+    struct {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    } vertexData[] {
+        {{}, {1.0f, 0.3f}},
+        {{}, {0.5f, 0.7f}},
+    };
+
+    MeshAttributeData a{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2)};
+    CORRADE_VERIFY(a.isOffsetOnly());
+    CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(a.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+
+    constexpr MeshAttributeData ca{MeshAttribute::TextureCoordinates, VertexFormat::Vector2, sizeof(Vector2), 2, 2*sizeof(Vector2)};
+    CORRADE_VERIFY(ca.isOffsetOnly());
+    CORRADE_COMPARE(ca.name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(ca.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+}
+
+void MeshDataTest::constructAttributeWrongFormat() {
+    Vector2 positionData[3];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshAttributeData{MeshAttribute::Color, Containers::arrayView(positionData)};
+    MeshAttributeData{MeshAttribute::Color, VertexFormat::Vector2, 0, 3, sizeof(Vector2)};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n"
+        "Trade::MeshAttributeData: VertexFormat::Vector2 is not a valid format for Trade::MeshAttribute::Color\n");
+}
+
 void MeshDataTest::constructAttributeWrongStride() {
     char positionData[3*sizeof(Vector3)]{};
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
+    /* We need this one to be constexpr, which means there can't be a warning
+       about stride not matching the size */
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, 0, 3*sizeof(Vector3), 1};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, -16}};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::StridedArrayView1D<const void>{positionData, 0, 65000}};
     MeshAttributeData{65000};
@@ -559,6 +600,20 @@ void MeshDataTest::constructAttributeWrongStride() {
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got 65000\n"
         "Trade::MeshAttributeData: at most 32k padding supported, got 65000\n"
     );
+}
+
+void MeshDataTest::constructAttributeWrongDataAccess() {
+    Vector2 positionData[3];
+    MeshAttributeData a{MeshAttribute::Position, Containers::arrayView(positionData)};
+    MeshAttributeData b{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, sizeof(Vector2)};
+    CORRADE_VERIFY(!a.isOffsetOnly());
+    CORRADE_VERIFY(b.isOffsetOnly());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    b.data();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshAttributeData::data(): the attribute is a relative offset, supply a data array\n");
 }
 
 void MeshDataTest::construct() {
@@ -597,8 +652,10 @@ void MeshDataTest::construct() {
     MeshIndexData indices{indexView};
     MeshAttributeData positions{MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector3>{vertexData, &vertexView[0].position, vertexView.size(), sizeof(Vertex)}};
+    /* Using a relative offset */
     MeshAttributeData normals{MeshAttribute::Normal,
-        Containers::StridedArrayView1D<Vector3>{vertexData, &vertexView[0].normal, vertexView.size(), sizeof(Vertex)}};
+        VertexFormat::Vector3, offsetof(Vertex, normal),
+        UnsignedInt(vertexView.size()), sizeof(Vertex)};
     MeshAttributeData textureCoordinates{MeshAttribute::TextureCoordinates,
         Containers::StridedArrayView1D<Vector2>{vertexData, &vertexView[0].textureCoordinate, vertexView.size(), sizeof(Vertex)}};
     MeshAttributeData ids{meshAttributeCustom(13),
@@ -691,6 +748,11 @@ void MeshDataTest::construct() {
     CORRADE_COMPARE(data.mutableAttribute<Vector3>(2)[2], Vector3::zAxis());
     CORRADE_COMPARE(data.mutableAttribute<Vector2>(3)[1], (Vector2{0.250f, 0.375f}));
     CORRADE_COMPARE(data.mutableAttribute<Short>(4)[1], -374);
+
+    /* Raw attribute data access by ID */
+    CORRADE_COMPARE(data.attributeData(3).name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(data.attributeData(3).format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(Containers::arrayCast<const Vector2>(data.attributeData(3).data())[1], (Vector2{0.250f, 0.375f}));
 
     /* Attribute access by name */
     CORRADE_VERIFY(data.hasAttribute(MeshAttribute::Position));
@@ -1167,14 +1229,17 @@ void MeshDataTest::constructAttributeNotContained() {
     Containers::ArrayView<Vector2> vertexData2{reinterpret_cast<Vector2*>(0xdead), 3};
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
     MeshAttributeData positions2{MeshAttribute::Position, Containers::arrayView(vertexData2)};
+    MeshAttributeData positions3{MeshAttribute::Position, VertexFormat::Vector2, 1, 3, 8};
 
     std::ostringstream out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Triangles, std::move(vertexData), {positions, positions2}};
     MeshData{MeshPrimitive::Triangles, nullptr, {positions}};
+    MeshData{MeshPrimitive::Triangles, Containers::Array<char>{24}, {positions3}};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData: attribute 1 [0xdead:0xdec5] is not contained in passed vertexData array [0xbadda9:0xbaddc1]\n"
-        "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n");
+        "Trade::MeshData: attribute 0 [0xbadda9:0xbaddc1] is not contained in passed vertexData array [0x0:0x0]\n"
+        "Trade::MeshData: offset attribute 0 spans 25 bytes but passed vertexData array has only 24\n");
 }
 
 void MeshDataTest::constructInconsitentVertexCount() {

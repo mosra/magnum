@@ -217,11 +217,11 @@ any, are interleaved together with existing attributes. Returned instance
 vertex data flags have both @ref Trade::DataFlag::Mutable and @ref Trade::DataFlag::Owned, so mutable attribute access is guaranteed.
 
 For greater control you can also pass an empty @ref Trade::MeshData instance
-and fill @p extra with attributes cherry-picked from
-@ref Trade::MeshData::attributeData() of an existing instance. By default the
-attributes are tightly packed, you can add arbitrary padding using instances
-constructed via @ref Trade::MeshAttributeData::MeshAttributeData(Int).
-Example:
+and fill @p extra with attributes cherry-picked using
+@ref Trade::MeshData::attributeData(UnsignedInt) const on an existing instance.
+By default the attributes are tightly packed, you can add arbitrary padding
+using instances constructed via
+@ref Trade::MeshAttributeData::MeshAttributeData(Int). Example:
 
 @snippet MagnumMeshTools.cpp interleavedLayout-extra
 
@@ -249,7 +249,8 @@ interleaved together with existing attributes (or, in case the attribute view
 is empty, only the corresponding space for given attribute type is reserved,
 with memory left uninitialized). The data layouting is done by
 @ref interleavedLayout(), see its documentation for detailed behavior
-description.
+description. Note that offset-only @ref Trade::MeshAttributeData instances are
+not supported in the @p extra array.
 
 Expects that each attribute in @p extra has either the same amount of elements
 as @p data vertex count or has none.

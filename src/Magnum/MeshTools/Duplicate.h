@@ -137,7 +137,8 @@ any, are duplicated and interleaved together with existing attributes (or, in
 case the attribute view is empty, only the corresponding space for given
 attribute type is reserved, with memory left uninitialized). The data layouting
 is done by @ref interleavedLayout(), see its documentation for detailed
-behavior description.
+behavior description. Note that offset-only @ref Trade::MeshAttributeData
+instances are not supported in the @p extra array.
 
 Expects that @p data is indexed and each attribute in @p extra has either the
 same amount of elements as @p data vertex count (*not* index count) or has

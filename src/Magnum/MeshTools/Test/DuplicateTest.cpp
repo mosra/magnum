@@ -60,6 +60,7 @@ struct DuplicateTest: TestSuite::Tester {
     void duplicateMeshDataExtra();
     void duplicateMeshDataExtraEmpty();
     void duplicateMeshDataExtraWrongCount();
+    void duplicateMeshDataExtraOffsetOnly();
     void duplicateMeshDataNoAttributes();
 };
 
@@ -90,6 +91,7 @@ DuplicateTest::DuplicateTest() {
               &DuplicateTest::duplicateMeshDataExtra,
               &DuplicateTest::duplicateMeshDataExtraEmpty,
               &DuplicateTest::duplicateMeshDataExtraWrongCount,
+              &DuplicateTest::duplicateMeshDataExtraOffsetOnly,
               &DuplicateTest::duplicateMeshDataNoAttributes});
 }
 
@@ -357,6 +359,20 @@ void DuplicateTest::duplicateMeshDataExtraWrongCount() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(normals)}
     });
     CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): extra attribute 1 expected to have 3 items but got 2\n");
+}
+
+void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
+    UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::duplicate(data, {
+        Trade::MeshAttributeData{10},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, 3, 5, 14}
+    });
+    CORRADE_COMPARE(out.str(), "MeshTools::duplicate(): extra attribute 1 is offset-only, which is not supported\n");
 }
 
 void DuplicateTest::duplicateMeshDataNoAttributes() {

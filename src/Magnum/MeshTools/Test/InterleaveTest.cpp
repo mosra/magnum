@@ -73,6 +73,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleaveMeshDataExtraEmpty();
     void interleaveMeshDataExtraOriginalEmpty();
     void interleaveMeshDataExtraWrongCount();
+    void interleaveMeshDataExtraOffsetOnly();
     void interleaveMeshDataAlreadyInterleavedMove();
     void interleaveMeshDataAlreadyInterleavedMoveNonOwned();
     void interleaveMeshDataNothing();
@@ -112,6 +113,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleaveMeshDataExtraEmpty,
               &InterleaveTest::interleaveMeshDataExtraOriginalEmpty,
               &InterleaveTest::interleaveMeshDataExtraWrongCount,
+              &InterleaveTest::interleaveMeshDataExtraOffsetOnly,
               &InterleaveTest::interleaveMeshDataAlreadyInterleavedMove,
               &InterleaveTest::interleaveMeshDataAlreadyInterleavedMoveNonOwned,
               &InterleaveTest::interleaveMeshDataNothing});
@@ -730,6 +732,18 @@ void InterleaveTest::interleaveMeshDataExtraWrongCount() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, Containers::arrayView(normals)}
     });
     CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 expected to have 3 items but got 2\n");
+}
+
+void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
+    Trade::MeshData data{MeshPrimitive::TriangleFan, 5};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleave(data, {
+        Trade::MeshAttributeData{10},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3, 3, 5, 14}
+    });
+    CORRADE_COMPARE(out.str(), "MeshTools::interleave(): extra attribute 1 is offset-only, which is not supported\n");
 }
 
 void InterleaveTest::interleaveMeshDataAlreadyInterleavedMove() {

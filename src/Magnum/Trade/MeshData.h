@@ -244,7 +244,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{} {}
+        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{}, _isOffsetOnly{false} {}
 
         /**
          * @brief Type-erased constructor
@@ -306,6 +306,24 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
 
         /**
+         * @brief Construct an offset-only attribute
+         * @param name          Attribute name
+         * @param format        Attribute format
+         * @param offset        Attribute data offset
+         * @param vertexCount   Attribute vertex count
+         * @param stride        Attribute stride
+         *
+         * Instances created this way refer to an offset in unspecified
+         * external vertex data instead of containing the data view directly.
+         * Useful when the location of the vertex data array is not known at
+         * attribute construction time. Note that instances created this way
+         * can't be used in most @ref MeshTools algorithms.
+         * @see @ref isOffsetOnly(),
+         *      @ref data(Containers::ArrayView<const void>) const
+         */
+        explicit constexpr MeshAttributeData(MeshAttribute name, VertexFormat format, std::size_t offset, UnsignedInt vertexCount, std::ptrdiff_t stride) noexcept;
+
+        /**
          * @brief Construct a pad value
          *
          * Usable in various @ref MeshTools algorithms to insert padding
@@ -316,7 +334,17 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         constexpr explicit MeshAttributeData(Int padding): _data{nullptr}, _vertexCount{0}, _format{}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
                 "Trade::MeshAttributeData: at most 32k padding supported, got" << padding), Short(padding))
-        }, _name{} {}
+        }, _name{}, _isOffsetOnly{false} {}
+
+        /**
+         * @brief If the attribute is offset-only
+         *
+         * Returns @cpp true @ce if the attribute doesn't contain the data view
+         * directly, but instead refers to unspecified external vertex data.
+         * @see @ref data(Containers::ArrayView<const void>) const,
+         *      @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t)
+         */
+        constexpr bool isOffsetOnly() const { return _isOffsetOnly; }
 
         /** @brief Attribute name */
         constexpr MeshAttribute name() const { return _name; }
@@ -324,20 +352,48 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         /** @brief Attribute format */
         constexpr VertexFormat format() const { return _format; }
 
-        /** @brief Type-erased attribute data */
+        /**
+         * @brief Type-erased attribute data
+         *
+         * Expects that the attribute is not offset-only, in that case use the
+         * @ref data(Containers::ArrayView<const void>) const overload
+         * instead.
+         * @see @ref isOffsetOnly()
+         */
         constexpr Containers::StridedArrayView1D<const void> data() const {
             return Containers::StridedArrayView1D<const void>{
                 /* We're *sure* the view is correct, so faking the view size */
                 /** @todo better ideas for the StridedArrayView API? */
-                {_data, ~std::size_t{}},
-                _vertexCount, _stride};
+                {_data.pointer, ~std::size_t{}}, _vertexCount,
+                (CORRADE_CONSTEXPR_ASSERT(!_isOffsetOnly, "Trade::MeshAttributeData::data(): the attribute is a relative offset, supply a data array"), _stride)};
+        }
+
+        /**
+         * @brief Type-erased attribute data for an offset-only attribute
+         *
+         * If the attribute is not offset-only, the @ref vertexData parameter
+         * is ignored.
+         * @see @ref isOffsetOnly(), @ref data() const
+         */
+        Containers::StridedArrayView1D<const void> data(Containers::ArrayView<const void> vertexData) const {
+            return Containers::StridedArrayView1D<const void>{
+                /* We're *sure* the view is correct, so faking the view size */
+                /** @todo better ideas for the StridedArrayView API? */
+                vertexData, _isOffsetOnly ? reinterpret_cast<const char*>(vertexData.data()) + _data.offset : _data.pointer, _vertexCount, _stride};
         }
 
     private:
         constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
 
         friend MeshData;
-        const void* _data;
+        union Data {
+            /* FFS C++ why this doesn't JUST WORK goddamit?! */
+            constexpr Data(const void* pointer = nullptr): pointer{pointer} {}
+            constexpr Data(std::size_t offset): offset{offset} {}
+
+            const void* pointer;
+            std::size_t offset;
+        } _data;
         /* Vertex count in MeshData is currently 32-bit, so this doesn't need
            to be 64-bit either */
         UnsignedInt _vertexCount;
@@ -346,8 +402,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
            current largest reported stride is 4k so 32k should be enough */
         Short _stride;
         MeshAttribute _name;
-        /* 4 bytes free for more stuff on 64b (20, aligned to 24); nothing on
-           32b */
+        bool _isOffsetOnly;
+        /* 3 bytes free for more stuff on 64b (21, aligned to 24) and on 32b
+           (17 used, aligned to 20) */
 };
 
 /** @relatesalso MeshAttributeData
@@ -679,14 +736,21 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Raw attribute metadata
          *
-         * Useful mainly for passing particular attributes to @ref MeshTools
-         * algorithms, everything is otherwise exposed directly through various
-         * `attribute*()` getters. Returns @cpp nullptr @ce if the mesh has no
-         * attributes.
-         * @see @ref attributeCount(), @ref attributeName(),
-         *      @ref attributeFormat(), @ref attribute()
+         * Returns the raw data that are used as a base for all `attribute*()`
+         * accessors, or @cpp nullptr @ce if the mesh has no attributes. In
+         * most cases you don't want to access those directly, but rather use
+         * the @ref attribute(), @ref attributeName(), @ref attributeFormat(),
+         * @ref attributeOffset(), @ref attributeStride() etc. accessors.
+         * Compared to those and to @ref attributeData(UnsignedInt) const, the
+         * @ref MeshAttributeData instances returned by this function may have
+         * different data pointers, and some of them might be offset-only ---
+         * use this function only if you *really* know what are you doing.
+         * @see @ref MeshAttributeData::isOffsetOnly()
          */
-        Containers::ArrayView<const MeshAttributeData> attributeData() const { return _attributes; }
+        Containers::ArrayView<const MeshAttributeData> attributeData() const & { return _attributes; }
+
+        /** @brief Taking a view to a r-value instance is not allowed */
+        Containers::ArrayView<const MeshAttributeData> attributeData() && = delete;
 
         /**
          * @brief Raw vertex data
@@ -811,6 +875,25 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @see @ref attributeCount(MeshAttribute) const
          */
         UnsignedInt attributeCount() const { return _attributes.size(); }
+
+        /**
+         * @brief Raw attribute data
+         *
+         * Returns the raw data that are used as a base for all `attribute*()`
+         * accessors. In most cases you don't want to access those directly,
+         * but rather use the @ref attribute(), @ref attributeName(),
+         * @ref attributeFormat(), @ref attributeOffset(),
+         * @ref attributeStride() etc. accessors.
+         *
+         * Useful mainly for passing particular attributes unchanged directly
+         * to @ref MeshTools algorithms --- unlike with @ref attributeData()
+         * and @ref releaseAttributeData(), returned instances are guaranteed
+         * to always have an absolute data pointer (i.e.,
+         * @ref MeshAttributeData::isOffsetOnly() always returning
+         * @cpp false @ce). The @p id is expected to be smaller than
+         * @ref attributeCount() const.
+         */
+        MeshAttributeData attributeData(UnsignedInt id) const;
 
         /**
          * @brief Attribute name
@@ -1159,10 +1242,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * like if it has no attributes (but it can still have a non-zero
          * vertex count). Note that the returned array has a custom no-op
          * deleter when the data are not owned by the mesh, and while the
-         * returned array type is mutable, the actual memory might be not ---
-         * use this function only if you are sure about the origin of the
-         * array.
-         * @see @ref attributeData()
+         * returned array type is mutable, the actual memory might be not.
+         * Additionally, the returned @ref MeshAttributeData instances
+         * may have different data pointers and sizes than what's returned by
+         * the @ref attribute() and @ref attributeData(UnsignedInt) const
+         * accessors as some of them might be offset-only --- use this function
+         * only if you *really* know what are you doing.
+         * @see @ref attributeData(), @ref MeshAttributeData::isOffsetOnly()
          */
         Containers::Array<MeshAttributeData> releaseAttributeData();
 
@@ -1316,6 +1402,59 @@ namespace Implementation {
     #undef _c
     #endif
     /* LCOV_EXCL_STOP */
+
+    constexpr bool isVertexFormatCompatibleWithAttribute(MeshAttribute name, VertexFormat format) {
+        /* Double types intentionally not supported for any builtin attributes
+           right now -- only for custom types */
+        return
+            (name == MeshAttribute::Position &&
+                (format == VertexFormat::Vector2 ||
+                 format == VertexFormat::Vector2h ||
+                 format == VertexFormat::Vector2ub ||
+                 format == VertexFormat::Vector2ubNormalized ||
+                 format == VertexFormat::Vector2b ||
+                 format == VertexFormat::Vector2bNormalized ||
+                 format == VertexFormat::Vector2us ||
+                 format == VertexFormat::Vector2usNormalized ||
+                 format == VertexFormat::Vector2s ||
+                 format == VertexFormat::Vector2sNormalized ||
+                 format == VertexFormat::Vector3 ||
+                 format == VertexFormat::Vector3h ||
+                 format == VertexFormat::Vector3ub ||
+                 format == VertexFormat::Vector3ubNormalized ||
+                 format == VertexFormat::Vector3b ||
+                 format == VertexFormat::Vector3bNormalized ||
+                 format == VertexFormat::Vector3us ||
+                 format == VertexFormat::Vector3usNormalized ||
+                 format == VertexFormat::Vector3s ||
+                 format == VertexFormat::Vector3sNormalized)) ||
+            (name == MeshAttribute::Normal &&
+                (format == VertexFormat::Vector3 ||
+                 format == VertexFormat::Vector3h ||
+                 format == VertexFormat::Vector3bNormalized ||
+                 format == VertexFormat::Vector3sNormalized)) ||
+            (name == MeshAttribute::Color &&
+                (format == VertexFormat::Vector3 ||
+                 format == VertexFormat::Vector3h ||
+                 format == VertexFormat::Vector3ubNormalized ||
+                 format == VertexFormat::Vector3usNormalized ||
+                 format == VertexFormat::Vector4 ||
+                 format == VertexFormat::Vector4h ||
+                 format == VertexFormat::Vector4ubNormalized ||
+                 format == VertexFormat::Vector4usNormalized)) ||
+            (name == MeshAttribute::TextureCoordinates &&
+                (format == VertexFormat::Vector2 ||
+                 format == VertexFormat::Vector2h ||
+                 format == VertexFormat::Vector2ub ||
+                 format == VertexFormat::Vector2ubNormalized ||
+                 format == VertexFormat::Vector2b ||
+                 format == VertexFormat::Vector2bNormalized ||
+                 format == VertexFormat::Vector2us ||
+                 format == VertexFormat::Vector2usNormalized ||
+                 format == VertexFormat::Vector2s ||
+                 format == VertexFormat::Vector2sNormalized)) ||
+            isMeshAttributeCustom(name); /* can be any format */
+    }
 }
 #endif
 
@@ -1325,58 +1464,19 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
     _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(data.stride()) & 0xffff8000),
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << data.stride()),
         Short(data.stride()))
-    }, _name{(CORRADE_CONSTEXPR_ASSERT(
-        /* Double types intentionally not supported for any builtin attributes
-           right now -- only for custom types */
-        (name == MeshAttribute::Position &&
-            (format == VertexFormat::Vector2 ||
-             format == VertexFormat::Vector2h ||
-             format == VertexFormat::Vector2ub ||
-             format == VertexFormat::Vector2ubNormalized ||
-             format == VertexFormat::Vector2b ||
-             format == VertexFormat::Vector2bNormalized ||
-             format == VertexFormat::Vector2us ||
-             format == VertexFormat::Vector2usNormalized ||
-             format == VertexFormat::Vector2s ||
-             format == VertexFormat::Vector2sNormalized ||
-             format == VertexFormat::Vector3 ||
-             format == VertexFormat::Vector3h ||
-             format == VertexFormat::Vector3ub ||
-             format == VertexFormat::Vector3ubNormalized ||
-             format == VertexFormat::Vector3b ||
-             format == VertexFormat::Vector3bNormalized ||
-             format == VertexFormat::Vector3us ||
-             format == VertexFormat::Vector3usNormalized ||
-             format == VertexFormat::Vector3s ||
-             format == VertexFormat::Vector3sNormalized)) ||
-        (name == MeshAttribute::Normal &&
-            (format == VertexFormat::Vector3 ||
-             format == VertexFormat::Vector3h ||
-             format == VertexFormat::Vector3bNormalized ||
-             format == VertexFormat::Vector3sNormalized)) ||
-        (name == MeshAttribute::Color &&
-            (format == VertexFormat::Vector3 ||
-             format == VertexFormat::Vector3h ||
-             format == VertexFormat::Vector3ubNormalized ||
-             format == VertexFormat::Vector3usNormalized ||
-             format == VertexFormat::Vector4 ||
-             format == VertexFormat::Vector4h ||
-             format == VertexFormat::Vector4ubNormalized ||
-             format == VertexFormat::Vector4usNormalized)) ||
-        (name == MeshAttribute::TextureCoordinates &&
-            (format == VertexFormat::Vector2 ||
-             format == VertexFormat::Vector2h ||
-             format == VertexFormat::Vector2ub ||
-             format == VertexFormat::Vector2ubNormalized ||
-             format == VertexFormat::Vector2b ||
-             format == VertexFormat::Vector2bNormalized ||
-             format == VertexFormat::Vector2us ||
-             format == VertexFormat::Vector2usNormalized ||
-             format == VertexFormat::Vector2s ||
-             format == VertexFormat::Vector2sNormalized)) ||
-        isMeshAttributeCustom(name) /* can be any format */,
+    }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
-    } {}
+    }, _isOffsetOnly{false} {}
+
+constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride) noexcept:
+    _data{offset}, _vertexCount{vertexCount}, _format{format},
+    /** @todo support zero / negative stride? would be hard to transfer to GL */
+    _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(stride) & 0xffff8000),
+        "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << stride),
+        Short(stride))
+    }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
+        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
+    }, _isOffsetOnly{true} {}
 
 template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, nullptr} {}
 

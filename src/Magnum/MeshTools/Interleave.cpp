@@ -185,6 +185,12 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
             /* Padding, ignore */
             if(extra[i].format() == VertexFormat{}) continue;
 
+            /* Asserting here even though data() has another assert since that
+               one would be too confusing in this context */
+            CORRADE_ASSERT(!extra[i].isOffsetOnly(),
+                "MeshTools::interleave(): extra attribute" << i << "is offset-only, which is not supported",
+                (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
             /* Copy the attribute in, if it is non-empty, otherwise keep the
                memory uninitialized */
             if(extra[i].data()) {
