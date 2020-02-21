@@ -60,6 +60,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructAttributePadding();
     void constructAttributeNonOwningArray();
     void constructAttributeOffsetOnly();
+    void constructAttributeImplementationSpecificFormat();
     void constructAttributeWrongFormat();
     void constructAttributeWrongStride();
     void constructAttributeWrongDataAccess();
@@ -123,6 +124,10 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void colorsAsArrayPackedUnsignedNormalized();
     void colorsIntoArrayInvalidSize();
 
+    void implementationSpecificVertexFormat();
+    void implementationSpecificVertexFormatWrongAccess();
+    void implementationSpecificVertexFormatNotContained();
+
     void mutableAccessNotAllowed();
 
     void indicesNotIndexed();
@@ -178,6 +183,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructAttributePadding,
               &MeshDataTest::constructAttributeNonOwningArray,
               &MeshDataTest::constructAttributeOffsetOnly,
+              &MeshDataTest::constructAttributeImplementationSpecificFormat,
               &MeshDataTest::constructAttributeWrongFormat,
               &MeshDataTest::constructAttributeWrongStride,
               &MeshDataTest::constructAttributeWrongDataAccess,
@@ -287,6 +293,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4ub>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4us>,
               &MeshDataTest::colorsIntoArrayInvalidSize,
+
+              &MeshDataTest::implementationSpecificVertexFormat,
+              &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
+              &MeshDataTest::implementationSpecificVertexFormatNotContained,
 
               &MeshDataTest::mutableAccessNotAllowed,
 
@@ -570,6 +580,18 @@ void MeshDataTest::constructAttributeOffsetOnly() {
     CORRADE_COMPARE(ca.name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(ca.format(), VertexFormat::Vector2);
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
+        Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
+        TestSuite::Compare::Container);
+}
+
+void MeshDataTest::constructAttributeImplementationSpecificFormat() {
+    Vector2 positions[]{{1.0f, 0.3f}, {0.5f, 0.7f}};
+
+    /* This should not fire any asserts */
+    MeshAttributeData a{MeshAttribute::TextureCoordinates, vertexFormatWrap(0x3a), positions};
+    CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(a.format(), vertexFormatWrap(0x3a));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data()),
         Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
         TestSuite::Compare::Container);
 }
@@ -1234,6 +1256,8 @@ void MeshDataTest::constructAttributeNotContained() {
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
     MeshAttributeData positions2{MeshAttribute::Position, Containers::arrayView(vertexData2)};
     MeshAttributeData positions3{MeshAttribute::Position, VertexFormat::Vector2, 1, 3, 8};
+    /* See implementationSpecificVertexFormatNotContained() below for
+       implementation-specific formats */
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -1860,6 +1884,116 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
     data.colorsInto(destination);
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::colorsInto(): expected a view with 3 elements but got 2\n");
+}
+
+void MeshDataTest::implementationSpecificVertexFormat() {
+    struct Vertex {
+        Long:64;
+        long double thing;
+    } vertexData[] {
+        {456.0l},
+        {456.0l}
+    };
+
+    /* Constructing should work w/o asserts */
+    Containers::StridedArrayView1D<long double> attribute{vertexData,
+        &vertexData[0].thing, 2, sizeof(Vertex)};
+    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
+        MeshAttributeData{MeshAttribute::Position,
+            vertexFormatWrap(0xdead1), attribute},
+        MeshAttributeData{MeshAttribute::Normal,
+            vertexFormatWrap(0xdead2), attribute},
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            vertexFormatWrap(0xdead3), attribute},
+        MeshAttributeData{MeshAttribute::Color,
+            vertexFormatWrap(0xdead4), attribute}}};
+
+    /* Getting typeless attribute should work also */
+    UnsignedInt format = 0xdead1;
+    for(MeshAttribute name: {MeshAttribute::Position,
+                             MeshAttribute::Normal,
+                             MeshAttribute::TextureCoordinates,
+                             MeshAttribute::Color}) {
+        CORRADE_ITERATION(name);
+        CORRADE_COMPARE(data.attributeFormat(name), vertexFormatWrap(format++));
+
+        /* The actual type size is unknown, so this will use the full stride */
+        CORRADE_COMPARE(data.attribute(name).size()[1], sizeof(Vertex));
+
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+            data.attribute(name).prefix({2, sizeof(long double)}))),
+            attribute, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
+            data.mutableAttribute(name).prefix({2, sizeof(long double)}))),
+            attribute, TestSuite::Compare::Container);
+    }
+}
+
+void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
+    struct Vertex {
+        Long:64;
+        long double thing;
+    } vertexData[] {
+        {456.0l},
+        {456.0l}
+    };
+
+    Containers::StridedArrayView1D<long double> attribute{vertexData,
+        &vertexData[0].thing, 2, sizeof(Vertex)};
+    MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
+        MeshAttributeData{MeshAttribute::Position,
+            vertexFormatWrap(0xdead1), attribute},
+        MeshAttributeData{MeshAttribute::Normal,
+            vertexFormatWrap(0xdead2), attribute},
+        MeshAttributeData{MeshAttribute::TextureCoordinates,
+            vertexFormatWrap(0xdead3), attribute},
+        MeshAttributeData{MeshAttribute::Color,
+            vertexFormatWrap(0xdead4), attribute}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attribute<Float>(MeshAttribute::Position);
+    data.attribute<Float>(MeshAttribute::Normal);
+    data.attribute<Float>(MeshAttribute::TextureCoordinates);
+    data.attribute<Float>(MeshAttribute::Color);
+    data.mutableAttribute<Float>(MeshAttribute::Position);
+    data.mutableAttribute<Float>(MeshAttribute::Normal);
+    data.mutableAttribute<Float>(MeshAttribute::TextureCoordinates);
+    data.mutableAttribute<Float>(MeshAttribute::Color);
+    data.positions2DAsArray();
+    data.positions3DAsArray();
+    data.normalsAsArray();
+    data.textureCoordinates2DAsArray();
+    data.colorsAsArray();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead2\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead3\n"
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead2\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead3\n"
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
+        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
+        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
+}
+
+void MeshDataTest::implementationSpecificVertexFormatNotContained() {
+    Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 3, [](char*, std::size_t){}};
+    Containers::ArrayView<char> vertexData2{reinterpret_cast<char*>(0xdead), 3};
+    MeshAttributeData positions{MeshAttribute::Position, vertexFormatWrap(0x3a), vertexData};
+    MeshAttributeData positions2{MeshAttribute::Position, vertexFormatWrap(0x3a), vertexData2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshData{MeshPrimitive::Triangles, std::move(vertexData), {positions, positions2}};
+    CORRADE_COMPARE(out.str(),
+        /* Assumes size of the type is 0, so the diagnostic is different from
+           constructAttributeNotContained() */
+        "Trade::MeshData: attribute 1 [0xdead:0xdeaf] is not contained in passed vertexData array [0xbadda9:0xbaddac]\n");
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {

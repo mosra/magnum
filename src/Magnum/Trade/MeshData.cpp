@@ -56,7 +56,7 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
        because I feel that makes more sense than duplicating the full assert
        logic */
     /** @todo support zero / negative stride? would be hard to transfer to GL */
-    CORRADE_ASSERT(data.empty() || std::ptrdiff_t(vertexFormatSize(format)) <= data.stride(),
+    CORRADE_ASSERT(data.empty() || isVertexFormatImplementationSpecific(format) || std::ptrdiff_t(vertexFormatSize(format)) <= data.stride(),
         "Trade::MeshAttributeData: expected stride to be positive and enough to fit" << format << Debug::nospace << ", got" << data.stride(), );
 }
 
@@ -64,7 +64,7 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
-    CORRADE_ASSERT(data.empty()[0] || vertexFormatSize(format) == data.size()[1],
+    CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || vertexFormatSize(format) == data.size()[1],
         "Trade::MeshAttributeData: second view dimension size" << data.size()[1] << "doesn't match" << format, );
     CORRADE_ASSERT(data.isContiguous<1>(),
         "Trade::MeshAttributeData: second view dimension is not contiguous", );
@@ -99,7 +99,12 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
             "Trade::MeshData: attribute" << i << "doesn't specify anything", );
         CORRADE_ASSERT(attribute._vertexCount == _vertexCount,
             "Trade::MeshData: attribute" << i << "has" << attribute._vertexCount << "vertices but" << _vertexCount << "expected", );
-        const UnsignedInt typeSize = vertexFormatSize(attribute._format);
+        /* Check that the view fits into the provided vertex data array. For
+           implementation-specific formats we don't know the size so use 0 to
+           check at least partially. */
+        const UnsignedInt typeSize =
+            isVertexFormatImplementationSpecific(attribute._format) ? 0 :
+            vertexFormatSize(attribute._format);
         if(attribute._isOffsetOnly) {
             const std::size_t size = attribute._data.offset + (_vertexCount - 1)*attribute._stride + typeSize;
             CORRADE_ASSERT(!_vertexCount || size <= _vertexData.size(),
@@ -317,10 +322,12 @@ Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(c
 Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
+    const MeshAttributeData& attribute = _attributes[id];
     /* Build a 2D view using information about attribute type size */
     return Containers::arrayCast<2, const char>(
-        attributeDataViewInternal(_attributes[id]),
-        vertexFormatSize(_attributes[id]._format));
+        attributeDataViewInternal(attribute),
+        isVertexFormatImplementationSpecific(attribute._format) ?
+            attribute._stride : vertexFormatSize(attribute._format));
 }
 
 Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) {
@@ -328,10 +335,12 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) 
         "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
+    const MeshAttributeData& attribute = _attributes[id];
     /* Build a 2D view using information about attribute type size */
     auto out = Containers::arrayCast<2, const char>(
-        attributeDataViewInternal(_attributes[id]),
-        vertexFormatSize(_attributes[id]._format));
+        attributeDataViewInternal(attribute),
+        isVertexFormatImplementationSpecific(attribute._format) ?
+            attribute._stride : vertexFormatSize(attribute._format));
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
@@ -391,6 +400,8 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> des
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination2f = Containers::arrayCast<2, Float>(destination);
 
@@ -439,6 +450,8 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3> des
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::positions3DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Position) << "position attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::positions3DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const Containers::StridedArrayView2D<Float> destination2f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector2>(destination));
     const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(destination);
@@ -518,6 +531,8 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destina
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal) << "normal attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::normalsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination3f = Containers::arrayCast<2, Float>(destination);
 
@@ -543,6 +558,8 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::textureCoordinates2DInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::TextureCoordinates) << "texture coordinate attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::textureCoordinates2DInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const auto destination2f = Containers::arrayCast<2, Float>(destination);
 
@@ -580,6 +597,8 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4> destinati
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::colorsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Color) << "color attributes", );
     CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::colorsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
     const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
     const Containers::StridedArrayView2D<Float> destination3f = Containers::arrayCast<2, Float>(Containers::arrayCast<Vector3>(destination));
     const Containers::StridedArrayView2D<Float> destination4f = Containers::arrayCast<2, Float>(destination);

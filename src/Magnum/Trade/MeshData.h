@@ -1001,9 +1001,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
          * The second dimension represents the actual data type (its size is
-         * equal to type size) and is guaranteed to be contiguous. Use the
-         * templated overload below to get the attribute in a concrete type.
-         * @see @ref Corrade::Containers::StridedArrayView::isContiguous()
+         * equal to format size for known @ref VertexFormat values and to
+         * attribute stride for implementation-specific values) and is
+         * guaranteed to be contiguous. Use the templated overload below to get
+         * the attribute in a concrete type.
+         * @see @ref Corrade::Containers::StridedArrayView::isContiguous(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::StridedArrayView2D<const char> attribute(UnsignedInt id) const;
 
@@ -1021,14 +1024,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * The @p id is expected to be smaller than @ref attributeCount() const
          * and @p T is expected to correspond to
-         * @ref attributeFormat(UnsignedInt) const. You can also use the
-         * non-templated @ref positions2DAsArray(), @ref positions3DAsArray(),
-         * @ref normalsAsArray(), @ref textureCoordinates2DAsArray() and
-         * @ref colorsAsArray() accessors to get common attributes converted to
-         * usual types, but note that these operations involve extra allocation
-         * and data conversion.
+         * @ref attributeFormat(UnsignedInt) const. Expects that the vertex
+         * format is *not* implementation-specific, in that case you can only
+         * access the attribute via the typeless @ref attribute(UnsignedInt) const
+         * above. You can also use the non-templated @ref positions2DAsArray(),
+         * @ref positions3DAsArray(), @ref normalsAsArray(),
+         * @ref textureCoordinates2DAsArray() and @ref colorsAsArray()
+         * accessors to get common attributes converted to usual types, but
+         * note that these operations involve extra allocation and data
+         * conversion.
          * @see @ref attribute(MeshAttribute, UnsignedInt) const,
-         *      @ref mutableAttribute(MeshAttribute, UnsignedInt)
+         *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         template<class T> Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
 
@@ -1046,12 +1053,15 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * The @p id is expected to be smaller than
          * @ref attributeCount(MeshAttribute) const. The second dimension
-         * represents the actual data type (its size is equal to type size) and
-         * is guaranteed to be contiguous. Use the templated overload below to
-         * get the attribute in a concrete type.
+         * represents the actual data type (its size is equal to format size
+         * for known @ref VertexFormat values and to attribute stride for
+         * implementation-specific values) and is guaranteed to be contiguous.
+         * Use the templated overload below to get the attribute in a concrete
+         * type.
          * @see @ref attribute(UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
-         *      @ref Corrade::Containers::StridedArrayView::isContiguous()
+         *      @ref Corrade::Containers::StridedArrayView::isContiguous(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::StridedArrayView2D<const char> attribute(MeshAttribute name, UnsignedInt id = 0) const;
 
@@ -1070,14 +1080,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * The @p id is expected to be smaller than
          * @ref attributeCount(MeshAttribute) const and @p T is expected to
          * correspond to @ref attributeFormat(MeshAttribute, UnsignedInt) const.
-         * You can also use the non-templated @ref positions2DAsArray(),
+         * Expects that the vertex format is *not* implementation-specific, in
+         * that case you can only access the attribute via the typeless
+         * @ref attribute(MeshAttribute, UnsignedInt) const above. You can also
+         * use the non-templated @ref positions2DAsArray(),
          * @ref positions3DAsArray(), @ref normalsAsArray(),
          * @ref textureCoordinates2DAsArray() and @ref colorsAsArray()
          * accessors to get common attributes converted to usual types, but
          * note that these operations involve extra data conversion and an
          * allocation.
          * @see @ref attribute(UnsignedInt) const,
-         *      @ref mutableAttribute(MeshAttribute, UnsignedInt)
+         *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         template<class T> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0) const;
 
@@ -1117,8 +1131,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * with @ref MeshAttribute::Position as the first argument. Converts
          * the position array from an arbitrary underlying type and returns it
          * in a newly-allocated array. If the underlying type is
-         * three-component, the last component is dropped.
-         * @see @ref positions2DInto()
+         * three-component, the last component is dropped. Expects that the
+         * vertex format is *not* implementation-specific, in that case you can
+         * only access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref positions2DInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Vector2> positions2DAsArray(UnsignedInt id = 0) const;
 
@@ -1139,8 +1156,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * with @ref MeshAttribute::Position as the first argument. Converts
          * the position array from an arbitrary underlying type and returns it
          * in a newly-allocated array. If the underlying type is two-component,
-         * the Z component is set to @cpp 0.0f @ce.
-         * @see @ref positions3DInto()
+         * the Z component is set to @cpp 0.0f @ce. Expects that the vertex
+         * format is *not* implementation-specific, in that case you can only
+         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref positions3DInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Vector3> positions3DAsArray(UnsignedInt id = 0) const;
 
@@ -1160,8 +1180,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
          * with @ref MeshAttribute::Normal as the first argument. Converts the
          * normal array from an arbitrary underlying type and returns it in a
-         * newly-allocated array.
-         * @see @ref normalsInto()
+         * newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref normalsInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Vector3> normalsAsArray(UnsignedInt id = 0) const;
 
@@ -1181,8 +1204,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
          * with @ref MeshAttribute::TextureCoordinates as the first argument.
          * Converts the texture coordinate array from an arbitrary underlying
-         * type and returns it in a newly-allocated array.
-         * @see @ref textureCoordinates2DInto()
+         * type and returns it in a newly-allocated array. Expects that the
+         * vertex format is *not* implementation-specific, in that case you can
+         * only access the attribute via the typeless
+         * @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref textureCoordinates2DInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Vector2> textureCoordinates2DAsArray(UnsignedInt id = 0) const;
 
@@ -1203,8 +1230,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * with @ref MeshAttribute::Color as the first argument. Converts the
          * color array from an arbitrary underlying type and returns it in a
          * newly-allocated array. If the underlying type is three-component,
-         * the alpha component is set to @cpp 1.0f @ce.
-         * @see @ref colorsInto()
+         * the alpha component is set to @cpp 1.0f @ce. Expects that the vertex
+         * format is *not* implementation-specific, in that case you can only
+         * access the attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref colorsInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Color4> colorsAsArray(UnsignedInt id = 0) const;
 
@@ -1407,6 +1437,10 @@ namespace Implementation {
         /* Double types intentionally not supported for any builtin attributes
            right now -- only for custom types */
         return
+            /* Implementation-specific formats can be used for any attribute
+               (tho the access capabilities will be reduced) */
+            isVertexFormatImplementationSpecific(format) ||
+            /* Named attributes are restricted so we can decode them */
             (name == MeshAttribute::Position &&
                 (format == VertexFormat::Vector2 ||
                  format == VertexFormat::Vector2h ||
@@ -1453,7 +1487,8 @@ namespace Implementation {
                  format == VertexFormat::Vector2usNormalized ||
                  format == VertexFormat::Vector2s ||
                  format == VertexFormat::Vector2sNormalized)) ||
-            isMeshAttributeCustom(name); /* can be any format */
+            /* Custom attributes can be anything */
+            isMeshAttributeCustom(name);
     }
 }
 #endif
@@ -1505,8 +1540,13 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Un
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[id]._format),
-        "Trade::MeshData::attribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
+    #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[id];
+    #endif
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
+        "Trade::MeshData::attribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
@@ -1515,8 +1555,13 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(U
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[id]._format),
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[id]._name << "of format" << _attributes[id]._format, nullptr);
+    #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[id];
+    #endif
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 
@@ -1526,10 +1571,12 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Me
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     #endif
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[attributeId]._format),
-        "Trade::MeshData::attribute(): improper type requested for" << _attributes[attributeId]._name << "of format" << _attributes[attributeId]._format, nullptr);
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
+        "Trade::MeshData::attribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
@@ -1539,10 +1586,12 @@ template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(M
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const UnsignedInt attributeId = attributeFor(name, id);
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     #endif
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(_attributes[attributeId]._format),
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[attributeId]._name << "of format" << _attributes[attributeId]._format, nullptr);
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 
