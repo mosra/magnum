@@ -244,7 +244,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{}, _isOffsetOnly{false} {}
+        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{}, _arraySize{}, _isOffsetOnly{false} {}
 
         /**
          * @brief Type-erased constructor
@@ -255,7 +255,21 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Expects that @p data stride is large enough to fit @p type and that
          * @p type corresponds to @p name.
          */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data) noexcept;
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data) noexcept: MeshAttributeData{name, format, 0, data} {}
+
+        /**
+         * @brief Type-erased constructor for an array attribute
+         * @param name      Attribute name
+         * @param format    Vertex format
+         * @param arraySize Array size
+         * @param data      Attribute data
+         *
+         * Expects that @p data stride is large enough to fit @p type, @p type
+         * corresponds to @p name and @p arraySize is zero for builtin
+         * attributes. Passing @cpp 0 @ce to @p arraySize is equivalent to
+         * calling the above overload.
+         */
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data) noexcept;
 
         /**
          * @brief Constructor
@@ -266,10 +280,25 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Expects that the second dimension of @p data is contiguous and its
          * size matches @p type; and that @p type corresponds to @p name.
          */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data) noexcept;
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView2D<const char>& data) noexcept: MeshAttributeData{name, format, 0, data} {}
 
         /** @overload */
-        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, std::nullptr_t) noexcept: MeshAttributeData{name, format, nullptr, nullptr} {}
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, std::nullptr_t) noexcept: MeshAttributeData{name, format, 0, nullptr, nullptr} {}
+
+        /**
+         * @brief Construct an array attribute
+         * @param name      Attribute name
+         * @param format    Vertex format
+         * @param arraySize Array size
+         * @param data      Attribute data
+         *
+         * Expects that the second dimension of @p data is contiguous and its
+         * size matches @p type and @p arraSize, that @p type corresponds to
+         * @p name and @p arraySize is zero for builtin attributes. Passing
+         * @cpp 0 @ce to @p arraySize is equivalent to calling the above
+         * overload.
+         */
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView2D<const char>& data) noexcept;
 
         /**
          * @brief Constructor
@@ -306,22 +335,40 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::ArrayView<T>& data) noexcept: MeshAttributeData{name, Containers::stridedArrayView(data)} {}
 
         /**
+         * @brief Construct an array attribute
+         * @param name      Attribute name
+         * @param data      Attribute data
+         *
+         * Detects @ref VertexFormat based on @p T and calls
+         * @ref MeshAttributeData(MeshAttribute, VertexFormat, UnsignedShort, const Containers::StridedArrayView1D<const void>&)
+         * with the second dimension size passed to @p arraySize. Expects that
+         * the second dimension is contiguous. At the moment only custom
+         * attributes can be arrays, which means this function can't be used
+         * with a builtin @p name. See @ref MeshAttributeData(MeshAttribute, const Containers::StridedArrayView1D<T>&)
+         * for details about @ref VertexFormat detection.
+         */
+        template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept;
+
+        /**
          * @brief Construct an offset-only attribute
          * @param name          Attribute name
          * @param format        Attribute format
          * @param offset        Attribute data offset
          * @param vertexCount   Attribute vertex count
          * @param stride        Attribute stride
+         * @param arraySize     Array size. Use @cpp 0 @ce for non-array
+         *      attributes.
          *
          * Instances created this way refer to an offset in unspecified
          * external vertex data instead of containing the data view directly.
          * Useful when the location of the vertex data array is not known at
-         * attribute construction time. Note that instances created this way
-         * can't be used in most @ref MeshTools algorithms.
-         * @see @ref isOffsetOnly(),
+         * attribute construction time. Expects that @p arraySize is zero for
+         * builtin attributes. Note that instances created this way can't be
+         * used in most @ref MeshTools algorithms.
+         * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */
-        explicit constexpr MeshAttributeData(MeshAttribute name, VertexFormat format, std::size_t offset, UnsignedInt vertexCount, std::ptrdiff_t stride) noexcept;
+        explicit constexpr MeshAttributeData(MeshAttribute name, VertexFormat format, std::size_t offset, UnsignedInt vertexCount, std::ptrdiff_t stride, UnsignedShort arraySize = 0) noexcept;
 
         /**
          * @brief Construct a pad value
@@ -334,7 +381,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         constexpr explicit MeshAttributeData(Int padding): _data{nullptr}, _vertexCount{0}, _format{}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
                 "Trade::MeshAttributeData: at most 32k padding supported, got" << padding), Short(padding))
-        }, _name{}, _isOffsetOnly{false} {}
+        }, _name{}, _arraySize{}, _isOffsetOnly{false} {}
 
         /**
          * @brief If the attribute is offset-only
@@ -342,7 +389,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Returns @cpp true @ce if the attribute doesn't contain the data view
          * directly, but instead refers to unspecified external vertex data.
          * @see @ref data(Containers::ArrayView<const void>) const,
-         *      @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t)
+         *      @ref MeshAttributeData(MeshAttribute, VertexFormat, std::size_t, UnsignedInt, std::ptrdiff_t, UnsignedShort)
          */
         constexpr bool isOffsetOnly() const { return _isOffsetOnly; }
 
@@ -351,6 +398,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
 
         /** @brief Attribute format */
         constexpr VertexFormat format() const { return _format; }
+
+        /** @brief Attribute array size */
+        constexpr UnsignedShort arraySize() const { return _arraySize; }
 
         /**
          * @brief Type-erased attribute data
@@ -383,7 +433,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         }
 
     private:
-        constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
+        constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
 
         friend MeshData;
         union Data {
@@ -402,9 +452,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
            current largest reported stride is 4k so 32k should be enough */
         Short _stride;
         MeshAttribute _name;
+        UnsignedShort _arraySize;
         bool _isOffsetOnly;
-        /* 3 bytes free for more stuff on 64b (21, aligned to 24) and on 32b
-           (17 used, aligned to 20) */
+        /* 1 byte free for more stuff on 64b (23, aligned to 24) and on 32b
+           (19, aligned to 20) */
 };
 
 /** @relatesalso MeshAttributeData
@@ -941,6 +992,26 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt attributeStride(UnsignedInt id) const;
 
         /**
+         * @brief Attribute array size
+         *
+         * In case given attribute is an array (the equivalent of e.g.
+         * @cpp int[30] @ce), returns array size, otherwise returns @cpp 0 @ce.
+         * At the moment only custom attributes can be arrays, no builtin
+         * @ref MeshAttribute is an array attribute. You can also use
+         * @ref attributeArraySize(MeshAttribute, UnsignedInt) const to
+         * directly get array size of given named attribute.
+         *
+         * Note that this is different from vertex count, which is exposed
+         * through @ref vertexCount(), and is an orthogonal concept to having
+         * multiple attributes of the same name (for example two sets of
+         * texture coordinates), which is exposed through
+         * @ref attributeCount(MeshAttribute) const. See
+         * @ref Trade-MeshData-populating-custom for an example.
+         * @see @ref isMeshAttributeCustom()
+         */
+        UnsignedShort attributeArraySize(UnsignedInt id) const;
+
+        /**
          * @brief Whether the mesh has given attribute
          *
          * @see @ref attributeCount(MeshAttribute) const
@@ -997,7 +1068,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt attributeStride(MeshAttribute name, UnsignedInt id = 0) const;
 
         /**
-         * @brief Data for given attribute array
+         * @brief Array size of a named attribute
+         *
+         * The @p id is expected to be smaller than
+         * @ref attributeCount(MeshAttribute) const. Note that this is
+         * different from vertex count, and is an orthogonal concept to having
+         * multiple attributes of the same name --- see
+         * @ref attributeArraySize(UnsignedInt) const for more information.
+         */
+        UnsignedShort attributeArraySize(MeshAttribute name, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Data for given attribute
          *
          * The @p id is expected to be smaller than @ref attributeCount() const.
          * The second dimension represents the actual data type (its size is
@@ -1011,7 +1093,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<const char> attribute(UnsignedInt id) const;
 
         /**
-         * @brief Mutable data for given attribute array
+         * @brief Mutable data for given attribute
          *
          * Like @ref attribute(UnsignedInt) const, but returns a mutable view.
          * Expects that the mesh is mutable.
@@ -1020,36 +1102,61 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<char> mutableAttribute(UnsignedInt id);
 
         /**
-         * @brief Data for given attribute array in a concrete type
+         * @brief Data for given attribute in a concrete type
          *
          * The @p id is expected to be smaller than @ref attributeCount() const
          * and @p T is expected to correspond to
          * @ref attributeFormat(UnsignedInt) const. Expects that the vertex
          * format is *not* implementation-specific, in that case you can only
          * access the attribute via the typeless @ref attribute(UnsignedInt) const
-         * above. You can also use the non-templated @ref positions2DAsArray(),
-         * @ref positions3DAsArray(), @ref normalsAsArray(),
-         * @ref textureCoordinates2DAsArray() and @ref colorsAsArray()
-         * accessors to get common attributes converted to usual types, but
-         * note that these operations involve extra allocation and data
-         * conversion.
+         * above. The attribute is also expected to not be an array, in that
+         * case you need to use the overload below by using @cpp T[] @ce
+         * instead of @cpp T @ce. You can also use the non-templated
+         * @ref positions2DAsArray(), @ref positions3DAsArray(),
+         * @ref normalsAsArray(), @ref textureCoordinates2DAsArray() and
+         * @ref colorsAsArray() accessors to get common attributes converted to
+         * usual types, but note that these operations involve extra allocation
+         * and data conversion.
          * @see @ref attribute(MeshAttribute, UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
-         *      @ref isVertexFormatImplementationSpecific()
+         *      @ref isVertexFormatImplementationSpecific(),
+         *      @ref attributeArraySize()
          */
-        template<class T> Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
 
         /**
-         * @brief Mutable data for given attribute array in a concrete type
+         * @brief Data for given array attribute in a concrete type
+         *
+         * Same as above, except that it works with array attributes instead
+         * --- you're expected to select this overload by passing @cpp T[] @ce
+         * instead of @cpp T @ce. The second dimension is guaranteed to be
+         * contiguous and have the same size as reported by
+         * @ref attributeArraySize() for given attribute.
+         */
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(UnsignedInt id) const;
+
+        /**
+         * @brief Mutable data for given attribute in a concrete type
          *
          * Like @ref attribute(UnsignedInt) const, but returns a mutable view.
          * Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        template<class T> Containers::StridedArrayView1D<T> mutableAttribute(UnsignedInt id);
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(UnsignedInt id);
 
         /**
-         * @brief Data for given named attribute array
+         * @brief Mutable data for given array attribute in a concrete type
+         *
+         * Same as above, except that it works with array attributes instead
+         * --- you're expected to select this overload by passing @cpp T[] @ce
+         * instead of @cpp T @ce. The second dimension is guaranteed to be
+         * contiguous and have the same size as reported by
+         * @ref attributeArraySize() for given attribute.
+         */
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(UnsignedInt id);
+
+        /**
+         * @brief Data for given named attribute
          *
          * The @p id is expected to be smaller than
          * @ref attributeCount(MeshAttribute) const. The second dimension
@@ -1066,7 +1173,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<const char> attribute(MeshAttribute name, UnsignedInt id = 0) const;
 
         /**
-         * @brief Mutable data for given named attribute array
+         * @brief Mutable data for given named attribute
          *
          * Like @ref attribute(MeshAttribute, UnsignedInt) const, but returns a
          * mutable view. Expects that the mesh is mutable.
@@ -1075,7 +1182,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::StridedArrayView2D<char> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
 
         /**
-         * @brief Data for given named attribute array in a concrete type
+         * @brief Data for given named attribute in a concrete type
          *
          * The @p id is expected to be smaller than
          * @ref attributeCount(MeshAttribute) const and @p T is expected to
@@ -1093,16 +1200,38 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        template<class T> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0) const;
 
         /**
-         * @brief Mutable data for given named attribute array in a concrete type
+         * @brief Data for given named array attribute in a concrete type
+         *
+         * Same as above, except that it works with array attributes instead
+         * --- you're expected to select this overload by passing @cpp T[] @ce
+         * instead of @cpp T @ce. The second dimension is guaranteed to be
+         * contiguous and have the same size as reported by
+         * @ref attributeArraySize() for given attribute.
+         */
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Mutable data for given named attribute in a concrete type
          *
          * Like @ref attribute(MeshAttribute, UnsignedInt) const, but returns a
          * mutable view. Expects that the mesh is mutable.
          * @see @ref vertexDataFlags()
          */
-        template<class T> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
+        template<class T, class = typename std::enable_if<!std::is_array<T>::value>::type> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
+
+        /**
+         * @brief Mutable data for given named array attribute in a concrete type
+         *
+         * Same as above, except that it works with array attributes instead
+         * --- you're expected to select this overload by passing @cpp T[] @ce
+         * instead of @cpp T @ce. The second dimension is guaranteed to be
+         * contiguous and have the same size as reported by
+         * @ref attributeArraySize() for given attribute.
+         */
+        template<class T, class = typename std::enable_if<std::is_array<T>::value>::type> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
 
         /**
          * @brief Indices as 32-bit integers
@@ -1318,6 +1447,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /* Like attribute(), but returning just a 1D view */
         Containers::StridedArrayView1D<const void> attributeDataViewInternal(const MeshAttributeData& attribute) const;
 
+        #ifndef CORRADE_NO_ASSERT
+        template<class T> bool checkAttributeTypeCompatibility(const MeshAttributeData& attribute, const char* prefix) const;
+        #endif
+
         /* GPUs don't currently support more than 32-bit index types / vertex
            counts so this should be enough. Sanity check:
            https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkIndexType.html */
@@ -1490,10 +1623,14 @@ namespace Implementation {
             /* Custom attributes can be anything */
             isMeshAttributeCustom(name);
     }
+
+    constexpr bool isAttributeArrayAllowed(MeshAttribute name) {
+        return isMeshAttributeCustom(name);
+    }
 }
 #endif
 
-constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
+constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
     _data{data.data()}, _vertexCount{UnsignedInt(data.size())}, _format{format},
     /** @todo support zero / negative stride? would be hard to transfer to GL */
     _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(data.stride()) & 0xffff8000),
@@ -1501,9 +1638,12 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
         Short(data.stride()))
     }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
-    }, _isOffsetOnly{false} {}
+    }, _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
+        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)
+    }, _isOffsetOnly{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
+        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), false)} {}
 
-constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride) noexcept:
+constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize) noexcept:
     _data{offset}, _vertexCount{vertexCount}, _format{format},
     /** @todo support zero / negative stride? would be hard to transfer to GL */
     _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(stride) & 0xffff8000),
@@ -1511,9 +1651,14 @@ constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const V
         Short(stride))
     }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
         "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
-    }, _isOffsetOnly{true} {}
+    }, _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
+        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)
+    }, _isOffsetOnly{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
+        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), true)} {}
 
-template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), data, nullptr} {}
+template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), 0, data, nullptr} {}
+
+template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), UnsignedShort(data.size()[1]), Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, (CORRADE_CONSTEXPR_ASSERT(data.stride()[1] == sizeof(T), "Trade::MeshAttributeData: second view dimension is not contiguous"), nullptr)} {}
 
 template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     Containers::StridedArrayView2D<const char> data = indices();
@@ -1535,64 +1680,108 @@ template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
     return Containers::arrayCast<1, T>(data).asContiguous();
 }
 
-template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(UnsignedInt id) const {
+#ifndef CORRADE_NO_ASSERT
+template<class T> bool MeshData::checkAttributeTypeCompatibility(const MeshAttributeData& attribute, const char* const prefix) const {
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        prefix << "can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), false);
+    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<typename std::remove_extent<T>::type>(attribute._format),
+        prefix << "improper type requested for" << attribute._name << "of format" << attribute._format, false);
+    CORRADE_ASSERT(std::is_array<T>::value == !!attribute._arraySize,
+        prefix << "use T[] to access an array attribute", false);
+    return true;
+}
+#endif
+
+template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(const UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[id];
+    if(!checkAttributeTypeCompatibility<T>(_attributes[id], "Trade::MeshData::attribute():")) return {};
     #endif
-    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
-        "Trade::MeshData::attribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(UnsignedInt id) {
+template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(const UnsignedInt id) const {
+    Containers::StridedArrayView2D<const char> data = attribute(id);
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
+    const MeshAttributeData& attribute = _attributes[id];
+    #ifndef CORRADE_NO_ASSERT
+    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    #endif
+    return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
+}
+
+template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(const UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[id];
+    if(!checkAttributeTypeCompatibility<T>(_attributes[id], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
-    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, T>(data);
 }
 
-template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(MeshAttribute name, UnsignedInt id) const {
+template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(const UnsignedInt id) {
+    Containers::StridedArrayView2D<char> data = mutableAttribute(id);
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
+    const MeshAttributeData& attribute = _attributes[id];
+    #ifndef CORRADE_NO_ASSERT
+    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    #endif
+    return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
+}
+
+template<class T, class> Containers::StridedArrayView1D<const T> MeshData::attribute(MeshAttribute name, UnsignedInt id) const {
     Containers::StridedArrayView2D<const char> data = attribute(name, id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
+    if(!checkAttributeTypeCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::attribute():")) return {};
     #endif
-    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
-        "Trade::MeshData::attribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, const T>(data);
 }
 
-template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(MeshAttribute name, UnsignedInt id) {
+template<class T, class> Containers::StridedArrayView2D<const typename std::remove_extent<T>::type> MeshData::attribute(MeshAttribute name, UnsignedInt id) const {
+    Containers::StridedArrayView2D<const char> data = attribute(name, id);
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
+    #ifndef CORRADE_NO_ASSERT
+    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
+    #endif
+    return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
+}
+
+template<class T, class> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(MeshAttribute name, UnsignedInt id) {
     Containers::StridedArrayView2D<char> data = mutableAttribute(name, id);
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
     #ifndef CORRADE_NO_ASSERT
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
+    if(!checkAttributeTypeCompatibility<T>(_attributes[attributeFor(name, id)], "Trade::MeshData::mutableAttribute():")) return {};
     #endif
-    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
-        "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), {});
-    CORRADE_ASSERT(Implementation::isVertexFormatCompatible<T>(attribute._format),
-        "Trade::MeshData::mutableAttribute(): improper type requested for" << attribute._name << "of format" << attribute._format, nullptr);
     return Containers::arrayCast<1, T>(data);
+}
+
+template<class T, class> Containers::StridedArrayView2D<typename std::remove_extent<T>::type> MeshData::mutableAttribute(MeshAttribute name, UnsignedInt id) {
+    Containers::StridedArrayView2D<char> data = mutableAttribute(name, id);
+    #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
+    if(!data.stride()[1]) return {};
+    #endif
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
+    #ifndef CORRADE_NO_ASSERT
+    if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
+    #endif
+    return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
 }
 
 }}

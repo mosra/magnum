@@ -51,7 +51,7 @@ MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& d
     _data = data.asContiguous();
 }
 
-MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView1D<const void>& data) noexcept: MeshAttributeData{name, format, data, nullptr} {
+MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data) noexcept: MeshAttributeData{name, format, arraySize, data, nullptr} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
@@ -60,12 +60,16 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
         "Trade::MeshAttributeData: expected stride to be positive and enough to fit" << format << Debug::nospace << ", got" << data.stride(), );
 }
 
-MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const Containers::StridedArrayView2D<const char>& data) noexcept: MeshAttributeData{name, format, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, nullptr} {
+MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView2D<const char>& data) noexcept: MeshAttributeData{name, format, arraySize, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, nullptr} {
     /* Yes, this calls into a constexpr function defined in the header --
        because I feel that makes more sense than duplicating the full assert
        logic */
-    CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || vertexFormatSize(format) == data.size()[1],
+    #ifndef CORRADE_NO_ASSERT
+    if(arraySize) CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format)*arraySize,
+        "Trade::MeshAttributeData: second view dimension size" << data.size()[1] << "doesn't match" << format << "and array size" << arraySize, );
+    else CORRADE_ASSERT(data.empty()[0] || isVertexFormatImplementationSpecific(format) || data.size()[1] == vertexFormatSize(format),
         "Trade::MeshAttributeData: second view dimension size" << data.size()[1] << "doesn't match" << format, );
+    #endif
     CORRADE_ASSERT(data.isContiguous<1>(),
         "Trade::MeshAttributeData: second view dimension is not contiguous", );
 }
@@ -263,6 +267,12 @@ UnsignedInt MeshData::attributeStride(UnsignedInt id) const {
     return _attributes[id]._stride;
 }
 
+UnsignedShort MeshData::attributeArraySize(UnsignedInt id) const {
+    CORRADE_ASSERT(id < _attributes.size(),
+        "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << _attributes.size() << "attributes", {});
+    return _attributes[id]._arraySize;
+}
+
 UnsignedInt MeshData::attributeCount(const MeshAttribute name) const {
     UnsignedInt count = 0;
     for(const MeshAttributeData& attribute: _attributes)
@@ -307,6 +317,12 @@ UnsignedInt MeshData::attributeStride(MeshAttribute name, UnsignedInt id) const 
     return attributeStride(attributeId);
 }
 
+UnsignedShort MeshData::attributeArraySize(MeshAttribute name, UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attributeArraySize(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    return attributeArraySize(attributeId);
+}
+
 Containers::StridedArrayView1D<const void> MeshData::attributeDataViewInternal(const MeshAttributeData& attribute) const {
     return Containers::StridedArrayView1D<const void>{
         /* We're *sure* the view is correct, so faking the view size */
@@ -327,7 +343,8 @@ Containers::StridedArrayView2D<const char> MeshData::attribute(UnsignedInt id) c
     return Containers::arrayCast<2, const char>(
         attributeDataViewInternal(attribute),
         isVertexFormatImplementationSpecific(attribute._format) ?
-            attribute._stride : vertexFormatSize(attribute._format));
+            attribute._stride : vertexFormatSize(attribute._format)*
+                (attribute._arraySize ? attribute._arraySize : 1));
 }
 
 Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) {
@@ -340,7 +357,8 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(UnsignedInt id) 
     auto out = Containers::arrayCast<2, const char>(
         attributeDataViewInternal(attribute),
         isVertexFormatImplementationSpecific(attribute._format) ?
-            attribute._stride : vertexFormatSize(attribute._format));
+            attribute._stride : vertexFormatSize(attribute._format)*
+                (attribute._arraySize ? attribute._arraySize : 1));
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
         /* The view size is there only for a size assert, we're pretty sure the
