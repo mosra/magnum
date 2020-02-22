@@ -26,6 +26,7 @@
 #include <cstring>
 #include <algorithm>
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -36,6 +37,7 @@
 #include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
+#include "Magnum/Math/PackingBatch.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {
 
@@ -73,22 +75,6 @@ struct HalfTest: Corrade::TestSuite::Tester {
     void tweakable();
     void tweakableError();
     #endif
-
-    private:
-        /* Naive / ground-truth packing helpers */
-        UnsignedShort packNaive(Float value);
-        Float unpackNaive(UnsignedShort value);
-
-        /* Table-based packing helpers */
-        UnsignedInt convertMantissa(UnsignedInt i);
-        UnsignedShort packTable(Float value);
-        Float unpackTable(UnsignedShort value);
-
-        UnsignedInt _mantissaTable[2048];
-        UnsignedInt _exponentTable[64];
-        UnsignedShort _offsetTable[64];
-        UnsignedShort _baseTable[512];
-        UnsignedByte _shiftTable[512];
 };
 
 typedef Math::Constants<Float> Constants;
@@ -166,57 +152,6 @@ HalfTest::HalfTest() {
     addInstancedTests({&HalfTest::tweakableError},
                       Corrade::Containers::arraySize(TweakableErrorData));
     #endif
-
-    /* Calculate tables for table-based benchmark */
-    _mantissaTable[0] = 0;
-    for(std::size_t i = 1; i != 1024; ++i)
-        _mantissaTable[i] = convertMantissa(i);
-    for(std::size_t i = 1024; i != 2048; ++i)
-        _mantissaTable[i] = 0x38000000 + ((i - 1024) << 13);
-
-    _exponentTable[0] = 0;
-    for(std::size_t i = 1; i != 31; ++i)
-        _exponentTable[i] = i << 23;
-    _exponentTable[31] = 0x47800000;
-    _exponentTable[32] = 0x80000000;
-    for(std::size_t i = 33; i != 63; ++i)
-        _exponentTable[i] = 0x80000000 + ((i - 32) << 23);
-    _exponentTable[63] = 0xc7800000;
-
-    for(std::size_t i = 0; i != 64; ++i)
-        _offsetTable[i] = 1024;
-    _offsetTable[0] = 0;
-    _offsetTable[32] = 0;
-
-    for(std::int_fast32_t i = 0; i != 256; ++i) {
-        std::int_fast32_t e = i - 127;
-        if(e < -24) {
-            _baseTable[i | 0x000] = 0x0000;
-            _baseTable[i | 0x100] = 0x8000;
-            _shiftTable[i | 0x000] = 24;
-            _shiftTable[i | 0x100] = 24;
-        } else if(e < -14) {
-            _baseTable[i | 0x000] = (0x0400 >> (-e - 14));
-            _baseTable[i | 0x100] = (0x0400 >> (-e - 14)) | 0x8000;
-            _shiftTable[i | 0x000] = -e - 1;
-            _shiftTable[i | 0x100] = -e - 1;
-        } else if(e <= 15) {
-            _baseTable[i | 0x000] = ((e + 15) << 10);
-            _baseTable[i | 0x100] = ((e + 15) << 10) | 0x8000;
-            _shiftTable[i | 0x000] = 13;
-            _shiftTable[i | 0x100] = 13;
-        } else if(e < 128) {
-            _baseTable[i | 0x000] = 0x7c00;
-            _baseTable[i | 0x100] = 0xfc00;
-            _shiftTable[i | 0x000] = 24;
-            _shiftTable[i | 0x100] = 24;
-        } else {
-            _baseTable[i | 0x000] = 0x7c00;
-            _baseTable[i | 0x100] = 0xfc00;
-            _shiftTable[i | 0x000] = 13;
-            _shiftTable[i | 0x100] = 13;
-        }
-    }
 }
 
 union FloatBits {
@@ -240,7 +175,7 @@ union HalfBits {
 
 /* float_to_half_full() from https://gist.github.com/rygorous/2156668,
    originally from ISPC */
-UnsignedShort HalfTest::packNaive(Float value) {
+UnsignedShort packNaive(Float value) {
     FloatBits f;
     f.f = value;
     HalfBits o{};
@@ -295,7 +230,7 @@ UnsignedShort HalfTest::packNaive(Float value) {
 
 /* half_to_float_full() from https://gist.github.com/rygorous/2144712,
    originally from ISPC */
-Float HalfTest::unpackNaive(UnsignedShort value) {
+Float unpackNaive(UnsignedShort value) {
     HalfBits h{value};
     FloatBits o{};
 
@@ -338,36 +273,32 @@ Float HalfTest::unpackNaive(UnsignedShort value) {
     return o.f;
 }
 
-/* Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
-   ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf */
-UnsignedInt HalfTest::convertMantissa(UnsignedInt i) {
-    UnsignedInt m = i << 13;
-    UnsignedInt e = 0;
-
-    while(!(m & 0x00800000)) {
-        e -= 0x00800000;
-        m <<= 1;
-    }
-
-    m &= ~0x00800000;
-    e += 0x38800000;
-    return m | e;
+UnsignedShort packTable(const Float value) {
+    UnsignedShort out;
+    packHalfInto(
+        Corrade::Containers::StridedArrayView2D<const Float>{{&value, 1}, {1, 1}},
+        Corrade::Containers::StridedArrayView2D<UnsignedShort>{{&out, 1}, {1, 1}});
+    return out;
 }
 
-UnsignedShort HalfTest::packTable(Float value) {
-    const UnsignedInt v = reinterpret_cast<const UnsignedInt&>(value);
-    return _baseTable[(v >> 23) & 0x1ff] + ((v & 0x007fffff) >> _shiftTable[(v >> 23) & 0x1ff]);
-}
-
-Float HalfTest::unpackTable(UnsignedShort value) {
-    UnsignedInt result = _mantissaTable[_offsetTable[value >> 10] + (value & 0x3ff)] + _exponentTable[value >> 10];
-    return reinterpret_cast<Float&>(result);
+Float unpackTable(const UnsignedShort value) {
+    Float out;
+    unpackHalfInto(
+        Corrade::Containers::StridedArrayView2D<const UnsignedShort>{{&value, 1}, {1, 1}},
+        Corrade::Containers::StridedArrayView2D<Float>{{&out, 1}, {1, 1}});
+    return out;
 }
 
 void HalfTest::unpack() {
     CORRADE_COMPARE(Math::unpackHalf(0x0000), 0.0f);
+
+    /* 0b0011110000000000 */
     CORRADE_COMPARE(Math::unpackHalf(0x3c00), 1.0f);
+
+    /* 0b0100000000000000 */
     CORRADE_COMPARE(Math::unpackHalf(0x4000), 2.0f);
+
+    /* 0b0100001000000000 */
     CORRADE_COMPARE(Math::unpackHalf(0x4200), 3.0f);
 
     CORRADE_COMPARE(unpackNaive(0x0000), 0.0f);
@@ -409,8 +340,14 @@ void HalfTest::unpack() {
 
 void HalfTest::pack() {
     CORRADE_COMPARE(Math::packHalf(0.0f), 0x0000);
+
+    /* 0b0011110000000000 */
     CORRADE_COMPARE(Math::packHalf(1.0f), 0x3c00);
+
+    /* 0b0100000000000000 */
     CORRADE_COMPARE(Math::packHalf(2.0f), 0x4000);
+
+    /* 0b0100001000000000 */
     CORRADE_COMPARE(Math::packHalf(3.0f), 0x4200);
 
     CORRADE_COMPARE(packNaive(0.0f), 0x0000);
@@ -481,7 +418,7 @@ void HalfTest::repack() {
         CORRADE_VERIFY(resultNaive != resultNaive);
         CORRADE_VERIFY(resultTable != resultTable);
 
-    /* Otherwise verify that both algos give the same results */
+    /* Otherwise verify that all algos give the same results */
     } else {
         CORRADE_COMPARE(result, resultTable);
         CORRADE_COMPARE(result, resultNaive);
@@ -513,13 +450,15 @@ void HalfTest::pack1kNaive() {
 }
 
 void HalfTest::pack1kTable() {
-    UnsignedInt out = 0;
-    CORRADE_BENCHMARK(100)
-        for(std::uint_fast16_t i = 0; i != 1000; ++i)
-            out += packTable(Float(i)*65);
+    Float src[1000];
+    UnsignedShort dst[1000];
+    for(std::uint_fast16_t i = 0; i != 1000; ++i)
+        src[i] = i*65;
 
-    /* To avoid optimizing things out */
-    CORRADE_VERIFY(out);
+    CORRADE_BENCHMARK(100) {
+        packHalfInto(Corrade::Containers::StridedArrayView2D<Float>{src, {1, 1000}},
+            Corrade::Containers::StridedArrayView2D<UnsignedShort>{dst, {1, 1000}});
+    }
 }
 
 void HalfTest::unpack1k() {
@@ -543,13 +482,15 @@ void HalfTest::unpack1kNaive() {
 }
 
 void HalfTest::unpack1kTable() {
-    Float out = 0.0f;
-    CORRADE_BENCHMARK(100)
-        for(std::uint_fast16_t i = 0; i != 1000; ++i)
-            out += unpackTable(i*65);
+    UnsignedShort src[1000];
+    Float dst[1000];
+    for(std::uint_fast16_t i = 0; i != 1000; ++i)
+        src[i] = i*65;
 
-    /* To avoid optimizing things out */
-    CORRADE_VERIFY(out);
+    CORRADE_BENCHMARK(100) {
+        unpackHalfInto(Corrade::Containers::StridedArrayView2D<UnsignedShort>{src, {1, 1000}},
+            Corrade::Containers::StridedArrayView2D<Float>{dst, {1, 1000}});
+    }
 }
 
 void HalfTest::constructDefault() {

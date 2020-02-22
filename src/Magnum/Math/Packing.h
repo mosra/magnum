@@ -184,7 +184,7 @@ that rounding mode is unspecified in order to save some cycles.
 
 Implementation based on CC0 / public domain code by *Fabian Giesen*,
 https://fgiesen.wordpress.com/2012/03/28/half-to-float-done-quic/ .
-@see @ref unpackHalf(), @ref Half
+@see @ref unpackHalf(), @ref packHalfInto(), @ref Half
 */
 MAGNUM_EXPORT UnsignedShort packHalf(Float value);
 
@@ -205,7 +205,7 @@ infinities to infinities, though their exact bit pattern is not preserved.
 
 Implementation based on CC0 / public domain code by *Fabian Giesen*,
 https://fgiesen.wordpress.com/2012/03/28/half-to-float-done-quic/ .
-@see @ref packHalf()
+@see @ref packHalf(), @ref unpackHalfInto(), @ref Half
 */
 MAGNUM_EXPORT Float unpackHalf(UnsignedShort value);
 

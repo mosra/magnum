@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Functions @ref Magnum::Math::packInto(), @ref Magnum::Math::unpackInto(), @ref Magnum::Math::castInto()
+ * @brief Functions @ref Magnum::Math::packInto(), @ref Magnum::Math::unpackInto(), @ref Magnum::Math::packHalfInto(), @ref Magnum::Math::unpackHalfInto(), @ref Magnum::Math::castInto()
  * @m_since_latest
  */
 
@@ -126,6 +126,44 @@ MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const 
  * @m_since_latest
  */
 MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+
+/**
+@brief Pack 32-bit float values into 16-bit half-float representation
+@param[in]  src     Source 32-bit float values
+@param[out] dst     Destination 16-bit half-float values
+@m_since_latest
+
+See [Wikipedia](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
+for more information about half floats. Unlike @ref packHalf() this function is
+a faster table-based implementation at the expense of using more memory, thus
+more suitable for batch conversions of large data amounts. Expects that @p src
+and @p dst have the same size and that the second dimension in both is
+contiguous.
+
+Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
+ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
+@see @ref Half
+*/
+MAGNUM_EXPORT void packHalfInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+
+/**
+@brief Unpack a range of 16-bit half-float values into 32-bit float representation
+@param[in]  src     Source floating-point values
+@param[out] dst     Destination integral values
+@m_since_latest
+
+See [Wikipedia](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
+for more information about half floats. Unlike @ref unpackHalf() this function
+is a faster table-based implementation at the expense of using more memory,
+thus more suitable for batch conversions of large data amounts. Expects that
+@p src and @p dst have the same size and that the second dimension in both is
+contiguous.
+
+Algorithm used: *Jeroen van der Zijp -- Fast Half Float Conversions, 2008,
+ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf*
+@see @ref Half
+*/
+MAGNUM_EXPORT void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
 @brief Cast integer values into a floating-point representation

@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Math/Packing.h"
+#include "Magnum/Math/Implementation/halfTables.hpp"
 
 namespace Magnum { namespace Math {
 
@@ -237,6 +238,62 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, c
 
 void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst) {
     castIntoImplementation(src, dst);
+}
+
+static_assert(sizeof(HalfMantissaTable) + sizeof(HalfOffsetTable) + sizeof(HalfExponentTable) == 8576,
+    "improper size of half->float conversion tables");
+
+static_assert(sizeof(HalfBaseTable) + sizeof(HalfShiftTable) == 1536,
+    "improper size of float->half conversion tables");
+
+void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
+    CORRADE_ASSERT(src.size() == dst.size(),
+        "Math::unpackHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
+    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
+        "Math::unpackHalfInto(): second view dimension is not contiguous", );
+
+    /* Caching values to avoid inline function calls in debug builds */
+    const char* srcPtr = reinterpret_cast<const char*>(src.data());
+    char* dstPtr = reinterpret_cast<char*>(dst.data());
+    const std::ptrdiff_t srcStride = src.stride()[0];
+    const std::ptrdiff_t dstStride = dst.stride()[0];
+    const std::size_t maxJ = src.size()[1];
+    for(std::size_t i = 0, maxI = src.size()[0]; i != maxI; ++i) {
+        const UnsignedShort* srcPtrI = reinterpret_cast<const UnsignedShort*>(srcPtr);
+        UnsignedInt* dstPtrI = reinterpret_cast<UnsignedInt*>(dstPtr);
+        for(std::size_t j = 0; j != maxJ; ++j) {
+            const UnsignedShort h = *srcPtrI++;
+            *dstPtrI++ = HalfMantissaTable[HalfOffsetTable[h >> 10] + (h & 0x3ff)] + HalfExponentTable[h >> 10];
+        }
+
+        srcPtr += srcStride;
+        dstPtr += dstStride;
+    }
+}
+
+void packHalfInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
+    CORRADE_ASSERT(src.size() == dst.size(),
+        "Math::packHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
+    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
+        "Math::packHalfInto(): second view dimension is not contiguous", );
+
+    /* Caching values to avoid inline function calls in debug builds */
+    const char* srcPtr = reinterpret_cast<const char*>(src.data());
+    char* dstPtr = reinterpret_cast<char*>(dst.data());
+    const std::ptrdiff_t srcStride = src.stride()[0];
+    const std::ptrdiff_t dstStride = dst.stride()[0];
+    const std::size_t maxJ = src.size()[1];
+    for(std::size_t i = 0, maxI = src.size()[0]; i != maxI; ++i) {
+        const UnsignedInt* srcPtrI = reinterpret_cast<const UnsignedInt*>(srcPtr);
+        UnsignedShort* dstPtrI = reinterpret_cast<UnsignedShort*>(dstPtr);
+        for(std::size_t j = 0; j != maxJ; ++j) {
+            const UnsignedInt f = *srcPtrI++;
+            *dstPtrI++ = HalfBaseTable[(f >> 23) & 0x1ff] + ((f & 0x007fffff) >> HalfShiftTable[(f >> 23) & 0x1ff]);
+        }
+
+        srcPtr += srcStride;
+        dstPtr += dstStride;
+    }
 }
 
 }}

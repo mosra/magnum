@@ -48,10 +48,14 @@ struct PackingBatchTest: Corrade::TestSuite::Tester {
     void packSignedByte();
     void packSignedShort();
 
+    void unpackHalf();
+    void packHalf();
+
     template<class T> void castUnsigned();
     template<class T> void castSigned();
 
     template<class T> void assertionsPackUnpack();
+    void assertionsPackUnpackHalf();
     template<class T> void assertionsCast();
 };
 
@@ -65,6 +69,9 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::packSignedByte,
               &PackingBatchTest::packSignedShort,
 
+              &PackingBatchTest::unpackHalf,
+              &PackingBatchTest::packHalf,
+
               &PackingBatchTest::castUnsigned<UnsignedByte>,
               &PackingBatchTest::castUnsigned<UnsignedShort>,
               &PackingBatchTest::castUnsigned<UnsignedInt>,
@@ -76,6 +83,7 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsPackUnpack<Byte>,
               &PackingBatchTest::assertionsPackUnpack<UnsignedShort>,
               &PackingBatchTest::assertionsPackUnpack<Short>,
+              &PackingBatchTest::assertionsPackUnpackHalf,
               &PackingBatchTest::assertionsCast<UnsignedByte>,
               &PackingBatchTest::assertionsCast<Byte>,
               &PackingBatchTest::assertionsCast<UnsignedShort>,
@@ -84,6 +92,7 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::assertionsCast<Int>});
 }
 
+typedef Math::Constants<Float> Constants;
 typedef Math::Vector2<UnsignedByte> Vector2ub;
 typedef Math::Vector2<UnsignedShort> Vector2us;
 typedef Math::Vector2<Byte> Vector2b;
@@ -324,6 +333,72 @@ void PackingBatchTest::packSignedShort() {
         CORRADE_COMPARE(Math::pack<Vector2s>(data[i].src), data[i].dst);
 }
 
+void PackingBatchTest::unpackHalf() {
+    /* Test data adapted from HalfTest */
+    struct Data {
+        Vector2us src;
+        Vector2 dst;
+    } data[]{
+        {{0, 0x3c00}, {}},
+        {{0x4000, 0x4200}, {}},
+        {{0x8dc2, 0x57bc}, {}},
+        {{0xfc00, 0x7c00}, {}}
+    };
+
+    constexpr Vector2 expected[] {
+        {0.0f, 1.0f},
+        {2.0f, 3.0f},
+        {-0.000351f, 123.75f},
+        {-Constants::inf(), +Constants::inf()}
+    };
+
+    Corrade::Containers::StridedArrayView1D<Vector2us> src{data, &data[0].src,
+        Corrade::Containers::arraySize(data), sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Vector2> dst{data, &data[0].dst,
+        Corrade::Containers::arraySize(data), sizeof(Data)};
+    unpackHalfInto(Corrade::Containers::arrayCast<2, UnsignedShort>(src),
+                   Corrade::Containers::arrayCast<2, Float>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Ensure the results are consistent with non-batch APIs */
+    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+        CORRADE_COMPARE(Math::unpackHalf(data[i].src), data[i].dst);
+}
+
+void PackingBatchTest::packHalf() {
+    /* Test data adapted from HalfTest */
+    struct Data {
+        Vector2 src;
+        Vector2us dst;
+    } data[]{
+        {{0.0f, 1.0f}, {}},
+        {{2.0f, 3.0f}, {}},
+        {{-0.000351512f, 123.75f}, {}},
+        {{-Constants::inf(), +Constants::inf()}, {}}
+    };
+
+    constexpr Vector2us expected[] {
+        {0, 0x3c00},
+        {0x4000, 0x4200},
+        {0x8dc2, 0x57bc},
+        {0xfc00, 0x7c00}
+    };
+
+    Corrade::Containers::StridedArrayView1D<Vector2> src{data, &data[0].src,
+        Corrade::Containers::arraySize(data), sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Vector2us> dst{data, &data[0].dst,
+        Corrade::Containers::arraySize(data), sizeof(Data)};
+    packHalfInto(Corrade::Containers::arrayCast<2, Float>(src),
+                 Corrade::Containers::arrayCast<2, UnsignedShort>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expected),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Ensure the results are consistent with non-batch APIs */
+    for(std::size_t i = 0; i != Corrade::Containers::arraySize(data); ++i)
+        CORRADE_COMPARE(Math::packHalf(data[i].src), data[i].dst);
+}
+
 template<class T> void PackingBatchTest::castUnsigned() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
@@ -434,6 +509,38 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
         "Math::packInto(): wrong destination size, got {2, 2} but expected {1, 2}\n"
         "Math::packInto(): wrong destination size, got {2, 2} but expected {2, 3}\n"
         "Math::packInto(): second view dimension is not contiguous\n");
+}
+
+void PackingBatchTest::assertionsPackUnpackHalf() {
+    Vector2us data[2]{};
+    Vector2 resultWrongCount[1]{};
+    Vector3 resultWrongVectorSize[2]{};
+    Vector4 resultNonContiguous[2]{};
+
+    auto src = Corrade::Containers::arrayCast<2, UnsignedShort>(
+        Corrade::Containers::arrayView(data));
+    auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
+        Corrade::Containers::arrayView(resultWrongCount));
+    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
+        Corrade::Containers::arrayView(resultWrongVectorSize));
+    auto dstNotContiguous = Corrade::Containers::arrayCast<2, Float>(
+        Corrade::Containers::arrayView(resultNonContiguous)).every({1, 2});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    unpackHalfInto(src, dstWrongCount);
+    unpackHalfInto(src, dstWrongVectorSize);
+    unpackHalfInto(src, dstNotContiguous);
+    packHalfInto(dstWrongCount, src);
+    packHalfInto(dstWrongVectorSize, src);
+    packHalfInto(dstNotContiguous, src);
+    CORRADE_COMPARE(out.str(),
+        "Math::unpackHalfInto(): wrong destination size, got {1, 2} but expected {2, 2}\n"
+        "Math::unpackHalfInto(): wrong destination size, got {2, 3} but expected {2, 2}\n"
+        "Math::unpackHalfInto(): second view dimension is not contiguous\n"
+        "Math::packHalfInto(): wrong destination size, got {2, 2} but expected {1, 2}\n"
+        "Math::packHalfInto(): wrong destination size, got {2, 2} but expected {2, 3}\n"
+        "Math::packHalfInto(): second view dimension is not contiguous\n");
 }
 
 template<class T> void PackingBatchTest::assertionsCast() {
