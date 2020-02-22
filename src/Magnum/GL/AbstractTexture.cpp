@@ -1075,7 +1075,7 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::RG16F:
         case TextureFormat::RGB16F:
         case TextureFormat::RGBA16F:
-            return PixelType::HalfFloat;
+            return PixelType::Half;
 
         case TextureFormat::R32UI:
         case TextureFormat::RG32UI:

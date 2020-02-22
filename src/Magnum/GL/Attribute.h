@@ -36,6 +36,10 @@
 #include "Magnum/GL/visibility.h"
 #include "Magnum/Math/TypeTraits.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace Implementation { template<class> struct Attribute; }
@@ -181,6 +185,7 @@ template<UnsignedInt location, class T> class Attribute {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Half float. Only for float attribute types.
+             * @m_since_latest
              * @requires_gl30 Extension @gl_extension{ARB,half_float_vertex}
              * @requires_gles30 Extension @gl_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
@@ -188,9 +193,17 @@ template<UnsignedInt location, class T> class Attribute {
              *      in WebGL 1.0.
              */
             #ifndef MAGNUM_TARGET_GLES2
-            HalfFloat = GL_HALF_FLOAT,
+            Half = GL_HALF_FLOAT,
             #else
-            HalfFloat = GL_HALF_FLOAT_OES,
+            Half = GL_HALF_FLOAT_OES,
+            #endif
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Half float.
+             * @m_deprecated_since_latest Use @ref DataType::Half instead.
+             */
+            HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
             #endif
             #endif
 
@@ -445,6 +458,7 @@ class DynamicAttribute {
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             /**
              * Half float. Only for float attribute types.
+             * @m_since_latest
              * @requires_gl30 Extension @gl_extension{ARB,half_float_vertex}
              * @requires_gles30 Extension @gl_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
@@ -452,9 +466,17 @@ class DynamicAttribute {
              *      in WebGL 1.0.
              */
             #ifndef MAGNUM_TARGET_GLES2
-            HalfFloat = GL_HALF_FLOAT,
+            Half = GL_HALF_FLOAT,
             #else
-            HalfFloat = GL_HALF_FLOAT_OES,
+            Half = GL_HALF_FLOAT_OES,
+            #endif
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Half float.
+             * @m_deprecated_since_latest Use @ref Half instead.
+             */
+            HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
             #endif
             #endif
 
@@ -641,9 +663,12 @@ struct FloatAttribute {
         Int = GL_INT,
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
+        Half = GL_HALF_FLOAT,
         #else
-        HalfFloat = GL_HALF_FLOAT_OES,
+        Half = GL_HALF_FLOAT_OES,
+        #endif
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
         #endif
         #endif
         Float = GL_FLOAT
@@ -741,9 +766,12 @@ template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
         Int = GL_INT,
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
+        Half = GL_HALF_FLOAT,
         #else
-        HalfFloat = GL_HALF_FLOAT_OES,
+        Half = GL_HALF_FLOAT_OES,
+        #endif
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
         #endif
         #endif
         Float = GL_FLOAT
@@ -789,9 +817,12 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         Int = GL_INT,
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
+        Half = GL_HALF_FLOAT,
         #else
-        HalfFloat = GL_HALF_FLOAT_OES,
+        Half = GL_HALF_FLOAT_OES,
+        #endif
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
         #endif
         #endif
         Float = GL_FLOAT

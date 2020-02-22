@@ -307,6 +307,12 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   @cpp GL::Attribute::DataType::HalfFloat @ce,
+    @cpp GL::DynamicAttribute::DataType::HalfFloat @ce and
+    @cpp GL::PixelType::HalfFloat @ce is deprecated in favor of
+    @ref GL::Attribute::DataType::Half,
+    @ref GL::DynamicAttribute::DataType::Half and @ref GL::PixelType::Half that
+    are consistent with the @ref Half type used elsewhere.
 -   @cpp Platform::GlfwApplication::Configuration::setCursorMode() @ce and
     related enum & getter are deprecated in favor of the new extended and more
     flexible @ref Platform::GlfwApplication::setCursor(). The setting didn't
@@ -2166,7 +2172,7 @@ Released 2018-05-01, tagged as
     strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
     workaround description and [mosra/magnum#239](https://github.com/mosra/magnum/issues/239)
     for details.
--   @ref GL::Attribute::DataType::HalfFloat was not available on WebGL 2 by
+-   @cpp GL::Attribute::DataType::HalfFloat @ce was not available on WebGL 2 by
     mistake
 -   A wrong code path for @ref GL::Framebuffer::checkStatus() was selected on
     WebGL 1 by mistake

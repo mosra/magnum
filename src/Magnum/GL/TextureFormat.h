@@ -137,7 +137,7 @@ enum class TextureFormat: GLenum {
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGB8.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering @ref PixelType::HalfFloat textures using
+     *      for filtering @ref PixelType::Half textures using
      *      @ref SamplerFilter::Linear in WebGL 1.0.
      */
     RGB = GL_RGB,
@@ -170,7 +170,7 @@ enum class TextureFormat: GLenum {
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGBA8.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering @ref PixelType::HalfFloat textures using
+     *      for filtering @ref PixelType::Half textures using
      *      @ref SamplerFilter::Linear in WebGL 1.0.
      */
     RGBA = GL_RGBA,
@@ -665,7 +665,7 @@ enum class TextureFormat: GLenum {
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
-     *      in combination with @ref PixelType::HalfFloat
+     *      in combination with @ref PixelType::Half
      *      (@gl_extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
@@ -674,7 +674,7 @@ enum class TextureFormat: GLenum {
      *      use as a render target. Use @ref TextureFormat::R16UI or
      *      @ref TextureFormat::R16I instead if not available.
      * @requires_webgl20 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
-     *      in combination with @ref PixelType::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in combination with @ref PixelType::Half (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
      *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
@@ -692,7 +692,7 @@ enum class TextureFormat: GLenum {
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
-     *      in combination with @ref PixelType::HalfFloat
+     *      in combination with @ref PixelType::Half
      *      (@gl_extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
@@ -701,7 +701,7 @@ enum class TextureFormat: GLenum {
      *      use as a render target in OpenGL ES. Use @ref TextureFormat::RG16UI
      *      or @ref TextureFormat::RG16I instead if not available.
      * @requires_webgl20 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
-     *      in combination with @ref PixelType::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in combination with @ref PixelType::Half (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
      *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
@@ -719,16 +719,16 @@ enum class TextureFormat: GLenum {
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RGB in combination with
-     *      @ref PixelType::HalfFloat (@gl_extension2{OES,texture_half_float,OES_texture_float})
+     *      @ref PixelType::Half (@gl_extension2{OES,texture_half_float,OES_texture_float})
      *      in OpenGL ES 2.0 instead.
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
      *      for filtering using @ref SamplerFilter::Linear in OpenGL ES 2.0.
      * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
-     *      @ref PixelType::HalfFloat (@webgl_extension{OES,texture_half_float})
-     *      in WebGL 1.0 instead.
+     *      @ref PixelType::Half (@webgl_extension{OES,texture_half_float}) in
+     *      WebGL 1.0 instead.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
      *      Use @ref TextureFormat::RGBA16F instead. Use @ref TextureFormat::RGB
-     *      in combination with @ref PixelType::HalfFloat
+     *      in combination with @ref PixelType::Half
      *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0
      *      instead.
      */
@@ -739,7 +739,7 @@ enum class TextureFormat: GLenum {
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RGBA in combination with
-     *      @ref PixelType::HalfFloat (@gl_extension2{OES,texture_half_float,OES_texture_float})
+     *      @ref PixelType::Half (@gl_extension2{OES,texture_half_float,OES_texture_float})
      *      in OpenGL ES 2.0 instead.
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
      *      for filtering using @ref SamplerFilter::Linear.
@@ -747,12 +747,12 @@ enum class TextureFormat: GLenum {
      *      use as a render target in OpenGL ES. Use @ref TextureFormat::RGBA16UI
      *      or @ref TextureFormat::RGBA16I instead if not available.
      * @requires_webgl20 Use @ref TextureFormat::RGBA in combination with
-     *      @ref PixelType::HalfFloat (@webgl_extension{OES,texture_half_float})
-     *      in WebGL 1.0 instead.
+     *      @ref PixelType::Half (@webgl_extension{OES,texture_half_float}) in
+     *      WebGL 1.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA16UI
      *      or @ref TextureFormat::RGBA16I instead if not available. Use
-     *      @ref TextureFormat::RGBA in combination with @ref PixelType::HalfFloat
+     *      @ref TextureFormat::RGBA in combination with @ref PixelType::Half
      *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0 instead.
      */
     RGBA16F = GL_RGBA16F,

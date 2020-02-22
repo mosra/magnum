@@ -195,7 +195,7 @@ constexpr struct {
         },
     #ifndef MAGNUM_TARGET_GLES2
     {"integer", RenderbufferFormat::RG32UI, PixelFormat::RGInteger, PixelType::UnsignedInt},
-    {"float", RenderbufferFormat::RGBA16F, PixelFormat::RGBA, PixelType::HalfFloat}
+    {"float", RenderbufferFormat::RGBA16F, PixelFormat::RGBA, PixelType::Half}
     #endif
 };
 

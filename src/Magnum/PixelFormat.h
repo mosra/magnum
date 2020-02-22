@@ -581,9 +581,8 @@ enum class PixelFormat: UnsignedInt {
     /**
      * Red component, half float.
      *
-     * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::R16F;
-     * @def_vk_keyword{FORMAT_R16_SFLOAT,Format};
+     * Corresponds to @ref GL::PixelFormat::Red and @ref GL::PixelType::Half,
+     * @ref GL::TextureFormat::R16F; @def_vk_keyword{FORMAT_R16_SFLOAT,Format};
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatR16Float](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatr16float?language=objc).
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
@@ -594,8 +593,8 @@ enum class PixelFormat: UnsignedInt {
     /**
      * Red and green component, half float.
      *
-     * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RG16F;
+     * Corresponds to @ref GL::PixelFormat::RG and @ref GL::PixelType::Half,
+     * @ref GL::TextureFormat::RG16F;
      * @def_vk_keyword{FORMAT_R16G16_SFLOAT,Format};
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatRG16Float](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrg16float?language=objc).
@@ -607,8 +606,8 @@ enum class PixelFormat: UnsignedInt {
     /**
      * RGB, half float.
      *
-     * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGB16F;
+     * Corresponds to @ref GL::PixelFormat::RGB and @ref GL::PixelType::Half,
+     * @ref GL::TextureFormat::RGB16F;
      * @def_vk_keyword{FORMAT_R16G16B16_SFLOAT,Format}. No 48-bit D3D or Metal
      * equivalent.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
@@ -618,8 +617,8 @@ enum class PixelFormat: UnsignedInt {
     /**
      * RGBA, half float.
      *
-     * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGBA16F;
+     * Corresponds to @ref GL::PixelFormat::RGBA and @ref GL::PixelType::Half,
+     * @ref GL::TextureFormat::RGBA16F;
      * @def_vk_keyword{FORMAT_R16G16B16A16_SFLOAT,Format};
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatRGBA16Float](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrgba16float?language=objc).

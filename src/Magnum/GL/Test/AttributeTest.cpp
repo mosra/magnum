@@ -381,7 +381,7 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::UnsignedInt2101010Rev);
     #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    Attribute a(Attribute::DataType::HalfFloat);
+    Attribute a(Attribute::DataType::Half);
     CORRADE_COMPARE(a.vectorSize(), 8);
     #else
     Attribute a(Attribute::DataType::Float);
@@ -562,8 +562,8 @@ void AttributeTest::debugDataTypeFloat() {
 
     std::ostringstream out;
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
+    Debug{&out} << Attribute::DataType::Half << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Half GL::Attribute::DataType(0xdead)\n");
     #else
     Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
     CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");

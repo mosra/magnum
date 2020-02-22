@@ -162,15 +162,15 @@ _s(RGB32I)
 _s(RGBA32I)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
-_c(R16F, Red, HalfFloat, R16F)
-_c(RG16F, RG, HalfFloat, RG16F)
-_c(RGB16F, RGB, HalfFloat, RGB16F)
-_c(RGBA16F, RGBA, HalfFloat, RGBA16F)
+_c(R16F, Red, Half, R16F)
+_c(RG16F, RG, Half, RG16F)
+_c(RGB16F, RGB, Half, RGB16F)
+_c(RGBA16F, RGBA, Half, RGBA16F)
 #else
-_n(R16F, Luminance, HalfFloat)
-_n(RG16F, LuminanceAlpha, HalfFloat)
-_n(RGB16F, RGB, HalfFloat)
-_n(RGBA16F, RGBA, HalfFloat)
+_n(R16F, Luminance, Half)
+_n(RG16F, LuminanceAlpha, Half)
+_n(RGB16F, RGB, Half)
+_n(RGBA16F, RGBA, Half)
 #endif
 #ifndef MAGNUM_TARGET_GLES2
 _c(R32F, Red, Float, R32F)

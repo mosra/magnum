@@ -138,7 +138,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
         #ifndef MAGNUM_TARGET_GLES2
         case PixelType::Short:
         #endif
-        case PixelType::HalfFloat:
+        case PixelType::Half:
             size = 2; break;
         case PixelType::UnsignedInt:
         #ifndef MAGNUM_TARGET_GLES2
@@ -351,7 +351,7 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         #ifndef MAGNUM_TARGET_GLES2
         _c(Int)
         #endif
-        _c(HalfFloat)
+        _c(Half)
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
         _c(UnsignedByte332)

@@ -410,6 +410,7 @@ enum class PixelType: GLenum {
     /**
      * Each component half float.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @m_since_latest
      * @requires_gl30 Extension @gl_extension{ARB,half_float_pixel}
      * @requires_gles30 Extension @gl_extension2{OES,texture_half_float,OES_texture_float}
      *      to use for texture reading in OpenGL ES 2.0.
@@ -425,9 +426,17 @@ enum class PixelType: GLenum {
      *      to use the texture as a render target.
      */
     #ifndef MAGNUM_TARGET_GLES2
-    HalfFloat = GL_HALF_FLOAT,
+    Half = GL_HALF_FLOAT,
     #else
-    HalfFloat = GL_HALF_FLOAT_OES,
+    Half = GL_HALF_FLOAT_OES,
+    #endif
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Half float.
+     * @m_deprecated_since_latest Use @ref PixelFormat::Half instead.
+     */
+    HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
     #endif
 
     /**

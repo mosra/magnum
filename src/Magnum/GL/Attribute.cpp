@@ -84,7 +84,7 @@ Debug& operator<<(Debug& debug, const DynamicAttribute::DataType value) {
         _c(UnsignedInt)
         _c(Int)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        _c(HalfFloat)
+        _c(Half)
         #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
@@ -112,7 +112,7 @@ UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
         case DataType::UnsignedShort:
         case DataType::Short:
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case DataType::HalfFloat:
+        case DataType::Half:
         #endif
             return 2*components;
         case DataType::UnsignedInt:
@@ -165,7 +165,7 @@ UnsignedInt Attribute<Math::Vector<3, Float>>::size(GLint components, DataType d
         case DataType::UnsignedShort:
         case DataType::Short:
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case DataType::HalfFloat:
+        case DataType::Half:
         #endif
             return 2*components;
         case DataType::UnsignedInt:
@@ -196,7 +196,7 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
         case DataType::UnsignedShort:
         case DataType::Short:
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case DataType::HalfFloat:
+        case DataType::Half:
         #endif
             return 2*components;
         case DataType::UnsignedInt:
@@ -358,7 +358,7 @@ Debug& operator<<(Debug& debug, const FloatAttribute::DataType value) {
         _c(UnsignedInt)
         _c(Int)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        _c(HalfFloat)
+        _c(Half)
         #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
@@ -421,7 +421,7 @@ Debug& operator<<(Debug& debug, const Attribute<Math::Vector<3, Float>>::DataTyp
         _c(UnsignedInt)
         _c(Int)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        _c(HalfFloat)
+        _c(Half)
         #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
@@ -448,7 +448,7 @@ Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::DataTyp
         _c(UnsignedInt)
         _c(Int)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        _c(HalfFloat)
+        _c(Half)
         #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
