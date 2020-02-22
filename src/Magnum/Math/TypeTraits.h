@@ -85,9 +85,8 @@ namespace Magnum { namespace Math {
 @m_since{2019,10}
 
 Equivalent to @ref std::true_type for all builtin scalar integer and
-floating-point types and in addition also @ref Deg and @ref Rad; equivalent to
-@ref std::false_type otherwise. The @ref Half type deliberately doesn't support
-any arithmetic, so it's not treated as a scalar type.
+floating-point types and in addition also @ref Half, @ref Deg and @ref Rad;
+equivalent to @ref std::false_type otherwise.
 
 Note that this is *different* from @ref std::is_scalar, which is @cpp true @ce
 also for enums or pointers --- it's rather closer to @ref std::is_arithmetic,
@@ -117,6 +116,7 @@ template<> struct IsScalar<unsigned long>: std::true_type {};
 template<> struct IsScalar<long long>: std::true_type {};
 template<> struct IsScalar<unsigned long long>: std::true_type {};
 template<> struct IsScalar<float>: std::true_type {};
+template<> struct IsScalar<Half>: std::true_type {};
 template<> struct IsScalar<double>: std::true_type {};
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct IsScalar<long double>: std::true_type {};
@@ -196,9 +196,8 @@ template<class T> struct IsIntegral<Color4<T>>: IsIntegral<T> {};
 @m_since{2019,10}
 
 Equivalent to @ref std::true_type for all floating-point scalar and vector
-types supported by Magnum math including @ref Deg and @ref Rad; equivalent to
-@ref std::false_type otherwise. The @ref Half type deliberately doesn't support
-any arithmetic, so it's not treated as a floating-point type.
+types supported by Magnum math including @ref Half, @ref Deg and @ref Rad;
+equivalent to @ref std::false_type otherwise.
 @see @ref IsIntegral, @ref IsScalar, @ref IsVector, @ref std::is_floating_point
 */
 template<class T> struct IsFloatingPoint
@@ -209,6 +208,7 @@ template<class T> struct IsFloatingPoint
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct IsFloatingPoint<Float>: std::true_type {};
+template<> struct IsFloatingPoint<Half>: std::true_type {};
 template<> struct IsFloatingPoint<Double>: std::true_type {};
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct IsFloatingPoint<long double>: std::true_type {};
@@ -346,8 +346,10 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     /**
      * @brief Fuzzy compare
      *
-     * Uses fuzzy compare for floating-point types (using @ref epsilon()
-     * value), pure equality comparison everywhere else. Algorithm adapted from
+     * Uses fuzzy compare for all floating-point types except @ref Half (using
+     * the @ref epsilon() value), pure equality comparison everywhere else.
+     * The @ref Half type has representable values sparse enough that no fuzzy
+     * comparison needs to be done. Algorithm adapted from
      * http://floating-point-gui.de/errors/comparison/.
      * @see @ref Math::equal(T, T), @ref Math::notEqual(T, T)
      */
@@ -410,6 +412,7 @@ namespace Implementation {
     _c(Long)
     #endif
     _c(Float)
+    _c(Half)
     _c(Double)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _c(long double)
@@ -497,6 +500,11 @@ template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Flo
     typedef Float FloatingPointType;
 
     constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
+};
+/* A bit special -- using integer comparison for equality but presenting itself
+   as a floating-point type so Color's fullChannel() works correctly */
+template<> struct TypeTraits<Half>: Implementation::TypeTraitsName<Half>, Implementation::TypeTraitsDefault<Half> {
+    typedef Half FloatingPointType;
 };
 template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
