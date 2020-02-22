@@ -191,6 +191,8 @@ See also:
 @subsubsection changelog-latest-new-vk Vk library
 
 -   Updated Vulkan headers for version 1.2
+-   Conversion of @ref VertexFormat values to the @type_vk{Format} enum using
+    @ref Vk::vkFormat(Magnum::VertexFormat)
 
 @subsection changelog-latest-changes Changes and improvements
 

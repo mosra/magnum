@@ -42,7 +42,9 @@ set(MagnumVk_HEADERS
 
     visibility.h)
 set(MagnumVk_PRIVATE_HEADERS
-    Implementation/FormatMapping.hpp)
+    Implementation/compressedPixelFormatMapping.hpp
+    Implementation/meshAttributeTypeMapping.hpp
+    Implementation/pixelFormatMapping.hpp)
 
 # Objects shared between main and test library
 # add_library(MagnumVkObjects OBJECT

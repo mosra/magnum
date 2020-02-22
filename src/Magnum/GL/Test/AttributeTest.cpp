@@ -70,6 +70,9 @@ struct AttributeTest: TestSuite::Tester {
     void attributeFromGenericFormatUnexpectedForLongKind();
     #endif
     void attributeFromGenericFormatTooManyComponents();
+    void attributeFromGenericFormatNotAvailable();
+
+    void hasVertexFormat();
 
     void debugComponents1();
     void debugComponents2();
@@ -132,6 +135,9 @@ AttributeTest::AttributeTest() {
               &AttributeTest::attributeFromGenericFormatUnexpectedForLongKind,
               #endif
               &AttributeTest::attributeFromGenericFormatTooManyComponents,
+              &AttributeTest::attributeFromGenericFormatNotAvailable,
+
+              &AttributeTest::hasVertexFormat,
 
               &AttributeTest::debugComponents1,
               &AttributeTest::debugComponents2,
@@ -638,6 +644,49 @@ void AttributeTest::attributeFromGenericFormatTooManyComponents() {
     DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Vector3};
     CORRADE_COMPARE(out.str(),
         "GL::DynamicAttribute: can't use VertexFormat::Vector3 for a 2-component attribute\n");
+}
+
+void AttributeTest::attributeFromGenericFormatNotAvailable() {
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_SKIP("All attribute formats available on desktop GL.");
+    #else
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Vector3d};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: VertexFormat::Vector3d isn't available on this target\n");
+    #endif
+}
+
+void AttributeTest::hasVertexFormat() {
+    CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Vector2i));
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Vector3d));
+    #endif
+
+    /* Ensure all generic formats are handled by going though all and executing
+       out functions on those. This goes through the first 16 bits, which
+       should be enough. Going through 32 bits takes 8 seconds, too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto format = Magnum::VertexFormat(i);
+        /* Each case only verifies that hasVertexFormat() handles the format
+           and doesn't fall into unreachable code */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(format) {
+            #define _c(format) \
+                case Magnum::VertexFormat::format: \
+                    GL::hasVertexFormat(Magnum::VertexFormat::format); \
+                    break;
+            #include "Magnum/Implementation/vertexFormatMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
 }
 
 void AttributeTest::debugComponents1() {

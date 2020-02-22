@@ -469,7 +469,41 @@ Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::DataTyp
 
 }
 
+bool hasVertexFormat(const VertexFormat format) {
+    switch(vertexFormatComponentFormat(format)) {
+        case VertexFormat::UnsignedByte:
+        case VertexFormat::Byte:
+        case VertexFormat::UnsignedShort:
+        case VertexFormat::Short:
+        case VertexFormat::UnsignedInt:
+        case VertexFormat::Int:
+        case VertexFormat::Float:
+            return true;
+
+        case VertexFormat::Half:
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            return true;
+            #else
+            return false;
+            #endif
+
+        case VertexFormat::Double:
+            #ifndef MAGNUM_TARGET_GLES
+            return true;
+            #else
+            return false;
+            #endif
+
+        /* Nothing else expected to be returned from
+           vertexFormatComponentFormat() */
+        default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    }
+}
+
 DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))} {
+    CORRADE_ASSERT(hasVertexFormat(format),
+        "GL::DynamicAttribute:" << format << "isn't available on this target", );
+
     /* Translate component type to a GL-specific value */
     switch(vertexFormatComponentFormat(format)) {
         #define _c(format)                                                  \
@@ -492,7 +526,8 @@ DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const 
         #undef _c
 
         /* Nothing else expected to be returned from
-           vertexFormatComponentFormat() */
+           vertexFormatComponentFormat(), the unavailable formats were caught
+           by the hasVertexFormat() above already */
         default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 

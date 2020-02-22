@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::Attribute
+ * @brief Class @ref Magnum::GL::Attribute, @ref Magnum::GL::DynamicAttribute, function @ref Magnum::GL::hasVertexFormat()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -547,10 +547,11 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * @brief Construct from a generic mesh attribute type
          * @m_since_latest
          *
-         * The @p type is expected to be compatible with @p kind --- i.e.,
-         * normalized or floating-point for @ref Kind::GenericNormalized,
-         * non-normalized for @ref Kind::Integral / @ref Kind::Long and
-         * integral for @ref Kind::Integral.
+         * The @p type is expected to be available on given target and be
+         * compatible with @p kind --- i.e., normalized or floating-point for
+         * @ref Kind::GenericNormalized, non-normalized for @ref Kind::Integral
+         * / @ref Kind::Long and integral for @ref Kind::Integral.
+         * @see @ref hasVertexFormat()
          */
         explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format): DynamicAttribute{kind, location, format, 4} {}
 
@@ -599,6 +600,29 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::Components);
 
 /** @debugoperatorclassenum{DynamicAttribute,DynamicAttribute::DataType} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::DataType);
+
+/**
+@brief Check availability of a generic mesh attribute type
+@m_since_latest
+
+Some OpenGL targets don't support all mesh attribute types (for example OpenGL
+ES doesn't support double-precision types). Returns @cpp false @ce if current
+target can't support such type, @cpp true @ce otherwise. The @p type value is
+expected to be valid.
+
+Note that, unlike with pixel format mapping, there's no way to represent an
+implementation-specific mesh attribute type using a single 32-bit value and
+thus this function returns @cpp false @ce also for all formats for which
+@ref isVertexFormatImplementationSpecific() is @cpp true @ce --- you need to do
+such mapping by hand by creating a corresponding @ref DynamicAttribute.
+
+@note Support of some formats depends on presence of a particular OpenGL
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such type.
+
+@see @ref DynamicAttribute::DynamicAttribute(Kind, UnsignedInt, VertexFormat)
+*/
+MAGNUM_GL_EXPORT bool hasVertexFormat(Magnum::VertexFormat format);
 
 namespace Implementation {
 
