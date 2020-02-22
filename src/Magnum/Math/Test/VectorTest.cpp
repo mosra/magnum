@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
@@ -58,6 +59,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void construct();
     void constructFromData();
     void constructPad();
+    void constructPadDefaultHalf();
     void constructDefault();
     void constructNoInit();
     void constructOneValue();
@@ -118,14 +120,17 @@ struct VectorTest: Corrade::TestSuite::Tester {
 typedef Math::Constants<Float> Constants;
 typedef Math::Rad<Float> Rad;
 typedef Vector<2, Float> Vector2;
+typedef Vector<2, Half> Vector2h;
 typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
+typedef Vector<4, Half> Vector4h;
 typedef Vector<4, Int> Vector4i;
 
 VectorTest::VectorTest() {
     addTests({&VectorTest::construct,
               &VectorTest::constructFromData,
               &VectorTest::constructPad,
+              &VectorTest::constructPadDefaultHalf,
               &VectorTest::constructDefault,
               &VectorTest::constructNoInit,
               &VectorTest::constructOneValue,
@@ -205,6 +210,13 @@ void VectorTest::constructPad() {
     constexpr Vector<5, Float> d{1.0f, -1.0f, 8.0f, 2.3f, -1.1f};
     constexpr Vector4 e = Vector4::pad(d);
     CORRADE_COMPARE(e, Vector4(1.0f, -1.0f, 8.0f, 2.3f));
+}
+
+void VectorTest::constructPadDefaultHalf() {
+    using namespace Literals;
+    /* The default pad value should work also for the Half type */
+    Vector4h a = Vector4h::pad(Vector2h{1.0_h, -1.0_h});
+    CORRADE_COMPARE(a, (Vector4h{1.0_h, -1.0_h, 0.0_h, 0.0_h}));
 }
 
 void VectorTest::constructDefault() {

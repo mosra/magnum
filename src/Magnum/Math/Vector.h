@@ -166,7 +166,7 @@ template<std::size_t size, class T> class Vector {
          * with @p value, otherwise it's cut.
          * @see @ref Vector4::pad(const Vector<otherSize, T>&, T, T)
          */
-        template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T(0)) {
+        template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T()) {
             return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
         }
 
@@ -1248,7 +1248,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     static const Type<T>& from(const T* data) {                             \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
-    template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T(0)) { \
+    template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T()) { \
         return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
