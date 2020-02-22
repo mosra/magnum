@@ -29,9 +29,20 @@
  * @brief Class @ref Magnum::Math::Half, literal @link Magnum::Math::Literals::operator""_h() @endlink
  */
 
-#include "Magnum/Math/Packing.h"
+#include <utility>
+#include <Corrade/Utility/Utility.h>
+
+#include "Magnum/visibility.h"
+#include "Magnum/Math/Math.h"
+#include "Magnum/Math/Tags.h"
 
 namespace Magnum { namespace Math {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* So we don't need to drag in the whole Packing.h */
+MAGNUM_EXPORT UnsignedShort packHalf(Float value);
+MAGNUM_EXPORT Float unpackHalf(UnsignedShort value);
+#endif
 
 /**
 @brief Half-precision float literal

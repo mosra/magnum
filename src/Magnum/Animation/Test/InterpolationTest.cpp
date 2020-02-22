@@ -33,6 +33,7 @@
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
+#include "Magnum/Math/Packing.h"
 
 namespace Magnum { namespace Animation { namespace Test { namespace {
 

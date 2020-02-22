@@ -33,6 +33,7 @@
 #endif
 
 #include "Magnum/Math/Half.h"
+#include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
