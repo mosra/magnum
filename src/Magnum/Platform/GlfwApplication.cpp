@@ -58,6 +58,18 @@ enum class GlfwApplication::Flag: UnsignedByte {
     TextInputActive = 1 << 1,
     #ifdef CORRADE_TARGET_APPLE
     HiDpiWarningPrinted = 1 << 2
+    #elif defined(CORRADE_TARGET_WINDOWS)
+    /* On Windows, GLFW fires a viewport event already when creating the
+       window, which means viewportEvent() gets called even before the
+       constructor exits. That's not a problem if the window is created
+       implicitly (because derived class vtable is not setup yet and so the
+       call goes into the base class no-op viewportEvent()), but when calling
+       create() / tryCreate() from user constructor, this might lead to crashes
+       as things touched by viewportEvent() might not be initialized yet. To
+       fix this, we ignore the first ever viewport event. This behavior was not
+       observed on Linux or macOS (and thus ignoring the first viewport event
+       there may be harmful), so keeping this Windows-only. */
+    FirstViewportEventIgnored = 1 << 2
     #endif
 };
 
@@ -582,18 +594,26 @@ void GlfwApplication::setupCallbacks() {
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
     });
     #ifdef MAGNUM_TARGET_GL
-    glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
-        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        ViewportEvent e{app.windowSize(), {w, h}, app.dpiScaling()};
-        app.viewportEvent(e);
-    });
+    glfwSetFramebufferSizeCallback
     #else
-    glfwSetWindowSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
+    glfwSetWindowSizeCallback
+    #endif
+    (_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        #ifdef CORRADE_TARGET_WINDOWS
+        /* See the flag for details */
+        if(!(app._flags & Flag::FirstViewportEventIgnored)) {
+            app._flags |= Flag::FirstViewportEventIgnored;
+            return;
+        }
+        #endif
+        #ifdef MAGNUM_TARGET_GL
+        ViewportEvent e{app.windowSize(), {w, h}, app.dpiScaling()};
+        #else
         ViewportEvent e{{w, h}, app.dpiScaling()};
+        #endif
         app.viewportEvent(e);
     });
-    #endif
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 

@@ -268,6 +268,10 @@ See also:
 -   Fixed broken @ref Platform::EmscriptenApplication mouse event coordinates
     when `-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1` is enabled (see
     [mosra/magnum#408](https://github.com/mosra/magnum/issues/408))
+-   Due to some Windows-specific issue with GLFW,
+    @ref Platform::GlfwApplication::viewportEvent() could get fired already
+    during class construction, potentially causing crashes. This is now worked
+    around by ignoring the very first event.
 -   In 2019.01 @ref Magnum/Platform/Sdl2Application.h went through an include
     cleanup, removing 50k lines; but unfortunately we forgot to add back
     @cpp #include <SDL_main.h> @ce, causing iOS builds to fail to initialize.
