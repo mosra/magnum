@@ -33,6 +33,7 @@
 #endif
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec3 {
@@ -75,6 +76,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     explicit ColorTest();
 
     void construct();
+    void constructDefaultAlphaHalf();
     void constructDefault();
     void constructNoInit();
     void constructOneValue();
@@ -152,7 +154,9 @@ typedef Math::Color3<Float> Color3;
 typedef Math::Color3<UnsignedByte> Color3ub;
 
 typedef Math::Vector4<Float> Vector4;
+typedef Math::Vector4<Half> Vector4h;
 typedef Math::Color4<Float> Color4;
+typedef Math::Color4<Half> Color4h;
 typedef Math::Color4<UnsignedByte> Color4ub;
 
 typedef Math::ColorHsv<Float> ColorHsv;
@@ -197,6 +201,7 @@ constexpr struct {
 
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
+              &ColorTest::constructDefaultAlphaHalf,
               &ColorTest::constructDefault,
               &ColorTest::constructNoInit,
               &ColorTest::constructOneValue,
@@ -290,6 +295,12 @@ void ColorTest::construct() {
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float, Float, Float>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float, Float, Float>::value));
+}
+
+void ColorTest::constructDefaultAlphaHalf() {
+    /* The default for alpha should work also for the Half type */
+    Color4h a{1.0_h, 0.5_h, 0.75_h};
+    CORRADE_COMPARE(a, Vector4h(1.0_h, 0.5_h, 0.75_h, 1.0_h));
 }
 
 void ColorTest::constructDefault() {

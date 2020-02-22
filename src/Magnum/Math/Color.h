@@ -37,6 +37,11 @@
 #include <tuple> /** @todo remove when Color[34]::Hsv is removed */
 #endif
 
+#if defined(CORRADE_MSVC2017_COMPATIBILITY) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+/* Needed by the fullChannel() workaround */
+#include "Magnum/Math/Half.h"
+#endif
+
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -203,15 +208,18 @@ template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(ty
    projects using CMake. Not using SFINAE in this case makes it work. Minimal
    repro case here: https://twitter.com/czmosra/status/1039446378248896513 */
 template<class T> constexpr typename std::enable_if<IsFloatingPoint<T>::value, T>::type fullChannel() {
-    return T(1);
+    return T(1.0);
 }
 template<class T> constexpr typename std::enable_if<IsIntegral<T>::value, T>::type fullChannel() {
     return Implementation::bitMax<T>();
 }
 #else
 template<class T> constexpr T fullChannel() { return bitMax<T>(); }
-/** @todo half */
 template<> constexpr float fullChannel<float>() { return 1.0f; }
+template<> constexpr Half fullChannel<Half>() {
+    /* This is 1.0_h, but expressible in a constexpr context */
+    return Half{UnsignedShort{0x3c00}};
+}
 template<> constexpr double fullChannel<double>() { return 1.0; }
 template<> constexpr long double fullChannel<long double>() { return 1.0l; }
 #endif
