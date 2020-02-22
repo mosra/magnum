@@ -513,14 +513,20 @@ void HalfTest::constructDefault() {
 
 void HalfTest::constructValue() {
     Half a{3.5f};
+    Half b{3.5};
     CORRADE_COMPARE(Float(a), 3.5f);
+    CORRADE_COMPARE(Float(b), 3.5f);
     CORRADE_COMPARE(UnsignedShort(a), 0x4300);
+    CORRADE_COMPARE(UnsignedShort(b), 0x4300);
     CORRADE_COMPARE(a.data(), 0x4300);
+    CORRADE_COMPARE(b.data(), 0x4300);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Half, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Double>::value));
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Half>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Double, Half>::value));
 }
 
 void HalfTest::constructData() {

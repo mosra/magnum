@@ -86,11 +86,20 @@ class Half {
         constexpr explicit Half(UnsignedShort data) noexcept: _data{data} {}
 
         /**
-         * @brief Construct a half value from 32-bit float representation
+         * @brief Construct a half value from a 32-bit float representation
          *
          * @see @ref packHalf()
          */
         explicit Half(Float value) noexcept: _data{packHalf(value)} {}
+
+        /**
+         * @brief Construct a half value from a 64-bit float representation
+         *
+         * Present only to aid generic code so e.g. @cpp T(1.0) @ce works
+         * without being ambigous.
+         * @see @ref packHalf()
+         */
+        explicit Half(Double value) noexcept: _data{packHalf(Float(value))} {}
 
         /** @brief Construct without initializing the contents */
         explicit Half(NoInitT) noexcept {}
