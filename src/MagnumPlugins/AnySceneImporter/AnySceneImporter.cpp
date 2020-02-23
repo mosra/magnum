@@ -196,21 +196,24 @@ std::string AnySceneImporter::doTextureName(const UnsignedInt id) { return _in->
 Containers::Optional<TextureData> AnySceneImporter::doTexture(const UnsignedInt id) { return _in->texture(id); }
 
 UnsignedInt AnySceneImporter::doImage1DCount() const { return _in->image1DCount(); }
+UnsignedInt AnySceneImporter::doImage1DLevelCount(UnsignedInt id) { return _in->image1DLevelCount(id); }
 Int AnySceneImporter::doImage1DForName(const std::string& name) { return _in->image1DForName(name); }
 std::string AnySceneImporter::doImage1DName(const UnsignedInt id) { return _in->image1DName(id); }
-Containers::Optional<ImageData1D> AnySceneImporter::doImage1D(const UnsignedInt id) { return _in->image1D(id); }
+Containers::Optional<ImageData1D> AnySceneImporter::doImage1D(const UnsignedInt id, const UnsignedInt level) { return _in->image1D(id, level); }
 
 UnsignedInt AnySceneImporter::doImage2DCount() const { return _in->image2DCount(); }
+UnsignedInt AnySceneImporter::doImage2DLevelCount(UnsignedInt id) { return _in->image2DLevelCount(id); }
 Int AnySceneImporter::doImage2DForName(const std::string& name) { return _in->image2DForName(name); }
 std::string AnySceneImporter::doImage2DName(const UnsignedInt id) { return _in->image2DName(id); }
-Containers::Optional<ImageData2D> AnySceneImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
+Containers::Optional<ImageData2D> AnySceneImporter::doImage2D(const UnsignedInt id, const UnsignedInt level) { return _in->image2D(id, level); }
 
 UnsignedInt AnySceneImporter::doImage3DCount() const { return _in->image3DCount(); }
+UnsignedInt AnySceneImporter::doImage3DLevelCount(UnsignedInt id) { return _in->image3DLevelCount(id); }
 Int AnySceneImporter::doImage3DForName(const std::string& name) { return _in->image3DForName(name); }
 std::string AnySceneImporter::doImage3DName(const UnsignedInt id) { return _in->image3DName(id); }
-Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id) { return _in->image3D(id); }
+Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id, const UnsignedInt level) { return _in->image3D(id, level); }
 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.1")

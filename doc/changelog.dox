@@ -150,6 +150,13 @@ See also:
     and @ref SceneGraph::AbstractBasicTranslationRotation3D::rotateLocal(const Math::Quaternion<T>&) "rotateLocal()"
     overloads taking a @ref Math::Quaternion
 
+@subsubsection changelog-latest-new-trade Trade library
+
+-   Ability to import image mip levels via an additional parameter in
+    @ref Trade::AbstractImporter::image2D(),
+    @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
+    and 3D images
+
 @subsubsection changelog-latest-new-vk Vk library
 
 -   Updated Vulkan headers for version 1.2

@@ -199,9 +199,11 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
 
 UnsignedInt AnyImageImporter::doImage2DCount() const { return _in->image2DCount(); }
 
-Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
+UnsignedInt AnyImageImporter::doImage2DLevelCount(UnsignedInt id) { return _in->image2DLevelCount(id); }
+
+Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id, const UnsignedInt level) { return _in->image2D(id, level); }
 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.1")

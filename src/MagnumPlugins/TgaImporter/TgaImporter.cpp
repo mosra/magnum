@@ -71,7 +71,7 @@ void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
-Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
+Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedInt) {
     /* Check if the file is long enough */
     if(_in.size() < std::streamoff(sizeof(Implementation::TgaHeader))) {
         Error() << "Trade::TgaImporter::image2D(): the file is too short:" << _in.size() << "bytes";
@@ -149,4 +149,4 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 }}
 
 CORRADE_PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.1")
