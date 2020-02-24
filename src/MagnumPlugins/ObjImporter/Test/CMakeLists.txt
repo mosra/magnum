@@ -66,6 +66,9 @@ corrade_add_test(ObjImporterTest ObjImporterTest.cpp
 target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(ObjImporterTest PRIVATE ObjImporter)
+else()
+    # So the plugins get properly built when building the test
+    add_dependencies(ObjImporterTest ObjImporter)
 endif()
 set_target_properties(ObjImporterTest PROPERTIES FOLDER "MagnumPlugins/ObjImporter/Test")
 if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)

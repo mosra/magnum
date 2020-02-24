@@ -49,6 +49,9 @@ corrade_add_test(TgaImporterTest TgaImporterTest.cpp
 target_include_directories(TgaImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(TgaImporterTest PRIVATE TgaImporter)
+else()
+    # So the plugins get properly built when building the test
+    add_dependencies(TgaImporterTest TgaImporter)
 endif()
 set_target_properties(TgaImporterTest PROPERTIES FOLDER "MagnumPlugins/TgaImporter/Test")
 if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)

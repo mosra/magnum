@@ -96,6 +96,9 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(WavAudioImporterTest PRIVATE WavAudioImporter)
+else()
+    # So the plugins get properly built when building the test
+    add_dependencies(WavAudioImporterTest WavAudioImporter)
 endif()
 corrade_add_test(WavAudioImporterWavHeaderTest
     WavHeaderTest.cpp
