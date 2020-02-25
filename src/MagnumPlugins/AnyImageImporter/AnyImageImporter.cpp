@@ -39,6 +39,8 @@ AnyImageImporter::AnyImageImporter(PluginManager::Manager<AbstractImporter>& man
 
 AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
+AnyImageImporter::AnyImageImporter(AnyImageImporter&&) noexcept = default;
+
 AnyImageImporter::~AnyImageImporter() = default;
 
 ImporterFeatures AnyImageImporter::doFeatures() const { return ImporterFeature::OpenData; }

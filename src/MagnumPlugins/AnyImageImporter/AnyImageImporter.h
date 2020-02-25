@@ -133,6 +133,23 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         /** @brief Plugin manager constructor */
         explicit AnyImageImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
+        /** @brief Copying is not allowed */
+        AnyImageImporter(const AnyImageImporter&) = delete;
+
+        /**
+         * @brief Move constructor
+         *
+         * See @ref Corrade::PluginManager::AbstractPlugin::AbstractPlugin(AbstractPlugin&&)
+         * for caveats.
+        */
+        AnyImageImporter(AnyImageImporter&&) noexcept;
+
+        /** @brief Copying is not allowed */
+        AnyImageImporter& operator=(const AnyImageImporter&) = delete;
+
+        /** @brief Only move construction is allowed */
+        AnyImageImporter& operator=(AnyImageImporter&&) = delete;
+
         ~AnyImageImporter();
 
     private:
