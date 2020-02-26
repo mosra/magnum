@@ -152,6 +152,9 @@ void EnumsTest::mapVkIndexType() {
 }
 
 void EnumsTest::mapVkIndexTypeUnsupported() {
+    #if 1
+    CORRADE_SKIP("All index formats are supported.");
+    #else
     CORRADE_VERIFY(!hasVkIndexType(Magnum::MeshIndexType::UnsignedByte));
     std::ostringstream out;
     {
@@ -160,6 +163,7 @@ void EnumsTest::mapVkIndexTypeUnsupported() {
     }
     CORRADE_COMPARE(out.str(),
         "Vk::vkIndexType(): unsupported type MeshIndexType::UnsignedByte\n");
+    #endif
 }
 
 void EnumsTest::mapVkIndexTypeInvalid() {

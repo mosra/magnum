@@ -58,10 +58,14 @@ MAGNUM_VK_EXPORT VkPrimitiveTopology vkPrimitiveTopology(Magnum::MeshPrimitive p
 /**
 @brief Check availability of a generic index type
 
-In particular, Vulkan doesn't support the @ref MeshIndexType::UnsignedByte
-type. Returns @cpp false @ce if Vulkan doesn't support such type, @cpp true @ce
+Returns @cpp false @ce if Vulkan doesn't support such type, @cpp true @ce
 otherwise. The @p type value is expected to be valid.
-@see @ref vkIndexType()
+
+@note Support of some types depends on presence of a particular Vulkan
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such type.
+
+@see @ref vkIndexType(), @vk_extension{EXT,index_type_uint8}
 */
 MAGNUM_VK_EXPORT bool hasVkIndexType(Magnum::MeshIndexType type);
 

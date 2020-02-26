@@ -46,7 +46,7 @@ constexpr VkPrimitiveTopology PrimitiveTopologyMapping[]{
 };
 
 constexpr VkIndexType IndexTypeMapping[]{
-    VkIndexType(~UnsignedInt{}),
+    VK_INDEX_TYPE_UINT8_EXT,
     VK_INDEX_TYPE_UINT16,
     VK_INDEX_TYPE_UINT32
 };

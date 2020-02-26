@@ -25,6 +25,7 @@ extension KHR_storage_buffer_storage_class optional
 extension KHR_variable_pointers optional
 
 extension EXT_texture_compression_astc_hdr optional
+extension EXT_index_type_uint8 optional
 
 extension IMG_format_pvrtc optional
 
