@@ -153,6 +153,28 @@ void MeshTest::mapPrimitive() {
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::Triangles), MeshPrimitive::Triangles);
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::TriangleStrip), MeshPrimitive::TriangleStrip);
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::TriangleFan), MeshPrimitive::TriangleFan);
+
+    /* Ensure all generic primitives are handled. This goes through the first
+       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
+       too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto primitive = Magnum::MeshPrimitive(i);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(primitive) {
+            #define _c(primitive) \
+                case Magnum::MeshPrimitive::primitive: \
+                    CORRADE_VERIFY(UnsignedInt(meshPrimitive(Magnum::MeshPrimitive::primitive)) >= 0); \
+                    break;
+            #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
 }
 
 void MeshTest::mapPrimitiveInvalid() {
@@ -168,6 +190,28 @@ void MeshTest::mapIndexType() {
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedByte), MeshIndexType::UnsignedByte);
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedShort), MeshIndexType::UnsignedShort);
     CORRADE_COMPARE(meshIndexType(Magnum::MeshIndexType::UnsignedInt), MeshIndexType::UnsignedInt);
+
+    /* Ensure all generic index types are handled. This goes through the first
+       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
+       too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto type = Magnum::MeshIndexType(i);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(type) {
+            #define _c(type) \
+                case Magnum::MeshIndexType::type: \
+                    CORRADE_VERIFY(UnsignedInt(meshIndexType(Magnum::MeshIndexType::type)) >= 0); \
+                    break;
+            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
 }
 
 void MeshTest::mapIndexTypeInvalid() {

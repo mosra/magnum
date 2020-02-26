@@ -116,6 +116,29 @@ void EnumsTest::mapVkPrimitiveTopology() {
 
     CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::TriangleFan));
     CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::TriangleFan), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
+
+    /* Ensure all generic primitives are handled. This goes through the first
+       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
+       too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto primitive = Magnum::MeshPrimitive(i);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(primitive) {
+            #define _c(primitive) \
+                case Magnum::MeshPrimitive::primitive: \
+                    if(hasVkPrimitiveTopology(Magnum::MeshPrimitive::primitive))  \
+                        CORRADE_VERIFY(UnsignedInt(vkPrimitiveTopology(Magnum::MeshPrimitive::primitive)) >= 0); \
+                    break;
+            #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
 }
 
 void EnumsTest::mapVkPrimitiveTopologyUnsupported() {
@@ -147,6 +170,28 @@ void EnumsTest::mapVkIndexType() {
 
     CORRADE_VERIFY(hasVkIndexType(Magnum::MeshIndexType::UnsignedInt));
     CORRADE_COMPARE(vkIndexType(Magnum::MeshIndexType::UnsignedInt), VK_INDEX_TYPE_UINT32);
+
+    /* Ensure all generic index types are handled. This goes through the first
+       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
+       too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto type = Magnum::MeshIndexType(i);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(type) {
+            #define _c(type) \
+                case Magnum::MeshIndexType::type: \
+                    CORRADE_VERIFY(UnsignedInt(vkIndexType(Magnum::MeshIndexType::type)) >= 0); \
+                    break;
+            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
 }
 
 void EnumsTest::mapVkIndexTypeUnsupported() {
