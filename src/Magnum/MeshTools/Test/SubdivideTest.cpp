@@ -41,6 +41,8 @@ struct SubdivideTest: TestSuite::Tester {
     template<class T> void subdivideInPlace();
     void subdivideInPlaceWrongIndexCount();
     void subdivideInPlaceSmallIndexType();
+
+    /* this is additionally regression-tested in PrimitivesIcosphereTest */
 };
 
 typedef Math::Vector<1, Int> Vector1;

@@ -42,6 +42,8 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesIndexedInPlaceSmallType();
     void removeDuplicatesIndexedInPlaceEmptyIndices();
     void removeDuplicatesIndexedInPlaceEmptyIndicesVertices();
+
+    /* this is additionally regression-tested in PrimitivesIcosphereTest */
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
