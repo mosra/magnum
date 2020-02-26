@@ -146,9 +146,17 @@ template<class T> class Frustum {
 
         /**
          * @brief Plane at given index
+         * @m_since_latest
          *
          * Expects that @p i is less than @cpp 6 @ce.
          */
+        Vector4<T>& operator[](std::size_t i) {
+            CORRADE_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range",
+                _data[i]);
+            return _data[i];
+        }
+
+        /** @overload */
         /* returns const& so [][] operations are also constexpr */
         constexpr const Vector4<T>& operator[](std::size_t i) const {
             return CORRADE_CONSTEXPR_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range"), _data[i];
@@ -196,23 +204,47 @@ template<class T> class Frustum {
          */
         constexpr const Vector4<T>* cend() const { return _data + 6; }
 
-        /** @brief Left plane */
-        constexpr Vector4<T> left() const { return _data[0]; }
+        /**
+         * @brief Left plane
+         * @m_since_latest
+         */
+        Vector4<T>& left() { return _data[0]; }
+        constexpr Vector4<T> left() const { return _data[0]; } /**< @overload */
 
-        /** @brief Right plane */
-        constexpr Vector4<T> right() const { return _data[1]; }
+        /**
+         * @brief Right plane
+         * @m_since_latest
+         */
+        Vector4<T>& right() { return _data[1]; }
+        constexpr Vector4<T> right() const { return _data[1]; } /**< @overload */
 
-        /** @brief Bottom plane */
-        constexpr Vector4<T> bottom() const { return _data[2]; }
+        /**
+         * @brief Bottom plane
+         * @m_since_latest
+         */
+        Vector4<T>& bottom() { return _data[2]; }
+        constexpr Vector4<T> bottom() const { return _data[2]; } /**< @overload */
 
-        /** @brief Top plane */
-        constexpr Vector4<T> top() const { return _data[3]; }
+        /**
+         * @brief Top plane
+         * @m_since_latest
+         */
+        Vector4<T>& top() { return _data[3]; }
+        constexpr Vector4<T> top() const { return _data[3]; } /**< @overload */
 
-        /** @brief Near plane */
-        constexpr Vector4<T> near() const { return _data[4]; }
+        /**
+         * @brief Near plane
+         * @m_since_latest
+         */
+        Vector4<T>& near() { return _data[4]; }
+        constexpr Vector4<T> near() const { return _data[4]; } /**< @overload */
 
-        /** @brief Far plane */
-        constexpr Vector4<T> far() const { return _data[5]; }
+        /**
+         * @brief Far plane
+         * @m_since_latest
+         */
+        Vector4<T>& far() { return _data[5]; }
+        constexpr Vector4<T> far() const { return _data[5]; } /**< @overload */
 
     private:
         Vector4<T> _data[6];
