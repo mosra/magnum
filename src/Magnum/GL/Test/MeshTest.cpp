@@ -50,7 +50,10 @@ struct MeshTest: TestSuite::Tester {
     void drawViewCountNotSet();
 
     void mapPrimitive();
+    void mapPrimitiveImplementationSpecific();
+    void mapPrimitiveUnsupported();
     void mapPrimitiveInvalid();
+
     void mapIndexType();
     void mapIndexTypeInvalid();
 
@@ -69,7 +72,10 @@ MeshTest::MeshTest() {
               &MeshTest::drawViewCountNotSet,
 
               &MeshTest::mapPrimitive,
+              &MeshTest::mapPrimitiveImplementationSpecific,
+              &MeshTest::mapPrimitiveUnsupported,
               &MeshTest::mapPrimitiveInvalid,
+
               &MeshTest::mapIndexType,
               &MeshTest::mapIndexTypeInvalid,
 
@@ -166,7 +172,8 @@ void MeshTest::mapPrimitive() {
         switch(primitive) {
             #define _c(primitive) \
                 case Magnum::MeshPrimitive::primitive: \
-                    CORRADE_VERIFY(UnsignedInt(meshPrimitive(Magnum::MeshPrimitive::primitive)) >= 0); \
+                    if(hasMeshPrimitive(Magnum::MeshPrimitive::primitive))  \
+                        CORRADE_VERIFY(UnsignedInt(meshPrimitive(Magnum::MeshPrimitive::primitive)) >= 0); \
                     break;
             #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
             #undef _c
@@ -175,6 +182,16 @@ void MeshTest::mapPrimitive() {
         #pragma GCC diagnostic pop
         #endif
     }
+}
+
+void MeshTest::mapPrimitiveImplementationSpecific() {
+    CORRADE_VERIFY(hasMeshPrimitive(meshPrimitiveWrap(GL_LINES)));
+    CORRADE_COMPARE(meshPrimitive(meshPrimitiveWrap(GL_LINES)),
+        MeshPrimitive::Lines);
+}
+
+void MeshTest::mapPrimitiveUnsupported() {
+    CORRADE_SKIP("All primitive types are supported.");
 }
 
 void MeshTest::mapPrimitiveInvalid() {

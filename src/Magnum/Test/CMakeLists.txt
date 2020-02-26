@@ -49,6 +49,7 @@ set_target_properties(
     PROPERTIES FOLDER "Magnum/Test")
 
 set_property(TARGET
+    MeshTest
     PixelFormatTest
     ResourceManagerTest
     VertexFormatTest

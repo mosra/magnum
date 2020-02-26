@@ -102,12 +102,18 @@ constexpr VkSamplerAddressMode SamplerAddressModeMapping[]{
 }
 
 bool hasVkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
+    if(isMeshPrimitiveImplementationSpecific(primitive))
+        return true;
+
     CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
         "Vk::hasVkPrimitiveTopology(): invalid primitive" << primitive, {});
     return UnsignedInt(PrimitiveTopologyMapping[UnsignedInt(primitive) - 1]) != ~UnsignedInt{};
 }
 
 VkPrimitiveTopology vkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
+    if(isMeshPrimitiveImplementationSpecific(primitive))
+        return meshPrimitiveUnwrap<VkPrimitiveTopology>(primitive);
+
     CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
         "Vk::vkPrimitiveTopology(): invalid primitive" << primitive, {});
     const VkPrimitiveTopology out = PrimitiveTopologyMapping[UnsignedInt(primitive) - 1];

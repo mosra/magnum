@@ -39,10 +39,17 @@ struct MeshTest: TestSuite::Tester {
     void primitiveMapping();
     void indexTypeMapping();
 
+    void primitiveIsImplementationSpecific();
+    void primitiveWrap();
+    void primitiveWrapInvalid();
+    void primitiveUnwrap();
+    void primitiveUnwrapInvalid();
+
     void indexTypeSize();
     void indexTypeSizeInvalid();
 
     void debugPrimitive();
+    void debugPrimitiveImplementationSpecific();
     void debugIndexType();
 
     void configurationPrimitive();
@@ -53,10 +60,17 @@ MeshTest::MeshTest() {
     addTests({&MeshTest::primitiveMapping,
               &MeshTest::indexTypeMapping,
 
+              &MeshTest::primitiveIsImplementationSpecific,
+              &MeshTest::primitiveWrap,
+              &MeshTest::primitiveWrapInvalid,
+              &MeshTest::primitiveUnwrap,
+              &MeshTest::primitiveUnwrapInvalid,
+
               &MeshTest::indexTypeSize,
               &MeshTest::indexTypeSizeInvalid,
 
               &MeshTest::debugPrimitive,
+              &MeshTest::debugPrimitiveImplementationSpecific,
               &MeshTest::debugIndexType,
 
               &MeshTest::configurationPrimitive,
@@ -139,6 +153,41 @@ void MeshTest::indexTypeMapping() {
     CORRADE_COMPARE(firstUnhandled, 0xff);
 }
 
+void MeshTest::primitiveIsImplementationSpecific() {
+    constexpr bool a = isMeshPrimitiveImplementationSpecific(MeshPrimitive::Lines);
+    constexpr bool b = isMeshPrimitiveImplementationSpecific(MeshPrimitive(0x8000dead));
+    CORRADE_VERIFY(!a);
+    CORRADE_VERIFY(b);
+}
+
+void MeshTest::primitiveWrap() {
+    constexpr MeshPrimitive a = meshPrimitiveWrap(0xdead);
+    CORRADE_COMPARE(UnsignedInt(a), 0x8000dead);
+}
+
+void MeshTest::primitiveWrapInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    meshPrimitiveWrap(0xdeadbeef);
+
+    CORRADE_COMPARE(out.str(), "meshPrimitiveWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
+}
+
+void MeshTest::primitiveUnwrap() {
+    constexpr UnsignedInt a = meshPrimitiveUnwrap(MeshPrimitive(0x8000dead));
+    CORRADE_COMPARE(a, 0xdead);
+}
+
+void MeshTest::primitiveUnwrapInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    meshPrimitiveUnwrap(MeshPrimitive::Triangles);
+
+    CORRADE_COMPARE(out.str(), "meshPrimitiveUnwrap(): MeshPrimitive::Triangles isn't a wrapped implementation-specific value\n");
+}
+
 void MeshTest::indexTypeSize() {
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedByte), 1);
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedShort), 2);
@@ -161,6 +210,13 @@ void MeshTest::debugPrimitive() {
     std::ostringstream o;
     Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0xfe);
     CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0xfe)\n");
+}
+
+void MeshTest::debugPrimitiveImplementationSpecific() {
+    std::ostringstream out;
+    Debug{&out} << meshPrimitiveWrap(0xdead);
+
+    CORRADE_COMPARE(out.str(), "MeshPrimitive::ImplementationSpecific(0xdead)\n");
 }
 
 void MeshTest::debugIndexType() {

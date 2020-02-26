@@ -196,6 +196,10 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+-   The @ref MeshPrimitive type can now store implementation-specific primitive
+    types similarly to @ref PixelFormat and the new @ref VertexFormat.
+    Implementation-specific types are then simply passed through in
+    @ref GL::meshPrimitive() and @ref Vk::vkPrimitiveTopology().
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
@@ -468,6 +472,9 @@ See also:
         @ref Shaders::Phong::bindDiffuseTexture(),
         @ref Shaders::Phong::bindSpecularTexture() and
         @ref Shaders::Phong::bindTextures() instead
+-   @ref MeshPrimitive is now four bytes instead of one, to allow wrapping
+    implementation-specific values using @ref meshPrimitiveWrap() and
+    @ref meshPrimitiveUnwrap()
 -   @ref MeshPrimitive and @ref MeshIndexType now reserve the zero value to
     indicate an invalid primitive / type, better catching accidentally
     forgotten initialization. Valid code shouldn't be affected by this change,

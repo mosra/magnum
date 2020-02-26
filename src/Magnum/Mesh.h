@@ -26,9 +26,10 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::MeshPrimitive, @ref Magnum::MeshIndexType, function @ref Magnum::meshIndexTypeSize()
+ * @brief Enum @ref Magnum::MeshPrimitive, @ref Magnum::MeshIndexType, function @ref Magnum::isMeshPrimitiveImplementationSpecific(), @ref Magnum::meshPrimitiveWrap(), @ref Magnum::meshPrimitiveUnwrap(), @ref Magnum::meshIndexTypeSize()
  */
 
+#include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
@@ -38,6 +39,11 @@ namespace Magnum {
 
 /**
 @brief Mesh primitive type
+
+Can act also as a wrapper for implementation-specific mesh primitive types
+using @ref meshPrimitiveWrap() and @ref meshPrimitiveUnwrap(). Distinction
+between generic and implementation-specific primitive types can be done using
+@ref isMeshPrimitiveImplementationSpecific().
 
 In case of OpenGL, corresponds to @ref GL::MeshPrimitive and is convertible to
 it using @ref GL::meshPrimitive(). See documentation of each value for more
@@ -52,7 +58,7 @@ For D3D, corresponds to @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY](https:
 for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://developer.apple.com/documentation/metal/mtlprimitivetype?language=objc).
 See documentation of each value for more information about the mapping.
 */
-enum class MeshPrimitive: UnsignedByte {
+enum class MeshPrimitive: UnsignedInt {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
@@ -134,6 +140,50 @@ enum class MeshPrimitive: UnsignedByte {
 
 /** @debugoperatorenum{MeshPrimitive} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
+
+/**
+@brief Whether a @ref MeshPrimitive value wraps an implementation-specific identifier
+@m_since_latest
+
+Returns @cpp true @ce if value of @p primitive has its highest bit set,
+@cpp false @ce otherwise. Use @ref meshPrimitiveWrap() and @ref meshPrimitiveUnwrap()
+to wrap/unwrap an implementation-specific indentifier to/from
+@ref MeshPrimitive.
+*/
+constexpr bool isMeshPrimitiveImplementationSpecific(MeshPrimitive primitive) {
+    return UnsignedInt(primitive) & (1u << 31);
+}
+
+/**
+@brief Wrap an implementation-specific mesh primitive identifier in @ref MeshPrimitive
+@m_since_latest
+
+Sets the highest bit on @p primitive to mark it as implementation-specific.
+Expects that @p primitive fits into the remaining bits. Use
+@ref meshPrimitiveUnwrap() for the inverse operation.
+@see @ref isMeshPrimitiveImplementationSpecific()
+*/
+template<class T> constexpr MeshPrimitive meshPrimitiveWrap(T implementationSpecific) {
+    static_assert(sizeof(T) <= 4, "types larger than 32bits are not supported");
+    return CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(implementationSpecific) & (1u << 31)),
+        "meshPrimitiveWrap(): implementation-specific value" << reinterpret_cast<void*>(implementationSpecific) << "already wrapped or too large"),
+        MeshPrimitive((1u << 31)|UnsignedInt(implementationSpecific));
+}
+
+/**
+@brief Unwrap an implementation-specific mesh primitive identifier from @ref MeshPrimitive
+@m_since_latest
+
+Unsets the highest bit from @p primitive to extract the implementation-specific
+value. Expects that @p primitive has it set. Use @ref meshPrimitiveWrap() for
+the inverse operation.
+@see @ref isMeshPrimitiveImplementationSpecific()
+*/
+template<class T = UnsignedInt> constexpr T meshPrimitiveUnwrap(MeshPrimitive primitive) {
+    return CORRADE_CONSTEXPR_ASSERT(UnsignedInt(primitive) & (1u << 31),
+        "meshPrimitiveUnwrap():" << primitive << "isn't a wrapped implementation-specific value"),
+        T(UnsignedInt(primitive) & ~(1u << 31));
+}
 
 /**
 @brief Mesh index type

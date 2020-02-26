@@ -40,13 +40,21 @@ namespace Magnum { namespace Vk {
 
 In particular, Vulkan doesn't support the @ref MeshPrimitive::LineLoop
 primitive. Returns @cpp false @ce if Vulkan doesn't support such primitive,
-@cpp true @ce otherwise. The @p primitive value is expected to be valid.
+@cpp true @ce otherwise. Moreover, returns @cpp true @ce also for all types
+that are @ref isMeshPrimitiveImplementationSpecific(). The @p primitive value
+is expected to be valid.
 @see @ref vkPrimitiveTopology()
 */
 MAGNUM_VK_EXPORT bool hasVkPrimitiveTopology(Magnum::MeshPrimitive primitive);
 
 /**
 @brief Convert generic mesh primitive to Vulkan primitive topology
+
+In case @ref isMeshPrimitiveImplementationSpecific() returns @cpp false @ce for
+@p primitive, maps it to a corresponding Vulkan primitive topology. In case
+@ref isMeshPrimitiveImplementationSpecific() returns @cpp true @ce, assumes
+@p primitive stores a Vulkan-specific primitive topology and returns
+@ref meshPrimitiveUnwrap() cast to @type_vk{VkPrimitiveTopology}.
 
 Not all generic mesh primitives are available in Vulkan and this function
 expects that given primitive is available. Use @ref hasVkPrimitiveTopology() to

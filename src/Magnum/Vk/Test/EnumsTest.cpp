@@ -39,6 +39,7 @@ struct EnumsTest: TestSuite::Tester {
     explicit EnumsTest();
 
     void mapVkPrimitiveTopology();
+    void mapVkPrimitiveTopologyImplementationSpecific();
     void mapVkPrimitiveTopologyUnsupported();
     void mapVkPrimitiveTopologyInvalid();
 
@@ -75,6 +76,7 @@ struct EnumsTest: TestSuite::Tester {
 
 EnumsTest::EnumsTest() {
     addTests({&EnumsTest::mapVkPrimitiveTopology,
+              &EnumsTest::mapVkPrimitiveTopologyImplementationSpecific,
               &EnumsTest::mapVkPrimitiveTopologyUnsupported,
               &EnumsTest::mapVkPrimitiveTopologyInvalid,
 
@@ -150,6 +152,12 @@ void EnumsTest::mapVkPrimitiveTopology() {
         #pragma GCC diagnostic pop
         #endif
     }
+}
+
+void EnumsTest::mapVkPrimitiveTopologyImplementationSpecific() {
+    CORRADE_VERIFY(hasVkPrimitiveTopology(meshPrimitiveWrap(VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY)));
+    CORRADE_COMPARE(vkPrimitiveTopology(meshPrimitiveWrap(VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY)),
+        VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY);
 }
 
 void EnumsTest::mapVkPrimitiveTopologyUnsupported() {

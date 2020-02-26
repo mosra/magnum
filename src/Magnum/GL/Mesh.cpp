@@ -65,10 +65,25 @@ constexpr MeshIndexType IndexTypeMapping[]{
 
 }
 
+bool hasMeshPrimitive(const Magnum::MeshPrimitive primitive) {
+    if(isMeshPrimitiveImplementationSpecific(primitive))
+        return true;
+
+    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveMapping),
+        "GL::hasPrimitive(): invalid primitive" << primitive, {});
+    return UnsignedInt(PrimitiveMapping[UnsignedInt(primitive) - 1]) != ~UnsignedInt{};
+}
+
 MeshPrimitive meshPrimitive(const Magnum::MeshPrimitive primitive) {
+    if(isMeshPrimitiveImplementationSpecific(primitive))
+        return meshPrimitiveUnwrap<GL::MeshPrimitive>(primitive);
+
     CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveMapping),
         "GL::meshPrimitive(): invalid primitive" << primitive, {});
-    return PrimitiveMapping[UnsignedInt(primitive) - 1];
+    const MeshPrimitive out = PrimitiveMapping[UnsignedInt(primitive) - 1];
+    CORRADE_ASSERT(out != MeshPrimitive(~UnsignedInt{}),
+        "GL::meshPrimitive(): unsupported primitive" << primitive, {});
+    return out;
 }
 
 MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {

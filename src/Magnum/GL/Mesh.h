@@ -137,8 +137,29 @@ enum class MeshPrimitive: GLenum {
 };
 
 /**
+@brief Check availability of a generic mesh primitive
+@m_since_latest
+
+Returns @cpp false @ce if OpenGL doesn't support such primitive, @cpp true @ce
+otherwise. Moreover, returns @cpp true @ce also for all formats that are
+@ref isMeshPrimitiveImplementationSpecific(). The @p primitive value is
+expected to be valid.
+@see @ref meshPrimitive()
+*/
+MAGNUM_GL_EXPORT bool hasMeshPrimitive(Magnum::MeshPrimitive primitive);
+
+/**
 @brief Convert generic mesh primitive to OpenGL mesh primitive
 
+In case @ref isMeshPrimitiveImplementationSpecific() returns @cpp false @ce for
+@p primitive, maps it to a corresponding OpenGL mesh primitive. In case
+@ref isMeshPrimitiveImplementationSpecific() returns @cpp true @ce, assumes
+@p primitive stores OpenGL-specific mesh primitive and returns
+@ref meshPrimitiveUnwrap() cast to @ref GL::MeshPrimitive.
+
+Not all generic mesh primitives are available in OpenGL and this function
+expects that given primitive is available. Use @ref hasMeshPrimitive() to
+query availability of given primitive.
 @see @ref meshIndexType()
 */
 MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive primitive);

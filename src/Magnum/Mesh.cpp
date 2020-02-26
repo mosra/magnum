@@ -56,6 +56,10 @@ constexpr const char* MeshPrimitiveNames[] {
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {
     debug << "MeshPrimitive" << Debug::nospace;
 
+    if(isMeshPrimitiveImplementationSpecific(value)) {
+        return debug << "::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(meshPrimitiveUnwrap(value)) << Debug::nospace << ")";
+    }
+
     if(UnsignedInt(value) - 1 < Containers::arraySize(MeshPrimitiveNames)) {
         return debug << "::" << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value) - 1];
     }
