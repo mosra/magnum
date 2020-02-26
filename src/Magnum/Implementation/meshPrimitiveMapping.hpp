@@ -32,4 +32,7 @@ _c(LineStrip)
 _c(Triangles)
 _c(TriangleStrip)
 _c(TriangleFan)
+_c(Instances)
+_c(Faces)
+_c(Edges)
 #endif

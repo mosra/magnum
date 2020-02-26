@@ -191,7 +191,10 @@ void MeshTest::mapPrimitiveImplementationSpecific() {
 }
 
 void MeshTest::mapPrimitiveUnsupported() {
-    CORRADE_SKIP("All primitive types are supported.");
+    std::ostringstream out;
+    Error redirectError{&out};
+    meshPrimitive(Magnum::MeshPrimitive::Instances);
+    CORRADE_COMPARE(out.str(), "GL::meshPrimitive(): unsupported primitive MeshPrimitive::Instances\n");
 }
 
 void MeshTest::mapPrimitiveInvalid() {

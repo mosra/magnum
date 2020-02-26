@@ -50,6 +50,11 @@ See also:
     @ref Color3us, @ref Color4us convenience typedefs for half-float, 8- and
     16-bit integer vector and color types
 -   New @ref VertexFormat enum for vertex formats and related utilities
+-   New @ref MeshPrimitive::Instances, @ref MeshPrimitive::Faces and
+    @ref MeshPrimitive::Edges primitive types for describing per-instance,
+    per-face and per-edge data. Those don't map to any common GPU API, but can
+    be used by various importers to provide access to mesh data that is not
+    necessarily GPU-friendly.
 
 @subsubsection changelog-latest-new-audio Audio library
 

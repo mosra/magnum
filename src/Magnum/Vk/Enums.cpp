@@ -43,7 +43,10 @@ constexpr VkPrimitiveTopology PrimitiveTopologyMapping[]{
     VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN
+    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,
+    VkPrimitiveTopology(~UnsignedInt{}), /* Instances */
+    VkPrimitiveTopology(~UnsignedInt{}), /* Faces */
+    VkPrimitiveTopology(~UnsignedInt{})  /* Edges */
 };
 
 constexpr VkIndexType IndexTypeMapping[]{

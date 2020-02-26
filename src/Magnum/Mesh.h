@@ -135,7 +135,48 @@ enum class MeshPrimitive: UnsignedInt {
      * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,PrimitiveTopology}. Not
      * supported on D3D or Metal.
      */
-    TriangleFan
+    TriangleFan,
+
+    /**
+     * Per-instance data.
+     * @m_since_latest
+     *
+     * Has no direct mapping to GPU APIs, but can be used to annotate
+     * @ref Trade::MeshData containing per-instance data (such as colors,
+     * transformations or texture layers) and then used to populate an instance
+     * buffer. Index buffer has no defined meaning for instance data.
+     */
+    Instances,
+
+    /**
+     * Per-face data.
+     * @m_since_latest
+     *
+     * Can be used to annotate @ref Trade::MeshData containing data that are
+     * per-face, as opposed to per-vertex. Has no direct mapping to common GPU
+     * APIs, there it either has to be converted to per-vertex (which usually
+     * involves slightly duplicating the original per-vertex data) or accessed
+     * via a direct buffer/texture fetch from a shader using e.g.
+     * @glsl gl_VertexID @ce. Index buffer can be used to deduplicate per-face
+     * data.
+     */
+    Faces,
+
+    /**
+     * Per-edge data.
+     * @m_since_latest
+     *
+     * Can be used to annotate @ref Trade::MeshData containing data that are
+     * per-edge, as opposed to per-vertex. This is different from
+     * @ref MeshPrimitive::Lines as it has just one entry per line segment,
+     * instead of two. Has no direct mapping to common GPU APIs, there it has
+     * to be converted to per-vertex (which usually involves slightly
+     * duplicating the original per-vertex data). Index buffer can be used to
+     * deduplicate per-face data. Can also be used for example to describe a
+     * half-edge mesh representation.
+     * @see @ref Trade::meshAttributeCustom()
+     */
+    Edges
 };
 
 /** @debugoperatorenum{MeshPrimitive} */
