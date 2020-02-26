@@ -1269,6 +1269,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image1DLevelCount()
+         * @m_since_latest
          *
          * Default implementation returns @cpp 1 @ce. See
          * @ref doImage2DLevelCount() for expected implementation behavior.
@@ -1301,6 +1302,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image2DLevelCount()
+         * @m_since_latest
          *
          * Default implementation returns @cpp 1 @ce. Similarly to all other
          * `*Count()` functions, this function isn't expected to fail --- if an
@@ -1341,6 +1343,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image3DLevelCount()
+         * @m_since_latest
          *
          * Default implementation returns @cpp 1 @ce. See
          * @ref doImage2DLevelCount() for expected implementation behavior.
