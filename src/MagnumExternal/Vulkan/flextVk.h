@@ -265,7 +265,7 @@ extern "C" {
 // Vulkan 1.2 version number
 #define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 131
+#define VK_HEADER_VERSION 133
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 #if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
 #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
@@ -983,7 +983,8 @@ typedef enum {
 
 typedef enum {
     VK_INDEX_TYPE_UINT16 = 0,
-    VK_INDEX_TYPE_UINT32 = 1
+    VK_INDEX_TYPE_UINT32 = 1,
+    VK_INDEX_TYPE_UINT8_EXT = 1000265000
 } VkIndexType;
 
 typedef enum {
@@ -1675,7 +1676,8 @@ typedef enum {
 typedef enum {
     VK_VENDOR_ID_VIV = 0x10001,
     VK_VENDOR_ID_VSI = 0x10002,
-    VK_VENDOR_ID_KAZAN = 0x10003
+    VK_VENDOR_ID_KAZAN = 0x10003,
+    VK_VENDOR_ID_CODEPLAY = 0x10004
 } VkVendorId;
 
 typedef enum {
