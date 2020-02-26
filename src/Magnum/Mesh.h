@@ -47,13 +47,22 @@ In case of Vulkan, corresponds to @type_vk_keyword{PrimitiveTopology} and is
 convertible to it using @ref Vk::vkPrimitiveTopology(). See documentation of
 each value for more information about the mapping. Note that not every mode is available there, use @ref Vk::hasVkPrimitiveTopology() to check for its
 presence.
+
+For D3D, corresponds to @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology);
+for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://developer.apple.com/documentation/metal/mtlprimitivetype?language=objc).
+See documentation of each value for more information about the mapping.
 */
 enum class MeshPrimitive: UnsignedInt {
     /**
      * Single points.
      *
-     * Corresponds to @ref GL::MeshPrimitive::Points /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_POINT_LIST,PrimitiveTopology}.
+     * Corresponds to @ref GL::MeshPrimitive::Points;
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_POINT_LIST,PrimitiveTopology};
+     * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_POINTLIST](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
+     * or @m_class{m-doc-external} [
+MTLPrimitiveTypePoint](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypepoint?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_POINTLIST
+MTLPrimitiveTypePoint}
      */
     Points,
 
@@ -62,7 +71,10 @@ enum class MeshPrimitive: UnsignedInt {
      * connected together.
      *
      * Corresponds to @ref GL::MeshPrimitive::Lines /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_LIST,PrimitiveTopology}.
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_LIST,PrimitiveTopology};
+     * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_LINELIST](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
+     * or @m_class{m-doc-external} [MTLPrimitiveTypeLine](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypeline?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_LINELIST MTLPrimitiveTypeLine}
      */
     Lines,
 
@@ -70,7 +82,7 @@ enum class MeshPrimitive: UnsignedInt {
      * Line strip, last and first vertex are connected together.
      *
      * Corresponds to @ref GL::MeshPrimitive::LineLoop. Not supported on
-     * Vulkan.
+     * Vulkan, D3D or Metal.
      */
     LineLoop,
 
@@ -79,7 +91,10 @@ enum class MeshPrimitive: UnsignedInt {
      * vertex defines another segment.
      *
      * Corresponds to @ref GL::MeshPrimitive::LineStrip /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_STRIP,PrimitiveTopology}.
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_STRIP,PrimitiveTopology};
+     * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_LINESTRIP](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
+     * or @m_class{m-doc-external} [MTLPrimitiveTypeLineStrip](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypelinestrip?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_LINESTRIP MTLPrimitiveTypeLineStrip}
      */
     LineStrip,
 
@@ -87,7 +102,10 @@ enum class MeshPrimitive: UnsignedInt {
      * Each three vertices define one triangle.
      *
      * Corresponds to @ref GL::MeshPrimitive::Triangles /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,PrimitiveTopology}.
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,PrimitiveTopology};
+     * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
+     * or @m_class{m-doc-external} [MTLPrimitiveTypeTriangle](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypetriangle?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST MTLPrimitiveTypeTriangle}
      */
     Triangles,
 
@@ -96,7 +114,10 @@ enum class MeshPrimitive: UnsignedInt {
      * vertex defines another triangle.
      *
      * Corresponds to @ref GL::MeshPrimitive::TriangleStrip /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,PrimitiveTopology}.
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,PrimitiveTopology} or
+     * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
+     * or @m_class{m-doc-external} [MTLPrimitiveTypeTriangleStrip](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypetrianglestrip?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP MTLPrimitiveTypeTriangleStrip}
      */
     TriangleStrip,
 
@@ -105,7 +126,8 @@ enum class MeshPrimitive: UnsignedInt {
      * previous and center vertex.
      *
      * Corresponds to @ref GL::MeshPrimitive::TriangleFan /
-     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,PrimitiveTopology}.
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,PrimitiveTopology}. Not
+     * supported on D3D or Metal.
      */
     TriangleFan
 };
