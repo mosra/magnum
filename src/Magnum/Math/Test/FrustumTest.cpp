@@ -124,14 +124,52 @@ void FrustumTest::construct() {
         planes[2], planes[3],
         planes[4], planes[5]};
 
-    CORRADE_COMPARE(frustum[0], planes[0]);
-    CORRADE_COMPARE(frustum[1], planes[1]);
-    CORRADE_COMPARE(frustum[2], planes[2]);
-    CORRADE_COMPARE(frustum[3], planes[3]);
-    CORRADE_COMPARE(frustum[4], planes[4]);
-    CORRADE_COMPARE(frustum[5], planes[5]);
+    constexpr Vector4 c0 = frustum[0];
+    constexpr Vector4 c1 = frustum[1];
+    constexpr Vector4 c2 = frustum[2];
+    constexpr Vector4 c3 = frustum[3];
+    constexpr Vector4 c4 = frustum[4];
+    constexpr Vector4 c5 = frustum[5];
+    CORRADE_COMPARE(c0, planes[0]);
+    CORRADE_COMPARE(c1, planes[1]);
+    CORRADE_COMPARE(c2, planes[2]);
+    CORRADE_COMPARE(c3, planes[3]);
+    CORRADE_COMPARE(c4, planes[4]);
+    CORRADE_COMPARE(c5, planes[5]);
+
+    constexpr Vector4 cleft = frustum.left();
+    constexpr Vector4 cright = frustum.right();
+    constexpr Vector4 cbottom = frustum.bottom();
+    constexpr Vector4 ctop = frustum.top();
+    constexpr Vector4 cnear = frustum.near();
+    constexpr Vector4 cfar = frustum.far();
+    CORRADE_COMPARE(cleft, planes[0]);
+    CORRADE_COMPARE(cright, planes[1]);
+    CORRADE_COMPARE(cbottom, planes[2]);
+    CORRADE_COMPARE(ctop, planes[3]);
+    CORRADE_COMPARE(cnear, planes[4]);
+    CORRADE_COMPARE(cfar, planes[5]);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
+
+    Frustum a{
+        planes[0], planes[1],
+        planes[2], planes[3],
+        planes[4], planes[5]};
+
+    CORRADE_COMPARE(a[0], planes[0]);
+    CORRADE_COMPARE(a[1], planes[1]);
+    CORRADE_COMPARE(a[2], planes[2]);
+    CORRADE_COMPARE(a[3], planes[3]);
+    CORRADE_COMPARE(a[4], planes[4]);
+    CORRADE_COMPARE(a[5], planes[5]);
+
+    CORRADE_COMPARE(a.left(), planes[0]);
+    CORRADE_COMPARE(a.right(), planes[1]);
+    CORRADE_COMPARE(a.bottom(), planes[2]);
+    CORRADE_COMPARE(a.top(), planes[3]);
+    CORRADE_COMPARE(a.near(), planes[4]);
+    CORRADE_COMPARE(a.far(), planes[5]);
 }
 
 void FrustumTest::constructIdentity() {
