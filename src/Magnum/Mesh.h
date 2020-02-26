@@ -59,10 +59,8 @@ enum class MeshPrimitive: UnsignedInt {
      * Corresponds to @ref GL::MeshPrimitive::Points;
      * @def_vk_keyword{PRIMITIVE_TOPOLOGY_POINT_LIST,PrimitiveTopology};
      * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_POINTLIST](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
-     * or @m_class{m-doc-external} [
-MTLPrimitiveTypePoint](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypepoint?language=objc).
-     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_POINTLIST
-MTLPrimitiveTypePoint}
+     * or @m_class{m-doc-external} [MTLPrimitiveTypePoint](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypepoint?language=objc).
+     * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_POINTLIST MTLPrimitiveTypePoint}
      */
     Points,
 
