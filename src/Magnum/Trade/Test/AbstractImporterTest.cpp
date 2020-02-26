@@ -1097,9 +1097,18 @@ void AbstractImporterTest::scene() {
     CORRADE_COMPARE(importer.sceneForName("eighth"), 7);
     CORRADE_COMPARE(importer.sceneName(7), "eighth");
 
-    auto data = importer.scene(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.scene(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.scene("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.scene("foo"));
+    }
 }
 
 void AbstractImporterTest::sceneCountNotImplemented() {
@@ -1219,7 +1228,10 @@ void AbstractImporterTest::sceneNoFile() {
     Error redirectError{&out};
 
     importer.scene(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::scene(): no file opened\n");
+    importer.scene("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::scene(): no file opened\n"
+        "Trade::AbstractImporter::scene(): no file opened\n");
 }
 
 void AbstractImporterTest::sceneOutOfRange() {
@@ -1268,9 +1280,18 @@ void AbstractImporterTest::animation() {
     CORRADE_COMPARE(importer.animationForName("eighth"), 7);
     CORRADE_COMPARE(importer.animationName(7), "eighth");
 
-    auto data = importer.animation(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.animation(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.animation("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.animation("foo"));
+    }
 }
 
 void AbstractImporterTest::animationCountNotImplemented() {
@@ -1390,7 +1411,10 @@ void AbstractImporterTest::animationNoFile() {
     Error redirectError{&out};
 
     importer.animation(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): no file opened\n");
+    importer.animation("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::animation(): no file opened\n"
+        "Trade::AbstractImporter::animation(): no file opened\n");
 }
 
 void AbstractImporterTest::animationOutOfRange() {
@@ -1457,6 +1481,7 @@ void AbstractImporterTest::animationCustomDataDeleter() {
         void doClose() override {}
 
         UnsignedInt doAnimationCount() const override { return 1; }
+        Int doAnimationForName(const std::string&) override { return 0; }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
             return AnimationData{Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}, nullptr};
         }
@@ -1466,7 +1491,10 @@ void AbstractImporterTest::animationCustomDataDeleter() {
     Error redirectError{&out};
 
     importer.animation(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
+    importer.animation("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::animationCustomTrackDeleter() {
@@ -1476,6 +1504,7 @@ void AbstractImporterTest::animationCustomTrackDeleter() {
         void doClose() override {}
 
         UnsignedInt doAnimationCount() const override { return 1; }
+        Int doAnimationForName(const std::string&) override { return 0; }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
             return AnimationData{nullptr, Containers::Array<AnimationTrackData>{nullptr, 0, [](AnimationTrackData*, std::size_t) {}}};
         }
@@ -1485,7 +1514,10 @@ void AbstractImporterTest::animationCustomTrackDeleter() {
     Error redirectError{&out};
 
     importer.animation(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
+    importer.animation("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::light() {
@@ -1513,9 +1545,18 @@ void AbstractImporterTest::light() {
     CORRADE_COMPARE(importer.lightForName("eighth"), 7);
     CORRADE_COMPARE(importer.lightName(7), "eighth");
 
-    auto data = importer.light(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.light(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.light("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.light("foo"));
+    }
 }
 
 void AbstractImporterTest::lightCountNotImplemented() {
@@ -1635,7 +1676,10 @@ void AbstractImporterTest::lightNoFile() {
     Error redirectError{&out};
 
     importer.light(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::light(): no file opened\n");
+    importer.light("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::light(): no file opened\n"
+        "Trade::AbstractImporter::light(): no file opened\n");
 }
 
 void AbstractImporterTest::lightOutOfRange() {
@@ -1679,9 +1723,18 @@ void AbstractImporterTest::camera() {
     CORRADE_COMPARE(importer.cameraForName("eighth"), 7);
     CORRADE_COMPARE(importer.cameraName(7), "eighth");
 
-    auto data = importer.camera(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.camera(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.camera("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.camera("foo"));
+    }
 }
 
 void AbstractImporterTest::cameraCountNotImplemented() {
@@ -1801,7 +1854,10 @@ void AbstractImporterTest::cameraNoFile() {
     Error redirectError{&out};
 
     importer.camera(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::camera(): no file opened\n");
+    importer.camera("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::camera(): no file opened\n"
+        "Trade::AbstractImporter::camera(): no file opened\n");
 }
 
 void AbstractImporterTest::cameraOutOfRange() {
@@ -1845,9 +1901,18 @@ void AbstractImporterTest::object2D() {
     CORRADE_COMPARE(importer.object2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.object2DName(7), "eighth");
 
-    auto data = importer.object2D(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.object2D(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.object2D("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.object2D("foo"));
+    }
 }
 
 void AbstractImporterTest::object2DCountNotImplemented() {
@@ -1967,7 +2032,10 @@ void AbstractImporterTest::object2DNoFile() {
     Error redirectError{&out};
 
     importer.object2D(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2D(): no file opened\n");
+    importer.object2D("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object2D(): no file opened\n"
+        "Trade::AbstractImporter::object2D(): no file opened\n");
 }
 
 void AbstractImporterTest::object2DOutOfRange() {
@@ -2011,9 +2079,18 @@ void AbstractImporterTest::object3D() {
     CORRADE_COMPARE(importer.object3DForName("eighth"), 7);
     CORRADE_COMPARE(importer.object3DName(7), "eighth");
 
-    auto data = importer.object3D(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.object3D(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.object3D("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.object3D("foo"));
+    }
 }
 
 void AbstractImporterTest::object3DCountNotImplemented() {
@@ -2133,7 +2210,10 @@ void AbstractImporterTest::object3DNoFile() {
     Error redirectError{&out};
 
     importer.object3D(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): no file opened\n");
+    importer.object3D("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::object3D(): no file opened\n"
+        "Trade::AbstractImporter::object3D(): no file opened\n");
 }
 
 void AbstractImporterTest::object3DOutOfRange() {
@@ -2179,9 +2259,18 @@ void AbstractImporterTest::mesh() {
     CORRADE_COMPARE(importer.meshForName("eighth"), 7);
     CORRADE_COMPARE(importer.meshName(7), "eighth");
 
-    auto data = importer.mesh(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.mesh(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.mesh("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.mesh("foo"));
+    }
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2340,7 +2429,10 @@ void AbstractImporterTest::meshNoFile() {
     Error redirectError{&out};
 
     importer.mesh(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): no file opened\n");
+    importer.mesh("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::mesh(): no file opened\n"
+        "Trade::AbstractImporter::mesh(): no file opened\n");
 }
 
 void AbstractImporterTest::meshOutOfRange() {
@@ -2418,6 +2510,7 @@ void AbstractImporterTest::meshCustomIndexDataDeleter() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 1; }
+        Int doMeshForName(const std::string&) override { return 0; }
         Containers::Optional<MeshData> doMesh(UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{data, 1, [](char*, std::size_t) {}}, MeshIndexData{MeshIndexType::UnsignedByte, data}};
         }
@@ -2429,7 +2522,10 @@ void AbstractImporterTest::meshCustomIndexDataDeleter() {
     Error redirectError{&out};
 
     importer.mesh(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+    importer.mesh("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::meshCustomVertexDataDeleter() {
@@ -2439,6 +2535,7 @@ void AbstractImporterTest::meshCustomVertexDataDeleter() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 1; }
+        Int doMeshForName(const std::string&) override { return 0; }
         Containers::Optional<MeshData> doMesh(UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}};
         }
@@ -2448,7 +2545,10 @@ void AbstractImporterTest::meshCustomVertexDataDeleter() {
     Error redirectError{&out};
 
     importer.mesh(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+    importer.mesh("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::meshCustomAttributesDeleter() {
@@ -2458,6 +2558,7 @@ void AbstractImporterTest::meshCustomAttributesDeleter() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 1; }
+        Int doMeshForName(const std::string&) override { return 0; }
         Containers::Optional<MeshData> doMesh(UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, nullptr, Containers::Array<MeshAttributeData>{&positions, 1, [](MeshAttributeData*, std::size_t) {}}};
         }
@@ -2469,7 +2570,11 @@ void AbstractImporterTest::meshCustomAttributesDeleter() {
     Error redirectError{&out};
 
     importer.mesh(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n");
+    importer.mesh("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::mesh(): implementation is not allowed to use a custom Array deleter\n"
+    );
 }
 
 void AbstractImporterTest::meshAttributeName() {
@@ -2933,9 +3038,18 @@ void AbstractImporterTest::material() {
     CORRADE_COMPARE(importer.materialForName("eighth"), 7);
     CORRADE_COMPARE(importer.materialName(7), "eighth");
 
-    auto data = importer.material(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.material(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.material("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.material("foo"));
+    }
 }
 
 void AbstractImporterTest::materialCountNotImplemented() {
@@ -3055,7 +3169,10 @@ void AbstractImporterTest::materialNoFile() {
     Error redirectError{&out};
 
     importer.material(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::material(): no file opened\n");
+    importer.material("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::material(): no file opened\n"
+        "Trade::AbstractImporter::material(): no file opened\n");
 }
 
 void AbstractImporterTest::materialOutOfRange() {
@@ -3099,9 +3216,18 @@ void AbstractImporterTest::texture() {
     CORRADE_COMPARE(importer.textureForName("eighth"), 7);
     CORRADE_COMPARE(importer.textureName(7), "eighth");
 
-    auto data = importer.texture(7);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.texture(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.texture("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.texture("foo"));
+    }
 }
 
 void AbstractImporterTest::textureCountNotImplemented() {
@@ -3221,7 +3347,10 @@ void AbstractImporterTest::textureNoFile() {
     Error redirectError{&out};
 
     importer.texture(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::texture(): no file opened\n");
+    importer.texture("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::texture(): no file opened\n"
+        "Trade::AbstractImporter::texture(): no file opened\n");
 }
 
 void AbstractImporterTest::textureOutOfRange() {
@@ -3270,9 +3399,18 @@ void AbstractImporterTest::image1D() {
     CORRADE_COMPARE(importer.image1DForName("eighth"), 7);
     CORRADE_COMPARE(importer.image1DName(7), "eighth");
 
-    auto data = importer.image1D(7, 2);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.image1D(7, 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.image1D("eighth", 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.image1D("foo"));
+    }
 }
 
 void AbstractImporterTest::image1DCountNotImplemented() {
@@ -3346,6 +3484,7 @@ void AbstractImporterTest::image1DLevelCountZero() {
         void doClose() override {}
 
         UnsignedInt doImage1DCount() const override { return 8; }
+        Int doImage1DForName(const std::string&) override { return 0; }
         UnsignedInt doImage1DLevelCount(UnsignedInt) override { return 0; }
     } importer;
 
@@ -3355,8 +3494,10 @@ void AbstractImporterTest::image1DLevelCountZero() {
     /* This should print a similar message instead of a confusing
        "level 1 out of range for 0 entries" */
     importer.image1D(7, 1);
+    importer.image1D("", 1);
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::image1DLevelCount(): implementation reported zero levels\n"
+        "Trade::AbstractImporter::image1D(): implementation reported zero levels\n"
         "Trade::AbstractImporter::image1D(): implementation reported zero levels\n");
 }
 
@@ -3453,7 +3594,10 @@ void AbstractImporterTest::image1DNoFile() {
     Error redirectError{&out};
 
     importer.image1D(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): no file opened\n");
+    importer.image1D("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image1D(): no file opened\n"
+        "Trade::AbstractImporter::image1D(): no file opened\n");
 }
 
 void AbstractImporterTest::image1DOutOfRange() {
@@ -3479,13 +3623,17 @@ void AbstractImporterTest::image1DLevelOutOfRange() {
         void doClose() override {}
 
         UnsignedInt doImage1DCount() const override { return 8; }
+        Int doImage1DForName(const std::string&) override { return 0; }
         UnsignedInt doImage1DLevelCount(UnsignedInt) override { return 3; }
     } importer;
 
     std::ostringstream out;
     Error redirectError{&out};
     importer.image1D(7, 3);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): level 3 out of range for 3 entries\n");
+    importer.image1D("", 3);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image1D(): level 3 out of range for 3 entries\n"
+        "Trade::AbstractImporter::image1D(): level 3 out of range for 3 entries\n");
 }
 
 void AbstractImporterTest::image1DNonOwningDeleter() {
@@ -3533,6 +3681,7 @@ void AbstractImporterTest::image1DCustomDeleter() {
         void doClose() override {}
 
         UnsignedInt doImage1DCount() const override { return 1; }
+        Int doImage1DForName(const std::string&) override { return 0; }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
             return ImageData1D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
         }
@@ -3542,7 +3691,10 @@ void AbstractImporterTest::image1DCustomDeleter() {
     Error redirectError{&out};
 
     importer.image1D(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter\n");
+    importer.image1D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::image2D() {
@@ -3575,9 +3727,18 @@ void AbstractImporterTest::image2D() {
     CORRADE_COMPARE(importer.image2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.image2DName(7), "eighth");
 
-    auto data = importer.image2D(7, 2);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.image2D(7, 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.image2D("eighth", 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.image2D("foo"));
+    }
 }
 
 void AbstractImporterTest::image2DCountNotImplemented() {
@@ -3651,6 +3812,7 @@ void AbstractImporterTest::image2DLevelCountZero() {
         void doClose() override {}
 
         UnsignedInt doImage2DCount() const override { return 8; }
+        Int doImage2DForName(const std::string&) override { return 0; }
         UnsignedInt doImage2DLevelCount(UnsignedInt) override { return 0; }
     } importer;
 
@@ -3660,8 +3822,10 @@ void AbstractImporterTest::image2DLevelCountZero() {
     /* This should print a similar message instead of a confusing
        "level 1 out of range for 0 entries" */
     importer.image2D(7, 1);
+    importer.image2D(7, 1);
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::image2DLevelCount(): implementation reported zero levels\n"
+        "Trade::AbstractImporter::image2D(): implementation reported zero levels\n"
         "Trade::AbstractImporter::image2D(): implementation reported zero levels\n");
 }
 
@@ -3758,7 +3922,10 @@ void AbstractImporterTest::image2DNoFile() {
     Error redirectError{&out};
 
     importer.image2D(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): no file opened\n");
+    importer.image2D("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image2D(): no file opened\n"
+        "Trade::AbstractImporter::image2D(): no file opened\n");
 }
 
 void AbstractImporterTest::image2DOutOfRange() {
@@ -3784,13 +3951,17 @@ void AbstractImporterTest::image2DLevelOutOfRange() {
         void doClose() override {}
 
         UnsignedInt doImage2DCount() const override { return 8; }
+        Int doImage2DForName(const std::string&) override { return 0; }
         UnsignedInt doImage2DLevelCount(UnsignedInt) override { return 3; }
     } importer;
 
     std::ostringstream out;
     Error redirectError{&out};
     importer.image2D(7, 3);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): level 3 out of range for 3 entries\n");
+    importer.image2D("", 3);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image2D(): level 3 out of range for 3 entries\n"
+        "Trade::AbstractImporter::image2D(): level 3 out of range for 3 entries\n");
 }
 
 void AbstractImporterTest::image2DNonOwningDeleter() {
@@ -3838,6 +4009,7 @@ void AbstractImporterTest::image2DCustomDeleter() {
         void doClose() override {}
 
         UnsignedInt doImage2DCount() const override { return 1; }
+        Int doImage2DForName(const std::string&) override { return 0; }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
             return ImageData2D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
         }
@@ -3847,7 +4019,10 @@ void AbstractImporterTest::image2DCustomDeleter() {
     Error redirectError{&out};
 
     importer.image2D(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter\n");
+    importer.image2D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::image3D() {
@@ -3880,9 +4055,18 @@ void AbstractImporterTest::image3D() {
     CORRADE_COMPARE(importer.image3DForName("eighth"), 7);
     CORRADE_COMPARE(importer.image3DName(7), "eighth");
 
-    auto data = importer.image3D(7, 2);
-    CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->importerState(), &state);
+    {
+        auto data = importer.image3D(7, 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.image3D("eighth", 2);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        /* This should fail gracefully, not assert */
+        CORRADE_VERIFY(!importer.image3D("foo"));
+    }
 }
 
 void AbstractImporterTest::image3DCountNotImplemented() {
@@ -3957,6 +4141,7 @@ void AbstractImporterTest::image3DLevelCountZero() {
         void doClose() override {}
 
         UnsignedInt doImage3DCount() const override { return 8; }
+        Int doImage3DForName(const std::string&) override { return 0; }
         UnsignedInt doImage3DLevelCount(UnsignedInt) override { return 0; }
     } importer;
 
@@ -3966,8 +4151,10 @@ void AbstractImporterTest::image3DLevelCountZero() {
     /* This should print a similar message instead of a confusing
        "level 1 out of range for 0 entries" */
     importer.image3D(7, 1);
+    importer.image3D("", 1);
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::image3DLevelCount(): implementation reported zero levels\n"
+        "Trade::AbstractImporter::image3D(): implementation reported zero levels\n"
         "Trade::AbstractImporter::image3D(): implementation reported zero levels\n");
 }
 
@@ -4064,7 +4251,10 @@ void AbstractImporterTest::image3DNoFile() {
     Error redirectError{&out};
 
     importer.image3D(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): no file opened\n");
+    importer.image3D("foo");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image3D(): no file opened\n"
+        "Trade::AbstractImporter::image3D(): no file opened\n");
 }
 
 void AbstractImporterTest::image3DOutOfRange() {
@@ -4090,13 +4280,17 @@ void AbstractImporterTest::image3DLevelOutOfRange() {
         void doClose() override {}
 
         UnsignedInt doImage3DCount() const override { return 8; }
+        Int doImage3DForName(const std::string&) override { return 0; }
         UnsignedInt doImage3DLevelCount(UnsignedInt) override { return 3; }
     } importer;
 
     std::ostringstream out;
     Error redirectError{&out};
     importer.image3D(7, 3);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): level 3 out of range for 3 entries\n");
+    importer.image3D("", 3);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image3D(): level 3 out of range for 3 entries\n"
+        "Trade::AbstractImporter::image3D(): level 3 out of range for 3 entries\n");
 }
 
 void AbstractImporterTest::image3DNonOwningDeleter() {
@@ -4144,6 +4338,7 @@ void AbstractImporterTest::image3DCustomDeleter() {
         void doClose() override {}
 
         UnsignedInt doImage3DCount() const override { return 1; }
+        Int doImage3DForName(const std::string&) override { return 0; }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
             return ImageData3D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
         }
@@ -4153,7 +4348,10 @@ void AbstractImporterTest::image3DCustomDeleter() {
     Error redirectError{&out};
 
     importer.image3D(0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter\n");
+    importer.image3D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::importerState() {

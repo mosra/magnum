@@ -185,6 +185,8 @@ See also:
     Equivalent APIs are exposed in both @ref Trade::ImageData and
     @ref Trade::MeshData as well. See @ref Trade-AnimationData-usage-mutable
     for more information.
+-   New convenience @ref Trade::AbstractImporter::material(const std::string&)
+    etc. APIs allowing to directly get a data using a string name
 
 @subsubsection changelog-latest-new-vk Vk library
 

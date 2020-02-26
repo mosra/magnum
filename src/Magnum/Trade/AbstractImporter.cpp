@@ -248,6 +248,13 @@ Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::scene(): not implemented", {});
 }
 
+Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
+    const Int id = doSceneForName(name);
+    if(id == -1) return {};
+    return scene(id); /* not doScene(), so we get the range checks also */
+}
+
 UnsignedInt AbstractImporter::animationCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationCount(): no file opened", {});
     return doAnimationCount();
@@ -285,6 +292,13 @@ Containers::Optional<AnimationData> AbstractImporter::doAnimation(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::animation(): not implemented", {});
 }
 
+Containers::Optional<AnimationData> AbstractImporter::animation(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
+    const Int id = doAnimationForName(name);
+    if(id == -1) return {};
+    return animation(id); /* not doAnimation(), so we get the checks also */
+}
+
 UnsignedInt AbstractImporter::lightCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightCount(): no file opened", {});
     return doLightCount();
@@ -315,6 +329,13 @@ Containers::Optional<LightData> AbstractImporter::light(const UnsignedInt id) {
 
 Containers::Optional<LightData> AbstractImporter::doLight(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::light(): not implemented", {});
+}
+
+Containers::Optional<LightData> AbstractImporter::light(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
+    const Int id = doLightForName(name);
+    if(id == -1) return {};
+    return light(id); /* not doLight(), so we get the range checks also */
 }
 
 UnsignedInt AbstractImporter::cameraCount() const {
@@ -349,6 +370,13 @@ Containers::Optional<CameraData> AbstractImporter::doCamera(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::camera(): not implemented", {});
 }
 
+Containers::Optional<CameraData> AbstractImporter::camera(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
+    const Int id = doCameraForName(name);
+    if(id == -1) return {};
+    return camera(id); /* not doCamera(), so we get the range checks also */
+}
+
 UnsignedInt AbstractImporter::object2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DCount(): no file opened", {});
     return doObject2DCount();
@@ -381,6 +409,13 @@ Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::object2D(): not implemented", {});
 }
 
+Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
+    const Int id = doObject2DForName(name);
+    if(id == -1) return {};
+    return object2D(id); /* not doObject2D(), so we get the range checks also */
+}
+
 UnsignedInt AbstractImporter::object3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DCount(): no file opened", {});
     return doObject3DCount();
@@ -411,6 +446,13 @@ Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const UnsignedInt i
 
 Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::object3D(): not implemented", {});
+}
+
+Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
+    const Int id = doObject3DForName(name);
+    if(id == -1) return {};
+    return object3D(id); /* not doObject3D(), so we get the range checks also */
 }
 
 UnsignedInt AbstractImporter::meshCount() const {
@@ -449,6 +491,13 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id) {
 
 Containers::Optional<MeshData> AbstractImporter::doMesh(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh(): not implemented", {});
+}
+
+Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
+    const Int id = doMeshForName(name);
+    if(id == -1) return {};
+    return mesh(id); /* not doMesh(), so we get the checks also */
 }
 
 MeshAttribute AbstractImporter::meshAttributeForName(const std::string& name) {
@@ -592,6 +641,13 @@ Containers::Pointer<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedI
     CORRADE_ASSERT(false, "Trade::AbstractImporter::material(): not implemented", {});
 }
 
+Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
+    const Int id = doMaterialForName(name);
+    if(id == -1) return {};
+    return material(id); /* not doMaterial(), so we get the range checks also */
+}
+
 UnsignedInt AbstractImporter::textureCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureCount(): no file opened", {});
     return doTextureCount();
@@ -622,6 +678,13 @@ Containers::Optional<TextureData> AbstractImporter::texture(const UnsignedInt id
 
 Containers::Optional<TextureData> AbstractImporter::doTexture(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::texture(): not implemented", {});
+}
+
+Containers::Optional<TextureData> AbstractImporter::texture(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
+    const Int id = doTextureForName(name);
+    if(id == -1) return {};
+    return texture(id); /* not doTexture(), so we get the range checks also */
 }
 
 UnsignedInt AbstractImporter::image1DCount() const {
@@ -680,6 +743,14 @@ Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt, Unsig
     CORRADE_ASSERT(false, "Trade::AbstractImporter::image1D(): not implemented", {});
 }
 
+Containers::Optional<ImageData1D> AbstractImporter::image1D(const std::string& name, const UnsignedInt level) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
+    const Int id = doImage1DForName(name);
+    if(id == -1) return {};
+    /* not doImage1D(), so we get the range checks also */
+    return image1D(id, level);
+}
+
 UnsignedInt AbstractImporter::image2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DCount(): no file opened", {});
     return doImage2DCount();
@@ -736,6 +807,14 @@ Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt, Unsig
     CORRADE_ASSERT(false, "Trade::AbstractImporter::image2D(): not implemented", {});
 }
 
+Containers::Optional<ImageData2D> AbstractImporter::image2D(const std::string& name, const UnsignedInt level) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
+    const Int id = doImage2DForName(name);
+    if(id == -1) return {};
+    /* not doImage2D(), so we get the range checks also */
+    return image2D(id, level);
+}
+
 UnsignedInt AbstractImporter::image3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DCount(): no file opened", {});
     return doImage3DCount();
@@ -790,6 +869,14 @@ Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id
 
 Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt, UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::image3D(): not implemented", {});
+}
+
+Containers::Optional<ImageData3D> AbstractImporter::image3D(const std::string& name, const UnsignedInt level) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
+    const Int id = doImage3DForName(name);
+    if(id == -1) return {};
+    /* not doImage3D(), so we get the range checks also */
+    return image3D(id, level);
 }
 
 const void* AbstractImporter::importerState() const {
