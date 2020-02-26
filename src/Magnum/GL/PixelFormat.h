@@ -1999,7 +1999,7 @@ Some OpenGL targets don't support all generic pixel formats (for example PVRTC
 compression might not be available on desktop OpenGL). Returns @cpp false @ce
 if current target can't support such format, @cpp true @ce otherwise. Moreover,
 returns @cpp true @ce also for all formats that are
-@ref isCompressedPixelFormatImplementationSpecific().The @p format value is
+@ref isCompressedPixelFormatImplementationSpecific(). The @p format value is
 expected to be valid.
 
 @note Support of some formats depends on presence of a particular OpenGL
