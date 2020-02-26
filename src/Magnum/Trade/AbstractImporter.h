@@ -245,9 +245,9 @@ checked by the implementation:
     there is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
--   For `doImage*()` and @p level parameter being nonzero, implementations are
-    called only if it is from valid range. Level zero is always expected to be
-    present and thus no check is done in that case.
+-   For @ref doMesh() and `doImage*()` and @p level parameter being nonzero,
+    implementations are called only if it is from valid range. Level zero is
+    always expected to be present and thus no check is done in that case.
 
 @m_class{m-block m-warning}
 
@@ -760,8 +760,19 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * Expects that a file is opened.
+         * @see @ref meshLevelCount()
          */
         UnsignedInt meshCount() const;
+
+        /**
+         * @brief Mesh level count
+         * @param id        Mesh ID, from range [0, @ref meshCount()).
+         * @m_since_latest
+         *
+         * Always returns at least one level, import failures are deferred to
+         * @ref mesh(). Expects that a file is opened.
+         */
+        UnsignedInt meshLevelCount(UnsignedInt id);
 
         /**
          * @brief Mesh ID for given name
@@ -769,7 +780,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
-         * @see @ref meshName(), @ref mesh(const std::string&)
+         * @see @ref meshName(), @ref mesh(const std::string&, UnsignedInt)
          */
         Int meshForName(const std::string& name);
 
@@ -786,24 +797,30 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Mesh
          * @param id        Mesh ID, from range [0, @ref meshCount()).
+         * @param level     Mesh level, from range [0, @ref meshLevelCount())
          * @m_since_latest
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
-         * Expects that a file is opened.
-         * @see @ref mesh(const std::string&)
+         * The @p level parameter allows access to additional data and is
+         * largely left as importer-specific --- for example allowing access to
+         * per-instance, per-face or per-edge data. Expects that a file is
+         * opened.
+         * @see @ref mesh(const std::string&, UnsignedInt),
+         *      @ref MeshPrimitive::Instances, @ref MeshPrimitive::Faces,
+         *      @ref MeshPrimitive::Edges
          */
-        Containers::Optional<MeshData> mesh(UnsignedInt id);
+        Containers::Optional<MeshData> mesh(UnsignedInt id, UnsignedInt level = 0);
 
         /**
          * @brief Mesh for given name
          * @m_since_latest
          *
          * A convenience API combining @ref meshForName() and
-         * @ref mesh(UnsignedInt). Returns @ref Containers::NullOpt either if
-         * @ref meshForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref mesh(UnsignedInt, UnsignedInt). Returns
+         * @ref Containers::NullOpt either if @ref meshForName() returns
+         * @cpp -1 @ce or if importing fails. Expects that a file is opened.
          */
-        Containers::Optional<MeshData> mesh(const std::string& name);
+        Containers::Optional<MeshData> mesh(const std::string& name, UnsignedInt level = 0);
 
         /**
          * @brief Mesh attribute for given name
@@ -1404,6 +1421,20 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual UnsignedInt doMeshCount() const;
 
         /**
+         * @brief Implementation for @ref meshLevelCount()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp 1 @ce. Similarly to all other
+         * `*Count()` functions, this function isn't expected to fail --- if an
+         * import error occus, this function should return @cpp 1 @ce and the
+         * error state should be returned from @ref mesh() instead.
+         *
+         * Deliberately not @cpp const @ce to allow plugins cache decoded
+         * data.
+         */
+        virtual UnsignedInt doMeshLevelCount(UnsignedInt id);
+
+        /**
          * @brief Implementation for @ref meshForName()
          * @m_since_latest
          *
@@ -1423,7 +1454,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref mesh()
          * @m_since_latest
          */
-        virtual Containers::Optional<MeshData> doMesh(UnsignedInt id);
+        virtual Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level);
 
         /**
          * @brief Implementation for @ref meshAttributeForName()

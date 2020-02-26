@@ -462,6 +462,16 @@ UnsignedInt AbstractImporter::meshCount() const {
 
 UnsignedInt AbstractImporter::doMeshCount() const { return 0; }
 
+UnsignedInt AbstractImporter::meshLevelCount(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::meshLevelCount(): no file opened", {});
+    CORRADE_ASSERT(id < doMeshCount(), "Trade::AbstractImporter::meshLevelCount(): index" << id << "out of range for" << doMeshCount() << "entries", {});
+    const UnsignedInt out = doMeshLevelCount(id);
+    CORRADE_ASSERT(out, "Trade::AbstractImporter::meshLevelCount(): implementation reported zero levels", {});
+    return out;
+}
+
+UnsignedInt AbstractImporter::doMeshLevelCount(UnsignedInt) { return 1; }
+
 Int AbstractImporter::meshForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::meshForName(): no file opened", {});
     return doMeshForName(name);
@@ -477,10 +487,21 @@ std::string AbstractImporter::meshName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMeshName(UnsignedInt) { return {}; }
 
-Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id) {
+Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
     CORRADE_ASSERT(id < doMeshCount(), "Trade::AbstractImporter::mesh(): index" << id << "out of range for" << doMeshCount() << "entries", {});
-    Containers::Optional<MeshData> mesh = doMesh(id);
+    #ifndef CORRADE_NO_ASSERT
+    /* Check for the range only if requested level is nonzero, as
+       meshLevelCount() is expected to return >= 1. This is done to prevent
+       random assertions and messages from a doMeshLevelCount() to be printed
+       (which are unlikely, but let's be consistent with what image*D() does). */
+    if(level) {
+        const UnsignedInt levelCount = doMeshLevelCount(id);
+        CORRADE_ASSERT(levelCount, "Trade::AbstractImporter::mesh(): implementation reported zero levels", {});
+        CORRADE_ASSERT(level < levelCount, "Trade::AbstractImporter::mesh(): level" << level << "out of range for" << levelCount << "entries", {});
+    }
+    #endif
+    Containers::Optional<MeshData> mesh = doMesh(id, level);
     CORRADE_ASSERT(!mesh || (
         (!mesh->_indexData.deleter() || mesh->_indexData.deleter() == Implementation::nonOwnedArrayDeleter || mesh->_indexData.deleter() == ArrayAllocator<char>::deleter) &&
         (!mesh->_vertexData.deleter() || mesh->_vertexData.deleter() == Implementation::nonOwnedArrayDeleter || mesh->_vertexData.deleter() == ArrayAllocator<char>::deleter) &&
@@ -489,15 +510,15 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id) {
     return mesh;
 }
 
-Containers::Optional<MeshData> AbstractImporter::doMesh(UnsignedInt) {
+Containers::Optional<MeshData> AbstractImporter::doMesh(UnsignedInt, UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh(): not implemented", {});
 }
 
-Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name) {
+Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name, const UnsignedInt level) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh(): no file opened", {});
     const Int id = doMeshForName(name);
     if(id == -1) return {};
-    return mesh(id); /* not doMesh(), so we get the checks also */
+    return mesh(id, level); /* not doMesh(), so we get the checks also */
 }
 
 MeshAttribute AbstractImporter::meshAttributeForName(const std::string& name) {
@@ -602,7 +623,7 @@ Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) 
 }
 
 Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(const UnsignedInt id) {
-    Containers::Optional<MeshData> out = doMesh(id);
+    Containers::Optional<MeshData> out = doMesh(id, 0);
     if(out) return MeshData3D{*out};
     return Containers::NullOpt;
 }

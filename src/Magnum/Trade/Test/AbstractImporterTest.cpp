@@ -171,6 +171,10 @@ struct AbstractImporterTest: TestSuite::Tester {
     #endif
     void meshCountNotImplemented();
     void meshCountNoFile();
+    void meshLevelCountNotImplemented();
+    void meshLevelCountNoFile();
+    void meshLevelCountOutOfRange();
+    void meshLevelCountZero();
     void meshForNameNotImplemented();
     void meshForNameNoFile();
     void meshNameNotImplemented();
@@ -179,6 +183,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void meshNotImplemented();
     void meshNoFile();
     void meshOutOfRange();
+    void meshLevelOutOfRange();
     void meshNonOwningDeleters();
     void meshGrowableDeleters();
     void meshCustomIndexDataDeleter();
@@ -420,6 +425,10 @@ AbstractImporterTest::AbstractImporterTest() {
               #endif
               &AbstractImporterTest::meshCountNotImplemented,
               &AbstractImporterTest::meshCountNoFile,
+              &AbstractImporterTest::meshLevelCountNotImplemented,
+              &AbstractImporterTest::meshLevelCountNoFile,
+              &AbstractImporterTest::meshLevelCountOutOfRange,
+              &AbstractImporterTest::meshLevelCountZero,
               &AbstractImporterTest::meshForNameNotImplemented,
               &AbstractImporterTest::meshForNameNoFile,
               &AbstractImporterTest::meshNameNotImplemented,
@@ -428,6 +437,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::meshNotImplemented,
               &AbstractImporterTest::meshNoFile,
               &AbstractImporterTest::meshOutOfRange,
+              &AbstractImporterTest::meshLevelOutOfRange,
               &AbstractImporterTest::meshNonOwningDeleters,
               &AbstractImporterTest::meshGrowableDeleters,
               &AbstractImporterTest::meshCustomIndexDataDeleter,
@@ -2239,6 +2249,10 @@ void AbstractImporterTest::mesh() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 8; }
+        UnsignedInt doMeshLevelCount(UnsignedInt id) override {
+            if(id == 7) return 3;
+            else return {};
+        }
         Int doMeshForName(const std::string& name) override {
             if(name == "eighth") return 7;
             else return -1;
@@ -2247,10 +2261,10 @@ void AbstractImporterTest::mesh() {
             if(id == 7) return "eighth";
             else return {};
         }
-        Containers::Optional<MeshData> doMesh(UnsignedInt id) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
             /* Verify that initializer list is converted to an array with
                the default deleter and not something disallowed */
-            if(id == 7) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+            if(id == 7 && level == 2) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
             else return {};
         }
     } importer;
@@ -2260,11 +2274,11 @@ void AbstractImporterTest::mesh() {
     CORRADE_COMPARE(importer.meshName(7), "eighth");
 
     {
-        auto data = importer.mesh(7);
+        auto data = importer.mesh(7, 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     } {
-        auto data = importer.mesh("eighth");
+        auto data = importer.mesh("eighth", 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
     } {
@@ -2289,8 +2303,8 @@ void AbstractImporterTest::meshDeprecatedFallback() {
             if(id == 7) return "eighth";
             else return {};
         }
-        Containers::Optional<MeshData> doMesh(UnsignedInt id) override {
-            if(id == 7) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+        Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
+            if(id == 7 && level == 0) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
             else return {};
         }
     } importer;
@@ -2334,6 +2348,70 @@ void AbstractImporterTest::meshCountNoFile() {
 
     importer.meshCount();
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshCount(): no file opened\n");
+}
+
+void AbstractImporterTest::meshLevelCountNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    CORRADE_COMPARE(importer.meshLevelCount(7), 1);
+}
+
+void AbstractImporterTest::meshLevelCountNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.meshLevelCount(7);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshLevelCount(): no file opened\n");
+}
+
+void AbstractImporterTest::meshLevelCountOutOfRange() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.meshLevelCount(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshLevelCount(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::meshLevelCountZero() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        Int doMeshForName(const std::string&) override { return 0; }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override { return 0; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.meshLevelCount(7);
+    /* This should print a similar message instead of a confusing
+       "level 1 out of range for 0 entries" */
+    importer.mesh(7, 1);
+    importer.mesh("", 1);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::meshLevelCount(): implementation reported zero levels\n"
+        "Trade::AbstractImporter::mesh(): implementation reported zero levels\n"
+        "Trade::AbstractImporter::mesh(): implementation reported zero levels\n");
 }
 
 void AbstractImporterTest::meshForNameNotImplemented() {
@@ -2451,6 +2529,26 @@ void AbstractImporterTest::meshOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): index 8 out of range for 8 entries\n");
 }
 
+void AbstractImporterTest::meshLevelOutOfRange() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        Int doMeshForName(const std::string&) override { return 0; }
+        UnsignedInt doMeshLevelCount(UnsignedInt) override { return 3; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.mesh(7, 3);
+    importer.mesh("", 3);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::mesh(): level 3 out of range for 3 entries\n"
+        "Trade::AbstractImporter::mesh(): level 3 out of range for 3 entries\n");
+}
+
 void AbstractImporterTest::meshNonOwningDeleters() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2458,7 +2556,7 @@ void AbstractImporterTest::meshNonOwningDeleters() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 1; }
-        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles,
                 Containers::Array<char>{indexData, 1, Implementation::nonOwnedArrayDeleter}, MeshIndexData{MeshIndexType::UnsignedByte, indexData},
                 Containers::Array<char>{nullptr, 0, Implementation::nonOwnedArrayDeleter},
@@ -2483,7 +2581,7 @@ void AbstractImporterTest::meshGrowableDeleters() {
         void doClose() override {}
 
         UnsignedInt doMeshCount() const override { return 1; }
-        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
             Containers::Array<char> indexData;
             Containers::arrayAppend<ArrayAllocator>(indexData, '\xab');
             Containers::Array<Vector3> vertexData;
@@ -2511,7 +2609,7 @@ void AbstractImporterTest::meshCustomIndexDataDeleter() {
 
         UnsignedInt doMeshCount() const override { return 1; }
         Int doMeshForName(const std::string&) override { return 0; }
-        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{data, 1, [](char*, std::size_t) {}}, MeshIndexData{MeshIndexType::UnsignedByte, data}};
         }
 
@@ -2536,7 +2634,7 @@ void AbstractImporterTest::meshCustomVertexDataDeleter() {
 
         UnsignedInt doMeshCount() const override { return 1; }
         Int doMeshForName(const std::string&) override { return 0; }
-        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}};
         }
     } importer;
@@ -2559,7 +2657,7 @@ void AbstractImporterTest::meshCustomAttributesDeleter() {
 
         UnsignedInt doMeshCount() const override { return 1; }
         Int doMeshForName(const std::string&) override { return 0; }
-        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+        Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
             return MeshData{MeshPrimitive::Triangles, nullptr, Containers::Array<MeshAttributeData>{&positions, 1, [](MeshAttributeData*, std::size_t) {}}};
         }
 
