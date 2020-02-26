@@ -203,6 +203,7 @@ void PixelFormatTest::mapFormatUnsupported() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::RGB16UI));
     pixelFormat(Magnum::PixelFormat::RGB16UI);
     CORRADE_COMPARE(out.str(), "GL::pixelFormat(): format PixelFormat::RGB16UI is not supported on this target\n");
     #endif
