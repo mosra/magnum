@@ -474,7 +474,7 @@ class DynamicAttribute {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Half float.
-             * @m_deprecated_since_latest Use @ref Half instead.
+             * @m_deprecated_since_latest Use @ref DataType::Half instead.
              */
             HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
             #endif

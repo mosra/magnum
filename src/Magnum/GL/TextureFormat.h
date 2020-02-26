@@ -662,7 +662,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, half float.
-     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Magnum::Half "Half", @ref Math::packHalf(),
+     *      @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
      *      in combination with @ref PixelType::Half
@@ -689,7 +690,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each half float.
-     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Magnum::Half "Half", @ref Math::packHalf(),
+     *      @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
      *      in combination with @ref PixelType::Half
@@ -716,7 +718,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component half float.
-     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Magnum::Half "Half", @ref Math::packHalf(),
+     *      @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RGB in combination with
      *      @ref PixelType::Half (@gl_extension2{OES,texture_half_float,OES_texture_float})
@@ -736,7 +739,8 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component half float.
-     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Magnum::Half "Half", @ref Math::packHalf(),
+     *      @ref Math::unpackHalf()
      * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Use @ref TextureFormat::RGBA in combination with
      *      @ref PixelType::Half (@gl_extension2{OES,texture_half_float,OES_texture_float})
