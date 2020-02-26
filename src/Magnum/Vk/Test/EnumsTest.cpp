@@ -34,8 +34,6 @@
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
-/* Tests MeshView as well */
-
 struct EnumsTest: TestSuite::Tester {
     explicit EnumsTest();
 
