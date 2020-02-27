@@ -75,6 +75,19 @@ instead. Usage example:
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
 /**
+@brief Remove duplicate data from given array in-place
+@param[in,out] data     Data array, duplicate items will be cut away with order
+    preserved
+@param[out]    indices  Where to put the resulting index array
+@return Size of unique prefix in the cleaned up @p data array
+@m_since_latest
+
+Same as above, except that the index array is not allocated but put into
+@p indices instead. Expects that @p indices has the same size as @p data.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices);
+
+/**
 @brief Remove duplicates from indexed data in-place
 @param[in,out] indices  Index array, which will get remapped to list just
     unique data

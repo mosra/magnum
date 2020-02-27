@@ -44,19 +44,20 @@ struct ArrayHash {
     }
 };
 
-std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
+std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
     /* Assuming the second dimension is contiguous so we can calculate the
        hashes easily */
     CORRADE_ASSERT(data.empty()[0] || data.isContiguous<1>(),
-        "MeshTools::removeDuplicatesInPlace(): second data view dimension is not contiguous", {});
+        "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous", {});
 
     const std::size_t dataSize = data.size()[0];
+    CORRADE_ASSERT(indices.size() == dataSize,
+        "MeshTools::removeDuplicatesInPlaceInto(): output index array has" << indices.size() << "elements but expected" << dataSize, {});
+
     /* Table containing index of first occurence for each unique entry.
        Reserving more buckets than necessary (i.e. as if each entry was
        unique). */
     std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
-
-    Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
 
     /* Go through all entries */
     for(std::size_t i = 0; i != dataSize; ++i) {
@@ -65,7 +66,7 @@ std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(c
         const auto result = table.emplace(entry, table.size());
 
         /* Add the (either new or already existing) index into the array */
-        remapping[i] = result.first->second;
+        indices[i] = result.first->second;
 
         /* If this is a new combination, copy the data to new (earlier)
            position in the array. Data in [table.size()-1, i) are already
@@ -76,7 +77,13 @@ std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(c
     }
 
     CORRADE_INTERNAL_ASSERT(dataSize >= table.size());
-    return {std::move(remapping), table.size()};
+    return table.size();
+}
+
+std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data) {
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    const std::size_t size = removeDuplicatesInPlaceInto(data, indices);
+    return {std::move(indices), size};
 }
 
 namespace {

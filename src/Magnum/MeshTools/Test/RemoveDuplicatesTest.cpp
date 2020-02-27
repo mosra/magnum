@@ -38,6 +38,7 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 
     void removeDuplicatesInPlace();
     void removeDuplicatesInPlaceNonContiguous();
+    void removeDuplicatesInPlaceIntoWrongOutputSize();
     template<class T> void removeDuplicatesIndexedInPlace();
     void removeDuplicatesIndexedInPlaceSmallType();
     void removeDuplicatesIndexedInPlaceEmptyIndices();
@@ -56,6 +57,7 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
     addTests({&RemoveDuplicatesTest::removeDuplicatesInPlace,
               &RemoveDuplicatesTest::removeDuplicatesInPlaceNonContiguous,
+              &RemoveDuplicatesTest::removeDuplicatesInPlaceIntoWrongOutputSize,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedByte>,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedShort>,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedInt>,
@@ -92,7 +94,19 @@ void RemoveDuplicatesTest::removeDuplicatesInPlaceNonContiguous() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)).every({1, 2}));
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesInPlace(): second data view dimension is not contiguous\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous\n");
+}
+
+void RemoveDuplicatesTest::removeDuplicatesInPlaceIntoWrongOutputSize() {
+    Int data[8]{};
+    UnsignedInt output[7];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicatesInPlaceInto(
+        Containers::arrayCast<2, char>(Containers::arrayView(data)),
+        output);
+    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
 
 template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlace() {
