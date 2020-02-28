@@ -199,6 +199,9 @@ See also:
     @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
     now fall back to linear interpolation when the quaternions are close to
     each other, instead of unconditionally returning the first argument
+-   Added non-const overloads to @ref Math::Frustum::operator[]() and
+    @ref Math::Frustum::front() etc. accessors, returning references (see
+    [mosra/magnum#425](https://github.com/mosra/magnum/pull/425))
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
