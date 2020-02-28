@@ -219,17 +219,17 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /** Read from back buffer. */
             Back = GL_BACK,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Read from front buffer.
              * @requires_es_extension Extension @gl_extension2{NV,read_buffer_front,NV_read_buffer}
              * @requires_gles Reading from front buffer is not available in
              *      WebGL.
              */
-            Front = GL_FRONT
+            Front = GL_FRONT,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
-            ,
-
             /**
              * Read from front and back buffer.
              * @requires_gl In OpenGL ES you must specify either
