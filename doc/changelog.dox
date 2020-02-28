@@ -128,6 +128,8 @@ See also:
     subdivision
 -   New @ref MeshTools::removeDuplicatesInPlace() variant that works on
     discrete data in addition to floating-point
+-   New @ref MeshTools::combineIndexedAttributes() tool for combining
+    differently indexed attributes into a single index buffer
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

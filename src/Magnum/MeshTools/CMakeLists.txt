@@ -29,6 +29,7 @@ set(MagnumMeshTools_SRCS
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
+    Combine.cpp
     CombineIndexedArrays.cpp
     CompressIndices.cpp
     Duplicate.cpp
@@ -38,6 +39,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     RemoveDuplicates.cpp)
 
 set(MagnumMeshTools_HEADERS
+    Combine.h
     CombineIndexedArrays.h
     CompressIndices.h
     Duplicate.h
