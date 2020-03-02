@@ -130,7 +130,9 @@ See also:
 -   New @ref MeshTools::removeDuplicatesInPlace() variant that works on
     discrete data in addition to floating-point
 -   New @ref MeshTools::combineIndexedAttributes() tool for combining
-    differently indexed attributes into a single index buffer
+    differently indexed attributes into a single index buffer, and
+    @ref MeshTools::combineFaceAttributes() for converting per-face attributes
+    into per-vertex
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

@@ -29,6 +29,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Combine.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -44,6 +45,20 @@ struct CombineTest: TestSuite::Tester {
     void combineIndexedAttributesNotIndexed();
     void combineIndexedAttributesDifferentPrimitive();
     void combineIndexedAttributesDifferentIndexCount();
+
+    void combineFaceAttributes();
+    void combineFaceAttributesMeshNotIndexed();
+    void combineFaceAttributesUnexpectedPrimitive();
+    void combineFaceAttributesUnexpectedFaceCount();
+    void combineFaceAttributesFacesNotInterleaved();
+};
+
+constexpr struct {
+    const char* name;
+    bool indexed;
+} CombineFaceAttributesData[] {
+    {"", false},
+    {"indexed faces", true}
 };
 
 CombineTest::CombineTest() {
@@ -54,6 +69,14 @@ CombineTest::CombineTest() {
               &CombineTest::combineIndexedAttributesNotIndexed,
               &CombineTest::combineIndexedAttributesDifferentPrimitive,
               &CombineTest::combineIndexedAttributesDifferentIndexCount});
+
+    addInstancedTests({&CombineTest::combineFaceAttributes},
+        Containers::arraySize(CombineFaceAttributesData));
+
+    addTests({&CombineTest::combineFaceAttributesMeshNotIndexed,
+              &CombineTest::combineFaceAttributesUnexpectedPrimitive,
+              &CombineTest::combineFaceAttributesUnexpectedFaceCount,
+              &CombineTest::combineFaceAttributesFacesNotInterleaved});
 }
 
 void CombineTest::combineIndexedAttributes() {
@@ -172,6 +195,194 @@ void CombineTest::combineIndexedAttributesDifferentIndexCount() {
     Error redirectError{&out};
     MeshTools::combineIndexedAttributes({a, b, c});
     CORRADE_COMPARE(out.str(), "MeshTools::combineIndexedAttributes(): data 2 has 4 indices but expected 5\n");
+}
+
+void CombineTest::combineFaceAttributes() {
+    auto&& data = CombineFaceAttributesData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    using namespace Math::Literals;
+
+    /*
+                                9 ------- 8
+        5 ------- 4              \       / 6
+         \       / \              \  C  / / \
+          \  C  /   \              \   / /   \
+           \   /  B  \              \ / /  B  \
+            \ /       \              7 /       \
+             1 ------- 3    ==>       3 ------- 5
+            / \       /              2 \       /
+           /   \  B  /              / \ \  B  /
+          /  A  \   /              /   \ \   /
+         /       \ /              /  A  \ \ /
+        0 ------- 2              /       \ 4
+                                0 ------- 1
+    */
+    const UnsignedShort indices[]{
+        0, 2, 1,
+        1, 2, 3,
+        1, 3, 4,
+        1, 4, 5
+    };
+    const Vector2 positions[] {
+        {0.0f, 0.0f},
+        {0.5f, 1.0f},
+        {1.0f, 0.0f},
+        {1.5f, 1.0f},
+        {1.0f, 2.0f},
+        {0.0f, 2.0f}
+    };
+
+    const struct FaceData {
+        Color3 color;
+        Byte id;
+    } faceData[] {
+        {0xaaaaaa_rgbf, 'A'},
+        {0xbbbbbb_rgbf, 'B'},
+        {0xbbbbbb_rgbf, 'B'},
+        {0xcccccc_rgbf, 'C'}
+    };
+
+    const UnsignedByte faceIndices[] { 0, 1, 1, 2 };
+    const FaceData faceDataIndexed[] {
+        {0xaaaaaa_rgbf, 'A'},
+        {0xbbbbbb_rgbf, 'B'},
+        {0xcccccc_rgbf, 'C'}
+    };
+
+    const Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, positions, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)}
+        }};
+    const Trade::MeshData faceAttributes{MeshPrimitive::Faces,
+        {}, faceData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+                Containers::StridedArrayView1D<const Color3>{faceData,
+                    &faceData[0].color, 4, sizeof(FaceData)}},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(25),
+                Containers::StridedArrayView1D<const Byte>{faceData,
+                    &faceData[0].id, 4, sizeof(FaceData)}},
+        }};
+    const Trade::MeshData faceAttributesIndexed{MeshPrimitive::Faces,
+        {}, faceIndices, Trade::MeshIndexData{faceIndices},
+        {}, faceDataIndexed, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+                Containers::StridedArrayView1D<const Color3>{faceDataIndexed,
+                    &faceDataIndexed[0].color, 3, sizeof(FaceData)}},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(25),
+                Containers::StridedArrayView1D<const Byte>{faceDataIndexed,
+                    &faceDataIndexed[0].id, 3, sizeof(FaceData)}},
+        }};
+
+    Trade::MeshData combined = data.indexed ?
+        MeshTools::combineFaceAttributes(mesh, faceAttributesIndexed) :
+        MeshTools::combineFaceAttributes(mesh, faceAttributes);
+    CORRADE_COMPARE(combined.attributeCount(), 3);
+    CORRADE_COMPARE(combined.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(combined.indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2,
+            3, 4, 5,
+            3, 5, 6,
+            7, 8, 9
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(combined.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {0.0f, 0.0f},
+            {1.0f, 0.0f},
+            {0.5f, 1.0f},
+            {0.5f, 1.0f},
+            {1.0f, 0.0f},
+            {1.5f, 1.0f},
+            {1.0f, 2.0f},
+            {0.5f, 1.0f},
+            {1.0f, 2.0f},
+            {0.0f, 2.0f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(combined.attribute<Color3>(Trade::MeshAttribute::Color),
+        Containers::arrayView<Color3>({
+            0xaaaaaa_rgbf, 0xaaaaaa_rgbf, 0xaaaaaa_rgbf,
+            0xbbbbbb_rgbf, 0xbbbbbb_rgbf, 0xbbbbbb_rgbf, 0xbbbbbb_rgbf,
+            0xcccccc_rgbf, 0xcccccc_rgbf, 0xcccccc_rgbf
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(combined.attribute<Byte>(Trade::meshAttributeCustom(25)),
+        Containers::arrayView<Byte>({
+            'A', 'A', 'A',
+            'B', 'B', 'B', 'B',
+            'C', 'C', 'C'
+        }), TestSuite::Compare::Container);
+}
+
+void CombineTest::combineFaceAttributesMeshNotIndexed() {
+    const Trade::MeshData mesh{MeshPrimitive::Triangles, 3};
+    const Trade::MeshData faceAttributes{MeshPrimitive::Faces, 0};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(mesh, faceAttributes);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): vertex mesh is not indexed\n");
+}
+
+void CombineTest::combineFaceAttributesUnexpectedPrimitive() {
+    const UnsignedInt indices[] { 0, 0, 0 };
+    const Trade::MeshData a{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices}, 1};
+    const Trade::MeshData b{MeshPrimitive::Lines,
+        {}, indices, Trade::MeshIndexData{indices}, 1};
+    const Trade::MeshData faceA{MeshPrimitive::Instances, 0};
+    const Trade::MeshData faceB{MeshPrimitive::Faces, 0};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(a, faceA);
+    MeshTools::combineFaceAttributes(b, faceB);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): expected a MeshPrimitive::Triangles mesh and a MeshPrimitive::Faces mesh but got MeshPrimitive::Triangles and MeshPrimitive::Instances\n"
+        "MeshTools::combineFaceAttributes(): expected a MeshPrimitive::Triangles mesh and a MeshPrimitive::Faces mesh but got MeshPrimitive::Lines and MeshPrimitive::Faces\n");
+}
+
+void CombineTest::combineFaceAttributesUnexpectedFaceCount() {
+    const UnsignedInt indices[] { 0, 0, 0 };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices}, 1};
+    const Trade::MeshData faceAttributes{MeshPrimitive::Faces, 2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(mesh, faceAttributes);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): expected 1 face entries for 3 indices but got 2\n");
+}
+
+void CombineTest::combineFaceAttributesFacesNotInterleaved() {
+    using namespace Math::Literals;
+
+    const UnsignedInt indices[] { 0, 0, 0, 0, 0, 0 };
+    const Trade::MeshData mesh{MeshPrimitive::Triangles,
+        {}, indices, Trade::MeshIndexData{indices}, 1};
+    const struct {
+        Color3 color[2];
+        Byte id[2];
+    } faceData[]{{
+        {0xaaaaaa_rgbf, 0xbbbbbb_rgbf},
+        {'A', 'B'}
+    }};
+    const Trade::MeshData faceAttributes{MeshPrimitive::Faces,
+        {}, faceData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+                Containers::arrayView(faceData[0].color)},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(25),
+                Containers::arrayView(faceData[0].id)}
+        }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(mesh, faceAttributes);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): face attributes are not interleaved\n");
 }
 
 }}}}

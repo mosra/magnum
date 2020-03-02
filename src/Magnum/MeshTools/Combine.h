@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::combineIndexedAttributes()
+ * @brief Function @ref Magnum::MeshTools::combineIndexedAttributes(), @ref Magnum::MeshTools::combineFaceAttributes()
  * @m_since_latest
  */
 
@@ -88,6 +88,25 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Container
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data);
+
+/**
+@brief Combine per-face attributes into an existing mesh
+@m_since_latest
+
+The resulting mesh will have all per-face attributes turned into per-vertex
+attributes, leaving only unique combinations and adjusting the index buffer
+accordingly. The resulting mesh has the same amount of indices, but likely
+more vertices.
+
+Expects that @p mesh is indexed @ref MeshPrimitive::Triangles and
+@p faceAttributes is indexed @ref MeshPrimitive::Faces, index count of the
+latter corresponding to index count of the former. If @p faceAttributes is
+indexed, it's assumed to have the data unique; if it's not indexed, it's first
+made unique using @ref removeDuplicates() and in that case it's expected to
+be interleaved.
+@see @ref isInterleaved()
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes);
 
 }}
 
