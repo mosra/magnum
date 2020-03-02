@@ -56,8 +56,8 @@ namespace Implementation {
 @brief Remove duplicate data from given array in-place
 @param[in,out] data Data array, duplicate items will be cut away with order
     preserved
-@return Size of unique prefix in the cleaned up @p data array and the resulting
-    index array
+@return The resulting index array and size of unique prefix in the cleaned up
+    @p data array
 @m_since_latest
 
 Removes duplicate data from given array by comparing the second dimension of
@@ -70,7 +70,11 @@ instead. Usage example:
 
 @snippet MagnumMeshTools.cpp removeDuplicates
 
-@see @ref Corrade::Containers::StridedArrayView::isContiguous()
+See @ref removeDuplicates(const Containers::StridedArrayView2D<const char>&)
+for a variant that doesn't modify the input data in any way but instead returns
+an index array pointing to original data locations.
+@see @ref Corrade::Containers::StridedArrayView::isContiguous(),
+    @ref removeDuplicatesInPlaceInto()
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
@@ -84,8 +88,35 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> r
 
 Same as above, except that the index array is not allocated but put into
 @p indices instead. Expects that @p indices has the same size as @p data.
+@see @ref removeDuplicatesInto()
 */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices);
+
+/**
+@brief Remove duplicate data from given array
+@param[in] data     Data array
+@return The resulting index array and count of unique items in the original
+    @p data array
+@m_since_latest
+
+Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
+this function doesn't modify the input data array in any way but instead
+returns an index array pointing to original data locations.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
+
+/**
+@brief Remove duplicate data from given array
+@param[in]  data    Data array
+@param[out] indices Where to put the resulting index array
+@return Count of unique items in the original @p data array
+@m_since_latest
+
+Compared to @ref removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>&, const Containers::StridedArrayView1D<UnsignedInt>&)
+this function doesn't modify the input data array in any way but instead
+makes an index array pointing to original data locations.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices);
 
 /**
 @brief Remove duplicates from indexed data in-place

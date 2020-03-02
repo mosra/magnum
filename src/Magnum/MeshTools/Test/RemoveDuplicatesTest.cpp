@@ -36,9 +36,9 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct RemoveDuplicatesTest: TestSuite::Tester {
     explicit RemoveDuplicatesTest();
 
-    void removeDuplicatesInPlace();
-    void removeDuplicatesInPlaceNonContiguous();
-    void removeDuplicatesInPlaceIntoWrongOutputSize();
+    void removeDuplicates();
+    void removeDuplicatesNonContiguous();
+    void removeDuplicatesIntoWrongOutputSize();
     template<class T> void removeDuplicatesIndexedInPlace();
     void removeDuplicatesIndexedInPlaceSmallType();
     void removeDuplicatesIndexedInPlaceEmptyIndices();
@@ -57,9 +57,9 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
-    addTests({&RemoveDuplicatesTest::removeDuplicatesInPlace,
-              &RemoveDuplicatesTest::removeDuplicatesInPlaceNonContiguous,
-              &RemoveDuplicatesTest::removeDuplicatesInPlaceIntoWrongOutputSize,
+    addTests({&RemoveDuplicatesTest::removeDuplicates,
+              &RemoveDuplicatesTest::removeDuplicatesNonContiguous,
+              &RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedByte>,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedShort>,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlace<UnsignedInt>,
@@ -79,38 +79,52 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertices});
 }
 
-void RemoveDuplicatesTest::removeDuplicatesInPlace() {
+void RemoveDuplicatesTest::removeDuplicates() {
     Int data[]{-15, 32, 24, -15, 15, 7541, 24, 32};
 
     std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
-        MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)));
+        MeshTools::removeDuplicates(Containers::arrayCast<2, char>(Containers::arrayView(data)));
     CORRADE_COMPARE_AS(Containers::arrayView(result.first),
+        Containers::arrayView<UnsignedInt>({0, 1, 2, 0, 4, 5, 2, 1}),
+        TestSuite::Compare::Container);
+
+    std::pair<Containers::Array<UnsignedInt>, std::size_t> resultInPlace =
+        MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)));
+    CORRADE_COMPARE_AS(Containers::arrayView(resultInPlace.first),
         Containers::arrayView<UnsignedInt>({0, 1, 2, 0, 3, 4, 2, 1}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(resultInPlace.second),
         Containers::arrayView<Int>({-15, 32, 24, 15, 7541}),
         TestSuite::Compare::Container);
 }
 
-void RemoveDuplicatesTest::removeDuplicatesInPlaceNonContiguous() {
+void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
     Int data[8]{};
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::removeDuplicates(Containers::arrayCast<2, const char>(Containers::arrayView(data)).every({1, 2}));
     MeshTools::removeDuplicatesInPlace(Containers::arrayCast<2, char>(Containers::arrayView(data)).every({1, 2}));
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous\n");
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesInto(): second data view dimension is not contiguous\n"
+        "MeshTools::removeDuplicatesInPlaceInto(): second data view dimension is not contiguous\n");
 }
 
-void RemoveDuplicatesTest::removeDuplicatesInPlaceIntoWrongOutputSize() {
+void RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize() {
     Int data[8]{};
     UnsignedInt output[7];
 
     std::ostringstream out;
     Error redirectError{&out};
+    MeshTools::removeDuplicatesInto(
+        Containers::arrayCast<2, const char>(Containers::arrayView(data)),
+        output);
     MeshTools::removeDuplicatesInPlaceInto(
         Containers::arrayCast<2, char>(Containers::arrayView(data)),
         output);
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesInPlaceInto(): output index array has 7 elements but expected 8\n");
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesInto(): output index array has 7 elements but expected 8\n"
+        "MeshTools::removeDuplicatesInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
 
 template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlace() {

@@ -44,6 +44,43 @@ struct ArrayHash {
     }
 };
 
+std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
+    /* Assuming the second dimension is contiguous so we can calculate the
+       hashes easily */
+    CORRADE_ASSERT(data.empty()[0] || data.isContiguous<1>(),
+        "MeshTools::removeDuplicatesInto(): second data view dimension is not contiguous", {});
+
+    const std::size_t dataSize = data.size()[0];
+    CORRADE_ASSERT(indices.size() == dataSize,
+        "MeshTools::removeDuplicatesInto(): output index array has" << indices.size() << "elements but expected" << dataSize, {});
+
+    /* Table containing index of first occurence for each unique entry.
+       Reserving more buckets than necessary (i.e. as if each entry was
+       unique). */
+    std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
+
+    /* Go through all entries */
+    for(std::size_t i = 0; i != dataSize; ++i) {
+        /* Try to insert new entry into the table. The inserted index points
+           into the original unchanged data array. */
+        const Containers::ArrayView<const char> entry = data[i].asContiguous();
+        const auto result = table.emplace(entry, i);
+
+        /* Put the (either new or already existing) index into the output
+           index array */
+        indices[i] = result.first->second;
+    }
+
+    CORRADE_INTERNAL_ASSERT(dataSize >= table.size());
+    return table.size();
+}
+
+std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data) {
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    const std::size_t size = removeDuplicatesInto(data, indices);
+    return {std::move(indices), size};
+}
+
 std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
     /* Assuming the second dimension is contiguous so we can calculate the
        hashes easily */
@@ -61,11 +98,13 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
 
     /* Go through all entries */
     for(std::size_t i = 0; i != dataSize; ++i) {
-        /* Try to insert new entry into the table */
+        /* Try to insert new entry into the table. The inserted index points
+           into the new data array that has all duplicates removed. */
         const Containers::ArrayView<const char> entry = data[i].asContiguous();
         const auto result = table.emplace(entry, table.size());
 
-        /* Add the (either new or already existing) index into the array */
+        /* Put the (either new or already existing) index into the output index
+           array */
         indices[i] = result.first->second;
 
         /* If this is a new combination, copy the data to new (earlier)
