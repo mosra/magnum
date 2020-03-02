@@ -429,6 +429,17 @@ See also:
     @ref MeshTools::flipFaceWindingInPlace() and @ref MeshTools::tipsifyInPlace()
     that accept a @ref Corrade::Containers::StridedArrayView instead of a
     @ref std::vector and work with 8- and 16-byte index types as well.
+-   `Magnum/MeshTools/CombineIndexedArrays.h`,
+    @cpp MeshTools::combineIndexArrays() @ce and
+    @cpp MeshTools::combineIndexedArrays() @ce are deprecated in favor of a more
+    flexible @ref MeshTools::combineIndexedAttributes() in the
+    @ref Magnum/MeshTools/Combine.h header
+-   @cpp MeshTools::compressIndicesAs() @ce, @cpp MeshTools::duplicate() @ce,
+    @cpp MeshTools::removeDuplicates() @ce and @cpp MeshTools::subdivide() @ce
+    operating on a @ref std::vector are deprecated, use the STL-free
+    @ref MeshTools::compressIndices(), @ref MeshTools::duplicate(),
+    @ref MeshTools::removeDuplicatesInPlace() and @ref MeshTools::subdivide() /
+    @ref MeshTools::subdivideInPlace() overloads instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
@@ -3214,9 +3225,10 @@ a high-level overview.
 -   Removed deprecated `*Texture::maxLayers()` functions, use
     @ref GL::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
     instead
--   Removed deprecated @ref MeshTools::combineIndexedArrays(),
+-   Removed deprecated @cpp MeshTools::combineIndexedArrays() @ce,
     @ref MeshTools::compressIndices(), @ref MeshTools::interleave() and
-    @ref MeshTools::removeDuplicates() overloads, use the general ones instead
+    @cpp MeshTools::removeDuplicates() @ce overloads, use the general ones
+    instead
 -   Removed deprecated `Mesh*::set*{Range,Count}()` functions, use
     @ref GL::Mesh::setCount() "Mesh*::setCount()" and
     @ref GL::MeshView::setIndexRange() "MeshView::setIndexRange()" instead

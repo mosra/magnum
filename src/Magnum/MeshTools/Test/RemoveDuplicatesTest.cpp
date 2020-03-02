@@ -45,7 +45,9 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesIndexedInPlaceEmptyIndicesVertices();
 
     void removeDuplicatesFuzzyInPlace();
+    #ifdef MAGNUM_BUILD_DEPRECATED
     void removeDuplicatesFuzzyStl();
+    #endif
     template<class T> void removeDuplicatesFuzzyIndexedInPlace();
     void removeDuplicatesFuzzyIndexedInPlaceSmallType();
     void removeDuplicatesFuzzyIndexedInPlaceEmptyIndices();
@@ -66,7 +68,9 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceEmptyIndicesVertices,
 
               &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace,
+              #ifdef MAGNUM_BUILD_DEPRECATED
               &RemoveDuplicatesTest::removeDuplicatesFuzzyStl,
+              #endif
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedByte>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedShort>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt>,
@@ -173,6 +177,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace() {
         TestSuite::Compare::Container);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void RemoveDuplicatesTest::removeDuplicatesFuzzyStl() {
     /* Same but with implicit bloat. HEH HEH */
     std::vector<Vector2i> data{
@@ -182,7 +187,9 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyStl() {
         {1, 5}
     };
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     const std::vector<UnsignedInt> indices = MeshTools::removeDuplicates(data, 2);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE_AS(indices,
         (std::vector<UnsignedInt>{0, 0, 1, 1}),
         TestSuite::Compare::Container);
@@ -190,6 +197,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyStl() {
         (std::vector<Vector2i>{{1, 0}, {0, 4}}),
         TestSuite::Compare::Container);
 }
+#endif
 
 template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());

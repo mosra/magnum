@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::removeDuplicatesInPlace(), @ref Magnum::MeshTools::removeDuplicatesIndexedInPlace(), @ref Magnum::MeshTools::removeDuplicates()
+ * @brief Function @ref Magnum::MeshTools::removeDuplicatesInPlace(), @ref Magnum::MeshTools::removeDuplicatesIndexedInPlace()
  */
 
 #include <limits>
@@ -133,11 +133,14 @@ instead.
 
 If you want to remove duplicate data from an already indexed array, use
 @ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>&, const Containers::StridedArrayView1D<Vector>&, typename Vector::Type) instead.
-See also @ref removeDuplicates(std::vector<Vector>&, typename Vector::Type) for
-a variant operating on a STL vector.
+
+If you want to remove duplicates in multiple incidental arrays, first remove
+duplicates in each array separately and then combine the resulting index arrays
+back into a single one using @ref combineIndexedAttributes().
 */
 template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Remove duplicate floating-point vector data from a STL vector in-place
 @param[in,out] data Data array, duplicate items will be cut away with order
@@ -145,6 +148,7 @@ template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> re
 @param[in] epsilon  Epsilon value, vertices closer than this distance will be
     melt together
 @return Resulting index array
+@m_deprecated_since_latest Use @ref removeDuplicatesInPlace() instead.
 
 Similar to the above, except that it's operating on a @ref std::vector, which
 gets shrunk as a result (instead of the prefix size being returned). This
@@ -155,7 +159,8 @@ array, and reorder the data accordingly:
 
 @snippet MagnumMeshTools.cpp removeDuplicates-multiple
 */
-template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead") std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+#endif
 
 /**
 @brief Remove duplicates from indexed floating-point vector data in-place
@@ -245,6 +250,7 @@ template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> re
     return {std::move(indices), size};
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {
     /* A trivial index array that'll be remapped and returned after */
     std::vector<UnsignedInt> indices(data.size());
@@ -253,6 +259,7 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
     data.resize(size);
     return indices;
 }
+#endif
 
 }}
 

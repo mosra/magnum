@@ -343,7 +343,7 @@ for a high-level overview.
 -   @cpp Buffer::invalidateData() @ce, @cpp Buffer::invalidateSubData() @ce and
     @cpp Renderer::resetNotificationStrategy() @ce functions are enabled on
     OpenGL ES as a no-op
--   Added @ref std::vector overload of @ref MeshTools::combineIndexArrays()
+-   Added @ref std::vector overload of @cpp MeshTools::combineIndexArrays() @ce
     for greater runtime-usage flexibility
 -   @ref Platform::Sdl2Application now defaults to non-resizable window, you
     can change the behavior using @ref Platform::Sdl2Application::Configuration::setWindowFlags()
@@ -391,9 +391,9 @@ for a high-level overview.
     which filled @cpp Mesh @ce and @cpp Buffer @ce directly are deprecated as
     they had undesired side-effects in some cases, use the data-returning
     versions instead and then configure mesh and buffer manually
--   @ref MeshTools::combineIndexedArrays() taking @ref std::tuple is
+-   @cpp MeshTools::combineIndexedArrays() @ce taking @ref std::tuple is
     deprecated, use version taking @ref std::pair instead
--   @ref MeshTools::removeDuplicates() taking also list of indices is
+-   @cpp MeshTools::removeDuplicates() @ce taking also list of indices is
     deprecated, use the function in conjunction with @ref MeshTools::duplicate().
     See function documentation for more information.
 -   Parameter-less @cpp Mesh::draw() @ce and @cpp MeshView::draw() @ce are

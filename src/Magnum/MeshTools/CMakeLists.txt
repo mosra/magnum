@@ -30,7 +30,6 @@ set(MagnumMeshTools_SRCS
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
     Combine.cpp
-    CombineIndexedArrays.cpp
     CompressIndices.cpp
     Duplicate.cpp
     FlipNormals.cpp
@@ -40,7 +39,6 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 
 set(MagnumMeshTools_HEADERS
     Combine.h
-    CombineIndexedArrays.h
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
@@ -57,7 +55,11 @@ set(MagnumMeshTools_INTERNAL_HEADERS
     Implementation/Tipsify.h)
 
 if(BUILD_DEPRECATED)
-    list(APPEND MagnumMeshTools_HEADERS GenerateFlatNormals.h)
+    list(APPEND MagnumMeshTools_GracefulAssert_SRCS
+        CombineIndexedArrays.cpp)
+    list(APPEND MagnumMeshTools_HEADERS
+        CombineIndexedArrays.h
+        GenerateFlatNormals.h)
 endif()
 
 if(TARGET_GL)

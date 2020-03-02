@@ -178,7 +178,6 @@ std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> com
     std::tie(data, type) = compressIndices(indices, MeshIndexType::UnsignedByte);
     return std::make_tuple(std::move(data), type, minmax.first, minmax.second);
 }
-#endif
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
     #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
@@ -196,5 +195,6 @@ template<class T> Containers::Array<T> compressIndicesAs(const std::vector<Unsig
 template Containers::Array<UnsignedByte> compressIndicesAs(const std::vector<UnsignedInt>&);
 template Containers::Array<UnsignedShort> compressIndicesAs(const std::vector<UnsignedInt>&);
 template Containers::Array<UnsignedInt> compressIndicesAs(const std::vector<UnsignedInt>&);
+#endif
 
 }}

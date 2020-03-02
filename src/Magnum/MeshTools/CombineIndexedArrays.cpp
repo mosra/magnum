@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_COMBINEINDEXEDARRAYS
+
 #include "CombineIndexedArrays.h"
 
 #include <cstring>
@@ -56,7 +58,9 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombi
 
     /* Combine them */
     std::vector<UnsignedInt> combinedIndices;
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::tie(combinedIndices, interleavedArrays) = MeshTools::combineIndexArrays(interleavedArrays, stride);
+    CORRADE_IGNORE_DEPRECATED_POP
     return {combinedIndices, interleavedArrays};
 }
 

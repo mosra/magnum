@@ -25,17 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::MeshTools::combineIndexArrays(), @ref Magnum::MeshTools::combineIndexedArrays()
+ * @m_deprecated_since_latest Use @ref Magnum/MeshTools/Combine.h and
+ *      @ref Magnum::MeshTools::combineIndexedAttributes() instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <functional>
 #include <tuple>
 #include <vector>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Types.h"
 #include "Magnum/MeshTools/visibility.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_COMBINEINDEXEDARRAYS
+CORRADE_DEPRECATED_FILE("use Magnum/Trade/MeshData.h and combineIndexedAttributes() instead")
+#endif
 
 namespace Magnum { namespace MeshTools {
 
@@ -44,6 +56,7 @@ namespace Magnum { namespace MeshTools {
 @param[in,out] arrays   Index arrays to combine. These arrays are updated
     in-place to contain unique combinations of the original indices.
 @return Resulting combined index array
+@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
 
 Creates new combined index array and updates the original ones with translation
 to new ones. For example, when you have position and normal array, each indexed
@@ -81,13 +94,17 @@ This function calls @ref combineIndexArrays(const std::vector<UnsignedInt>&, Uns
 internally. See also @ref combineIndexedArrays() which does the vertex data
 reordering automatically.
 */
-MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays);
+CORRADE_DEPRECATED("use combineIndexedAttributes() instead") MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays);
 
-/** @overload */
-MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
+/**
+@overload
+@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
+*/
+CORRADE_DEPRECATED("use combineIndexedAttributes() instead") MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
 
 /**
 @brief Combine interleaved index arrays
+@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
 
 Unlike above, this function takes one interleaved array instead of separate
 index arrays. Continuing with the above example, you would call this function
@@ -107,7 +124,7 @@ And second pair value is the cleaned up interleaved array:
 
 @see @ref combineIndexedArrays()
 */
-MAGNUM_MESHTOOLS_EXPORT std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, UnsignedInt stride);
+CORRADE_DEPRECATED("use combineIndexedAttributes() instead") MAGNUM_MESHTOOLS_EXPORT std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, UnsignedInt stride);
 
 namespace Implementation {
 
@@ -140,6 +157,7 @@ template<class T, class ...U> inline void writeCombinedArrays(UnsignedInt stride
 @brief Combine indexed arrays
 @param[in,out] indexedArrays Index and attribute arrays
 @return Array with resulting indices
+@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
 
 Creates new combined index array and reorders original attribute arrays so they
 can be indexed with the new single index array.
@@ -160,7 +178,7 @@ procedure.
 /* Implementation note: It's done using tuples because it is more clear which
    parameter is index array and which is attribute array, mainly when both are
    of the same type. */
-template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
+template<class ...T> CORRADE_DEPRECATED("use combineIndexedAttributes() instead") std::vector<UnsignedInt> combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
     /* Interleave and combine index arrays */
     std::vector<UnsignedInt> combinedIndices;
     std::vector<UnsignedInt> interleavedCombinedIndexArrays;
@@ -174,5 +192,8 @@ template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::pa
 }
 
 }}
+#else
+#error use functions in Combine.h instead
+#endif
 
 #endif

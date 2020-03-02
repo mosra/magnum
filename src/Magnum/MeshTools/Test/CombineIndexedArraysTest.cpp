@@ -28,6 +28,8 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#define _MAGNUM_NO_DEPRECATED_COMBINEINDEXEDARRAYS
+
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 
@@ -47,6 +49,7 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
               &CombineIndexedArraysTest::indexedArrays});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void CombineIndexedArraysTest::wrongIndexCount() {
     std::stringstream ss;
     Error redirectError{&ss};
@@ -87,6 +90,7 @@ void CombineIndexedArraysTest::indexedArrays() {
     CORRADE_COMPARE(array2, (std::vector<UnsignedInt>{3, 4}));
     CORRADE_COMPARE(array3, (std::vector<UnsignedInt>{6, 7}));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}}
 

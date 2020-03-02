@@ -42,7 +42,9 @@ struct DuplicateTest: TestSuite::Tester {
 
     void duplicate();
     void duplicateOutOfBounds();
+    #ifdef MAGNUM_BUILD_DEPRECATED
     void duplicateStl();
+    #endif
 
     void duplicateInto();
     void duplicateIntoWrongSize();
@@ -67,7 +69,9 @@ struct DuplicateTest: TestSuite::Tester {
 DuplicateTest::DuplicateTest() {
     addTests({&DuplicateTest::duplicate,
               &DuplicateTest::duplicateOutOfBounds,
+              #ifdef MAGNUM_BUILD_DEPRECATED
               &DuplicateTest::duplicateStl,
+              #endif
 
               &DuplicateTest::duplicateInto,
               &DuplicateTest::duplicateIntoWrongSize,
@@ -116,10 +120,14 @@ void DuplicateTest::duplicateOutOfBounds() {
         "MeshTools::duplicateInto(): index 4 out of bounds for 4 elements\n");
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void DuplicateTest::duplicateStl() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(MeshTools::duplicate({1, 1, 0, 3, 2, 2}, std::vector<int>{-7, 35, 12, -18}),
         (std::vector<Int>{35, 35, -7, -18, 12, 12}));
+    CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 void DuplicateTest::duplicateInto() {
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};

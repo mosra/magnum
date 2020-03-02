@@ -290,17 +290,11 @@ mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
 
 {
 /* [MeshVisualizer-usage-no-geom1] */
-std::vector<UnsignedInt> indices{
-    // ...
-};
-std::vector<Vector3> indexedPositions{
-    // ...
-};
+Containers::StridedArrayView1D<const UnsignedInt> indices;
+Containers::StridedArrayView1D<const Vector3> indexedPositions;
 
 /* De-indexing the position array */
-GL::Buffer vertices;
-vertices.setData(MeshTools::duplicate(indices, indexedPositions),
-                 GL::BufferUsage::StaticDraw);
+GL::Buffer vertices{MeshTools::duplicate(indices, indexedPositions)};
 
 GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});

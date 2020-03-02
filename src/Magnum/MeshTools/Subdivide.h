@@ -29,13 +29,16 @@
  * @brief Function @ref Magnum::MeshTools::subdivide(), @ref Magnum::MeshTools::subdivideInPlace()
  */
 
-#include <vector>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Magnum.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#endif
 
 namespace Magnum { namespace MeshTools {
 
@@ -66,19 +69,20 @@ template<class IndexType, class Vertex, class Interpolator> void subdivide(Conta
     subdivideInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(vertices), interpolator);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Subdivide a mesh
-
-Same as @ref subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator), only
-working on a @ref std::vector.
+@m_deprecated_since_latest Use @ref subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator)
+    or @ref subdivideInPlace() instead.
 */
-template<class Vertex, class Interpolator> void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
+template<class Vertex, class Interpolator> CORRADE_DEPRECATED("use subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator) or subdivideInPlace() instead") void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::subdivide(): index count is not divisible by 3", );
 
     vertices.resize(vertices.size() + indices.size());
     indices.resize(indices.size()*4);
     subdivideInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(vertices), interpolator);
 }
+#endif
 
 /**
 @brief Subdivide a mesh in-place

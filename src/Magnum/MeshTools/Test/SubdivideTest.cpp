@@ -37,7 +37,9 @@ struct SubdivideTest: TestSuite::Tester {
     explicit SubdivideTest();
 
     void subdivide();
+    #ifdef MAGNUM_BUILD_DEPRECATED
     void subdivideStl();
+    #endif
     void subdivideWrongIndexCount();
     template<class T> void subdivideInPlace();
     void subdivideInPlaceWrongIndexCount();
@@ -52,7 +54,9 @@ inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
 
 SubdivideTest::SubdivideTest() {
     addTests({&SubdivideTest::subdivide,
+              #ifdef MAGNUM_BUILD_DEPRECATED
               &SubdivideTest::subdivideStl,
+              #endif
               &SubdivideTest::subdivideWrongIndexCount,
               &SubdivideTest::subdivideInPlace<UnsignedByte>,
               &SubdivideTest::subdivideInPlace<UnsignedShort>,
@@ -74,10 +78,13 @@ void SubdivideTest::subdivide() {
     }), TestSuite::Compare::Container);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void SubdivideTest::subdivideStl() {
     std::vector<Vector1> positions{0, 2, 6, 8};
     std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
+    CORRADE_IGNORE_DEPRECATED_PUSH
     MeshTools::subdivide(indices, positions, interpolator);
+    CORRADE_IGNORE_DEPRECATED_POP
 
     CORRADE_COMPARE_AS(indices,
         (std::vector<UnsignedInt>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}),
@@ -86,13 +93,14 @@ void SubdivideTest::subdivideStl() {
         (std::vector<Vector1>{0, 2, 6, 8, 1, 4, 3, 4, 7, 5}),
         TestSuite::Compare::Container);
 }
+#endif
 
 void SubdivideTest::subdivideWrongIndexCount() {
     std::stringstream out;
     Error redirectError{&out};
 
-    std::vector<Vector1> positions;
-    std::vector<UnsignedInt> indices{0, 1};
+    Containers::Array<Vector1> positions;
+    Containers::Array<UnsignedInt> indices{2};
     MeshTools::subdivide(indices, positions, interpolator);
     CORRADE_COMPARE(out.str(), "MeshTools::subdivide(): index count is not divisible by 3\n");
 }

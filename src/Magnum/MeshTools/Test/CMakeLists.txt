@@ -24,7 +24,6 @@
 #
 
 corrade_add_test(MeshToolsCombineTest CombineTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
@@ -38,7 +37,6 @@ corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBe
 
 # Graceful assert for testing
 set_property(TARGET
-    MeshToolsCombineIndexedArraysTest
     MeshToolsDuplicateTest
     MeshToolsInterleaveTest
     MeshToolsRemoveDuplicatesTest
@@ -47,7 +45,6 @@ set_property(TARGET
 
 set_target_properties(
     MeshToolsCombineTest
-    MeshToolsCombineIndexedArraysTest
     MeshToolsCompressIndicesTest
     MeshToolsDuplicateTest
     MeshToolsFlipNormalsTest
@@ -59,6 +56,16 @@ set_target_properties(
     MeshToolsTransformTest
     MeshToolsSubdivideRemov___Benchmark
     PROPERTIES FOLDER "Magnum/MeshTools/Test")
+
+if(BUILD_DEPRECATED)
+    corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
+    set_property(TARGET
+        MeshToolsCombineIndexedArraysTest
+        APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+    set_target_properties(
+        MeshToolsCombineIndexedArraysTest
+        PROPERTIES FOLDER "Magnum/MeshTools/Test")
+endif()
 
 if(BUILD_GL_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found

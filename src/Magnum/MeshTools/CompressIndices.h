@@ -26,12 +26,11 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::compressIndices(), @ref Magnum::MeshTools::compressIndicesAs()
+ * @brief Function @ref Magnum::MeshTools::compressIndices()
  */
 
 #include <utility>
 #include <Corrade/Containers/Containers.h>
-#include <Corrade/Utility/StlForwardVector.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/visibility.h"
@@ -40,6 +39,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <tuple>
 #include <Corrade/Utility/Macros.h>
+#include <Corrade/Utility/StlForwardVector.h>
 #endif
 
 namespace Magnum { namespace MeshTools {
@@ -178,14 +178,13 @@ sufficient.
 Example usage:
 
 @snippet MagnumMeshTools-gl.cpp compressIndices-stl
-
-@see @ref compressIndicesAs()
 */
 CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices);
-#endif
 
 /**
 @brief Compress vertex indices as given type
+@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
+    instead.
 
 The type can be either @ref Magnum::UnsignedByte "UnsignedByte",
 @ref Magnum::UnsignedShort "UnsignedShort" or @ref Magnum::UnsignedInt "UnsignedInt".
@@ -194,15 +193,14 @@ Values in the index array are expected to be representable with given type.
 Example usage:
 
 @snippet MagnumMeshTools.cpp compressIndicesAs
-
-@see @ref compressIndices()
 */
-template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices);
+template<class T> CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long) instead") MAGNUM_MESHTOOLS_EXPORT Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices);
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedByte> compressIndicesAs<UnsignedByte>(const std::vector<UnsignedInt>&);
 extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedShort> compressIndicesAs<UnsignedShort>(const std::vector<UnsignedInt>&);
 extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> compressIndicesAs<UnsignedInt>(const std::vector<UnsignedInt>&);
+#endif
 #endif
 
 }}

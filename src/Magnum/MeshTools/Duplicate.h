@@ -29,14 +29,17 @@
  * @brief Function @ref Magnum::MeshTools::duplicate(), @ref Magnum::MeshTools::duplicateInto()
  */
 
-#include <vector>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#include <Corrade/Containers/ArrayViewStl.h>
+#endif
 
 namespace Magnum { namespace MeshTools {
 
@@ -56,7 +59,7 @@ indices are in range for the @p data array.
 
 If you want to fill an existing memory (or, for example a @ref std::vector),
 use @ref duplicateInto().
-@see @ref removeDuplicates(), @ref combineIndexedArrays()
+@see @ref removeDuplicatesInPlace(), @ref combineIndexedAttributes()
 */
 template<class IndexType, class T> Containers::Array<T> duplicate(const Containers::StridedArrayView1D<const IndexType>& indices, const Containers::StridedArrayView1D<const T>& data) {
     Containers::Array<T> out{Containers::NoInit, indices.size()};
@@ -64,17 +67,18 @@ template<class IndexType, class T> Containers::Array<T> duplicate(const Containe
     return out;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Duplicate data using given index array
-
-Like @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&),
-but putting the result into a @ref std::vector.
+@m_deprecated_since_latest Use @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&)
+    or @ref duplicateInto() instead.
 */
-template<class T> std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
+template<class T> CORRADE_DEPRECATED("use duplicate() taking a StridedArrayView instead") std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
     std::vector<T> out(indices.size());
     duplicateInto<UnsignedInt, T>(indices, data, out);
     return out;
 }
+#endif
 
 /**
 @brief Duplicate data using an index array into given output array

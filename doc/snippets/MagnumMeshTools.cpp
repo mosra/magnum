@@ -25,7 +25,6 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
-#include "Magnum/MeshTools/CombineIndexedArrays.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
@@ -34,12 +33,19 @@
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_COMBINEINDEXEDARRAYS
+#include "Magnum/MeshTools/CombineIndexedArrays.h"
+#endif
+
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [combineIndexedArrays] */
 std::vector<UnsignedInt> vertexIndices;
 std::vector<Vector3> positions;
@@ -53,7 +59,9 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
     std::make_pair(std::cref(normalTextureIndices), std::ref(textureCoordinates))
 );
 /* [combineIndexedArrays] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 /* [compressIndices-offset] */
@@ -66,13 +74,17 @@ std::pair<Containers::Array<char>, MeshIndexType> result =
 /* [compressIndices-offset] */
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [compressIndicesAs] */
 std::vector<UnsignedInt> indices;
 Containers::Array<UnsignedShort> indexData =
     MeshTools::compressIndicesAs<UnsignedShort>(indices);
 /* [compressIndicesAs] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 /* [generateFlatNormals] */
@@ -143,7 +155,9 @@ data = data.prefix(size);
 /* [removeDuplicates] */
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 {
+CORRADE_IGNORE_DEPRECATED_PUSH
 /* [removeDuplicates-multiple] */
 std::vector<Vector3> positions;
 std::vector<Vector2> texCoords;
@@ -156,7 +170,9 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
     std::make_pair(std::cref(texCoordIndices), std::ref(texCoords))
 );
 /* [removeDuplicates-multiple] */
+CORRADE_IGNORE_DEPRECATED_POP
 }
+#endif
 
 {
 /* [transformVectors] */
