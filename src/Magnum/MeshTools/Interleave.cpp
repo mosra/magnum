@@ -32,23 +32,47 @@
 
 namespace Magnum { namespace MeshTools {
 
-bool isInterleaved(const Trade::MeshData& data) {
-    /* There is nothing, so yes it is (because there is nothing we could do
-       to make it interleaved anyway) */
-    if(!data.attributeCount()) return true;
+namespace {
+
+Containers::StridedArrayView2D<const char> interleavedDataInternal(const Trade::MeshData& data) {
+    /* There is no attributes, return a non-nullptr zero-sized view to indicate
+       a success */
+    if(!data.attributeCount() || !data.vertexData())
+        return Containers::StridedArrayView2D<const char>{data.vertexData(), {data.vertexCount(), 0}};
 
     const UnsignedInt stride = data.attributeStride(0);
     std::size_t minOffset = data.attributeOffset(0);
-    std::size_t maxOffset = minOffset;
-    for(UnsignedInt i = 1; i != data.attributeCount(); ++i) {
-        if(data.attributeStride(i) != stride) return false;
+    std::size_t maxOffset = minOffset + vertexFormatSize(data.attributeFormat(0));
+    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
+        if(data.attributeStride(i) != stride) return nullptr;
 
         const std::size_t offset = data.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
         maxOffset = Math::max(maxOffset, offset + vertexFormatSize(data.attributeFormat(i)));
     }
 
-    return maxOffset - minOffset <= stride;
+    /* The offsets can't fit into the stride, report failure */
+    if(maxOffset - minOffset > stride) return nullptr;
+
+    return Containers::StridedArrayView2D<const char>{
+        data.vertexData(), data.vertexData().data() + minOffset,
+        {data.vertexCount(), maxOffset - minOffset},
+        {std::ptrdiff_t(stride), 1}};
+}
+
+}
+
+bool isInterleaved(const Trade::MeshData& data) {
+    /* If a nullptr value is returned but the mesh vertex data is not nullptr,
+       the mesh is not interleaved. Otherwise it is */
+    return !!interleavedDataInternal(data).data() == !!data.vertexData().data();
+}
+
+Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data) {
+    auto out = interleavedDataInternal(data);
+    CORRADE_ASSERT(out || !data.vertexData(),
+        "MeshTools::interleavedData(): the mesh is not interleaved", {});
+    return out;
 }
 
 Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {

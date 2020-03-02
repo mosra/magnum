@@ -116,8 +116,9 @@ See also:
 
 -   Added @ref MeshTools::compile(const Trade::MeshData&) operating on the new
     @ref Trade::MeshData API
--   New @ref MeshTools::isInterleaved() utility for checking if
-    @ref Trade::MeshData is interleaved
+-   New @ref MeshTools::isInterleaved() and @ref MeshTools::interleavedData()
+    utilities for checking if @ref Trade::MeshData is interleaved and for
+    getting an interleaved view
 -   Added @ref MeshTools::interleavedLayout() for convenient creation of an
     interleaved mesh layout using the new @ref Trade::MeshData API
 -   Added @ref MeshTools::interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>),

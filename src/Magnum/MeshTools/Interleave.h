@@ -196,9 +196,21 @@ between minimal and maximal offset is not larger than the stride, @cpp false @ce
 otherwise. In particular, returns @cpp true @ce also if the mesh has just one
 or no attributes.
 @see @ref Trade::MeshData::attributeStride(),
-    @ref Trade::MeshData::attributeOffset()
+    @ref Trade::MeshData::attributeOffset(), @ref interleavedData()
 */
 MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
+
+/**
+@brief Type-erased view on interleaved mesh data
+@m_since_latest
+
+Returns a 2D view on @ref Trade::MeshData::vertexData() that spans all
+interleaved attributes, with the first dimension being the vertex count and the
+second being the attribute stride that's common for all attributes. Expects
+that the mesh is interleaved.
+@see @ref isInterleaved()
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data);
 
 /**
 @brief Create an interleaved mesh layout
