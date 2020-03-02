@@ -29,7 +29,7 @@ namespace Magnum {
 /** @page building Downloading and building
 @brief Guide how to download and build Magnum on different platforms.
 
-@m_keywords{Building}
+@m_keywords{Building Vcpkg Hunter}
 @m_keyword{ANGLE OpenGL compatibility layer,,}
 
 @tableofcontents
