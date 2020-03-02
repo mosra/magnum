@@ -39,7 +39,7 @@ namespace Magnum { namespace Shaders {
 @brief Distance field vector shader
 
 Renders vector graphics in a form of signed distance field. See
-@ref TextureTools::distanceField() for more information. Note that the final
+@ref TextureTools::DistanceField for more information. Note that the final
 rendered outlook will greatly depend on radius of input distance field and
 value passed to @ref setSmoothness(). You need to provide @ref Position and
 @ref TextureCoordinates attributes in your triangle mesh and call at least

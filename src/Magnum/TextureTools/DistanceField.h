@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::TextureTools::distanceField()
+ * @brief Class @ref Magnum::TextureTools::DistanceField
  */
 
 #include "Magnum/configure.h"

@@ -55,7 +55,7 @@ resulting distance field texture.
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 
-@see @ref TextureTools::distanceField()
+@see @ref TextureTools::DistanceField
 */
 class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
     public:
@@ -65,8 +65,8 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * @param size              Actual glyph cache texture size
          * @param radius            Distance field computation radius
          *
-         * See @ref TextureTools::distanceField() for more information about
-         * the parameters. Sets internal texture format to red channel only. On
+         * See @ref TextureTools::DistanceField for more information about the
+         * parameters. Sets internal texture format to red channel only. On
          * desktop OpenGL requires @gl_extension{ARB,texture_rg} (also part of
          * OpenGL ES 3.0), in ES2 uses @gl_extension{EXT,texture_rg} if
          * available or @ref GL::TextureFormat::RGB as fallback.

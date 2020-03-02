@@ -848,7 +848,7 @@ Released 2019-10-24, tagged as
 
 @subsubsection changelog-2019-10-changes-texturetools TextureTools library
 
--   @ref TextureTools::distanceField() was updated to work on ES3 SwiftShader
+-   @ref TextureTools::DistanceField was updated to work on ES3 SwiftShader
     contexts (which have broken @glsl gl_VertexID @ce)
 
 @subsubsection changelog-2019-10-changes-platform Platform libraries
@@ -1640,10 +1640,10 @@ Released 2018-10-23, tagged as
     combined transformation matrix. See @ref Trade::ObjectData2D::transformation()
     and @ref Trade::ObjectData3D::transformation() for more information.
 -   Support for file loading callbacks in @ref Trade::AbstractImporter
--   Debug output for @ref Trade::AbstractImporter::Feature,
-    @ref Trade::AbstractImageConverter::Feature enums and
-    @ref Trade::AbstractImporter::Features,
-    @ref Trade::AbstractImageConverter::Features enum sets
+-   Debug output for @cpp Trade::AbstractImporter::Feature @ce,
+    @cpp Trade::AbstractImageConverter::Feature @ce enums and
+    @cpp Trade::AbstractImporter::Features @ce,
+    @cpp Trade::AbstractImageConverter::Features @ce enum sets
 -   @ref Trade::AnyImageImporter "AnyImageImporter" plugin now supports
     detection and loading of DDS, EXR, HDR, JPEG, PNG and TGA files from data
     next to file type detection based on filename
@@ -1768,9 +1768,9 @@ Released 2018-10-23, tagged as
 
 @subsubsection changelog-2018-10-changes-texturetools TextureTools library
 
--   Fixed @ref TextureTools::distanceField() to not require more than 8 texture
-    units, which is the limit on all iOS ES2 contexts, independently on the
-    device (ES3 contexts have 16).
+-   Fixed @cpp TextureTools::distanceField() @ce to not require more than 8
+    texture units, which is the limit on all iOS ES2 contexts, independently on
+    the device (ES3 contexts have 16).
 
 @subsubsection changelog-2018-10-changes-trade Trade library
 
@@ -1856,7 +1856,7 @@ Released 2018-10-23, tagged as
     a proper documented default value instead of being left uninitialized.
 -   @ref Math::sclerp() was not properly interpolating the translation if
     rotation was the same on both sides
--   Improved @ref TextureTools::distanceField() to work better on shader
+-   Improved @cpp TextureTools::distanceField() @ce to work better on shader
     compilers that have problems compiling nested loops (WebGL implementations,
     some ES2 devices)
 -   @ref SceneGraph::AbstractObject::addFeature() and
@@ -2568,7 +2568,7 @@ a high-level overview.
 -   Added templated version of @ref GL::Buffer::map() "Buffer::map*()"
     functions
 -   New `BUILD_MULTITHREADED` @ref cmake "CMake option" and a corresponding
-    @ref MAGNUM_BUILD_MULTITHREADED CMake variable and preprocessor define
+    @cpp MAGNUM_BUILD_MULTITHREADED @ce CMake variable and preprocessor define
 -   Added @ref GL::Framebuffer::detach() "Framebuffer::detach()" as a
     conunterpart to all the @ref GL::Framebuffer::attachTexture() "attach*()"
     functions
@@ -2953,8 +2953,8 @@ a high-level overview.
 -   Various compatibility updates to the @ref Shaders library
 -   Updates to OpenGL tests to work better on non-NVidia cards
 -   Various fixes for OpenGL object label queries on AMD drivers
--   Fixed @ref TextureTools::distanceField() on 3.0 &lt;= GL < 3.2
--   Fixed driver crash on AMD with @ref TextureTools::distanceField()
+-   Fixed @cpp TextureTools::distanceField() @ce on 3.0 &lt;= GL < 3.2
+-   Fixed driver crash on AMD with @cpp TextureTools::distanceField() @ce
 -   @ref GL::Framebuffer::attachCubeMapTexture() "Framebuffer::attachCubeMapTexture()"
     incorrectly behaved as a layered attachment (see
     [mosra/magnum#123](https://github.com/mosra/magnum/issues/123))
@@ -3076,7 +3076,7 @@ a high-level overview.
     @ref Magnum/Math/Packing.h header instead
 -   @ref Trade::MeshData2D and @ref Trade::MeshData3D constructors without the
     `colors` parameter are deprecated, use the full ones instead
--   @ref Shaders::Generic::Color vertex attribute implicit constructor is
+-   @cpp Shaders::Generic::Color @ce vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
 -   The bundled @ref std::optional implementation was causing serious conflicts
     with C++17 and it's now deprecated in favor of

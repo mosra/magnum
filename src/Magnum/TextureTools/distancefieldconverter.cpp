@@ -114,7 +114,7 @@ Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
 @ref PixelFormat::RGBA8Unorm are accepted on input.
 
 The resulting image can be then used with @ref Shaders::DistanceFieldVector
-shader. See also @ref TextureTools::distanceField() for more information about
+shader. See also @ref TextureTools::DistanceField for more information about
 the algorithm and parameters.
 
 @section magnum-distancefield-example Example usage

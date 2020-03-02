@@ -137,7 +137,7 @@ for a high-level overview.
 
 @subsection changelog-2015-05-bugfixes Bug fixes
 
--   Fixed @ref TextureTools::distanceField() to work in GLSL < 4.20 (see
+-   Fixed @cpp TextureTools::distanceField() @ce to work in GLSL < 4.20 (see
     [mosra/magnum#62](https://github.com/mosra/magnum/issues/62)).
 -   Fixed @ref Shaders::MeshVisualizer to work in GLSL ES.
 -   Fixed @ref Shaders::Vector "Shaders::*Vector" on Intel GPUs.

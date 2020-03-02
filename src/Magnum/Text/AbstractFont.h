@@ -345,10 +345,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. If the plugin has @ref FontFeature::MultiFile, the function
-         * will use additional files in given path, all sharing common basename
-         * derived from @p filename. Returns @cpp true @ce on success,
-         * @cpp false @ce otherwise.
+         * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
          */
         bool openFile(const std::string& filename, Float size);
 
