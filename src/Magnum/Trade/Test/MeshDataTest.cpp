@@ -675,7 +675,12 @@ void MeshDataTest::constructAttributeWrongDataAccess() {
         "Trade::MeshAttributeData::data(): the attribute is a relative offset, supply a data array\n");
 }
 
-constexpr Vector2 ArrayVertexData[3*4];
+constexpr Vector2 ArrayVertexData[3*4]
+    /* MSVC 2015 needs an explicit initializer. GCC 4.8 *doesn't*. */
+    #ifdef CORRADE_MSVC2015_COMPATIBILITY
+    {}
+    #endif
+    ;
 
 void MeshDataTest::constructArrayAttribute() {
     Vector2 vertexData[3*4];
@@ -2063,18 +2068,22 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
         "Trade::MeshData::colorsInto(): expected a view with 3 elements but got 2\n");
 }
 
+/* MSVC 2015 doesn't like anonymous bitfields in inline structs, so putting the
+   declaration outside */
+struct VertexWithImplementationSpecificData {
+    Long:64;
+    long double thing;
+};
+
 void MeshDataTest::implementationSpecificVertexFormat() {
-    struct Vertex {
-        Long:64;
-        long double thing;
-    } vertexData[] {
+    VertexWithImplementationSpecificData vertexData[] {
         {456.0l},
         {456.0l}
     };
 
     /* Constructing should work w/o asserts */
     Containers::StridedArrayView1D<long double> attribute{vertexData,
-        &vertexData[0].thing, 2, sizeof(Vertex)};
+        &vertexData[0].thing, 2, sizeof(VertexWithImplementationSpecificData)};
     MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
         MeshAttributeData{MeshAttribute::Position,
             vertexFormatWrap(0xdead1), attribute},
@@ -2095,7 +2104,7 @@ void MeshDataTest::implementationSpecificVertexFormat() {
         CORRADE_COMPARE(data.attributeFormat(name), vertexFormatWrap(format++));
 
         /* The actual type size is unknown, so this will use the full stride */
-        CORRADE_COMPARE(data.attribute(name).size()[1], sizeof(Vertex));
+        CORRADE_COMPARE(data.attribute(name).size()[1], sizeof(VertexWithImplementationSpecificData));
 
         CORRADE_COMPARE_AS((Containers::arrayCast<1, const long double>(
             data.attribute(name).prefix({2, sizeof(long double)}))),
@@ -2107,16 +2116,13 @@ void MeshDataTest::implementationSpecificVertexFormat() {
 }
 
 void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
-    struct Vertex {
-        Long:64;
-        long double thing;
-    } vertexData[] {
+    VertexWithImplementationSpecificData vertexData[] {
         {456.0l},
         {456.0l}
     };
 
     Containers::StridedArrayView1D<long double> attribute{vertexData,
-        &vertexData[0].thing, 2, sizeof(Vertex)};
+        &vertexData[0].thing, 2, sizeof(VertexWithImplementationSpecificData)};
     MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
         MeshAttributeData{MeshAttribute::Position,
             vertexFormatWrap(0xdead1), attribute},
