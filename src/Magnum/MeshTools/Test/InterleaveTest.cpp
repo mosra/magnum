@@ -44,8 +44,9 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void attributeCountGaps();
     void stride();
     void strideGaps();
-    void write();
-    void writeGaps();
+    void interleave();
+    void interleaveGaps();
+    void interleaveEmpty();
 
     void interleaveInto();
 
@@ -84,8 +85,9 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::attributeCountGaps,
               &InterleaveTest::stride,
               &InterleaveTest::strideGaps,
-              &InterleaveTest::write,
-              &InterleaveTest::writeGaps,
+              &InterleaveTest::interleave,
+              &InterleaveTest::interleaveGaps,
+              &InterleaveTest::interleaveEmpty,
 
               &InterleaveTest::interleaveInto,
 
@@ -148,7 +150,7 @@ void InterleaveTest::strideGaps() {
     CORRADE_COMPARE((Implementation::Stride{}(2, std::vector<Byte>(), 1, std::vector<Int>(), 12)), std::size_t(20));
 }
 
-void InterleaveTest::write() {
+void InterleaveTest::interleave() {
     const Containers::Array<char> data = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2},
         std::vector<Int>{3, 4, 5},
@@ -169,7 +171,7 @@ void InterleaveTest::write() {
     }
 }
 
-void InterleaveTest::writeGaps() {
+void InterleaveTest::interleaveGaps() {
     const Containers::Array<char> data = MeshTools::interleave(
         std::vector<Byte>{0, 1, 2}, 3,
         std::vector<Int>{3, 4, 5},
@@ -190,6 +192,11 @@ void InterleaveTest::writeGaps() {
             0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x08, 0x00, 0x00
         }));
     }
+}
+
+void InterleaveTest::interleaveEmpty() {
+    const Containers::Array<char> data = MeshTools::interleave(std::vector<Byte>{}, 2);
+    CORRADE_COMPARE(data.size(), 0);
 }
 
 void InterleaveTest::interleaveInto() {
