@@ -52,10 +52,10 @@ template<class IndexType, class T> void duplicateInto(const Containers::StridedA
 @brief Duplicate data using given index array
 @m_since{2019,10}
 
-Converts indexed array to non-indexed, for example data `{a, b, c, d}` with
-index array `{1, 1, 0, 3, 2, 2}` will be converted to `{b, b, a, d, c, c}`.
-The resulting array size is the same as size of @p indices, expects that all
-indices are in range for the @p data array.
+Converts indexed array to non-indexed, for example data @cpp {a, b, c, d} @ce
+with index array @cpp {1, 1, 0, 3, 2, 2} @ce will be converted to
+@cpp {b, b, a, d, c, c} @ce. The resulting array size is the same as size of
+@p indices, expects that all indices are in range for the @p data array.
 
 If you want to fill an existing memory (or, for example a @ref std::vector),
 use @ref duplicateInto().

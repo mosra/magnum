@@ -128,7 +128,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInto(const Containers::Strid
 @m_since_latest
 
 Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
-this variant is more suited for data that are already indexed as it works on
+this variant is more suited for data that is already indexed as it works on
 the existing index array instead of allocating a new one.
 */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<char>& data);
@@ -205,7 +205,7 @@ template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead
 @m_since_latest
 
 Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
-this variant is more suited for data that are already indexed as it works on
+this variant is more suited for data that is already indexed as it works on
 the existing index array instead of allocating a new one.
 */
 template<class IndexType, class Vector> std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {

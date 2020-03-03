@@ -101,9 +101,9 @@ Containers::Array<Vector3> normals =
 
 {
 /* [interleave2] */
-std::vector<Vector4> positions;
-std::vector<UnsignedShort> weights;
-std::vector<Color3ub> vertexColors;
+Containers::ArrayView<const Vector4> positions;
+Containers::ArrayView<const UnsignedShort> weights;
+Containers::ArrayView<const Color3ub> vertexColors;
 
 auto data = MeshTools::interleave(positions, weights, 2, vertexColors, 1);
 /* [interleave2] */

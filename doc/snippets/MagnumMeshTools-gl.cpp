@@ -115,15 +115,16 @@ struct MyShader {
     typedef GL::Attribute<0, Vector2> TextureCoordinates;
 };
 /* [interleave1] */
-std::vector<Vector3> positions;
-std::vector<Vector2> textureCoordinates;
+Containers::ArrayView<const Vector3> positions;
+Containers::ArrayView<const Vector2> textureCoordinates;
 
 GL::Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates), GL::BufferUsage::StaticDraw);
+vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates));
 
 GL::Mesh mesh;
 mesh.setCount(positions.size())
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{}, MyShader::TextureCoordinates{});
+    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{},
+                                      MyShader::TextureCoordinates{});
 /* [interleave1] */
 }
 

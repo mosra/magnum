@@ -26,6 +26,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 
 using namespace Magnum;

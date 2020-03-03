@@ -120,7 +120,8 @@ template<class T, class ...U> void writeInterleaved(std::size_t stride, char* st
 @brief Interleave vertex attributes
 
 This function takes list of attribute arrays and returns them interleaved, so
-data for each attribute are in continuous place in memory.
+data for each attribute are in continuous place in memory. Expects that all
+attributes have the same element count.
 
 Example usage:
 
@@ -134,14 +135,12 @@ achieve that, you can specify gaps between the attributes:
 All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
 would be 21 bytes, causing possible performance loss.
 
-@attention The function expects that all arrays have the same size.
-
-@note The only requirements to attribute array type is that it must have either
-    a typedef `T::Type` (in case of Corrade types such as
-    @ref Corrade::Containers::ArrayView) or a typedef `T::value_type` (in case
-    of STL types such as @ref std::vector or @ref std::array) or a, a forward
-    iterator (to be used with range-based for) and a function `size()`
-    returning count of elements.
+@note The only requirements to the attribute array type is that it must have
+    either a typedef @cpp T::Type @ce (in case of Corrade types such as
+    @ref Corrade::Containers::ArrayView) or a typedef @cpp T::value_type @ce
+    (in case of STL types such as @ref std::vector or @ref std::array), a
+    forward iterator (to be used with range-based for) and a @cpp size() @ce
+    method returning element count.
 
 @see @ref interleaveInto()
 */
@@ -173,11 +172,8 @@ template<class T, class ...U
 Unlike @ref interleave() this function interleaves the data into existing
 buffer and leaves gaps untouched instead of zero-initializing them. This
 function can thus be used for interleaving data depending on runtime
-parameters.
-
-@attention Similarly to @ref interleave(), this function expects that all
-    arrays have the same size. The passed buffer must also be large enough to
-    contain the interleaved data.
+parameters. Expects that all arrays have the same size and the passed buffer is
+large enough to contain the interleaved data.
 */
 template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
     /* Verify expected buffer size */
@@ -243,17 +239,20 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData&
 @brief Interleave mesh data
 @m_since_latest
 
-Returns a copy of @p data with all attributes interleaved but everything else
-(indices, primitive type, ...) kept as-is. The @p extra attributes, if any, are
-interleaved together with existing attributes (or, in case the attribute view
-is empty, only the corresponding space for given attribute type is reserved,
-with memory left uninitialized). The data layouting is done by
-@ref interleavedLayout(), see its documentation for detailed behavior
-description. Note that offset-only @ref Trade::MeshAttributeData instances are
-not supported in the @p extra array.
+Returns a copy of @p data with all attributes interleaved. Indices (if any) are
+kept as-is. The @p extra attributes, if any, are interleaved together with
+existing attributes (or, in case the attribute view is empty, only the
+corresponding space for given attribute type is reserved, with memory left
+uninitialized). The data layouting is done by @ref interleavedLayout(), see its
+documentation for detailed behavior description. Note that offset-only
+@ref Trade::MeshAttributeData instances are not supported in the @p extra
+array.
 
 Expects that each attribute in @p extra has either the same amount of elements
-as @p data vertex count or has none.
+as @p data vertex count or has none. This function will unconditionally make a
+copy of all data even if @p data is already interleaved and needs no change,
+use @ref interleave(Trade::MeshData&&, Containers::ArrayView<const Trade::MeshAttributeData>)
+to avoid that copy.
 @see @ref isInterleaved(), @ref Trade::MeshData::attributeData()
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
