@@ -67,6 +67,17 @@ void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& ind
  */
 void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
 
+/**
+@brief Flip mesh normals and face winding in-place on a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+etc. overloads.
+*/
+void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
@@ -98,6 +109,17 @@ void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArr
  * @m_since_latest
  */
 void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices);
+
+/**
+@brief Flip face winding in-place on a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -137,6 +159,11 @@ inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShor
 }
 
 inline void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
+    flipFaceWindingInPlace(indices);
+    flipNormalsInPlace(normals);
+}
+
+inline void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector3>& normals) {
     flipFaceWindingInPlace(indices);
     flipNormalsInPlace(normals);
 }

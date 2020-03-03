@@ -56,6 +56,18 @@ void flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& 
     flipFaceWindingInPlaceImplementation(indices);
 }
 
+void flipFaceWindingInPlace(const Containers::StridedArrayView2D<char>& indices) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous", );
+    if(indices.size()[1] == 4)
+        return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedInt>(indices));
+    else if(indices.size()[1] == 2)
+        return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedShort>(indices));
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], );
+        return flipFaceWindingInPlaceImplementation(Containers::arrayCast<1, UnsignedByte>(indices));
+    }
+}
+
 void flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>& normals) {
     for(Vector3& normal: normals)
         normal = -normal;

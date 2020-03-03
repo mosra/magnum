@@ -39,9 +39,11 @@ struct FlipNormalsTest: TestSuite::Tester {
 
     void wrongIndexCount();
     template<class T> void flipFaceWinding();
+    template<class T> void flipFaceWindingErased();
     void flipNormals();
 
     template<class T> void flipNormalsFaceWinding();
+    template<class T> void flipNormalsFaceWindingErased();
 };
 
 FlipNormalsTest::FlipNormalsTest() {
@@ -49,11 +51,18 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipFaceWinding<UnsignedByte>,
               &FlipNormalsTest::flipFaceWinding<UnsignedShort>,
               &FlipNormalsTest::flipFaceWinding<UnsignedInt>,
+              &FlipNormalsTest::flipFaceWindingErased<UnsignedByte>,
+              &FlipNormalsTest::flipFaceWindingErased<UnsignedShort>,
+              &FlipNormalsTest::flipFaceWindingErased<UnsignedInt>,
               &FlipNormalsTest::flipNormals,
 
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedByte>,
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedShort>,
-              &FlipNormalsTest::flipNormalsFaceWinding<UnsignedInt>});
+              &FlipNormalsTest::flipNormalsFaceWinding<UnsignedInt>,
+              &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedByte>,
+              &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedShort>,
+              &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedInt>,
+    });
 }
 
 void FlipNormalsTest::wrongIndexCount() {
@@ -67,6 +76,17 @@ void FlipNormalsTest::wrongIndexCount() {
 }
 
 template<class T> void FlipNormalsTest::flipFaceWinding() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    T indices[]{0, 1, 2, 3, 4, 5};
+    MeshTools::flipFaceWindingInPlace(indices);
+
+    CORRADE_COMPARE_AS(Containers::arrayView(indices),
+        Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
+        TestSuite::Compare::Container);
+}
+
+template<class T> void FlipNormalsTest::flipFaceWindingErased() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     T indices[]{0, 1, 2, 3, 4, 5};
@@ -93,6 +113,24 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
     T indices[]{0, 1, 2, 3, 4, 5};
     Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
     MeshTools::flipNormalsInPlace(indices, normals);
+
+    CORRADE_COMPARE_AS(Containers::arrayView(indices),
+        Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(normals),
+        Containers::arrayView<Vector3>({
+            -Vector3::xAxis(), -Vector3::yAxis(), -Vector3::zAxis()
+        }), TestSuite::Compare::Container);
+}
+
+template<class T> void FlipNormalsTest::flipNormalsFaceWindingErased() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    T indices[]{0, 1, 2, 3, 4, 5};
+    Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
+    MeshTools::flipNormalsInPlace(
+        Containers::arrayCast<2, char>(Containers::stridedArrayView(indices)),
+        normals);
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
