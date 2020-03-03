@@ -171,6 +171,19 @@ constexpr UnsignedShort meshAttributeCustom(MeshAttribute name) {
 
 Convenience type for populating @ref MeshData, see its documentation for an
 introduction.
+
+@section Trade-MeshIndexData-usage Usage
+
+The most straightforward usage is constructing the instance from a view on the
+index array. The @ref MeshIndexType gets inferred from the view type:
+
+@snippet MagnumTrade.cpp MeshIndexData-usage
+
+Alternatively, you can pass a typeless @cpp const void @ce view and supply
+@ref MeshIndexType explicitly, or a contiguous 2D view and let the class detect
+the actual index type from second dimension size. Note that the class accepts
+only contiguous views and not @ref Corrade::Containers::StridedArrayView,
+following limitations of GPU index buffers that also have to be contiguous.
 @see @ref MeshAttributeData
 */
 class MAGNUM_TRADE_EXPORT MeshIndexData {
@@ -233,7 +246,47 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 @m_since_latest
 
 Convenience type for populating @ref MeshData, see its documentation for an
-introduction.
+introduction. Additionally usable in various @ref MeshTools algorithms such as
+@ref MeshTools::duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
+or @ref MeshTools::interleave(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>).
+
+@section Trade-MeshAttributeData-usage Usage
+
+The most straightforward usage is constructing an instance from a pair of
+@ref MeshAttribute and a strided view. The @ref VertexFormat gets inferred from
+the view type:
+
+@snippet MagnumTrade.cpp MeshAttributeData-usage
+
+Alternatively, you can pass a typeless @cpp const void @ce view and supply
+@ref VertexFormat explicitly, or a 2D view.
+
+@subsection Trade-MeshAttributeData-usage-offset-only Offset-only attribute data
+
+If the actual attribute data location is not known yet, the instance can be
+created as "offset-only", meaning the actual view gets created only later when
+passed to a @ref MeshData instance with a concrete vertex data array. This is
+useful for example when vertex layout is static (and thus can be defined at
+compile time), but the actual data is allocated / populated at runtime:
+
+@snippet MagnumTrade.cpp MeshAttributeData-usage-offset-only
+
+Note that @ref MeshTools algorithms generally don't accept offset-only
+@ref MeshAttributeData instances except when passed through a @ref MeshData
+instance.
+
+@section Trade-MeshAttributeData-custom-vertex-format Custom vertex formats
+
+Apart from custom @ref MeshAttribute names, shown in
+@ref Trade-MeshData-populating-custom, @ref VertexFormat can be extended with
+implementation-specific formats as well. Formats that don't have a generic
+@ref VertexFormat equivalent can be created using @ref vertexFormatWrap(),
+however note that most APIs and @ref MeshTools functions can't work with those
+as their size or contents can't be known:
+
+@snippet MagnumTrade.cpp MeshAttributeData-custom-vertex-format
+
+@see @ref MeshIndexData
 */
 class MAGNUM_TRADE_EXPORT MeshAttributeData {
     public:
@@ -505,6 +558,19 @@ element data type without having to explicitly handle all relevant types:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
 
+@section Trade-MeshData-usage-compile Using MeshTools::compile()
+
+For a quick yet efficient way to upload all data and configure a mesh for all
+known attributes that are present, @ref MeshTools::compile() can be used.
+Compared to the above, it's just an oneliner:
+
+@snippet MagnumTrade.cpp MeshData-usage-compile
+
+Compared to configuring the mesh manually you may lose a bit of flexibility,
+especially when you need to set up custom attributes or modify the data after.
+See @ref MeshTools::compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
+for a possible solution.
+
 @section Trade-MeshData-usage-mutable Mutable data access
 
 The interfaces implicitly provide @cpp const @ce views on the contained index
@@ -519,6 +585,51 @@ first. The following snippet applies a transformation to the mesh data:
 
 @snippet MagnumTrade.cpp MeshData-usage-mutable
 
+@section Trade-MeshData-populating Populating an instance
+
+A @ref MeshData instance by default takes over the ownership of an
+@ref Corrade::Containers::Array containing the vertex / index data together
+with a @ref MeshIndexData instance and a list of @ref MeshAttributeData
+describing various index and vertex properties. For example, an interleaved
+indexed mesh with 3D positions and RGBA colors would look like this ---
+and variants with just vertex data or just index data or neither are possible
+too:
+
+@snippet MagnumTrade.cpp MeshData-populating
+
+In cases where you want the @ref MeshData instance to only refer to external
+data without taking ownership (for example in a memory-mapped file, constant
+memory etc., instead of moving in an @ref Corrade::Containers::Array you pass
+@ref DataFlags describing if the data is mutable or not together with an
+@ref Corrade::Containers::ArrayView. A variant of the above where the index
+data is constant and vertex data mutable, both referenced externally:
+
+@snippet MagnumTrade.cpp MeshData-populating-non-owned
+
+@subsection Trade-MeshData-populating-custom Custom mesh attributes
+
+To allow for greater flexibility, a @ref MeshData instance can describe not
+just attributes that are predefined in the @ref MeshAttribute enum, but also
+custom attributes, created with @ref meshAttributeCustom(). For example, the
+snippet below describes a custom per-face structure that exposes faces as
+higher-order polygons combining multiple triangles together ---in this case,
+each face has an array of 15 IDs, which is exposed as a 2D array:
+
+@snippet MagnumTrade.cpp MeshData-populating-custom
+
+Later, the (array) attributes can be retrieved back using the same custom
+identifiers --- note the use of @cpp [] @ce to get back a 2D array again:
+
+@snippet MagnumTrade.cpp MeshData-populating-custom-retrieve
+
+When a custom attribute is exposed through @ref AbstractImporter, it's possible
+to map custom @ref MeshAttribute values to human-readable string names using
+@ref AbstractImporter::meshAttributeName() and
+@ref AbstractImporter::meshAttributeForName(). Using @ref meshPrimitiveWrap()
+you can also supply implementation-specific values that are not available in
+the generic @ref MeshPrimitive enum, similarly see also
+@ref Trade-MeshAttributeData-custom-vertex-format for details on
+implementation-specific @ref VertexFormat values.
 @see @ref AbstractImporter::mesh()
 */
 class MAGNUM_TRADE_EXPORT MeshData {
@@ -943,6 +1054,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref MeshAttributeData::isOffsetOnly() always returning
          * @cpp false @ce). The @p id is expected to be smaller than
          * @ref attributeCount() const.
+         * @see @ref MeshTools::interleavedData()
          */
         MeshAttributeData attributeData(UnsignedInt id) const;
 
@@ -976,7 +1088,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref attributeCount() const. You can also use
          * @ref attributeOffset(MeshAttribute, UnsignedInt) const to
          * directly get an offset of given named attribute.
-         * @see @ref indexOffset()
+         * @see @ref indexOffset(), @ref MeshTools::isInterleaved()
          */
         std::size_t attributeOffset(UnsignedInt id) const;
 
@@ -988,6 +1100,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * than @ref attributeCount() const. You can also use
          * @ref attributeStride(MeshAttribute, UnsignedInt) const to
          * directly get a stride of given named attribute.
+         * @see @ref MeshTools::isInterleaved()
          */
         UnsignedInt attributeStride(UnsignedInt id) const;
 

@@ -45,7 +45,11 @@
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Shaders/Phong.h"
+#endif
+#ifdef MAGNUM_TARGET_VK
+#include "Magnum/Vk/Vulkan.h"
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -242,6 +246,54 @@ for(auto&& row: data.mutablePixels<Color3ub>())
 /* [ImageData-usage-mutable] */
 }
 
+{
+/* [MeshIndexData-usage] */
+Containers::ArrayView<const UnsignedShort> indices;
+
+Trade::MeshIndexData data{indices};
+/* [MeshIndexData-usage] */
+}
+
+{
+/* [MeshAttributeData-usage] */
+Containers::StridedArrayView1D<const Vector3> positions;
+
+Trade::MeshAttributeData data{Trade::MeshAttribute::Position, positions};
+/* [MeshAttributeData-usage] */
+}
+
+{
+/* [MeshAttributeData-usage-offset-only] */
+struct Vertex {
+    Vector3 position;
+    Vector4 color;
+};
+
+/* Layout defined statically, 15 vertices in total */
+constexpr Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+    VertexFormat::Vector3, offsetof(Vertex, position), 15, sizeof(Vertex)};
+constexpr Trade::MeshAttributeData colors{Trade::MeshAttribute::Color,
+    VertexFormat::Vector4, offsetof(Vertex, color), 15, sizeof(Vertex)};
+
+/* Actual data populated later */
+Containers::Array<char> vertexData{15*sizeof(Vertex)};
+// ...
+Trade::MeshData{MeshPrimitive::Triangles, std::move(vertexData),
+    {positions, colors}};
+/* [MeshAttributeData-usage-offset-only] */
+}
+
+#ifdef MAGNUM_TARGET_VK
+{
+Containers::StridedArrayView1D<const void> data;
+/* [MeshAttributeData-custom-vertex-format] */
+Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+    vertexFormatWrap(VK_FORMAT_B10G11R11_UFLOAT_PACK32),
+    data};
+/* [MeshAttributeData-custom-vertex-format] */
+}
+#endif
+
 #ifdef MAGNUM_TARGET_GL
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};
@@ -300,6 +352,13 @@ if(data.isIndexed()) {
 } else mesh.setCount(data.vertexCount());
 /* [MeshData-usage-advanced] */
 }
+
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-usage-compile] */
+GL::Mesh mesh = MeshTools::compile(data);
+/* [MeshData-usage-compile] */
+}
 #endif
 
 {
@@ -315,6 +374,99 @@ if(!(data.vertexDataFlags() & Trade::DataFlag::Mutable) ||
 MeshTools::transformPointsInPlace(Matrix4::scaling(Vector3{2.0f}),
     data.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
 /* [MeshData-usage-mutable] */
+}
+
+{
+std::size_t vertexCount{}, indexCount{};
+/* [MeshData-populating] */
+struct Vertex {
+    Vector3 position;
+    Vector4 color;
+};
+
+Containers::Array<char> indexData{indexCount*sizeof(UnsignedShort)};
+Containers::Array<char> vertexData{vertexCount*sizeof(Vertex)};
+// …
+auto vertices = Containers::arrayCast<const Vertex>(vertexData);
+auto indices = Containers::arrayCast<const UnsignedShort>(indexData);
+
+Trade::MeshData data{MeshPrimitive::Triangles,
+    std::move(indexData), Trade::MeshIndexData{indices},
+    std::move(vertexData), {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::StridedArrayView1D<const Vector3>{vertices,
+                &vertices[0].position, vertexCount, sizeof(Vertex)}},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            Containers::StridedArrayView1D<const Vector4>{vertices,
+                &vertices[0].color, vertexCount, sizeof(Vertex)}}
+    }};
+/* [MeshData-populating] */
+}
+
+{
+struct Vertex {
+    Vector3 position;
+    Vector4 color;
+};
+/* [MeshData-populating-non-owned] */
+const UnsignedShort indices[] {
+    0, 1, 2,
+    2, 1, 3,
+    3, 4, 5,
+    5, 4, 6
+};
+Vertex vertices[7];
+
+Trade::MeshData data{MeshPrimitive::Triangles,
+    Trade::DataFlags{}, indices, Trade::MeshIndexData{indices},
+    Trade::DataFlag::Mutable, vertices, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::StridedArrayView1D<const Vector3>{
+                Containers::arrayView(vertices), &vertices[0].position,
+                Containers::arraySize(vertices), sizeof(Vertex)}},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            Containers::StridedArrayView1D<const Vector4>{
+                Containers::arrayView(vertices), &vertices[0].color,
+                Containers::arraySize(vertices), sizeof(Vertex)}}
+    }};
+/* [MeshData-populating-non-owned] */
+}
+
+{
+/* [MeshData-populating-custom] */
+/* Each face can consist of 15 triangles at most, triangleCount says how many
+   indices in triangleIds are valid */
+struct Face {
+    UnsignedShort triangleIds[15];
+    UnsignedByte triangleCount;
+};
+
+constexpr Trade::MeshAttribute TriangleIds = Trade::meshAttributeCustom(0x01);
+constexpr Trade::MeshAttribute TriangleCount = Trade::meshAttributeCustom(0x02);
+
+Containers::Array<char> vertexData;
+auto faces = Containers::arrayCast<const Face>(vertexData);
+
+Trade::MeshData data{MeshPrimitive::Faces, std::move(vertexData), {
+    Trade::MeshAttributeData{TriangleIds,
+        Containers::StridedArrayView2D<const UnsignedShort>{faces,
+            &faces[0].triangleIds[0],
+            {faces.size(), 15},
+            {sizeof(Face), sizeof(UnsignedShort)}}},
+    Trade::MeshAttributeData{TriangleCount,
+        Containers::StridedArrayView1D<const UnsignedByte>{faces,
+            &faces[0].triangleCount, faces.size(), sizeof(Face)}}
+}};
+/* [MeshData-populating-custom] */
+
+/* [MeshData-populating-custom-retrieve] */
+Containers::StridedArrayView2D<const UnsignedShort> triangleIds =
+    data.attribute<UnsignedShort[]>(TriangleIds);
+Containers::StridedArrayView1D<const UnsignedByte> triangleCounts =
+    data.attribute<UnsignedByte>(TriangleCount);
+/* [MeshData-populating-custom-retrieve] */
+static_cast<void>(triangleIds);
+static_cast<void>(triangleCounts);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
