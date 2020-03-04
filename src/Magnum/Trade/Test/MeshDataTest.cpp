@@ -492,6 +492,8 @@ void MeshDataTest::constructAttribute() {
     CORRADE_COMPARE(positions.arraySize(), 0);
     CORRADE_COMPARE(positions.name(), MeshAttribute::Position);
     CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(positions.offset(positionData), 0);
+    CORRADE_COMPARE(positions.stride(), sizeof(Vector2));
     CORRADE_VERIFY(positions.data().data() == positionData);
     /* This is allowed too for simplicity, it just ignores the parameter */
     CORRADE_VERIFY(positions.data(positionData).data() == positionData);
@@ -501,11 +503,13 @@ void MeshDataTest::constructAttribute() {
     constexpr UnsignedShort arraySize = cpositions.arraySize();
     constexpr MeshAttribute name = cpositions.name();
     constexpr VertexFormat format = cpositions.format();
+    constexpr Short stride = cpositions.stride();
     constexpr Containers::StridedArrayView1D<const void> data = cpositions.data();
     CORRADE_VERIFY(!isOffsetOnly);
     CORRADE_COMPARE(arraySize, 0);
     CORRADE_COMPARE(name, MeshAttribute::Position);
     CORRADE_COMPARE(format, VertexFormat::Vector2);
+    CORRADE_COMPARE(stride, sizeof(Vector2));
     CORRADE_COMPARE(data.data(), Positions);
 }
 
@@ -603,6 +607,8 @@ void MeshDataTest::constructAttributeOffsetOnly() {
     CORRADE_COMPARE(a.arraySize(), 0);
     CORRADE_COMPARE(a.name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(a.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(a.offset(vertexData), sizeof(Vector2));
+    CORRADE_COMPARE(a.stride(), 2*sizeof(Vector2));
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
         Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
         TestSuite::Compare::Container);
@@ -612,6 +618,8 @@ void MeshDataTest::constructAttributeOffsetOnly() {
     CORRADE_COMPARE(ca.arraySize(), 0);
     CORRADE_COMPARE(ca.name(), MeshAttribute::TextureCoordinates);
     CORRADE_COMPARE(ca.format(), VertexFormat::Vector2);
+    CORRADE_COMPARE(ca.offset(vertexData), sizeof(Vector2));
+    CORRADE_COMPARE(ca.stride(), 2*sizeof(Vector2));
     CORRADE_COMPARE_AS(Containers::arrayCast<const Vector2>(a.data(vertexData)),
         Containers::arrayView<Vector2>({{1.0f, 0.3f}, {0.5f, 0.7f}}),
         TestSuite::Compare::Container);

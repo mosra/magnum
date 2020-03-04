@@ -430,6 +430,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * between interleaved attributes. Negative values can be used to alias
          * multiple different attributes onto each other. Not meant to be
          * passed to @ref MeshData.
+         * @see @ref stride()
          */
         constexpr explicit MeshAttributeData(Int padding): _data{nullptr}, _vertexCount{0}, _format{}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
@@ -451,6 +452,25 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
 
         /** @brief Attribute format */
         constexpr VertexFormat format() const { return _format; }
+
+        /**
+         * @brief Attribute offset
+         *
+         * If the attribute is offset-only, returns the offset directly,
+         * otherwise uses the @p vertexData parameter to calculate the offset.
+         * @see @ref isOffsetOnly()
+         */
+        std::size_t offset(Containers::ArrayView<const void> vertexData) const {
+            return _isOffsetOnly ? _data.offset : reinterpret_cast<const char*>(_data.pointer) - reinterpret_cast<const char*>(vertexData.data());
+        }
+
+        /**
+         * @brief Attribute stride
+         *
+         * Can be negative for pad values, never negative for real attributes.
+         * @see @ref MeshAttributeData(Int)
+         */
+        constexpr Short stride() const { return _stride; }
 
         /** @brief Attribute array size */
         constexpr UnsignedShort arraySize() const { return _arraySize; }
@@ -474,8 +494,8 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         /**
          * @brief Type-erased attribute data for an offset-only attribute
          *
-         * If the attribute is not offset-only, the @ref vertexData parameter
-         * is ignored.
+         * If the attribute is not offset-only, the @p vertexData parameter is
+         * ignored.
          * @see @ref isOffsetOnly(), @ref data() const
          */
         Containers::StridedArrayView1D<const void> data(Containers::ArrayView<const void> vertexData) const {

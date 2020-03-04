@@ -80,9 +80,9 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
     std::size_t extraAttributeCount = 0;
     for(std::size_t i = 0; i != extra.size(); ++i) {
         if(extra[i].format() == VertexFormat{}) {
-            CORRADE_ASSERT(extra[i].data().stride() > 0 || stride >= std::size_t(-extra[i].data().stride()),
-                "MeshTools::interleavedLayout(): negative padding" << extra[i].data().stride() << "in extra attribute" << i << "too large for stride" << stride, (Trade::MeshData{MeshPrimitive::Points, 0}));
-            stride += extra[i].data().stride();
+            CORRADE_ASSERT(extra[i].stride() > 0 || stride >= std::size_t(-extra[i].stride()),
+                "MeshTools::interleavedLayout(): negative padding" << extra[i].stride() << "in extra attribute" << i << "too large for stride" << stride, (Trade::MeshData{MeshPrimitive::Points, 0}));
+            stride += extra[i].stride();
         } else {
             stride += vertexFormatSize(extra[i].format());
             ++extraAttributeCount;
@@ -118,7 +118,7 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
     for(UnsignedInt i = 0; i != extra.size(); ++i) {
         /* Padding, only adjust the offset for next attribute */
         if(extra[i].format() == VertexFormat{}) {
-            offset += extra[i].data().stride();
+            offset += extra[i].stride();
             continue;
         }
 
