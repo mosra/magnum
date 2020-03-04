@@ -226,6 +226,10 @@ output non-indexed. If you want to preserve index data, create a new indexed
 instance with attribute and vertex data transferred from the returned instance:
 
 @snippet MagnumMeshTools.cpp interleavedLayout-indices
+
+This function will unconditionally allocate a new array to store all
+@ref Trade::MeshAttributeData, use @ref interleavedLayout(Trade::MeshData&&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>)
+to avoid that allocation.
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
 
@@ -234,6 +238,23 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData&
  * @m_since_latest
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
+
+/**
+@brief Create an interleaved mesh layout
+@m_since_latest
+
+Compared to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>)
+this function can reuse the @ref Trade::MeshAttributeData array from @p data
+instead of allocating a new one if there are no attributes passed in @p extra
+and the attribute array is owned by the mesh.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data, UnsignedInt vertexCount, Containers::ArrayView<const Trade::MeshAttributeData> extra = {});
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
 
 /**
 @brief Interleave mesh data

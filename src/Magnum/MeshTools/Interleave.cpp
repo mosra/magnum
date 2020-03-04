@@ -51,7 +51,7 @@ bool isInterleaved(const Trade::MeshData& data) {
     return maxOffset - minOffset <= stride;
 }
 
-Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
     /* If there are no attributes, bail -- return an empty mesh with desired
        vertex count but nothing else */
     if(!data.attributeCount() && extra.empty())
@@ -89,32 +89,49 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
         }
     }
 
-    /* Allocate new data and attribute array */
+    /* Transfer the attribute data array. If there are no extra attributes and
+       the attribute data array is owned (the array has a default deleter), we
+       can take over the ownership and avoid an allocation. Otherwise we
+       allocate a new array and copy the prefix over so we can just patch the
+       data array later. */
+    const UnsignedInt originalAttributeCount = data.attributeCount();
+    const UnsignedInt originalAttributeStride = originalAttributeCount ?
+        data.attributeStride(0) : 0;
+    Containers::Array<Trade::MeshAttributeData> originalAttributeData =
+        data.releaseAttributeData();
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    if(!extraAttributeCount && !originalAttributeData.deleter())
+        attributeData = std::move(originalAttributeData);
+    else {
+        attributeData = Containers::Array<Trade::MeshAttributeData>{originalAttributeCount + extraAttributeCount};
+        Utility::copy(originalAttributeData, attributeData.prefix(originalAttributeCount));
+    }
+
+    /* Allocate new data array */
     Containers::Array<char> vertexData{Containers::NoInit, stride*vertexCount};
-    Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount() + extraAttributeCount};
 
     /* Copy existing attribute layout. If the original is already interleaved,
        preserve relative attribute offsets, otherwise pack tightly. */
     std::size_t offset = 0;
-    for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
-        if(interleaved) offset = data.attributeOffset(i) - minOffset;
+    for(UnsignedInt i = 0; i != originalAttributeCount; ++i) {
+        if(interleaved) offset = attributeData[i].offset(data.vertexData()) - minOffset;
 
         attributeData[i] = Trade::MeshAttributeData{
-            data.attributeName(i), data.attributeFormat(i),
+            attributeData[i].name(), attributeData[i].format(),
             Containers::StridedArrayView1D<void>{vertexData, vertexData + offset,
             vertexCount, std::ptrdiff_t(stride)}};
 
-        if(!interleaved) offset += vertexFormatSize(data.attributeFormat(i));
+        if(!interleaved) offset += vertexFormatSize(attributeData[i].format());
     }
 
     /* In case the original is already interleaved, set the offset for extra
        attribs to the original stride to preserve also potential padding at the
        end. */
-    if(interleaved && data.attributeCount())
-        offset = data.attributeStride(0);
+    if(interleaved && originalAttributeCount)
+        offset = originalAttributeStride;
 
     /* Mix in the extra attributes */
-    UnsignedInt attributeIndex = data.attributeCount();
+    UnsignedInt attributeIndex = originalAttributeCount;
     for(UnsignedInt i = 0; i != extra.size(); ++i) {
         /* Padding, only adjust the offset for next attribute */
         if(extra[i].format() == VertexFormat{}) {
@@ -130,6 +147,22 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
     }
 
     return Trade::MeshData{data.primitive(), std::move(vertexData), std::move(attributeData)};
+}
+
+Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra) {
+    return interleavedLayout(std::move(data), vertexCount, Containers::arrayView(extra));
+}
+
+Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
+    /* If there's no attributes in the original mesh, we need to pass vertex
+       count explicitly (MeshData asserts on that to avoid it getting lost.) */
+    if(!data.attributeCount())
+        return interleavedLayout(Trade::MeshData{data.primitive(), data.vertexCount()}, vertexCount, extra);
+
+    return interleavedLayout(
+        Trade::MeshData{data.primitive(), {}, data.vertexData(),
+            Trade::meshAttributeDataNonOwningArray(data.attributeData())},
+        vertexCount, extra);
 }
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const std::initializer_list<Trade::MeshAttributeData> extra) {

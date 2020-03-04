@@ -67,6 +67,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleavedLayoutAlreadyInterleavedAliased();
     void interleavedLayoutAlreadyInterleavedExtra();
     void interleavedLayoutNothing();
+    void interleavedLayoutRvalue();
 
     void interleaveMeshData();
     void interleaveMeshDataIndexed();
@@ -108,6 +109,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleavedLayoutAlreadyInterleavedAliased,
               &InterleaveTest::interleavedLayoutAlreadyInterleavedExtra,
               &InterleaveTest::interleavedLayoutNothing,
+              &InterleaveTest::interleavedLayoutRvalue,
 
               &InterleaveTest::interleaveMeshData,
               &InterleaveTest::interleaveMeshDataIndexed,
@@ -338,15 +340,20 @@ void InterleaveTest::isInterleavedAttributeAcrossStride() {
 void InterleaveTest::interleavedLayout() {
     Containers::Array<char> indexData{6};
     Containers::Array<char> vertexData{3*20};
-    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-        Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
-    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
-        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+
+    const Trade::MeshAttributeData attributeData[]{
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            Containers::arrayCast<Vector2>(vertexData.prefix(3*8))},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            Containers::arrayCast<Vector3>(vertexData.suffix(3*8))}
+    };
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
-        std::move(indexData), indices,
-        std::move(vertexData), {positions, normals}};
+        std::move(indexData), indices, std::move(vertexData),
+        /* Verify that interleavedLayout() won't attempt to modify the const
+           array (see interleavedLayoutRvalue()) */
+        Trade::meshAttributeDataNonOwningArray(attributeData)};
     CORRADE_VERIFY(!MeshTools::isInterleaved(data));
 
     Trade::MeshData layout = MeshTools::interleavedLayout(data, 10);
@@ -594,6 +601,49 @@ void InterleaveTest::interleavedLayoutNothing() {
     CORRADE_COMPARE(layout.vertexCount(), 10);
     CORRADE_VERIFY(!layout.vertexData());
     CORRADE_COMPARE(layout.vertexData().size(), 0);
+}
+
+void InterleaveTest::interleavedLayoutRvalue() {
+    Containers::Array<char> indexData{6};
+    Containers::Array<char> vertexData{3*20};
+    Containers::Array<Trade::MeshAttributeData> attributeData{2};
+    attributeData[0] = Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::arrayCast<Vector2>(vertexData.prefix(3*8))};
+    attributeData[1] = Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+        Containers::arrayCast<Vector3>(vertexData.suffix(3*8))};
+    const void* originalAttributeData = attributeData.data();
+
+    Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
+    Trade::MeshData data{MeshPrimitive::TriangleFan,
+        std::move(indexData), indices,
+        std::move(vertexData), std::move(attributeData)};
+    CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+
+    /* Check that the attribute data array gets reused when moving a rvalue.
+       Explicitly passing an empty init list to verify the rvalue gets
+       propagated correctly through all functions. */
+    Trade::MeshData layout = MeshTools::interleavedLayout(std::move(data), 10,
+        std::initializer_list<Trade::MeshAttributeData>{});
+    CORRADE_VERIFY(layout.attributeData().data() == originalAttributeData);
+
+    /* The rest is same as in interleavedLayout() */
+    CORRADE_VERIFY(MeshTools::isInterleaved(layout));
+    CORRADE_COMPARE(layout.primitive(), MeshPrimitive::TriangleFan);
+    CORRADE_VERIFY(!layout.isIndexed()); /* Indices are not preserved */
+    CORRADE_COMPARE(layout.attributeCount(), 2);
+    CORRADE_COMPARE(layout.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(layout.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(layout.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(layout.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(layout.attributeStride(0), 20);
+    CORRADE_COMPARE(layout.attributeStride(1), 20);
+    CORRADE_COMPARE(layout.attributeOffset(0), 0);
+    CORRADE_COMPARE(layout.attributeOffset(1), 8);
+    CORRADE_COMPARE(layout.vertexCount(), 10);
+    /* Needs to be like this so we can modify the data */
+    CORRADE_COMPARE(layout.vertexDataFlags(), Trade::DataFlag::Mutable|Trade::DataFlag::Owned);
+    CORRADE_VERIFY(layout.vertexData());
+    CORRADE_COMPARE(layout.vertexData().size(), 10*20);
 }
 
 void InterleaveTest::interleaveMeshData() {
