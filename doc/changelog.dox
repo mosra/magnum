@@ -133,6 +133,8 @@ See also:
     differently indexed attributes into a single index buffer, and
     @ref MeshTools::combineFaceAttributes() for converting per-face attributes
     into per-vertex
+-   New @ref MeshTools::concatenate() and @ref MeshTools::concatenateInto()
+    tool for batching multiple generic meshes together
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

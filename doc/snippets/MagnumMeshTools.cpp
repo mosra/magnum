@@ -26,11 +26,14 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/CompressIndices.h"
+#include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/FlipNormals.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
+#include "Magnum/Primitives/Cube.h"
 #include "Magnum/Trade/MeshData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -72,6 +75,15 @@ std::pair<Containers::Array<char>, MeshIndexType> result =
 
 // use `offset` to adjust vertex attribute offset …
 /* [compressIndices-offset] */
+}
+
+{
+/* [concatenate-make-mutable] */
+/* Flip triangles on a cube primitive so it's counterclockwise from the inside
+   in order to render a cube map */
+Trade::MeshData mesh = MeshTools::concatenate(Primitives::cubeSolid());
+MeshTools::flipFaceWindingInPlace(mesh.mutableIndices());
+/* [concatenate-make-mutable] */
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

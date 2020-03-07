@@ -31,6 +31,7 @@ set(MagnumMeshTools_SRCS
 set(MagnumMeshTools_GracefulAssert_SRCS
     Combine.cpp
     CompressIndices.cpp
+    Concatenate.cpp
     Duplicate.cpp
     FlipNormals.cpp
     GenerateNormals.cpp
@@ -40,6 +41,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 set(MagnumMeshTools_HEADERS
     Combine.h
     CompressIndices.h
+    Concatenate.h
     Duplicate.h
     FlipNormals.h
     GenerateNormals.h

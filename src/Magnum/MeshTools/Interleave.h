@@ -114,6 +114,9 @@ template<class T, class ...U> void writeInterleaved(std::size_t stride, char* st
     writeInterleaved(stride, startingOffset + writeOneInterleaved(stride, startingOffset, first), next...);
 }
 
+/* Used internally by interleavedLayout() and concatenate() */
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, Containers::ArrayView<const Trade::MeshAttributeData> extra);
+
 }
 
 /**
