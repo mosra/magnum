@@ -2264,7 +2264,7 @@ void AbstractImporterTest::mesh() {
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
             /* Verify that initializer list is converted to an array with
                the default deleter and not something disallowed */
-            if(id == 7 && level == 2) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+            if(id == 7 && level == 2) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, MeshData::ImplicitVertexCount, &state};
             else return {};
         }
     } importer;
@@ -2304,7 +2304,7 @@ void AbstractImporterTest::meshDeprecatedFallback() {
             else return {};
         }
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
-            if(id == 7 && level == 0) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+            if(id == 7 && level == 0) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, MeshData::ImplicitVertexCount, &state};
             else return {};
         }
     } importer;
@@ -2610,7 +2610,7 @@ void AbstractImporterTest::meshCustomIndexDataDeleter() {
         UnsignedInt doMeshCount() const override { return 1; }
         Int doMeshForName(const std::string&) override { return 0; }
         Containers::Optional<MeshData> doMesh(UnsignedInt, UnsignedInt) override {
-            return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{data, 1, [](char*, std::size_t) {}}, MeshIndexData{MeshIndexType::UnsignedByte, data}};
+            return MeshData{MeshPrimitive::Triangles, Containers::Array<char>{data, 1, [](char*, std::size_t) {}}, MeshIndexData{MeshIndexType::UnsignedByte, data}, 1};
         }
 
         char data[1];

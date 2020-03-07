@@ -79,15 +79,29 @@ Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Conta
     return Containers::Array<Trade::MeshAttributeData>{const_cast<Trade::MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(Trade::MeshAttributeData*, std::size_t)>(Trade::Implementation::nonOwnedArrayDeleter)};
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: _indexType{indices._type}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)}, _attributes{std::move(attributes)}, _indices{Containers::arrayCast<const char>(indices._data)} {
-    /* Save vertex count. It's a strided array view, so the size is not
-       depending on type. */
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: _indexType{indices._type}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)}, _attributes{std::move(attributes)}, _indices{Containers::arrayCast<const char>(indices._data)} {
+    /* Save vertex count. If it's passed explicitly, use that (but still check
+       that all attributes have the same vertex count for safety), otherwise
+       expect at least one attribute  */
+    #ifndef CORRADE_NO_ASSERT
+    UnsignedInt expectedAttributeVertexCount;
+    #endif
     if(_attributes.empty()) {
-        CORRADE_ASSERT(indices._type != MeshIndexType{},
-            "Trade::MeshData: indices are expected to be valid if there are no attributes and vertex count isn't passed explicitly", );
-        /** @todo some better value? attributeless indexed with defined vertex count? */
-        _vertexCount = 0;
-    } else _vertexCount = _attributes[0]._vertexCount;
+        CORRADE_ASSERT(vertexCount != ImplicitVertexCount,
+            "Trade::MeshData: vertex count can't be implicit if there are no attributes", );
+        _vertexCount = vertexCount;
+        /* No attributes, so we won't be checking anything */
+    } else if(vertexCount != ImplicitVertexCount) {
+        _vertexCount = vertexCount;
+        #ifndef CORRADE_NO_ASSERT
+        expectedAttributeVertexCount = _attributes[0]._vertexCount;
+        #endif
+    } else {
+        _vertexCount = _attributes[0]._vertexCount;
+        #ifndef CORRADE_NO_ASSERT
+        expectedAttributeVertexCount = _vertexCount;
+        #endif
+    }
 
     CORRADE_ASSERT(!_indices.empty() || _indexData.empty(),
         "Trade::MeshData: indexData passed for a non-indexed mesh", );
@@ -101,8 +115,8 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
         const MeshAttributeData& attribute = _attributes[i];
         CORRADE_ASSERT(attribute._format != VertexFormat{},
             "Trade::MeshData: attribute" << i << "doesn't specify anything", );
-        CORRADE_ASSERT(attribute._vertexCount == _vertexCount,
-            "Trade::MeshData: attribute" << i << "has" << attribute._vertexCount << "vertices but" << _vertexCount << "expected", );
+        CORRADE_ASSERT(attribute._vertexCount == expectedAttributeVertexCount,
+            "Trade::MeshData: attribute" << i << "has" << attribute._vertexCount << "vertices but" << expectedAttributeVertexCount << "expected", );
         /* Check that the view fits into the provided vertex data array. For
            implementation-specific formats we don't know the size so use 0 to
            check at least partially. */
@@ -123,9 +137,9 @@ MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& inde
     #endif
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, std::move(indexData), indices, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, std::move(indexData), indices, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), importerState} {
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), vertexCount, importerState} {
     CORRADE_ASSERT(!(indexDataFlags & DataFlag::Owned),
         "Trade::MeshData: can't construct with non-owned index data but" << indexDataFlags, );
     CORRADE_ASSERT(!(vertexDataFlags & DataFlag::Owned),
@@ -134,45 +148,45 @@ MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags
     _vertexDataFlags = vertexDataFlags;
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, const std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, indexDataFlags, indexData, indices, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, const std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, indexDataFlags, indexData, indices, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, std::move(vertexData), std::move(attributes), importerState} {
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, std::move(vertexData), std::move(attributes), vertexCount, importerState} {
     CORRADE_ASSERT(!(indexDataFlags & DataFlag::Owned),
         "Trade::MeshData: can't construct with non-owned index data but" << indexDataFlags, );
     _indexDataFlags = indexDataFlags;
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, const std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, indexDataFlags, indexData, indices, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, const std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, indexDataFlags, indexData, indices, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: MeshData{primitive, std::move(indexData), indices, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), importerState} {
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, std::move(indexData), indices, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), vertexCount, importerState} {
     CORRADE_ASSERT(!(vertexDataFlags & DataFlag::Owned),
         "Trade::MeshData: can't construct with non-owned vertex data but" << vertexDataFlags, );
     _vertexDataFlags = vertexDataFlags;
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, const std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, std::move(indexData), indices, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const DataFlags vertexDataFlags, const Containers::ArrayView<const void> vertexData, const std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, std::move(indexData), indices, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: MeshData{primitive, {}, MeshIndexData{}, std::move(vertexData), std::move(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, {}, MeshIndexData{}, std::move(vertexData), std::move(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& vertexData, const std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& vertexData, const std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, std::move(vertexData), Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), importerState} {
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(vertexData.data())), vertexData.size(), Implementation::nonOwnedArrayDeleter}, std::move(attributes), vertexCount, importerState} {
     CORRADE_ASSERT(!(vertexDataFlags & DataFlag::Owned),
         "Trade::MeshData: can't construct with non-owned vertex data but" << vertexDataFlags, );
     _vertexDataFlags = vertexDataFlags;
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* const importerState): MeshData{primitive, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const UnsignedInt vertexCount, const void* const importerState): MeshData{primitive, vertexDataFlags, vertexData, Implementation::initializerListToArrayWithDefaultDeleter(attributes), vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const void* const importerState) noexcept: MeshData{primitive, std::move(indexData), indices, {}, {}, importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, std::move(indexData), indices, {}, {}, vertexCount, importerState} {}
 
-MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, importerState} {
+MeshData::MeshData(const MeshPrimitive primitive, const DataFlags indexDataFlags, const Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, Containers::Array<char>{const_cast<char*>(static_cast<const char*>(indexData.data())), indexData.size(), Implementation::nonOwnedArrayDeleter}, indices, vertexCount, importerState} {
     CORRADE_ASSERT(!(indexDataFlags & DataFlag::Owned),
         "Trade::MeshData: can't construct with non-owned index data but" << indexDataFlags, );
     _indexDataFlags = indexDataFlags;
 }
 
-MeshData::MeshData(const MeshPrimitive primitive, const UnsignedInt vertexCount, const void* const importerState) noexcept: _vertexCount{vertexCount}, _indexType{}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState} {}
+MeshData::MeshData(const MeshPrimitive primitive, const UnsignedInt vertexCount, const void* const importerState) noexcept: MeshData{primitive, {}, MeshIndexData{}, {}, {}, vertexCount, importerState} {}
 
 MeshData::~MeshData() = default;
 
@@ -238,8 +252,7 @@ MeshAttributeData MeshData::attributeData(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attributeData(): index" << id << "out of range for" << _attributes.size() << "attributes", MeshAttributeData{});
     const MeshAttributeData& attribute = _attributes[id];
-    return attribute._isOffsetOnly ? MeshAttributeData{attribute._name,
-        attribute._format, attributeDataViewInternal(attribute)} : attribute;
+    return MeshAttributeData{attribute._name, attribute._format, attributeDataViewInternal(attribute)};
 }
 
 MeshAttribute MeshData::attributeName(UnsignedInt id) const {

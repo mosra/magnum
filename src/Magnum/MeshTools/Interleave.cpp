@@ -154,14 +154,10 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
 }
 
 Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt vertexCount, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
-    /* If there's no attributes in the original mesh, we need to pass vertex
-       count explicitly (MeshData asserts on that to avoid it getting lost.) */
-    if(!data.attributeCount())
-        return interleavedLayout(Trade::MeshData{data.primitive(), data.vertexCount()}, vertexCount, extra);
-
     return interleavedLayout(
         Trade::MeshData{data.primitive(), {}, data.vertexData(),
-            Trade::meshAttributeDataNonOwningArray(data.attributeData())},
+            Trade::meshAttributeDataNonOwningArray(data.attributeData()),
+            data.vertexCount()},
         vertexCount, extra);
 }
 
@@ -257,19 +253,13 @@ Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayV
     if(data.isIndexed()) {
         indexData = data.indexData();
         indices = Trade::MeshIndexData{data.indices()};
-
-    /* If there's neither an index array nor any attributes in the original
-       mesh, we need to pass vertex count explicitly (MeshData asserts on that
-       to avoid it getting lost.) */
-    } else if(!data.attributeCount()) {
-        return interleave(Trade::MeshData{data.primitive(), data.vertexCount()}, extra);
     }
 
     return interleave(Trade::MeshData{data.primitive(),
         {}, indexData, indices,
-        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData())
+        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
+        data.vertexCount()
     }, extra);
-
 }
 
 Trade::MeshData interleave(const Trade::MeshData& data, const std::initializer_list<Trade::MeshAttributeData> extra) {

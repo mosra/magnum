@@ -372,7 +372,7 @@ void DuplicateTest::duplicateMeshDataExtraWrongCount() {
 void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 3};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -386,7 +386,7 @@ void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
 void DuplicateTest::duplicateMeshDataNoAttributes() {
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Trade::MeshData data{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 3};
 
     Trade::MeshData duplicated = MeshTools::duplicate(data, {});
     CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);

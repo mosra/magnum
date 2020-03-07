@@ -418,6 +418,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * attribute construction time. Expects that @p arraySize is zero for
          * builtin attributes. Note that instances created this way can't be
          * used in most @ref MeshTools algorithms.
+         *
+         * Additionally, for even more flexibility, the @p vertexCount can be
+         * overriden at @ref MeshData construction time, however all attributes
+         * are still required to have the same vertex count to catch accidents.
          * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */
@@ -654,6 +658,14 @@ implementation-specific @ref VertexFormat values.
 */
 class MAGNUM_TRADE_EXPORT MeshData {
     public:
+        enum: UnsignedInt {
+            /**
+             * Implicit vertex count. When passed to a constructor, indicates
+             * that vertex count should be taken from attribute data views.
+             */
+            ImplicitVertexCount = ~UnsignedInt{}
+        };
+
         /**
          * @brief Construct an indexed mesh data
          * @param primitive     Primitive
@@ -661,6 +673,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param indices       Index data description
          * @param vertexData    Vertex data
          * @param attributes    Description of all vertex attribute data
+         * @param vertexCount   Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState Importer-specific state
          *
          * The @p indices are expected to point to a sub-range of @p indexData.
@@ -674,14 +690,14 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * The @ref indexDataFlags() / @ref vertexDataFlags() are implicitly
          * set to a combination of @ref DataFlag::Owned and
          * @ref DataFlag::Mutable. For non-owned data use the
-         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, const void*)
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * constructor or its variants instead.
          */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct indexed mesh data with non-owned index and vertex data
@@ -692,19 +708,23 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param vertexDataFlags   Vertex data flags
          * @param vertexData        View on vertex data
          * @param attributes        Description of all vertex attribute data
+         * @param vertexCount       Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState     Importer-specific state
          *
-         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * creates an instance that doesn't own the passed vertex and index
          * data. The @p indexDataFlags / @p vertexDataFlags parameters can
          * contain @ref DataFlag::Mutable to indicate the external data can be
          * modified, and is expected to *not* have @ref DataFlag::Owned set.
          */
-        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct indexed mesh data with non-owned index data
@@ -714,9 +734,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param indices           Index data description
          * @param vertexData        Vertex data
          * @param attributes        Description of all vertex attribute data
+         * @param vertexCount       Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState     Importer-specific state
          *
-         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * creates an instance that doesn't own the passed index data. The
          * @p indexDataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
@@ -724,11 +748,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * implicitly set to a combination of @ref DataFlag::Owned and
          * @ref DataFlag::Mutable.
          */
-        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct indexed mesh data with non-owned vertex data
@@ -738,9 +762,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param vertexDataFlags   Vertex data flags
          * @param vertexData        View on vertex data
          * @param attributes        Description of all vertex attribute data
+         * @param vertexCount       Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState     Importer-specific state
          *
-         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * creates an instance that doesn't own the passed vertex data. The
          * @p vertexDataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
@@ -748,20 +776,24 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * implicitly set to a combination of @ref DataFlag::Owned and
          * @ref DataFlag::Mutable.
          */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct a non-indexed mesh data
          * @param primitive     Primitive
          * @param vertexData    Vertex data
          * @param attributes    Description of all vertex attribute data
+         * @param vertexCount   Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState Importer-specific state
          *
-         * Same as calling @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Same as calling @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * with default-constructed @p indexData and @p indices arguments.
          *
          * The @ref vertexDataFlags() are implicitly set to a combination of
@@ -769,14 +801,14 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * the @ref indexDataFlags() are implicitly set to a combination of
          * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
          * isn't any data to own or to mutate. For non-owned data use the
-         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, const void*)
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * constructor instead.
          */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct a non-owned non-indexed mesh data
@@ -784,9 +816,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param vertexDataFlags   Vertex data flags
          * @param vertexData        View on vertex data
          * @param attributes        Description of all vertex attribute data
+         * @param vertexCount       Vertex count. If set to
+         *      @ref ImplicitVertexCount, vertex count is taken from data views
+         *      passed to @p attributes (in which case there has to be at least
+         *      one).
          * @param importerState     Importer-specific state
          *
-         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p vertexDataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
@@ -795,20 +831,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
          * isn't any data to own or to mutate.
          */
-        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, UnsignedInt vertexCount = ImplicitVertexCount, const void* importerState = nullptr);
 
         /**
          * @brief Construct an attribute-less indexed mesh data
          * @param primitive     Primitive
          * @param indexData     Index data
          * @param indices       Index data description
+         * @param vertexCount   Vertex count. Passing @ref ImplicitVertexCount
+         *      is not allowed in this overload.
          * @param importerState Importer-specific state
          *
-         * Same as calling @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * Same as calling @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, UnsignedInt, const void*)
          * with default-constructed @p vertexData and @p attributes arguments.
          * The @p indices are expected to be valid (but can be empty). If you
          * want to create an attribute-less non-indexed mesh, use
@@ -820,10 +858,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * the @ref vertexDataFlags() are implicitly set to a combination of
          * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
          * isn't any data to own or to mutate. For non-owned data use the
-         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, const void*)
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, UnsignedInt, const void*)
          * constructor instead.
          */
-        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, UnsignedInt vertexCount, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct a non-owned attribute-less indexed mesh data
@@ -831,9 +869,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param indexDataFlags    Index data flags
          * @param indexData         View on index data
          * @param indices           Index data description
+         * @param vertexCount       Vertex count. Passing
+         *      @ref ImplicitVertexCount is not allowed in this overload.
          * @param importerState     Importer-specific state
          *
-         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, const void*)
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, UnsignedInt, const void*)
          * creates an instance that doesn't own the passed data. The
          * @p indexDataFlags parameter can contain @ref DataFlag::Mutable to
          * indicate the external data can be modified, and is expected to *not*
@@ -842,12 +882,13 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
          * isn't any data to own or to mutate.
          */
-        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const void* importerState = nullptr) noexcept;
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, UnsignedInt vertexCount, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct an index-less attribute-less mesh data
          * @param primitive     Primitive
-         * @param vertexCount   Desired count of vertices to draw
+         * @param vertexCount   Vertex count. Passing @ref ImplicitVertexCount
+         *      is not allowed in this overload.
          * @param importerState Importer-specific state
          *
          * Useful in case the drawing is fully driven by a shader. For

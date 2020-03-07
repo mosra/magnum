@@ -107,11 +107,11 @@ void CombineTest::combineIndexedAttributesIndicesOnly() {
     const UnsignedShort indicesB[]{3, 4, 3};
     const UnsignedByte indicesC[]{7, 6, 7};
     Trade::MeshData a{MeshPrimitive::LineLoop, {}, indicesA,
-        Trade::MeshIndexData{indicesA}};
+        Trade::MeshIndexData{indicesA}, 3};
     Trade::MeshData b{MeshPrimitive::LineLoop, {}, indicesB,
-        Trade::MeshIndexData{indicesB}};
+        Trade::MeshIndexData{indicesB}, 5};
     Trade::MeshData c{MeshPrimitive::LineLoop, {}, indicesC,
-        Trade::MeshIndexData{indicesC}};
+        Trade::MeshIndexData{indicesC}, 8};
 
     Trade::MeshData result = MeshTools::combineIndexedAttributes({a, b, c});
     CORRADE_COMPARE(result.primitive(), MeshPrimitive::LineLoop);
@@ -121,7 +121,7 @@ void CombineTest::combineIndexedAttributesIndicesOnly() {
         Containers::arrayView<UnsignedInt>({0, 1, 0}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(result.attributeCount(), 0);
-    CORRADE_COMPARE(result.vertexCount(), 0);
+    CORRADE_COMPARE(result.vertexCount(), 2);
 }
 
 void CombineTest::combineIndexedAttributesNoMeshes() {
@@ -134,9 +134,9 @@ void CombineTest::combineIndexedAttributesNoMeshes() {
 void CombineTest::combineIndexedAttributesNotIndexed() {
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData b{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData c{MeshPrimitive::Lines, 5};
 
     std::ostringstream out;
@@ -148,9 +148,9 @@ void CombineTest::combineIndexedAttributesNotIndexed() {
 void CombineTest::combineIndexedAttributesDifferentPrimitive() {
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData b{MeshPrimitive::Points,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -161,12 +161,12 @@ void CombineTest::combineIndexedAttributesDifferentPrimitive() {
 void CombineTest::combineIndexedAttributesDifferentIndexCount() {
     const UnsignedShort indices[5]{};
     Trade::MeshData a{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData b{MeshPrimitive::Lines,
-        {}, indices, Trade::MeshIndexData{indices}};
+        {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData c{MeshPrimitive::Lines,
         {}, indices,
-        Trade::MeshIndexData{Containers::arrayView(indices).prefix(4)}};
+        Trade::MeshIndexData{Containers::arrayView(indices).prefix(4)}, 1};
 
     std::ostringstream out;
     Error redirectError{&out};

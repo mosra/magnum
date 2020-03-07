@@ -91,7 +91,7 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
     /* Make the combined index array unique */
     Containers::Array<char> indexData{indexCount*sizeof(UnsignedInt)};
     const auto indexDataI = Containers::arrayCast<UnsignedInt>(indexData);
-    const std::size_t vertexCount = removeDuplicatesInPlaceInto(
+    const UnsignedInt vertexCount = removeDuplicatesInPlaceInto(
         Containers::StridedArrayView2D<char>{combinedIndices, {indexCount, indexStride}},
         indexDataI);
 
@@ -133,7 +133,7 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
 
     return Trade::MeshData{primitive,
         std::move(indexData), Trade::MeshIndexData{indexDataI},
-        std::move(vertexData), std::move(attributeData)};
+        std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
 Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data) {
