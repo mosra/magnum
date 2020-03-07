@@ -124,12 +124,23 @@ void WireframeSpheroid::cylinder() {
         arrayAppend(_indexData, {UnsignedInt(_vertexData.size()) - 4*_segments + i, UnsignedInt(_vertexData.size()) + i});
 }
 
+namespace {
+
+constexpr Trade::MeshAttributeData AttributeData[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        0, 0, sizeof(Vector3)}
+};
+
+}
+
 Trade::MeshData WireframeSpheroid::finalize() {
     Trade::MeshIndexData indices{_indexData};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position, Containers::arrayView(_vertexData)};
+    const UnsignedInt vertexCount = _vertexData.size();
     return Trade::MeshData{MeshPrimitive::Lines,
         Containers::arrayAllocatorCast<char>(std::move(_indexData)), indices,
-        Containers::arrayAllocatorCast<char>(std::move(_vertexData)), {positions}};
+        Containers::arrayAllocatorCast<char>(std::move(_vertexData)),
+        Trade::meshAttributeDataNonOwningArray(AttributeData), vertexCount};
 }
 
 }}}

@@ -109,9 +109,20 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
             textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
     }
 
+    /* Not using a compile-time attribute array because there's way too many
+       combinations */
     return Trade::MeshData{MeshPrimitive::Triangles,
         std::move(indexData), Trade::MeshIndexData{indices},
         std::move(vertexData), std::move(attributes)};
+}
+
+namespace {
+
+constexpr Trade::MeshAttributeData AttributeData3DWireframe[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        0, 0, sizeof(Vector3)}
+};
+
 }
 
 Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
@@ -153,7 +164,9 @@ Trade::MeshData grid3DWireframe(const Vector2i& subdivisions) {
 
     return Trade::MeshData{MeshPrimitive::Lines,
         std::move(indexData), Trade::MeshIndexData{indices},
-        std::move(vertexData), {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}}};
+        std::move(vertexData),
+        Trade::meshAttributeDataNonOwningArray(AttributeData3DWireframe),
+        UnsignedInt(vertexCount.product())};
 }
 
 }}

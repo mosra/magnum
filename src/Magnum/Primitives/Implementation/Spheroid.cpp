@@ -220,37 +220,39 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
     }
 }
 
+namespace {
+
+constexpr Trade::MeshAttributeData AttributeData[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        offsetof(Vertex, position), 0, sizeof(Vertex)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
+        offsetof(Vertex, normal), 0, sizeof(Vertex)}
+};
+
+constexpr Trade::MeshAttributeData AttributeDataTextureCoords[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        offsetof(VertexTextureCoords, position), 0, sizeof(VertexTextureCoords)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
+        offsetof(VertexTextureCoords, normal), 0, sizeof(VertexTextureCoords)},
+    Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,
+        offsetof(VertexTextureCoords, textureCoords), 0, sizeof(VertexTextureCoords)}
+};
+
+}
+
 Trade::MeshData Spheroid::finalize() {
     Trade::MeshIndexData indices{_indexData};
 
-    const std::size_t stride = _textureCoords == TextureCoords::Generate ?
-        sizeof(VertexTextureCoords) : sizeof(Vertex);
-    const std::size_t size = _vertexData.size()/stride;
-
-    auto typedVertices = reinterpret_cast<VertexTextureCoords*>(_vertexData.data());
-    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-        /* GCC 4.8 needs the arrayView() */
-        Containers::stridedArrayView(Containers::arrayView(_vertexData),
-        &typedVertices[0].position, size, stride)};
-    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
-        /* GCC 4.8 needs the arrayView() */
-        Containers::stridedArrayView(Containers::arrayView(_vertexData),
-        &typedVertices[0].normal, size, stride)};
-
     Containers::Array<Trade::MeshAttributeData> attributes;
-    if(_textureCoords == TextureCoords::Generate) {
-        Trade::MeshAttributeData textureCoords{Trade::MeshAttribute::TextureCoordinates,
-            /* GCC 4.8 needs the arrayView() */
-            Containers::stridedArrayView(Containers::arrayView(_vertexData),
-            &typedVertices[0].textureCoords, size, stride)};
-        attributes = Containers::Array<Trade::MeshAttributeData>{Containers::InPlaceInit, {positions, normals, textureCoords}};
-    } else {
-        attributes = Containers::Array<Trade::MeshAttributeData>{Containers::InPlaceInit, {positions, normals}};
-    }
+    if(_textureCoords == TextureCoords::Generate)
+        attributes = Trade::meshAttributeDataNonOwningArray(AttributeDataTextureCoords);
+    else
+        attributes = Trade::meshAttributeDataNonOwningArray(AttributeData);
+    const UnsignedInt vertexCount = _vertexData.size()/attributes[0].stride();
 
     return Trade::MeshData{MeshPrimitive::Triangles,
         Containers::arrayAllocatorCast<char>(std::move(_indexData)), indices,
-        std::move(_vertexData), std::move(attributes)};
+        std::move(_vertexData), std::move(attributes), vertexCount};
 }
 
 }}}
