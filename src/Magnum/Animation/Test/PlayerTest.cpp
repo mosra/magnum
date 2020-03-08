@@ -107,7 +107,7 @@ const struct {
 } RunFor100YearsData[]{
     {"0", 0.0f, {}, false, false},
     {"1 minute", 60.0f, std::chrono::minutes(1), false, false},
-    {"5 minutes", 5.0f*60.0f, std::chrono::minutes{5}, true, false},
+    {"5 minutes", 5.0f*60.0f, std::chrono::minutes{5}, false, false},
     {"30 minutes", 30.0f*60.0f, std::chrono::minutes{30}, true, false},
     {"1 hour", 60.0f*60.0f, std::chrono::minutes{60}, true, false},
     {"1 day", 24.0f*60.0f*60.0f, std::chrono::minutes{24*60}, true, true},

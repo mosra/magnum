@@ -543,7 +543,7 @@ template<class T> void FunctionsTest::sincos() {
     /* For GCC's __builtin_sincos this verifies that all specializations are
        correct */
     CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).first, T(0.5));
-    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second, T(0.8660254037844386));
+    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second, T(0.866025403784438647l));
 }
 
 void FunctionsTest::sinCosSeparateBenchmark() {
