@@ -288,6 +288,14 @@ template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
+
+    /* Ensure we have the same behavior as TestSuite */
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(0)+TypeTraits<T>::epsilon()/T(2), T(0)),
+        Corrade::TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(0)+TypeTraits<T>::epsilon()*T(2), T(0)),
+        Corrade::TestSuite::ComparisonStatusFlag::Failed);
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
@@ -295,6 +303,14 @@ template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
+
+    /* Ensure we have the same behavior as TestSuite */
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(1)+TypeTraits<T>::epsilon()/T(2), T(1)),
+        Corrade::TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(1)+TypeTraits<T>::epsilon()*T(3), T(1)),
+        Corrade::TestSuite::ComparisonStatusFlag::Failed);
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
@@ -303,8 +319,13 @@ template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 
-    CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
-    CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
+    /* Ensure we have the same behavior as TestSuite */
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(25)+TypeTraits<T>::epsilon()*T(2), T(25)),
+        Corrade::TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        T(25)+TypeTraits<T>::epsilon()*T(75), T(25)),
+        Corrade::TestSuite::ComparisonStatusFlag::Failed);
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
@@ -314,6 +335,14 @@ template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
                                          Constants<T>::inf()));
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::inf(),
                                          -Constants<T>::inf()));
+
+    /* Ensure we have the same behavior as TestSuite */
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        Constants<T>::inf(), Constants<T>::inf()),
+        Corrade::TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        Constants<T>::inf(), -Constants<T>::inf()),
+        Corrade::TestSuite::ComparisonStatusFlag::Failed);
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
@@ -321,6 +350,12 @@ template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
 
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
+
+    /* OTOH, TestSuite compares two NaNs as equal -- since that makes more
+       sense in the context of tests */
+    CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
+        Constants<T>::nan(), Constants<T>::nan()),
+        Corrade::TestSuite::ComparisonStatusFlags{});
 }
 
 /* Argh! Why there is no standard std::abs() for unsigned types? */
