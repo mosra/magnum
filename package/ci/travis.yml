@@ -224,7 +224,12 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
+# binaryen is a dependency for wasm targets, but homebrew devs don't give a
+# shit: https://github.com/Homebrew/homebrew-core/issues/47869 Also the
+# generated .emscripten doesn't have a newline at EOL so the workaround listed
+# in the issue doesn't work and one has to add explicit \n there to make it
+# work. EVERYTHING SUCKS NOWADAYS.
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install emscripten binaryen && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc && echo -e "\nBINARYEN_ROOT = '/usr/local'\n" >> ~/.emscripten; fi
 - if [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL on macOS and iOS (cached)
