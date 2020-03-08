@@ -280,7 +280,7 @@ void TypeTraitsTest::equalsHalf() {
     CORRADE_VERIFY(TypeTraits<Half>::equals(Half(UnsignedShort(0xabcd)),
                                             Half(UnsignedShort(0xabcd))));
     CORRADE_VERIFY(!TypeTraits<Half>::equals(Half(UnsignedShort(0xabcd)),
-                                            Half(UnsignedShort(0xabce))));
+                                             Half(UnsignedShort(0xabce))));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
