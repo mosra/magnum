@@ -52,7 +52,11 @@
 
 namespace Magnum { namespace MeshTools {
 
-GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices) {
+namespace {
+
+GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices, const CompileFlags flags) {
+    /* Only this one flag is allowed at this point */
+    CORRADE_INTERNAL_ASSERT(!(flags & ~CompileFlag::NoWarnOnCustomAttributes));
     CORRADE_ASSERT((!meshData.isIndexed() || indices.id()) && vertices.id(),
         "MeshTools::compile(): invalid external buffer(s)", GL::Mesh{});
 
@@ -70,7 +74,8 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
            single 32-bit value :( */
         const VertexFormat format = meshData.attributeFormat(i);
         if(isVertexFormatImplementationSpecific(format)) {
-            Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format));
+            if(!(flags & CompileFlag::NoWarnOnCustomAttributes))
+                Warning{} << "MeshTools::compile(): ignoring attribute" << meshData.attributeName(i) << "with an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format));
             continue;
         }
 
@@ -101,7 +106,8 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
         }
 
         if(!attribute) {
-            Warning{} << "MeshTools::compile(): ignoring unknown attribute" << meshData.attributeName(i);
+            if(!(flags & CompileFlag::NoWarnOnCustomAttributes))
+                Warning{} << "MeshTools::compile(): ignoring unknown attribute" << meshData.attributeName(i);
             continue;
         }
 
@@ -122,7 +128,7 @@ GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buff
     return mesh;
 }
 
-GL::Mesh compile(const Trade::MeshData& meshData) {
+GL::Mesh compileInternal(const Trade::MeshData& meshData, const CompileFlags flags) {
     GL::Buffer indices{NoCreate};
     if(meshData.isIndexed()) {
         indices = GL::Buffer{GL::Buffer::TargetHint::ElementArray};
@@ -132,19 +138,29 @@ GL::Mesh compile(const Trade::MeshData& meshData) {
     GL::Buffer vertices{GL::Buffer::TargetHint::Array};
     vertices.setData(meshData.vertexData());
 
-    return compile(meshData, std::move(indices), std::move(vertices));
+    return compileInternal(meshData, std::move(indices), std::move(vertices), flags);
+}
+
+}
+
+GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices) {
+    return compileInternal(meshData, std::move(indices), std::move(vertices), {});
 }
 
 GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer& vertices) {
-    return compile(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array));
+    return compileInternal(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
 }
 
 GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer&& vertices) {
-    return compile(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), std::move(vertices));
+    return compileInternal(meshData, GL::Buffer::wrap(indices.id(), GL::Buffer::TargetHint::ElementArray), std::move(vertices), CompileFlag::NoWarnOnCustomAttributes);
 }
 
 GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer& vertices) {
-    return compile(meshData, std::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array));
+    return compileInternal(meshData, std::move(indices), GL::Buffer::wrap(vertices.id(), GL::Buffer::TargetHint::Array), CompileFlag::NoWarnOnCustomAttributes);
+}
+
+GL::Mesh compile(const Trade::MeshData& meshData) {
+    return compileInternal(meshData, {});
 }
 
 GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
@@ -194,8 +210,8 @@ GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags) {
     }
 
     flags &= ~(CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals);
-    CORRADE_INTERNAL_ASSERT(!flags);
-    return compile(meshData);
+    CORRADE_INTERNAL_ASSERT(!(flags & ~CompileFlag::NoWarnOnCustomAttributes));
+    return compileInternal(meshData, flags);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

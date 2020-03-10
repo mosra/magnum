@@ -93,7 +93,7 @@ struct CompileGLTest: GL::OpenGLTester {
 
         void packedAttributes();
 
-        void unknownAttribute();
+        void customAttribute();
         void implementationSpecificAttributeFormat();
         void generateNormalsNoPosition();
         void generateNormals2DPosition();
@@ -170,6 +170,14 @@ constexpr struct {
     {"move both", true, true, true}
 };
 
+constexpr struct {
+    const char* name;
+    CompileFlags flags;
+} CustomAttributeWarningData[] {
+    {"", {}},
+    {"no warning", CompileFlag::NoWarnOnCustomAttributes}
+};
+
 using namespace Math::Literals;
 
 constexpr Color4ub ImageData[] {
@@ -203,11 +211,13 @@ CompileGLTest::CompileGLTest() {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    addTests({&CompileGLTest::packedAttributes,
+    addTests({&CompileGLTest::packedAttributes});
 
-              &CompileGLTest::unknownAttribute,
-              &CompileGLTest::implementationSpecificAttributeFormat,
-              &CompileGLTest::generateNormalsNoPosition,
+    addInstancedTests({&CompileGLTest::customAttribute,
+                       &CompileGLTest::implementationSpecificAttributeFormat},
+        Containers::arraySize(CustomAttributeWarningData));
+
+    addTests({&CompileGLTest::generateNormalsNoPosition,
               &CompileGLTest::generateNormals2DPosition,
               &CompileGLTest::generateNormalsNoFloats});
 
@@ -714,27 +724,39 @@ void CompileGLTest::packedAttributes() {
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
 }
 
-void CompileGLTest::unknownAttribute() {
+void CompileGLTest::customAttribute() {
+    auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {Trade::MeshAttributeData{Trade::meshAttributeCustom(115),
             VertexFormat::Short, nullptr}}};
 
     std::ostringstream out;
     Warning redirectError{&out};
-    MeshTools::compile(data);
-    CORRADE_COMPARE(out.str(),
+    if(instanceData.flags)
+        MeshTools::compile(data, instanceData.flags);
+    else
+        MeshTools::compile(data);
+    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
         "MeshTools::compile(): ignoring unknown attribute Trade::MeshAttribute::Custom(115)\n");
 }
 
 void CompileGLTest::implementationSpecificAttributeFormat() {
+    auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             vertexFormatWrap(0xdead), nullptr}}};
 
     std::ostringstream out;
     Warning redirectError{&out};
-    MeshTools::compile(data);
-    CORRADE_COMPARE(out.str(),
+    if(instanceData.flags)
+        MeshTools::compile(data, instanceData.flags);
+    else
+        MeshTools::compile(data);
+    CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
         "MeshTools::compile(): ignoring attribute Trade::MeshAttribute::Position with an implementation-specific format 0xdead\n");
 }
 

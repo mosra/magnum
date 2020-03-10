@@ -72,7 +72,18 @@ enum class CompileFlag: UnsignedByte {
      * is not a triangle mesh or doesn't have 3D positions, this flag does
      * nothing. If the mesh already has its own normals, these get replaced.
      */
-    GenerateSmoothNormals = 1 << 1
+    GenerateSmoothNormals = 1 << 1,
+
+    /**
+     * By default, @ref compile() warns when it encounters custom attributes
+     * and attributes with implementation-specific format, as those get ignored
+     * by it. If you're binding those manually with
+     * @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&) or
+     * handling them in some other way on the application side already, use
+     * this flag to suppress the warning messages.
+     * @m_since_latest
+     */
+    NoWarnOnCustomAttributes = 1 << 2
 };
 
 /**
@@ -105,7 +116,8 @@ possibly also an index buffer, if the mesh is indexed.
     their type.
 -   Custom attributes and known attributes of implementation-specific types
     are ignored with a warning. See the @ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&)
-    for an example showing how to bind them manually.
+    for an example showing how to bind them manually, and
+    @ref CompileFlag::NoWarnOnCustomAttributes to suppress the warning.
 
 If normal generation is not requested, @ref Trade::MeshData::indexData() and
 @ref Trade::MeshData::vertexData() are uploaded as-is without any further
@@ -158,6 +170,11 @@ by the mesh or not:
 If @p meshData is not indexed, the @p indices parameter is ignored --- in that
 case you can pass a @ref NoCreate "NoCreate"-d instance to avoid allocating an
 unnecessary OpenGL buffer object.
+
+Compared to @ref compile(const Trade::MeshData&, CompileFlags), this function
+implicitly enables the @ref CompileFlag::NoWarnOnCustomAttributes flag,
+assuming that custom attributes and attributes with implementation-specific
+formats are explicitly handled on the application side.
 */
 MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer& vertices);
 
