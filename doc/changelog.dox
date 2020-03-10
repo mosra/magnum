@@ -177,11 +177,11 @@ See also:
 
 @subsubsection changelog-latest-changes-gl GL library
 
--   Added @ref GL::AbstractTexture::bind() and
-    @ref GL::AbstractTexture::bindImages() overloads taking a
-    @ref Corrade::Containers::ArrayView instead of @ref std::initializer_list
-    in order to allow passing runtime-sized lists (see
-    [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
+-   Added @ref GL::AbstractTexture::bind(),
+    @ref GL::AbstractTexture::bindImages() and @ref GL::MeshView::draw()
+    overloads taking a @ref Corrade::Containers::ArrayView instead of
+    @ref std::initializer_list in order to allow passing runtime-sized lists
+    (see also [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
 -   Added an ability to remove a buffer from a @ref GL::BufferTexture using
     @ref GL::BufferTexture::resetBuffer() "resetBuffer()"
 

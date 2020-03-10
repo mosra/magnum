@@ -59,7 +59,7 @@ struct MeshState {
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    void(*multiDrawImplementation)(std::initializer_list<Containers::Reference<MeshView>>);
+    void(*multiDrawImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
     #endif
 
     void(*bindVAOImplementation)(GLuint);

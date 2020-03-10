@@ -84,7 +84,17 @@ class MAGNUM_GL_EXPORT MeshView {
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
+         * @m_since_latest
          */
+        static void draw(AbstractShaderProgram& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        static void draw(AbstractShaderProgram&& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+
+        /** @overload */
         static void draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
 
         /** @overload */
@@ -287,9 +297,9 @@ class MAGNUM_GL_EXPORT MeshView {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(std::initializer_list<Containers::Reference<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
         #endif
-        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(std::initializer_list<Containers::Reference<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 
         Containers::Reference<Mesh> _original;
 
