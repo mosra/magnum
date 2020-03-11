@@ -106,9 +106,9 @@ elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumMeshTools PUBLIC
-    Magnum)
+    Magnum MagnumTrade)
 if(TARGET_GL)
-    target_link_libraries(MagnumMeshTools PUBLIC MagnumGL MagnumTrade)
+    target_link_libraries(MagnumMeshTools PUBLIC MagnumGL)
 endif()
 
 install(TARGETS MagnumMeshTools
@@ -131,9 +131,9 @@ if(BUILD_TESTS)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumMeshToolsTestLib PUBLIC
-        Magnum)
+        Magnum MagnumTrade)
     if(TARGET_GL)
-        target_link_libraries(MagnumMeshToolsTestLib PUBLIC MagnumGL MagnumTrade)
+        target_link_libraries(MagnumMeshToolsTestLib PUBLIC MagnumGL)
     endif()
 
     add_subdirectory(Test)
