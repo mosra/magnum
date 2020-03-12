@@ -5,5 +5,5 @@ pkg
 *.kdev4
 *~
 *.kate-swp
-*.pkg.tar.xz
+*.pkg.tar.zst
 CMakeLists.txt.user*
