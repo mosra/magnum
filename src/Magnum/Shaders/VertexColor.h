@@ -145,6 +145,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         VertexColor<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
     private:
+        /* Prevent accidentally calling irrelevant functions */
+        #ifndef MAGNUM_TARGET_GLES
+        using GL::AbstractShaderProgram::drawTransformFeedback;
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        using GL::AbstractShaderProgram::dispatchCompute;
+        #endif
+
         Int _transformationProjectionMatrixUniform{0};
 };
 

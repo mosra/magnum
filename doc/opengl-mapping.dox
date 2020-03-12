@@ -138,10 +138,10 @@ OpenGL function                         | Matching API
 @fn_gl{DispatchCompute}                 | @ref GL::AbstractShaderProgram::dispatchCompute()
 @fn_gl_extension{DispatchComputeGroupSize,ARB,compute_variable_group_size} | |
 @fn_gl{DispatchComputeIndirect}         | |
-@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref GL::Mesh::draw(AbstractShaderProgram&), \n @ref GL::MeshView::draw(AbstractShaderProgram&)
+@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref GL::AbstractShaderProgram::drawTransformFeedback()
 @fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElementsIndirect} | |
 @fn_gl{DrawBuffer}, \n `glNamedFramebufferDrawBuffer()`, \n @fn_gl{DrawBuffers}, \n `glNamedFramebufferDrawBuffers()` | @ref GL::DefaultFramebuffer::mapForDraw(), \n @ref GL::Framebuffer::mapForDraw()
-@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | @ref GL::Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt), \n @ref GL::MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | @ref GL::AbstractShaderProgram::drawTransformFeedback()
 
 @subsection opengl-mapping-functions-e E
 
@@ -292,7 +292,7 @@ OpenGL function                         | Matching API
 @fn_gl{MapBuffer}, \n `glMapNamedBuffer()`, \n @fn_gl{MapBufferRange}, \n `glMapNamedBufferRange()`, \n @fn_gl{UnmapBuffer}, \n `glUnmapNamedBuffer()` | @ref GL::Buffer::map(), @ref GL::Buffer::unmap()
 @fn_gl{MemoryBarrier}, \n `glMemoryBarrierByRegion()` | @ref GL::Renderer::setMemoryBarrier(), \n @ref GL::Renderer::setMemoryBarrierByRegion()
 @fn_gl{MinSampleShading}                | @ref GL::Renderer::setMinSampleShading()
-@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref GL::MeshView::draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>)
+@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
 @fn_gl{MultiDrawArraysIndirectCount}, \n @fn_gl{MultiDrawElementsIndirectCount} | |
 
 @subsection opengl-mapping-functions-o O
@@ -394,7 +394,7 @@ OpenGL function                         | Matching API
 @fn_gl_extension{UniformHandle,ARB,bindless_texture}, \n @fn_gl_extension{ProgramUniformHandle,ARB,bindless_texture} | |
 @fn_gl{UniformBlockBinding}             | @ref GL::AbstractShaderProgram::setUniformBlockBinding()
 @fn_gl{UniformSubroutines}              | |
-@fn_gl{UseProgram}                      | @ref GL::Mesh::draw(), @ref GL::MeshView::draw()
+@fn_gl{UseProgram}                      | @ref GL::AbstractShaderProgram::draw(), \n @ref GL::AbstractShaderProgram::drawTransformFeedback(), \n @ref GL::AbstractShaderProgram::dispatchCompute()
 @fn_gl{UseProgramStages}                | |
 
 @subsection opengl-mapping-functions-v V

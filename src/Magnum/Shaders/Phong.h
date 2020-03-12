@@ -554,6 +554,14 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         }
 
     private:
+        /* Prevent accidentally calling irrelevant functions */
+        #ifndef MAGNUM_TARGET_GLES
+        using GL::AbstractShaderProgram::drawTransformFeedback;
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        using GL::AbstractShaderProgram::dispatchCompute;
+        #endif
+
         Flags _flags;
         UnsignedInt _lightCount;
         Int _transformationMatrixUniform{0},

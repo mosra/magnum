@@ -36,32 +36,53 @@
 
 namespace Magnum { namespace GL {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void MeshView::draw(AbstractShaderProgram& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
-    /* Why std::initializer_list doesn't have empty()? */
-    if(!meshes.size()) return;
-
-    shader.use();
-
-    #ifndef CORRADE_NO_ASSERT
-    const Mesh* original = &meshes.begin()->get()._original.get();
-    for(MeshView& mesh: meshes)
-        CORRADE_ASSERT(&mesh._original.get() == original, "GL::MeshView::draw(): all meshes must be views of the same original mesh", );
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    multiDrawImplementationDefault(meshes);
-    #else
-    Context::current().state().mesh->multiDrawImplementation(meshes);
-    #endif
+    shader.draw(meshes);
 }
 
 void MeshView::draw(AbstractShaderProgram&& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
-    draw(shader, Containers::arrayView(meshes));
+    shader.draw(meshes);
 }
 
 void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
-    draw(shader, Containers::arrayView(meshes));
+    shader.draw(meshes);
 }
+
+void MeshView::draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
+    shader.draw(meshes);
+}
+#endif
+
+MeshView& MeshView::setIndexRange(Int first) {
+     CORRADE_ASSERT(_original.get()._indexBuffer.id(), "MeshView::setIndexRange(): mesh is not indexed", *this);
+    _indexOffset = _original.get()._indexOffset + first*_original.get().indexTypeSize();
+    return *this;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshView& MeshView::draw(AbstractShaderProgram& shader) {
+    shader.draw(*this);
+    return *this;
+}
+
+MeshView& MeshView::draw(AbstractShaderProgram&& shader) {
+    shader.draw(*this);
+    return *this;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+MeshView& MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    shader.drawTransformFeedback(*this, xfb, stream);
+    return *this;
+}
+
+MeshView& MeshView::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    shader.drawTransformFeedback(*this, xfb, stream);
+    return *this;
+}
+#endif
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
@@ -144,42 +165,6 @@ void MeshView::multiDrawImplementationFallback(Containers::ArrayView<const Conta
         mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset);
         #endif
     }
-}
-#endif
-
-MeshView& MeshView::setIndexRange(Int first) {
-     CORRADE_ASSERT(_original.get()._indexBuffer.id(), "MeshView::setIndexRange(): mesh is not indexed", *this);
-    _indexOffset = _original.get()._indexOffset + first*_original.get().indexTypeSize();
-    return *this;
-}
-
-MeshView& MeshView::draw(AbstractShaderProgram& shader) {
-    CORRADE_ASSERT(_countSet, "GL::MeshView::draw(): setCount() was never called, probably a mistake?", *this);
-
-    /* Nothing to draw, exit without touching any state */
-    if(!_count || !_instanceCount) return *this;
-
-    shader.use();
-
-    #ifndef MAGNUM_TARGET_GLES
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
-
-    return *this;
-}
-
-#ifndef MAGNUM_TARGET_GLES
-MeshView& MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
-    /* Nothing to draw, exit without touching any state */
-    if(!_instanceCount) return *this;
-
-    shader.use();
-    _original.get().drawInternal(xfb, stream, _instanceCount);
-    return *this;
 }
 #endif
 

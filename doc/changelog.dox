@@ -227,10 +227,11 @@ See also:
 @subsubsection changelog-latest-changes-gl GL library
 
 -   Added @ref GL::AbstractTexture::bind(),
-    @ref GL::AbstractTexture::bindImages() and @ref GL::MeshView::draw()
-    overloads taking a @ref Corrade::Containers::ArrayView instead of
-    @ref std::initializer_list in order to allow passing runtime-sized lists
-    (see also [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
+    @ref GL::AbstractTexture::bindImages() and
+    @ref GL::AbstractShaderProgram::draw() overloads taking a
+    @ref Corrade::Containers::ArrayView instead of @ref std::initializer_list
+    in order to allow passing runtime-sized lists (see also
+    [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
 -   Added an ability to remove a buffer from a @ref GL::BufferTexture using
     @ref GL::BufferTexture::resetBuffer() "resetBuffer()"
 
@@ -392,6 +393,10 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   @cpp GL::Mesh::draw() @ce and @cpp GL::MeshView::draw() @ce are deprecated
+    in favor of @ref GL::AbstractShaderProgram::draw() and
+    @ref GL::AbstractShaderProgram::drawTransformFeedback(), as the API makes
+    much more sense to have on a shader and not on a mesh
 -   @cpp GL::Attribute::DataType::HalfFloat @ce,
     @cpp GL::DynamicAttribute::DataType::HalfFloat @ce and
     @cpp GL::PixelType::HalfFloat @ce is deprecated in favor of
@@ -1806,9 +1811,9 @@ Released 2018-10-23, tagged as
     @ref GL::Mesh::setIndexBuffer() can now take ownership of a passed
     @ref GL::Buffer to simplify resource management on user side. See
     @ref GL-Mesh-buffer-ownership for more information.
--   @ref GL::Mesh::draw() and @ref GL::MeshView::draw() now return a reference
-    to self to make method-chained draws (for example using a different shader)
-    possible as well
+-   @cpp GL::Mesh::draw() @ce and @cpp GL::MeshView::draw() @ce now return a
+    reference to self to make method-chained draws (for example using a
+    different shader) possible as well
 -   The @ref GL::BufferUsage parameter in @ref GL::Buffer::setData() is now
     optional, defaults to @ref GL::BufferUsage::StaticDraw
 
@@ -3237,8 +3242,8 @@ a high-level overview.
 -   Removed deprecated `Mesh*::set*{Range,Count}()` functions, use
     @ref GL::Mesh::setCount() "Mesh*::setCount()" and
     @ref GL::MeshView::setIndexRange() "MeshView::setIndexRange()" instead
--   Removed deprecated parameterless @ref GL::Mesh::draw() "Mesh*::draw()"
-    overload, use the one with explicit shader parameter instead
+-   Removed deprecated parameterless @cpp GL::Mesh::draw() @ce overload, use
+    the one with explicit shader parameter instead
 -   Removed deprecated `Context::Flag::Robustness` enum value, use
     @ref GL::Context::Flag::RobustAccess "Context::Flag::RobustAccess" instead
 -   Removed deprecated `Texture::Target` enum, use dedicated

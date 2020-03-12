@@ -31,9 +31,14 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/MeshView.h"
 #include "Magnum/GL/Shader.h"
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/GL/Implementation/DebugState.h"
+#endif
+#ifdef MAGNUM_TARGET_GLES
+#include "Magnum/GL/Implementation/MeshState.h"
 #endif
 #include "Magnum/GL/Implementation/ShaderProgramState.h"
 #include "Magnum/GL/Implementation/State.h"
@@ -332,6 +337,80 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
 
     return {success, std::move(message)};
 }
+
+void AbstractShaderProgram::draw(Mesh& mesh) {
+    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?", );
+
+    /* Nothing to draw, exit without touching any state */
+    if(!mesh._count || !mesh._instanceCount) return;
+
+    use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+    #else
+    mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+    #endif
+}
+
+void AbstractShaderProgram::draw(MeshView& mesh) {
+    CORRADE_ASSERT(mesh._countSet, "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?", );
+
+    /* Nothing to draw, exit without touching any state */
+    if(!mesh._count || !mesh._instanceCount) return;
+
+    use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+    #else
+    mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+    #endif
+}
+
+void AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
+    if(meshes.empty()) return;
+
+    use();
+
+    #ifndef CORRADE_NO_ASSERT
+    const Mesh* original = &meshes.begin()->get()._original.get();
+    for(MeshView& mesh: meshes)
+        CORRADE_ASSERT(&mesh._original.get() == original, "GL::AbstractShaderProgram::draw(): all meshes must be views of the same original mesh", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    MeshView::multiDrawImplementationDefault(meshes);
+    #else
+    Context::current().state().mesh->multiDrawImplementation(meshes);
+    #endif
+}
+
+void AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>> meshes) {
+    draw(Containers::arrayView(meshes));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractShaderProgram::drawTransformFeedback(Mesh& mesh, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!mesh._instanceCount) return;
+
+    use();
+    mesh.drawInternal(xfb, stream, mesh._instanceCount);
+}
+
+void AbstractShaderProgram::drawTransformFeedback(MeshView& mesh, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!mesh._instanceCount) return;
+
+    use();
+    mesh._original->drawInternal(xfb, stream, mesh._instanceCount);
+}
+#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {

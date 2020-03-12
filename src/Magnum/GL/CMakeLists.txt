@@ -26,7 +26,6 @@
 set(MagnumGL_SRCS
     AbstractObject.cpp
     AbstractQuery.cpp
-    AbstractShaderProgram.cpp
     Buffer.cpp
     Context.cpp
     DefaultFramebuffer.cpp
@@ -54,6 +53,7 @@ set(MagnumGL_SRCS
 
 set(MagnumGL_GracefulAssert_SRCS
     AbstractFramebuffer.cpp
+    AbstractShaderProgram.cpp
     AbstractTexture.cpp
     Attribute.cpp
     CubeMapTexture.cpp

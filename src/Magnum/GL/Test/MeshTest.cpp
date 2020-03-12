@@ -136,7 +136,7 @@ void MeshTest::drawCountNotSet() {
     mesh.draw(Shader{NoCreate});
 
     CORRADE_COMPARE(out.str(),
-        "GL::Mesh::draw(): setCount() was never called, probably a mistake?\n");
+        "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?\n");
 }
 
 void MeshTest::drawViewCountNotSet() {
@@ -148,7 +148,7 @@ void MeshTest::drawViewCountNotSet() {
     view.draw(Shader{NoCreate});
 
     CORRADE_COMPARE(out.str(),
-        "GL::MeshView::draw(): setCount() was never called, probably a mistake?\n");
+        "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?\n");
 }
 
 void MeshTest::mapPrimitive() {

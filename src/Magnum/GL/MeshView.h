@@ -52,55 +52,46 @@ bindings and attached buffers are reused from original mesh.
 The same rules as in @ref Mesh apply, i.e. if the view has non-zero index
 count, it is treated as indexed mesh, otherwise it is treated as non-indexed
 mesh. If both index and vertex count is zero, the view is treated as empty and
-no draw commands are issued when calling @ref draw().
+no draw commands are issued when calling @ref AbstractShaderProgram::draw().
 
 You must ensure that the original mesh remains available for whole view
 lifetime.
 */
 class MAGNUM_GL_EXPORT MeshView {
-    friend Implementation::MeshState;
-
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw multiple meshes at once
-         *
-         * In OpenGL ES, if @gl_extension{EXT,multi_draw_arrays} is not
-         * present, the functionality is emulated using sequence of
-         * @ref draw(AbstractShaderProgram&) calls.
-         *
-         * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in OpenGL
-         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
-         * available, the associated vertex array object is bound instead of
-         * setting up the mesh from scratch.
-         * @attention All meshes must be views of the same original mesh and
-         *      must not be instanced.
-         * @see @ref draw(AbstractShaderProgram&), @fn_gl{UseProgram},
-         *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray}, @fn_gl_keyword{MultiDrawArrays} or
-         *      @fn_gl_keyword{MultiDrawElements}/@fn_gl_keyword{MultiDrawElementsBaseVertex}
-         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
-         *      if the mesh is indexed and @ref baseVertex() is not `0`.
-         * @requires_gl Specifying base vertex for indexed meshes is not
-         *      available in OpenGL ES or WebGL.
-         * @m_since_latest
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         *      instead.
          */
-        static void draw(AbstractShaderProgram& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
+         *      instead.
          */
-        static void draw(AbstractShaderProgram&& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram&& shader, Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 
-        /** @overload */
-        static void draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
 
-        /** @overload */
-        static void draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
-            draw(shader, meshes);
-        }
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") static void draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
+        #endif
 
         /**
          * @brief Constructor
@@ -131,8 +122,7 @@ class MAGNUM_GL_EXPORT MeshView {
          * @brief Set vertex/index count
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         *
+         * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * @attention To prevent nothing being rendered by accident, this
          *      function has to be always called, even to just set the count to
          *      @cpp 0 @ce.
@@ -151,8 +141,9 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
-         * when drawing. Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is @cpp 0 @ce.
+         * when drawing. Ignored when calling
+         * @ref AbstractShaderProgram::drawTransformFeedback(). Default is
+         * @cpp 0 @ce.
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gles32 Base vertex cannot be specified for indexed meshes
@@ -175,7 +166,7 @@ class MAGNUM_GL_EXPORT MeshView {
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
          * @ref setIndexRange(Int), as index range functionality is not
          * available there. Ignored when calling
-         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * Expects that the original mesh is indexed.
          * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
@@ -190,7 +181,7 @@ class MAGNUM_GL_EXPORT MeshView {
          *
          * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
          * better performance. Ignored when calling
-         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * Expects that the original mesh is indexed.
          * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
@@ -206,9 +197,9 @@ class MAGNUM_GL_EXPORT MeshView {
          *
          * Default is @cpp 1 @ce.
          * @requires_gl31 Extension @gl_extension{ARB,draw_instanced} if using
-         *      @ref draw(AbstractShaderProgram&)
+         *      @ref AbstractShaderProgram::draw()
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
-         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+         *      if using @ref AbstractShaderProgram::drawTransformFeedback()
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays},
          *      @gl_extension{EXT,draw_instanced},
@@ -230,7 +221,7 @@ class MAGNUM_GL_EXPORT MeshView {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * Default is @cpp 0 @ce.
          * @requires_gl42 Extension @gl_extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
@@ -242,60 +233,42 @@ class MAGNUM_GL_EXPORT MeshView {
         }
         #endif
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw the mesh
-         * @return Reference to self (for method chaining)
-         *
-         * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
-         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>),
-         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
-         *      if the mesh is indexed and @ref baseVertex() is not `0`.
-         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays} if
-         *      @ref instanceCount() is more than `1`.
-         * @requires_gl42 Extension @gl_extension{ARB,base_instance} if
-         *      @ref baseInstance() is not `0`.
-         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
-         *      @gl_extension{EXT,instanced_arrays},
-         *      @gl_extension{EXT,draw_instanced},
-         *      @gl_extension{NV,instanced_arrays},
-         *      @gl_extension{NV,draw_instanced} in OpenGL ES 2.0 if
-         *      @ref instanceCount() is more than `1`.
-         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
-         *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
-         * @requires_gl Specifying base vertex for indexed meshes is not
-         *      available in OpenGL ES or WebGL.
+         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         *      instead.
          */
-        MeshView& draw(AbstractShaderProgram& shader);
-        MeshView& draw(AbstractShaderProgram&& shader) {
-            return draw(shader);
-        } /**< @overload */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") MeshView& draw(AbstractShaderProgram& shader);
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") MeshView& draw(AbstractShaderProgram&& shader);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw the mesh with vertices coming out of transform feedback
-         * @return Reference to self (for method chaining)
-         *
-         * Everything set by @ref setCount(), @ref setBaseInstance(),
-         * @ref setBaseVertex(), @ref setIndexRange() and @ref Mesh::setIndexBuffer()
-         * is ignored, the mesh is drawn as non-indexed and the vertex count is
-         * taken from the @p xfb object. See
-         * @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * for more information.
-         * @see @ref draw(AbstractShaderProgram&)
-         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback2}
-         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback3} if
-         *      @p stream is not `0`
-         * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
-         *      if @ref instanceCount() is more than `1`.
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
-        MeshView& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-        MeshView& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
-            return draw(shader, xfb, stream);
-        } /**< @overload */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") MeshView& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use
+                @ref AbstractShaderProgram::drawTransformFeedback() instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") MeshView& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+        #endif
         #endif
 
     private:
+        friend AbstractShaderProgram;
+        friend Implementation::MeshState;
+
         #ifndef MAGNUM_TARGET_WEBGL
         static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
         #endif

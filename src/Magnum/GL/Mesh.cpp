@@ -29,7 +29,6 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -42,6 +41,10 @@
 #endif
 #include "Magnum/GL/Implementation/MeshState.h"
 #include "Magnum/GL/Implementation/State.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/GL/AbstractShaderProgram.h"
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -397,25 +400,6 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, const GLintptr offset, const MeshInde
     return *this;
 }
 
-Mesh& Mesh::draw(AbstractShaderProgram& shader) {
-    CORRADE_ASSERT(_countSet, "GL::Mesh::draw(): setCount() was never called, probably a mistake?", *this);
-
-    /* Nothing to draw, exit without touching any state */
-    if(!_count || !_instanceCount) return *this;
-
-    shader.use();
-
-    #ifndef MAGNUM_TARGET_GLES
-    drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
-
-    return *this;
-}
-
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd)
 #elif !defined(MAGNUM_TARGET_GLES2)
@@ -554,15 +538,30 @@ void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const 
 
     (this->*state.unbindImplementation)();
 }
+#endif
 
-Mesh& Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
-    /* Nothing to draw, exit without touching any state */
-    if(!_instanceCount) return *this;
-
-    shader.use();
-    drawInternal(xfb, stream, _instanceCount);
+#ifdef MAGNUM_BUILD_DEPRECATED
+Mesh& Mesh::draw(AbstractShaderProgram& shader) {
+    shader.draw(*this);
     return *this;
 }
+
+Mesh& Mesh::draw(AbstractShaderProgram&& shader) {
+    shader.draw(*this);
+    return *this;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Mesh& Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    shader.drawTransformFeedback(*this, xfb, stream);
+    return *this;
+}
+
+Mesh& Mesh::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    shader.drawTransformFeedback(*this, xfb, stream);
+    return *this;
+}
+#endif
 #endif
 
 void Mesh::bindVAOImplementationDefault(GLuint) {}

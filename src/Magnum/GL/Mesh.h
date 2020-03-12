@@ -227,7 +227,7 @@ for use with stock shaders.
     ownership to the mesh.
 
 If vertex/index count or instance count is zero, the mesh is empty and no draw
-commands are issued when calling @ref draw().
+commands are issued when calling @ref AbstractShaderProgram::draw().
 
 @subsection GL-Mesh-configuration-example Example mesh configuration
 
@@ -289,7 +289,7 @@ getting only a moved-out instance. For example:
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader (see
 @ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-for more infromation) and call @ref Mesh::draw().
+for more infromation) and call @ref AbstractShaderProgram::draw().
 
 @section GL-Mesh-webgl-restrictions WebGL restrictions
 
@@ -302,8 +302,8 @@ If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0,
 WebGL 2.0, @gl_extension{OES,vertex_array_object} in OpenGL ES 2.0 or
 @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
-in each @ref draw() call. The engine tracks currently bound VAO and currently
-active shader program to avoid unnecessary calls to @fn_gl_keyword{BindVertexArray}
+in each @ref AbstractShaderProgram::draw() call. The engine tracks currently
+bound VAO and currently active shader program to avoid unnecessary calls to @fn_gl_keyword{BindVertexArray}
 and @fn_gl_keyword{UseProgram}. Mesh limits and implementation-defined values
 (such as @ref maxElementIndex()) are cached, so repeated queries don't result
 in repeated @fn_gl{Get} calls.
@@ -315,12 +315,9 @@ documentation of @ref addVertexBuffer() for more information.
 
 If index range is specified in @ref setIndexBuffer(), range-based version of
 drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
-@ref draw() for more information.
+@ref AbstractShaderProgram::draw() for more information.
  */
 class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
-    friend MeshView;
-    friend Implementation::MeshState;
-
     public:
         /**
          * @brief Max vertex attribute stride
@@ -582,8 +579,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * If the mesh is indexed, the value is treated as index count,
          * otherwise the value is vertex count. If set to @cpp 0 @ce, no draw
-         * commands are issued when calling @ref draw(AbstractShaderProgram&).
-         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * commands are issued when calling @ref AbstractShaderProgram::draw().
+         * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          *
          * @attention To prevent nothing being rendered by accident, this
          *      function has to be always called, even to just set the count to
@@ -606,8 +603,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Ignored when calling
-         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is @cpp 0 @ce.
+         * @ref AbstractShaderProgram::drawTransformFeedback(). Default is
+         * @cpp 0 @ce.
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
@@ -627,16 +624,16 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * If set to @cpp 1 @ce, non-instanced draw commands are issued when
-         * calling @ref draw(AbstractShaderProgram&) or
-         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * calling @ref AbstractShaderProgram::draw() or
+         * @ref AbstractShaderProgram::drawTransformFeedback().
          * If set to @cpp 0 @ce, no draw commands are issued at all. Default is
          * @cpp 1 @ce.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
          * @requires_gl31 Extension @gl_extension{ARB,draw_instanced} if using
-         *      @ref draw(AbstractShaderProgram&)
+         *      @ref AbstractShaderProgram::draw()
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
-         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+         *      if using @ref AbstractShaderProgram::drawTransformFeedback()
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
          *      @gl_extension{EXT,instanced_arrays},
          *      @gl_extension{EXT,draw_instanced},
@@ -658,7 +655,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * Default is @cpp 0 @ce.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @gl_extension{ARB,base_instance}
@@ -895,8 +892,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         *
+         * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * @see @ref maxElementIndex(), @ref maxElementsIndices(),
          *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer} or
@@ -957,93 +953,43 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), 0, 0);
         } /**< @overload */
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw the mesh
-         * @param shader    Shader to use for drawing
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the shader is compatible with this mesh and is fully
-         * set up. If vertex/index count or instance count is `0`, no draw
-         * commands are issued. See also
-         * @ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
-         * for more information. If @gl_extension{ARB,vertex_array_object} (part
-         * of OpenGL 3.0), OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object}
-         * in OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in
-         * WebGL 1.0 is available, the associated vertex array object is bound
-         * instead of setting up the mesh from scratch.
-         * @see @ref setCount(), @ref setInstanceCount(),
-         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
-         *      @ref MeshView::draw(AbstractShaderProgram&),
-         *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>),
-         *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
-         *      @fn_gl_keyword{DisableVertexAttribArray} or @fn_gl_keyword{BindVertexArray},
-         *      @fn_gl_keyword{DrawArrays}/@fn_gl_keyword{DrawArraysInstanced}/
-         *      @fn_gl_keyword{DrawArraysInstancedBaseInstance} or @fn_gl_keyword{DrawElements}/
-         *      @fn_gl_keyword{DrawRangeElements}/@fn_gl_keyword{DrawElementsBaseVertex}/
-         *      @fn_gl_keyword{DrawRangeElementsBaseVertex}/@fn_gl_keyword{DrawElementsInstanced}/
-         *      @fn_gl_keyword{DrawElementsInstancedBaseInstance}/
-         *      @fn_gl_keyword{DrawElementsInstancedBaseVertex}/
-         *      @fn_gl_keyword{DrawElementsInstancedBaseVertexBaseInstance}
-         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
-         *      if the mesh is indexed and @ref baseVertex() is not `0`.
-         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays} if
-         *      @ref instanceCount() is more than `1`.
-         * @requires_gl42 Extension @gl_extension{ARB,base_instance} if
-         *      @ref baseInstance() is not `0`.
-         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
-         *      @gl_extension{EXT,instanced_arrays},
-         *      @gl_extension{EXT,draw_instanced},
-         *      @gl_extension{NV,instanced_arrays},
-         *      @gl_extension{NV,draw_instanced} in OpenGL ES 2.0 if
-         *      @ref instanceCount() is more than `1`.
-         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
-         *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
-         * @requires_gl Specifying base vertex for indexed meshes is not
-         *      available in OpenGL ES or WebGL.
+         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         *      instead.
          */
-        Mesh& draw(AbstractShaderProgram& shader);
-        Mesh& draw(AbstractShaderProgram&& shader) {
-            return draw(shader);
-        } /**< @overload */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") Mesh& draw(AbstractShaderProgram& shader);
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") Mesh& draw(AbstractShaderProgram&& shader);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw the mesh with vertices coming out of transform feedback
-         * @param shader    Shader to use for drawing
-         * @param xfb       Transform feedback to use for vertex count
-         * @param stream    Transform feedback stream ID
-         * @return Reference to self (for method chaining)
-         *
-         * Expects that the @p shader is compatible with this mesh, is fully
-         * set up and that the output buffer(s) from @p xfb are used as vertex
-         * buffers in this mesh. Everything set by @ref setCount(),
-         * @ref setBaseInstance(), @ref setBaseVertex() and @ref setIndexBuffer()
-         * is ignored, the mesh is drawn as non-indexed and the vertex count is
-         * taken from the @p xfb object. If @p stream is @cpp 0 @ce, non-stream
-         * draw command is used. If @gl_extension{ARB,vertex_array_object} (part
-         * of OpenGL 3.0) is available, the associated vertex array object is
-         * bound instead of setting up the mesh from scratch.
-         * @see @ref setInstanceCount(), @ref draw(AbstractShaderProgram&),
-         *      @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
-         *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
-         *      @fn_gl_keyword{DisableVertexAttribArray} or @fn_gl_keyword{BindVertexArray},
-         *      @fn_gl_keyword{DrawTransformFeedback}/@fn_gl_keyword{DrawTransformFeedbackInstanced} or
-         *      @fn_gl_keyword{DrawTransformFeedbackStream}/@fn_gl_keyword{DrawTransformFeedbackStreamInstanced}
-         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback2}
-         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback3} if
-         *      @p stream is not `0`
-         * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
-         *      if @ref instanceCount() is more than `1`.
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
-        Mesh& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-        Mesh& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
-            return draw(shader, xfb, stream);
-        } /**< @overload */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") Mesh& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+
+        /**
+         * @overload
+         * @m_deprecated_since_latest Use
+         *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
+         */
+        CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") Mesh& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+        #endif
         #endif
 
     private:
+        friend AbstractShaderProgram;
+        friend MeshView;
+        friend Implementation::MeshState;
+
         struct MAGNUM_GL_LOCAL AttributeLayout;
 
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags);

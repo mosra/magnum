@@ -56,8 +56,9 @@ configured in one run, reducing count of bind calls from 9 to 3.
 @snippet MagnumGL.cpp method-chaining-texture-chained
 
 Method chaining is not used on non-configuring functions, such as
-@ref GL::Framebuffer::clear() or @ref GL::Mesh::draw(), as these won't be
-commonly used in conjunction with other functions anyway.
+@ref GL::Framebuffer::clear() or @ref GL::AbstractShaderProgram::draw(), as
+their desired use is commonly as a last step in the chain, after everything
+else.
 
 Method chaining is also used in @ref SceneGraph and other libraries and in some
 cases it allows you to just "configure and forget" without even saving the

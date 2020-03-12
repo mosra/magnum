@@ -268,6 +268,15 @@ enum: UnsignedInt {
 };
 /* [AbstractShaderProgram-output-attributes] */
 
+#if !defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+/* [AbstractShaderProgram-hide-irrelevant] */
+private:
+    using GL::AbstractShaderProgram::drawTransformFeedback;
+    using GL::AbstractShaderProgram::dispatchCompute;
+/* [AbstractShaderProgram-hide-irrelevant] */
+public:
+#endif
+
 /* [AbstractShaderProgram-constructor] */
 explicit MyShader() {
     /* Load shader sources */
