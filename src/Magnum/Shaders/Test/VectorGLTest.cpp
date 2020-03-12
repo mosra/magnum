@@ -225,9 +225,9 @@ void VectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector2D shader;
-    shader.bindVectorTexture(texture);
-    square.draw(shader);
+    Vector2D{}
+        .bindVectorTexture(texture)
+        .draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -272,9 +272,9 @@ void VectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector3D shader;
-    shader.bindVectorTexture(texture);
-    plane.draw(shader);
+    Vector3D{}
+        .bindVectorTexture(texture)
+        .draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -319,15 +319,14 @@ void VectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector2D shader;
-    shader
+    Vector2D{}
         .setBackgroundColor(0x9999ff_rgbf)
         .setColor(0xffff99_rgbf)
         .setTransformationProjectionMatrix(
             Matrix3::projection({2.1f, 2.1f})*
             Matrix3::rotation(5.0_degf))
-        .bindVectorTexture(texture);
-    square.draw(shader);
+        .bindVectorTexture(texture)
+        .draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -371,8 +370,7 @@ void VectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector3D shader;
-    shader
+    Vector3D{}
         .setBackgroundColor(0x9999ff_rgbf)
         .setColor(0xffff99_rgbf)
         .setTransformationProjectionMatrix(
@@ -380,8 +378,8 @@ void VectorGLTest::render3D() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationZ(15.0_degf))
-        .bindVectorTexture(texture);
-    plane.draw(shader);
+        .bindVectorTexture(texture)
+        .draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

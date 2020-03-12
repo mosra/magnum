@@ -185,7 +185,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     #endif
     q.begin();
 
-    mesh.draw(shader);
+    shader.draw(mesh);
 
     q.end();
     const bool availableBefore = q.resultAvailable();
@@ -236,13 +236,13 @@ void SampleQueryGLTest::conditionalRender() {
 
     /* This should generate some samples */
     qYes.begin();
-    mesh.draw(shader);
+    shader.draw(mesh);
     qYes.end();
 
     /* Thus this should be rendered */
     qYes.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
     q.begin();
-    mesh.draw(shader);
+    shader.draw(mesh);
     q.end();
     qYes.endConditionalRender();
 
@@ -257,7 +257,7 @@ void SampleQueryGLTest::conditionalRender() {
     /* Thus this should not be rendered */
     qNo.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
     q.begin();
-    mesh.draw(shader);
+    shader.draw(mesh);
     q.end();
     qNo.endConditionalRender();
 

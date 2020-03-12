@@ -347,8 +347,8 @@ void FlatGLTest::renderTeardown() {
 void FlatGLTest::renderDefaults2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D shader;
-    circle.draw(shader);
+    Flat2D{}
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -367,8 +367,8 @@ void FlatGLTest::renderDefaults2D() {
 void FlatGLTest::renderDefaults3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D shader;
-    sphere.draw(shader);
+    Flat3D{}
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -387,11 +387,10 @@ void FlatGLTest::renderDefaults3D() {
 void FlatGLTest::renderColored2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D shader;
-    shader.setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}));
-
-    circle.draw(shader);
+    Flat2D{}
+        .setColor(0x9999ff_rgbf)
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -415,15 +414,14 @@ void FlatGLTest::renderColored2D() {
 void FlatGLTest::renderColored3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D shader;
-    shader.setColor(0x9999ff_rgbf)
+    Flat3D{}
+        .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf));
-
-    sphere.draw(shader);
+            Matrix4::rotationX(15.0_degf))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -473,10 +471,10 @@ void FlatGLTest::renderSinglePixelTextured2D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    Flat2D shader{Flat3D::Flag::Textured};
-    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .bindTexture(texture);
-    circle.draw(shader);
+    Flat2D{Flat3D::Flag::Textured}
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .bindTexture(texture)
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -511,14 +509,14 @@ void FlatGLTest::renderSinglePixelTextured3D() {
         .setStorage(1, TextureFormatRGBA, Vector2i{1})
         .setSubImage(0, {}, diffuseImage);
 
-    Flat3D shader{Flat3D::Flag::Textured};
-    shader.setTransformationProjectionMatrix(
+    Flat3D{Flat3D::Flag::Textured}
+        .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        .bindTexture(texture);
-    sphere.draw(shader);
+        .bindTexture(texture)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -560,13 +558,13 @@ void FlatGLTest::renderTextured2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D shader{Flat2D::Flag::Textured};
-    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+    Flat2D{Flat2D::Flag::Textured}
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         /* Colorized. Case without a color (where it should be white) is tested
            in renderSinglePixelTextured() */
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
-    circle.draw(shader);
+        .bindTexture(texture)
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -604,8 +602,8 @@ void FlatGLTest::renderTextured3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D shader{Flat3D::Flag::Textured};
-    shader.setTransformationProjectionMatrix(
+    Flat3D{Flat3D::Flag::Textured}
+        .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
@@ -613,8 +611,8 @@ void FlatGLTest::renderTextured3D() {
         /* Colorized. Case without a color (where it should be white) is tested
            in renderSinglePixelTextured() */
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
-    sphere.draw(shader);
+        .bindTexture(texture)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -664,11 +662,11 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D shader{Flat2D::Flag::Textured|Flat2D::Flag::VertexColor};
-    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+    Flat2D{Flat2D::Flag::Textured|Flat2D::Flag::VertexColor}
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
-    circle.draw(shader);
+        .bindTexture(texture)
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -718,15 +716,15 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D shader{Flat3D::Flag::Textured|Flat3D::Flag::VertexColor};
-    shader.setTransformationProjectionMatrix(
+    Flat3D{Flat3D::Flag::Textured|Flat3D::Flag::VertexColor}
+        .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture);
-    sphere.draw(shader);
+        .bindTexture(texture)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -791,7 +789,7 @@ void FlatGLTest::renderAlpha2D() {
     if(data.flags & Flat3D::Flag::AlphaMask)
         shader.setAlphaMask(data.threshold);
 
-    circle.draw(shader);
+    shader.draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -848,9 +846,9 @@ void FlatGLTest::renderAlpha3D() {
 
     /* For proper Z order draw back faces first and then front faces */
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    sphere.draw(shader);
+    shader.draw(sphere);
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    sphere.draw(shader);
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -904,12 +902,11 @@ void FlatGLTest::renderObjectId2D() {
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D shader{Flat3D::Flag::ObjectId};
-    shader.setColor(0x9999ff_rgbf)
+    Flat2D{Flat3D::Flag::ObjectId}
+        .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .setObjectId(47523);
-
-    circle.draw(shader);
+        .setObjectId(47523)
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -949,16 +946,15 @@ void FlatGLTest::renderObjectId3D() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D shader{Flat3D::Flag::ObjectId};
-    shader.setColor(0x9999ff_rgbf)
+    Flat3D{Flat3D::Flag::ObjectId}
+        .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        .setObjectId(48526);
-
-    sphere.draw(shader);
+        .setObjectId(48526)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

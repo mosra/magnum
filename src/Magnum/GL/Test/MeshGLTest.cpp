@@ -395,10 +395,10 @@ void MeshGLTest::constructMove() {
         framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer)
                    .bind();
 
-        FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
         d.setPrimitive(MeshPrimitive::Points)
-         .setCount(1)
-         .draw(shader);
+         .setCount(1);
+        FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
+        shader.draw(d);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -663,7 +663,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 
     if(view.mesh().isIndexed()) view.setIndexRange(1);
 
-    view.draw(shader);
+    shader.draw(view);
 }
 
 template<class T> T Checker::get(PixelFormat format, PixelType type) {
@@ -2952,8 +2952,8 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
         mesh.setInstanceCount(2)
             .addVertexBufferInstanced(buffer, 1, 0, Attribute{})
             .setPrimitive(MeshPrimitive::Points)
-            .setCount(1)
-            .draw(shader);
+            .setCount(1);
+        shader.draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -2968,8 +2968,8 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
         mesh.setInstanceCount(1)
             .addVertexBuffer(buffer, 4, Attribute{})
             .setPrimitive(MeshPrimitive::Points)
-            .setCount(2)
-            .draw(shader);
+            .setCount(2);
+        shader.draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -3017,7 +3017,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
          .setIndexRange(1);
     } else c.setBaseVertex(1);
 
-    MeshView::draw(shader, {a, b, c});
+    shader.draw({a, b, c});
 }
 
 template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {

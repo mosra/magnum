@@ -357,8 +357,9 @@ template<class T> void CompileGLTest::twoDimensions() {
     /* Check with the flat shader, it should always work */
     {
         _framebuffer.clear(GL::FramebufferClear::Color);
-        _flat2D.setColor(0xff3366_rgbf);
-        mesh.draw(_flat2D);
+        _flat2D
+            .setColor(0xff3366_rgbf)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -370,7 +371,7 @@ template<class T> void CompileGLTest::twoDimensions() {
     /* Check with the colored shader, if we have colors */
     if(data.flags & Flag::Colors) {
         _framebuffer.clear(GL::FramebufferClear::Color);
-        mesh.draw(_color2D);
+        _color2D.draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -382,8 +383,9 @@ template<class T> void CompileGLTest::twoDimensions() {
     /* Check with the textured shader, if we have texture coords */
     if(data.flags & Flag::TextureCoordinates2D) {
         _framebuffer.clear(GL::FramebufferClear::Color);
-        _flatTextured2D.bindTexture(_texture);
-        mesh.draw(_flatTextured2D);
+        _flatTextured2D
+            .bindTexture(_texture)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -502,8 +504,8 @@ template<class T> void CompileGLTest::threeDimensions() {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _flat3D
             .setTransformationProjectionMatrix(projection*transformation)
-            .setColor(0x6633ff_rgbf);
-        mesh.draw(_flat3D);
+            .setColor(0x6633ff_rgbf)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -519,8 +521,8 @@ template<class T> void CompileGLTest::threeDimensions() {
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
             .setNormalMatrix(transformation.normalMatrix())
-            .setProjectionMatrix(projection);
-        mesh.draw(_phong);
+            .setProjectionMatrix(projection)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -539,8 +541,8 @@ template<class T> void CompileGLTest::threeDimensions() {
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
             .setNormalMatrix(transformation.normalMatrix())
-            .setProjectionMatrix(projection);
-        mesh.draw(_phong);
+            .setProjectionMatrix(projection)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -554,8 +556,8 @@ template<class T> void CompileGLTest::threeDimensions() {
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
             .setNormalMatrix(transformation.normalMatrix())
-            .setProjectionMatrix(projection);
-        mesh.draw(_phong);
+            .setProjectionMatrix(projection)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -569,8 +571,8 @@ template<class T> void CompileGLTest::threeDimensions() {
     if(data.flags & Flag::Colors) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _color3D
-            .setTransformationProjectionMatrix(projection*transformation);
-        mesh.draw(_color3D);
+            .setTransformationProjectionMatrix(projection*transformation)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -585,8 +587,8 @@ template<class T> void CompileGLTest::threeDimensions() {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _flatTextured3D
             .setTransformationProjectionMatrix(projection*transformation)
-            .bindTexture(_texture);
-        mesh.draw(_flatTextured3D);
+            .bindTexture(_texture)
+            .draw(mesh);
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE_WITH(
@@ -689,8 +691,8 @@ void CompileGLTest::packedAttributes() {
         .setDiffuseColor(0x33ff66_rgbf)
         .setTransformationMatrix(transformation)
         .setNormalMatrix(transformation.normalMatrix())
-        .setProjectionMatrix(projection);
-    mesh.draw(_phong);
+        .setProjectionMatrix(projection)
+        .draw(mesh);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
@@ -701,8 +703,8 @@ void CompileGLTest::packedAttributes() {
     /* Check colors */
     _framebuffer.clear(GL::FramebufferClear::Color);
     _color3D
-        .setTransformationProjectionMatrix(projection*transformation);
-    mesh.draw(_color3D);
+        .setTransformationProjectionMatrix(projection*transformation)
+        .draw(mesh);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
@@ -714,8 +716,8 @@ void CompileGLTest::packedAttributes() {
     _framebuffer.clear(GL::FramebufferClear::Color);
     _flatTextured3D
         .setTransformationProjectionMatrix(projection*transformation)
-        .bindTexture(_texture);
-    mesh.draw(_flatTextured3D);
+        .bindTexture(_texture)
+        .draw(mesh);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
@@ -869,8 +871,9 @@ void CompileGLTest::externalBuffers() {
         CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     _framebuffer.clear(GL::FramebufferClear::Color);
-    _flat2D.setColor(0xff3366_rgbf);
-    mesh.draw(_flat2D);
+    _flat2D
+        .setColor(0xff3366_rgbf)
+        .draw(mesh);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(

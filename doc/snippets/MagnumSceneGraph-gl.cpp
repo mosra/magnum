@@ -107,8 +107,8 @@ class RedCubeDrawable: public SceneGraph::Drawable3D {
                     {5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
                 .setNormalMatrix(transformationMatrix.normalMatrix())
-                .setProjectionMatrix(camera.projectionMatrix());
-            _mesh.draw(_shader);
+                .setProjectionMatrix(camera.projectionMatrix())
+                .draw(_mesh);
         }
 
         GL::Mesh _mesh;

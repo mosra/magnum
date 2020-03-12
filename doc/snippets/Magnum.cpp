@@ -230,7 +230,7 @@ MyResourceManager manager;
 typedef ResourceManager<GL::Mesh, GL::Texture2D, GL::AbstractShaderProgram>
     MyResourceManager;
 struct MyShader: GL::AbstractShaderProgram {
-    void bindTexture(GL::Texture2D&) {}
+    MyShader& bindTexture(GL::Texture2D&) { return *this; }
 };
 /* [ResourceManager-fill] */
 MyResourceManager manager;
@@ -248,8 +248,9 @@ if(!cube) {
 /* [ResourceManager-fill] */
 
 /* [ResourceManager-use] */
-shader->bindTexture(*texture);
-cube->draw(*shader);
+(*shader)
+    .bindTexture(*texture)
+    .draw(*cube);
 /* [ResourceManager-use] */
 }
 

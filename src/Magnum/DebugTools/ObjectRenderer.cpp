@@ -68,8 +68,8 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Reso
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;
 
 template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) {
-    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{_options->size()}));
-    _mesh->draw(*_shader);
+    _shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{_options->size()}))
+        .draw(*_mesh);
 }
 
 template class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer<2>;

@@ -132,8 +132,7 @@ void MeshTest::drawCountNotSet() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Mesh mesh{NoCreate};
-    mesh.draw(Shader{NoCreate});
+    Shader{NoCreate}.draw(Mesh{NoCreate});
 
     CORRADE_COMPARE(out.str(),
         "GL::AbstractShaderProgram::draw(): Mesh::setCount() was never called, probably a mistake?\n");
@@ -144,8 +143,7 @@ void MeshTest::drawViewCountNotSet() {
     Error redirectError{&out};
 
     Mesh mesh{NoCreate};
-    MeshView view{mesh};
-    view.draw(Shader{NoCreate});
+    Shader{NoCreate}.draw(MeshView{mesh});
 
     CORRADE_COMPARE(out.str(),
         "GL::AbstractShaderProgram::draw(): MeshView::setCount() was never called, probably a mistake?\n");

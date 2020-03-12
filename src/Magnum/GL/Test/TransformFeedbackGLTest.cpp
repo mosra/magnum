@@ -289,7 +289,7 @@ void TransformFeedbackGLTest::attachBase() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -336,7 +336,7 @@ void TransformFeedbackGLTest::attachRange() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -427,7 +427,7 @@ void TransformFeedbackGLTest::attachBases() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -484,7 +484,7 @@ void TransformFeedbackGLTest::attachRanges() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -563,7 +563,7 @@ void TransformFeedbackGLTest::interleaved() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -650,7 +650,7 @@ void TransformFeedbackGLTest::draw() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(xfbShader, TransformFeedback::PrimitiveMode::Points);
-    inputMesh.draw(xfbShader);
+    xfbShader.draw(inputMesh);
     feedback.end();
     Renderer::disable(Renderer::Feature::RasterizerDiscard);
 
@@ -700,7 +700,7 @@ void TransformFeedbackGLTest::draw() {
 
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin();
-    outputMesh.draw(drawShader, feedback, DrawData[testCaseInstanceId()].stream);
+    drawShader.drawTransformFeedback(outputMesh, feedback, DrawData[testCaseInstanceId()].stream);
     q.end();
 
     MAGNUM_VERIFY_NO_GL_ERROR();

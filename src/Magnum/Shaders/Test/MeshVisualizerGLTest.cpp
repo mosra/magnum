@@ -284,8 +284,8 @@ void MeshVisualizerGLTest::renderTeardown() {
 void MeshVisualizerGLTest::renderDefaults() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    MeshVisualizer shader;
-    sphere.draw(shader);
+    MeshVisualizer{}
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -325,7 +325,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
 
     MeshVisualizer shader{MeshVisualizer::Flag::Wireframe};
-    sphere.draw(shader);
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -343,8 +343,9 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
     }
 
     /** @todo make this unnecessary */
-    shader.setViewportSize({80, 80});
-    sphere.draw(shader);
+    shader
+        .setViewportSize({80, 80})
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -360,14 +361,14 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
 void MeshVisualizerGLTest::render() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    MeshVisualizer shader;
-    shader.setColor(0x9999ff_rgbf)
+    MeshVisualizer{}
+        .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf));
-    sphere.draw(shader);
+            Matrix4::rotationX(15.0_degf))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -429,8 +430,8 @@ void MeshVisualizerGLTest::renderWireframe() {
         }
     } else sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizer shader{data.flags|MeshVisualizer::Flag::Wireframe};
-    shader.setColor(0xffff99_rgbf)
+    MeshVisualizer{data.flags|MeshVisualizer::Flag::Wireframe}
+        .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf)
         .setWireframeWidth(data.width)
         .setSmoothness(data.smoothness)
@@ -439,8 +440,8 @@ void MeshVisualizerGLTest::renderWireframe() {
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf));
-    sphere.draw(shader);
+            Matrix4::rotationX(15.0_degf))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

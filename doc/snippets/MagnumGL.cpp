@@ -160,7 +160,7 @@ struct: GL::AbstractShaderProgram {} someShader;
 GL::Buffer buffer;
 GL::Mesh mesh;
 // ...
-mesh.draw(someShader);
+someShader.draw(mesh);
 
 {
     /* Entering a section with 3rd-party OpenGL code -- clean up all state that
@@ -406,9 +406,8 @@ GL::Texture2D diffuseTexture, specularTexture;
 shader.setTransformationMatrix(transformation)
     .setProjectionMatrix(projection)
     .bindDiffuseTexture(diffuseTexture)
-    .bindSpecularTexture(specularTexture);
-
-mesh.draw(shader);
+    .bindSpecularTexture(specularTexture)
+    .draw(mesh);
 /* [AbstractShaderProgram-rendering] */
 }
 #endif
@@ -832,7 +831,7 @@ GL::DebugOutput::setEnabled(
         GL::DebugOutput::Severity::Notification, "Rendering a transparent mesh");
 
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
-    mesh.draw(shader);
+    shader.draw(mesh);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     // ...
@@ -865,7 +864,7 @@ struct: GL::AbstractShaderProgram {} shader;
     GL::DebugGroup group{GL::DebugGroup::Source::Application, 42, "Scene rendering"};
 
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
-    mesh.draw(shader);
+    shader.draw(mesh);
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     /* The debug group is popped automatically at the end of the scope */
@@ -882,7 +881,7 @@ GL::DebugGroup group;
 group.push(GL::DebugGroup::Source::Application, 42, "Scene rendering");
 
 GL::Renderer::enable(GL::Renderer::Feature::Blending);
-mesh.draw(shader);
+shader.draw(mesh);
 GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
 group.pop();

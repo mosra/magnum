@@ -154,14 +154,15 @@ namespace {
 }
 
 std::string ShaderVisualizer::phong() {
-    MeshTools::compile(Primitives::uvSphereSolid(16, 32)).draw(Shaders::Phong{}
+    Shaders::Phong{}
         .setAmbientColor(0x22272e_srgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
         .setLightPosition({5.0f, 5.0f, 7.0f})
         .setProjectionMatrix(Projection)
         .setTransformationMatrix(Transformation)
-        .setNormalMatrix(Transformation.normalMatrix()));
+        .setNormalMatrix(Transformation.normalMatrix())
+        .draw(MeshTools::compile(Primitives::uvSphereSolid(16, 32)));
 
     return "phong.png";
 }
@@ -171,21 +172,22 @@ std::string ShaderVisualizer::meshVisualizer() {
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    MeshTools::compile(Primitives::icosphereSolid(1))
-        .draw(Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe}
-            .setColor(BaseColor)
-            .setWireframeColor(OutlineColor)
-            .setWireframeWidth(2.0f)
-            .setViewportSize(Vector2{ImageSize})
-            .setTransformationProjectionMatrix(projection));
+    Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe}
+        .setColor(BaseColor)
+        .setWireframeColor(OutlineColor)
+        .setWireframeWidth(2.0f)
+        .setViewportSize(Vector2{ImageSize})
+        .setTransformationProjectionMatrix(projection)
+        .draw(MeshTools::compile(Primitives::icosphereSolid(1)));
 
     return "meshvisualizer.png";
 }
 
 std::string ShaderVisualizer::flat() {
-    MeshTools::compile(Primitives::uvSphereSolid(16, 32)).draw(Shaders::Flat3D{}
+    Shaders::Flat3D{}
         .setColor(BaseColor)
-        .setTransformationProjectionMatrix(Projection*Transformation));
+        .setTransformationProjectionMatrix(Projection*Transformation)
+        .draw(MeshTools::compile(Primitives::uvSphereSolid(16, 32)));
 
     return "flat.png";
 }
@@ -213,9 +215,8 @@ std::string ShaderVisualizer::vertexColor() {
         .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt);
 
     Shaders::VertexColor3D shader;
-    shader.setTransformationProjectionMatrix(Projection*Transformation);
-
-    mesh.draw(shader);
+    shader.setTransformationProjectionMatrix(Projection*Transformation)
+        .draw(mesh);
 
     return "vertexcolor.png";
 }
@@ -238,11 +239,11 @@ std::string ShaderVisualizer::vector() {
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate))
-        .draw(Shaders::Vector2D{}
-            .setColor(BaseColor)
-            .bindVectorTexture(texture)
-            .setTransformationProjectionMatrix({}));
+    Shaders::Vector2D{}
+        .setColor(BaseColor)
+        .bindVectorTexture(texture)
+        .setTransformationProjectionMatrix({})
+        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate)));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
@@ -267,13 +268,13 @@ std::string ShaderVisualizer::distanceFieldVector() {
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate))
-        .draw(Shaders::DistanceFieldVector2D{}
-            .setColor(BaseColor)
-            .setOutlineColor(OutlineColor)
-            .setOutlineRange(0.6f, 0.4f)
-            .bindVectorTexture(texture)
-            .setTransformationProjectionMatrix({}));
+    Shaders::DistanceFieldVector2D{}
+        .setColor(BaseColor)
+        .setOutlineColor(OutlineColor)
+        .setOutlineRange(0.6f, 0.4f)
+        .bindVectorTexture(texture)
+        .setTransformationProjectionMatrix({})
+        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate)));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 

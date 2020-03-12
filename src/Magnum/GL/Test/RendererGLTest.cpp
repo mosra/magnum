@@ -210,8 +210,8 @@ void RendererGLTest::pointCoord() {
     #endif
 
     Mesh mesh{MeshPrimitive::Points};
-    mesh.setCount(1)
-        .draw(shader);
+    mesh.setCount(1);
+    shader.draw(mesh);
 
     #ifndef MAGNUM_TARGET_GLES
     Renderer::disable(Renderer::Feature::ProgramPointSize);

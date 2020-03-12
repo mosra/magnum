@@ -240,9 +240,9 @@ void DistanceFieldVectorGLTest::renderDefaults2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D shader;
-    shader.bindVectorTexture(texture);
-    square.draw(shader);
+    DistanceFieldVector2D{}
+        .bindVectorTexture(texture)
+        .draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -296,9 +296,9 @@ void DistanceFieldVectorGLTest::renderDefaults3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D shader;
-    shader.bindVectorTexture(texture);
-    plane.draw(shader);
+    DistanceFieldVector2D{}
+        .bindVectorTexture(texture)
+        .draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -355,16 +355,15 @@ void DistanceFieldVectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D shader;
-    shader
+    DistanceFieldVector2D{}
         /** @todo implement background color */
         .setColor(0xffff99_rgbf)
         .setOutlineColor(0x9999ff_rgbf)
         .setOutlineRange(data.outlineRangeStart, data.outlineRangeEnd)
         .setSmoothness(data.smoothness)
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .bindVectorTexture(texture);
-    square.draw(shader);
+        .bindVectorTexture(texture)
+        .draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -412,8 +411,7 @@ void DistanceFieldVectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector3D shader;
-    shader
+    DistanceFieldVector3D{}
         /** @todo implement background color */
         .setColor(0xffff99_rgbf)
         .setOutlineColor(0x9999ff_rgbf)
@@ -424,8 +422,8 @@ void DistanceFieldVectorGLTest::render3D() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationZ(15.0_degf))
-        .bindVectorTexture(texture);
-    plane.draw(shader);
+        .bindVectorTexture(texture)
+        .draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

@@ -162,7 +162,7 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     q.begin();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
-    mesh.draw(shader);
+    shader.draw(mesh);
 
     q.end();
     const bool availableBefore = q.resultAvailable();
@@ -232,7 +232,7 @@ void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
     q.begin(0);
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
-    mesh.draw(shader);
+    shader.draw(mesh);
 
     q.end();
     const UnsignedInt count = q.result<UnsignedInt>();
@@ -308,9 +308,9 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
 
-    mesh.draw(shader); /* Draw once without XFB (shouldn't be counted) */
+    shader.draw(mesh); /* Draw once without XFB (shouldn't be counted) */
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Triangles);
-    mesh.draw(shader);
+    shader.draw(mesh);
     feedback.end();
 
     q.end();
@@ -389,10 +389,10 @@ void PrimitiveQueryGLTest::transformFeedbackOverflow() {
     PrimitiveQuery q1{PrimitiveQuery::Target::TransformFeedbackOverflow},
         q2{PrimitiveQuery::Target::TransformFeedbackOverflow};
     q1.begin();
-    mesh.draw(shader);
+    shader.draw(mesh);
     q1.end();
     q2.begin();
-    mesh.draw(shader);
+    shader.draw(mesh);
     q2.end();
     feedback.end();
 

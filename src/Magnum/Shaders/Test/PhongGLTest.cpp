@@ -514,8 +514,8 @@ void PhongGLTest::renderDefaults() {
     MeshTools::transformVectorsInPlace(transformation.inverted().transposed(), meshData.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
     GL::Mesh sphere = MeshTools::compile(meshData);
 
-    Phong shader;
-    sphere.draw(shader);
+    Phong{}
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -544,8 +544,8 @@ void PhongGLTest::renderColored() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong shader{{}, 2};
-    shader.setLightColors({data.lightColor1, data.lightColor2})
+    Phong{{}, 2}
+        .setLightColors({data.lightColor1, data.lightColor2})
         .setLightPositions({{data.lightPosition1, -3.0f, 0.0f},
                             {data.lightPosition2, -3.0f, 0.0f}})
         .setAmbientColor(0x330033_rgbf)
@@ -554,9 +554,8 @@ void PhongGLTest::renderColored() {
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f))*
                                  Matrix4::rotationY(data.rotation))
         .setNormalMatrix(Matrix4::rotationY(data.rotation).rotationScaling())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
-
-    sphere.draw(shader);
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -642,7 +641,7 @@ void PhongGLTest::renderSinglePixelTextured() {
         .bindDiffuseTexture(diffuse)
         .bindSpecularTexture(specular);
 
-    sphere.draw(shader);
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -742,9 +741,8 @@ void PhongGLTest::renderTextured() {
         /** @todo use normalMatrix() instead */
         .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf)).rotationScaling())
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
-
-    sphere.draw(shader);
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -814,7 +812,7 @@ void PhongGLTest::renderTexturedNormal() {
     else
         shader.bindNormalTexture(normal);
 
-    plane.draw(shader);
+    shader.draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -879,9 +877,9 @@ template<class T> void PhongGLTest::renderVertexColor() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Phong shader{Phong::Flag::DiffuseTexture|Phong::Flag::VertexColor, 2};
-    shader.setLightPositions({{-3.0f, -3.0f, 0.0f},
-                              { 3.0f, -3.0f, 0.0f}})
+    Phong{Phong::Flag::DiffuseTexture|Phong::Flag::VertexColor, 2}
+        .setLightPositions({{-3.0f, -3.0f, 0.0f},
+                            { 3.0f, -3.0f, 0.0f}})
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
@@ -891,8 +889,8 @@ template<class T> void PhongGLTest::renderVertexColor() {
             Matrix4::rotationX(15.0_degf)).rotationScaling())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .setDiffuseColor(0x9999ff_rgbf)
-        .bindDiffuseTexture(diffuse);
-    sphere.draw(shader);
+        .bindDiffuseTexture(diffuse)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -917,15 +915,14 @@ void PhongGLTest::renderShininess() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong shader;
-    shader.setLightPosition({-3.0f, -3.0f, 0.0f})
+    Phong{}
+        .setLightPosition({-3.0f, -3.0f, 0.0f})
         .setDiffuseColor(0xff3333_rgbf)
         .setSpecularColor(data.specular)
         .setShininess(data.shininess)
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
-        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
-
-    sphere.draw(shader);
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1071,9 +1068,9 @@ void PhongGLTest::renderAlpha() {
 
     /* For proper Z order draw back faces first and then front faces */
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    sphere.draw(shader);
+    shader.draw(sphere);
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    sphere.draw(shader);
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1129,8 +1126,8 @@ void PhongGLTest::renderObjectId() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong shader{Phong::Flag::ObjectId, 2};
-    shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
+    Phong{Phong::Flag::ObjectId, 2}
+        .setLightColors({0x993366_rgbf, 0x669933_rgbf})
         .setLightPositions({{-3.0f, -3.0f, 0.0f},
                             { 3.0f, -3.0f, 0.0f}})
         .setAmbientColor(0x330033_rgbf)
@@ -1138,9 +1135,8 @@ void PhongGLTest::renderObjectId() {
         .setSpecularColor(0x6666ff_rgbf)
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setObjectId(48526);
-
-    sphere.draw(shader);
+        .setObjectId(48526)
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1233,9 +1229,9 @@ void PhongGLTest::renderZeroLights() {
 
     /* For proper Z order draw back faces first and then front faces */
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
-    sphere.draw(shader);
+    shader.draw(sphere);
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
-    sphere.draw(shader);
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

@@ -123,8 +123,7 @@ void main() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    GL::Mesh mesh = fullScreenTriangle(data.version);
-    mesh.draw(shader);
+    shader.draw(fullScreenTriangle(data.version));
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

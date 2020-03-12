@@ -216,7 +216,7 @@ void DistanceField::operator()(GL::Texture2D& input, GL::Texture2D& output, cons
     }
 
     /* Draw the mesh */
-    _state->mesh.draw(_state->shader);
+    _state->shader.draw(_state->mesh);
 }
 
 }}

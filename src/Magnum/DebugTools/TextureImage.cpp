@@ -164,7 +164,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
             mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
         }
 
-        mesh.draw(shader);
+        shader.draw(mesh);
 
         /* release() needs to be called after querying the size to avoid zeroing it out */
         const Vector2i imageSize = image.size();

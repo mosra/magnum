@@ -207,8 +207,8 @@ template<class T> void VertexColorGLTest::renderDefaults2D() {
     GL::Mesh circle = MeshTools::compile(circleData);
     circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color3::Location, T>{});
 
-    VertexColor2D shader;
-    circle.draw(shader);
+    VertexColor2D{}
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -248,8 +248,8 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
     GL::Mesh sphere = MeshTools::compile(sphereData);
     sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color4::Location, T>{});
 
-    VertexColor3D shader;
-    sphere.draw(shader);
+    VertexColor3D{}
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -283,9 +283,9 @@ template<class T> void VertexColorGLTest::render2D() {
     GL::Mesh circle = MeshTools::compile(circleData);
     circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color3::Location, T>{});
 
-    VertexColor2D shader;
-    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}));
-    circle.draw(shader);
+    VertexColor2D{}
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -328,13 +328,13 @@ template<class T> void VertexColorGLTest::render3D() {
     GL::Mesh sphere = MeshTools::compile(sphereData);
     sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::VertexColor2D::Color4::Location, T>{});
 
-    VertexColor3D shader;
-    shader.setTransformationProjectionMatrix(
+    VertexColor3D{}
+        .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf));
-    sphere.draw(shader);
+            Matrix4::rotationX(15.0_degf))
+        .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

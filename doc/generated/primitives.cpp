@@ -193,7 +193,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data).draw(shader);
+            shader.draw(MeshTools::compile(*data));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -212,7 +212,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data).draw(shader);
+            shader.draw(MeshTools::compile(*data));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -237,7 +237,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data).draw(shader);
+            shader.draw(MeshTools::compile(*data));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -267,7 +267,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data).draw(shader);
+            shader.draw(MeshTools::compile(*data));
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -302,9 +302,9 @@ int PrimitiveVisualizer::exec() {
             std::tie(data, filename) = (this->*fun)();
 
             /* TODO: use MeshVisualizer2D once it exists */
-            MeshTools::compile(*data)
-                .draw(flat)
-                .draw(wireframe2D);
+            GL::Mesh mesh = MeshTools::compile(*data);
+            flat.draw(mesh);
+            wireframe2D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -345,9 +345,9 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data)
-                .draw(phong)
-                .draw(wireframe3D);
+            GL::Mesh mesh = MeshTools::compile(*data);
+            phong.draw(mesh);
+            wireframe3D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -368,9 +368,9 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data)
-                .draw(shader)
-                .draw(wireframe2D);
+            GL::Mesh mesh = MeshTools::compile(*data);
+            shader.draw(mesh);
+            wireframe2D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -391,9 +391,9 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            MeshTools::compile(*data)
-                .draw(shader)
-                .draw(wireframe3D);
+            GL::Mesh mesh = MeshTools::compile(*data);
+            shader.draw(mesh);
+            wireframe3D.draw(mesh);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
