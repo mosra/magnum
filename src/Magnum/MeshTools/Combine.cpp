@@ -105,9 +105,11 @@ Trade::MeshData combineIndexedAttributes(const Containers::ArrayView<const Conta
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Decide on the output primitive and index count, calculated total
-       combined index type size */
-    MeshPrimitive primitive;
-    UnsignedInt indexCount;
+       combined index type size. Initialize primitive and indexCount even
+       though not needed, otherwise GCC complains about "potentially
+       uninitialized" in the assert below */
+    MeshPrimitive primitive{};
+    UnsignedInt indexCount{};
     UnsignedInt indexStride = 0;
     for(std::size_t i = 0; i != data.size(); ++i) {
         CORRADE_ASSERT(data[i]->isIndexed(),
