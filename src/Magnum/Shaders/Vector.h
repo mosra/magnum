@@ -128,11 +128,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
             AbstractVector<dimensions>::bindVectorTexture(texture);
             return *this;
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_DEPRECATED("use bindVectorTexture() instead") Vector<dimensions>& setVectorTexture(GL::Texture2D& texture) {
-            return bindVectorTexture(texture);
-        }
-        #endif
         #endif
 
     private:
