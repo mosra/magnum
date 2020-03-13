@@ -44,7 +44,6 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructMovePhongNoDiffuseTexture();
         void constructMovePhongNoSpecularTexture();
 
-        void accessInvalidColors();
         void accessInvalidTextures();
 
         void debugType();
@@ -66,7 +65,6 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructMovePhongNoDiffuseTexture,
               &MaterialDataTest::constructMovePhongNoSpecularTexture,
 
-              &MaterialDataTest::accessInvalidColors,
               &MaterialDataTest::accessInvalidTextures,
 
               &MaterialDataTest::debugType,
@@ -275,22 +273,6 @@ void MaterialDataTest::constructMovePhongNoSpecularTexture() {
     CORRADE_COMPARE(d.importerState(), &a);
 }
 
-void MaterialDataTest::accessInvalidColors() {
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    PhongMaterialData a{PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture, {}, {}, 80.0f};
-
-    a.ambientColor();
-    a.diffuseColor();
-    a.specularColor();
-
-    CORRADE_COMPARE(out.str(),
-        "Trade::PhongMaterialData::ambientColor(): the material has ambient texture\n"
-        "Trade::PhongMaterialData::diffuseColor(): the material has diffuse texture\n"
-        "Trade::PhongMaterialData::specularColor(): the material has specular texture\n");
-}
-
 void MaterialDataTest::accessInvalidTextures() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -302,9 +284,9 @@ void MaterialDataTest::accessInvalidTextures() {
     a.specularTexture();
 
     CORRADE_COMPARE(out.str(),
-        "Trade::PhongMaterialData::ambientTexture(): the material doesn't have ambient texture\n"
-        "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have diffuse texture\n"
-        "Trade::PhongMaterialData::specularTexture(): the material doesn't have specular texture\n");
+        "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture\n"
+        "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture\n"
+        "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture\n");
 }
 
 void MaterialDataTest::debugType() {

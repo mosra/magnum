@@ -31,92 +31,71 @@ namespace Magnum { namespace Trade {
 
 using namespace Math::Literals;
 
-PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _flags{flags}, _shininess{shininess} {
-    if(_flags & Flag::AmbientTexture)
-        _ambient.texture = {};
-    else
-        _ambient.color = 0x000000ff_rgbaf;
+PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt normalTexture, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _ambientColor{ambientColor}, _diffuseColor{diffuseColor}, _specularColor{specularColor}, _shininess{shininess} {
+    CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
+        "Trade::PhongMaterialData: texture transformation enabled but the material has no textures", );
 
-    if(_flags & Flag::DiffuseTexture)
-        _diffuse.texture = {};
-    else
-        _diffuse.color = 0xffffffff_rgbaf;
-
-    if(_flags & Flag::SpecularTexture)
-        _specular.texture = {};
-    else
-        _specular.color = 0xffffffff_rgbaf;
+    if(flags & Flag::AmbientTexture)
+        _ambientTexture = ambientTexture;
+    if(flags & Flag::DiffuseTexture)
+        _diffuseTexture = diffuseTexture;
+    if(flags & Flag::SpecularTexture)
+        _specularTexture = specularTexture;
+    if(flags & Flag::NormalTexture)
+        _normalTexture = normalTexture;
+    if(flags  & Flag::TextureTransformation)
+        _textureMatrix = textureMatrix;
 }
 
-PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept: AbstractMaterialData{std::move(other)}, _flags{other._flags}, _shininess{other._shininess} {
-    if(_flags & Flag::AmbientTexture)
-        _ambient.texture = other._ambient.texture;
-    else
-        _ambient.color = other._ambient.color;
+#ifdef MAGNUM_BUILD_DEPRECATED
+PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, alphaMode, alphaMask, shininess, importerState} {}
 
-    if(_flags & Flag::DiffuseTexture)
-        _diffuse.texture = other._diffuse.texture;
-    else
-        _diffuse.color = other._diffuse.color;
+PhongMaterialData::PhongMaterialData(const Flags flags, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, MaterialAlphaMode::Opaque, 0.5f, shininess, importerState} {}
+#endif
 
-    if(_flags & Flag::SpecularTexture)
-        _specular.texture = other._specular.texture;
-    else
-        _specular.color = other._specular.color;
+PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept = default;
+
+PhongMaterialData& PhongMaterialData::operator=(PhongMaterialData&& other) noexcept = default;
+
+UnsignedInt PhongMaterialData::ambientTexture() const {
+    CORRADE_ASSERT(flags() & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture", {});
+    return _ambientTexture;
 }
 
-PhongMaterialData& PhongMaterialData::operator=(PhongMaterialData&& other) noexcept {
-    AbstractMaterialData::operator=(std::move(other));
-
-    _flags = other._flags;
-    _shininess = other._shininess;
-
-    if(_flags & Flag::AmbientTexture)
-        _ambient.texture = other._ambient.texture;
-    else
-        _ambient.color = other._ambient.color;
-
-    if(_flags & Flag::DiffuseTexture)
-        _diffuse.texture = other._diffuse.texture;
-    else
-        _diffuse.color = other._diffuse.color;
-
-    if(_flags & Flag::SpecularTexture)
-        _specular.texture = other._specular.texture;
-    else
-        _specular.color = other._specular.color;
-
-    return *this;
-}
-
-Color4& PhongMaterialData::ambientColor() {
-    CORRADE_ASSERT(!(_flags & Flag::AmbientTexture), "Trade::PhongMaterialData::ambientColor(): the material has ambient texture", _ambient.color);
-    return _ambient.color;
-}
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt& PhongMaterialData::ambientTexture() {
-    CORRADE_ASSERT(_flags & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have ambient texture", _ambient.texture);
-    return _ambient.texture;
+    CORRADE_ASSERT(flags() & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture", _ambientTexture);
+    return _ambientTexture;
+}
+#endif
+
+UnsignedInt PhongMaterialData::diffuseTexture() const {
+    CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture", {});
+    return _diffuseTexture;
 }
 
-Color4& PhongMaterialData::diffuseColor() {
-    CORRADE_ASSERT(!(_flags & Flag::DiffuseTexture), "Trade::PhongMaterialData::diffuseColor(): the material has diffuse texture", _diffuse.color);
-    return _diffuse.color;
-}
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt& PhongMaterialData::diffuseTexture() {
-    CORRADE_ASSERT(_flags & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have diffuse texture", _diffuse.texture);
-    return _diffuse.texture;
+    CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture", _diffuseTexture);
+    return _diffuseTexture;
+}
+#endif
+
+UnsignedInt PhongMaterialData::specularTexture() const {
+    CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", {});
+    return _specularTexture;
 }
 
-Color4& PhongMaterialData::specularColor() {
-    CORRADE_ASSERT(!(_flags & Flag::SpecularTexture), "Trade::PhongMaterialData::specularColor(): the material has specular texture", _specular.color);
-    return _specular.color;
-}
-
+#ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt& PhongMaterialData::specularTexture() {
-    CORRADE_ASSERT(_flags & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have specular texture", _specular.texture);
-    return _specular.texture;
+    CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", _specularTexture);
+    return _specularTexture;
+}
+#endif
+
+UnsignedInt PhongMaterialData::normalTexture() const {
+    CORRADE_ASSERT(flags() & Flag::NormalTexture, "Trade::PhongMaterialData::normalTexture(): the material doesn't have a normal texture", {});
+    return _normalTexture;
 }
 
 Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
@@ -129,6 +108,8 @@ Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
         _c(AmbientTexture)
         _c(DiffuseTexture)
         _c(SpecularTexture)
+        _c(NormalTexture)
+        _c(TextureTransformation)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -141,7 +122,9 @@ Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
         PhongMaterialData::Flag::DoubleSided,
         PhongMaterialData::Flag::AmbientTexture,
         PhongMaterialData::Flag::DiffuseTexture,
-        PhongMaterialData::Flag::SpecularTexture});
+        PhongMaterialData::Flag::SpecularTexture,
+        PhongMaterialData::Flag::NormalTexture,
+        PhongMaterialData::Flag::TextureTransformation});
 }
 
 }}

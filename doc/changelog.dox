@@ -205,6 +205,9 @@ See also:
     for more information.
 -   New convenience @ref Trade::AbstractImporter::material(const std::string&)
     etc. APIs allowing to directly get a data using a string name
+-   @ref Trade::PhongMaterialData now supports both color and texture instead
+    of just one or the other, can reference normal textures as well and
+    specfify texture coordinate transform
 
 @subsubsection changelog-latest-new-vk Vk library
 
