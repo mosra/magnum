@@ -23,10 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -59,6 +61,8 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
 
     template<UnsignedInt dimensions> void construct();
     template<UnsignedInt dimensions> void constructMove();
+
+    template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
 
     void renderSetup();
     void renderTeardown();
@@ -94,21 +98,46 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
+    DistanceFieldVector2D::Flags flags;
+} ConstructData[]{
+    {"", {}},
+    {"texture transformation", DistanceFieldVector2D::Flag::TextureTransformation}
+};
+
+const struct {
+    const char* name;
+    DistanceFieldVector2D::Flags flags;
+    Matrix3 textureTransformation;
+    Color4 color, outlineColor;
     Float outlineRangeStart, outlineRangeEnd, smoothness;
     const char* file2D;
     const char* file3D;
+    bool flip;
 } RenderData[] {
-    {"smooth0.1", 0.5f, 1.0f, 0.1f, "smooth0.1-2D.tga", "smooth0.1-3D.tga"},
-    {"smooth0.2", 0.5f, 1.0f, 0.2f, "smooth0.2-2D.tga", "smooth0.2-3D.tga"},
-    {"outline", 0.6f, 0.45f, 0.05f, "outline2D.tga", "outline3D.tga"}
+    {"texture transformation", DistanceFieldVector2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        0xffffff_rgbf, 0x00000000_rgbaf, 0.5f, 1.0f, 0.04f,
+        "defaults-distancefield.tga", "defaults-distancefield.tga", true},
+    {"smooth0.1", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.1f,
+        "smooth0.1-2D.tga", "smooth0.1-3D.tga", false},
+    {"smooth0.2", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.5f, 1.0f, 0.2f,
+        "smooth0.2-2D.tga", "smooth0.2-3D.tga", false},
+    {"outline", {}, {}, 0xffff99_rgbf, 0x9999ff_rgbf, 0.6f, 0.45f, 0.05f,
+        "outline2D.tga", "outline3D.tga", false}
 };
 
 DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
-    addTests<DistanceFieldVectorGLTest>({
+    addInstancedTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::construct<2>,
-        &DistanceFieldVectorGLTest::construct<3>,
+        &DistanceFieldVectorGLTest::construct<3>},
+        Containers::arraySize(ConstructData));
+
+    addTests<DistanceFieldVectorGLTest>({
         &DistanceFieldVectorGLTest::constructMove<2>,
-        &DistanceFieldVectorGLTest::constructMove<3>});
+        &DistanceFieldVectorGLTest::constructMove<3>,
+
+        &DistanceFieldVectorGLTest::setTextureMatrixNotEnabled<2>,
+        &DistanceFieldVectorGLTest::setTextureMatrixNotEnabled<3>});
 
     addTests({&DistanceFieldVectorGLTest::renderDefaults2D,
               &DistanceFieldVectorGLTest::renderDefaults3D},
@@ -148,7 +177,11 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    DistanceFieldVector<dimensions> shader;
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    DistanceFieldVector<dimensions> shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -163,7 +196,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    DistanceFieldVector<dimensions> a;
+    DistanceFieldVector<dimensions> a{DistanceFieldVector<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -171,12 +204,27 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove()
 
     DistanceFieldVector<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), DistanceFieldVector<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
     DistanceFieldVector<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), DistanceFieldVector<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
+}
+
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatrixNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DistanceFieldVector<dimensions> shader;
+    shader.setTextureMatrix({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::DistanceFieldVector::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -355,17 +403,29 @@ void DistanceFieldVectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector2D{}
+    DistanceFieldVector2D shader{data.flags};
+    shader
         /** @todo implement background color */
-        .setColor(0xffff99_rgbf)
-        .setOutlineColor(0x9999ff_rgbf)
+        .setColor(data.color)
+        .setOutlineColor(data.outlineColor)
         .setOutlineRange(data.outlineRangeStart, data.outlineRangeEnd)
         .setSmoothness(data.smoothness)
-        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .bindVectorTexture(texture)
-        .draw(square);
+        .bindVectorTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+    else shader.setTransformationProjectionMatrix(
+        Matrix3::projection({2.1f, 2.1f}));
+
+    shader.draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing, Apple A8 a bit
@@ -375,9 +435,7 @@ void DistanceFieldVectorGLTest::render2D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 2.386f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+    CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join({_testDir, "VectorTestFiles", data.file2D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
@@ -411,21 +469,32 @@ void DistanceFieldVectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    DistanceFieldVector3D{}
+    DistanceFieldVector3D shader{data.flags};
+    shader
         /** @todo implement background color */
-        .setColor(0xffff99_rgbf)
-        .setOutlineColor(0x9999ff_rgbf)
+        .setColor(data.color)
+        .setOutlineColor(data.outlineColor)
         .setOutlineRange(data.outlineRangeStart, data.outlineRangeEnd)
         .setSmoothness(data.smoothness)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationZ(15.0_degf))
-        .bindVectorTexture(texture)
-        .draw(plane);
+        .bindVectorTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+    else shader.setTransformationProjectionMatrix(
+        Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+        Matrix4::translation(Vector3::zAxis(-2.15f))*
+        Matrix4::rotationY(-15.0_degf)*
+        Matrix4::rotationZ(15.0_degf));
+
+    shader.draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing plus a bunch of
@@ -435,9 +504,7 @@ void DistanceFieldVectorGLTest::render3D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 1.613f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+    CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }

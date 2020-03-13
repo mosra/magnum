@@ -62,10 +62,14 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
+
     template<UnsignedInt dimensions> void constructMove();
+
+    template<UnsignedInt dimensions> void constructTextureTransformationNotTextured();
 
     template<UnsignedInt dimensions> void bindTextureNotEnabled();
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
+    template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
     template<UnsignedInt dimensions> void setObjectIdNotEnabled();
     #endif
@@ -132,6 +136,7 @@ constexpr struct {
 } ConstructData[]{
     {"", {}},
     {"textured", Flat2D::Flag::Textured},
+    {"textured + texture transformation", Flat2D::Flag::Textured|Flat2D::Flag::TextureTransformation},
     {"alpha mask", Flat2D::Flag::AlphaMask},
     {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
     {"vertex colors", Flat2D::Flag::VertexColor},
@@ -140,6 +145,19 @@ constexpr struct {
     {"object ID", Flat2D::Flag::ObjectId},
     {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
     #endif
+};
+
+const struct {
+    const char* name;
+    Flat2D::Flags flags;
+    Matrix3 textureTransformation;
+    bool flip;
+} RenderTexturedData[]{
+    {"", Flat2D::Flag::Textured, {}, false},
+    {"texture transformeation",
+        Flat2D::Flag::Textured|Flat2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        true},
 };
 
 const struct {
@@ -174,10 +192,15 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::constructMove<2>,
         &FlatGLTest::constructMove<3>,
 
+        &FlatGLTest::constructTextureTransformationNotTextured<2>,
+        &FlatGLTest::constructTextureTransformationNotTextured<3>,
+
         &FlatGLTest::bindTextureNotEnabled<2>,
         &FlatGLTest::bindTextureNotEnabled<3>,
         &FlatGLTest::setAlphaMaskNotEnabled<2>,
         &FlatGLTest::setAlphaMaskNotEnabled<3>,
+        &FlatGLTest::setTextureMatrixNotEnabled<2>,
+        &FlatGLTest::setTextureMatrixNotEnabled<3>,
         #ifndef MAGNUM_TARGET_GLES2
         &FlatGLTest::setObjectIdNotEnabled<2>,
         &FlatGLTest::setObjectIdNotEnabled<3>
@@ -189,10 +212,17 @@ FlatGLTest::FlatGLTest() {
               &FlatGLTest::renderColored2D,
               &FlatGLTest::renderColored3D,
               &FlatGLTest::renderSinglePixelTextured2D,
-              &FlatGLTest::renderSinglePixelTextured3D,
-              &FlatGLTest::renderTextured2D,
-              &FlatGLTest::renderTextured3D,
-              &FlatGLTest::renderVertexColor2D<Color3>,
+              &FlatGLTest::renderSinglePixelTextured3D},
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+
+    addInstancedTests({&FlatGLTest::renderTextured2D,
+                       &FlatGLTest::renderTextured3D},
+        Containers::arraySize(RenderTexturedData),
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
+
+    addTests({&FlatGLTest::renderVertexColor2D<Color3>,
               &FlatGLTest::renderVertexColor2D<Color4>,
               &FlatGLTest::renderVertexColor3D<Color3>,
               &FlatGLTest::renderVertexColor3D<Color4>},
@@ -276,6 +306,16 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
+template<UnsignedInt dimensions> void FlatGLTest::constructTextureTransformationNotTextured() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Flat<dimensions>{Flat<dimensions>::Flag::TextureTransformation};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Flat: texture transformation enabled but the shader is not textured\n");
+}
+
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -300,6 +340,19 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::setTextureMatrixNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Flat<dimensions> shader;
+    shader.setTextureMatrix({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Flat::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -539,6 +592,9 @@ void FlatGLTest::renderSinglePixelTextured3D() {
 }
 
 void FlatGLTest::renderTextured2D() {
+    auto&& data = RenderTexturedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
@@ -558,15 +614,26 @@ void FlatGLTest::renderTextured2D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat2D{Flat2D::Flag::Textured}
+    Flat2D shader{data.flags};
+    shader
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
         /* Colorized. Case without a color (where it should be white) is tested
            in renderSinglePixelTextured() */
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture)
-        .draw(circle);
+        .bindTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+
+    shader.draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has minor rounding errors, Apple A8 slightly more */
@@ -575,14 +642,15 @@ void FlatGLTest::renderTextured2D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.667f, meanThreshold = 3.254f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+    CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join(_testDir, "FlatTestFiles/textured2D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderTextured3D() {
+    auto&& data = RenderTexturedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
@@ -602,19 +670,30 @@ void FlatGLTest::renderTextured3D() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    Flat3D{Flat3D::Flag::Textured}
+    Flat3D shader{data.flags};
+    shader
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf))
+            Matrix4::rotationY(data.flip ? 15.0_degf : -15.0_degf)*
+            Matrix4::rotationX(data.flip ? -15.0_degf : 15.0_degf))
         /* Colorized. Case without a color (where it should be white) is tested
            in renderSinglePixelTextured() */
         .setColor(0x9999ff_rgbf)
-        .bindTexture(texture)
-        .draw(sphere);
+        .bindTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+
+    shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has 5 different pixels on the edges */
@@ -623,9 +702,7 @@ void FlatGLTest::renderTextured3D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 139.0f, meanThreshold = 2.896f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+    CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join(_testDir, "FlatTestFiles/textured3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }

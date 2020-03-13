@@ -251,6 +251,17 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              */
             VertexColor = 1 << 5,
 
+            /**
+             * Enable texture coordinate transformation. If this flag is set,
+             * the shader expects that at least one of
+             * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture,
+             * @ref Flag::SpecularTexture or @ref Flag::NormalTexture is
+             * enabled as well.
+             * @see @ref setTextureMatrix()
+             * @m_since_latest
+             */
+            TextureTransformation = 1 << 6,
+
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Enable object ID output. See @ref Shaders-Phong-usage-object-id
@@ -260,7 +271,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      WebGL 1.0.
              * @m_since{2019,10}
              */
-            ObjectId = 1 << 6
+            ObjectId = 1 << 7
             #endif
         };
 
@@ -482,6 +493,17 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Phong& setProjectionMatrix(const Matrix4& matrix);
 
         /**
+         * @brief Set texture coordinate transformation matrix
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with
+         * @ref Flag::TextureTransformation enabled. Initial value is an
+         * identity matrix.
+         */
+        Phong& setTextureMatrix(const Matrix3& matrix);
+
+        /**
          * @brief Set light positions
          * @return Reference to self (for method chaining)
          *
@@ -567,6 +589,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Int _transformationMatrixUniform{0},
             _projectionMatrixUniform{1},
             _normalMatrixUniform{2},
+            _textureMatrixUniform{3},
             _ambientColorUniform{4},
             _diffuseColorUniform{5},
             _specularColorUniform{6},

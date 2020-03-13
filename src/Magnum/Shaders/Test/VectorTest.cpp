@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Shaders/Vector.h"
 
@@ -37,6 +39,9 @@ struct VectorTest: TestSuite::Tester {
 
     void constructCopy2D();
     void constructCopy3D();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 VectorTest::VectorTest() {
@@ -44,7 +49,10 @@ VectorTest::VectorTest() {
               &VectorTest::constructNoCreate3D,
 
               &VectorTest::constructCopy2D,
-              &VectorTest::constructCopy3D});
+              &VectorTest::constructCopy3D,
+
+              &VectorTest::debugFlag,
+              &VectorTest::debugFlags});
 }
 
 void VectorTest::constructNoCreate2D() {
@@ -73,6 +81,20 @@ void VectorTest::constructCopy2D() {
 void VectorTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_constructible<Vector3D, const Vector3D&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Vector3D, const Vector3D&>{}));
+}
+
+void VectorTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << Vector2D::Flag::TextureTransformation << Vector2D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::Vector::Flag::TextureTransformation Shaders::Vector::Flag(0xf0)\n");
+}
+
+void VectorTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << Vector3D::Flags{Vector3D::Flag::TextureTransformation|Vector3D::Flag(0xf0)} << Vector3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::Vector::Flag::TextureTransformation|Shaders::Vector::Flag(0xf0) Shaders::Vector::Flags{}\n");
 }
 
 }}}}

@@ -25,6 +25,7 @@
 
 #include "Vector.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -45,7 +46,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
 }
 
-template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
+template<UnsignedInt dimensions> Vector<dimensions>::Vector(const Flags flags): _flags{flags} {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -62,7 +63,8 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.get("generic.glsl"))
+    vert.addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Vector.frag"));
@@ -89,6 +91,8 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     #endif
     {
         _transformationProjectionMatrixUniform = GL::AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        if(flags & Flag::TextureTransformation)
+            _textureMatrixUniform = GL::AbstractShaderProgram::uniformLocation("textureMatrix");
         _backgroundColorUniform = GL::AbstractShaderProgram::uniformLocation("backgroundColor");
         _colorUniform = GL::AbstractShaderProgram::uniformLocation("color");
     }
@@ -103,12 +107,20 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix({});
+    if(flags & Flag::TextureTransformation) setTextureMatrix({});
     setColor(Color4{1.0f}); /* Background color is zero by default */
     #endif
 }
 
 template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setTextureMatrix(const Matrix3& matrix) {
+    CORRADE_ASSERT(_flags & Flag::TextureTransformation,
+        "Shaders::Vector::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+    GL::AbstractShaderProgram::setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
 
@@ -124,5 +136,29 @@ template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setColo
 
 template class Vector<2>;
 template class Vector<3>;
+
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const VectorFlag value) {
+    debug << "Shaders::Vector::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case VectorFlag::v: return debug << "::" #v;
+        _c(TextureTransformation)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const VectorFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::Vector::Flags{}", {
+        VectorFlag::TextureTransformation
+        });
+}
+
+}
 
 }}

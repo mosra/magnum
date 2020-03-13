@@ -65,8 +65,11 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void constructMove();
 
+    void constructTextureTransformationNotTextured();
+
     void bindTexturesNotEnabled();
     void setAlphaMaskNotEnabled();
+    void setTextureMatrixNotEnabled();
     #ifndef MAGNUM_TARGET_GLES2
     void setObjectIdNotEnabled();
     #endif
@@ -134,6 +137,7 @@ constexpr struct {
     {"", {}, 1},
     {"ambient texture", Phong::Flag::AmbientTexture, 1},
     {"diffuse texture", Phong::Flag::DiffuseTexture, 1},
+    {"diffuse texture + texture transform", Phong::Flag::DiffuseTexture|Phong::Flag::TextureTransformation, 1},
     {"specular texture", Phong::Flag::SpecularTexture, 1},
     {"normal texture", Phong::Flag::NormalTexture, 1},
     {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 1},
@@ -174,15 +178,20 @@ constexpr struct {
     {"multi bind", true}
 };
 
-constexpr struct {
+const struct {
     const char* name;
     const char* expected;
     Phong::Flags flags;
+    Matrix3 textureTransformation;
 } RenderTexturedData[]{
-    {"all", "textured.tga", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
-    {"ambient", "textured-ambient.tga", Phong::Flag::AmbientTexture},
-    {"diffuse", "textured-diffuse.tga", Phong::Flag::DiffuseTexture},
-    {"specular", "textured-specular.tga", Phong::Flag::SpecularTexture}
+    {"all", "textured.tga", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, {}},
+    {"ambient", "textured-ambient.tga", Phong::Flag::AmbientTexture, {}},
+    {"diffuse", "textured-diffuse.tga", Phong::Flag::DiffuseTexture, {}},
+    {"diffuse transformed", "textured-diffuse-transformed.tga",
+        Phong::Flag::DiffuseTexture|Phong::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f})
+    },
+    {"specular", "textured-specular.tga", Phong::Flag::SpecularTexture, {}}
 };
 
 /* MSVC 2015 doesn't like constexpr here due to the angles */
@@ -262,8 +271,11 @@ PhongGLTest::PhongGLTest() {
 
     addTests({&PhongGLTest::constructMove,
 
+              &PhongGLTest::constructTextureTransformationNotTextured,
+
               &PhongGLTest::bindTexturesNotEnabled,
               &PhongGLTest::setAlphaMaskNotEnabled,
+              &PhongGLTest::setTextureMatrixNotEnabled,
               #ifndef MAGNUM_TARGET_GLES2
               &PhongGLTest::setObjectIdNotEnabled,
               #endif
@@ -388,6 +400,14 @@ void PhongGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
+void PhongGLTest::constructTextureTransformationNotTextured() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    Phong{Phong::Flag::TextureTransformation};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong: texture transformation enabled but the shader is not textured\n");
+}
+
 void PhongGLTest::bindTexturesNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -417,6 +437,17 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+}
+
+void PhongGLTest::setTextureMatrixNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Phong shader;
+    shader.setTextureMatrix({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -676,6 +707,9 @@ void PhongGLTest::renderTextured() {
         Primitives::UVSphereTextureCoords::Generate));
 
     Phong shader{data.flags, 2};
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);

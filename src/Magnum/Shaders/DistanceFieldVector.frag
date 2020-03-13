@@ -30,7 +30,7 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1)
+layout(location = 2)
 #endif
 uniform lowp vec4 color
     #ifndef GL_ES
@@ -39,12 +39,12 @@ uniform lowp vec4 color
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 2)
+layout(location = 3)
 #endif
 uniform lowp vec4 outlineColor; /* defaults to zero */
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 3)
+layout(location = 4)
 #endif
 uniform lowp vec2 outlineRange
     #ifndef GL_ES
@@ -53,7 +53,7 @@ uniform lowp vec2 outlineRange
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 4)
+layout(location = 5)
 #endif
 uniform lowp float smoothness
     #ifndef GL_ES

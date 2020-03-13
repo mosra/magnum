@@ -30,12 +30,12 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1)
+layout(location = 2)
 #endif
 uniform lowp vec4 backgroundColor; /* defaults to zero */
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 2)
+layout(location = 3)
 #endif
 uniform lowp vec4 color
     #ifndef GL_ES

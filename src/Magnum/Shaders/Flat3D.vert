@@ -37,6 +37,17 @@ uniform highp mat4 transformationProjectionMatrix
     #endif
     ;
 
+#ifdef TEXTURE_TRANSFORMATION
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1)
+#endif
+uniform mediump mat3 textureMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
+#endif
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -65,7 +76,13 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoordinates = textureCoordinates;
+    interpolatedTextureCoordinates =
+        #ifdef TEXTURE_TRANSFORMATION
+        (textureMatrix*vec3(textureCoordinates, 1.0)).xy
+        #else
+        textureCoordinates
+        #endif
+        ;
     #endif
 
     #ifdef VERTEX_COLOR

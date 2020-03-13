@@ -57,6 +57,17 @@ uniform mediump mat3 normalMatrix
     ;
 #endif
 
+#ifdef TEXTURE_TRANSFORMATION
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 3)
+#endif
+uniform mediump mat3 textureMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
+#endif
+
 #if LIGHT_COUNT
 /* Needs to be last because it uses locations 10 to 10 + LIGHT_COUNT - 1 */
 #ifdef EXPLICIT_UNIFORM_LOCATION
@@ -136,7 +147,13 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoordinates = textureCoordinates;
+    interpolatedTextureCoordinates =
+        #ifdef TEXTURE_TRANSFORMATION
+        (textureMatrix*vec3(textureCoordinates, 1.0)).xy
+        #else
+        textureCoordinates
+        #endif
+        ;
     #endif
 
     #ifdef VERTEX_COLOR

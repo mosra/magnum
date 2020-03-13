@@ -180,6 +180,11 @@ See also:
     and @ref SceneGraph::AbstractBasicTranslationRotation3D::rotateLocal(const Math::Quaternion<T>&) "rotateLocal()"
     overloads taking a @ref Math::Quaternion
 
+@subsubsection changelog-latest-new-shaders Shaders library
+
+-   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
+    @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
+
 @subsubsection changelog-latest-new-trade Trade library
 
 -   A new, redesigned @ref Trade::MeshData class that allows much more flexible

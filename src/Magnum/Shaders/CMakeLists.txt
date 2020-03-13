@@ -32,16 +32,16 @@ set_target_properties(MagnumShaders_RCS-dependencies PROPERTIES FOLDER "Magnum/S
 
 set(MagnumShaders_SRCS
     AbstractVector.cpp
-    DistanceFieldVector.cpp
-    Vector.cpp
     VertexColor.cpp
 
     ${MagnumShaders_RCS})
 
 set(MagnumShaders_GracefulAssert_SRCS
+    DistanceFieldVector.cpp
     Flat.cpp
     MeshVisualizer.cpp
-    Phong.cpp)
+    Phong.cpp
+    Vector.cpp)
 
 set(MagnumShaders_HEADERS
     DistanceFieldVector.h

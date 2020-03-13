@@ -38,6 +38,7 @@
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
@@ -54,6 +55,9 @@ namespace {
 }
 
 Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)} {
+    CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
+        "Shaders::Phong: texture transformation enabled but the shader is not textured", );
+
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -95,6 +99,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture) ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
@@ -152,6 +157,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #endif
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
+        if(flags & Flag::TextureTransformation)
+            _textureMatrixUniform = uniformLocation("textureMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
         _ambientColorUniform = uniformLocation("ambientColor");
         if(lightCount) {
@@ -195,6 +202,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         /* Light position is zero by default */
         setNormalMatrix({});
     }
+    if(flags & Flag::TextureTransformation) setTextureMatrix({});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */
     #endif
@@ -286,6 +294,13 @@ Phong& Phong::setProjectionMatrix(const Matrix4& matrix) {
     return *this;
 }
 
+Phong& Phong::setTextureMatrix(const Matrix3& matrix) {
+    CORRADE_ASSERT(_flags & Flag::TextureTransformation,
+        "Shaders::Phong::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+    setUniform(_textureMatrixUniform, matrix);
+    return *this;
+}
+
 Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
@@ -338,6 +353,7 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         _c(NormalTexture)
         _c(AlphaMask)
         _c(VertexColor)
+        _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         #endif
@@ -356,6 +372,7 @@ Debug& operator<<(Debug& debug, const Phong::Flags value) {
         Phong::Flag::NormalTexture,
         Phong::Flag::AlphaMask,
         Phong::Flag::VertexColor,
+        Phong::Flag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
         Phong::Flag::ObjectId
         #endif

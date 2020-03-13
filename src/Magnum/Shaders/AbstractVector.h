@@ -83,6 +83,11 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
         /**
          * @brief Bind vector texture
          * @return Reference to self (for method chaining)
+         *
+         * @see @ref DistanceFieldVector::Flag::TextureTransformation,
+         *      @ref Vector::Flag::TextureTransformation,
+         *      @ref DistanceFieldVector::setTextureMatrix(),
+         *      @ref Vector::setTextureMatrix()
          */
         AbstractVector<dimensions>& bindVectorTexture(GL::Texture2D& texture);
 

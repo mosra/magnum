@@ -23,10 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -60,6 +62,8 @@ struct VectorGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void construct();
     template<UnsignedInt dimensions> void constructMove();
 
+    template<UnsignedInt dimensions> void setTextureMatrixNotEnabled();
+
     void renderSetup();
     void renderTeardown();
 
@@ -92,17 +96,52 @@ struct VectorGLTest: GL::OpenGLTester {
 
 using namespace Math::Literals;
 
+constexpr struct {
+    const char* name;
+    Vector2D::Flags flags;
+} ConstructData[]{
+    {"", {}},
+    {"texture transformation", Vector2D::Flag::TextureTransformation}
+};
+
+const struct {
+    const char* name;
+    Vector2D::Flags flags;
+    Matrix3 textureTransformation;
+    Color4 backgroundColor, color;
+    const char* file2D;
+    const char* file3D;
+    bool flip;
+} RenderData[] {
+    {"texture transformation", Vector2D::Flag::TextureTransformation,
+        Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
+        0x00000000_rgbaf, 0xffffff_rgbf,
+        "defaults.tga", "defaults.tga", true},
+    {"", {}, {}, 0x9999ff_rgbf, 0xffff99_rgbf,
+        "vector2D.tga", "vector3D.tga", false}
+};
+
 VectorGLTest::VectorGLTest() {
-    addTests<VectorGLTest>({
+    addInstancedTests<VectorGLTest>({
         &VectorGLTest::construct<2>,
-        &VectorGLTest::construct<3>,
+        &VectorGLTest::construct<3>},
+        Containers::arraySize(ConstructData));
+
+    addTests<VectorGLTest>({
         &VectorGLTest::constructMove<2>,
-        &VectorGLTest::constructMove<3>});
+        &VectorGLTest::constructMove<3>,
+
+        &VectorGLTest::setTextureMatrixNotEnabled<2>,
+        &VectorGLTest::setTextureMatrixNotEnabled<3>});
 
     addTests({&VectorGLTest::renderDefaults2D,
-              &VectorGLTest::renderDefaults3D,
-              &VectorGLTest::render2D,
-              &VectorGLTest::render3D},
+              &VectorGLTest::renderDefaults3D},
+        &VectorGLTest::renderSetup,
+        &VectorGLTest::renderTeardown);
+
+    addInstancedTests({&VectorGLTest::render2D,
+                       &VectorGLTest::render3D},
+        Containers::arraySize(RenderData),
         &VectorGLTest::renderSetup,
         &VectorGLTest::renderTeardown);
 
@@ -133,7 +172,11 @@ VectorGLTest::VectorGLTest() {
 template<UnsignedInt dimensions> void VectorGLTest::construct() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    Vector<dimensions> shader;
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Vector<dimensions> shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -148,7 +191,7 @@ template<UnsignedInt dimensions> void VectorGLTest::construct() {
 template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    Vector<dimensions> a;
+    Vector<dimensions> a{Vector<dimensions>::Flag::TextureTransformation};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -156,12 +199,27 @@ template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
 
     Vector<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), Vector<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!a.id());
 
     Vector<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), Vector<dimensions>::Flag::TextureTransformation);
     CORRADE_VERIFY(!b.id());
+}
+
+template<UnsignedInt dimensions> void VectorGLTest::setTextureMatrixNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Vector<dimensions> shader;
+    shader.setTextureMatrix({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Vector::setTextureMatrix(): the shader was not created with texture transformation enabled\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -294,6 +352,9 @@ void VectorGLTest::renderDefaults3D() {
 }
 
 void VectorGLTest::render2D() {
+    auto&& data = RenderData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
@@ -319,16 +380,26 @@ void VectorGLTest::render2D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector2D{}
-        .setBackgroundColor(0x9999ff_rgbf)
-        .setColor(0xffff99_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix3::projection({2.1f, 2.1f})*
-            Matrix3::rotation(5.0_degf))
-        .bindVectorTexture(texture)
-        .draw(square);
+    Vector2D shader{data.flags};
+    shader.setBackgroundColor(data.backgroundColor)
+        .setColor(data.color)
+        .bindVectorTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+    else shader.setTransformationProjectionMatrix(
+        Matrix3::projection({2.1f, 2.1f})*
+        Matrix3::rotation(5.0_degf));
+
+    shader.draw(square);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has differently rasterized edges on four pixels */
@@ -337,14 +408,15 @@ void VectorGLTest::render2D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 170.0f, meanThreshold = 0.962f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/vector2D.tga"),
+    CORRADE_COMPARE_WITH(pixels,
+        Utility::Directory::join({_testDir, "VectorTestFiles", data.file2D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void VectorGLTest::render3D() {
+    auto&& data = RenderData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
@@ -370,18 +442,28 @@ void VectorGLTest::render3D() {
         .setSubImage(0, {}, *image);
     #endif
 
-    Vector3D{}
-        .setBackgroundColor(0x9999ff_rgbf)
-        .setColor(0xffff99_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
-            Matrix4::translation(Vector3::zAxis(-2.15f))*
-            Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationZ(15.0_degf))
-        .bindVectorTexture(texture)
-        .draw(plane);
+    Vector3D shader{data.flags};
+    shader.setBackgroundColor(data.backgroundColor)
+        .setColor(data.color)
+        .bindVectorTexture(texture);
+
+    if(data.textureTransformation != Matrix3{})
+        shader.setTextureMatrix(data.textureTransformation);
+    else shader.setTransformationProjectionMatrix(
+        Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+        Matrix4::translation(Vector3::zAxis(-2.15f))*
+        Matrix4::rotationY(-15.0_degf)*
+        Matrix4::rotationZ(15.0_degf));
+
+    shader.draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Image2D rendered = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+    /* Dropping the alpha channel, as it's always 1.0 */
+    Containers::StridedArrayView2D<Color3ub> pixels =
+        Containers::arrayCast<Color3ub>(rendered.pixels<Color4ub>());
+    if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has differently rasterized edges on four pixels */
@@ -390,10 +472,8 @@ void VectorGLTest::render3D() {
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 170.0f, meanThreshold = 0.660f;
     #endif
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "VectorTestFiles/vector3D.tga"),
+    CORRADE_COMPARE_WITH(pixels,
+        Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 

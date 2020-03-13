@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Shaders/DistanceFieldVector.h"
 
@@ -37,6 +39,9 @@ struct DistanceFieldVectorTest: TestSuite::Tester {
 
     void constructCopy2D();
     void constructCopy3D();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 DistanceFieldVectorTest::DistanceFieldVectorTest() {
@@ -44,7 +49,10 @@ DistanceFieldVectorTest::DistanceFieldVectorTest() {
               &DistanceFieldVectorTest::constructNoCreate3D,
 
               &DistanceFieldVectorTest::constructCopy2D,
-              &DistanceFieldVectorTest::constructCopy3D});
+              &DistanceFieldVectorTest::constructCopy3D,
+
+              &DistanceFieldVectorTest::debugFlag,
+              &DistanceFieldVectorTest::debugFlags});
 }
 
 void DistanceFieldVectorTest::constructNoCreate2D() {
@@ -73,6 +81,20 @@ void DistanceFieldVectorTest::constructCopy2D() {
 void DistanceFieldVectorTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_constructible<DistanceFieldVector3D, const DistanceFieldVector3D&>{}));
     CORRADE_VERIFY(!(std::is_assignable<DistanceFieldVector3D, const DistanceFieldVector3D&>{}));
+}
+
+void DistanceFieldVectorTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << DistanceFieldVector2D::Flag::TextureTransformation << DistanceFieldVector2D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVector::Flag::TextureTransformation Shaders::DistanceFieldVector::Flag(0xf0)\n");
+}
+
+void DistanceFieldVectorTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << DistanceFieldVector3D::Flags{DistanceFieldVector3D::Flag::TextureTransformation|DistanceFieldVector3D::Flag(0xf0)} << DistanceFieldVector3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::DistanceFieldVector::Flag::TextureTransformation|Shaders::DistanceFieldVector::Flag(0xf0) Shaders::DistanceFieldVector::Flags{}\n");
 }
 
 }}}}

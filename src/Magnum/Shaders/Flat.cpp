@@ -50,6 +50,9 @@ namespace {
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _flags(flags) {
+    CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & Flag::Textured),
+        "Shaders::Flat: texture transformation enabled but the shader is not textured", );
+
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -68,6 +71,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
+        .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
@@ -111,6 +115,8 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        if(flags & Flag::TextureTransformation)
+            _textureMatrixUniform = uniformLocation("textureMatrix");
         _colorUniform = uniformLocation("color");
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
         #ifndef MAGNUM_TARGET_GLES2
@@ -128,6 +134,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix({});
+    if(flags & Flag::TextureTransformation) setTextureMatrix({});
     setColor(Magnum::Color4{1.0f});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */
@@ -136,6 +143,13 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 
 template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
     setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTextureMatrix(const Matrix3& matrix) {
+    CORRADE_ASSERT(_flags & Flag::TextureTransformation,
+        "Shaders::Flat::setTextureMatrix(): the shader was not created with texture transformation enabled", *this);
+    setUniform(_textureMatrixUniform, matrix);
     return *this;
 }
 
@@ -181,6 +195,7 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         _c(Textured)
         _c(AlphaMask)
         _c(VertexColor)
+        _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         #endif
@@ -196,6 +211,7 @@ Debug& operator<<(Debug& debug, const FlatFlags value) {
         FlatFlag::Textured,
         FlatFlag::AlphaMask,
         FlatFlag::VertexColor,
+        FlatFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
         FlatFlag::ObjectId
         #endif

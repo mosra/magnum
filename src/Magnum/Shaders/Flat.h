@@ -41,8 +41,9 @@ namespace Implementation {
         Textured = 1 << 0,
         AlphaMask = 1 << 1,
         VertexColor = 1 << 2,
+        TextureTransformation = 1 << 3,
         #ifndef MAGNUM_TARGET_GLES2
-        ObjectId = 1 << 3
+        ObjectId = 1 << 4
         #endif
     };
     typedef Containers::EnumSet<FlatFlag> FlatFlags;
@@ -216,6 +217,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              */
             VertexColor = 1 << 2,
 
+            /**
+             * Enable texture coordinate transformation. If this flag is set,
+             * the shader expects that @ref Flag::Textured is enabled as well.
+             * @see @ref setTextureMatrix()
+             * @m_since_latest
+             */
+            TextureTransformation = 1 << 3,
+
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Enable object ID output. See @ref Shaders-Flat-usage-object-id
@@ -225,7 +234,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      WebGL 1.0.
              * @m_since{2019,10}
              */
-            ObjectId = 1 << 3
+            ObjectId = 1 << 4
             #endif
         };
 
@@ -286,6 +295,17 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         Flat<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
         /**
+         * @brief Set texture coordinate transformation matrix
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that the shader was created with
+         * @ref Flag::TextureTransformation enabled. Initial value is an
+         * identity matrix.
+         */
+        Flat<dimensions>& setTextureMatrix(const Matrix3& matrix);
+
+        /**
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
@@ -302,7 +322,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *
          * Expects that the shader was created with @ref Flag::Textured
          * enabled.
-         * @see @ref setColor()
+         * @see @ref setColor(), @ref Flag::TextureTransformation,
+         *      @ref setTextureMatrix()
          */
         Flat<dimensions>& bindTexture(GL::Texture2D& texture);
 
@@ -344,10 +365,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
         Flags _flags;
         Int _transformationProjectionMatrixUniform{0},
-            _colorUniform{1},
-            _alphaMaskUniform{2};
+            _textureMatrixUniform{1},
+            _colorUniform{2},
+            _alphaMaskUniform{3};
         #ifndef MAGNUM_TARGET_GLES2
-        Int _objectIdUniform{3};
+        Int _objectIdUniform{4};
         #endif
 };
 
