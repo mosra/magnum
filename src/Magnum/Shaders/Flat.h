@@ -393,7 +393,6 @@ namespace Implementation {
 }
 #endif
 
-
 }}
 
 #endif
