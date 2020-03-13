@@ -106,7 +106,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * Initial value is an identity matrix.
          */
-        DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
+        DistanceFieldVector<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
         /**
          * @brief Set fill color
@@ -115,7 +115,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * Initial value is @cpp 0xffffffff_rgbaf @ce.
          * @see @ref setOutlineColor()
          */
-        DistanceFieldVector& setColor(const Color4& color);
+        DistanceFieldVector<dimensions>& setColor(const Color4& color);
 
         /**
          * @brief Set outline color
@@ -125,7 +125,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * drawn --- see @ref setOutlineRange() for more information.
          * @see @ref setOutlineRange(), @ref setColor()
          */
-        DistanceFieldVector& setOutlineColor(const Color4& color);
+        DistanceFieldVector<dimensions>& setOutlineColor(const Color4& color);
 
         /**
          * @brief Set outline range
@@ -141,7 +141,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see @ref setOutlineColor()
          */
-        DistanceFieldVector& setOutlineRange(Float start, Float end);
+        DistanceFieldVector<dimensions>& setOutlineRange(Float start, Float end);
 
         /**
          * @brief Set smoothness radius
@@ -151,7 +151,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * smaller values will make them look more crisp (but possibly
          * aliased). Initial value is @cpp 0.04f @ce.
          */
-        DistanceFieldVector& setSmoothness(Float value);
+        DistanceFieldVector<dimensions>& setSmoothness(Float value);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */
