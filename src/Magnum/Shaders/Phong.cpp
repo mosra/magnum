@@ -191,12 +191,12 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         setDiffuseColor(Magnum::Color4{1.0f});
         setSpecularColor(Magnum::Color4{1.0f});
         setShininess(80.0f);
-        if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
-        /* Object ID is zero by default */
         setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
         /* Light position is zero by default */
         setNormalMatrix({});
     }
+    if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+    /* Object ID is zero by default */
     #endif
 }
 

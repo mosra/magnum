@@ -391,6 +391,8 @@ See also:
 -   @ref Resource was unnecessarily querying the @ref ResourceManager for
     updated data even in cases where no resource update was done since last
     check
+-   For a @ref Shaders::Phong with zero lights, alpha mask default value was
+    incorrectly @cpp 0.0f @ce instead of @cpp 0.5f @ce on OpenGL ES
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

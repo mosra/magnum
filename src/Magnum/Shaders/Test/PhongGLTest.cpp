@@ -1063,7 +1063,9 @@ void PhongGLTest::renderAlpha() {
         .setSpecularColor(0xffffff00_rgbaf)
         .bindTextures(&ambient, &diffuse, nullptr, nullptr);
 
-    if(data.flags & Phong::Flag::AlphaMask)
+    /* Test that the default is correct by not setting the threshold if it's
+       equal to the default */
+    if(data.flags & Phong::Flag::AlphaMask && data.threshold != 0.5f)
         shader.setAlphaMask(data.threshold);
 
     /* For proper Z order draw back faces first and then front faces */
@@ -1213,7 +1215,7 @@ void PhongGLTest::renderZeroLights() {
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setAlphaMask(0.5f)
+        /* Keep alpha mask at the default 0.5 to test the default */
         #ifndef MAGNUM_TARGET_GLES2
         .setObjectId(65534)
         #endif
