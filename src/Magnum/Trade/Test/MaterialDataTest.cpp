@@ -36,13 +36,11 @@ class MaterialDataTest: public TestSuite::Tester {
         explicit MaterialDataTest();
 
         void constructPhong();
-        void constructPhongAmbientTexture();
-        void constructPhongDiffuseTexture();
-        void constructPhongSpecularTexture();
+        void constructPhongTextured();
+        void constructPhongTexturedTextureTransform();
+        void constructPhongTextureTransformNoTextures();
         void constructCopy();
-        void constructMovePhongNoAmbientTexture();
-        void constructMovePhongNoDiffuseTexture();
-        void constructMovePhongNoSpecularTexture();
+        void constructMovePhong();
 
         void accessInvalidTextures();
 
@@ -57,13 +55,11 @@ class MaterialDataTest: public TestSuite::Tester {
 
 MaterialDataTest::MaterialDataTest() {
     addTests({&MaterialDataTest::constructPhong,
-              &MaterialDataTest::constructPhongAmbientTexture,
-              &MaterialDataTest::constructPhongDiffuseTexture,
-              &MaterialDataTest::constructPhongSpecularTexture,
+              &MaterialDataTest::constructPhongTextured,
+              &MaterialDataTest::constructPhongTexturedTextureTransform,
+              &MaterialDataTest::constructPhongTextureTransformNoTextures,
               &MaterialDataTest::constructCopy,
-              &MaterialDataTest::constructMovePhongNoAmbientTexture,
-              &MaterialDataTest::constructMovePhongNoDiffuseTexture,
-              &MaterialDataTest::constructMovePhongNoSpecularTexture,
+              &MaterialDataTest::constructMovePhong,
 
               &MaterialDataTest::accessInvalidTextures,
 
@@ -80,88 +76,91 @@ void MaterialDataTest::constructPhong() {
     using namespace Math::Literals;
 
     const int a{};
-    PhongMaterialData data{{}, MaterialAlphaMode::Mask, 0.3f, 80.0f, &a};
-    data.ambientColor() = 0xccffbb_rgbf;
-    data.diffuseColor() = 0xeebbff_rgbf;
-    data.specularColor() = 0xacabad_rgbf;
+    PhongMaterialData data{{},
+        0xccffbb_rgbf, {},
+        0xebefbf_rgbf, {},
+        0xacabad_rgbf, {}, {}, {},
+        MaterialAlphaMode::Mask, 0.3f, 80.0f, &a};
 
+    /** @todo use data directly once deprecated mutable access is gone */
     const PhongMaterialData& cdata = data;
-
     CORRADE_COMPARE(cdata.type(), MaterialType::Phong);
     CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flags{});
+    CORRADE_COMPARE(cdata.ambientColor(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(cdata.diffuseColor(), 0xebefbf_rgbf);
+    CORRADE_COMPARE(cdata.specularColor(), 0xacabad_rgbf);
+    CORRADE_COMPARE(cdata.textureMatrix(), Matrix3{});
     CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Mask);
     CORRADE_COMPARE(cdata.alphaMask(), 0.3f);
-    CORRADE_COMPARE(cdata.ambientColor(), 0xccffbb_rgbf);
-    CORRADE_COMPARE(cdata.diffuseColor(), 0xeebbff_rgbf);
-    CORRADE_COMPARE(cdata.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(cdata.shininess(), 80.0f);
     CORRADE_COMPARE(cdata.importerState(), &a);
 }
 
-void MaterialDataTest::constructPhongAmbientTexture() {
+void MaterialDataTest::constructPhongTextured() {
     using namespace Math::Literals;
 
     const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::AmbientTexture, MaterialAlphaMode::Mask, 0.3f, 80.0f, &a};
-    data.ambientTexture() = 42;
-    data.diffuseColor() = 0xeebbff_rgbf;
-    data.specularColor() = 0xacabad_rgbf;
+    PhongMaterialData data{
+        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture,
+        0x111111_rgbf, 42,
+        0xeebbff_rgbf, {},
+        0xacabad_rgbf, 17, {}, {},
+        MaterialAlphaMode::Blend, 0.37f, 96.0f, &a};
 
+    /** @todo use data directly once deprecated mutable access is gone */
     const PhongMaterialData& cdata = data;
-
     CORRADE_COMPARE(cdata.type(), MaterialType::Phong);
-    CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flag::AmbientTexture);
-    CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Mask);
-    CORRADE_COMPARE(cdata.alphaMask(), 0.3f);
+    CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture);
+    CORRADE_COMPARE(cdata.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(cdata.ambientTexture(), 42);
     CORRADE_COMPARE(cdata.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(cdata.specularColor(), 0xacabad_rgbf);
-    CORRADE_COMPARE(cdata.shininess(), 80.0f);
+    CORRADE_COMPARE(cdata.specularTexture(), 17);
+    CORRADE_COMPARE(cdata.textureMatrix(), Matrix3{});
+    CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Blend);
+    CORRADE_COMPARE(cdata.alphaMask(), 0.37f);
+    CORRADE_COMPARE(cdata.shininess(), 96.0f);
     CORRADE_COMPARE(cdata.importerState(), &a);
 }
 
-void MaterialDataTest::constructPhongDiffuseTexture() {
+void MaterialDataTest::constructPhongTexturedTextureTransform() {
     using namespace Math::Literals;
 
     const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::DoubleSided, MaterialAlphaMode::Opaque, 0.0f, 80.0f, &a};
-    data.ambientColor() = 0xccffbb_rgbf;
-    data.diffuseTexture() = 42;
-    data.specularColor() = 0xacabad_rgbf;
+    PhongMaterialData data{
+        PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation,
+        0x111111_rgbf, {},
+        0xeebbff_rgbf, 42,
+        0xacabad_rgbf, {}, 17,
+        Matrix3::rotation(90.0_degf),
+        MaterialAlphaMode::Opaque, 0.5f, 96.0f, &a};
 
+    /** @todo use data directly once deprecated mutable access is gone */
     const PhongMaterialData& cdata = data;
-
     CORRADE_COMPARE(cdata.type(), MaterialType::Phong);
-    CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::DoubleSided);
-    CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Opaque);
-    CORRADE_COMPARE(cdata.alphaMask(), 0.0f);
-    CORRADE_COMPARE(cdata.ambientColor(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation);
+    CORRADE_COMPARE(cdata.ambientColor(), 0x111111_rgbf);
+    CORRADE_COMPARE(cdata.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(cdata.diffuseTexture(), 42);
     CORRADE_COMPARE(cdata.specularColor(), 0xacabad_rgbf);
-    CORRADE_COMPARE(cdata.shininess(), 80.0f);
+    CORRADE_COMPARE(cdata.normalTexture(), 17);
+    CORRADE_COMPARE(cdata.textureMatrix(), Matrix3::rotation(90.0_degf));
+    CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Opaque);
+    CORRADE_COMPARE(cdata.alphaMask(), 0.5f);
+    CORRADE_COMPARE(cdata.shininess(), 96.0f);
     CORRADE_COMPARE(cdata.importerState(), &a);
 }
 
-void MaterialDataTest::constructPhongSpecularTexture() {
-    using namespace Math::Literals;
-
-    const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::SpecularTexture, MaterialAlphaMode::Blend, 1.0f, 30.0f, &a};
-    data.ambientColor() = 0xccffbb_rgbf;
-    data.diffuseColor() = 0xeebbff_rgbf;
-    data.specularTexture() = 42;
-
-    const PhongMaterialData& cdata = data;
-
-    CORRADE_COMPARE(cdata.type(), MaterialType::Phong);
-    CORRADE_COMPARE(cdata.flags(), PhongMaterialData::Flag::SpecularTexture);
-    CORRADE_COMPARE(cdata.alphaMode(), MaterialAlphaMode::Blend);
-    CORRADE_COMPARE(cdata.alphaMask(), 1.0f);
-    CORRADE_COMPARE(cdata.ambientColor(), 0xccffbb_rgbf);
-    CORRADE_COMPARE(cdata.diffuseColor(), 0xeebbff_rgbf);
-    CORRADE_COMPARE(cdata.specularTexture(), 42);
-    CORRADE_COMPARE(cdata.shininess(), 30.0f);
-    CORRADE_COMPARE(cdata.importerState(), &a);
+void MaterialDataTest::constructPhongTextureTransformNoTextures() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    PhongMaterialData a{PhongMaterialData::Flag::TextureTransformation,
+        {}, {},
+        {}, {},
+        {}, {}, {}, {},
+        {}, 0.5f, 80.0f};
+    CORRADE_COMPARE(out.str(),
+        "Trade::PhongMaterialData: texture transformation enabled but the material has no textures\n");
 }
 
 void MaterialDataTest::constructCopy() {
@@ -171,122 +170,79 @@ void MaterialDataTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<PhongMaterialData, const PhongMaterialData&>{}));
 }
 
-void MaterialDataTest::constructMovePhongNoAmbientTexture() {
+void MaterialDataTest::constructMovePhong() {
     using namespace Math::Literals;
 
     const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture, {}, {}, 80.0f, &a};
-    data.ambientColor() = 0xccffbb_rgbf;
-    data.diffuseTexture() = 42;
-    data.specularTexture() = 13;
+    PhongMaterialData data{
+        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation,
+        0x111111_rgbf, 1,
+        0xeebbff_rgbf, 42,
+        0xacabad_rgbf, 24, 17,
+        Matrix3::rotation(90.0_degf),
+        MaterialAlphaMode::Blend, 0.55f, 13.0f, &a};
 
     PhongMaterialData b{std::move(data)};
-
-    CORRADE_COMPARE(b.flags(), (PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture));
-    CORRADE_COMPARE(b.ambientColor(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(b.type(), MaterialType::Phong);
+    CORRADE_COMPARE(b.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation);
+    CORRADE_COMPARE(b.ambientColor(), 0x111111_rgbf);
+    CORRADE_COMPARE(b.ambientTexture(), 1);
+    CORRADE_COMPARE(b.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(b.diffuseTexture(), 42);
-    CORRADE_COMPARE(b.specularTexture(), 13);
-    CORRADE_COMPARE(b.shininess(), 80.0f);
+    CORRADE_COMPARE(b.specularColor(), 0xacabad_rgbf);
+    CORRADE_COMPARE(b.specularTexture(), 24);
+    CORRADE_COMPARE(b.normalTexture(), 17);
+    CORRADE_COMPARE(b.textureMatrix(), Matrix3::rotation(90.0_degf));
+    CORRADE_COMPARE(b.alphaMode(), MaterialAlphaMode::Blend);
+    CORRADE_COMPARE(b.alphaMask(), 0.55f);
+    CORRADE_COMPARE(b.shininess(), 13.0f);
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
-    PhongMaterialData d{PhongMaterialData::Flag::AmbientTexture, {}, {}, 100.0f, &c};
-    d.ambientTexture() = 42;
-    d.diffuseColor() = 0xeebbff_rgbf;
-    d.specularColor() = 0xacabad_rgbf;
+    PhongMaterialData d{{},
+        0xccffbb_rgbf, {},
+        0xebefbf_rgbf, {},
+        0xacabad_rgbf, {}, {}, {},
+        MaterialAlphaMode::Mask, 0.3f, 80.0f, &c};
     d = std::move(b);
 
-    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture);
-    CORRADE_COMPARE(d.ambientColor(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(d.type(), MaterialType::Phong);
+    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation);
+    CORRADE_COMPARE(d.ambientColor(), 0x111111_rgbf);
+    CORRADE_COMPARE(d.ambientTexture(), 1);
+    CORRADE_COMPARE(d.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(d.diffuseTexture(), 42);
-    CORRADE_COMPARE(d.specularTexture(), 13);
-    CORRADE_COMPARE(d.shininess(), 80.0f);
+    CORRADE_COMPARE(d.specularColor(), 0xacabad_rgbf);
+    CORRADE_COMPARE(d.specularTexture(), 24);
+    CORRADE_COMPARE(d.normalTexture(), 17);
+    CORRADE_COMPARE(d.textureMatrix(), Matrix3::rotation(90.0_degf));
+    CORRADE_COMPARE(d.alphaMode(), MaterialAlphaMode::Blend);
+    CORRADE_COMPARE(d.alphaMask(), 0.55f);
+    CORRADE_COMPARE(d.shininess(), 13.0f);
     CORRADE_COMPARE(d.importerState(), &a);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<PhongMaterialData>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<PhongMaterialData>::value);
 }
 
-void MaterialDataTest::constructMovePhongNoDiffuseTexture() {
-    using namespace Math::Literals;
-
-    const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture, {}, {}, 80.0f, &a};
-    data.ambientTexture() = 42;
-    data.diffuseColor() = 0xeebbff_rgbf;
-    data.specularTexture() = 13;
-
-    PhongMaterialData b{std::move(data)};
-
-    CORRADE_COMPARE(b.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture);
-    CORRADE_COMPARE(b.ambientTexture(), 42);
-    CORRADE_COMPARE(b.diffuseColor(), 0xeebbff_rgbf);
-    CORRADE_COMPARE(b.specularTexture(), 13);
-    CORRADE_COMPARE(b.shininess(), 80.0f);
-    CORRADE_COMPARE(b.importerState(), &a);
-
-    const int c{};
-    PhongMaterialData d{PhongMaterialData::Flag::DiffuseTexture, {}, {}, 100.0f, &c};
-    d.ambientColor() = 0xccffbb_rgbf;
-    d.diffuseTexture() = 42;
-    d.specularColor() = 0xacabad_rgbf;
-    d = std::move(b);
-
-    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture);
-    CORRADE_COMPARE(d.ambientTexture(), 42);
-    CORRADE_COMPARE(d.diffuseColor(), 0xeebbff_rgbf);
-    CORRADE_COMPARE(d.specularTexture(), 13);
-    CORRADE_COMPARE(d.shininess(), 80.0f);
-    CORRADE_COMPARE(d.importerState(), &a);
-}
-
-void MaterialDataTest::constructMovePhongNoSpecularTexture() {
-    using namespace Math::Literals;
-
-    const int a{};
-    PhongMaterialData data{PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture, {}, {}, 80.0f, &a};
-    data.ambientTexture() = 13;
-    data.diffuseTexture() = 42;
-    data.specularColor() = 0xacabad_rgbf;
-
-    PhongMaterialData b{std::move(data)};
-
-    CORRADE_COMPARE(b.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture);
-    CORRADE_COMPARE(b.ambientTexture(), 13);
-    CORRADE_COMPARE(b.diffuseTexture(), 42);
-    CORRADE_COMPARE(b.specularColor(), 0xacabad_rgbf);
-    CORRADE_COMPARE(b.shininess(), 80.0f);
-    CORRADE_COMPARE(b.importerState(), &a);
-
-    const int c{};
-    PhongMaterialData d{PhongMaterialData::Flag::SpecularTexture, {}, {}, 30.0f, &c};
-    d.ambientColor() = 0xccffbb_rgbf;
-    d.diffuseColor() = 0xeebbff_rgbf;
-    d.specularTexture() = 42;
-    d = std::move(b);
-
-    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture);
-    CORRADE_COMPARE(d.ambientTexture(), 13);
-    CORRADE_COMPARE(d.diffuseTexture(), 42);
-    CORRADE_COMPARE(d.specularColor(), 0xacabad_rgbf);
-    CORRADE_COMPARE(d.shininess(), 80.0f);
-    CORRADE_COMPARE(d.importerState(), &a);
-}
-
 void MaterialDataTest::accessInvalidTextures() {
+    PhongMaterialData a{{},
+        {}, {},
+        {}, {},
+        {}, {}, {}, {},
+        {}, 0.5f, 80.0f};
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    PhongMaterialData a{PhongMaterialData::Flags{}, {}, {}, 80.0f};
-
     a.ambientTexture();
     a.diffuseTexture();
     a.specularTexture();
-
+    a.normalTexture();
     CORRADE_COMPARE(out.str(),
         "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture\n"
         "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture\n"
-        "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture\n");
+        "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture\n"
+        "Trade::PhongMaterialData::normalTexture(): the material doesn't have a normal texture\n");
 }
 
 void MaterialDataTest::debugType() {

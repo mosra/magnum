@@ -3127,7 +3127,11 @@ void AbstractImporterTest::material() {
             else return {};
         }
         Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id) override {
-            if(id == 7) return Containers::pointer(new PhongMaterialData{{}, {}, {}, {}, &state});
+            if(id == 7) return Containers::pointer(new PhongMaterialData{{},
+                {}, {},
+                {}, {},
+                {}, {}, {}, {},
+                {}, {}, {}, &state});
             else return {};
         }
     } importer;
