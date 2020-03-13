@@ -88,9 +88,9 @@ in mediump vec3 tangent;
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
-in mediump vec2 textureCoords;
+in mediump vec2 textureCoordinates;
 
-out mediump vec2 interpolatedTextureCoords;
+out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -136,7 +136,7 @@ void main() {
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
-    interpolatedTextureCoords = textureCoords;
+    interpolatedTextureCoordinates = textureCoordinates;
     #endif
 
     #ifdef VERTEX_COLOR

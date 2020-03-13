@@ -146,7 +146,7 @@ in highp vec3 cameraDirection;
 #endif
 
 #if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
-in mediump vec2 interpolatedTextureCoords;
+in mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef VERTEX_COLOR
@@ -170,13 +170,13 @@ out highp uint fragmentObjectId;
 void main() {
     lowp const vec4 finalAmbientColor =
         #ifdef AMBIENT_TEXTURE
-        texture(ambientTexture, interpolatedTextureCoords)*
+        texture(ambientTexture, interpolatedTextureCoordinates)*
         #endif
         ambientColor;
     #if LIGHT_COUNT
     lowp const vec4 finalDiffuseColor =
         #ifdef DIFFUSE_TEXTURE
-        texture(diffuseTexture, interpolatedTextureCoords)*
+        texture(diffuseTexture, interpolatedTextureCoordinates)*
         #endif
         #ifdef VERTEX_COLOR
         interpolatedVertexColor*
@@ -184,7 +184,7 @@ void main() {
         diffuseColor;
     lowp const vec4 finalSpecularColor =
         #ifdef SPECULAR_TEXTURE
-        texture(specularTexture, interpolatedTextureCoords)*
+        texture(specularTexture, interpolatedTextureCoordinates)*
         #endif
         specularColor;
     #endif
@@ -203,7 +203,7 @@ void main() {
                         normalizedTransformedTangent)),
         normalizedTransformedNormal
     );
-    normalizedTransformedNormal = tbn*(texture(normalTexture, interpolatedTextureCoords).rgb*2.0 - vec3(1.0));
+    normalizedTransformedNormal = tbn*(texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0));
     #endif
 
     /* Add diffuse color for each light */

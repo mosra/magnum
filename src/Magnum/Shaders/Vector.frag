@@ -49,7 +49,7 @@ layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
 
-in mediump vec2 fragmentTextureCoordinates;
+in mediump vec2 interpolatedTextureCoordinates;
 
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
@@ -59,6 +59,6 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
-    lowp float intensity = texture(vectorTexture, fragmentTextureCoordinates).r;
+    lowp float intensity = texture(vectorTexture, interpolatedTextureCoordinates).r;
     fragmentColor = mix(backgroundColor, color, intensity);
 }

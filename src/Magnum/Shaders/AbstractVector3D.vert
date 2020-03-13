@@ -47,9 +47,9 @@ layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
 
-out mediump vec2 fragmentTextureCoordinates;
+out mediump vec2 interpolatedTextureCoordinates;
 
 void main() {
     gl_Position = transformationProjectionMatrix*position;
-    fragmentTextureCoordinates = textureCoordinates;
+    interpolatedTextureCoordinates = textureCoordinates;
 }
