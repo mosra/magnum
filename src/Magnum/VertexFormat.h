@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::VertexFormat, function @ref Magnum::isVertexFormatImplementationSpecific(), @ref Magnum::vertexFormatWrap(), @ref Magnum::vertexFormatUnwrap(), @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::isVertexFormatNormalized()
+ * @brief Enum @ref Magnum::VertexFormat, function @ref Magnum::isVertexFormatImplementationSpecific(), @ref Magnum::vertexFormatWrap(), @ref Magnum::vertexFormatUnwrap(), @ref Magnum::vertexFormatSize(), @ref Magnum::vertexFormatComponentFormat(), @ref Magnum::vertexFormatComponentCount(), @ref Magnum::vertexFormatVectorCount(), @ref Magnum::vertexFormatVectorStride(), @ref Magnum::isVertexFormatNormalized()
  */
 
 #include <Corrade/Utility/Assert.h>
@@ -776,7 +776,547 @@ enum class VertexFormat: UnsignedInt {
      * or @m_class{m-doc-external} [MTLVertexFormatInt4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatint4?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32A32_SINT MTLVertexFormatInt4}
      */
-    Vector4i
+    Vector4i,
+
+    /**
+     * @ref Matrix2x2.
+     *
+     * Same as two @ref VertexFormat::Vector2 tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x2,
+
+    /**
+     * @ref Matrix2x2h.
+     *
+     * Same as two @ref VertexFormat::Vector2h tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x2h,
+
+    /**
+     * @ref Matrix2x2d.
+     *
+     * Same as two @ref VertexFormat::Vector2d tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x2d,
+
+    /**
+     * @ref Matrix2x2b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector2bNormalized tightly following each
+     * other and bound to consecutive locations. Note that this type doesn't
+     * have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix2x2bNormalizedAligned instead.
+     */
+    Matrix2x2bNormalized,
+
+    /**
+     * @ref Matrix2x2s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector2sNormalized tightly following each
+     * other and bound to consecutive locations.
+     */
+    Matrix2x2sNormalized,
+
+    /**
+     * @ref Matrix2x3.
+     *
+     * Same as two @ref VertexFormat::Vector3 tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x3,
+
+    /**
+     * @ref Matrix2x3h.
+     *
+     * Same as two @ref VertexFormat::Vector3h tightly following each other and
+     * bound to consecutive locations. Note that this type doesn't have the
+     * columns four-byte aligned, which may negatively affect performance on
+     * some APIs --- prefer to use @ref VertexFormat::Matrix2x3hAligned
+     * instead.
+     */
+    Matrix2x3h,
+
+    /**
+     * @ref Matrix2x3d.
+     *
+     * Same as two @ref VertexFormat::Vector3d tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x3d,
+
+    /**
+     * @ref Matrix2x3b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector3bNormalized tightly following each
+     * other and bound to consecutive locations. Note that this type doesn't
+     * have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix2x3bNormalizedAligned instead.
+     */
+    Matrix2x3bNormalized,
+
+    /**
+     * @ref Matrix2x3s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector3sNormalized tightly following each
+     * other and bound to consecutive locations. Note that this type doesn't
+     * have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix2x3sNormalizedAligned instead.
+     */
+    Matrix2x3sNormalized,
+
+    /**
+     * @ref Matrix2x4.
+     *
+     * Same as two @ref VertexFormat::Vector4 tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x4,
+
+    /**
+     * @ref Matrix2x4h.
+     *
+     * Same as two @ref VertexFormat::Vector4h tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x4h,
+
+    /**
+     * @ref Matrix2x4d.
+     *
+     * Same as two @ref VertexFormat::Vector4d tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix2x4d,
+
+    /**
+     * @ref Matrix2x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector4bNormalized tightly following each
+     * other and bound to consecutive locations.
+     */
+    Matrix2x4bNormalized,
+
+    /**
+     * @ref Matrix2x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as two @ref VertexFormat::Vector4sNormalized tightly following each
+     * other and bound to consecutive locations.
+     */
+    Matrix2x4sNormalized,
+
+    /**
+     * @ref Matrix2x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom two rows ignored. A variant of
+     * @ref VertexFormat::Matrix2x2bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as two @ref VertexFormat::Vector2bNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix2x2bNormalizedAligned,
+
+    /**
+     * @ref Matrix2x4h, with bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix2x3h that has columns four-byte aligned.
+     *
+     * Same as two @ref VertexFormat::Vector3s following each other with a
+     * 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix2x3hAligned,
+
+    /**
+     * @ref Matrix2x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix2x3bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as two @ref VertexFormat::Vector3bNormalized following each other
+     * with a 1-byte gap in between, bound to consecutive locations.
+     */
+    Matrix2x3bNormalizedAligned,
+
+    /**
+     * @ref Matrix2x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix2x3sNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as two @ref VertexFormat::Vector3sNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix2x3sNormalizedAligned,
+
+    /**
+     * @ref Matrix3x2.
+     *
+     * Same as three @ref VertexFormat::Vector2 tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x2,
+
+    /**
+     * @ref Matrix3x2h.
+     *
+     * Same as three @ref VertexFormat::Vector2h tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x2h,
+
+    /**
+     * @ref Matrix3x2d.
+     *
+     * Same as three @ref VertexFormat::Vector2d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x2d,
+
+    /**
+     * @ref Matrix3x2b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector2bNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix3x2bNormalizedAligned instead.
+     */
+    Matrix3x2bNormalized,
+
+    /**
+     * @ref Matrix3x2s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector2sNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix3x2sNormalized,
+
+    /**
+     * @ref Matrix3x3 or @ref Matrix3.
+     *
+     * Same as three @ref VertexFormat::Vector3 tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x3,
+
+    /**
+     * @ref Matrix3x3h.
+     *
+     * Same as three @ref VertexFormat::Vector3h tightly following each other
+     * and bound to consecutive locations. Note that this type doesn't have the
+     * columns four-byte aligned, which may negatively affect performance on
+     * some APIs --- prefer to use @ref VertexFormat::Matrix3x3hAligned
+     * instead.
+     */
+    Matrix3x3h,
+
+    /**
+     * @ref Matrix3x3d or @ref Matrix3d.
+     *
+     * Same as three @ref VertexFormat::Vector3d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x3d,
+
+    /**
+     * @ref Matrix3x3b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector3bNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix3x3bNormalizedAligned instead.
+     */
+    Matrix3x3bNormalized,
+
+    /**
+     * @ref Matrix3x3s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector3sNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix3x3sNormalizedAligned instead.
+     */
+    Matrix3x3sNormalized,
+
+    /**
+     * @ref Matrix3x4.
+     *
+     * Same as three @ref VertexFormat::Vector4 tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x4,
+
+    /**
+     * @ref Matrix3x4h.
+     *
+     * Same as three @ref VertexFormat::Vector4h tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x4h,
+
+    /**
+     * @ref Matrix3x4d.
+     *
+     * Same as three @ref VertexFormat::Vector4d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix3x4d,
+
+    /**
+     * @ref Matrix3x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector4bNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix3x4bNormalized,
+
+    /**
+     * @ref Matrix3x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as three @ref VertexFormat::Vector4sNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix3x4sNormalized,
+
+    /**
+     * @ref Matrix3x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom two rows ignored. A variant of
+     * @ref VertexFormat::Matrix3x2bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as three @ref VertexFormat::Vector2bNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix3x2bNormalizedAligned,
+
+    /**
+     * @ref Matrix3x4h, with bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix3x3h that has columns four-byte aligned.
+     *
+     * Same as three @ref VertexFormat::Vector3s following each other with a
+     * 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix3x3hAligned,
+
+    /**
+     * @ref Matrix3x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix3x3bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as three @ref VertexFormat::Vector3bNormalized following each other
+     * with a 1-byte gap in between, bound to consecutive locations.
+     */
+    Matrix3x3bNormalizedAligned,
+
+    /**
+     * @ref Matrix3x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix3x3sNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as three @ref VertexFormat::Vector3sNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix3x3sNormalizedAligned,
+
+    /**
+     * @ref Matrix4x2.
+     *
+     * Same as four @ref VertexFormat::Vector2 tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix4x2,
+
+    /**
+     * @ref Matrix4x2h.
+     *
+     * Same as four @ref VertexFormat::Vector2h tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x2h,
+
+    /**
+     * @ref Matrix4x2d.
+     *
+     * Same as four @ref VertexFormat::Vector2d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x2d,
+
+    /**
+     * @ref Matrix4x2b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector2bNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix4x2bNormalizedAligned instead.
+     */
+    Matrix4x2bNormalized,
+
+    /**
+     * @ref Matrix4x2s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector2sNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix4x2sNormalized,
+
+    /**
+     * @ref Matrix4x3.
+     *
+     * Same as four @ref VertexFormat::Vector3 tightly following each other and
+     * bound to consecutive locations.
+     */
+    Matrix4x3,
+
+    /**
+     * @ref Matrix4x3h.
+     *
+     * Same as four @ref VertexFormat::Vector3h tightly following each other
+     * and bound to consecutive locations. Note that this type doesn't have the
+     * columns four-byte aligned, which may negatively affect performance on
+     * some APIs --- prefer to use @ref VertexFormat::Matrix4x3hAligned
+     * instead.
+     */
+    Matrix4x3h,
+
+    /**
+     * @ref Matrix4x3d.
+     *
+     * Same as four @ref VertexFormat::Vector3d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x3d,
+
+    /**
+     * @ref Matrix4x3b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector3bNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix4x3bNormalizedAligned instead.
+     */
+    Matrix4x3bNormalized,
+
+    /**
+     * @ref Matrix4x3s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector3sNormalized tightly following
+     * each other and bound to consecutive locations. Note that this type
+     * doesn't have the columns four-byte aligned, which may negatively affect
+     * performance --- prefer to use
+     * @ref VertexFormat::Matrix4x3sNormalizedAligned instead.
+     */
+    Matrix4x3sNormalized,
+
+    /**
+     * @ref Matrix4x4 or @ref Matrix4.
+     *
+     * Same as four @ref VertexFormat::Vector4 tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x4,
+
+    /**
+     * @ref Matrix4x4h.
+     *
+     * Same as four @ref VertexFormat::Vector4h tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x4h,
+
+    /**
+     * @ref Matrix4x4d.
+     *
+     * Same as four @ref VertexFormat::Vector4d tightly following each other
+     * and bound to consecutive locations.
+     */
+    Matrix4x4d,
+
+    /**
+     * @ref Matrix4x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector4bNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix4x4bNormalized,
+
+    /**
+     * @ref Matrix4x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$.
+     *
+     * Same as four @ref VertexFormat::Vector4sNormalized tightly following
+     * each other and bound to consecutive locations.
+     */
+    Matrix4x4sNormalized,
+
+    /**
+     * @ref Matrix4x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom two rows ignored. A variant of
+     * @ref VertexFormat::Matrix4x2bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as four @ref VertexFormat::Vector2bNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix4x2bNormalizedAligned,
+
+    /**
+     * @ref Matrix4x4h, with bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix3x3h that has columns four-byte aligned.
+     *
+     * Same as four @ref VertexFormat::Vector3s following each other with a
+     * 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix4x3hAligned,
+
+    /**
+     * @ref Matrix4x4b, with range @f$ [-127, 127] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix4x3bNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as four @ref VertexFormat::Vector3bNormalized following each other
+     * with a 1-byte gap in between, bound to consecutive locations.
+     */
+    Matrix4x3bNormalizedAligned,
+
+    /**
+     * @ref Matrix4x4s, with range @f$ [-32767, 32767] @f$ interpreted as
+     * @f$ [-1.0, 1.0] @f$ and bottom row ignored. A variant of
+     * @ref VertexFormat::Matrix4x3sNormalized that has columns four-byte
+     * aligned.
+     *
+     * Same as four @ref VertexFormat::Vector3sNormalized following each other
+     * with a 2-byte gap in between, bound to consecutive locations.
+     */
+    Matrix4x3sNormalizedAligned
 };
 
 /**
@@ -864,6 +1404,25 @@ Returns @cpp 1 @ce for scalar types and e.g. @cpp 3 @ce for
 MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
 
 /**
+@brief Vector count of given vertex format
+@m_since_latest
+
+Returns @cpp 1 @ce for scalar and vector types and e.g. @cpp 3 @ce for
+@ref VertexFormat::Matrix3x2d.
+*/
+MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
+
+/**
+@brief Vector stride of given vertex format
+@m_since_latest
+
+Returns type size for scalar and vector types and e.g. @cpp 8 @ce for
+@ref VertexFormat::Matrix2x3hAligned (but @cpp 6 @ce for
+@ref VertexFormat::Matrix2x3h).
+*/
+MAGNUM_EXPORT UnsignedInt vertexFormatVectorStride(VertexFormat format);
+
+/**
 @brief Component count of given vertex format
 @m_since_latest
 
@@ -887,6 +1446,22 @@ normalization. Expects that @p componentCount is not larger than @cpp 4 @ce and
     @ref isVertexFormatNormalized()
 */
 MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt componentCount, bool normalized);
+
+/**
+@brief Assemble a matrix vertex format from parts
+@m_since_latest
+
+Converts @p format to a new format of desired component and vertex count and
+normalization. Expects that both @p vectorCount and @p componentCount is either
+@cpp 2 @ce, @cpp 3 @ce or @cpp 4 @ce, and @p format is floating-point or
+8-/16-bit signed integer.
+@see @ref vertexFormatComponentFormat(),
+    @ref vertexFormatComponentCount(),
+    @ref vertexFormatVectorCount(),
+    @ref vertexFormatVectorStride(),
+    @ref isVertexFormatNormalized()
+*/
+MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt vectorCount, UnsignedInt componentCount, bool aligned);
 
 }
 

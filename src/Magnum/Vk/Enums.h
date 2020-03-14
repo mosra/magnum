@@ -95,7 +95,10 @@ Some Vulkan targets don't support all generic vertex formats. Returns
 @cpp false @ce if current target can't support such format, @cpp true @ce
 otherwise. Moreover, returns @cpp true @ce also for all formats that are
 @ref isVertexFormatImplementationSpecific(). The @p format value is expected
-to be valid.
+to be valid. Note that for matrix formats the function only returns a
+corresponding vector type, and the user is expected to bind the remaining
+vectors to consecutive attribute locations based on what
+@ref vertexFormatVectorCount() and @ref vertexFormatVectorStride() return.
 
 @note Support of some formats depends on presence of a particular Vulkan
     extension. Such check is outside of the scope of this function and you are

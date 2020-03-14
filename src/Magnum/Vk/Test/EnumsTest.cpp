@@ -251,6 +251,7 @@ void EnumsTest::mapVkFormatVertexFormat() {
     /* Touchstone verification */
     CORRADE_VERIFY(hasVkFormat(Magnum::VertexFormat::Vector3us));
     CORRADE_COMPARE(vkFormat(Magnum::VertexFormat::Vector3us), VK_FORMAT_R16G16B16_UINT);
+    CORRADE_COMPARE(vkFormat(Magnum::VertexFormat::Matrix2x3bNormalizedAligned), VK_FORMAT_R8G8B8_SNORM);
 
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */

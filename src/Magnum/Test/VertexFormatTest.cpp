@@ -25,11 +25,13 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/VertexFormat.h"
-#include "Magnum/Math/Vector4.h"
+#include "Magnum/Math/Half.h"
+#include "Magnum/Math/Matrix4.h"
 
 namespace Magnum { namespace Test { namespace {
 
@@ -52,6 +54,12 @@ struct VertexFormatTest: TestSuite::Tester {
     void componentFormat();
     void componentFormatInvalid();
     void componentFormatImplementationSpecific();
+    void vectorCount();
+    void vectorCountInvalid();
+    void vectorCountImplementationSpecific();
+    void vectorStride();
+    void vectorStrideInvalid();
+    void vectorStrideImplementationSpecific();
     void isNormalized();
     void isNormalizedInvalid();
     void isNormalizedImplementationSpecific();
@@ -61,6 +69,12 @@ struct VertexFormatTest: TestSuite::Tester {
     void assembleCantNormalize();
     void assembleInvalidComponentCount();
     void assembleImplementationSpecific();
+
+    void assembleMatrix();
+    void assembleMatrixRoundtrip();
+    void assembleMatrixInvalidType();
+    void assembleMatrixInvalidCount();
+    void assembleMatrixImplementationSpecific();
 
     void debug();
     void debugImplementationSpecific();
@@ -85,6 +99,32 @@ constexpr struct {
     {VertexFormat::Int, false}
 };
 
+constexpr struct {
+    VertexFormat componentType;
+    UnsignedInt componentCount;
+    bool aligned;
+} AssembleMatrixRoundtripData[]{
+    {VertexFormat::Float, 2, true},
+    {VertexFormat::Float, 3, true},
+    {VertexFormat::Float, 4, true},
+    {VertexFormat::Half, 2, false},
+    {VertexFormat::Half, 3, false},
+    {VertexFormat::Half, 3, true},
+    {VertexFormat::Half, 4, false},
+    {VertexFormat::Double, 2, true},
+    {VertexFormat::Double, 3, true},
+    {VertexFormat::Double, 4, true},
+    {VertexFormat::Byte, 2, false},
+    {VertexFormat::Byte, 2, true},
+    {VertexFormat::Byte, 3, false},
+    {VertexFormat::Byte, 3, true},
+    {VertexFormat::Byte, 4, false},
+    {VertexFormat::Short, 2, false},
+    {VertexFormat::Short, 3, false},
+    {VertexFormat::Short, 3, true},
+    {VertexFormat::Short, 4, false}
+};
+
 VertexFormatTest::VertexFormatTest() {
     addTests({&VertexFormatTest::mapping,
 
@@ -102,6 +142,12 @@ VertexFormatTest::VertexFormatTest() {
               &VertexFormatTest::componentFormat,
               &VertexFormatTest::componentFormatInvalid,
               &VertexFormatTest::componentFormatImplementationSpecific,
+              &VertexFormatTest::vectorCount,
+              &VertexFormatTest::vectorCountInvalid,
+              &VertexFormatTest::vectorCountImplementationSpecific,
+              &VertexFormatTest::vectorStride,
+              &VertexFormatTest::vectorStrideInvalid,
+              &VertexFormatTest::vectorStrideImplementationSpecific,
               &VertexFormatTest::isNormalized,
               &VertexFormatTest::isNormalizedInvalid,
               &VertexFormatTest::isNormalizedImplementationSpecific,
@@ -114,6 +160,15 @@ VertexFormatTest::VertexFormatTest() {
     addTests({&VertexFormatTest::assembleCantNormalize,
               &VertexFormatTest::assembleInvalidComponentCount,
               &VertexFormatTest::assembleImplementationSpecific,
+
+              &VertexFormatTest::assembleMatrix});
+
+    addRepeatedInstancedTests({&VertexFormatTest::assembleMatrixRoundtrip}, 3,
+        Containers::arraySize(AssembleMatrixRoundtripData));
+
+    addTests({&VertexFormatTest::assembleMatrixInvalidType,
+              &VertexFormatTest::assembleMatrixInvalidCount,
+              &VertexFormatTest::assembleMatrixImplementationSpecific,
 
               &VertexFormatTest::debug,
               &VertexFormatTest::debugImplementationSpecific,
@@ -198,6 +253,13 @@ void VertexFormatTest::size() {
     CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector2), sizeof(Vector2));
     CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector3), sizeof(Vector3));
     CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector4), sizeof(Vector4));
+
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Matrix2x3), sizeof(Matrix2x3));
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Matrix4x3h), sizeof(Matrix4x3h));
+
+    /* Aligned types */
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Matrix2x2bNormalized), sizeof(Matrix2x2b));
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Matrix2x2bNormalizedAligned), sizeof(Matrix2x4b));
 }
 
 void VertexFormatTest::sizeInvalid() {
@@ -224,6 +286,13 @@ void VertexFormatTest::componentCount() {
     CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector2us), 2);
     CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector3bNormalized), 3);
     CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector4), 4);
+
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Matrix4x3), 3);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Matrix2x4sNormalized), 4);
+
+    /* Aligned types return used component count, w/o padding */
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Matrix2x3sNormalized), 3);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Matrix2x3sNormalizedAligned), 3);
 }
 
 void VertexFormatTest::componentCountInvalid() {
@@ -257,6 +326,14 @@ void VertexFormatTest::componentFormat() {
     CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2sNormalized), VertexFormat::Short);
     CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2ui), VertexFormat::UnsignedInt);
     CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector3i), VertexFormat::Int);
+
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix3x4), VertexFormat::Float);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix2x3h), VertexFormat::Half);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix2x2d), VertexFormat::Double);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix4x2bNormalized), VertexFormat::Byte);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix4x2bNormalizedAligned), VertexFormat::Byte);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix2x3sNormalized), VertexFormat::Short);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Matrix2x3sNormalizedAligned), VertexFormat::Short);
 }
 
 void VertexFormatTest::componentFormatInvalid() {
@@ -279,11 +356,80 @@ void VertexFormatTest::componentFormatImplementationSpecific() {
         "vertexFormatComponentFormat(): can't determine component format of an implementation-specific format 0xdead\n");
 }
 
+void VertexFormatTest::vectorCount() {
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::UnsignedByteNormalized), 1);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Vector2us), 1);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Vector3bNormalized), 1);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Vector4), 1);
+
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Matrix2x4sNormalized), 2);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Matrix3x2bNormalized), 3);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Matrix3x2bNormalizedAligned), 3);
+    CORRADE_COMPARE(vertexFormatVectorCount(VertexFormat::Matrix4x3), 4);
+}
+
+void VertexFormatTest::vectorCountInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    vertexFormatVectorCount(VertexFormat{});
+    vertexFormatVectorCount(VertexFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatVectorCount(): invalid format VertexFormat(0x0)\n"
+        "vertexFormatVectorCount(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::vectorCountImplementationSpecific() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormatVectorCount(vertexFormatWrap(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatVectorCount(): can't determine vector count of an implementation-specific format 0xdead\n");
+}
+
+void VertexFormatTest::vectorStride() {
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::UnsignedByteNormalized), 1);
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Vector3bNormalized), 3);
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Vector2us), 4);
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Vector4), 16);
+
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Matrix2x4sNormalized), 8);
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Matrix4x3), 12);
+
+    /* Aligned formats */
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Matrix3x2bNormalized), 2);
+    CORRADE_COMPARE(vertexFormatVectorStride(VertexFormat::Matrix3x2bNormalizedAligned), 4);
+}
+
+void VertexFormatTest::vectorStrideInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    vertexFormatVectorStride(VertexFormat{});
+    vertexFormatVectorStride(VertexFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatVectorStride(): invalid format VertexFormat(0x0)\n"
+        "vertexFormatVectorStride(): invalid format VertexFormat(0xdead)\n");
+}
+
+void VertexFormatTest::vectorStrideImplementationSpecific() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormatVectorStride(vertexFormatWrap(0xdead));
+    CORRADE_COMPARE(out.str(),
+        "vertexFormatVectorStride(): can't determine vector count of an implementation-specific format 0xdead\n");
+}
+
 void VertexFormatTest::isNormalized() {
     CORRADE_VERIFY(isVertexFormatNormalized(VertexFormat::UnsignedByteNormalized));
     CORRADE_VERIFY(!isVertexFormatNormalized(VertexFormat::Vector2us));
     CORRADE_VERIFY(isVertexFormatNormalized(VertexFormat::Vector3bNormalized));
     CORRADE_VERIFY(!isVertexFormatNormalized(VertexFormat::Vector4));
+
+    CORRADE_VERIFY(!isVertexFormatNormalized(VertexFormat::Matrix2x2h));
+    CORRADE_VERIFY(isVertexFormatNormalized(VertexFormat::Matrix2x3bNormalized));
 }
 
 void VertexFormatTest::isNormalizedInvalid() {
@@ -336,8 +482,11 @@ void VertexFormatTest::assembleRoundtrip() {
     setTestCaseDescription(out.str());
 
     VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 1, data.normalized);
+    CORRADE_COMPARE(vertexFormat(result, testCaseRepeatId() + 1, data.normalized), result);
     CORRADE_COMPARE(vertexFormatComponentFormat(result), data.componentType);
     CORRADE_COMPARE(vertexFormatComponentCount(result), testCaseRepeatId() + 1);
+    CORRADE_COMPARE(vertexFormatVectorCount(result), 1);
+    CORRADE_COMPARE(vertexFormatVectorStride(result), vertexFormatSize(result));
     CORRADE_COMPARE(isVertexFormatNormalized(result), data.normalized);
 }
 
@@ -361,6 +510,83 @@ void VertexFormatTest::assembleImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(vertexFormatWrap(0xdead), 1, true);
+    CORRADE_COMPARE(out.str(),
+        "vertexFormat(): can't assemble a format out of an implementation-specific format 0xdead\n");
+}
+
+void VertexFormatTest::assembleMatrix() {
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Byte, 3, 2, false),
+        VertexFormat::Matrix3x2bNormalized);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Short, 2, 3, true),
+        VertexFormat::Matrix2x3sNormalizedAligned);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Float, 4, 2, true),
+        VertexFormat::Matrix4x2);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Half, 2, 4, false),
+        VertexFormat::Matrix2x4h);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Double, 4, 4, true),
+        VertexFormat::Matrix4x4d);
+
+    /* Non-scalar types allowed too, as that makes the internal checking
+       much simpler than when requiring the type to be scalar non-normalized */
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Vector4bNormalized, 2, 2, false),
+        VertexFormat::Matrix2x2bNormalized);
+    CORRADE_COMPARE(vertexFormat(VertexFormat::Vector3h, 3, 3, true),
+        VertexFormat::Matrix3x3hAligned);
+}
+
+void VertexFormatTest::assembleMatrixRoundtrip() {
+    auto&& data = AssembleMatrixRoundtripData[testCaseInstanceId()];
+
+    std::ostringstream out;
+    {
+        Debug d{&out, Debug::Flag::NoNewlineAtTheEnd};
+        d << data.componentType << Debug::nospace << "," << data.componentCount;
+        if(data.aligned) d << Debug::nospace << ", aligned";
+    }
+    setTestCaseDescription(out.str());
+
+    VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 2, data.componentCount, data.aligned);
+    CORRADE_COMPARE(vertexFormat(result, testCaseRepeatId() + 2, data.componentCount, data.aligned), result);
+    CORRADE_COMPARE(vertexFormatComponentFormat(result), data.componentType);
+    CORRADE_COMPARE(vertexFormatComponentCount(result), data.componentCount);
+    CORRADE_COMPARE(vertexFormatVectorCount(result), testCaseRepeatId() + 2);
+    CORRADE_COMPARE(vertexFormatVectorStride(result), vertexFormatSize(result)/(testCaseRepeatId() + 2));
+    if(data.aligned)
+        CORRADE_COMPARE_AS(vertexFormatVectorStride(result), 4, TestSuite::Compare::Divisible);
+}
+
+void VertexFormatTest::assembleMatrixInvalidType() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormat(VertexFormat::UnsignedByte, 3, 2, false);
+    vertexFormat(VertexFormat::UnsignedShort, 3, 2, false);
+    vertexFormat(VertexFormat::UnsignedInt, 2, 3, false);
+    vertexFormat(VertexFormat::Int, 2, 3, false);
+    CORRADE_COMPARE(out.str(),
+        "vertexFormat(): invalid matrix component type VertexFormat::UnsignedByte, only floating-point or 8-/16-bit signed integer types are supported\n"
+        "vertexFormat(): invalid matrix component type VertexFormat::UnsignedShort, only floating-point or 8-/16-bit signed integer types are supported\n"
+        "vertexFormat(): invalid matrix component type VertexFormat::UnsignedInt, only floating-point or 8-/16-bit signed integer types are supported\n"
+        "vertexFormat(): invalid matrix component type VertexFormat::Int, only floating-point or 8-/16-bit signed integer types are supported\n");
+}
+
+void VertexFormatTest::assembleMatrixInvalidCount() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormat(VertexFormat::Vector3, 2, 1, false);
+    vertexFormat(VertexFormat::Vector3, 2, 5, false);
+    vertexFormat(VertexFormat::Vector3, 5, 2, false);
+    vertexFormat(VertexFormat::Vector3, 1, 2, false);
+    CORRADE_COMPARE(out.str(),
+        "vertexFormat(): invalid component count 1\n"
+        "vertexFormat(): invalid component count 5\n"
+        "vertexFormat(): invalid vector count 5\n"
+        "vertexFormat(): invalid vector count 1\n");
+}
+
+void VertexFormatTest::assembleMatrixImplementationSpecific() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    vertexFormat(vertexFormatWrap(0xdead), 2, 2, true);
     CORRADE_COMPARE(out.str(),
         "vertexFormat(): can't assemble a format out of an implementation-specific format 0xdead\n");
 }
