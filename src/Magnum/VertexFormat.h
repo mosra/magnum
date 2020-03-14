@@ -435,8 +435,9 @@ enum class VertexFormat: UnsignedInt {
     Vector3,
 
     /**
-     * @ref Vector3h. Can be used instead of @ref VertexFormat::Vector3 for
-     * packed 3D positions and three-component colors.
+     * @ref Vector3h or @ref Color3h. Can be used instead of
+     * @ref VertexFormat::Vector3 for packed 3D positions and three-component
+     * colors.
      *
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Half;
@@ -474,8 +475,8 @@ enum class VertexFormat: UnsignedInt {
     Vector3ub,
 
     /**
-     * @ref Vector3ub, with range @f$ [0, 255] @f$ interpreted as
-     * @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector3
+     * @ref Vector3ub or @ref Color3ub, with range @f$ [0, 255] @f$ interpreted
+     * as @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector3
      * for packed 3D positions and three-component colors.
      *
      * Corresponds to three-component
@@ -534,9 +535,10 @@ enum class VertexFormat: UnsignedInt {
     Vector3us,
 
     /**
-     * @ref Vector3us, with range @f$ [0, 65535] @f$ interpreted as
-     * @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector2
-     * for packed 3D positions and three-component colors.
+     * @ref Vector3us or @ref Color3us, with range @f$ [0, 65535] @f$
+     * interpreted as @f$ [0.0, 1.0] @f$. Can be used instead of
+     * @ref VertexFormat::Vector2 for packed 3D positions and three-component
+     * colors.
      *
      * Corresponds to three-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
@@ -617,8 +619,8 @@ enum class VertexFormat: UnsignedInt {
     Vector4,
 
     /**
-     * @ref Vector4h. Can be used instead of @ref VertexFormat::Vector4 for
-     * four-component colors.
+     * @ref Vector4h or @ref Color4h. Can be used instead of
+     * @ref VertexFormat::Vector4 for four-component colors.
      *
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Half;
@@ -654,8 +656,8 @@ enum class VertexFormat: UnsignedInt {
     Vector4ub,
 
     /**
-     * @ref Vector4ub, with range @f$ [0, 255] @f$ interpreted as
-     * @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector4
+     * @ref Vector4ub or @ref Color4ub, with range @f$ [0, 255] @f$ interpreted
+     * as @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector4
      * for packed linear four-component colors.
      *
      * Corresponds to four-component
@@ -709,9 +711,9 @@ enum class VertexFormat: UnsignedInt {
     Vector4us,
 
     /**
-     * @ref Vector4us, with range @f$ [0, 65535] @f$ interpreted as
-     * @f$ [0.0, 1.0] @f$. Can be used instead of @ref VertexFormat::Vector4
-     * for packed linear four-component colors.
+     * @ref Vector4us or @ref Color4us, with range @f$ [0, 65535] @f$
+     * interpreted as @f$ [0.0, 1.0] @f$. Can be used instead of
+     * @ref VertexFormat::Vector4 for packed linear four-component colors.
      *
      * Corresponds to four-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
