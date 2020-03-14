@@ -49,6 +49,14 @@ See also:
     @ref Vector2s, @ref Vector3s, @ref Vector4s, @ref Color3h, @ref Color4h,
     @ref Color3us, @ref Color4us convenience typedefs for half-float, 8- and
     16-bit integer vector and color types
+-   New storage-only @ref Matrix2x2h, @ref Matrix2x2b, @ref Matrix2x2s,
+    @ref Matrix2x3h, @ref Matrix2x3b, @ref Matrix2x3s, @ref Matrix2x4h,
+    @ref Matrix2x4b, @ref Matrix2x4s, @ref Matrix3x2h, @ref Matrix3x2b,
+    @ref Matrix3x2s, @ref Matrix3x3h. @ref Matrix3x3b, @ref Matrix3x3s,
+    @ref Matrix3x4h, @ref Matrix3x4b, @ref Matrix3x4s, @ref Matrix4x2h,
+    @ref Matrix4x2b, @ref Matrix4x2s, @ref Matrix4x3h, @ref Matrix4x3b,
+    @ref Matrix4x3s, @ref Matrix4x4h, @ref Matrix4x4b, @ref Matrix4x4s
+    convenience typedefs for half-float, 8- and 16-bit packed matrix types
 -   New @ref VertexFormat enum for vertex formats and related utilities
 -   New @ref MeshPrimitive::Instances, @ref MeshPrimitive::Faces and
     @ref MeshPrimitive::Edges primitive types for describing per-instance,

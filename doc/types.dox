@@ -83,14 +83,23 @@ after type name means @ref Float underlying type, `h` means @ref Half, `d` is
 | Magnum matrix type                                               | Equivalent GLSL type                  |
 | ---------------------------------------------------------------- | ------------------------------------- |
 | @ref Matrix2x2 or @ref Matrix2x2d                                | @glsl mat2 @ce / @glsl mat2x2 @ce or @glsl dmat2 @ce / @glsl dmat2x2 @ce |
+| @ref Matrix2x2h, @ref Matrix2x2b, @ref Matrix2x2s                | (*none*) |
 | @ref Matrix3 / @ref Matrix3x3 or @ref Matrix3d / @ref Matrix3x3d | @glsl mat3 @ce / @glsl mat3x3 @ce or @glsl dmat3 @ce / @glsl dmat3x3 @ce |
+| @ref Matrix3x3h, @ref Matrix3x3b, @ref Matrix3x3s                | (*none*) |
 | @ref Matrix4 / @ref Matrix4x4 or @ref Matrix4d / @ref Matrix4x4d | @glsl mat4 @ce / @glsl mat4x4 @ce or  @glsl dmat4 @ce / @glsl dmat4x4 @ce |
+| @ref Matrix4x4h, @ref Matrix4x4b, @ref Matrix4x4s                | (*none*) |
 | @ref Matrix2x3 or @ref Matrix2x3d                                | @glsl mat2x3 @ce or @glsl dmat2x3 @ce |
+| @ref Matrix2x3h, @ref Matrix2x3b, @ref Matrix2x3s                | (*none*) |
 | @ref Matrix3x2 or @ref Matrix3x2d                                | @glsl mat3x2 @ce or @glsl dmat3x2 @ce |
+| @ref Matrix3x2h, @ref Matrix3x2b, @ref Matrix3x2s                | (*none*) |
 | @ref Matrix2x4 or @ref Matrix2x4d                                | @glsl mat2x4 @ce or @glsl dmat2x4 @ce |
+| @ref Matrix2x4h, @ref Matrix2x4b, @ref Matrix2x4s                | (*none*) |
 | @ref Matrix4x2 or @ref Matrix4x2d                                | @glsl mat4x2 @ce or @glsl dmat4x2 @ce |
+| @ref Matrix4x2h, @ref Matrix4x2b, @ref Matrix4x2s                | (*none*) |
 | @ref Matrix3x4 or @ref Matrix3x4d                                | @glsl mat3x4 @ce or @glsl dmat3x4 @ce |
+| @ref Matrix3x4h, @ref Matrix3x4b, @ref Matrix3x4s                | (*none*) |
 | @ref Matrix4x3 or @ref Matrix4x3d                                | @glsl mat4x3 @ce or @glsl dmat4x3 @ce |
+| @ref Matrix4x3h, @ref Matrix4x3b, @ref Matrix4x3s                | (*none*) |
 
 Any super- or sub-class of the same size and underlying type can be used
 equivalently (e.g. @ref Math::Vector "Math::Vector<Float>" or @ref Color3

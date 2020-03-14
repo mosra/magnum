@@ -522,6 +522,222 @@ Equivalent to GLSL @glsl mat4x3 @ce.
 */
 typedef Math::Matrix4x3<Float> Matrix4x3;
 
+/**
+@brief Signed byte matrix with 2 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix2x4b and ignore the bottom two rows.
+*/
+typedef Math::Matrix2x2<Byte> Matrix2x2b;
+
+/**
+@brief Signed byte matrix with 2 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix2x4b and ignore the bottom row.
+*/
+typedef Math::Matrix2x3<Byte> Matrix2x3b;
+
+/**
+@brief Signed byte matrix with 2 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix2x4<Byte> Matrix2x4b;
+
+/**
+@brief Signed byte matrix with 3 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix3x4b and ignore the bottom two rows.
+*/
+typedef Math::Matrix3x2<Byte> Matrix3x2b;
+
+/**
+@brief Signed byte matrix with 3 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix3x4b and ignore the bottom row.
+*/
+typedef Math::Matrix3x3<Byte> Matrix3x3b;
+
+/**
+@brief Signed byte matrix with 3 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix3x4<Byte> Matrix3x4b;
+
+/**
+@brief Signed byte matrix with 4 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix4x4b and ignore the bottom two rows.
+*/
+typedef Math::Matrix4x2<Byte> Matrix4x2b;
+
+/**
+@brief Signed byte matrix with 4 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix4x4b and ignore the bottom row.
+*/
+typedef Math::Matrix4x3<Byte> Matrix4x3b;
+
+/**
+@brief Signed byte matrix with 4 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 8-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix4x4<Byte> Matrix4x4b;
+
+/**
+@brief Signed short matrix with 2 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix2x2<Short> Matrix2x2s;
+
+/**
+@brief Signed short matrix with 2 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix2x4s and ignore the bottom row.
+*/
+typedef Math::Matrix2x3<Short> Matrix2x3s;
+
+/**
+@brief Signed short matrix with 2 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix2x4<Short> Matrix2x4s;
+
+/**
+@brief Signed short matrix with 3 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix3x2<Short> Matrix3x2s;
+
+/**
+@brief Signed short matrix with 3 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix3x4s and ignore the bottom row.
+*/
+typedef Math::Matrix3x3<Short> Matrix3x3s;
+
+/**
+@brief Signed short matrix with 3 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix3x4<Short> Matrix3x4s;
+
+/**
+@brief Signed short matrix with 4 columns and 2 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix4x2<Short> Matrix4x2s;
+
+/**
+@brief Signed short matrix with 4 columns and 3 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix4x4s and ignore the bottom row.
+*/
+typedef Math::Matrix4x3<Short> Matrix4x3s;
+
+/**
+@brief Signed short matrix with 4 columns and 4 rows
+@m_since_latest
+
+Storage only, in ordet to support matrices packed into 16-bit types. For
+performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
+/ @ref Math::packInto() back again.
+*/
+typedef Math::Matrix4x4<Short> Matrix4x4s;
+
 /** @brief Float two-dimensional quadratic Bézier curve */
 typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
 
@@ -596,7 +812,9 @@ typedef Math::Frustum<Float> Frustum;
 /** @{ @name Half-precision types
 
 These types are for storage and conversion from / to single-precision types,
-no arithmetic operations are implemented. See @ref types for more information.
+no arithmetic operations are implemented. See @ref types for more information,
+for performing arithmetic on these types use @ref Math::unpackHalf() / @ref Math::unpackHalfInto() to convert to a 32-bit float type first and then
+@ref Math::packHalf() / @ref Math::packHalfInto() back again.
 */
 
 /**
@@ -628,6 +846,72 @@ typedef Math::Color3<Half> Color3h;
 @m_since_latest
 */
 typedef Math::Color4<Half> Color4h;
+
+/**
+@brief Half-float matrix with 2 columns and 2 rows
+@m_since_latest
+*/
+typedef Math::Matrix2x2<Half> Matrix2x2h;
+
+/**
+@brief Half-float matrix with 2 columns and 3 rows
+@m_since_latest
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix2x4h and ignore the bottom row.
+*/
+typedef Math::Matrix2x3<Half> Matrix2x3h;
+
+/**
+@brief Half-float matrix with 2 columns and 4 rows
+@m_since_latest
+*/
+typedef Math::Matrix2x4<Half> Matrix2x4h;
+
+/**
+@brief Half-float matrix with 3 columns and 2 rows
+@m_since_latest
+*/
+typedef Math::Matrix3x2<Half> Matrix3x2h;
+
+/**
+@brief Half-float matrix with 3 columns and 3 rows
+@m_since_latest
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix3x4h and ignore the bottom row.
+*/
+typedef Math::Matrix3x3<Half> Matrix3x3h;
+
+/**
+@brief Half-float matrix with 3 columns and 4 rows
+@m_since_latest
+*/
+typedef Math::Matrix3x4<Half> Matrix3x4h;
+
+/**
+@brief Half-float matrix with 4 columns and 2 rows
+@m_since_latest
+*/
+typedef Math::Matrix4x2<Half> Matrix4x2h;
+
+/**
+@brief Half-float matrix with 4 columns and 3 rows
+@m_since_latest
+
+Note that this type doesn't have the columns four-byte aligned, which may
+negatively affect performance in some cases. For better alignment use
+@ref Matrix4x4h and ignore the bottom row.
+*/
+typedef Math::Matrix4x3<Half> Matrix4x3h;
+
+/**
+@brief Half-float matrix with 4 columns and 4 rows
+@m_since_latest
+*/
+typedef Math::Matrix4x4<Half> Matrix4x4h;
 
 /*@}*/
 

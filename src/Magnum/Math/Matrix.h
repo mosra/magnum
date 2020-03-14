@@ -54,7 +54,12 @@ namespace Implementation {
 See @ref matrix-vector for brief introduction.
 
 @configurationvalueref{Magnum::Math::Matrix}
-@see @ref Matrix2x2, @ref Matrix3x3, @ref Matrix4x4
+@see @ref Matrix2x2, @ref Matrix3x3, @ref Matrix4x4, @ref Magnum::Matrix2x2,
+    @ref Magnum::Matrix2x2d, @ref Magnum::Matrix2x2h, @ref Magnum::Matrix2x2b,
+    @ref Magnum::Matrix2x2s, @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d,
+    @ref Magnum::Matrix3x3h, @ref Magnum::Matrix3x3b, @ref Magnum::Matrix3x3s,
+    @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d, @ref Magnum::Matrix4x4h,
+    @ref Magnum::Matrix4x4b, @ref Magnum::Matrix4x4s
  */
 template<std::size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:
@@ -301,7 +306,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
 Convenience alternative to `Matrix<2, T>`. See @ref Matrix for more
 information.
-@see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d
+@see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d, @ref Magnum::Matrix2x2h,
+    @ref Magnum::Matrix2x2b, @ref Magnum::Matrix2x2s
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix2x2 = Matrix<2, T>;
@@ -313,7 +319,8 @@ template<class T> using Matrix2x2 = Matrix<2, T>;
 Convenience alternative to `Matrix<3, T>`. See @ref Matrix for more
 information. Note that this is different from @ref Matrix3, which contains
 additional functions for transformations in 2D.
-@see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d
+@see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d, @ref Magnum::Matrix3x3h,
+    @ref Magnum::Matrix3x3b, @ref Magnum::Matrix3x3s
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix3x3 = Matrix<3, T>;
@@ -325,7 +332,8 @@ template<class T> using Matrix3x3 = Matrix<3, T>;
 Convenience alternative to `Matrix<4, T>`. See @ref Matrix for more
 information. Note that this is different from @ref Matrix4, which contains
 additional functions for transformations in 3D.
-@see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d
+@see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d, @ref Magnum::Matrix4x4h,
+    @ref Magnum::Matrix4x4b, @ref Magnum::Matrix4x4s
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix4x4 = Matrix<4, T>;
