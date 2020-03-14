@@ -1002,7 +1002,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {
-            return attribute.vectorSize()*Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
+            return attribute.vectorStride()*Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
         }
         template<class ...T> static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
             return gap + strideOfInterleaved(attributes...);
@@ -1014,7 +1014,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             addVertexAttribute(buffer, attribute, offset, stride, divisor);
 
             /* Add size of this attribute to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+attribute.vectorSize()*Attribute<location, T>::VectorCount, stride, divisor, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.vectorStride()*Attribute<location, T>::VectorCount, stride, divisor, attributes...);
         }
         template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
@@ -1029,7 +1029,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
                     Implementation::kindFor<location, T>(attribute.dataOptions()),
-                    GLintptr(offset+i*attribute.vectorSize()),
+                    GLintptr(offset+i*attribute.vectorStride()),
                     stride,
                     divisor);
         }
@@ -1054,7 +1054,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
                     Implementation::kindFor<location, T>(attribute.dataOptions()),
-                    GLintptr(offset+i*attribute.vectorSize()),
+                    GLintptr(offset+i*attribute.vectorStride()),
                     stride,
                     divisor);
         }

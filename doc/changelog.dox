@@ -251,6 +251,8 @@ See also:
     [mosra/magnum#403](https://github.com/mosra/magnum/pull/403))
 -   Added an ability to remove a buffer from a @ref GL::BufferTexture using
     @ref GL::BufferTexture::resetBuffer() "resetBuffer()"
+-   Matrix @ref GL::Attribute instances can now specify custom stride between
+    column vectors in order to control alignment in packed 8- and 16-bit types
 
 @subsubsection changelog-latest-changes-math Math library
 
@@ -422,6 +424,8 @@ See also:
     @ref GL::Attribute::DataType::Half,
     @ref GL::DynamicAttribute::DataType::Half and @ref GL::PixelType::Half that
     are consistent with the @ref Half type used elsewhere.
+-   @cpp GL::Attribute::vectorSize() @ce is deprecated as the name is
+    misleading now, use @ref GL::Attribute::vectorStride() instead
 -   @cpp Trade::AbstractImporter::mesh2D() @ce,
     @cpp Trade::MeshData2D @ce, @cpp Trade::MeshData3D @ce,
     @cpp Trade::AbstractImporter::mesh2D() @ce,

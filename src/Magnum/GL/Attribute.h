@@ -286,16 +286,6 @@ template<UnsignedInt location, class T> class Attribute {
 
         /**
          * @brief Constructor
-         * @param components    Component count
-         * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for
-         *      @ref Magnum::Vector4i "Vector4i").
-         * @param dataOptions   Data options. Default is no options.
-         */
-        constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
-
-        /**
-         * @brief Constructor
          * @param dataType      Type of passed data. Default is the same as
          *      type used in shader (e.g. @ref DataType::Int for
          *      @ref Magnum::Vector4i "Vector4i").
@@ -304,7 +294,48 @@ template<UnsignedInt location, class T> class Attribute {
          * Component count is set to the same value as in type used in shader
          * (e.g. @ref Components::Three for @ref Magnum::Vector3 "Vector3").
          */
-        constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
+        constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, dataType, dataOptions} {}
+
+        /**
+         * @brief Constructor
+         * @param components    Component count
+         * @param dataType      Type of passed data. Default is the same as
+         *      type used in shader (e.g. @ref DataType::Int for
+         *      @ref Magnum::Vector4i "Vector4i").
+         * @param dataOptions   Data options. Default is no options.
+         *
+         * Vector stride is set to the size of the vector type (e.g. 9 for a
+         * @ref Magnum::Matrix3 "Matrix3").
+         */
+        constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{components, Implementation::Attribute<T>::size(GLint(components), dataType), dataType, dataOptions} {}
+
+        /**
+         * @brief Construct with a custom vector stride
+         * @param vectorStride  Stride between consecutive matrix column
+         *      vectors
+         * @param dataType      Type of passed data. Default is the same as
+         *      type used in shader (e.g. @ref DataType::Int for
+         *      @ref Magnum::Vector4i "Vector4i").
+         * @param dataOptions   Data options. Default is no options.
+         * @m_since_latest
+         *
+         * Component count is set to the same value as in type used in shader
+         * (e.g. @ref Components::Three for @ref Magnum::Vector3 "Vector3").
+         */
+        constexpr Attribute(UnsignedInt vectorStride, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): Attribute{Implementation::Attribute<T>::DefaultComponents, vectorStride, dataType, dataOptions} {}
+
+        /**
+         * @brief Construct with a custom vector stride
+         * @param components    Component count
+         * @param vectorStride  Stride between consecutive matrix column
+         *      vectors
+         * @param dataType      Type of passed data. Default is the same as
+         *      type used in shader (e.g. @ref DataType::Int for
+         *      @ref Magnum::Vector4i "Vector4i").
+         * @param dataOptions   Data options. Default is no options.
+         * @m_since_latest
+         */
+        constexpr Attribute(Components components, UnsignedInt vectorStride, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components{components}, _vectorStride{vectorStride}, _dataType{dataType}, _dataOptions{dataOptions} {}
 
         /** @brief Component count of passed data */
         constexpr Components components() const { return _components; }
@@ -313,19 +344,35 @@ template<UnsignedInt location, class T> class Attribute {
         constexpr DataType dataType() const { return _dataType; }
 
         /**
+         * @brief Stride between consecutive vector elements
+         * @m_since_latest
+         *
+         * Used for describing matrix attributes. Implicitly the same as size
+         * of given vector type (e.g. @cpp 9 @ce for a
+         * @ref Magnum::Matrix3 "Matrix3"), but can be overriden for example to
+         * ensure four-byte column alignment with 1- and 2-byte data types.
+         * @see @ref Vectors
+         */
+        constexpr UnsignedInt vectorStride() const { return _vectorStride; }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
          * @brief Size of each vector in passed data
+         * @m_deprecated_since_latest Use @ref vectorStride() instead.
          *
          * @see @ref VectorCount
          */
-        UnsignedInt vectorSize() const {
-            return Implementation::Attribute<T>::size(GLint(_components), _dataType);
+        constexpr CORRADE_DEPRECATED("use vectorStride() instead") UnsignedInt vectorSize() const {
+            return vectorStride();
         }
+        #endif
 
         /** @brief Data options */
         constexpr DataOptions dataOptions() const { return _dataOptions; }
 
     private:
         Components _components;
+        UnsignedInt _vectorStride;
         DataType _dataType;
         DataOptions _dataOptions;
 };

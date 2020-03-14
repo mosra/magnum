@@ -51,6 +51,7 @@ struct AttributeTest: TestSuite::Tester {
     #ifndef MAGNUM_TARGET_GLES2
     void attributeMatrixMxN();
     #endif
+    void attributeMatrixNxNCustomStride();
     void attributeMatrixNxNd();
     void attributeMatrixMxNd();
 
@@ -116,6 +117,7 @@ AttributeTest::AttributeTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &AttributeTest::attributeMatrixMxN,
               #endif
+              &AttributeTest::attributeMatrixNxNCustomStride,
               &AttributeTest::attributeMatrixNxNd,
               &AttributeTest::attributeMatrixMxNd,
 
@@ -174,7 +176,7 @@ void AttributeTest::attributeScalar() {
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::One);
     CORRADE_VERIFY(!a.dataOptions());
-    CORRADE_COMPARE(a.vectorSize(), 4);
+    CORRADE_COMPARE(a.vectorStride(), 4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Float);
 
     DynamicAttribute da{a};
@@ -185,7 +187,7 @@ void AttributeTest::attributeScalar() {
 
     /* Options */
     Attribute b(Attribute::DataType::UnsignedShort, Attribute::DataOption::Normalized);
-    CORRADE_COMPARE(b.vectorSize(), 2);
+    CORRADE_COMPARE(b.vectorStride(), 2);
     CORRADE_VERIFY(b.dataOptions() <= Attribute::DataOption::Normalized);
 
     DynamicAttribute db{b};
@@ -203,7 +205,7 @@ void AttributeTest::attributeScalarInt() {
 
     /* Default constructor */
     Attribute a;
-    CORRADE_COMPARE(a.vectorSize(), 4);
+    CORRADE_COMPARE(a.vectorStride(), 4);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
@@ -213,7 +215,7 @@ void AttributeTest::attributeScalarInt() {
 
     /* Options */
     Attribute b(Attribute::DataType::Short);
-    CORRADE_COMPARE(b.vectorSize(), 2);
+    CORRADE_COMPARE(b.vectorStride(), 2);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
@@ -233,7 +235,7 @@ void AttributeTest::attributeScalarUnsignedInt() {
 
     /* Default constructor */
     Attribute a;
-    CORRADE_COMPARE(a.vectorSize(), 4);
+    CORRADE_COMPARE(a.vectorStride(), 4);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
@@ -243,7 +245,7 @@ void AttributeTest::attributeScalarUnsignedInt() {
 
     /* Options */
     Attribute b(Attribute::DataType::UnsignedByte);
-    CORRADE_COMPARE(b.vectorSize(), 1);
+    CORRADE_COMPARE(b.vectorStride(), 1);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
@@ -263,7 +265,7 @@ void AttributeTest::attributeScalarDouble() {
 
     /* Default constructor */
     Attribute a;
-    CORRADE_COMPARE(a.vectorSize(), 8);
+    CORRADE_COMPARE(a.vectorStride(), 8);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Long);
@@ -283,7 +285,7 @@ void AttributeTest::attributeVector() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Three);
-    CORRADE_COMPARE(a.vectorSize(), 3*4);
+    CORRADE_COMPARE(a.vectorStride(), 3*4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Float);
 
     DynamicAttribute da{a};
@@ -296,7 +298,7 @@ void AttributeTest::attributeVector() {
     #ifndef MAGNUM_TARGET_GLES
     Attribute b(Attribute::Components::Two, Attribute::DataType::Double);
     CORRADE_COMPARE(b.components(), Attribute::Components::Two);
-    CORRADE_COMPARE(b.vectorSize(), 2*8);
+    CORRADE_COMPARE(b.vectorStride(), 2*8);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
@@ -306,7 +308,7 @@ void AttributeTest::attributeVector() {
     #else
     Attribute b(Attribute::Components::Two, Attribute::DataType::Float);
     CORRADE_COMPARE(b.components(), Attribute::Components::Two);
-    CORRADE_COMPARE(b.vectorSize(), 2*4);
+    CORRADE_COMPARE(b.vectorStride(), 2*4);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
@@ -325,7 +327,7 @@ void AttributeTest::attributeVectorInt() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Two);
-    CORRADE_COMPARE(a.vectorSize(), 2*4);
+    CORRADE_COMPARE(a.vectorStride(), 2*4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Int);
 
     DynamicAttribute da{a};
@@ -336,7 +338,7 @@ void AttributeTest::attributeVectorInt() {
 
     /* Options */
     Attribute b(Attribute::Components::One, Attribute::DataType::Int);
-    CORRADE_COMPARE(b.vectorSize(), 4);
+    CORRADE_COMPARE(b.vectorStride(), 4);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
@@ -357,7 +359,7 @@ void AttributeTest::attributeVectorUnsignedInt() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Four);
-    CORRADE_COMPARE(a.vectorSize(), 4*4);
+    CORRADE_COMPARE(a.vectorStride(), 4*4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::UnsignedInt);
 
     DynamicAttribute da{a};
@@ -368,7 +370,7 @@ void AttributeTest::attributeVectorUnsignedInt() {
 
     /* Options */
     Attribute b(Attribute::Components::Three, Attribute::DataType::UnsignedShort);
-    CORRADE_COMPARE(b.vectorSize(), 3*2);
+    CORRADE_COMPARE(b.vectorStride(), 3*2);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
@@ -389,7 +391,7 @@ void AttributeTest::attributeVectorDouble() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Two);
-    CORRADE_COMPARE(a.vectorSize(), 2*8);
+    CORRADE_COMPARE(a.vectorStride(), 2*8);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Double);
 
     DynamicAttribute da{a};
@@ -400,7 +402,7 @@ void AttributeTest::attributeVectorDouble() {
 
     /* Options */
     Attribute b(Attribute::Components::One);
-    CORRADE_COMPARE(b.vectorSize(), 8);
+    CORRADE_COMPARE(b.vectorStride(), 8);
 
     DynamicAttribute db{b};
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Long);
@@ -420,7 +422,7 @@ void AttributeTest::attributeVector4() {
     /* Custom type */
     #ifndef MAGNUM_TARGET_GLES
     Attribute a(Attribute::DataType::UnsignedInt2101010Rev);
-    CORRADE_COMPARE(a.vectorSize(), 4);
+    CORRADE_COMPARE(a.vectorStride(), 4);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
@@ -429,7 +431,7 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::UnsignedInt2101010Rev);
     #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Attribute a(Attribute::DataType::Half);
-    CORRADE_COMPARE(a.vectorSize(), 8);
+    CORRADE_COMPARE(a.vectorStride(), 8);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
@@ -438,7 +440,7 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Half);
     #else
     Attribute a(Attribute::DataType::Float);
-    CORRADE_COMPARE(a.vectorSize(), 16);
+    CORRADE_COMPARE(a.vectorStride(), 16);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
@@ -456,7 +458,7 @@ void AttributeTest::attributeVectorBGRA() {
 
     /* BGRA */
     Attribute a(Attribute::Components::BGRA);
-    CORRADE_COMPARE(a.vectorSize(), 4*4);
+    CORRADE_COMPARE(a.vectorStride(), 4*4);
 
     DynamicAttribute da{a};
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
@@ -476,7 +478,7 @@ void AttributeTest::attributeMatrixNxN() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Three);
-    CORRADE_COMPARE(a.vectorSize(), 3*4);
+    CORRADE_COMPARE(a.vectorStride(), 3*4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Float);
 
     DynamicAttribute da{a};
@@ -484,6 +486,36 @@ void AttributeTest::attributeMatrixNxN() {
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Three);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
+}
+
+void AttributeTest::attributeMatrixNxNCustomStride() {
+    typedef Attribute<3, Matrix3> Attribute;
+    CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
+    CORRADE_COMPARE(Attribute::VectorCount, 3);
+
+    /* Default stride */
+    Attribute a{Attribute::DataType::Short};
+    CORRADE_COMPARE(a.components(), Attribute::Components::Three);
+    CORRADE_COMPARE(a.vectorStride(), 6);
+    CORRADE_COMPARE(a.dataType(), Attribute::DataType::Short);
+
+    DynamicAttribute da{a};
+    CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(da.location(), 3);
+    CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Short);
+
+    /* Custom stride */
+    Attribute b{8, Attribute::DataType::Short};
+    CORRADE_COMPARE(b.components(), Attribute::Components::Three);
+    CORRADE_COMPARE(b.vectorStride(), 8);
+    CORRADE_COMPARE(b.dataType(), Attribute::DataType::Short);
+
+    DynamicAttribute db{b};
+    CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(db.location(), 3);
+    CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Short);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -495,7 +527,7 @@ void AttributeTest::attributeMatrixMxN() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Four);
-    CORRADE_COMPARE(a.vectorSize(), 4*4);
+    CORRADE_COMPARE(a.vectorStride(), 4*4);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Float);
 
     DynamicAttribute da{a};
@@ -515,7 +547,7 @@ void AttributeTest::attributeMatrixNxNd() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Four);
-    CORRADE_COMPARE(a.vectorSize(), 4*8);
+    CORRADE_COMPARE(a.vectorStride(), 4*8);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Double);
 
     DynamicAttribute da{a};
@@ -537,7 +569,7 @@ void AttributeTest::attributeMatrixMxNd() {
     /* Default constructor */
     Attribute a;
     CORRADE_COMPARE(a.components(), Attribute::Components::Two);
-    CORRADE_COMPARE(a.vectorSize(), 2*8);
+    CORRADE_COMPARE(a.vectorStride(), 2*8);
     CORRADE_COMPARE(a.dataType(), Attribute::DataType::Double);
 
     DynamicAttribute da{a};
