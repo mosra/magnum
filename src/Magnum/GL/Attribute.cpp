@@ -470,6 +470,13 @@ Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::DataTyp
 }
 
 bool hasVertexFormat(const VertexFormat format) {
+    /* Non-square matrices are not supported on ES2 */
+    #ifdef MAGNUM_TARGET_GLES2
+    const UnsignedInt vectorCount = vertexFormatVectorCount(format);
+    if(vectorCount != 1 && vectorCount != vertexFormatComponentCount(format))
+        return false;
+    #endif
+
     switch(vertexFormatComponentFormat(format)) {
         case VertexFormat::UnsignedByte:
         case VertexFormat::Byte:
@@ -547,7 +554,7 @@ UnsignedInt attributeSize(DynamicAttribute::Components components, DynamicAttrib
 
 DynamicAttribute::DynamicAttribute(const Kind kind, const UnsignedInt location, const Components components, const UnsignedInt vectors, const DataType dataType): DynamicAttribute{kind, location, components, vectors, attributeSize(components, dataType), dataType} {}
 
-DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))}, _vectors{vertexFormatVectorCount(format)}, _vectorStride{vertexFormatVectorStride(format)} {
+DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, UnsignedInt maxVectors, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))}, _vectors{vertexFormatVectorCount(format)}, _vectorStride{vertexFormatVectorStride(format)} {
     CORRADE_ASSERT(hasVertexFormat(format),
         "GL::DynamicAttribute:" << format << "isn't available on this target", );
 
@@ -599,10 +606,13 @@ DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const 
     }
 
     #ifndef CORRADE_NO_DEBUG
+    CORRADE_ASSERT(_vectors <= maxVectors,
+        "GL::DynamicAttribute: can't use" << format << "for a" << maxVectors << Debug::nospace << "-vector attribute", );
     /* Should pass also if maxComponents is GL_BGRA */
     CORRADE_ASSERT(GLint(_components) <= maxComponents,
         "GL::DynamicAttribute: can't use" << format << "for a" << maxComponents << Debug::nospace << "-component attribute", );
     #else
+    static_cast<void>(maxVectors);
     static_cast<void>(maxComponents);
     #endif
 }

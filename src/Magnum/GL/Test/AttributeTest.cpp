@@ -62,6 +62,10 @@ struct AttributeTest: TestSuite::Tester {
     #ifndef MAGNUM_TARGET_GLES
     void attributeFromGenericFormatLong();
     #endif
+    void attributeFromGenericFormatMatrixNxN();
+    #ifndef MAGNUM_TARGET_GLES2
+    void attributeFromGenericFormatMatrixMxN();
+    #endif
     void attributeFromGenericFormatEnableNormalized();
     void attributeFromGenericFormatUnexpectedForNormalizedKind();
     #ifndef MAGNUM_TARGET_GLES2
@@ -70,6 +74,7 @@ struct AttributeTest: TestSuite::Tester {
     #ifndef MAGNUM_TARGET_GLES
     void attributeFromGenericFormatUnexpectedForLongKind();
     #endif
+    void attributeFromGenericFormatTooManyVectors();
     void attributeFromGenericFormatTooManyComponents();
     void attributeFromGenericFormatNotAvailable();
 
@@ -128,6 +133,10 @@ AttributeTest::AttributeTest() {
               #ifndef MAGNUM_TARGET_GLES
               &AttributeTest::attributeFromGenericFormatLong,
               #endif
+              &AttributeTest::attributeFromGenericFormatMatrixNxN,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::attributeFromGenericFormatMatrixMxN,
+              #endif
               &AttributeTest::attributeFromGenericFormatEnableNormalized,
               &AttributeTest::attributeFromGenericFormatUnexpectedForNormalizedKind,
               #ifndef MAGNUM_TARGET_GLES2
@@ -136,6 +145,7 @@ AttributeTest::AttributeTest() {
               #ifndef MAGNUM_TARGET_GLES
               &AttributeTest::attributeFromGenericFormatUnexpectedForLongKind,
               #endif
+              &AttributeTest::attributeFromGenericFormatTooManyVectors,
               &AttributeTest::attributeFromGenericFormatTooManyComponents,
               &AttributeTest::attributeFromGenericFormatNotAvailable,
 
@@ -640,6 +650,8 @@ void AttributeTest::attributeFromGenericFormat() {
     CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(a.location(), 3);
     CORRADE_COMPARE(a.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(a.vectorStride(), 2);
+    CORRADE_COMPARE(a.vectors(), 1);
     CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::UnsignedShort);
 
     /* Check that compile-time attribs work too */
@@ -648,6 +660,8 @@ void AttributeTest::attributeFromGenericFormat() {
     CORRADE_COMPARE(a2.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(a2.location(), 7);
     CORRADE_COMPARE(a2.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(a2.vectorStride(), 2);
+    CORRADE_COMPARE(a2.vectors(), 1);
     CORRADE_COMPARE(a2.dataType(), DynamicAttribute::DataType::UnsignedShort);
 
     DynamicAttribute b{DynamicAttribute::Kind::GenericNormalized, 3,
@@ -655,6 +669,8 @@ void AttributeTest::attributeFromGenericFormat() {
     CORRADE_COMPARE(b.kind(), DynamicAttribute::Kind::GenericNormalized);
     CORRADE_COMPARE(b.location(), 3);
     CORRADE_COMPARE(b.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(b.vectorStride(), 2);
+    CORRADE_COMPARE(b.vectors(), 1);
     CORRADE_COMPARE(b.dataType(), DynamicAttribute::DataType::Byte);
 
     DynamicAttribute c{DynamicAttribute::Kind::Generic, 3,
@@ -705,6 +721,50 @@ void AttributeTest::attributeFromGenericFormatLong() {
 }
 #endif
 
+void AttributeTest::attributeFromGenericFormatMatrixNxN() {
+    DynamicAttribute a{DynamicAttribute::Kind::Generic, 13,
+        VertexFormat::Matrix2x2bNormalizedAligned};
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::GenericNormalized);
+    CORRADE_COMPARE(a.location(), 13);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(a.vectorStride(), 4);
+    CORRADE_COMPARE(a.vectors(), 2);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::Byte);
+
+    /* Check that compile-time attribs work too */
+    DynamicAttribute a2{Attribute<7, Matrix3x3>{},
+        VertexFormat::Matrix2x2};
+    CORRADE_COMPARE(a2.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(a2.location(), 7);
+    CORRADE_COMPARE(a2.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(a2.vectorStride(), 8);
+    CORRADE_COMPARE(a2.vectors(), 2);
+    CORRADE_COMPARE(a2.dataType(), DynamicAttribute::DataType::Float);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::attributeFromGenericFormatMatrixMxN() {
+    DynamicAttribute a{DynamicAttribute::Kind::Generic, 13,
+        VertexFormat::Matrix4x3h};
+    CORRADE_COMPARE(a.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(a.location(), 13);
+    CORRADE_COMPARE(a.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(a.vectorStride(), 6);
+    CORRADE_COMPARE(a.vectors(), 4);
+    CORRADE_COMPARE(a.dataType(), DynamicAttribute::DataType::Half);
+
+    /* Check that compile-time attribs work too */
+    DynamicAttribute a2{Attribute<7, Matrix4x4>{},
+        VertexFormat::Matrix4x3sNormalizedAligned};
+    CORRADE_COMPARE(a2.kind(), DynamicAttribute::Kind::GenericNormalized);
+    CORRADE_COMPARE(a2.location(), 7);
+    CORRADE_COMPARE(a2.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(a2.vectorStride(), 8);
+    CORRADE_COMPARE(a2.vectors(), 4);
+    CORRADE_COMPARE(a2.dataType(), DynamicAttribute::DataType::Short);
+}
+#endif
+
 void AttributeTest::attributeFromGenericFormatEnableNormalized() {
     DynamicAttribute a{DynamicAttribute::Kind::Generic, 3,
         VertexFormat::Vector3ubNormalized};
@@ -749,6 +809,14 @@ void AttributeTest::attributeFromGenericFormatUnexpectedForLongKind() {
 }
 #endif
 
+void AttributeTest::attributeFromGenericFormatTooManyVectors() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    DynamicAttribute{Attribute<7, Vector2>{}, VertexFormat::Matrix2x2};
+    CORRADE_COMPARE(out.str(),
+        "GL::DynamicAttribute: can't use VertexFormat::Matrix2x2 for a 1-vector attribute\n");
+}
+
 void AttributeTest::attributeFromGenericFormatTooManyComponents() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -771,8 +839,15 @@ void AttributeTest::attributeFromGenericFormatNotAvailable() {
 
 void AttributeTest::hasVertexFormat() {
     CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Vector2i));
+    CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Matrix2x2));
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Vector3d));
+    CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Matrix2x3d));
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_VERIFY(GL::hasVertexFormat(Magnum::VertexFormat::Matrix2x3));
+    #else
+    CORRADE_VERIFY(!GL::hasVertexFormat(Magnum::VertexFormat::Matrix2x3));
     #endif
 
     /* Ensure all generic formats are handled by going though all and executing

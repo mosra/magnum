@@ -639,7 +639,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * / @ref Kind::Long and integral for @ref Kind::Integral.
          * @see @ref hasVertexFormat()
          */
-        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format): DynamicAttribute{kind, location, format, 4} {}
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format): DynamicAttribute{kind, location, format, 4, 4} {}
 
         /**
          * @brief Construct from a compile-time attribute with a generic mesh attribute type override
@@ -684,7 +684,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
     private:
         /* Used by the constructor taking Attribute, defined in cpp to avoid
            a dependency on <Magnum/Mesh.h> for the assertion */
-        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format, GLint maxComponents);
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, VertexFormat format, UnsignedInt maxVectors, GLint maxComponents);
 
         Kind _kind;
         UnsignedInt _location;
@@ -1047,7 +1047,7 @@ template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, 
 
 template<UnsignedInt location_, class T> constexpr DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute): _kind{Implementation::kindFor<location_, T>(attribute.dataOptions())}, _location{location_}, _components{Components(GLint(attribute.components()))}, _vectors{Attribute<location_, T>::Vectors}, _vectorStride{attribute.vectorStride()}, _dataType{DataType(GLenum(attribute.dataType()))} {}
 
-template<UnsignedInt location_, class T> DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute, const VertexFormat format): DynamicAttribute{Implementation::kindFor<location_, T>(attribute.dataOptions()), location_, format, GLint(Implementation::Attribute<T>::DefaultComponents)} {}
+template<UnsignedInt location_, class T> DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute, const VertexFormat format): DynamicAttribute{Implementation::kindFor<location_, T>(attribute.dataOptions()), location_, format, Attribute<location_, T>::Vectors, GLint(Implementation::Attribute<T>::DefaultComponents)} {}
 
 }}
 
