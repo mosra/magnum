@@ -317,7 +317,7 @@ bool isVertexFormatNormalized(const VertexFormat format) {
     CORRADE_ASSERT(false, "isVertexFormatNormalized(): invalid format" << format, {});
 }
 
-VertexFormat vertexFormat(const VertexFormat format, UnsignedInt componentCount, bool normalized) {
+VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt componentCount, const bool normalized) {
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
         "vertexFormat(): can't assemble a format out of an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)), {});
 

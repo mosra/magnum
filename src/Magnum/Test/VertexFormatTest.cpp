@@ -70,7 +70,7 @@ struct VertexFormatTest: TestSuite::Tester {
 constexpr struct {
     VertexFormat componentType;
     bool normalized;
-} CombineRoundtripData[] {
+} AssembleRoundtripData[] {
     {VertexFormat::Float, false},
     {VertexFormat::Double, false},
     {VertexFormat::UnsignedByte, false},
@@ -109,7 +109,7 @@ VertexFormatTest::VertexFormatTest() {
               &VertexFormatTest::assemble});
 
     addRepeatedInstancedTests({&VertexFormatTest::assembleRoundtrip}, 4,
-        Containers::arraySize(CombineRoundtripData));
+        Containers::arraySize(AssembleRoundtripData));
 
     addTests({&VertexFormatTest::assembleCantNormalize,
               &VertexFormatTest::assembleInvalidComponentCount,
@@ -167,7 +167,7 @@ void VertexFormatTest::isImplementationSpecific() {
 }
 
 void VertexFormatTest::wrap() {
-    constexpr VertexFormat a = Magnum::vertexFormatWrap(0xdead);
+    constexpr VertexFormat a = vertexFormatWrap(0xdead);
     CORRADE_COMPARE(UnsignedInt(a), 0x8000dead);
 }
 
@@ -175,13 +175,13 @@ void VertexFormatTest::wrapInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::vertexFormatWrap(0xdeadbeef);
+    vertexFormatWrap(0xdeadbeef);
 
     CORRADE_COMPARE(out.str(), "vertexFormatWrap(): implementation-specific value 0xdeadbeef already wrapped or too large\n");
 }
 
 void VertexFormatTest::unwrap() {
-    constexpr UnsignedInt a = Magnum::vertexFormatUnwrap(VertexFormat(0x8000dead));
+    constexpr UnsignedInt a = vertexFormatUnwrap(VertexFormat(0x8000dead));
     CORRADE_COMPARE(a, 0xdead);
 }
 
@@ -189,23 +189,23 @@ void VertexFormatTest::unwrapInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::vertexFormatUnwrap(VertexFormat::Float);
+    vertexFormatUnwrap(VertexFormat::Float);
 
     CORRADE_COMPARE(out.str(), "vertexFormatUnwrap(): VertexFormat::Float isn't a wrapped implementation-specific value\n");
 }
 
 void VertexFormatTest::size() {
-    CORRADE_COMPARE(Magnum::vertexFormatSize(VertexFormat::Vector2), sizeof(Vector2));
-    CORRADE_COMPARE(Magnum::vertexFormatSize(VertexFormat::Vector3), sizeof(Vector3));
-    CORRADE_COMPARE(Magnum::vertexFormatSize(VertexFormat::Vector4), sizeof(Vector4));
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector2), sizeof(Vector2));
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector3), sizeof(Vector3));
+    CORRADE_COMPARE(vertexFormatSize(VertexFormat::Vector4), sizeof(Vector4));
 }
 
 void VertexFormatTest::sizeInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::vertexFormatSize(VertexFormat{});
-    Magnum::vertexFormatSize(VertexFormat(0xdead));
+    vertexFormatSize(VertexFormat{});
+    vertexFormatSize(VertexFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
         "vertexFormatSize(): invalid format VertexFormat(0x0)\n"
@@ -215,23 +215,23 @@ void VertexFormatTest::sizeInvalid() {
 void VertexFormatTest::sizeImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
-    Magnum::vertexFormatSize(Magnum::vertexFormatWrap(0xdead));
+    vertexFormatSize(vertexFormatWrap(0xdead));
     CORRADE_COMPARE(out.str(), "vertexFormatSize(): can't determine size of an implementation-specific format 0xdead\n");
 }
 
 void VertexFormatTest::componentCount() {
-    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::UnsignedByteNormalized), 1);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector2us), 2);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector3bNormalized), 3);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(VertexFormat::Vector4), 4);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::UnsignedByteNormalized), 1);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector2us), 2);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector3bNormalized), 3);
+    CORRADE_COMPARE(vertexFormatComponentCount(VertexFormat::Vector4), 4);
 }
 
 void VertexFormatTest::componentCountInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::vertexFormatComponentCount(VertexFormat{});
-    Magnum::vertexFormatComponentCount(VertexFormat(0xdead));
+    vertexFormatComponentCount(VertexFormat{});
+    vertexFormatComponentCount(VertexFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
         "vertexFormatComponentCount(): invalid format VertexFormat(0x0)\n"
@@ -241,30 +241,30 @@ void VertexFormatTest::componentCountInvalid() {
 void VertexFormatTest::componentCountImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
-    Magnum::vertexFormatComponentCount(Magnum::vertexFormatWrap(0xdead));
+    vertexFormatComponentCount(vertexFormatWrap(0xdead));
     CORRADE_COMPARE(out.str(),
         "vertexFormatComponentCount(): can't determine component count of an implementation-specific format 0xdead\n");
 }
 
 void VertexFormatTest::componentFormat() {
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector4), VertexFormat::Float);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3h), VertexFormat::Half);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2d), VertexFormat::Double);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::UnsignedByte), VertexFormat::UnsignedByte);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::UnsignedByteNormalized), VertexFormat::UnsignedByte);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3bNormalized), VertexFormat::Byte);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2us), VertexFormat::UnsignedShort);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2sNormalized), VertexFormat::Short);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector2ui), VertexFormat::UnsignedInt);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(VertexFormat::Vector3i), VertexFormat::Int);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector4), VertexFormat::Float);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector3h), VertexFormat::Half);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2d), VertexFormat::Double);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::UnsignedByte), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::UnsignedByteNormalized), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector3bNormalized), VertexFormat::Byte);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2us), VertexFormat::UnsignedShort);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2sNormalized), VertexFormat::Short);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector2ui), VertexFormat::UnsignedInt);
+    CORRADE_COMPARE(vertexFormatComponentFormat(VertexFormat::Vector3i), VertexFormat::Int);
 }
 
 void VertexFormatTest::componentFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Magnum::vertexFormatComponentFormat(VertexFormat{});
-    Magnum::vertexFormatComponentFormat(VertexFormat(0xdead));
+    vertexFormatComponentFormat(VertexFormat{});
+    vertexFormatComponentFormat(VertexFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
         "vertexFormatComponentType(): invalid format VertexFormat(0x0)\n"
@@ -274,7 +274,7 @@ void VertexFormatTest::componentFormatInvalid() {
 void VertexFormatTest::componentFormatImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
-    Magnum::vertexFormatComponentFormat(Magnum::vertexFormatWrap(0xdead));
+    vertexFormatComponentFormat(vertexFormatWrap(0xdead));
     CORRADE_COMPARE(out.str(),
         "vertexFormatComponentFormat(): can't determine component format of an implementation-specific format 0xdead\n");
 }
@@ -301,7 +301,7 @@ void VertexFormatTest::isNormalizedInvalid() {
 void VertexFormatTest::isNormalizedImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
-    isVertexFormatNormalized(Magnum::vertexFormatWrap(0xdead));
+    isVertexFormatNormalized(vertexFormatWrap(0xdead));
     CORRADE_COMPARE(out.str(),
         "isVertexFormatNormalized(): can't determine normalization of an implementation-specific format 0xdead\n");
 }
@@ -325,7 +325,7 @@ void VertexFormatTest::assemble() {
 }
 
 void VertexFormatTest::assembleRoundtrip() {
-    auto&& data = CombineRoundtripData[testCaseInstanceId()];
+    auto&& data = AssembleRoundtripData[testCaseInstanceId()];
 
     std::ostringstream out;
     {
@@ -336,8 +336,8 @@ void VertexFormatTest::assembleRoundtrip() {
     setTestCaseDescription(out.str());
 
     VertexFormat result = vertexFormat(data.componentType, testCaseRepeatId() + 1, data.normalized);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentFormat(result), data.componentType);
-    CORRADE_COMPARE(Magnum::vertexFormatComponentCount(result), testCaseRepeatId() + 1);
+    CORRADE_COMPARE(vertexFormatComponentFormat(result), data.componentType);
+    CORRADE_COMPARE(vertexFormatComponentCount(result), testCaseRepeatId() + 1);
     CORRADE_COMPARE(isVertexFormatNormalized(result), data.normalized);
 }
 
@@ -360,7 +360,7 @@ void VertexFormatTest::assembleInvalidComponentCount() {
 void VertexFormatTest::assembleImplementationSpecific() {
     std::ostringstream out;
     Error redirectError{&out};
-    vertexFormat(Magnum::vertexFormatWrap(0xdead), 1, true);
+    vertexFormat(vertexFormatWrap(0xdead), 1, true);
     CORRADE_COMPARE(out.str(),
         "vertexFormat(): can't assemble a format out of an implementation-specific format 0xdead\n");
 }
