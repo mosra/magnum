@@ -307,6 +307,12 @@ void AttributeTest::attributeVector() {
     Attribute b(Attribute::Components::Two, Attribute::DataType::Float);
     CORRADE_COMPARE(b.components(), Attribute::Components::Two);
     CORRADE_COMPARE(b.vectorSize(), 2*4);
+
+    DynamicAttribute db{b};
+    CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(db.location(), 3);
+    CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Float);
     #endif
 }
 
@@ -424,9 +430,21 @@ void AttributeTest::attributeVector4() {
     #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Attribute a(Attribute::DataType::Half);
     CORRADE_COMPARE(a.vectorSize(), 8);
+
+    DynamicAttribute da{a};
+    CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(da.location(), 3);
+    CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Half);
     #else
     Attribute a(Attribute::DataType::Float);
     CORRADE_COMPARE(a.vectorSize(), 16);
+
+    DynamicAttribute da{a};
+    CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(da.location(), 3);
+    CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
     #endif
 }
 
@@ -570,6 +588,15 @@ void AttributeTest::attributeFromGenericFormat() {
     CORRADE_COMPARE(d.location(), 3);
     CORRADE_COMPARE(d.components(), DynamicAttribute::Components::One);
     CORRADE_COMPARE(d.dataType(), DynamicAttribute::DataType::Float);
+
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    DynamicAttribute e{DynamicAttribute::Kind::Generic, 15,
+        VertexFormat::Vector2h};
+    CORRADE_COMPARE(e.kind(), DynamicAttribute::Kind::Generic);
+    CORRADE_COMPARE(e.location(), 15);
+    CORRADE_COMPARE(e.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(e.dataType(), DynamicAttribute::DataType::Half);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
