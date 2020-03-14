@@ -1002,7 +1002,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {
-            return attribute.vectorStride()*Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
+            return attribute.vectorStride()*Attribute<location, T>::Vectors + strideOfInterleaved(attributes...);
         }
         template<class ...T> static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
             return gap + strideOfInterleaved(attributes...);
@@ -1014,7 +1014,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             addVertexAttribute(buffer, attribute, offset, stride, divisor);
 
             /* Add size of this attribute to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+attribute.vectorStride()*Attribute<location, T>::VectorCount, stride, divisor, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.vectorStride()*Attribute<location, T>::Vectors, stride, divisor, attributes...);
         }
         template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
@@ -1023,7 +1023,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void addVertexBufferInternal(Buffer&, GLintptr, GLsizei, GLuint) {}
 
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
-            for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
+            for(UnsignedInt i = 0; i != Attribute<location, T>::Vectors; ++i)
                 attributePointerInternal(buffer,
                     location+i,
                     GLint(attribute.components()),
@@ -1048,7 +1048,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
-            for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
+            for(UnsignedInt i = 0; i != Attribute<location, T>::Vectors; ++i)
                 attributePointerInternal(buffer,
                     location+i,
                     GLint(attribute.components()),

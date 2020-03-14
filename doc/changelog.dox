@@ -426,6 +426,9 @@ See also:
     are consistent with the @ref Half type used elsewhere.
 -   @cpp GL::Attribute::vectorSize() @ce is deprecated as the name is
     misleading now, use @ref GL::Attribute::vectorStride() instead
+-   @cpp GL::Attribute::VectorCount @ce is deprecated in favor of
+    @ref GL::Attribute::Vectors to have a name consistent with
+    @ref GL::Attribute::components()
 -   @cpp Trade::AbstractImporter::mesh2D() @ce,
     @cpp Trade::MeshData2D @ce, @cpp Trade::MeshData3D @ce,
     @cpp Trade::AbstractImporter::mesh2D() @ce,

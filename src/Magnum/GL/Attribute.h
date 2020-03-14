@@ -80,18 +80,28 @@ template<UnsignedInt location, class T> class Attribute {
     public:
         enum: UnsignedInt {
             /**
-             * Location to which the attribute is bound
+             * Location to which the attribute is bound.
              *
              * @see @ref AbstractShaderProgram::maxVertexAttributes()
              */
             Location = location,
 
             /**
-             * Count of vectors in this type
+             * Count of vectors in this type.
+             * @m_since_latest
              *
+             * Is @cpp 1 @ce for non-matrix attributes.
              * @see @ref vectorSize()
              */
-            VectorCount = Implementation::Attribute<T>::VectorCount
+            Vectors = Implementation::Attribute<T>::Vectors,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Count of vectors in this type,
+             * @m_deprecated_since_latest Use @ref Vectors instead.
+             */
+            VectorCount CORRADE_DEPRECATED_ENUM("use Vectors instead") = Vectors
+            #endif
         };
 
         /**
@@ -360,7 +370,7 @@ template<UnsignedInt location, class T> class Attribute {
          * @brief Size of each vector in passed data
          * @m_deprecated_since_latest Use @ref vectorStride() instead.
          *
-         * @see @ref VectorCount
+         * @see @ref Vectors
          */
         constexpr CORRADE_DEPRECATED("use vectorStride() instead") UnsignedInt vectorSize() const {
             return vectorStride();
@@ -695,7 +705,7 @@ template<std::size_t cols, std::size_t rows> struct SizedAttribute;
 
 /* Vector attribute sizes */
 template<std::size_t cols> struct SizedVectorAttribute {
-    enum: UnsignedInt { VectorCount = UnsignedInt(cols) };
+    enum: UnsignedInt { Vectors = UnsignedInt(cols) };
 };
 template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1 };
@@ -941,7 +951,7 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     typedef FloatAttribute::DataOption DataOption;
     typedef FloatAttribute::DataOptions DataOptions;
 
-    enum: UnsignedInt { VectorCount = 1 };
+    enum: UnsignedInt { Vectors = 1 };
 
     static UnsignedInt MAGNUM_GL_EXPORT size(GLint components, DataType dataType);
 };
