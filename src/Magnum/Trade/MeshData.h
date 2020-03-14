@@ -373,6 +373,12 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          *      @ref VertexFormat::Vector4ubNormalized
          * -    @ref Color4us is recognized as
          *      @ref VertexFormat::Vector4usNormalized
+         * -    @ref Matrix2x2b is recognized as
+         *      @ref VertexFormat::Matrix2x2bNormalized (and similarly for
+         *      other matrix sizes)
+         * -    @ref Matrix2x2s is recognized as
+         *      @ref VertexFormat::Matrix2x2sNormalized (and similarly for
+         *      other matrix sizes)
          *
          * This also means that if you have a @ref Magnum::Vector2s "Vector2s",
          * for example, and want to pick a
@@ -1696,7 +1702,55 @@ namespace Implementation {
     _c(Vector4s)
     _c(Vector4ui)
     _c(Vector4i)
+    #define _cn(format) \
+        template<> constexpr VertexFormat vertexFormatFor<format>() { return VertexFormat::format ## Normalized; }
+     _c(Matrix2x2)
+     _c(Matrix2x2h)
+     _c(Matrix2x2d)
+    _cn(Matrix2x2b)
+    _cn(Matrix2x2s)
+     _c(Matrix2x3)
+     _c(Matrix2x3h)
+     _c(Matrix2x3d)
+    _cn(Matrix2x3b)
+    _cn(Matrix2x3s)
+     _c(Matrix2x4)
+     _c(Matrix2x4h)
+     _c(Matrix2x4d)
+    _cn(Matrix2x4b)
+    _cn(Matrix2x4s)
+     _c(Matrix3x2)
+     _c(Matrix3x2h)
+     _c(Matrix3x2d)
+    _cn(Matrix3x2b)
+    _cn(Matrix3x2s)
+     _c(Matrix3x3)
+     _c(Matrix3x3h)
+     _c(Matrix3x3d)
+    _cn(Matrix3x3b)
+    _cn(Matrix3x3s)
+     _c(Matrix3x4)
+     _c(Matrix3x4h)
+     _c(Matrix3x4d)
+    _cn(Matrix3x4b)
+    _cn(Matrix3x4s)
+     _c(Matrix4x2)
+     _c(Matrix4x2h)
+     _c(Matrix4x2d)
+    _cn(Matrix4x2b)
+    _cn(Matrix4x2s)
+     _c(Matrix4x3)
+     _c(Matrix4x3h)
+     _c(Matrix4x3d)
+    _cn(Matrix4x3b)
+    _cn(Matrix4x3s)
+     _c(Matrix4x4)
+     _c(Matrix4x4h)
+     _c(Matrix4x4d)
+    _cn(Matrix4x4b)
+    _cn(Matrix4x4s)
     #undef _c
+    #undef _cn
     #endif
     template<> constexpr VertexFormat vertexFormatFor<Color3>() { return VertexFormat::Vector3; }
     template<> constexpr VertexFormat vertexFormatFor<Color3h>() { return VertexFormat::Vector3h; }
@@ -1736,6 +1790,45 @@ namespace Implementation {
     _c(Vector4s)
     /* For Color[34]u[sb] we expect the format to be normalized, which is
        handled by vertexFormatFor() properly already */
+    template<> constexpr bool isVertexFormatCompatible<Matrix2x4h>(VertexFormat format) {
+        return format == VertexFormat::Matrix2x4h ||
+               format == VertexFormat::Matrix2x3hAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix2x4b>(VertexFormat format) {
+        return format == VertexFormat::Matrix2x4bNormalized ||
+               format == VertexFormat::Matrix2x2bNormalizedAligned ||
+               format == VertexFormat::Matrix2x3bNormalizedAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix2x4s>(VertexFormat format) {
+        return format == VertexFormat::Matrix2x4sNormalized ||
+               format == VertexFormat::Matrix2x3sNormalizedAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix3x4h>(VertexFormat format) {
+        return format == VertexFormat::Matrix3x4h ||
+               format == VertexFormat::Matrix3x3hAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix3x4b>(VertexFormat format) {
+        return format == VertexFormat::Matrix3x4bNormalized ||
+               format == VertexFormat::Matrix3x2bNormalizedAligned ||
+               format == VertexFormat::Matrix3x3bNormalizedAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix3x4s>(VertexFormat format) {
+        return format == VertexFormat::Matrix3x4sNormalized ||
+               format == VertexFormat::Matrix3x3sNormalizedAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix4x4h>(VertexFormat format) {
+        return format == VertexFormat::Matrix4x4h ||
+               format == VertexFormat::Matrix4x3hAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix4x4b>(VertexFormat format) {
+        return format == VertexFormat::Matrix4x4bNormalized ||
+               format == VertexFormat::Matrix4x2bNormalizedAligned ||
+               format == VertexFormat::Matrix4x3bNormalizedAligned;
+    }
+    template<> constexpr bool isVertexFormatCompatible<Matrix4x4s>(VertexFormat format) {
+        return format == VertexFormat::Matrix4x4sNormalized ||
+               format == VertexFormat::Matrix4x3sNormalizedAligned;
+    }
     #undef _c
     #endif
     /* LCOV_EXCL_STOP */
