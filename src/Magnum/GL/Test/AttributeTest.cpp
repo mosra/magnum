@@ -183,6 +183,8 @@ void AttributeTest::attributeScalar() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(da.vectorStride(), 4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
 
     /* Options */
@@ -194,6 +196,8 @@ void AttributeTest::attributeScalar() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::GenericNormalized);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(db.vectorStride(), 2);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::UnsignedShort);
 }
 
@@ -211,6 +215,8 @@ void AttributeTest::attributeScalarInt() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(da.location(), 2);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(da.vectorStride(), 4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Int);
 
     /* Options */
@@ -221,6 +227,8 @@ void AttributeTest::attributeScalarInt() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(db.location(), 2);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(db.vectorStride(), 2);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Short);
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
@@ -241,6 +249,8 @@ void AttributeTest::attributeScalarUnsignedInt() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(da.vectorStride(), 4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::UnsignedInt);
 
     /* Options */
@@ -251,6 +261,8 @@ void AttributeTest::attributeScalarUnsignedInt() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(db.vectorStride(), 1);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::UnsignedByte);
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
@@ -271,6 +283,8 @@ void AttributeTest::attributeScalarDouble() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Long);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(da.vectorStride(), 8);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Double);
     #else
     CORRADE_SKIP("Double attributes are not available in OpenGL ES.");
@@ -292,6 +306,8 @@ void AttributeTest::attributeVector() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(da.vectorStride(), 3*4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
 
     /* Options */
@@ -304,6 +320,8 @@ void AttributeTest::attributeVector() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(db.vectorStride(), 2*8);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Double);
     #else
     Attribute b(Attribute::Components::Two, Attribute::DataType::Float);
@@ -314,6 +332,8 @@ void AttributeTest::attributeVector() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(db.vectorStride(), 2*4);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Float);
     #endif
 }
@@ -334,6 +354,8 @@ void AttributeTest::attributeVectorInt() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(da.vectorStride(), 2*4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Int);
 
     /* Options */
@@ -344,6 +366,8 @@ void AttributeTest::attributeVectorInt() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(db.vectorStride(), 4);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Int);
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
@@ -366,6 +390,8 @@ void AttributeTest::attributeVectorUnsignedInt() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 4*4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::UnsignedInt);
 
     /* Options */
@@ -376,6 +402,8 @@ void AttributeTest::attributeVectorUnsignedInt() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Integral);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(db.vectorStride(), 3*2);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::UnsignedShort);
     #else
     CORRADE_SKIP("Integer attributes are not available in OpenGL ES 2.");
@@ -398,6 +426,8 @@ void AttributeTest::attributeVectorDouble() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Long);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(da.vectorStride(), 2*8);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Double);
 
     /* Options */
@@ -408,6 +438,8 @@ void AttributeTest::attributeVectorDouble() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Long);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::One);
+    CORRADE_COMPARE(db.vectorStride(), 8);
+    CORRADE_COMPARE(db.vectors(), 1);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Double);
     #else
     CORRADE_SKIP("Double attributes are not available in OpenGL ES.");
@@ -428,6 +460,8 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::UnsignedInt2101010Rev);
     #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Attribute a(Attribute::DataType::Half);
@@ -437,6 +471,8 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 8);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Half);
     #else
     Attribute a(Attribute::DataType::Float);
@@ -446,6 +482,8 @@ void AttributeTest::attributeVector4() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 16);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
     #endif
 }
@@ -464,6 +502,8 @@ void AttributeTest::attributeVectorBGRA() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::BGRA);
+    CORRADE_COMPARE(da.vectorStride(), 4*4);
+    CORRADE_COMPARE(da.vectors(), 1);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
     #else
     CORRADE_SKIP("BGRA attribute component ordering is not available in OpenGL ES.");
@@ -485,6 +525,8 @@ void AttributeTest::attributeMatrixNxN() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(da.vectorStride(), 3*4);
+    CORRADE_COMPARE(da.vectors(), 3);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
 }
 
@@ -503,6 +545,8 @@ void AttributeTest::attributeMatrixNxNCustomStride() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(da.vectorStride(), 6);
+    CORRADE_COMPARE(da.vectors(), 3);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Short);
 
     /* Custom stride */
@@ -515,6 +559,8 @@ void AttributeTest::attributeMatrixNxNCustomStride() {
     CORRADE_COMPARE(db.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(db.location(), 3);
     CORRADE_COMPARE(db.components(), DynamicAttribute::Components::Three);
+    CORRADE_COMPARE(db.vectorStride(), 8);
+    CORRADE_COMPARE(db.vectors(), 3);
     CORRADE_COMPARE(db.dataType(), DynamicAttribute::DataType::Short);
 }
 
@@ -534,6 +580,8 @@ void AttributeTest::attributeMatrixMxN() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Generic);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 4*4);
+    CORRADE_COMPARE(da.vectors(), 3);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Float);
 }
 #endif
@@ -554,6 +602,8 @@ void AttributeTest::attributeMatrixNxNd() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Long);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Four);
+    CORRADE_COMPARE(da.vectorStride(), 4*8);
+    CORRADE_COMPARE(da.vectors(), 4);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Double);
     #else
     CORRADE_SKIP("Double attributes are not available in OpenGL ES.");
@@ -576,6 +626,8 @@ void AttributeTest::attributeMatrixMxNd() {
     CORRADE_COMPARE(da.kind(), DynamicAttribute::Kind::Long);
     CORRADE_COMPARE(da.location(), 3);
     CORRADE_COMPARE(da.components(), DynamicAttribute::Components::Two);
+    CORRADE_COMPARE(da.vectorStride(), 2*8);
+    CORRADE_COMPARE(da.vectors(), 4);
     CORRADE_COMPARE(da.dataType(), DynamicAttribute::DataType::Double);
     #else
     CORRADE_SKIP("Double attributes are not available in OpenGL ES.");

@@ -591,8 +591,37 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * @param location      Attribute location
          * @param components    Component count
          * @param dataType      Type of passed data
+         *
+         * Vector count is set to @cpp 1 @ce, vector stride to size of the data
+         * type times component count.
          */
-        constexpr explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): DynamicAttribute{kind, location, components, 1, dataType} {}
+
+        /**
+         * @brief Construct a matrix attribute
+         * @param kind          Attribute kind
+         * @param location      Attribute location
+         * @param components    Component count
+         * @param vectors       Vector count
+         * @param dataType      Type of passed data
+         * @m_since_latest
+         *
+         * Vector stride is set to size of the data type times component count.
+         */
+        explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, UnsignedInt vectors, DataType dataType);
+
+        /**
+         * @brief Construct a matrix attribute with custom vector stride
+         * @param kind          Attribute kind
+         * @param location      Attribute location
+         * @param components    Component count
+         * @param vectors       Vector count
+         * @param vectorStride  Stride between consecutive matrix column
+         *      vectors
+         * @param dataType      Type of passed data
+         * @m_since_latest
+         */
+        constexpr explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, UnsignedInt vectors, UnsignedInt vectorStride, DataType dataType): _kind{kind}, _location{location}, _components{components}, _vectors{vectors}, _vectorStride{vectorStride}, _dataType{dataType} {}
 
         /**
          * @brief Construct from a compile-time attribute
@@ -635,6 +664,20 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
         /** @brief Component count */
         constexpr Components components() const { return _components; }
 
+        /**
+         * @brief Vector count
+         * @m_since_latest
+         *
+         * Returns @cpp 1 @ce for non-matrix attributes.
+         */
+        constexpr UnsignedInt vectors() const { return _vectors; }
+
+        /**
+         * @brief Vector stride
+         * @m_since_latest
+         */
+        constexpr UnsignedInt vectorStride() const { return _vectorStride; }
+
         /** @brief Type of passed data */
         constexpr DataType dataType() const { return _dataType; }
 
@@ -646,6 +689,8 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
         Kind _kind;
         UnsignedInt _location;
         Components _components;
+        UnsignedInt _vectors;
+        UnsignedInt _vectorStride;
         DataType _dataType;
 };
 
@@ -1000,7 +1045,7 @@ template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, 
 
 }
 
-template<UnsignedInt location_, class T> constexpr DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute): _kind{Implementation::kindFor<location_, T>(attribute.dataOptions())}, _location{location_}, _components{Components(GLint(attribute.components()))}, _dataType{DataType(GLenum(attribute.dataType()))} {}
+template<UnsignedInt location_, class T> constexpr DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute): _kind{Implementation::kindFor<location_, T>(attribute.dataOptions())}, _location{location_}, _components{Components(GLint(attribute.components()))}, _vectors{Attribute<location_, T>::Vectors}, _vectorStride{attribute.vectorStride()}, _dataType{DataType(GLenum(attribute.dataType()))} {}
 
 template<UnsignedInt location_, class T> DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute, const VertexFormat format): DynamicAttribute{Implementation::kindFor<location_, T>(attribute.dataOptions()), location_, format, GLint(Implementation::Attribute<T>::DefaultComponents)} {}
 

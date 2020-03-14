@@ -995,17 +995,9 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 3*3*4, 3*3*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 0,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Float})
-            .addVertexBuffer(buffer, 3*3*4 + 3*4, 3*3*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 1,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Float})
-            .addVertexBuffer(buffer, 3*3*4 + 6*4, 3*3*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 2,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Float});
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Three, 3,
+            DynamicAttribute::DataType::Float});
     } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1049,17 +1041,9 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 3*3*8, 3*3*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 0,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Double})
-            .addVertexBuffer(buffer, 3*3*8 + 3*8, 3*3*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 1,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Double})
-            .addVertexBuffer(buffer, 3*3*8 + 6*8, 3*3*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 2,
-                DynamicAttribute::Components::Three,
-                DynamicAttribute::DataType::Double});
+            DynamicAttribute::Kind::Long, 0,
+            DynamicAttribute::Components::Three, 3,
+            DynamicAttribute::DataType::Double});
     } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1103,17 +1087,9 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 3*4*4, 3*4*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 0,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Float})
-            .addVertexBuffer(buffer, 3*4*4 + 4*4, 3*4*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 1,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Float})
-            .addVertexBuffer(buffer, 3*4*4 + 8*4, 3*4*4, DynamicAttribute{
-                DynamicAttribute::Kind::Generic, 2,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Float});
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Four, 3,
+            DynamicAttribute::DataType::Float});
     } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1149,17 +1125,9 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     } else if(testCaseInstanceId() == 1) {
         setTestCaseDescription("DynamicAttribute");
         mesh.addVertexBuffer(buffer, 3*4*8, 3*4*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 0,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Double})
-            .addVertexBuffer(buffer, 3*4*8 + 4*8, 3*4*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 1,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Double})
-            .addVertexBuffer(buffer, 3*4*8 + 8*8, 3*4*8, DynamicAttribute{
-                DynamicAttribute::Kind::Long, 2,
-                DynamicAttribute::Components::Four,
-                DynamicAttribute::DataType::Double});
+            DynamicAttribute::Kind::Long, 0,
+            DynamicAttribute::Components::Four, 3,
+            DynamicAttribute::DataType::Double});
     } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();

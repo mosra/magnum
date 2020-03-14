@@ -500,7 +500,54 @@ bool hasVertexFormat(const VertexFormat format) {
     }
 }
 
-DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))} {
+namespace {
+
+UnsignedInt attributeSize(DynamicAttribute::Components components, DynamicAttribute::DataType dataType) {
+    Int componentCount = GLint(components);
+    #ifndef MAGNUM_TARGET_GLES
+    if(components == DynamicAttribute::Components::BGRA) componentCount = 4;
+    #endif
+
+    switch(dataType) {
+        case DynamicAttribute::DataType::UnsignedByte:
+        case DynamicAttribute::DataType::Byte:
+            return componentCount;
+        case DynamicAttribute::DataType::UnsignedShort:
+        case DynamicAttribute::DataType::Short:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        case DynamicAttribute::DataType::Half:
+        #endif
+            return 2*componentCount;
+        case DynamicAttribute::DataType::UnsignedInt:
+        case DynamicAttribute::DataType::Int:
+        case DynamicAttribute::DataType::Float:
+            return 4*componentCount;
+        #ifndef MAGNUM_TARGET_GLES
+        case DynamicAttribute::DataType::Double:
+            return 8*componentCount;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        case DynamicAttribute::DataType::UnsignedInt2101010Rev:
+        case DynamicAttribute::DataType::Int2101010Rev:
+            CORRADE_INTERNAL_ASSERT(componentCount == 4);
+            return 4;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case DynamicAttribute::DataType::UnsignedInt10f11f11fRev:
+            CORRADE_INTERNAL_ASSERT(componentCount == 3);
+            return 4;
+        #endif
+    }
+
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+}
+
+DynamicAttribute::DynamicAttribute(const Kind kind, const UnsignedInt location, const Components components, const UnsignedInt vectors, const DataType dataType): DynamicAttribute{kind, location, components, vectors, attributeSize(components, dataType), dataType} {}
+
+DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const VertexFormat format, GLint maxComponents): _kind{kind}, _location{location}, _components{Components(vertexFormatComponentCount(format))}, _vectors{vertexFormatVectorCount(format)}, _vectorStride{vertexFormatVectorStride(format)} {
     CORRADE_ASSERT(hasVertexFormat(format),
         "GL::DynamicAttribute:" << format << "isn't available on this target", );
 

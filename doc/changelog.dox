@@ -253,6 +253,9 @@ See also:
     @ref GL::BufferTexture::resetBuffer() "resetBuffer()"
 -   Matrix @ref GL::Attribute instances can now specify custom stride between
     column vectors in order to control alignment in packed 8- and 16-bit types
+-   @ref GL::DynamicAttribute can now describe matrix attributes similarly to
+    @ref GL::Attribute, previously this was possible only by specifying each
+    column vector separately
 
 @subsubsection changelog-latest-changes-math Math library
 

@@ -358,14 +358,15 @@ UnsignedInt Mesh::indexTypeSize() const {
 }
 
 Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {
-    attributePointerInternal(AttributeLayout{buffer,
-        attribute.location(),
-        GLint(attribute.components()),
-        GLenum(attribute.dataType()),
-        attribute.kind(),
-        offset,
-        stride,
-        divisor});
+    for(UnsignedInt i = 0; i != attribute.vectors(); ++i)
+        attributePointerInternal(AttributeLayout{buffer,
+            attribute.location() + i,
+            GLint(attribute.components()),
+            GLenum(attribute.dataType()),
+            attribute.kind(),
+            GLintptr(offset + i*attribute.vectorStride()),
+            stride,
+            divisor});
     return *this;
 }
 
