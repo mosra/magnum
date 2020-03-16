@@ -28,6 +28,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Packing.h"
@@ -51,12 +52,15 @@ struct PackingBatchTest: Corrade::TestSuite::Tester {
     void unpackHalf();
     void packHalf();
 
-    template<class T> void castUnsigned();
-    template<class T> void castSigned();
+    template<class T> void castUnsignedFloat();
+    template<class T> void castSignedFloat();
+
+    template<class T> void castUnsignedInteger();
+    template<class T> void castSignedInteger();
 
     template<class T> void assertionsPackUnpack();
     void assertionsPackUnpackHalf();
-    template<class T> void assertionsCast();
+    template<class U, class T> void assertionsCast();
 };
 
 PackingBatchTest::PackingBatchTest() {
@@ -72,24 +76,33 @@ PackingBatchTest::PackingBatchTest() {
               &PackingBatchTest::unpackHalf,
               &PackingBatchTest::packHalf,
 
-              &PackingBatchTest::castUnsigned<UnsignedByte>,
-              &PackingBatchTest::castUnsigned<UnsignedShort>,
-              &PackingBatchTest::castUnsigned<UnsignedInt>,
-              &PackingBatchTest::castSigned<Byte>,
-              &PackingBatchTest::castSigned<Short>,
-              &PackingBatchTest::castSigned<Int>,
+              &PackingBatchTest::castUnsignedFloat<UnsignedByte>,
+              &PackingBatchTest::castUnsignedFloat<UnsignedShort>,
+              &PackingBatchTest::castUnsignedFloat<UnsignedInt>,
+              &PackingBatchTest::castSignedFloat<Byte>,
+              &PackingBatchTest::castSignedFloat<Short>,
+              &PackingBatchTest::castSignedFloat<Int>,
+
+              &PackingBatchTest::castUnsignedInteger<UnsignedByte>,
+              &PackingBatchTest::castUnsignedInteger<UnsignedShort>,
+              &PackingBatchTest::castSignedInteger<Byte>,
+              &PackingBatchTest::castSignedInteger<Short>,
 
               &PackingBatchTest::assertionsPackUnpack<UnsignedByte>,
               &PackingBatchTest::assertionsPackUnpack<Byte>,
               &PackingBatchTest::assertionsPackUnpack<UnsignedShort>,
               &PackingBatchTest::assertionsPackUnpack<Short>,
               &PackingBatchTest::assertionsPackUnpackHalf,
-              &PackingBatchTest::assertionsCast<UnsignedByte>,
-              &PackingBatchTest::assertionsCast<Byte>,
-              &PackingBatchTest::assertionsCast<UnsignedShort>,
-              &PackingBatchTest::assertionsCast<Short>,
-              &PackingBatchTest::assertionsCast<UnsignedInt>,
-              &PackingBatchTest::assertionsCast<Int>});
+              &PackingBatchTest::assertionsCast<Float, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<Float, Byte>,
+              &PackingBatchTest::assertionsCast<Float, UnsignedShort>,
+              &PackingBatchTest::assertionsCast<Float, Short>,
+              &PackingBatchTest::assertionsCast<Float, UnsignedInt>,
+              &PackingBatchTest::assertionsCast<Float, Int>,
+              &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedByte>,
+              &PackingBatchTest::assertionsCast<UnsignedInt, UnsignedShort>,
+              &PackingBatchTest::assertionsCast<Int, Byte>,
+              &PackingBatchTest::assertionsCast<Int, Short>});
 }
 
 typedef Math::Constants<Float> Constants;
@@ -98,6 +111,8 @@ typedef Math::Vector2<UnsignedShort> Vector2us;
 typedef Math::Vector2<Byte> Vector2b;
 typedef Math::Vector2<Short> Vector2s;
 typedef Math::Vector2<Float> Vector2;
+typedef Math::Vector2<UnsignedInt> Vector2ui;
+typedef Math::Vector2<Int> Vector2i;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector4<Float> Vector4;
 
@@ -399,7 +414,7 @@ void PackingBatchTest::packHalf() {
         CORRADE_COMPARE(Math::packHalf(data[i].src), data[i].dst);
 }
 
-template<class T> void PackingBatchTest::castUnsigned() {
+template<class T> void PackingBatchTest::castUnsignedFloat() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
     struct Data {
@@ -439,7 +454,7 @@ template<class T> void PackingBatchTest::castUnsigned() {
         Corrade::TestSuite::Compare::Container);
 }
 
-template<class T> void PackingBatchTest::castSigned() {
+template<class T> void PackingBatchTest::castSignedFloat() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
     struct Data {
@@ -476,6 +491,86 @@ template<class T> void PackingBatchTest::castSigned() {
     castInto(Corrade::Containers::arrayCast<2, Float>(dst),
              Corrade::Containers::arrayCast<2, T>(src));
     CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedInteger),
+        Corrade::TestSuite::Compare::Container);
+}
+
+template<class T> void PackingBatchTest::castUnsignedInteger() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    struct Data {
+        Math::Vector2<T> src;
+        Vector2ui dst;
+    } data[]{
+        {{0, 89}, {}},
+        {{149, 22}, {}},
+        {{13, 255}, {}}
+    };
+
+    /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
+       ‘const Vector2 [3]’ with a compound literal), wtf */
+    const Vector2ui expectedTargetType[] {
+        {0, 89},
+        {149, 22},
+        {13, 255}
+    };
+
+    constexpr Math::Vector2<T> expectedOriginalType[] {
+        {0, 89},
+        {149, 22},
+        {13, 255}
+    };
+
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Vector2ui> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, T>(src),
+             Corrade::Containers::arrayCast<2, UnsignedInt>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Test the other way around as well */
+    castInto(Corrade::Containers::arrayCast<2, UnsignedInt>(dst),
+             Corrade::Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
+        Corrade::TestSuite::Compare::Container);
+}
+
+template<class T> void PackingBatchTest::castSignedInteger() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    struct Data {
+        Math::Vector2<T> src;
+        Vector2i dst;
+    } data[]{
+        {{0, -89}, {}},
+        {{-119, 22}, {}},
+        {{13, 127}, {}}
+    };
+
+    /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
+       ‘const Vector2 [3]’ with a compound literal), wtf */
+    const Vector2i expectedTargetType[] {
+        {0, -89},
+        {-119, 22},
+        {13, 127}
+    };
+
+    constexpr Math::Vector2<T> expectedOriginalType[] {
+        {0, -89},
+        {-119, 22},
+        {13, 127}
+    };
+
+    Corrade::Containers::StridedArrayView1D<Math::Vector2<T>> src{data, &data[0].src, 3, sizeof(Data)};
+    Corrade::Containers::StridedArrayView1D<Vector2i> dst{data, &data[0].dst, 3, sizeof(Data)};
+    castInto(Corrade::Containers::arrayCast<2, T>(src),
+             Corrade::Containers::arrayCast<2, Int>(dst));
+    CORRADE_COMPARE_AS(dst, Corrade::Containers::stridedArrayView(expectedTargetType),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Test the other way around as well */
+    castInto(Corrade::Containers::arrayCast<2, Int>(dst),
+             Corrade::Containers::arrayCast<2, T>(src));
+    CORRADE_COMPARE_AS(src, Corrade::Containers::stridedArrayView(expectedOriginalType),
         Corrade::TestSuite::Compare::Container);
 }
 
@@ -543,19 +638,21 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
         "Math::packHalfInto(): second view dimension is not contiguous\n");
 }
 
-template<class T> void PackingBatchTest::assertionsCast() {
+template<class U, class T> void PackingBatchTest::assertionsCast() {
+    setTestCaseTemplateName(Corrade::Utility::formatString("{}, {}", TypeTraits<U>::name(), TypeTraits<T>::name()));
+
     Math::Vector2<T> data[2]{};
-    Vector2 resultWrongCount[1]{};
-    Vector3 resultWrongVectorSize[2]{};
-    Vector4 resultNonContiguous[2]{};
+    Math::Vector2<U> resultWrongCount[1]{};
+    Math::Vector3<U> resultWrongVectorSize[2]{};
+    Math::Vector4<U> resultNonContiguous[2]{};
 
     auto src = Corrade::Containers::arrayCast<2, T>(
         Corrade::Containers::arrayView(data));
-    auto dstWrongCount = Corrade::Containers::arrayCast<2, Float>(
+    auto dstWrongCount = Corrade::Containers::arrayCast<2, U>(
         Corrade::Containers::arrayView(resultWrongCount));
-    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, Float>(
+    auto dstWrongVectorSize = Corrade::Containers::arrayCast<2, U>(
         Corrade::Containers::arrayView(resultWrongVectorSize));
-    auto dstNotContiguous = Corrade::Containers::arrayCast<2, Float>(
+    auto dstNotContiguous = Corrade::Containers::arrayCast<2, U>(
         Corrade::Containers::arrayView(resultNonContiguous)).every({1, 2});
 
     std::ostringstream out;

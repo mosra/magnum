@@ -110,6 +110,11 @@ See also:
 
 @subsubsection changelog-latest-new-math Math library
 
+-   New @ref Magnum/Math/PackingBatch.h header with batch
+    @ref Math::packInto(), @ref Math::unpackInto(),
+    @ref Math::packHalfInto(), @ref Math::unpackHalfInto() and
+    @ref Math::castInto() functions for optimized (un)packing and casting of
+    large amounts of data (see also [mosra/magnum#275](https://github.com/mosra/magnum/pull/275))
 -   Added @ref Math::Quaternion::toEuler() and documented how to convert Euler
     angles to a quaternion (see [mosra/magnum#397](https://github.com/mosra/magnum/pull/397))
 -   Added @ref Math::DualComplex::transformVector(),
@@ -262,11 +267,6 @@ See also:
 -   Functions in @ref Magnum/Math/FunctionsBatch.h now accept any type that's
     convertible to a @ref Corrade::Containers::StridedArrayView without having
     to add explicit casts or template parameters
--   New @ref Magnum/Math/PackingBatch.h header with batch
-    @ref Math::packInto(), @ref Math::unpackInto(),
-    @ref Math::packHalfInto(), @ref Math::unpackHalfInto() and
-    @ref Math::castInto() functions for optimized (un)packing of large amounts
-    of data (see also [mosra/magnum#275](https://github.com/mosra/magnum/pull/275))
 -   @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) and
     @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
     now fall back to linear interpolation when the quaternions are close to

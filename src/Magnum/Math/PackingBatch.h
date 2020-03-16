@@ -265,6 +265,65 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
 
+/**
+@brief Cast integer values into a differently sized type
+@param[in]  src     Source values
+@param[out] dst     Destination values
+@m_since_latest
+
+Second dimension is meant to contain vector/matrix components, or have a size
+of 1 for scalars. Expects that @p src and @p dst have the same size and that
+the second dimension in both is contiguous.
+
+@attention Values that don't fit into the resulting type will have undefined
+    values.
+
+@see @ref Corrade::Containers::StridedArrayView::isContiguous()
+*/
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+
 /*@}*/
 
 }}
