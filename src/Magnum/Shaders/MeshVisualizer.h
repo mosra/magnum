@@ -124,8 +124,13 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * 3.1, OpenGL ES 3.0 and newer this value is provided via the
          * @cb{.glsl} gl_VertexID @ce shader builtin, so the attribute is not
          * needed.
+         *
+         * @note This attribute uses the same slot as @ref Generic::ObjectId,
+         *      but since Object ID is available only on ES3+ and vertex index
+         *      is used only on ES2 contexts without @glsl gl_VertexID @ce,
+         *      there should be no conflict between these two.
          */
-        typedef GL::Attribute<5, Float> VertexIndex;
+        typedef GL::Attribute<4, Float> VertexIndex;
 
         enum: UnsignedInt {
             /**

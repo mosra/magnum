@@ -37,7 +37,7 @@ struct MeshVisualizerTest: TestSuite::Tester {
     void constructNoCreate();
     void constructCopy();
 
-    void vertexIndexNoConflict();
+    void vertexIndexSameAsObjectId();
 
     void debugFlag();
     void debugFlags();
@@ -47,7 +47,7 @@ MeshVisualizerTest::MeshVisualizerTest() {
     addTests({&MeshVisualizerTest::constructNoCreate,
               &MeshVisualizerTest::constructCopy,
 
-              &MeshVisualizerTest::vertexIndexNoConflict,
+              &MeshVisualizerTest::vertexIndexSameAsObjectId,
 
               &MeshVisualizerTest::debugFlag,
               &MeshVisualizerTest::debugFlags});
@@ -67,13 +67,12 @@ void MeshVisualizerTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer, const MeshVisualizer&>{}));
 }
 
-void MeshVisualizerTest::vertexIndexNoConflict() {
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Position::Location));
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Normal::Location));
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::TextureCoordinates::Location));
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Color3::Location));
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Color4::Location));
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Tangent::Location));
+void MeshVisualizerTest::vertexIndexSameAsObjectId() {
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Object ID is not available on ES2.");
+    #else
+    CORRADE_COMPARE(MeshVisualizer::VertexIndex::Location, Generic3D::ObjectId::Location);
+    #endif
 }
 
 void MeshVisualizerTest::debugFlag() {

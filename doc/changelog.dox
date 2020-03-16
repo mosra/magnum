@@ -197,6 +197,12 @@ See also:
 
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
+-   New attribute definitions and an location allocation scheme in
+    @ref Shaders::Generic --- @ref Shaders::Generic::Tangent4,
+    @ref Shaders::Generic::Bitangent, @ref Shaders::Generic::ObjectId plus
+    @ref Shaders::Generic::TransformationMatrix,
+    @ref Shaders::Generic::NormalMatrix and
+    @ref Shaders::Generic::TextureOffset for instancing
 
 @subsubsection changelog-latest-new-trade Trade library
 
@@ -515,6 +521,18 @@ See also:
     was deprecated in 2019.10 is now removed. Usually a deprecated feature is
     kept for at least a year before removal, but in this case it was severely
     limiting multithreaded applications and removing it was necessary.
+-   Locations of generic shader attributes was changed in order to accomodate
+    for new attributes and use cases. This may break custom shaders if these
+    rely on generic attribute definitions or are used together with
+    @ref MeshTools::compile(). To avoid further breakages you're advised to
+    reuse the definitions from @ref Shaders::Generic (and propagating them to
+    shader code as well) instead of hardcoding the locations directly.
+    -   @ref Shaders::Generic::Color3 / @ref Shaders::Generic::Color4 location
+        changed from @cpp 3 @ce to @cpp 2 @ce
+    -   @ref Shaders::Generic::Normal location changed from @cpp 2 @ce to
+        @cpp 5 @ce
+    -   @ref Shaders::Generic::Tangent location changed from @cpp 4 @ce to
+        @cpp 3 @ce
 -   Removed remaining APIs deprecated in version 2018.04:
     -   @cpp Audio::Buffer::Format @ce, use @ref Audio::BufferFormat instead
     -   @cpp Shaders::*Vector::setVectorTexture() @ce,

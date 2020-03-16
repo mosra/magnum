@@ -86,7 +86,8 @@ enum class MeshAttribute: UnsignedShort {
      *
      * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
      *
-     * Corresponds to @ref Shaders::Generic::Tangent.
+     * Corresponds to @ref Shaders::Generic::Tangent or
+     * @ref Shaders::Generic::Tangent4.
      * @see @ref MeshData::tangentsAsArray(),
      *      @ref MeshData::bitangentSignsAsArray()
      */
@@ -97,7 +98,8 @@ enum class MeshAttribute: UnsignedShort {
      * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector3bNormalized or
      * @ref VertexFormat::Vector3sNormalized. For better storage efficiency,
      * the bitangent can be also reconstructed from the normal and tangent, see
-     * @ref MeshAttribute::Tangent for more information.
+     * @ref MeshAttribute::Tangent for more information. Corresponds to
+     * @ref Shaders::Generic::Bitangent.
      * @see @ref MeshData::bitangentsAsArray()
      */
     Bitangent,
@@ -140,6 +142,7 @@ enum class MeshAttribute: UnsignedShort {
      * (Instanced) object ID for editor selection or scene annotation. Type is
      * usually @ref VertexFormat::UnsignedInt, but can be also
      * @ref VertexFormat::UnsignedShort or @ref VertexFormat::UnsignedByte.
+     * Corresponds to @ref Shaders::Generic::ObjectId.
      * @see @ref MeshData::objectIdsAsArray()
      */
     ObjectId,

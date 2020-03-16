@@ -25,6 +25,7 @@
 
 corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersGenericTest GenericTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
