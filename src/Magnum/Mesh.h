@@ -245,10 +245,10 @@ enum class MeshIndexType: UnsignedByte {
     /**
      * Unsigned byte
      *
-     * Corresponds to @ref GL::MeshIndexType::UnsignedByte. Not available on
-     * Vulkan. While available on OpenGL, at least AMD GPUs are known to
-     * suggest (via debug output) using 16-byte types instead for better
-     * efficiency.
+     * Corresponds to @ref GL::MeshIndexType::UnsignedByte /
+     * @def_vk_keyword{INDEX_TYPE_UINT8_EXT,IndexType}. Note that using this
+     * type is discouraged, at least AMD GPUs are known to suggest (via debug
+     * output) using 16-byte types instead for better efficiency.
      */
     UnsignedByte = 1,
 
