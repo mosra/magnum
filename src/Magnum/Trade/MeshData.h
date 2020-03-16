@@ -425,6 +425,8 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * it explicitly --- there's no way the library can infer this from the
          * type alone, except for the color types above (which are generally
          * always normalized).
+         * @todo Pick a type based on the combination of T and name? E.g., for
+         *      a Tangent it would pick Vector3sNormalized instead of Vector3s
          */
         template<class T> constexpr explicit MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept;
 
