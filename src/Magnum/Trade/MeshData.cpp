@@ -394,27 +394,19 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(MeshAttribute na
     return mutableAttribute(attributeId);
 }
 
-namespace {
-
-template<class T> void convertIndices(const Containers::ArrayView<const char> data, const Containers::ArrayView<UnsignedInt> destination) {
-    const auto input = Containers::arrayCast<const T>(data);
-    for(std::size_t i = 0; i != input.size(); ++i) destination[i] = input[i];
-}
-
-}
-
 void MeshData::indicesInto(const Containers::ArrayView<UnsignedInt> destination) const {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );
+    auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
-    switch(_indexType) {
-        case MeshIndexType::UnsignedByte: return convertIndices<UnsignedByte>(_indices, destination);
-        case MeshIndexType::UnsignedShort: return convertIndices<UnsignedShort>(_indices, destination);
-        case MeshIndexType::UnsignedInt: return convertIndices<UnsignedInt>(_indices, destination);
-    }
-
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(_indexType == MeshIndexType::UnsignedInt)
+        return Utility::copy(Containers::arrayCast<const UnsignedInt>(_indices), destination);
+    else if(_indexType == MeshIndexType::UnsignedShort)
+        return Math::castInto(Containers::arrayCast<2, const UnsignedShort>(Containers::arrayCast<const UnsignedShort>(_indices)), destination1ui);
+    else if(_indexType == MeshIndexType::UnsignedByte)
+        return Math::castInto(Containers::arrayCast<2, const UnsignedByte>(Containers::arrayCast<const UnsignedByte>(_indices)), destination1ui);
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
