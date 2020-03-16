@@ -394,7 +394,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableAttribute(MeshAttribute na
     return mutableAttribute(attributeId);
 }
 
-void MeshData::indicesInto(const Containers::ArrayView<UnsignedInt> destination) const {
+void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt> destination) const {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::indicesInto(): the mesh is not indexed", );
     CORRADE_ASSERT(destination.size() == indexCount(), "Trade::MeshData::indicesInto(): expected a view with" << indexCount() << "elements but got" << destination.size(), );

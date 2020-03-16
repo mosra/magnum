@@ -1464,7 +1464,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * sized to contain exactly all data.
          * @see @ref indexCount()
          */
-        void indicesInto(Containers::ArrayView<UnsignedInt> destination) const;
+        void indicesInto(Containers::StridedArrayView1D<UnsignedInt> destination) const;
 
         /**
          * @brief Positions as 2D float vectors
