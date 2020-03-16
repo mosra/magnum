@@ -73,6 +73,36 @@ enum class MeshAttribute: UnsignedShort {
     Position = 1,
 
     /**
+     * Tangent, optionally including bitangent sign. In the first case the type
+     * is usually @ref VertexFormat::Vector3, but can be also
+     * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector3bNormalized or
+     * @ref VertexFormat::Vector3sNormalized; in the second case the type is
+     * @ref VertexFormat::Vector4 (or @ref VertexFormat::Vector4h,
+     * @ref VertexFormat::Vector4bNormalized,
+     * @ref VertexFormat::Vector4sNormalized) and the fourth component is a
+     * sign value (@cpp -1.0f @ce or @cpp +1.0f @ce) defining handedness of the
+     * tangent basis. Reconstruct the @ref MeshAttribute::Bitangent can be then
+     * done like this:
+     *
+     * @snippet MagnumTrade.cpp MeshAttribute-bitangent-from-tangent
+     *
+     * Corresponds to @ref Shaders::Generic::Tangent.
+     * @see @ref MeshData::tangentsAsArray(),
+     *      @ref MeshData::bitangentSignsAsArray()
+     */
+    Tangent,
+
+    /**
+     * Bitangent. Type is usually @ref VertexFormat::Vector3, but can be also
+     * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector3bNormalized or
+     * @ref VertexFormat::Vector3sNormalized. For better storage efficiency,
+     * the bitangent can be also reconstructed from the normal and tangent, see
+     * @ref MeshAttribute::Tangent for more information.
+     * @see @ref MeshData::bitangentsAsArray()
+     */
+    Bitangent,
+
+    /**
      * Normal. Type is usually @ref VertexFormat::Vector3, but can be also
      * @ref VertexFormat::Vector3h. @ref VertexFormat::Vector3bNormalized or
      * @ref VertexFormat::Vector3sNormalized. Corresponds to
@@ -563,7 +593,8 @@ the @ref Primitives library.
 @section Trade-MeshData-usage Basic usage
 
 The simplest usage is through the convenience functions @ref positions2DAsArray(),
-@ref positions3DAsArray(), @ref normalsAsArray(), @ref textureCoordinates2DAsArray()
+@ref positions3DAsArray(), @ref tangentsAsArray(), @ref bitangentsAsArray(),
+@ref normalsAsArray(), @ref tangentsAsArray(), @ref textureCoordinates2DAsArray()
 and @ref colorsAsArray(). Each of these takes an index (as there can be
 multiple sets of texture coordinates, for example) and you're expected to check
 for attribute presence first with either @ref hasAttribute() or
@@ -1293,10 +1324,12 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * case you need to use the overload below by using @cpp T[] @ce
          * instead of @cpp T @ce. You can also use the non-templated
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
-         * @ref normalsAsArray(), @ref textureCoordinates2DAsArray() and
-         * @ref colorsAsArray() accessors to get common attributes converted to
-         * usual types, but note that these operations involve extra allocation
-         * and data conversion.
+         * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
+         * @ref bitangentsAsArray(), @ref normalsAsArray(),
+         * @ref textureCoordinates2DAsArray() and @ref colorsAsArray()
+         * accessors to get common attributes converted to usual types, but
+         * note that these operations involve extra allocation and data
+         * conversion.
          * @see @ref attribute(MeshAttribute, UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific(),
@@ -1484,6 +1517,90 @@ class MAGNUM_TRADE_EXPORT MeshData {
         void positions3DInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
 
         /**
+         * @brief Tangents as 3D float vectors
+         *
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * with @ref MeshAttribute::Tangent as the first argument. Converts the
+         * tangent array from an arbitrary underlying type and returns it in a
+         * newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         *
+         * If the tangents contain a fourth component with bitangent direction,
+         * it's ignored here --- use @ref bitangentSignsAsArray() to get those
+         * instead. You can also use @ref tangentsInto() together with
+         * @ref bitangentSignsInto() to put them both in a single array.
+         * @see @ref bitangentsAsArray(), @ref normalsAsArray(),
+         *      @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        Containers::Array<Vector3> tangentsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Tangents as 3D float vectors into a pre-allocated view
+         *
+         * Like @ref tangentsAsArray(), but puts the result into @p destination
+         * instead of allocating a new array. Expects that @p destination is
+         * sized to contain exactly all data.
+         * @see @ref vertexCount()
+         */
+        void tangentsInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Bitangent signs as floats
+         *
+         * Counterpart to @ref tangentsAsArray() returning value of the fourth
+         * component. Expects that the type of @ref MeshAttribute::Tangent is
+         * four-component. You can also use @ref tangentsInto() together with
+         * @ref bitangentSignsInto() to put them both in a single array.
+         * @see @ref tangentsAsArray(), @ref bitangentsAsArray(),
+         *      @ref normalsAsArray(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        Containers::Array<Float> bitangentSignsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Bitangent signs as floats into a pre-allocated view
+         *
+         * Like @ref bitangentsAsArray(), but puts the result into
+         * @p destination instead of allocating a new array. Expects that
+         * @p destination is sized to contain exactly all data.
+         * @see @ref vertexCount()
+         */
+        void bitangentSignsInto(Containers::StridedArrayView1D<Float> destination, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Bitangents as 3D float vectors
+         *
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * with @ref MeshAttribute::Bitangent as the first argument. Converts
+         * the bitangent array from an arbitrary underlying type and returns it
+         * in a newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         *
+         * Note that in some cases the bitangents aren't provided directly but
+         * calculated from normals and four-component tangents. In that case
+         * you'll need to get bitangent signs via @ref bitangentSignsAsArray()
+         * and calculate the bitangents as shown in the documentation of
+         * @ref MeshAttribute::Tangent.
+         * @see @ref bitangentsInto(), @ref tangentsAsArray(),
+         *      @ref normalsAsArray(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        Containers::Array<Vector3> bitangentsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Bitangents as 3D float vectors into a pre-allocated view
+         *
+         * Like @ref bitangentsAsArray(), but puts the result into
+         * @p destination instead of allocating a new array. Expects that
+         * @p destination is sized to contain exactly all data.
+         * @see @ref vertexCount()
+         */
+        void bitangentsInto(Containers::StridedArrayView1D<Vector3> destination, UnsignedInt id = 0) const;
+
+        /**
          * @brief Normals as 3D float vectors
          *
          * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
@@ -1492,7 +1609,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
          * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
-         * @see @ref normalsInto(), @ref attributeFormat(),
+         * @see @ref normalsInto(), @ref tangentsAsArray(),
+         *      @ref bitangentsAsArray(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
         Containers::Array<Vector3> normalsAsArray(UnsignedInt id = 0) const;
@@ -1862,7 +1980,16 @@ namespace Implementation {
                  format == VertexFormat::Vector3usNormalized ||
                  format == VertexFormat::Vector3s ||
                  format == VertexFormat::Vector3sNormalized)) ||
-            (name == MeshAttribute::Normal &&
+            (name == MeshAttribute::Tangent &&
+                (format == VertexFormat::Vector3 ||
+                 format == VertexFormat::Vector3h ||
+                 format == VertexFormat::Vector3bNormalized ||
+                 format == VertexFormat::Vector3sNormalized ||
+                 format == VertexFormat::Vector4 ||
+                 format == VertexFormat::Vector4h ||
+                 format == VertexFormat::Vector4bNormalized ||
+                 format == VertexFormat::Vector4sNormalized)) ||
+            ((name == MeshAttribute::Bitangent || name == MeshAttribute::Normal) &&
                 (format == VertexFormat::Vector3 ||
                  format == VertexFormat::Vector3h ||
                  format == VertexFormat::Vector3bNormalized ||

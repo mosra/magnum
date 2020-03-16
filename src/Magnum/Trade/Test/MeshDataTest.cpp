@@ -121,6 +121,16 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void positions3DAsArrayPackedUnsignedNormalized();
     template<class T> void positions3DAsArrayPackedSignedNormalized();
     void positions3DIntoArrayInvalidSize();
+    template<class T> void tangentsAsArray();
+    template<class T> void tangentsAsArrayPackedSignedNormalized();
+    void tangentsIntoArrayInvalidSize();
+    template<class T> void bitangentSignsAsArray();
+    template<class T> void bitangentSignsAsArrayPackedSignedNormalized();
+    void bitangentSignsAsArrayNotFourComponent();
+    void bitangentSignsIntoArrayInvalidSize();
+    template<class T> void bitangentsAsArray();
+    template<class T> void bitangentsAsArrayPackedSignedNormalized();
+    void bitangentsIntoArrayInvalidSize();
     template<class T> void normalsAsArray();
     template<class T> void normalsAsArrayPackedSignedNormalized();
     void normalsIntoArrayInvalidSize();
@@ -302,6 +312,22 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::positions3DAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::positions3DAsArrayPackedSignedNormalized<Vector3s>,
               &MeshDataTest::positions3DIntoArrayInvalidSize,
+              &MeshDataTest::tangentsAsArray<Vector3>,
+              &MeshDataTest::tangentsAsArray<Vector3h>,
+              &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3b>,
+              &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3s>,
+              &MeshDataTest::tangentsIntoArrayInvalidSize,
+              &MeshDataTest::bitangentSignsAsArray<Float>,
+              &MeshDataTest::bitangentSignsAsArray<Half>,
+              &MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized<Byte>,
+              &MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized<Short>,
+              &MeshDataTest::bitangentSignsAsArrayNotFourComponent,
+              &MeshDataTest::bitangentSignsIntoArrayInvalidSize,
+              &MeshDataTest::bitangentsAsArray<Vector3>,
+              &MeshDataTest::bitangentsAsArray<Vector3h>,
+              &MeshDataTest::bitangentsAsArrayPackedSignedNormalized<Vector3b>,
+              &MeshDataTest::bitangentsAsArrayPackedSignedNormalized<Vector3s>,
+              &MeshDataTest::bitangentsIntoArrayInvalidSize,
               &MeshDataTest::normalsAsArray<Vector3>,
               &MeshDataTest::normalsAsArray<Vector3h>,
               &MeshDataTest::normalsAsArrayPackedSignedNormalized<Vector3b>,
@@ -1946,6 +1972,158 @@ void MeshDataTest::positions3DIntoArrayInvalidSize() {
         "Trade::MeshData::positions3DInto(): expected a view with 3 elements but got 2\n");
 }
 
+template<class T> void MeshDataTest::tangentsAsArray() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+    typedef typename T::Type U;
+
+    Containers::Array<char> vertexData{3*sizeof(T)};
+    auto tangentView = Containers::arrayCast<T>(vertexData);
+    /* Needs to be sufficiently representable to have the test work also for
+       half floats */
+    tangentView[0] = {U(2.0f), U(1.0f), U(0.75f)};
+    tangentView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
+    tangentView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, tangentView}}};
+    CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
+        {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
+    }), TestSuite::Compare::Container);
+}
+
+template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    Containers::Array<char> vertexData{2*sizeof(T)};
+    auto tangentsView = Containers::arrayCast<T>(vertexData);
+    tangentsView[0] = {Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)};
+    tangentsView[1] = {0, Math::pack<typename T::Type>(-1.0f), 0};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent,
+        /* Assuming the normalized enum is always after the non-normalized */
+        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+        tangentsView}}};
+    CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
+        {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::tangentsIntoArrayInvalidSize() {
+    Containers::Array<char> vertexData{3*sizeof(Vector3)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector3>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Vector3 destination[2];
+    data.tangentsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::tangentsInto(): expected a view with 3 elements but got 2\n");
+}
+
+template<class T> void MeshDataTest::bitangentSignsAsArray() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Containers::Array<char> vertexData{3*sizeof(Math::Vector4<T>)};
+    auto tangentView = Containers::arrayCast<Math::Vector4<T>>(vertexData);
+    /* Needs to be sufficiently representable to have the test work also for
+       half floats */
+    tangentView[0] = {T(2.0f), T(1.0f), T(0.75f), T(-1.0f)};
+    tangentView[1] = {T(0.0f), T(-1.0f), T(1.25f), T(1.0f)};
+    tangentView[2] = {T(-2.0f), T(3.0f), T(2.5f), T(-1.0f)};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, tangentView}}};
+    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
+        -1.0f, 1.0f, -1.0f
+    }), TestSuite::Compare::Container);
+}
+
+template<class T> void MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Containers::Array<char> vertexData{2*sizeof(Math::Vector4<T>)};
+    auto bitangentsView = Containers::arrayCast<Math::Vector4<T>>(vertexData);
+    bitangentsView[0] = {Math::pack<T>(1.0f), 0, Math::pack<T>(1.0f), Math::pack<T>(-1.0f)};
+    bitangentsView[1] = {0, Math::pack<T>(-1.0f), 0, Math::pack<T>(1.0f)};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent,
+        /* Assuming the normalized enum is always after the non-normalized */
+        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<Math::Vector4<T>>()) + 1),
+        bitangentsView}}};
+    CORRADE_COMPARE_AS(data.bitangentSignsAsArray(), Containers::arrayView<Float>({
+        -1.0f, 1.0f
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
+    Containers::Array<char> vertexData{3*sizeof(Vector3s)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, VertexFormat::Vector3sNormalized, Containers::arrayCast<Vector3s>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Float destination[3];
+    data.bitangentSignsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got VertexFormat::Vector3sNormalized\n");
+}
+
+void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
+    Containers::Array<char> vertexData{3*sizeof(Vector4)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector4>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Float destination[2];
+    data.bitangentSignsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::bitangentSignsInto(): expected a view with 3 elements but got 2\n");
+}
+
+template<class T> void MeshDataTest::bitangentsAsArray() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+    typedef typename T::Type U;
+
+    Containers::Array<char> vertexData{3*sizeof(T)};
+    auto bitangentsView = Containers::arrayCast<T>(vertexData);
+    /* Needs to be sufficiently representable to have the test work also for
+       half floats */
+    bitangentsView[0] = {U(2.0f), U(1.0f), U(0.75f)};
+    bitangentsView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
+    bitangentsView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent, bitangentsView}}};
+    CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
+        {2.0f, 1.0f, 0.75f}, {0.0f, -1.0f, 1.25f}, {-2.0f, 3.0f, 2.5f},
+    }), TestSuite::Compare::Container);
+}
+
+template<class T> void MeshDataTest::bitangentsAsArrayPackedSignedNormalized() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    Containers::Array<char> vertexData{2*sizeof(T)};
+    auto bitangentsView = Containers::arrayCast<T>(vertexData);
+    bitangentsView[0] = {Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)};
+    bitangentsView[1] = {0, Math::pack<typename T::Type>(-1.0f), 0};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent,
+        /* Assuming the normalized enum is always after the non-normalized */
+        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+        bitangentsView}}};
+    CORRADE_COMPARE_AS(data.bitangentsAsArray(), Containers::arrayView<Vector3>({
+        {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 0.0f}
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::bitangentsIntoArrayInvalidSize() {
+    Containers::Array<char> vertexData{3*sizeof(Vector3)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayCast<Vector3>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Vector3 destination[2];
+    data.bitangentsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::bitangentsInto(): expected a view with 3 elements but got 2\n");
+}
+
 template<class T> void MeshDataTest::normalsAsArray() {
     setTestCaseTemplateName(NameTraits<T>::name());
     typedef typename T::Type U;
@@ -2188,6 +2366,10 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     MeshData data{MeshPrimitive::TriangleFan, DataFlag::Mutable, vertexData, {
         MeshAttributeData{MeshAttribute::Position,
             vertexFormatWrap(0xdead1), attribute},
+        MeshAttributeData{MeshAttribute::Tangent,
+            vertexFormatWrap(0xdead2), attribute},
+        MeshAttributeData{MeshAttribute::Bitangent,
+            vertexFormatWrap(0xdead2), attribute},
         MeshAttributeData{MeshAttribute::Normal,
             vertexFormatWrap(0xdead2), attribute},
         MeshAttributeData{MeshAttribute::TextureCoordinates,
@@ -2207,6 +2389,9 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.mutableAttribute<Float>(MeshAttribute::Color);
     data.positions2DAsArray();
     data.positions3DAsArray();
+    data.tangentsAsArray();
+    data.bitangentSignsAsArray();
+    data.bitangentsAsArray();
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray();
@@ -2221,6 +2406,9 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         "Trade::MeshData::mutableAttribute(): can't cast data from an implementation-specific vertex format 0xdead4\n"
         "Trade::MeshData::positions2DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::positions3DInto(): can't extract data out of an implementation-specific vertex format 0xdead1\n"
+        "Trade::MeshData::tangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
+        "Trade::MeshData::bitangentSignsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
+        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
         "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
         "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
         "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
@@ -2430,6 +2618,9 @@ void MeshDataTest::attributeNotFound() {
     data.attribute<Vector2>(MeshAttribute::Color, 2);
     data.positions2DAsArray();
     data.positions3DAsArray();
+    data.tangentsAsArray();
+    data.bitangentSignsAsArray();
+    data.bitangentsAsArray();
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray(2);
@@ -2457,6 +2648,9 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::attribute(): index 2 out of range for 2 Trade::MeshAttribute::Color attributes\n"
         "Trade::MeshData::positions2DInto(): index 0 out of range for 0 position attributes\n"
         "Trade::MeshData::positions3DInto(): index 0 out of range for 0 position attributes\n"
+        "Trade::MeshData::tangentsInto(): index 0 out of range for 0 tangent attributes\n"
+        "Trade::MeshData::bitangentSignsInto(): index 0 out of range for 0 tangent attributes\n"
+        "Trade::MeshData::bitangentsInto(): index 0 out of range for 0 bitangent attributes\n"
         "Trade::MeshData::normalsInto(): index 0 out of range for 0 normal attributes\n"
         "Trade::MeshData::textureCoordinates2DInto(): index 0 out of range for 0 texture coordinate attributes\n"
         "Trade::MeshData::colorsInto(): index 2 out of range for 2 color attributes\n");

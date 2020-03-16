@@ -255,6 +255,15 @@ Trade::MeshIndexData data{indices};
 }
 
 {
+Vector3 normal;
+Vector4 tangent;
+/* [MeshAttribute-bitangent-from-tangent] */
+Vector3 bitangent = Math::cross(normal, tangent.xyz())*tangent.w();
+/* [MeshAttribute-bitangent-from-tangent] */
+static_cast<void>(bitangent);
+}
+
+{
 /* [MeshAttributeData-usage] */
 Containers::StridedArrayView1D<const Vector3> positions;
 

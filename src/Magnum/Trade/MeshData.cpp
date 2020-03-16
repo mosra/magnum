@@ -557,6 +557,96 @@ Containers::Array<Vector3> MeshData::positions3DAsArray(const UnsignedInt id) co
     return out;
 }
 
+namespace {
+
+void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void> attributeData, const Containers::StridedArrayView1D<Vector3> destination, VertexFormat format) {
+    const auto destination3f = Containers::arrayCast<2, Float>(destination);
+
+    if(format == VertexFormat::Vector3)
+        Utility::copy(Containers::arrayCast<const Vector3>(attributeData), destination);
+    else if(format == VertexFormat::Vector3h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 3), destination3f);
+    else if(format == VertexFormat::Vector3bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 3), destination3f);
+    else if(format == VertexFormat::Vector3sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 3), destination3f);
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+}
+
+void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::tangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::tangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::tangentsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+
+    /* If the tangent is four-component, ignore the last component; otherwise
+       copy/unpack given format directly */
+    VertexFormat format;
+    if(attribute._format == VertexFormat::Vector4)
+        format = VertexFormat::Vector3;
+    else if(attribute._format == VertexFormat::Vector4h)
+        format = VertexFormat::Vector3h;
+    else if(attribute._format == VertexFormat::Vector4ubNormalized)
+        format = VertexFormat::Vector3ubNormalized;
+    else if(attribute._format == VertexFormat::Vector4usNormalized)
+        format = VertexFormat::Vector3usNormalized;
+    else format = attribute._format;
+    tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, format);
+}
+
+Containers::Array<Vector3> MeshData::tangentsAsArray(const UnsignedInt id) const {
+    Containers::Array<Vector3> out{_vertexCount};
+    tangentsInto(out, id);
+    return out;
+}
+
+void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::Tangent, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentSignsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Tangent) << "tangent attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentSignsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::bitangentSignsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+    const auto destination1f = Containers::arrayCast<2, Float>(destination);
+
+    if(attribute._format == VertexFormat::Vector4)
+        Utility::copy(Containers::arrayCast<2, const Float>(attributeData, 4).transposed<0, 1>()[3], destination);
+    else if(attribute._format == VertexFormat::Vector4h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4).suffix({0, 3}), destination1f);
+    else if(attribute._format == VertexFormat::Vector4bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4).suffix({0, 3}), destination1f);
+    else if(attribute._format == VertexFormat::Vector4sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4).suffix({0, 3}), destination1f);
+    else CORRADE_ASSERT(false, "Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got" << attribute._format, );
+}
+
+Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) const {
+    Containers::Array<Float> out{_vertexCount};
+    bitangentSignsInto(out, id);
+    return out;
+}
+
+void MeshData::bitangentsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::Bitangent, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::bitangentsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Bitangent) << "bitangent attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::bitangentsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
+}
+
+Containers::Array<Vector3> MeshData::bitangentsAsArray(const UnsignedInt id) const {
+    Containers::Array<Vector3> out{_vertexCount};
+    bitangentsInto(out, id);
+    return out;
+}
+
 void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destination, const UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(MeshAttribute::Normal, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::normalsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Normal) << "normal attributes", );
@@ -564,18 +654,7 @@ void MeshData::normalsInto(const Containers::StridedArrayView1D<Vector3> destina
     const MeshAttributeData& attribute = _attributes[attributeId];
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
         "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
-    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
-    const auto destination3f = Containers::arrayCast<2, Float>(destination);
-
-    if(attribute._format == VertexFormat::Vector3)
-        Utility::copy(Containers::arrayCast<const Vector3>(attributeData), destination);
-    else if(attribute._format == VertexFormat::Vector3h)
-        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 3), destination3f);
-    else if(attribute._format == VertexFormat::Vector3bNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 3), destination3f);
-    else if(attribute._format == VertexFormat::Vector3sNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 3), destination3f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, attribute._format);
 }
 
 Containers::Array<Vector3> MeshData::normalsAsArray(const UnsignedInt id) const {
@@ -704,6 +783,8 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         /* LCOV_EXCL_START */
         #define _c(value) case MeshAttribute::value: return debug << "::" << Debug::nospace << #value;
         _c(Position)
+        _c(Tangent)
+        _c(Bitangent)
         _c(Normal)
         _c(TextureCoordinates)
         _c(Color)
