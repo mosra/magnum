@@ -747,6 +747,31 @@ Containers::Array<Color4> MeshData::colorsAsArray(const UnsignedInt id) const {
     return out;
 }
 
+void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::ObjectId, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::objectIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::ObjectId) << "object ID attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::objectIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+    const auto destination1ui = Containers::arrayCast<2, UnsignedInt>(destination);
+
+    if(attribute._format == VertexFormat::UnsignedInt)
+        Utility::copy(Containers::arrayCast<const UnsignedInt>(attributeData), destination);
+    else if(attribute._format == VertexFormat::UnsignedShort)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 1), destination1ui);
+    else if(attribute._format == VertexFormat::UnsignedByte)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 1), destination1ui);
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) const {
+    Containers::Array<UnsignedInt> out{_vertexCount};
+    objectIdsInto(out, id);
+    return out;
+}
+
 Containers::Array<char> MeshData::releaseIndexData() {
     _indices = {_indices.data(), 0};
     Containers::Array<char> out = std::move(_indexData);
@@ -780,6 +805,7 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         _c(Normal)
         _c(TextureCoordinates)
         _c(Color)
+        _c(ObjectId)
         #undef _c
         /* LCOV_EXCL_STOP */
 

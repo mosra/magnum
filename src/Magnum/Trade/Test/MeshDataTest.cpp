@@ -143,6 +143,8 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void colorsAsArray();
     template<class T> void colorsAsArrayPackedUnsignedNormalized();
     void colorsIntoArrayInvalidSize();
+    template<class T> void objectIdsAsArray();
+    void objectIdsIntoArrayInvalidSize();
 
     void implementationSpecificVertexFormat();
     void implementationSpecificVertexFormatWrongAccess();
@@ -353,6 +355,10 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4ub>,
               &MeshDataTest::colorsAsArrayPackedUnsignedNormalized<Color4us>,
               &MeshDataTest::colorsIntoArrayInvalidSize,
+              &MeshDataTest::objectIdsAsArray<UnsignedByte>,
+              &MeshDataTest::objectIdsAsArray<UnsignedShort>,
+              &MeshDataTest::objectIdsAsArray<UnsignedInt>,
+              &MeshDataTest::objectIdsIntoArrayInvalidSize,
 
               &MeshDataTest::implementationSpecificVertexFormat,
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
@@ -2308,6 +2314,35 @@ void MeshDataTest::colorsIntoArrayInvalidSize() {
         "Trade::MeshData::colorsInto(): expected a view with 3 elements but got 2\n");
 }
 
+template<class T> void MeshDataTest::objectIdsAsArray() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Containers::Array<char> vertexData{3*sizeof(T)};
+    auto objectIdsView = Containers::arrayCast<T>(vertexData);
+    /* Can't use e.g. 0xff3366_rgbf because that's not representable in
+       half-floats */
+    objectIdsView[0] = {157};
+    objectIdsView[1] = {24};
+    objectIdsView[2] = {1};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::ObjectId, objectIdsView}}};
+    CORRADE_COMPARE_AS(data.objectIdsAsArray(), Containers::arrayView<UnsignedInt>({
+        157, 24, 1
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::objectIdsIntoArrayInvalidSize() {
+    Containers::Array<char> vertexData{3*sizeof(UnsignedInt)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayCast<UnsignedInt>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    UnsignedInt destination[2];
+    data.objectIdsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::objectIdsInto(): expected a view with 3 elements but got 2\n");
+}
+
 /* MSVC 2015 doesn't like anonymous bitfields in inline structs, so putting the
    declaration outside */
 struct VertexWithImplementationSpecificData {
@@ -2375,6 +2410,8 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         MeshAttributeData{MeshAttribute::TextureCoordinates,
             vertexFormatWrap(0xdead3), attribute},
         MeshAttributeData{MeshAttribute::Color,
+            vertexFormatWrap(0xdead4), attribute},
+        MeshAttributeData{MeshAttribute::ObjectId,
             vertexFormatWrap(0xdead4), attribute}}};
 
     std::ostringstream out;
@@ -2395,6 +2432,7 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray();
+    data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead1\n"
         "Trade::MeshData::attribute(): can't cast data from an implementation-specific vertex format 0xdead2\n"
@@ -2411,7 +2449,8 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
         "Trade::MeshData::bitangentsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
         "Trade::MeshData::normalsInto(): can't extract data out of an implementation-specific vertex format 0xdead2\n"
         "Trade::MeshData::textureCoordinatesInto(): can't extract data out of an implementation-specific vertex format 0xdead3\n"
-        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
+        "Trade::MeshData::colorsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n"
+        "Trade::MeshData::objectIdsInto(): can't extract data out of an implementation-specific vertex format 0xdead4\n");
 }
 
 void MeshDataTest::implementationSpecificVertexFormatNotContained() {
@@ -2624,6 +2663,7 @@ void MeshDataTest::attributeNotFound() {
     data.normalsAsArray();
     data.textureCoordinates2DAsArray();
     data.colorsAsArray(2);
+    data.objectIdsAsArray();
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::attributeName(): index 2 out of range for 2 attributes\n"
         "Trade::MeshData::attributeFormat(): index 2 out of range for 2 attributes\n"
@@ -2653,7 +2693,8 @@ void MeshDataTest::attributeNotFound() {
         "Trade::MeshData::bitangentsInto(): index 0 out of range for 0 bitangent attributes\n"
         "Trade::MeshData::normalsInto(): index 0 out of range for 0 normal attributes\n"
         "Trade::MeshData::textureCoordinates2DInto(): index 0 out of range for 0 texture coordinate attributes\n"
-        "Trade::MeshData::colorsInto(): index 2 out of range for 2 color attributes\n");
+        "Trade::MeshData::colorsInto(): index 2 out of range for 2 color attributes\n"
+        "Trade::MeshData::objectIdsInto(): index 0 out of range for 0 object ID attributes\n");
 }
 
 void MeshDataTest::attributeWrongType() {

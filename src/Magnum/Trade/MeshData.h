@@ -137,6 +137,14 @@ enum class MeshAttribute: UnsignedShort {
     Color,
 
     /**
+     * (Instanced) object ID for editor selection or scene annotation. Type is
+     * usually @ref VertexFormat::UnsignedInt, but can be also
+     * @ref VertexFormat::UnsignedShort or @ref VertexFormat::UnsignedByte.
+     * @see @ref MeshData::objectIdsAsArray()
+     */
+    ObjectId,
+
+    /**
      * This and all higher values are for importer-specific attributes. Can be
      * of any type. See documentation of a particular importer for details.
      * @see @ref isMeshAttributeCustom(MeshAttribute)
@@ -594,11 +602,11 @@ the @ref Primitives library.
 
 The simplest usage is through the convenience functions @ref positions2DAsArray(),
 @ref positions3DAsArray(), @ref tangentsAsArray(), @ref bitangentsAsArray(),
-@ref normalsAsArray(), @ref tangentsAsArray(), @ref textureCoordinates2DAsArray()
-and @ref colorsAsArray(). Each of these takes an index (as there can be
-multiple sets of texture coordinates, for example) and you're expected to check
-for attribute presence first with either @ref hasAttribute() or
-@ref attributeCount(MeshAttribute) const:
+@ref normalsAsArray(), @ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
+@ref colorsAsArray() and @ref objectIdsAsArray(). Each of these takes an index
+(as there can be multiple sets of texture coordinates, for example) and you're
+expected to check for attribute presence first with either @ref hasAttribute()
+or @ref attributeCount(MeshAttribute) const:
 
 @snippet MagnumTrade.cpp MeshData-usage
 
@@ -1326,10 +1334,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref positions2DAsArray(), @ref positions3DAsArray(),
          * @ref tangentsAsArray(), @ref bitangentSignsAsArray(),
          * @ref bitangentsAsArray(), @ref normalsAsArray(),
-         * @ref textureCoordinates2DAsArray() and @ref colorsAsArray()
-         * accessors to get common attributes converted to usual types, but
-         * note that these operations involve extra allocation and data
-         * conversion.
+         * @ref textureCoordinates2DAsArray(), @ref colorsAsArray() and
+         * @ref objectIdsAsArray() accessors to get common attributes converted
+         * to usual types, but note that these operations involve extra
+         * allocation and data conversion.
          * @see @ref attribute(MeshAttribute, UnsignedInt) const,
          *      @ref mutableAttribute(MeshAttribute, UnsignedInt),
          *      @ref isVertexFormatImplementationSpecific(),
@@ -1676,6 +1684,30 @@ class MAGNUM_TRADE_EXPORT MeshData {
         void colorsInto(Containers::StridedArrayView1D<Color4> destination, UnsignedInt id = 0) const;
 
         /**
+         * @brief Object IDs as 32-bit integers
+         *
+         * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
+         * with @ref MeshAttribute::ObjectId as the first argument. Converts
+         * the object ID array from an arbitrary underlying type and returns it
+         * in a newly-allocated array. Expects that the vertex format is *not*
+         * implementation-specific, in that case you can only access the
+         * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
+         * @see @ref objectIdsInto(), @ref attributeFormat(),
+         *      @ref isVertexFormatImplementationSpecific()
+         */
+        Containers::Array<UnsignedInt> objectIdsAsArray(UnsignedInt id = 0) const;
+
+        /**
+         * @brief Object IDs as 32-bit integers into a pre-allocated view
+         *
+         * Like @ref objectIdsAsArray(), but puts the result into
+         * @p destination instead of allocating a new array. Expects that
+         * @p destination is sized to contain exactly all data.
+         * @see @ref vertexCount()
+         */
+        void objectIdsInto(Containers::StridedArrayView1D<UnsignedInt> destination, UnsignedInt id = 0) const;
+
+        /**
          * @brief Release index data storage
          *
          * Releases the ownership of the index data array and resets internal
@@ -2014,6 +2046,10 @@ namespace Implementation {
                  format == VertexFormat::Vector2usNormalized ||
                  format == VertexFormat::Vector2s ||
                  format == VertexFormat::Vector2sNormalized)) ||
+            (name == MeshAttribute::ObjectId &&
+                (format == VertexFormat::UnsignedInt ||
+                 format == VertexFormat::UnsignedShort ||
+                 format == VertexFormat::UnsignedByte)) ||
             /* Custom attributes can be anything */
             isMeshAttributeCustom(name);
     }
