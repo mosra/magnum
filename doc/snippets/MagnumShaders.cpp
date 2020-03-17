@@ -95,7 +95,7 @@ mesh.addVertexBuffer(vertices, 0,
 /* [shaders-generic] */
 
 /* [shaders-meshvisualizer] */
-Shaders::MeshVisualizer visualizerShader{Shaders::MeshVisualizer::Flag::Wireframe};
+Shaders::MeshVisualizer3D visualizerShader{Shaders::MeshVisualizer3D::Flag::Wireframe};
 visualizerShader
     .setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
@@ -254,7 +254,7 @@ GL::Buffer vertices;
 vertices.setData(data, GL::BufferUsage::StaticDraw);
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
+mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer3D::Position{});
 /* [MeshVisualizer-usage-geom1] */
 
 /* [MeshVisualizer-usage-geom2] */
@@ -262,7 +262,7 @@ Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix =
     Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
-Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe};
+Shaders::MeshVisualizer3D shader{Shaders::MeshVisualizer3D::Flag::Wireframe};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
@@ -277,7 +277,7 @@ std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 GL::Buffer vertexIndices;
 vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
 
-mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
+mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer3D::VertexIndex{});
 /* [MeshVisualizer-usage-no-geom-old] */
 }
 #endif
@@ -291,7 +291,7 @@ Containers::StridedArrayView1D<const Vector3> indexedPositions;
 GL::Buffer vertices{MeshTools::duplicate(indices, indexedPositions)};
 
 GL::Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
+mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer3D::Position{});
 /* [MeshVisualizer-usage-no-geom1] */
 }
 
@@ -300,8 +300,9 @@ GL::Mesh mesh;
 /* [MeshVisualizer-usage-no-geom2] */
 Matrix4 transformationMatrix, projectionMatrix;
 
-Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe|
-                               Shaders::MeshVisualizer::Flag::NoGeometryShader};
+Shaders::MeshVisualizer3D shader{
+    Shaders::MeshVisualizer3D::Flag::Wireframe|
+    Shaders::MeshVisualizer3D::Flag::NoGeometryShader};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)

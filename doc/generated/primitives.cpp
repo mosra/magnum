@@ -275,17 +275,12 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizer wireframe2D{Shaders::MeshVisualizer::Flag::Wireframe};
+    Shaders::MeshVisualizer2D wireframe2D{Shaders::MeshVisualizer2D::Flag::Wireframe};
     wireframe2D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
         .setViewportSize(Vector2{ImageSize})
-        .setTransformationProjectionMatrix(Matrix4{
-            /** @todo clean up once Matrix4 from Matrix3 constructor exists */
-            {(Projection2D*Transformation2D)[0], 0.0f},
-            {(Projection2D*Transformation2D)[1], 0.0f},
-            {0.0f, 0.0f, 1.0f, 0.0f},
-            {{(Projection2D*Transformation2D)[2].xy(), 0.0f}, 1.0f}});
+        .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
     {
         Shaders::Flat2D flat;
@@ -312,7 +307,7 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
-    Shaders::MeshVisualizer wireframe3D{Shaders::MeshVisualizer::Flag::Wireframe};
+    Shaders::MeshVisualizer3D wireframe3D{Shaders::MeshVisualizer3D::Flag::Wireframe};
     wireframe3D.setColor(0x00000000_srgbaf)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)

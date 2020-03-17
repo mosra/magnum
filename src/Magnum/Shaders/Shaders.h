@@ -31,6 +31,10 @@
 
 #include "Magnum/Types.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Shaders {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -48,7 +52,12 @@ typedef Flat<3> Flat3D;
 
 /* Generic is used only statically */
 
-class MeshVisualizer;
+class MeshVisualizer2D;
+class MeshVisualizer3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use MeshVisualizer3D instead") MeshVisualizer3D MeshVisualizer;
+#endif
+
 class Phong;
 
 template<UnsignedInt> class Vector;

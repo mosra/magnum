@@ -43,9 +43,11 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
+#include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Circle.h"
 #include "Magnum/Primitives/Icosphere.h"
 #include "Magnum/Primitives/UVSphere.h"
@@ -60,25 +62,33 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
-    void construct();
+    void construct2D();
+    void construct3D();
+
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void constructWireframeGeometryShader();
+    void constructWireframeGeometryShader2D();
+    void constructWireframeGeometryShader3D();
     #endif
-    void constructWireframeNoGeometryShader();
 
-    void constructMove();
+    void constructMove2D();
+    void constructMove3D();
 
-    void setWireframeNotEnabled();
+    void setWireframeNotEnabled2D();
+    void setWireframeNotEnabled3D();
 
     void renderSetup();
     void renderTeardown();
 
-    void renderDefaults();
+    void renderDefaults2D();
+    void renderDefaults3D();
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void renderDefaultsWireframe();
+    void renderDefaultsWireframe2D();
+    void renderDefaultsWireframe3D();
     #endif
-    void render();
-    void renderWireframe();
+    void render2D();
+    void render3D();
+    void renderWireframe2D();
+    void renderWireframe3D();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -106,40 +116,97 @@ using namespace Math::Literals;
 
 constexpr struct {
     const char* name;
-    MeshVisualizer::Flags flags;
+    MeshVisualizer2D::Flags flags;
+} ConstructData2D[] {
+    {"", {}},
+    {"wireframe w/o GS", MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader},
+};
+
+constexpr struct {
+    const char* name;
+    MeshVisualizer3D::Flags flags;
+} ConstructData3D[] {
+    {"", {}},
+    {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader}
+};
+
+constexpr struct {
+    const char* name;
+    MeshVisualizer2D::Flags flags;
     Float width, smoothness;
     const char* file;
     const char* fileXfail;
-} WireframeData[] {
+} WireframeData2D[] {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    {"", MeshVisualizer::Flags{}, 1.0f, 2.0f, "wireframe.tga", nullptr},
-    {"wide/sharp", MeshVisualizer::Flags{}, 3.0f, 1.0f, "wireframe-wide.tga", nullptr},
+    {"", MeshVisualizer2D::Flags{},
+        1.0f, 2.0f, "wireframe2D.tga", nullptr},
+    {"wide/sharp", MeshVisualizer2D::Flags{},
+        3.0f, 1.0f, "wireframe-wide2D.tga", nullptr},
     #endif
-    {"no geometry shader", MeshVisualizer::Flag::NoGeometryShader, 1.0f, 2.0f, "wireframe.tga", "wireframe-nogeo.tga"},
-    {"no geometry shader, wide/sharp", MeshVisualizer::Flag::NoGeometryShader, 3.0f, 1.0f, "wireframe-wide.tga", "wireframe-nogeo.tga"}
+    {"no geometry shader", MeshVisualizer2D::Flag::NoGeometryShader,
+        1.0f, 2.0f, "wireframe2D.tga", "wireframe-nogeo2D.tga"},
+    {"no geometry shader, wide/sharp", MeshVisualizer2D::Flag::NoGeometryShader,
+        3.0f, 1.0f, "wireframe-wide2D.tga", "wireframe-nogeo2D.tga"}
+};
+
+constexpr struct {
+    const char* name;
+    MeshVisualizer3D::Flags flags;
+    Float width, smoothness;
+    const char* file;
+    const char* fileXfail;
+} WireframeData3D[] {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    {"", MeshVisualizer3D::Flags{},
+        1.0f, 2.0f, "wireframe3D.tga", nullptr},
+    {"wide/sharp", MeshVisualizer3D::Flags{},
+        3.0f, 1.0f, "wireframe-wide3D.tga", nullptr},
+    #endif
+    {"no geometry shader",
+        MeshVisualizer3D::Flag::NoGeometryShader,
+        1.0f, 2.0f, "wireframe3D.tga", "wireframe-nogeo3D.tga"},
+    {"no geometry shader, wide/sharp",
+        MeshVisualizer3D::Flag::NoGeometryShader,
+        3.0f, 1.0f, "wireframe-wide3D.tga", "wireframe-nogeo3D.tga"}
 };
 
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
-    addTests({&MeshVisualizerGLTest::construct,
+    addInstancedTests({&MeshVisualizerGLTest::construct2D},
+        Containers::arraySize(ConstructData2D));
+
+    addInstancedTests({&MeshVisualizerGLTest::construct3D},
+        Containers::arraySize(ConstructData3D));
+
+    addTests({
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::constructWireframeGeometryShader,
+              &MeshVisualizerGLTest::constructWireframeGeometryShader2D,
+              &MeshVisualizerGLTest::constructWireframeGeometryShader3D,
               #endif
-              &MeshVisualizerGLTest::constructWireframeNoGeometryShader,
 
-              &MeshVisualizerGLTest::constructMove,
+              &MeshVisualizerGLTest::constructMove2D,
+              &MeshVisualizerGLTest::constructMove3D,
 
-              &MeshVisualizerGLTest::setWireframeNotEnabled});
+              &MeshVisualizerGLTest::setWireframeNotEnabled2D,
+              &MeshVisualizerGLTest::setWireframeNotEnabled3D});
 
-    addTests({&MeshVisualizerGLTest::renderDefaults,
+    addTests({&MeshVisualizerGLTest::renderDefaults2D,
+              &MeshVisualizerGLTest::renderDefaults3D,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::renderDefaultsWireframe,
+              &MeshVisualizerGLTest::renderDefaultsWireframe2D,
+              &MeshVisualizerGLTest::renderDefaultsWireframe3D,
               #endif
-              &MeshVisualizerGLTest::render},
+              &MeshVisualizerGLTest::render2D,
+              &MeshVisualizerGLTest::render3D},
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
-    addInstancedTests({&MeshVisualizerGLTest::renderWireframe},
-        Containers::arraySize(WireframeData),
+    addInstancedTests({&MeshVisualizerGLTest::renderWireframe2D},
+        Containers::arraySize(WireframeData2D),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+
+    addInstancedTests({&MeshVisualizerGLTest::renderWireframe3D},
+        Containers::arraySize(WireframeData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
 
@@ -167,9 +234,29 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     }
 }
 
-void MeshVisualizerGLTest::construct() {
-    MeshVisualizer shader;
-    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flags{});
+void MeshVisualizerGLTest::construct2D() {
+    auto&& data = ConstructData2D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    MeshVisualizer2D shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MeshVisualizerGLTest::construct3D() {
+    auto&& data = ConstructData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    MeshVisualizer3D shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -182,7 +269,7 @@ void MeshVisualizerGLTest::construct() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::constructWireframeGeometryShader() {
+void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -196,8 +283,33 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    MeshVisualizer shader{MeshVisualizer::Flag::Wireframe};
-    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flag::Wireframe);
+    MeshVisualizer2D shader{MeshVisualizer2D::Flag::Wireframe};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizer2D::Flag::Wireframe);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.id());
+        CORRADE_VERIFY(shader.validate().first);
+    }
+}
+
+void MeshVisualizerGLTest::constructWireframeGeometryShader3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+    #endif
+
+    MeshVisualizer3D shader{MeshVisualizer3D::Flag::Wireframe};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizer3D::Flag::Wireframe);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -208,42 +320,64 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader() {
 }
 #endif
 
-void MeshVisualizerGLTest::constructWireframeNoGeometryShader() {
-    MeshVisualizer shader{MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader};
-    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void MeshVisualizerGLTest::constructMove() {
-    MeshVisualizer a{MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader};
+void MeshVisualizerGLTest::constructMove2D() {
+    MeshVisualizer2D a{MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    MeshVisualizer b{std::move(a)};
+    MeshVisualizer2D b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
-    CORRADE_COMPARE(b.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
+    CORRADE_COMPARE(b.flags(), MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
-    MeshVisualizer c{NoCreate};
+    MeshVisualizer2D c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
-    CORRADE_COMPARE(c.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
+    CORRADE_COMPARE(c.flags(), MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
 }
 
-void MeshVisualizerGLTest::setWireframeNotEnabled() {
+void MeshVisualizerGLTest::constructMove3D() {
+    MeshVisualizer3D a{MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader};
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MeshVisualizer3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader);
+    CORRADE_VERIFY(!a.id());
+
+    MeshVisualizer3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader);
+    CORRADE_VERIFY(!b.id());
+}
+
+void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    MeshVisualizer shader;
+    MeshVisualizer2D shader;
+    shader.setWireframeColor({})
+        .setWireframeWidth({})
+        .setSmoothness({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizer::setSmoothness(): the shader was not created with wireframe enabled\n");
+}
+
+void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshVisualizer3D shader;
     shader.setWireframeColor({})
         .setWireframeWidth({})
         .setSmoothness({});
@@ -281,10 +415,36 @@ void MeshVisualizerGLTest::renderTeardown() {
     _color = GL::Renderbuffer{NoCreate};
 }
 
-void MeshVisualizerGLTest::renderDefaults() {
+void MeshVisualizerGLTest::renderDefaults2D() {
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
+
+    MeshVisualizer2D{}
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has differently rasterized edges on four pixels */
+    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 238.0f, meanThreshold = 0.298f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "FlatTestFiles/defaults.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+void MeshVisualizerGLTest::renderDefaults3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    MeshVisualizer{}
+    MeshVisualizer3D{}
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -308,7 +468,56 @@ void MeshVisualizerGLTest::renderDefaults() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::renderDefaultsWireframe() {
+void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+    #endif
+
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(16));
+
+    MeshVisualizer2D shader{MeshVisualizer2D::Flag::Wireframe};
+    shader.draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    {
+        CORRADE_EXPECT_FAIL("Defaults don't work for wireframe as line width is derived from viewport size.");
+        CORRADE_COMPARE_WITH(
+            /* Dropping the alpha channel, as it's always 1.0 */
+            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+            (DebugTools::CompareImageToFile{_manager}));
+    }
+
+    /** @todo make this unnecessary */
+    shader
+        .setViewportSize({80, 80})
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe2D.tga"),
+        /* AMD has off-by-one errors on edges compared to Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.082f}));
+}
+
+void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -324,7 +533,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
 
     GL::Mesh sphere = MeshTools::compile(Primitives::icosphereSolid(1));
 
-    MeshVisualizer shader{MeshVisualizer::Flag::Wireframe};
+    MeshVisualizer3D shader{MeshVisualizer3D::Flag::Wireframe};
     shader.draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -338,7 +547,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
+            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -352,16 +561,44 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe3D.tga"),
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
 #endif
 
-void MeshVisualizerGLTest::render() {
+void MeshVisualizerGLTest::render2D() {
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
+
+    MeshVisualizer2D{}
+        .setColor(0x9999ff_rgbf)
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has differently rasterized edges on four pixels */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.133f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.456f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "FlatTestFiles/colored2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+void MeshVisualizerGLTest::render3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    MeshVisualizer{}
+    MeshVisualizer3D{}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
@@ -390,13 +627,105 @@ void MeshVisualizerGLTest::render() {
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
-void MeshVisualizerGLTest::renderWireframe() {
-    auto&& data = WireframeData[testCaseInstanceId()];
+void MeshVisualizerGLTest::renderWireframe2D() {
+    auto&& data = WireframeData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(!(data.flags & MeshVisualizer::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+    if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
+    #endif
+    #endif
+
+    const Trade::MeshData circleData = Primitives::circle2DSolid(16);
+
+    GL::Mesh circle{NoCreate};
+    if(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) {
+        /* Duplicate the vertices. The circle primitive is  */
+        const Trade::MeshData circleDataIndexed =
+            MeshTools::generateIndices(circleData);
+        circle = MeshTools::compile(MeshTools::duplicate(circleDataIndexed));
+
+        /* Supply also the vertex ID, if needed */
+        #ifndef MAGNUM_TARGET_GLES2
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        #endif
+        {
+            Containers::Array<Float> vertexIndex{circleDataIndexed.indexCount()};
+            std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
+
+            GL::Buffer vertexId;
+            vertexId.setData(vertexIndex);
+            circle.addVertexBuffer(std::move(vertexId), 0, MeshVisualizer2D::VertexIndex{});
+        }
+    } else circle = MeshTools::compile(circleData);
+
+    MeshVisualizer2D{data.flags|MeshVisualizer2D::Flag::Wireframe}
+        .setColor(0xffff99_rgbf)
+        .setWireframeColor(0x9999ff_rgbf)
+        .setWireframeWidth(data.width)
+        .setSmoothness(data.smoothness)
+        .setViewportSize({80, 80})
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    {
+        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer2D::Flag::NoGeometryShader,
+            "Line width is currently not configurable w/o geometry shader.");
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /* SwiftShader has differently rasterized edges on four pixels */
+        const Float maxThreshold = 170.0f, meanThreshold = 0.327f;
+        #else
+        /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+        const Float maxThreshold = 170.0f, meanThreshold = 1.699f;
+        #endif
+        CORRADE_COMPARE_WITH(
+            /* Dropping the alpha channel, as it's always 1.0 */
+            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
+            (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+    }
+
+    /* Test it's not *too* off, at least */
+    if(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) {
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /* SwiftShader has differently rasterized edges on four pixels. Apple
+           A8 on more. */
+        const Float maxThreshold = 170.0f, meanThreshold = 0.330f;
+        #else
+        /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+        const Float maxThreshold = 170.0f, meanThreshold = 2.077f;
+        #endif
+        CORRADE_COMPARE_WITH(
+            /* Dropping the alpha channel, as it's always 1.0 */
+            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
+            (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+    }
+}
+
+void MeshVisualizerGLTest::renderWireframe3D() {
+    auto&& data = WireframeData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
     #else
     if(!(data.flags & MeshVisualizer::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
@@ -412,7 +741,7 @@ void MeshVisualizerGLTest::renderWireframe() {
     const Trade::MeshData sphereData = Primitives::icosphereSolid(1);
 
     GL::Mesh sphere{NoCreate};
-    if(data.flags & MeshVisualizer::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) {
         /* Duplicate the vertices */
         sphere = MeshTools::compile(MeshTools::duplicate(sphereData));
 
@@ -426,11 +755,11 @@ void MeshVisualizerGLTest::renderWireframe() {
 
             GL::Buffer vertexId;
             vertexId.setData(vertexIndex);
-            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizer::VertexIndex{});
+            sphere.addVertexBuffer(std::move(vertexId), 0, MeshVisualizer3D::VertexIndex{});
         }
     } else sphere = MeshTools::compile(sphereData);
 
-    MeshVisualizer{data.flags|MeshVisualizer::Flag::Wireframe}
+    MeshVisualizer3D{data.flags|MeshVisualizer3D::Flag::Wireframe}
         .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf)
         .setWireframeWidth(data.width)
@@ -450,7 +779,7 @@ void MeshVisualizerGLTest::renderWireframe() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     {
-        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer::Flag::NoGeometryShader,
+        CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer3D::Flag::NoGeometryShader,
             "Line width is currently not configurable w/o geometry shader.");
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels */
@@ -467,7 +796,7 @@ void MeshVisualizerGLTest::renderWireframe() {
     }
 
     /* Test it's not *too* off, at least */
-    if(data.flags & MeshVisualizer::Flag::NoGeometryShader) {
+    if(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has differently rasterized edges on four pixels. Apple
            A8 on more. */

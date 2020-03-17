@@ -78,7 +78,8 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
     int exec() override;
 
     std::string phong();
-    std::string meshVisualizer();
+    std::string meshVisualizer2D();
+    std::string meshVisualizer3D();
     std::string flat();
     std::string vertexColor();
 
@@ -127,7 +128,8 @@ int ShaderVisualizer::exec() {
     GL::Renderer::setClearColor(0x000000_srgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
-                   &ShaderVisualizer::meshVisualizer,
+                   &ShaderVisualizer::meshVisualizer2D,
+                   &ShaderVisualizer::meshVisualizer3D,
                    &ShaderVisualizer::flat,
                    &ShaderVisualizer::vertexColor,
                    &ShaderVisualizer::vector,
@@ -167,12 +169,28 @@ std::string ShaderVisualizer::phong() {
     return "phong.png";
 }
 
-std::string ShaderVisualizer::meshVisualizer() {
+std::string ShaderVisualizer::meshVisualizer2D() {
+    const Matrix3 projection =
+        Matrix3::projection(Vector2{3.0f})*
+        Matrix3::rotation(13.7_degf);
+
+    Shaders::MeshVisualizer2D{Shaders::MeshVisualizer2D::Flag::Wireframe}
+        .setColor(BaseColor)
+        .setWireframeColor(OutlineColor)
+        .setWireframeWidth(2.0f)
+        .setViewportSize(Vector2{ImageSize})
+        .setTransformationProjectionMatrix(projection)
+        .draw(MeshTools::compile(Primitives::circle2DSolid(8)));
+
+    return "meshvisualizer2d.png";
+}
+
+std::string ShaderVisualizer::meshVisualizer3D() {
     const Matrix4 projection = Projection*Transformation*
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe}
+    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe}
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
@@ -180,7 +198,7 @@ std::string ShaderVisualizer::meshVisualizer() {
         .setTransformationProjectionMatrix(projection)
         .draw(MeshTools::compile(Primitives::icosphereSolid(1)));
 
-    return "meshvisualizer.png";
+    return "meshvisualizer3d.png";
 }
 
 std::string ShaderVisualizer::flat() {

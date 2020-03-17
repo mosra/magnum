@@ -31,16 +31,32 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
+#ifdef TWO_DIMENSIONS
+uniform highp mat3 transformationProjectionMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
+#elif defined(THREE_DIMENSIONS)
 uniform highp mat4 transformationProjectionMatrix
     #ifndef GL_ES
     = mat4(1.0)
     #endif
     ;
+#else
+#error
+#endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+#ifdef TWO_DIMENSIONS
+in highp vec2 position;
+#elif defined(THREE_DIMENSIONS)
 in highp vec4 position;
+#else
+#error
+#endif
 
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 #if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
@@ -55,7 +71,13 @@ out vec3 barycentric;
 #endif
 
 void main() {
+    #ifdef TWO_DIMENSIONS
+    gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
+    #elif defined(THREE_DIMENSIONS)
     gl_Position = transformationProjectionMatrix*position;
+    #else
+    #error
+    #endif
 
     #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
     barycentric = vec3(0.0);

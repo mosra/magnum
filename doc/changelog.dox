@@ -204,6 +204,7 @@ See also:
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
+-   New @ref Shaders::MeshVisualizer2D for 2D mesh visualization
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
 -   New attribute definitions and an location allocation scheme in
@@ -495,6 +496,8 @@ See also:
     @ref MeshTools::compressIndices(), @ref MeshTools::duplicate(),
     @ref MeshTools::removeDuplicatesInPlace() and @ref MeshTools::subdivide() /
     @ref MeshTools::subdivideInPlace() overloads instead
+-   @cpp Shaders::MeshVisualizer @ce is deprecated as the shader can now handle
+    both 2D and 3D, use @ref Shaders::MeshVisualizer3D instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -153,10 +153,14 @@ if(BUILD_GL_TESTS)
         FILES
             FlatTestFiles/defaults.tga
             FlatTestFiles/colored3D.tga
-            MeshVisualizerTestFiles/defaults-wireframe.tga
-            MeshVisualizerTestFiles/wireframe.tga
-            MeshVisualizerTestFiles/wireframe-nogeo.tga
-            MeshVisualizerTestFiles/wireframe-wide.tga)
+            MeshVisualizerTestFiles/defaults-wireframe2D.tga
+            MeshVisualizerTestFiles/defaults-wireframe3D.tga
+            MeshVisualizerTestFiles/wireframe2D.tga
+            MeshVisualizerTestFiles/wireframe3D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo2D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/wireframe-wide2D.tga
+            MeshVisualizerTestFiles/wireframe-wide3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
