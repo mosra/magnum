@@ -27,6 +27,9 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Utility/Algorithms.h>
+
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -141,6 +144,70 @@ Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vert
     Containers::Array<UnsignedInt> indices{Containers::NoInit, 3*(vertexCount - 2)};
     generateTriangleFanIndicesInto(vertexCount, indices);
     return indices;
+}
+
+Trade::MeshData generateIndices(Trade::MeshData&& data) {
+    CORRADE_ASSERT(!data.isIndexed(),
+        "MeshTools::generateIndices(): mesh data already indexed",
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    /* Transfer vertex / attribute data as-is, as those don't need any changes.
+       Release if possible. */
+    Containers::Array<char> vertexData;
+    const UnsignedInt vertexCount = data.vertexCount();
+    if(data.vertexDataFlags() & Trade::DataFlag::Owned)
+        vertexData = data.releaseVertexData();
+    else {
+        vertexData = Containers::Array<char>{Containers::NoInit, data.vertexData().size()};
+        Utility::copy(data.vertexData(), vertexData);
+    }
+
+    /* Recreate the attribute array with views on the new vertexData */
+    /** @todo if the vertex data were moved and this array is owned, it
+        wouldn't need to be recreated, but the logic is a bit complex */
+    Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount()};
+    for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
+        attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
+            data.attributeFormat(i),
+            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i), vertexCount, data.attributeStride(i)}};
+    }
+
+    /* Generate the index array */
+    MeshPrimitive primitive;
+    Containers::Array<char> indexData;
+    if(data.primitive() == MeshPrimitive::LineStrip) {
+        primitive = MeshPrimitive::Lines;
+        indexData = Containers::Array<char>{Containers::NoInit, 2*(vertexCount - 1)*sizeof(UnsignedInt)};
+        generateLineStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+    } else if(data.primitive() == MeshPrimitive::LineLoop) {
+        primitive = MeshPrimitive::Lines;
+        indexData = Containers::Array<char>{Containers::NoInit, 2*vertexCount*sizeof(UnsignedInt)};
+        generateLineLoopIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+    } else if(data.primitive() == MeshPrimitive::TriangleStrip) {
+        primitive = MeshPrimitive::Triangles;
+        indexData = Containers::Array<char>{Containers::NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        generateTriangleStripIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+    } else if(data.primitive() == MeshPrimitive::TriangleFan) {
+        primitive = MeshPrimitive::Triangles;
+        indexData = Containers::Array<char>{Containers::NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
+        generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
+    } else CORRADE_ASSERT(false,
+        "MeshTools::generateIndices(): invalid primitive" << data.primitive(),
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};
+    return Trade::MeshData{primitive, std::move(indexData), indices,
+        std::move(vertexData), std::move(attributeData)};
+}
+
+Trade::MeshData generateIndices(const Trade::MeshData& data) {
+    CORRADE_ASSERT(!data.isIndexed(),
+        "MeshTools::generateIndices(): mesh data already indexed",
+        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+
+    return generateIndices(Trade::MeshData{data.primitive(),
+        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
+        data.vertexCount()});
 }
 
 }}

@@ -155,7 +155,8 @@ See also:
     @ref MeshTools::generateTriangleStripIndices() and
     @ref MeshTools::generateTriangleFanIndices() utilities for converting
     various mesh types to plain indexed @ref MeshPrimitive::Lines and
-    @ref MeshPrimitive::Triangles
+    @ref MeshPrimitive::Triangles, as well as @ref MeshTools::generateIndices()
+    operating directly on a @ref Trade::MeshData
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

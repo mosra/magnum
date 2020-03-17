@@ -30,7 +30,9 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -52,6 +54,40 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateTriangleFanIndices();
     void generateTriangleFanIndicesWrongVertexCount();
     void generateTriangleFanIndicesIntoWrongSize();
+
+    void generateIndicesMeshData();
+    void generateIndicesMeshDataMove();
+    void generateIndicesMeshDataIndexed();
+    void generateIndicesMeshDataInvalidPrimitive();
+};
+
+const struct {
+    MeshPrimitive primitive;
+    Containers::Array<UnsignedInt> indices;
+} MeshDataData[] {
+    {MeshPrimitive::LineStrip, Containers::array<UnsignedInt>({
+        0, 1,
+        1, 2,
+        2, 3,
+        3, 4
+    })},
+    {MeshPrimitive::LineLoop, Containers::array<UnsignedInt>({
+        0, 1,
+        1, 2,
+        2, 3,
+        3, 4,
+        4, 0
+    })},
+    {MeshPrimitive::TriangleStrip, Containers::array<UnsignedInt>({
+        0, 1, 2,
+        2, 1, 3, /* Reversed */
+        2, 3, 4
+    })},
+    {MeshPrimitive::TriangleFan, Containers::array<UnsignedInt>({
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4
+    })}
 };
 
 GenerateIndicesTest::GenerateIndicesTest() {
@@ -70,6 +106,13 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateTriangleFanIndices,
               &GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount,
               &GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize});
+
+    addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData},
+        Containers::arraySize(MeshDataData));
+
+    addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
+              &GenerateIndicesTest::generateIndicesMeshDataIndexed,
+              &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
 }
 
 void GenerateIndicesTest::generateLineStripIndices() {
@@ -257,6 +300,129 @@ void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
     MeshTools::generateTriangleFanIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");
+}
+
+void GenerateIndicesTest::generateIndicesMeshData() {
+    auto&& data = MeshDataData[testCaseInstanceId()];
+    {
+        std::ostringstream out;
+        Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << data.primitive;
+        setTestCaseDescription(out.str());
+    }
+
+    const struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    } vertexData[] {
+        {{1.5f, 0.3f}, {0.2f, 0.8f}},
+        {{2.5f, 1.3f}, {0.3f, 0.7f}},
+        {{3.5f, 2.3f}, {0.4f, 0.6f}},
+        {{4.5f, 3.3f}, {0.5f, 0.5f}},
+        {{5.5f, 4.3f}, {0.6f, 0.4f}}
+    };
+
+    Trade::MeshData mesh{data.primitive,
+        {}, vertexData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::stridedArrayView(vertexData,
+                    &vertexData[0].position, 5, sizeof(Vertex))},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                Containers::stridedArrayView(vertexData,
+                    &vertexData[0].textureCoordinates, 5, sizeof(Vertex))}
+        }};
+
+    Trade::MeshData out = generateIndices(mesh);
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.indices,
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeCount(), 2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {0.2f, 0.8f}, {0.3f, 0.7f}, {0.4f, 0.6f}, {0.5f, 0.5f}, {0.6f, 0.4f}
+        }), TestSuite::Compare::Container);
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataMove() {
+    struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    };
+
+    Containers::Array<char> vertexData{5*sizeof(Vertex)};
+    auto vertices = Containers::arrayCast<Vertex>(vertexData);
+    vertices[0].position = {1.5f, 0.3f};
+    vertices[1].position = {2.5f, 1.3f};
+    vertices[2].position = {3.5f, 2.3f};
+    vertices[3].position = {4.5f, 3.3f};
+    vertices[4].position = {5.5f, 4.3f};
+    vertices[0].textureCoordinates = {0.2f, 0.8f};
+    vertices[1].textureCoordinates = {0.3f, 0.7f};
+    vertices[2].textureCoordinates = {0.4f, 0.6f};
+    vertices[3].textureCoordinates = {0.5f, 0.5f};
+    vertices[4].textureCoordinates = {0.6f, 0.4f};
+
+    Trade::MeshData out = generateIndices(Trade::MeshData{
+        MeshPrimitive::TriangleFan, std::move(vertexData), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::stridedArrayView(vertices,
+                    &vertices[0].position, 5, sizeof(Vertex))},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                Containers::stridedArrayView(vertices,
+                    &vertices[0].textureCoordinates, 5, sizeof(Vertex))}
+        }});
+    CORRADE_VERIFY(out.isIndexed());
+    CORRADE_COMPARE(out.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(out.indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4
+        }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeCount(), 2);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
+        Containers::arrayView<Vector2>({
+            {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
+        }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates),
+        Containers::arrayView<Vector2>({
+            {0.2f, 0.8f}, {0.3f, 0.7f}, {0.4f, 0.6f}, {0.5f, 0.5f}, {0.6f, 0.4f}
+        }), TestSuite::Compare::Container);
+
+    /* The vertex data should be moved, not copied */
+    CORRADE_COMPARE(out.vertexData().data(), static_cast<void*>(vertices.data()));
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataIndexed() {
+    UnsignedByte indices[]{0};
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices}, 0};
+
+    /* Test both r-value and l-value overload */
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateIndices(mesh);
+    generateIndices(Trade::MeshData{MeshPrimitive::TriangleFan,
+        {}, indices, Trade::MeshIndexData{indices}, 0});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateIndices(): mesh data already indexed\n"
+        "MeshTools::generateIndices(): mesh data already indexed\n");
+}
+
+void GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive() {
+    Trade::MeshData mesh{MeshPrimitive::Triangles, 2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    generateIndices(mesh);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateIndices(): invalid primitive MeshPrimitive::Triangles\n");
 }
 
 }}}}

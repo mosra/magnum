@@ -50,7 +50,11 @@ namespace Implementation {
 The returned mesh contains vertices from all meshes concatenated together. If
 any mesh is indexed, the resulting mesh is indexed as well, with indices
 adjusted for vertex offsets of particular meshes. The behavior is undefined if
-any mesh has indices out of bounds for its particular vertex count.
+any mesh has indices out of bounds for its particular vertex count. Meshes with
+@ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
+@ref MeshPrimitive::TriangleStrip and @ref MeshPrimitive::TriangleFan can't be
+concatenated --- use @ref generateIndices() to turn them into
+@ref MeshPrimitive::Lines or @ref MeshPrimitive::Triangles first.
 
 All attributes from the @p first mesh are taken; for each mesh in @p next,
 attributes present in @p first are copied, superfluous attributes ignored and
