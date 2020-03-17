@@ -107,6 +107,8 @@ See also:
 -   New @ref GL::Buffer::Buffer(Containers::ArrayView<const void>, BufferUsage)
     constructor for directly creating buffers filled with data.
 -   New @ref GL::Mesh::maxVertexAttributeStride() limit query
+-   Added a @ref GL::Shader::Shader(NoCreateT) constructor for consistency with
+    other OpenGL wrapper objects
 
 @subsubsection changelog-latest-new-math Math library
 

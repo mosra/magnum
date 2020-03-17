@@ -34,13 +34,24 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct ShaderTest: TestSuite::Tester {
     explicit ShaderTest();
 
+    void constructNoCreate();
     void constructCopy();
     void debugType();
 };
 
 ShaderTest::ShaderTest() {
-    addTests({&ShaderTest::constructCopy,
+    addTests({&ShaderTest::constructNoCreate,
+              &ShaderTest::constructCopy,
               &ShaderTest::debugType});
+}
+
+void ShaderTest::constructNoCreate() {
+    {
+        Shader shader{NoCreate};
+        CORRADE_COMPARE(shader.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void ShaderTest::constructCopy() {

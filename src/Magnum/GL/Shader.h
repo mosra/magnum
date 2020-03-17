@@ -33,6 +33,7 @@
 #include <vector>
 #include <Corrade/Containers/ArrayView.h>
 
+#include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
@@ -511,6 +512,21 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @see @fn_gl_keyword{CreateShader}
          */
         explicit Shader(Version version, Type type);
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
+         * @see @ref Shader()
+         */
+        explicit Shader(NoCreateT) noexcept: _type{}, _id{0} {}
 
         /** @brief Copying is not allowed */
         Shader(const Shader&) = delete;
