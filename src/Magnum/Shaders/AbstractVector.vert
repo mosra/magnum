@@ -31,11 +31,21 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
+#ifdef TWO_DIMENSIONS
 uniform highp mat3 transformationProjectionMatrix
     #ifndef GL_ES
     = mat3(1.0)
     #endif
     ;
+#elif defined(THREE_DIMENSIONS)
+uniform highp mat4 transformationProjectionMatrix
+    #ifndef GL_ES
+    = mat4(1.0)
+    #endif
+    ;
+#else
+#error
+#endif
 
 #ifdef TEXTURE_TRANSFORMATION
 #ifdef EXPLICIT_UNIFORM_LOCATION
@@ -51,31 +61,30 @@ uniform mediump mat3 textureMatrix
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+#ifdef TWO_DIMENSIONS
 in highp vec2 position;
+#elif defined(THREE_DIMENSIONS)
+in highp vec4 position;
+#else
+#error
+#endif
 
-#ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec2 textureCoordinates;
 
 out mediump vec2 interpolatedTextureCoordinates;
-#endif
-
-#ifdef VERTEX_COLOR
-#ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = COLOR_ATTRIBUTE_LOCATION)
-#endif
-in lowp vec4 vertexColor;
-
-out lowp vec4 interpolatedVertexColor;
-#endif
 
 void main() {
+    #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
+    #elif defined(THREE_DIMENSIONS)
+    gl_Position = transformationProjectionMatrix*position;
+    #else
+    #error
+    #endif
 
-    #ifdef TEXTURED
-    /* Texture coordinates, if needed */
     interpolatedTextureCoordinates =
         #ifdef TEXTURE_TRANSFORMATION
         (textureMatrix*vec3(textureCoordinates, 1.0)).xy
@@ -83,10 +92,4 @@ void main() {
         textureCoordinates
         #endif
         ;
-    #endif
-
-    #ifdef VERTEX_COLOR
-    /* Vertex colors, if enabled */
-    interpolatedVertexColor = vertexColor;
-    #endif
 }

@@ -39,12 +39,6 @@
 
 namespace Magnum { namespace Shaders {
 
-namespace {
-    template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "VertexColor2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "VertexColor3D.vert"; }
-}
-
 template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -62,8 +56,9 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
-    vert.addSource(rs.get("generic.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
+    vert.addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
+        .addSource(rs.get("generic.glsl"))
+        .addSource(rs.get("VertexColor.vert"));
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("VertexColor.frag"));
 

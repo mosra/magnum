@@ -40,12 +40,6 @@
 
 namespace Magnum { namespace Shaders {
 
-namespace {
-    template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "AbstractVector2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
-}
-
 template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector(const Flags flags): _flags{flags} {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -64,8 +58,9 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
         .addSource(rs.get("generic.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
+        .addSource(rs.get("AbstractVector.vert"));
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("DistanceFieldVector.frag"));
 

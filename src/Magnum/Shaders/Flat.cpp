@@ -43,10 +43,6 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     enum: Int { TextureLayer = 0 };
-
-    template<UnsignedInt> constexpr const char* vertexShaderName();
-    template<> constexpr const char* vertexShaderName<2>() { return "Flat2D.vert"; }
-    template<> constexpr const char* vertexShaderName<3>() { return "Flat3D.vert"; }
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _flags(flags) {
@@ -72,8 +68,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
+        .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
         .addSource(rs.get("generic.glsl"))
-        .addSource(rs.get(vertexShaderName<dimensions>()));
+        .addSource(rs.get("Flat.vert"));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
