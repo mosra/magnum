@@ -34,53 +34,43 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct VectorTest: TestSuite::Tester {
     explicit VectorTest();
 
-    void constructNoCreate2D();
-    void constructNoCreate3D();
-
-    void constructCopy2D();
-    void constructCopy3D();
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 
     void debugFlag();
     void debugFlags();
 };
 
 VectorTest::VectorTest() {
-    addTests({&VectorTest::constructNoCreate2D,
-              &VectorTest::constructNoCreate3D,
+    addTests({&VectorTest::constructNoCreate<2>,
+              &VectorTest::constructNoCreate<3>,
 
-              &VectorTest::constructCopy2D,
-              &VectorTest::constructCopy3D,
+              &VectorTest::constructCopy<2>,
+              &VectorTest::constructCopy<3>,
 
               &VectorTest::debugFlag,
               &VectorTest::debugFlags});
 }
 
-void VectorTest::constructNoCreate2D() {
+template<UnsignedInt dimensions> void VectorTest::constructNoCreate() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
     {
-        Vector2D shader{NoCreate};
+        Vector<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void VectorTest::constructNoCreate3D() {
-    {
-        Vector3D shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-    }
+template<UnsignedInt dimensions> void VectorTest::constructCopy() {
+    setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(true);
-}
+    CORRADE_VERIFY((std::is_constructible<Vector<dimensions>, Vector<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Vector<dimensions>, const Vector<dimensions>&>{}));
 
-void VectorTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<Vector2D, const Vector2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Vector2D, const Vector2D&>{}));
-}
-
-void VectorTest::constructCopy3D() {
-    CORRADE_VERIFY(!(std::is_constructible<Vector3D, const Vector3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Vector3D, const Vector3D&>{}));
+    CORRADE_VERIFY((std::is_assignable<Vector<dimensions>, Vector<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Vector<dimensions>, const Vector<dimensions>&>{}));
 }
 
 void VectorTest::debugFlag() {

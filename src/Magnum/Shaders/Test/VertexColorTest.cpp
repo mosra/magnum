@@ -32,47 +32,38 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct VertexColorTest: TestSuite::Tester {
     explicit VertexColorTest();
 
-    void constructNoCreate2D();
-    void constructNoCreate3D();
-
-    void constructCopy2D();
-    void constructCopy3D();
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 };
 
 VertexColorTest::VertexColorTest() {
-    addTests({&VertexColorTest::constructNoCreate2D,
-              &VertexColorTest::constructNoCreate3D,
+    addTests<VertexColorTest>({
+        &VertexColorTest::constructNoCreate<2>,
+        &VertexColorTest::constructNoCreate<3>,
 
-              &VertexColorTest::constructCopy2D,
-              &VertexColorTest::constructCopy3D});
+        &VertexColorTest::constructCopy<2>,
+        &VertexColorTest::constructCopy<3>});
 }
 
-void VertexColorTest::constructNoCreate2D() {
+template<UnsignedInt dimensions> void VertexColorTest::constructNoCreate() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
     {
-        VertexColor2D shader{NoCreate};
+        VertexColor<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void VertexColorTest::constructNoCreate3D() {
-    {
-        VertexColor3D shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-    }
+template<UnsignedInt dimensions> void VertexColorTest::constructCopy() {
+    setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(true);
-}
+    CORRADE_VERIFY((std::is_constructible<VertexColor<dimensions>, VertexColor<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<VertexColor<dimensions>, const VertexColor<dimensions>&>{}));
 
-void VertexColorTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<VertexColor2D, const VertexColor2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<VertexColor2D, const VertexColor2D&>{}));
-}
-
-void VertexColorTest::constructCopy3D() {
-    CORRADE_VERIFY(!(std::is_constructible<VertexColor3D, const VertexColor3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<VertexColor3D, const VertexColor3D&>{}));
+    CORRADE_VERIFY((std::is_assignable<VertexColor<dimensions>, VertexColor<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<VertexColor<dimensions>, const VertexColor<dimensions>&>{}));
 }
 
 }}}}

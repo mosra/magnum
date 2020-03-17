@@ -34,53 +34,43 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct FlatTest: TestSuite::Tester {
     explicit FlatTest();
 
-    void constructNoCreate2D();
-    void constructNoCreate3D();
-
-    void constructCopy2D();
-    void constructCopy3D();
+    template<UnsignedInt dimensions> void constructNoCreate();
+    template<UnsignedInt dimensions> void constructCopy();
 
     void debugFlag();
     void debugFlags();
 };
 
 FlatTest::FlatTest() {
-    addTests({&FlatTest::constructNoCreate2D,
-              &FlatTest::constructNoCreate3D,
+    addTests({&FlatTest::constructNoCreate<2>,
+              &FlatTest::constructNoCreate<3>,
 
-              &FlatTest::constructCopy2D,
-              &FlatTest::constructCopy3D,
+              &FlatTest::constructCopy<2>,
+              &FlatTest::constructCopy<3>,
 
               &FlatTest::debugFlag,
               &FlatTest::debugFlags});
 }
 
-void FlatTest::constructNoCreate2D() {
+template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
     {
-        Flat2D shader{NoCreate};
+        Flat<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FlatTest::constructNoCreate3D() {
-    {
-        Flat3D shader{NoCreate};
-        CORRADE_COMPARE(shader.id(), 0);
-    }
+template<UnsignedInt dimensions> void FlatTest::constructCopy() {
+    setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY(true);
-}
+    CORRADE_VERIFY((std::is_constructible<Flat<dimensions>, Flat<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Flat<dimensions>, const Flat<dimensions>&>{}));
 
-void FlatTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<Flat2D, const Flat2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Flat2D, const Flat2D&>{}));
-}
-
-void FlatTest::constructCopy3D() {
-    CORRADE_VERIFY(!(std::is_constructible<Flat3D, const Flat3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Flat3D, const Flat3D&>{}));
+    CORRADE_VERIFY((std::is_assignable<Flat<dimensions>, Flat<dimensions>&&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Flat<dimensions>, const Flat<dimensions>&>{}));
 }
 
 void FlatTest::debugFlag() {
