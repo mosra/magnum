@@ -89,6 +89,7 @@ enum class MeshPrimitive: UnsignedInt {
      *
      * Corresponds to @ref GL::MeshPrimitive::LineLoop. Not supported on
      * Vulkan, D3D or Metal.
+     * @see @ref MeshTools::generateLineLoopIndices()
      */
     LineLoop,
 
@@ -101,6 +102,7 @@ enum class MeshPrimitive: UnsignedInt {
      * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_LINESTRIP](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
      * or @m_class{m-doc-external} [MTLPrimitiveTypeLineStrip](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypelinestrip?language=objc).
      * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_LINESTRIP MTLPrimitiveTypeLineStrip}
+     * @see @ref MeshTools::generateLineStripIndices()
      */
     LineStrip,
 
@@ -124,6 +126,7 @@ enum class MeshPrimitive: UnsignedInt {
      * @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology)
      * or @m_class{m-doc-external} [MTLPrimitiveTypeTriangleStrip](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypetrianglestrip?language=objc).
      * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP MTLPrimitiveTypeTriangleStrip}
+     * @see @ref MeshTools::generateTriangleStripIndices()
      */
     TriangleStrip,
 
@@ -134,6 +137,7 @@ enum class MeshPrimitive: UnsignedInt {
      * Corresponds to @ref GL::MeshPrimitive::TriangleFan /
      * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,PrimitiveTopology}. Not
      * supported on D3D or Metal.
+     * @see @ref MeshTools::generateTriangleFanIndices()
      */
     TriangleFan,
 

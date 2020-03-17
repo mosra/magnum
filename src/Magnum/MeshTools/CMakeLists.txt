@@ -34,6 +34,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     Concatenate.cpp
     Duplicate.cpp
     FlipNormals.cpp
+    GenerateIndices.cpp
     GenerateNormals.cpp
     Interleave.cpp
     RemoveDuplicates.cpp)
@@ -44,6 +45,7 @@ set(MagnumMeshTools_HEADERS
     Concatenate.h
     Duplicate.h
     FlipNormals.h
+    GenerateIndices.h
     GenerateNormals.h
     Interleave.h
     RemoveDuplicates.h

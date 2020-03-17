@@ -28,6 +28,7 @@ corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES 
 corrade_add_test(MeshToolsConcatenateTest ConcatenateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
+corrade_add_test(MeshToolsGenerateIndicesTest GenerateIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsGenerateNormalsTest GenerateNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
@@ -51,6 +52,7 @@ set_target_properties(
     MeshToolsConcatenateTest
     MeshToolsDuplicateTest
     MeshToolsFlipNormalsTest
+    MeshToolsGenerateIndicesTest
     MeshToolsGenerateNormalsTest
     MeshToolsInterleaveTest
     MeshToolsRemoveDuplicatesTest

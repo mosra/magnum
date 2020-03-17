@@ -150,6 +150,12 @@ See also:
     into per-vertex
 -   New @ref MeshTools::concatenate() and @ref MeshTools::concatenateInto()
     tool for batching multiple generic meshes together
+-   New family of @ref MeshTools::generateLineStripIndices(),
+    @ref MeshTools::generateLineLoopIndices(),
+    @ref MeshTools::generateTriangleStripIndices() and
+    @ref MeshTools::generateTriangleFanIndices() utilities for converting
+    various mesh types to plain indexed @ref MeshPrimitive::Lines and
+    @ref MeshPrimitive::Triangles
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
