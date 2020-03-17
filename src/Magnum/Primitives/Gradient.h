@@ -47,7 +47,7 @@ defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
 @image html primitives-gradient2d.png width=256px
 
 @see @ref gradient2DHorizontal(), @ref gradient2DVertical(), @ref gradient3D(),
-    @ref squareSolid()
+    @ref squareSolid(), @ref MeshTools::generateTriangleStripIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2D(const Vector2& a, const Color4& colorA, const Vector2& b, const Color4& colorB);
 
@@ -90,7 +90,7 @@ defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
 @image html primitives-gradient3d.png width=256px
 
 @see @ref gradient3DHorizontal(), @ref gradient3DVertical(), @ref gradient2D(),
-    @ref planeSolid()
+    @ref planeSolid(), @ref MeshTools::generateTriangleStripIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB);
 

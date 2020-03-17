@@ -57,7 +57,7 @@ normals or anything else --- use @ref cubeSolid() instead if you need these.
 
 @image html primitives-cubesolid.png width=256px
 
-@see @ref cubeWireframe()
+@see @ref cubeWireframe(), @ref MeshTools::generateTriangleStripIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cubeSolidStrip();
 

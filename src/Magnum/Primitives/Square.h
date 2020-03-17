@@ -56,7 +56,8 @@ memory.
 
 @image html primitives-squaresolid.png width=256px
 
-@see @ref squareWireframe(), @ref planeSolid(), @ref gradient2D()
+@see @ref squareWireframe(), @ref planeSolid(), @ref gradient2D(),
+    @ref MeshTools::generateTriangleStripIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData squareSolid(SquareTextureCoords textureCoords = SquareTextureCoords::DontGenerate);
 
@@ -69,7 +70,8 @@ stored in constant memory.
 
 @image html primitives-squarewireframe.png width=256px
 
-@see @ref squareSolid(), @ref planeWireframe()
+@see @ref squareSolid(), @ref planeWireframe(),
+    @ref MeshTools::generateLineLoopIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData squareWireframe();
 

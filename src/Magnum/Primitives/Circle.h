@@ -57,7 +57,8 @@ positions and optional @ref VertexFormat::Vector2 texture coordinates.
 
 @image html primitives-circle2dsolid.png width=256px
 
-@see @ref circle2DWireframe(), @ref circle3DSolid()
+@see @ref circle2DWireframe(), @ref circle3DSolid(),
+    @ref MeshTools::generateTriangleFanIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DSolid(UnsignedInt segments, CircleTextureCoords textureCoords = CircleTextureCoords::DontGenerate);
 
@@ -71,7 +72,8 @@ Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop with
 
 @image html primitives-circle2dwireframe.png width=256px
 
-@see @ref circle2DSolid(), @ref circle3DWireframe()
+@see @ref circle2DSolid(), @ref circle3DWireframe(),
+    @ref MeshTools::generateLineLoopIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DWireframe(UnsignedInt segments);
 
@@ -88,7 +90,8 @@ optional @ref VertexFormat::Vector2 texture coordinates.
 
 @image html primitives-circle3dsolid.png width=256px
 
-@see @ref circle3DWireframe(), @ref circle2DSolid()
+@see @ref circle3DWireframe(), @ref circle2DSolid(),
+    @ref MeshTools::generateTriangleFanIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle3DSolid(UnsignedInt segments, CircleTextureCoords textureCoords = CircleTextureCoords::DontGenerate);
 
@@ -100,7 +103,8 @@ Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive
 
 @image html primitives-circle3dwireframe.png width=256px
 
-@see @ref circle2DSolid(), @ref circle3DWireframe()
+@see @ref circle2DSolid(), @ref circle3DWireframe(),
+    @ref MeshTools::generateLineLoopIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle3DWireframe(UnsignedInt segments);
 

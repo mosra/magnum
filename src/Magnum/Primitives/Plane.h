@@ -56,7 +56,8 @@ memory.
 
 @image html primitives-planesolid.png width=256px
 
-@see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D()
+@see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D(),
+    @ref MeshTools::generateTriangleStripIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
 
@@ -69,7 +70,8 @@ stored in constant memory.
 
 @image html primitives-planewireframe.png width=256px
 
-@see @ref planeSolid(), @ref squareWireframe()
+@see @ref planeSolid(), @ref squareWireframe(),
+    @ref MeshTools::generateLineLoopIndices()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeWireframe();
 
