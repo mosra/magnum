@@ -316,10 +316,14 @@ void CompressIndicesTest::compressMeshDataMove() {
 }
 
 void CompressIndicesTest::compressMeshDataNonIndexed() {
+    /* Test both r-value and l-value overload */
     std::ostringstream out;
     Error redirectError{&out};
+    Trade::MeshData mesh{MeshPrimitive::TriangleFan, 5};
+    MeshTools::compressIndices(mesh);
     MeshTools::compressIndices(Trade::MeshData{MeshPrimitive::TriangleFan, 5});
     CORRADE_COMPARE(out.str(),
+        "MeshTools::compressIndices(): mesh data not indexed\n"
         "MeshTools::compressIndices(): mesh data not indexed\n");
 }
 
