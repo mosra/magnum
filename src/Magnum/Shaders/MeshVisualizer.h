@@ -49,19 +49,18 @@ configure the shader.
 @section Shaders-MeshVisualizer-wireframe Wireframe visualization
 
 Wireframe visualization is done by enabling @ref Flag::Wireframe. It is done
-either using geometry shaders or with help of additional vertex information.
-
-If you have geometry shaders available, you don't need to do anything else.
+either using geometry shaders or with help of additional vertex information. If
+you have geometry shaders available, you don't need to do anything else.
 
 @requires_gl32 Extension @gl_extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
 @requires_es_extension Extension @gl_extension{EXT,geometry_shader} for
     wireframe rendering using geometry shaders.
 
-If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
-(it's enabled by default in OpenGL ES 2.0) and use only **non-indexed** triangle
-meshes (see @ref MeshTools::duplicate() for a possible solution). Additionaly,
-if you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also the
+If you don't have geometry shaders, you need to enable @ref Flag::NoGeometryShader
+(done by default in OpenGL ES 2.0) and use only **non-indexed** triangle meshes
+(see @ref MeshTools::duplicate() for a possible solution). Additionaly, if you
+have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also the
 @ref VertexIndex attribute.
 
 @requires_gles30 Extension @gl_extension{OES,standard_derivatives} for
@@ -84,7 +83,7 @@ Common rendering setup:
 
 @subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without a geometry shader
 
-The vertices have to be be converted to a non-indexed array. Mesh setup:
+The vertices have to be converted to a non-indexed array first. Mesh setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom1
 
