@@ -82,7 +82,7 @@ uniform lowp float smoothness
     ;
 
 #ifndef NO_GEOMETRY_SHADER
-#ifdef GL_NV_shader_noperspective_interpolation
+#if !defined(GL_ES) || defined(GL_NV_shader_noperspective_interpolation)
 noperspective
 #endif
 in lowp vec3 dist;

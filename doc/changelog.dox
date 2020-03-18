@@ -432,6 +432,9 @@ See also:
     check
 -   For a @ref Shaders::Phong with zero lights, alpha mask default value was
     incorrectly @cpp 0.0f @ce instead of @cpp 0.5f @ce on OpenGL ES
+-   @ref Shaders::MeshVisualizer3D accidentally didn't enable
+    @glsl noperspective @ce interpolation on desktop, resulting in minor
+    wireframe rendering artifacts
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

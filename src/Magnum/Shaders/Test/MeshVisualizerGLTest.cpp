@@ -792,8 +792,14 @@ void MeshVisualizerGLTest::renderWireframe3D() {
         CORRADE_EXPECT_FAIL_IF(data.flags & MeshVisualizer3D::Flag::NoGeometryShader,
             "Line width is currently not configurable w/o geometry shader.");
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /* SwiftShader has differently rasterized edges on four pixels */
-        const Float maxThreshold = 170.0f, meanThreshold = 0.327f;
+        /* SwiftShader has differently rasterized edges on four pixels. On a
+           GS, if GL_NV_shader_noperspective_interpolation is not supported,
+           the artifacts are bigger. */
+        Float maxThreshold = 170.0f, meanThreshold = 0.327f;
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+            meanThreshold = 2.166f;
+        #endif
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
         const Float maxThreshold = 170.0f, meanThreshold = 1.699f;

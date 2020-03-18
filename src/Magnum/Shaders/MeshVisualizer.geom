@@ -44,7 +44,7 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 /* Interpolate in screen space (if possible) */
-#ifdef GL_NV_shader_noperspective_interpolation
+#if !defined(GL_ES) || defined(GL_NV_shader_noperspective_interpolation)
 noperspective
 #endif
 out lowp vec3 dist;
