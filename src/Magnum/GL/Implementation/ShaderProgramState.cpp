@@ -36,7 +36,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_WEBGL
-        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0)
+        , maxGeometryOutputVertices{0}, maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0)
         #endif
         , minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0)
         #ifndef MAGNUM_TARGET_WEBGL

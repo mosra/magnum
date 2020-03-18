@@ -62,6 +62,23 @@ Int AbstractShaderProgram::maxVertexAttributes() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+Int AbstractShaderProgram::maxGeometryOutputVertices() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        return 0;
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current().state().shaderProgram->maxGeometryOutputVertices;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, &value);
+
+    return value;
+}
+
 Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>())

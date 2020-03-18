@@ -687,6 +687,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::geometry_shader)
         #endif
 
+        _l(GL::AbstractShaderProgram::maxGeometryOutputVertices())
         _l(GL::Shader::maxGeometryInputComponents())
         _l(GL::Shader::maxGeometryOutputComponents())
         _l(GL::Shader::maxGeometryTotalOutputComponents())

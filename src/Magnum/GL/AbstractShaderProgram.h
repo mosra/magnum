@@ -463,6 +463,21 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
+         * @brief Max supported count of vertices emitted by a geometry shader
+         * @m_since_latest
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither @gl_extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) nor @gl_extension{ANDROID,extension_pack_es31a} /
+         * @gl_extension{EXT,geometry_shader} (part of OpenGL ES 3.2) is not
+         * available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_GEOMETRY_OUTPUT_VERTICES}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        static Int maxGeometryOutputVertices();
+
+        /**
          * @brief Max supported atomic counter buffer size
          *
          * The result is cached, repeated queries don't result in repeated

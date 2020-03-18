@@ -496,7 +496,7 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_FRAMEBUFFER_SAMPLES}        | |
 @def_gl{MAX_FRAMEBUFFER_WIDTH}          | |
 @def_gl{MAX_FRAGMENT_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}, \n @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_INPUT_COMPONENTS}, \n @def_gl{MAX_TESS_EVALUATION_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VERTEX_OUTPUT_COMPONENTS}, \n @def_gl{MAX_VARYING_VECTORS} | @ref GL::Shader::maxFragmentInputComponents(), \n @ref GL::Shader::maxGeometryInputComponents(), \n @ref GL::Shader::maxGeometryOutputComponents(), \n @ref GL::Shader::maxGeometryTotalOutputComponents(), \n @ref GL::Shader::maxTessellationControlInputComponents(), \n @ref GL::Shader::maxTessellationControlOutputComponents(), \n @ref GL::Shader::maxTessellationControlTotalOutputComponents(), \n @ref GL::Shader::maxTessellationEvaluationInputComponents(), \n @ref GL::Shader::maxTessellationEvaluationOutputComponents(), \n @ref GL::Shader::maxVertexOutputComponents()
-@def_gl{MAX_GEOMETRY_OUTPUT_VERTICES}   | |
+@def_gl{MAX_GEOMETRY_OUTPUT_VERTICES}   | @ref GL::AbstractShaderProgram::maxGeometryOutputVertices()
 @def_gl{MAX_GEOMETRY_SHADER_INVOCATIONS} | |
 @def_gl{MAX_IMAGE_SAMPLES}              | @ref GL::AbstractShaderProgram::maxImageSamples()
 @def_gl{MAX_IMAGE_UNITS}                | @ref GL::AbstractShaderProgram::maxImageUnits()
