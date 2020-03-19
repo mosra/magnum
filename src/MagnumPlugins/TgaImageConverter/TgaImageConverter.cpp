@@ -25,10 +25,10 @@
 
 #include "TgaImageConverter.h"
 
-#include <algorithm>
 #include <fstream>
 #include <tuple>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/ImageView.h"
@@ -68,25 +68,17 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
-    /* Image data pointer including skip */
-    const char* imageData = image.data() + std::get<0>(image.dataProperties()).sum();
-
-    /* Fill data or copy them row by row if we need to drop the padding */
-    const std::size_t rowSize = image.size().x()*pixelSize;
-    const std::size_t rowStride = std::get<1>(image.dataProperties()).x();
-    if(rowStride != rowSize) {
-        for(std::int_fast32_t y = 0; y != image.size().y(); ++y)
-            std::copy_n(imageData + y*rowStride, rowSize, data.begin() + sizeof(Implementation::TgaHeader) + y*rowSize);
-    } else std::copy_n(imageData, pixelSize*image.size().product(), data.begin() + sizeof(Implementation::TgaHeader));
+    /* Copy the pixels into output, dropping padding (if any) */
+    const Containers::ArrayView<char> pixels = data.suffix(sizeof(Implementation::TgaHeader));
+    Utility::copy(image.pixels(), Containers::StridedArrayView3D<char>{pixels,
+        {std::size_t(image.size().y()), std::size_t(image.size().x()), pixelSize}});
 
     if(image.format() == PixelFormat::RGB8Unorm) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
-        std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r'>(pixel); });
+        for(Vector3ub& pixel: Containers::arrayCast<Vector3ub>(pixels))
+            pixel = Math::gather<'b', 'g', 'r'>(pixel);
     } else if(image.format() == PixelFormat::RGBA8Unorm) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
-        std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r', 'a'>(pixel); });
+        for(Vector4ub& pixel: Containers::arrayCast<Vector4ub>(pixels))
+            pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
 
     return data;
