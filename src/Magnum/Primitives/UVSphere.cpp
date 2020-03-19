@@ -33,14 +33,12 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords) {
+Trade::MeshData uvSphereSolid(const UnsignedInt rings, const UnsignedInt segments, const UVSphereFlags flags) {
     CORRADE_ASSERT(rings >= 2 && segments >= 3,
         "Primitives::uvSphereSolid(): at least two rings and three segments expected",
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-    Implementation::Spheroid sphere(segments, textureCoords == UVSphereTextureCoords::Generate ?
-        Implementation::Spheroid::TextureCoords::Generate :
-        Implementation::Spheroid::TextureCoords::DontGenerate);
+    Implementation::Spheroid sphere(segments, Implementation::Spheroid::Flag(UnsignedByte(flags)));
 
     Float textureCoordsVIncrement = 1.0f/rings;
     Rad ringAngleIncrement(Constants::pi()/rings);
@@ -61,6 +59,14 @@ Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereT
 
     return sphere.finalize();
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Trade::MeshData uvSphereSolid(const UnsignedInt rings, const UnsignedInt segments, const UVSphereTextureCoords textureCoords) {
+    return uvSphereSolid(rings, segments, textureCoords == UVSphereTextureCoords::Generate ? UVSphereFlag::TextureCoordinates : UVSphereFlags{});
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Trade::MeshData uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
     CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%4 == 0,

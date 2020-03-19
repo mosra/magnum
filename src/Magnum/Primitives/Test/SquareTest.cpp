@@ -58,7 +58,7 @@ void SquareTest::solid() {
 }
 
 void SquareTest::solidTextured() {
-    Trade::MeshData square = Primitives::squareSolid(Primitives::SquareTextureCoords::Generate);
+    Trade::MeshData square = Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates);
 
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!square.isIndexed());

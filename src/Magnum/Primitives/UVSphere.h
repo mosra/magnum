@@ -29,20 +29,33 @@
  * @brief Class @ref Magnum::Primitives::uvSphereSolid(), @ref Magnum::Primitives::uvSphereWireframe()
  */
 
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Primitives/visibility.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
-@brief Whether to generate UV sphere texture coordinates
+@brief UV sphere flag
+@m_since_latest
+
+@see @ref UVSphereFlags, @ref uvSphereSolid()
+*/
+enum class UVSphereFlag: UnsignedByte {
+    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
+};
+
+/**
+@brief UV sphere flags
+@m_since_latest
 
 @see @ref uvSphereSolid()
 */
-enum class UVSphereTextureCoords: UnsignedByte {
-    DontGenerate,       /**< Don't generate texture coordinates */
-    Generate            /**< Generate texture coordinates */
-};
+typedef Containers::EnumSet<UVSphereFlag> UVSphereFlags;
+
+CORRADE_ENUMSET_OPERATORS(UVSphereFlags)
 
 /**
 @brief Solid 3D UV sphere
@@ -50,7 +63,8 @@ enum class UVSphereTextureCoords: UnsignedByte {
     @cpp 2 @ce.
 @param segments         Number of (face) segments. Must be larger or
     equal to @cpp 3 @ce.
-@param textureCoords    Whether to generate texture coordinates
+@param flags            Flags
+@m_since_latest
 
 Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
@@ -62,7 +76,27 @@ generated, vertices of one segment are duplicated for texture wrapping.
 
 @see @ref icosphereSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereFlags flags = {});
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Whether to generate UV sphere texture coordinates
+@m_deprecated_since_latest Use @ref UVSphereFlags instead.
+*/
+enum class CORRADE_DEPRECATED("use UVSphereFlags instead") UVSphereTextureCoords: UnsignedByte {
+    DontGenerate,       /**< Don't generate texture coordinates */
+    Generate            /**< Generate texture coordinates */
+};
+
+/**
+@brief @copybrief uvSphereSolid(UnsignedInt, UnsignedInt, UVSphereFlags)
+@m_deprecated_since_latest Use @ref uvSphereSolid(UnsignedInt, UnsignedInt, UVSphereFlags)
+    instead.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
+MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use uvSphereSolid() with UVSphereFlags instead") Trade::MeshData uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Wireframe 3D UV sphere

@@ -163,7 +163,7 @@ void CylinderTest::solidWithCaps() {
 }
 
 void CylinderTest::solidWithTextureCoords() {
-    Trade::MeshData cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::GenerateTextureCoords);
+    Trade::MeshData cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::TextureCoordinates);
 
     CORRADE_COMPARE(cylinder.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cylinder.isIndexed());
@@ -230,7 +230,7 @@ void CylinderTest::solidWithTextureCoords() {
 }
 
 void CylinderTest::solidWithTextureCoordsAndCaps() {
-    Trade::MeshData cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::GenerateTextureCoords|CylinderFlag::CapEnds);
+    Trade::MeshData cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::TextureCoordinates|CylinderFlag::CapEnds);
 
     CORRADE_COMPARE(cylinder.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cylinder.isIndexed());

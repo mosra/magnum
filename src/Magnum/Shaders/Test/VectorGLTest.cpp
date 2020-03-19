@@ -262,7 +262,7 @@ void VectorGLTest::renderDefaults2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate));
+    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -309,7 +309,7 @@ void VectorGLTest::renderDefaults3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate));
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -359,7 +359,7 @@ void VectorGLTest::render2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate));
+    GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -421,7 +421,7 @@ void VectorGLTest::render3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate));
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);

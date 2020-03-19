@@ -42,8 +42,22 @@ namespace Magnum { namespace Primitives {
 
 @see @ref CylinderFlags, @ref cylinderSolid()
 */
-enum class CylinderFlag {
-    GenerateTextureCoords = 1 << 0,  /**< Generate texture coordinates */
+enum class CylinderFlag: UnsignedByte {
+    /**
+     * Generate texture coordinates
+     * @m_since_latest
+     */
+    TextureCoordinates = 1 << 0,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Generate texture coordinates
+     * @m_deprecated_since_latest Use @ref CylinderFlag::TextureCoordinates
+     *      instead.
+     */
+    GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
+    #endif
+
     CapEnds = 1 << 1                 /**< Cap ends */
 };
 

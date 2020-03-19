@@ -513,7 +513,7 @@ constexpr GL::TextureFormat TextureFormatRGBA =
 
 void FlatGLTest::renderSinglePixelTextured2D() {
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate));
+        Primitives::Circle2DFlag::TextureCoordinates));
 
     const Color4ub diffuseData[]{ 0x9999ff_rgb };
     ImageView2D diffuseImage{PixelFormat::RGBA8Unorm, Vector2i{1}, diffuseData};
@@ -551,7 +551,7 @@ void FlatGLTest::renderSinglePixelTextured2D() {
 
 void FlatGLTest::renderSinglePixelTextured3D() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     const Color4ub diffuseData[]{ 0x9999ff_rgb };
     ImageView2D diffuseImage{PixelFormat::RGBA8Unorm, Vector2i{1}, diffuseData};
@@ -600,7 +600,7 @@ void FlatGLTest::renderTextured2D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate));
+        Primitives::Circle2DFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -656,7 +656,7 @@ void FlatGLTest::renderTextured3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -715,7 +715,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     Trade::MeshData circleData = Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate);
+        Primitives::Circle2DFlag::TextureCoordinates);
 
     /* Highlight a quarter */
     Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x999999_rgbf};
@@ -769,7 +769,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate);
+        Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the middle rings */
     Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
@@ -856,7 +856,7 @@ void FlatGLTest::renderAlpha2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate));
+        Primitives::Circle2DFlag::TextureCoordinates));
 
     Flat2D shader{data.flags};
     shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
@@ -907,7 +907,7 @@ void FlatGLTest::renderAlpha3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     Flat3D shader{data.flags};
     shader.setTransformationProjectionMatrix(

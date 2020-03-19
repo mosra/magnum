@@ -185,7 +185,7 @@ void CapsuleTest::solid3DWithoutTextureCoords() {
 }
 
 void CapsuleTest::solid3DWithTextureCoords() {
-    Trade::MeshData capsule = capsule3DSolid(2, 2, 3, 0.5f, CapsuleTextureCoords::Generate);
+    Trade::MeshData capsule = capsule3DSolid(2, 2, 3, 0.5f, CapsuleFlag::TextureCoordinates);
 
     CORRADE_COMPARE(capsule.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(capsule.isIndexed());

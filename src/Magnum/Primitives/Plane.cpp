@@ -77,16 +77,25 @@ constexpr Trade::MeshAttributeData AttributesSolidTextureCoords[]{
 
 }
 
-Trade::MeshData planeSolid(const PlaneTextureCoords textureCoords) {
-    if(textureCoords != PlaneTextureCoords::Generate)
+Trade::MeshData planeSolid(const PlaneFlags flags) {
+    if(flags & PlaneFlag::TextureCoordinates)
         return Trade::MeshData{MeshPrimitive::TriangleStrip,
-            {}, VerticesSolid,
-            Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+            {}, VerticesSolidTextureCoords,
+            Trade::meshAttributeDataNonOwningArray(AttributesSolidTextureCoords)};
 
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
-        {}, VerticesSolidTextureCoords,
-        Trade::meshAttributeDataNonOwningArray(AttributesSolidTextureCoords)};
+        {}, VerticesSolid,
+        Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Trade::MeshData planeSolid(const PlaneTextureCoords textureCoords) {
+    return planeSolid(textureCoords == PlaneTextureCoords::Generate ?
+        PlaneFlag::TextureCoordinates : PlaneFlags{});
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 namespace {
 

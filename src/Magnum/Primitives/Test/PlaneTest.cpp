@@ -60,7 +60,7 @@ void PlaneTest::solid() {
 }
 
 void PlaneTest::solidTextured() {
-    Trade::MeshData plane = Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate);
+    Trade::MeshData plane = Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates);
 
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!plane.isIndexed());

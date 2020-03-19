@@ -74,7 +74,7 @@ void CircleTest::solid2D() {
 }
 
 void CircleTest::solid2DTextureCoords() {
-    Trade::MeshData circle = Primitives::circle2DSolid(8, Primitives::CircleTextureCoords::Generate);
+    Trade::MeshData circle = Primitives::circle2DSolid(8, Primitives::Circle2DFlag::TextureCoordinates);
 
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
     CORRADE_VERIFY(!circle.isIndexed());
@@ -126,7 +126,7 @@ void CircleTest::solid3D() {
 }
 
 void CircleTest::solid3DTextureCoords() {
-    Trade::MeshData circle = Primitives::circle3DSolid(8, Primitives::CircleTextureCoords::Generate);
+    Trade::MeshData circle = Primitives::circle3DSolid(8, Primitives::Circle3DFlag::TextureCoordinates);
 
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
     CORRADE_VERIFY(!circle.isIndexed());

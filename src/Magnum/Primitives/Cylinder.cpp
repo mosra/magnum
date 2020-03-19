@@ -38,7 +38,7 @@ Trade::MeshData cylinderSolid(const UnsignedInt rings, const UnsignedInt segment
         "Primitives::cylinderSolid(): at least one ring and three segments expected",
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-    Implementation::Spheroid cylinder(segments, flags & CylinderFlag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
+    Implementation::Spheroid cylinder{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
 
     const Float length = 2.0f*halfLength;
     const Float textureCoordsV = flags & CylinderFlag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
@@ -60,7 +60,7 @@ Trade::MeshData cylinderSolid(const UnsignedInt rings, const UnsignedInt segment
 
     /* Faces. Account for the extra vertices for caps and texture coords. */
     if(flags & CylinderFlag::CapEnds) cylinder.bottomFaceRing();
-    if(flags >= (CylinderFlag::CapEnds|CylinderFlag::GenerateTextureCoords))
+    if(flags >= (CylinderFlag::CapEnds|CylinderFlag::TextureCoordinates))
         cylinder.faceRings(rings, 2 + segments);
     else if(flags & CylinderFlag::CapEnds)
         cylinder.faceRings(rings, 1 + segments);

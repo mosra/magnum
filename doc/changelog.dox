@@ -501,6 +501,26 @@ See also:
     @ref MeshTools::compressIndices(), @ref MeshTools::duplicate(),
     @ref MeshTools::removeDuplicatesInPlace() and @ref MeshTools::subdivide() /
     @ref MeshTools::subdivideInPlace() overloads instead
+-   @cpp Primitives::CapsuleTextureCoords @ce,
+    @cpp Primitives::CircleTextureCoords @ce,
+    @cpp Primitives::PlaneTextureCoords @ce,
+    @cpp Primitives::SquareTextureCoords @ce,
+    @cpp Primitives::UVSphereTextureCoords @ce enums and
+    @ref Primitives::capsule3DSolid(), @ref Primitives::circle2DSolid(),
+    @ref Primitives::circle3DSolid(), @ref Primitives::planeSolid(),
+    @ref Primitives::squareSolid() and @ref Primitives::uvSphereSolid()
+    overloads taking those are deprecated in favor of
+    @ref Primitives::CapsuleFlags, @ref Primitives::Circle2DFlags,
+    @ref Primitives::Circle3DFlags, @ref Primitives::PlaneFlags,
+    @ref Primitives::SquareFlags and @ref Primitives::UVSphereFlags
+-   @cpp Primitives::ConeFlag::GenerateTextureCoords @ce,
+    @cpp Primitives::CylinderFlag::GenerateTextureCoords @ce,
+    @cpp Primitives::GridFlag::GenerateTextureCoords @ce and
+    @cpp Primitives::GridFlag::GenerateNormals @ce is deprecated in favor of
+    @ref Primitives::ConeFlag::TextureCoordinates,
+    @ref Primitives::CylinderFlag::TextureCoordinates,
+    @ref Primitives::GridFlag::TextureCoordinates and
+    @ref Primitives::GridFlag::Normals for naming consistency
 -   @cpp Shaders::MeshVisualizer @ce is deprecated as the shader can now handle
     both 2D and 3D, use @ref Shaders::MeshVisualizer3D instead
 -   @cpp Shaders::MeshVisualizer::setTransformationProjectionMatrix() @ce is

@@ -98,14 +98,12 @@ Trade::MeshData capsule2DWireframe(const UnsignedInt hemisphereRings, const Unsi
         Containers::arrayAllocatorCast<char>(std::move(vertexData)), {positions}};
 }
 
-Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleTextureCoords textureCoords) {
+Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleFlags flags) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3,
         "Primitives::capsule3DSolid(): at least one hemisphere ring, one cylinder ring and three segments expected",
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-    Implementation::Spheroid capsule(segments, textureCoords == CapsuleTextureCoords::Generate ?
-        Implementation::Spheroid::TextureCoords::Generate :
-        Implementation::Spheroid::TextureCoords::DontGenerate);
+    Implementation::Spheroid capsule{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
 
     Float height = 2.0f+2.0f*halfLength;
     Float hemisphereTextureCoordsVIncrement = 1.0f/(hemisphereRings*height);
@@ -133,6 +131,16 @@ Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const Unsigned
 
     return capsule.finalize();
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Trade::MeshData capsule3DSolid(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength, const CapsuleTextureCoords textureCoords) {
+    return capsule3DSolid(hemisphereRings, cylinderRings, segments, halfLength,
+        textureCoords == CapsuleTextureCoords::Generate ?
+        CapsuleFlag::TextureCoordinates : CapsuleFlags{});
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Trade::MeshData capsule3DWireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0,

@@ -150,7 +150,7 @@ void ConeTest::solidWithCaps() {
 }
 
 void ConeTest::solidWithTextureCoords() {
-    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::GenerateTextureCoords);
+    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::TextureCoordinates);
 
     CORRADE_COMPARE(cone.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cone.isIndexed());
@@ -217,7 +217,7 @@ void ConeTest::solidWithTextureCoords() {
 }
 
 void ConeTest::solidWithTextureCoordsAndCaps() {
-    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::GenerateTextureCoords|ConeFlag::CapEnd);
+    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::TextureCoordinates|ConeFlag::CapEnd);
 
     CORRADE_COMPARE(cone.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cone.isIndexed());

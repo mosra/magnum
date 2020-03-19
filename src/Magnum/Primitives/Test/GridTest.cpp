@@ -127,7 +127,7 @@ void GridTest::solid3DWithoutAnything() {
 }
 
 void GridTest::solid3DWithNormalsAndTextureCoords() {
-    Trade::MeshData grid = grid3DSolid({5, 3}, GridFlag::GenerateNormals|GridFlag::GenerateTextureCoords);
+    Trade::MeshData grid = grid3DSolid({5, 3}, GridFlag::Normals|GridFlag::TextureCoordinates);
 
     CORRADE_COMPARE(grid.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(grid.isIndexed());

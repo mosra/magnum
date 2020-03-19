@@ -29,27 +29,51 @@
  * @brief Function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe(), @ref Magnum::Primitives::circle3DSolid(), @ref Magnum::Primitives::circle3DWireframe()
  */
 
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
-@brief Whether to generate circle texture coordinates
-@m_since{2019,10}
+@brief 2D circle flag
+@m_since_latest
 
-@see @ref circle2DSolid(), @ref circle3DSolid()
+@see @ref Circle2DFlags, @ref circle2DSolid()
 */
-enum class CircleTextureCoords: UnsignedByte {
-    DontGenerate,       /**< Don't generate texture coordinates */
-    Generate            /**< Generate texture coordinates */
+enum class Circle2DFlag: UnsignedByte {
+    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
 };
 
 /**
+@brief 2D circle flags
+@m_since_latest
+
+@see @ref circle2DSolid()
+*/
+typedef Containers::EnumSet<Circle2DFlag> Circle2DFlags;
+
+CORRADE_ENUMSET_OPERATORS(Circle2DFlags)
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Whether to generate circle texture coordinates
+@m_deprecated_since_latest Use @ref Circle2DFlags or @ref Circle3DFlags
+    instead.
+*/
+enum class CORRADE_DEPRECATED_ENUM("use Circle2DFlags or Circle3DFlags instead") CircleTextureCoords: UnsignedByte {
+    DontGenerate,       /**< Don't generate texture coordinates */
+    Generate            /**< Generate texture coordinates */
+};
+#endif
+
+/**
 @brief Solid 2D circle
-@param segments         Number of segments. Must be greater or equal to
-    @cpp 3 @ce.
-@param textureCoords    Whether to generate texture coordinates
+@param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
+@param flags        Flags
+@m_since_latest
 
 Circle with radius @cpp 1.0f @ce. @ref MeshPrimitive::TriangleFan with
 @ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector2
@@ -60,7 +84,18 @@ positions and optional @ref VertexFormat::Vector2 texture coordinates.
 @see @ref circle2DWireframe(), @ref circle3DSolid(),
     @ref MeshTools::generateTriangleFanIndices()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DSolid(UnsignedInt segments, CircleTextureCoords textureCoords = CircleTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DSolid(UnsignedInt segments, Circle2DFlags flags = {});
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief circle2DSolid(UnsignedInt, Circle2DFlags)
+@m_deprecated_since_latest Use @ref circle2DSolid(UnsignedInt, Circle2DFlags)
+    instead.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
+MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use circle2DSolid() with Circle2DFlags instead") Trade::MeshData circle2DSolid(UnsignedInt segments, CircleTextureCoords textureCoords);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Wireframe 2D circle
@@ -78,10 +113,30 @@ Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop with
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DWireframe(UnsignedInt segments);
 
 /**
+@brief 3D circle flag
+@m_since_latest
+
+@see @ref Circle3DFlags, @ref circle3DSolid()
+*/
+enum class Circle3DFlag: UnsignedByte {
+    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
+};
+
+/**
+@brief 3D circle flags
+@m_since_latest
+
+@see @ref circle3DSolid()
+*/
+typedef Containers::EnumSet<Circle3DFlag> Circle3DFlags;
+
+CORRADE_ENUMSET_OPERATORS(Circle3DFlags)
+
+/**
 @brief Solid 3D circle
-@param segments         Number of segments. Must be greater or equal to
-    @cpp 3 @ce.
-@param textureCoords    Whether to generate texture coordinates
+@param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
+@param flags        Flags
+@m_since_latest
 
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::TriangleFan with interleaved @ref VertexFormat::Vector3
@@ -93,7 +148,18 @@ optional @ref VertexFormat::Vector2 texture coordinates.
 @see @ref circle3DWireframe(), @ref circle2DSolid(),
     @ref MeshTools::generateTriangleFanIndices()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle3DSolid(UnsignedInt segments, CircleTextureCoords textureCoords = CircleTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle3DSolid(UnsignedInt segments, Circle3DFlags flags = {});
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief circle3DSolid(UnsignedInt, Circle3DFlags)
+@m_deprecated_since_latest Use @ref circle3DSolid(UnsignedInt, Circle3DFlags)
+    instead.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
+MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use circle3DSolid() with Circle2DFlags instead") Trade::MeshData circle3DSolid(UnsignedInt segments, CircleTextureCoords textureCoords);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Wireframe 3D circle

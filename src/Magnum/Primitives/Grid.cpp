@@ -59,11 +59,11 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
     /* Allocate interleaved array for all vertex data */
     std::size_t stride = sizeof(Vector3);
     std::size_t attributeCount = 1;
-    if(flags & GridFlag::GenerateNormals) {
+    if(flags & GridFlag::Normals) {
         ++attributeCount;
         stride += sizeof(Vector3);
     }
-    if(flags & GridFlag::GenerateTextureCoords) {
+    if(flags & GridFlag::TextureCoordinates) {
         ++attributeCount;
         stride += sizeof(Vector2);
     }
@@ -88,7 +88,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
 
     /* Fill normals, if any. It's always the second attribute, right after
        positions. */
-    if(flags & GridFlag::GenerateNormals) {
+    if(flags & GridFlag::Normals) {
         Containers::StridedArrayView1D<Vector3> normals{vertexData,
             reinterpret_cast<Vector3*>(vertexData.begin() + attributeOffset),
             std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};
@@ -98,7 +98,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         for(auto&& i: normals) i = Vector3::zAxis(1.0f);
     }
 
-    if(flags & GridFlag::GenerateTextureCoords) {
+    if(flags & GridFlag::TextureCoordinates) {
         Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
             reinterpret_cast<Vector2*>(vertexData.begin() + attributeOffset),
             std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};

@@ -48,13 +48,13 @@ constexpr Trade::MeshAttributeData AttributeData2DTextureCoords[]{
 
 }
 
-Trade::MeshData circle2DSolid(const UnsignedInt segments, const CircleTextureCoords textureCoords) {
+Trade::MeshData circle2DSolid(const UnsignedInt segments, const Circle2DFlags flags) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): segments must be >= 3",
         (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
     /* Allocate interleaved array for all vertex data */
     Containers::Array<Trade::MeshAttributeData> attributes;
-    if(textureCoords == CircleTextureCoords::Generate)
+    if(flags & Circle2DFlag::TextureCoordinates)
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData2DTextureCoords);
     else
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData2D);
@@ -76,7 +76,7 @@ Trade::MeshData circle2DSolid(const UnsignedInt segments, const CircleTextureCoo
     }
 
     /* Fill texture coords, if any */
-    if(textureCoords == CircleTextureCoords::Generate) {
+    if(flags & Circle2DFlag::TextureCoordinates) {
         Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
             reinterpret_cast<Vector2*>(vertexData.begin() + sizeof(Vector2)),
             positions.size(), std::ptrdiff_t(stride)};
@@ -86,6 +86,15 @@ Trade::MeshData circle2DSolid(const UnsignedInt segments, const CircleTextureCoo
 
     return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes), UnsignedInt(positions.size())};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Trade::MeshData circle2DSolid(const UnsignedInt segments, const CircleTextureCoords textureCoords) {
+    return circle2DSolid(segments, textureCoords == CircleTextureCoords::Generate ?
+        Circle2DFlag::TextureCoordinates : Circle2DFlags{});
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): segments must be >= 3",
@@ -131,13 +140,13 @@ constexpr Trade::MeshAttributeData AttributeData3DWireframe[]{
 
 }
 
-Trade::MeshData circle3DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
+Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags flags) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
         (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
     /* Allocate interleaved array for all vertex data */
     Containers::Array<Trade::MeshAttributeData> attributes;
-    if(textureCoords == CircleTextureCoords::Generate)
+    if(flags & Circle3DFlag::TextureCoordinates)
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData3DTextureCoords);
     else
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData3D);
@@ -165,7 +174,7 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, CircleTextureCoords te
     for(Vector3& normal: normals) normal = Vector3::zAxis(1.0f);
 
     /* Fill texture coords, if any */
-    if(textureCoords == CircleTextureCoords::Generate) {
+    if(flags & Circle3DFlag::TextureCoordinates) {
         Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
             reinterpret_cast<Vector2*>(vertexData.begin() + 2*sizeof(Vector3)),
             positions.size(), std::ptrdiff_t(stride)};
@@ -175,6 +184,15 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, CircleTextureCoords te
 
     return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes), UnsignedInt(positions.size())};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Trade::MeshData circle3DSolid(const UnsignedInt segments, const CircleTextureCoords textureCoords) {
+    return circle3DSolid(segments, textureCoords == CircleTextureCoords::Generate ?
+        Circle3DFlag::TextureCoordinates : Circle3DFlags{});
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): segments must be >= 3",

@@ -197,7 +197,7 @@ template<class T> void VertexColorGLTest::renderDefaults2D() {
     setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
 
     Trade::MeshData circleData = Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate);
+        Primitives::Circle2DFlag::TextureCoordinates);
 
     /* All a single color */
     Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0xffffff_rgbf};
@@ -238,7 +238,7 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate);
+        Primitives::UVSphereFlag::TextureCoordinates);
 
     /* All a single color */
     Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0xffffff_rgbf};
@@ -271,7 +271,7 @@ template<class T> void VertexColorGLTest::render2D() {
     setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
 
     Trade::MeshData circleData = Primitives::circle2DSolid(32,
-        Primitives::CircleTextureCoords::Generate);
+        Primitives::Circle2DFlag::TextureCoordinates);
 
     /* Highlight a quarter */
     Containers::Array<T> colorData{Containers::DirectInit, circleData.vertexCount(), 0x9999ff_rgbf};
@@ -316,7 +316,7 @@ template<class T> void VertexColorGLTest::render3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate);
+        Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the middle rings */
     Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x9999ff_rgbf};

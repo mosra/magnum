@@ -36,12 +36,13 @@ namespace Magnum { namespace Primitives { namespace Implementation {
 
 class Spheroid {
     public:
-        enum class TextureCoords: UnsignedByte {
-            DontGenerate,
-            Generate
+        enum class Flag: UnsignedByte {
+            TextureCoordinates = 1 << 0
         };
 
-        Spheroid(UnsignedInt segments, TextureCoords textureCoords);
+        typedef Containers::EnumSet<Flag> Flags;
+
+        explicit Spheroid(UnsignedInt segments, Flags flags);
 
         void capVertex(Float y, Float normalY, Float textureCoordsV);
         void hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
@@ -55,7 +56,7 @@ class Spheroid {
 
     private:
         UnsignedInt _segments;
-        TextureCoords _textureCoords;
+        Flags _flags;
 
         Containers::Array<UnsignedInt> _indexData;
         Containers::Array<char> _vertexData;
@@ -63,6 +64,8 @@ class Spheroid {
         void append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords = {});
         void setLastVertexTextureCoords(const Vector2& textureCoords);
 };
+
+CORRADE_ENUMSET_OPERATORS(Spheroid::Flags)
 
 }}}
 

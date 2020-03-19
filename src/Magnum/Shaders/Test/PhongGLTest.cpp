@@ -629,7 +629,7 @@ void PhongGLTest::renderSinglePixelTextured() {
     setTestCaseDescription(data.name);
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     const Color4ub ambientData[]{ 0x330033_rgb };
     ImageView2D ambientImage{PixelFormat::RGBA8Unorm, Vector2i{1}, ambientData};
@@ -704,7 +704,7 @@ void PhongGLTest::renderTextured() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     Phong shader{data.flags, 2};
 
@@ -815,7 +815,7 @@ void PhongGLTest::renderTexturedNormal() {
         .setStorage(1, TextureFormatRGB, image->size())
         .setSubImage(0, {}, *image);
 
-    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid( Primitives::PlaneTextureCoords::Generate));
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid( Primitives::PlaneFlag::TextureCoordinates));
 
     /* Add hardcoded tangents */
     /** @todo remove once MeshData is sane */
@@ -887,7 +887,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate);
+        Primitives::UVSphereFlag::TextureCoordinates);
 
     /* Highlight the middle rings */
     Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
@@ -1079,7 +1079,7 @@ void PhongGLTest::renderAlpha() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     Phong shader{data.flags, 2};
     shader.setLightPositions({{-3.0f, -3.0f, 0.0f},
@@ -1218,7 +1218,7 @@ void PhongGLTest::renderZeroLights() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
-        Primitives::UVSphereTextureCoords::Generate));
+        Primitives::UVSphereFlag::TextureCoordinates));
 
     Phong shader{
         Phong::Flag::AmbientTexture|Phong::Flag::AlphaMask

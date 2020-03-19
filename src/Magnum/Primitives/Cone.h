@@ -30,6 +30,7 @@
  */
 
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Primitives/visibility.h"
@@ -42,8 +43,22 @@ namespace Magnum { namespace Primitives {
 
 @see @ref ConeFlags, @ref coneSolid()
 */
-enum class ConeFlag {
-    GenerateTextureCoords = 1 << 0, /**< Generate texture coordinates */
+enum class ConeFlag: UnsignedByte {
+    /**
+     * Generate texture coordinates
+     * @m_since_latest
+     */
+    TextureCoordinates = 1 << 0,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Generate texture coordinates
+     * @m_deprecated_since_latest Use @ref ConeFlag::TextureCoordinates
+     *      instead.
+     */
+    GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
+    #endif
+
     CapEnd = 1 << 1                 /**< Cap end */
 };
 

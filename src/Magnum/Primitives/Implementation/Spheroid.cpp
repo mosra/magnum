@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 
-Spheroid::Spheroid(UnsignedInt segments, TextureCoords textureCoords): _segments(segments), _textureCoords(textureCoords) {}
+Spheroid::Spheroid(UnsignedInt segments, Flags flags): _segments(segments), _flags{flags} {}
 
 namespace {
 
@@ -56,7 +56,7 @@ struct VertexTextureCoords {
     at the beginning since the growth is optimized for adding a single
     element */
 void Spheroid::append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords) {
-    if(_textureCoords == TextureCoords::Generate) {
+    if(_flags & Flag::TextureCoordinates) {
         const VertexTextureCoords v[]{{position, normal, textureCoords}};
         arrayAppend(_vertexData, Containers::arrayCast<const char>(Containers::arrayView(v)));
     } else {
@@ -72,7 +72,7 @@ void Spheroid::setLastVertexTextureCoords(const Vector2& textureCoords) {
 
 void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
     append({0.0f, y, 0.0f}, {0.0f, normalY, 0.0f});
-    if(_textureCoords == TextureCoords::Generate)
+    if(_flags & Flag::TextureCoordinates)
         setLastVertexTextureCoords({0.5f, textureCoordsV});
 }
 
@@ -91,12 +91,12 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
             append({x*segmentSinCos.first, centerY+y, z*segmentSinCos.second},
                    {x*segmentSinCos.first, y, z*segmentSinCos.second});
 
-            if(_textureCoords == TextureCoords::Generate)
+            if(_flags & Flag::TextureCoordinates)
                 setLastVertexTextureCoords({j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement});
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
-        if(_textureCoords == TextureCoords::Generate) {
+        if(_flags & Flag::TextureCoordinates) {
             /* This view will become dangling right after append() */
             auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
             append(typedVertices[typedVertices.size()-_segments].position,
@@ -118,12 +118,12 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
             append({base.x()*segmentSinCos.first, base.y(), base.x()*segmentSinCos.second},
                    {baseNormal.x()*segmentSinCos.first, baseNormal.y(), baseNormal.x()*segmentSinCos.second});
 
-            if(_textureCoords == TextureCoords::Generate)
+            if(_flags & Flag::TextureCoordinates)
                 setLastVertexTextureCoords({j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement});
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
-        if(_textureCoords == TextureCoords::Generate) {
+        if(_flags & Flag::TextureCoordinates) {
             /* This view will become dangling right after append() */
             auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
             append(typedVertices[typedVertices.size()-_segments].position,
@@ -142,7 +142,7 @@ void Spheroid::bottomFaceRing() {
             0u,
 
             /* Top right vertex */
-            (j != _segments-1 || _textureCoords == TextureCoords::Generate) ?
+            (j != _segments-1 || _flags & Flag::TextureCoordinates) ?
             j+2 : 1,
 
             /* Top left vertex */
@@ -152,12 +152,12 @@ void Spheroid::bottomFaceRing() {
 }
 
 void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
-    const UnsignedInt vertexSegments = _segments + (_textureCoords == TextureCoords::Generate ? 1 : 0);
+    const UnsignedInt vertexSegments = _segments + (_flags & Flag::TextureCoordinates ? 1 : 0);
 
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != _segments; ++j) {
             const UnsignedInt bottomLeft = i*vertexSegments+j+offset;
-            const UnsignedInt bottomRight = ((j != _segments-1 || _textureCoords == TextureCoords::Generate) ?
+            const UnsignedInt bottomRight = ((j != _segments-1 || _flags & Flag::TextureCoordinates) ?
                 i*vertexSegments+j+1+offset : i*_segments+offset);
             const UnsignedInt topLeft = bottomLeft+vertexSegments;
             const UnsignedInt topRight = bottomRight+vertexSegments;
@@ -175,10 +175,10 @@ void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
 }
 
 void Spheroid::topFaceRing() {
-    const UnsignedInt vertexSegments = _segments + (_textureCoords == TextureCoords::Generate ? 1 : 0);
+    const UnsignedInt vertexSegments = _segments + (_flags & Flag::TextureCoordinates ? 1 : 0);
 
     UnsignedInt vertexCount;
-    if(_textureCoords == TextureCoords::Generate)
+    if(_flags & Flag::TextureCoordinates)
         vertexCount = _vertexData.size()/sizeof(VertexTextureCoords);
     else
         vertexCount = _vertexData.size()/sizeof(Vertex);
@@ -189,7 +189,7 @@ void Spheroid::topFaceRing() {
             vertexCount - vertexSegments + j - 1,
 
             /* Bottom right vertex */
-            (j != _segments-1 || _textureCoords == TextureCoords::Generate) ?
+            (j != _segments-1 || _flags & Flag::TextureCoordinates) ?
             vertexCount - vertexSegments + j : vertexCount - _segments - 1,
 
             /* Top vertex */
@@ -206,12 +206,12 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
         const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
         append({segmentSinCos.first, y, segmentSinCos.second}, normal);
 
-        if(_textureCoords == TextureCoords::Generate)
+        if(_flags & Flag::TextureCoordinates)
             setLastVertexTextureCoords({i*1.0f/_segments, textureCoordsV});
     }
 
     /* Duplicate first segment in the ring for additional vertex for texture coordinate */
-    if(_textureCoords == TextureCoords::Generate) {
+    if(_flags & Flag::TextureCoordinates) {
         /* This view will become dangling right after append() */
         auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
         append(typedVertices[typedVertices.size()-_segments].position,
@@ -244,7 +244,7 @@ Trade::MeshData Spheroid::finalize() {
     Trade::MeshIndexData indices{_indexData};
 
     Containers::Array<Trade::MeshAttributeData> attributes;
-    if(_textureCoords == TextureCoords::Generate)
+    if(_flags & Flag::TextureCoordinates)
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeDataTextureCoords);
     else
         attributes = Trade::meshAttributeDataNonOwningArray(AttributeData);

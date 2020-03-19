@@ -38,7 +38,7 @@ Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, c
         "Primitives::coneSolid(): at least one ring and three segments expected",
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
-    Implementation::Spheroid cone{segments, flags & ConeFlag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate};
+    Implementation::Spheroid cone{segments, Implementation::Spheroid::Flag(UnsignedByte(flags))};
 
     const Float length = 2.0f*halfLength;
     const Float textureCoordsV = flags & ConeFlag::CapEnd ? 1.0f/(length + 1.0f) : 0.0f;
@@ -54,7 +54,7 @@ Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, c
 
     /* Faces. Account for the extra vertices for caps and texture coords. */
     if(flags & ConeFlag::CapEnd) cone.bottomFaceRing();
-    if(flags >= (ConeFlag::CapEnd|ConeFlag::GenerateTextureCoords))
+    if(flags >= (ConeFlag::CapEnd|ConeFlag::TextureCoordinates))
         cone.faceRings(rings, 2 + segments);
     else if(flags & ConeFlag::CapEnd)
         cone.faceRings(rings, 1 + segments);

@@ -44,14 +44,34 @@ namespace Magnum { namespace Primitives {
 @see @ref GridFlags, @ref grid3DSolid()
 */
 enum class GridFlag: UnsignedByte {
-    /** Generate texture coordinates with origin in bottom left corner. */
-    GenerateTextureCoords = 1 << 0,
+    /**
+     * Generate texture coordinates with origin in the bottom left corner
+     * @m_since_latest
+     */
+    TextureCoordinates = 1 << 0,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Generate texture coordinates with origin in the bottom left corner
+     * @m_deprecated_since_latest Use @ref GridFlag::TextureCoordinates
+     *      instead.
+     */
+    GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
+    #endif
 
     /**
-     * Generate normals inn positive Z direction. Disable if you'd be
+     * Generate normals in positive Z direction. Disable if you'd be
      * generating your own normals anyway (for example based on a heightmap).
      */
-    GenerateNormals = 1 << 1
+    Normals = 1 << 1,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Generate normals in positive Z direction.
+     * @m_deprecated_since_latest Use @ref GridFlag::Normals instead.
+     */
+    GenerateNormals CORRADE_DEPRECATED_ENUM("use Normals instead") = Normals
+    #endif
 };
 
 /**
@@ -81,7 +101,7 @@ cells horizontally and 4 vertically. In particular, this is different from the
 `subdivisions` parameter in @ref icosphereSolid().
 @see @ref grid3DWireframe()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData grid3DSolid(const Vector2i& subdivisions, GridFlags flags = GridFlag::GenerateNormals);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData grid3DSolid(const Vector2i& subdivisions, GridFlags flags = GridFlag::Normals);
 
 /**
 @brief Wireframe 3D grid

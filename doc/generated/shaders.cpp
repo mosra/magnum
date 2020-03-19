@@ -262,7 +262,7 @@ std::string ShaderVisualizer::vector() {
         .setColor(BaseColor)
         .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({})
-        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate)));
+        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates)));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
@@ -293,7 +293,7 @@ std::string ShaderVisualizer::distanceFieldVector() {
         .setOutlineRange(0.6f, 0.4f)
         .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({})
-        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate)));
+        .draw(MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates)));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 

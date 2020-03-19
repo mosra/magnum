@@ -89,7 +89,7 @@ void UVSphereTest::solidWithoutTextureCoords() {
 }
 
 void UVSphereTest::solidWithTextureCoords() {
-    Trade::MeshData sphere = uvSphereSolid(3, 3, UVSphereTextureCoords::Generate);
+    Trade::MeshData sphere = uvSphereSolid(3, 3, UVSphereFlag::TextureCoordinates);
 
     CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(sphere.isIndexed());

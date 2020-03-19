@@ -29,25 +29,52 @@
  * @brief Function @ref Magnum::Primitives::planeSolid(), @ref Magnum::Primitives::planeWireframe()
  */
 
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Primitives/visibility.h"
 
 namespace Magnum { namespace Primitives {
 
 /**
-@brief Whether to generate plane texture coordinates
+@brief Plane flag
+@m_since_latest
+
+@see @ref PlaneFlags, @ref planeSolid()
+*/
+enum class PlaneFlag: UnsignedByte {
+    /** Generate texture coordinates with origin in bottom left corner */
+    TextureCoordinates = 1 << 0
+};
+
+/**
+@brief Plane flags
+@m_since_latest
 
 @see @ref planeSolid()
 */
-enum class PlaneTextureCoords: UnsignedByte {
+typedef Containers::EnumSet<PlaneFlag> PlaneFlags;
+
+CORRADE_ENUMSET_OPERATORS(PlaneFlags)
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Whether to generate plane texture coordinates
+@m_deprecated_since_latest Use @ref PlaneFlags instead.
+*/
+enum class CORRADE_DEPRECATED_ENUM("use PlaneFlags instead") PlaneTextureCoords: UnsignedByte {
     DontGenerate,       /**< Don't generate texture coordinates */
 
     /** Generate texture coordinates with origin in bottom left corner. */
     Generate
 };
+#endif
 
 /**
 @brief Solid 3D plane
+@param flags        Flags
+@m_since_latest
 
 2x2 plane. Non-indexed @ref MeshPrimitive::TriangleStrip on the XY plane with
 @ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3 normals in
@@ -59,7 +86,17 @@ memory.
 @see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D(),
     @ref MeshTools::generateTriangleStripIndices()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneFlags flags = {});
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief @copybrief planeSolid(PlaneFlags)
+@m_deprecated_since_latest Use @ref planeSolid(PlaneFlags) instead.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH
+MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use planeSolid(PlaneFlags) instead") Trade::MeshData planeSolid(PlaneTextureCoords textureCoords);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /**
 @brief Wireframe 3D plane
