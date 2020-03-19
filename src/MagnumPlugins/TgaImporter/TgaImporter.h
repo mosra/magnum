@@ -57,8 +57,9 @@ namespace Magnum { namespace Trade {
 /**
 @brief TGA importer plugin
 
-Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) uncompressed BGR,
-BGRA or grayscale images with 8 bits per channel.
+Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) BGR, BGRA or
+grayscale images with 8 bits per channel. RLE compression is supported,
+paletted images are not.
 
 The images are imported with @ref PixelFormat::RGB8Unorm,
 @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::R8Unorm, respectively. Images

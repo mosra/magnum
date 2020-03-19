@@ -92,7 +92,10 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     }
 
     /* Color */
-    if(header.imageType == 2) {
+    bool rle = false;
+    if(header.imageType == 2 || header.imageType == 10) {
+        /* Reference: http://www.paulbourke.net/dataformats/tga/ */
+        rle = header.imageType == 10;
         switch(header.bpp) {
             case 24:
                 format = PixelFormat::RGB8Unorm;
@@ -106,27 +109,79 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         }
 
     /* Grayscale */
-    } else if(header.imageType == 3) {
+    } else if(header.imageType == 3 || header.imageType == 11) {
+        /* I only discovered this by accident when using ImageMagick's
+            mogrify -compression RunLengthEncoded file.tga
+           as far as I could find, it's not documented in any TGA specs */
+        rle = header.imageType == 11;
         format = PixelFormat::R8Unorm;
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
             return Containers::NullOpt;
         }
 
-    /* Compressed files */
+    /* Other? */
     } else {
-        Error() << "Trade::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
+        Error() << "Trade::TgaImporter::image2D(): unsupported image type:" << header.imageType;
         return Containers::NullOpt;
     }
 
-    std::size_t outputSize = std::size_t(size.product())*header.bpp/8;
-    if(outputSize + sizeof(Implementation::TgaHeader) > _in.size()) {
-        Error{} << "Trade::TgaImporter::image2D(): the file is too short: got" << _in.size() << "bytes but expected" << outputSize + sizeof(Implementation::TgaHeader);
-        return Containers::NullOpt;
-    }
+    const std::size_t pixelSize = header.bpp/8;
+    const std::size_t outputSize = std::size_t(size.product())*pixelSize;
 
+    /* Copy data directly if not RLE */
     Containers::Array<char> data{outputSize};
-    Utility::copy(_in.suffix(sizeof(Implementation::TgaHeader)), data);
+    Containers::ArrayView<const char> srcPixels = _in.suffix(sizeof(Implementation::TgaHeader));
+    if(!rle) {
+        /* Files that are larger are allowed in this case (but not for RLE) */
+        if(srcPixels.size() < outputSize) {
+            Error{} << "Trade::TgaImporter::image2D(): the file is too short: got" << _in.size() << "bytes but expected" << outputSize + sizeof(Implementation::TgaHeader);
+            return Containers::NullOpt;
+        }
+
+        Utility::copy(srcPixels.prefix(data.size()), data);
+
+    /* Otherwise decode */
+    } else {
+        Containers::ArrayView<char> dstPixels = data;
+        while(!srcPixels.empty()) {
+            /* Reference: http://www.paulbourke.net/dataformats/tga/ */
+
+            /* 8-bit RLE header. First bit denotes the operation, last 7 bits
+               denotes operation count minus 1. */
+            const UnsignedByte rleHeader = srcPixels[0];
+            const std::size_t count = (rleHeader & ~0x80) + 1;
+
+            /* First bit set to 1 means copying the following pixel given
+               number of times, 0 means copying the following number of
+               pixels once. We represent that operation with a stride. */
+            const std::size_t dataSize = (rleHeader & 0x80 ? 1 : count)*pixelSize;
+            const std::ptrdiff_t stride = rleHeader & 0x80 ? 0 : pixelSize;
+
+            /* Check bounds */
+            if(1 + dataSize > srcPixels.size()) {
+                Error{} << "Trade::TgaImporter::image2D(): RLE file too short at pixel" << (dstPixels.begin() - data.begin())/pixelSize;
+                return Containers::NullOpt;
+            }
+            if(count*pixelSize > dstPixels.size()) {
+                Error{} << "Trade::TgaImporter::image2D(): RLE data larger than advertised" << size << "pixels at byte" << (srcPixels.data() - _in.data());
+                return Containers::NullOpt;
+            }
+
+            /* Copy the data */
+            Containers::StridedArrayView2D<const char> src{
+                srcPixels.slice(1, 1 + dataSize),
+                {count, pixelSize}, {stride, 1}};
+            Containers::StridedArrayView2D<char> dst{
+                dstPixels.prefix(count*pixelSize),
+                {count, pixelSize}};
+            Utility::copy(src, dst);
+
+            /* Update views for the next round */
+            srcPixels = srcPixels.suffix(1 + dataSize);
+            dstPixels = dstPixels.suffix(count*pixelSize);
+        }
+    }
 
     /* Adjust pixel storage if row size is not four byte aligned */
     PixelStorage storage;

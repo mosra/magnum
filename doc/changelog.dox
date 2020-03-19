@@ -236,6 +236,7 @@ See also:
 -   @ref Trade::PhongMaterialData now supports both color and texture instead
     of just one or the other, can reference normal textures as well and
     specfify texture coordinate transform
+-   RLE compression support in @ref Trade::TgaImporter "TgaImporter"
 
 @subsubsection changelog-latest-new-vk Vk library
 
