@@ -101,9 +101,9 @@ constexpr struct {
     const char* message;
 } ShortData[] {
     {"short header", Containers::arrayView(Color24).prefix(17),
-        "the file is too short: 17 bytes"},
+        "file too short, expected at least 18 bytes but got 17"},
     {"short data", Containers::arrayView(Color24).except(1),
-        "the file is too short: got 35 bytes but expected 36"},
+        "file too short, expected 36 bytes but got 35"},
     {"short RLE data", Containers::arrayView(Color24Rle).except(1),
         "RLE file too short at pixel 3"},
     {"short RLE raw data", Containers::arrayView(Color24Rle).except(5),

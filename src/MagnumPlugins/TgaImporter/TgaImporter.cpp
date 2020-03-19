@@ -73,8 +73,8 @@ UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
 Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedInt) {
     /* Check if the file is long enough */
-    if(_in.size() < std::streamoff(sizeof(Implementation::TgaHeader))) {
-        Error() << "Trade::TgaImporter::image2D(): the file is too short:" << _in.size() << "bytes";
+    if(_in.size() < sizeof(Implementation::TgaHeader)) {
+        Error{} << "Trade::TgaImporter::image2D(): file too short, expected at least" << sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();
         return Containers::NullOpt;
     }
 
@@ -135,7 +135,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     if(!rle) {
         /* Files that are larger are allowed in this case (but not for RLE) */
         if(srcPixels.size() < outputSize) {
-            Error{} << "Trade::TgaImporter::image2D(): the file is too short: got" << _in.size() << "bytes but expected" << outputSize + sizeof(Implementation::TgaHeader);
+            Error{} << "Trade::TgaImporter::image2D(): file too short, expected" << outputSize + sizeof(Implementation::TgaHeader) << "bytes but got" << _in.size();
             return Containers::NullOpt;
         }
 
