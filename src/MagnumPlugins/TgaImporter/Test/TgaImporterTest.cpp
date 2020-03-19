@@ -301,6 +301,11 @@ void TgaImporterTest::grayscale8() {
         3, 4,
         5, 6
     };
+    const char pixels[] {
+        1, 2,
+        3, 4,
+        5, 6
+    };
     CORRADE_VERIFY(importer->openData(data));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
@@ -308,7 +313,7 @@ void TgaImporterTest::grayscale8() {
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(data).suffix(18),
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
 }
 
