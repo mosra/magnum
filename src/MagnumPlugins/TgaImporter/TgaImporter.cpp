@@ -25,11 +25,11 @@
 
 #include "TgaImporter.h"
 
-#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/PixelFormat.h"
@@ -126,7 +126,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
     }
 
     Containers::Array<char> data{outputSize};
-    std::copy_n(_in + sizeof(Implementation::TgaHeader), outputSize, data.begin());
+    Utility::copy(_in.suffix(sizeof(Implementation::TgaHeader)), data);
 
     /* Adjust pixel storage if row size is not four byte aligned */
     PixelStorage storage;
@@ -134,13 +134,11 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         storage.setAlignment(1);
 
     if(format == PixelFormat::RGB8Unorm) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.data());
-        std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r'>(pixel); });
+        for(Vector3ub& pixel: Containers::arrayCast<Vector3ub>(data))
+            pixel = Math::gather<'b', 'g', 'r'>(pixel);
     } else if(format == PixelFormat::RGBA8Unorm) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.data());
-        std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r', 'a'>(pixel); });
+        for(Vector4ub& pixel: Containers::arrayCast<Vector4ub>(data))
+            pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }
 
     return ImageData2D{storage, format, size, std::move(data)};
