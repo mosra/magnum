@@ -172,10 +172,10 @@ void TgaImporterTest::paletted() {
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
-    std::ostringstream debug;
-    Error redirectError{&debug};
+    std::ostringstream out;
+    Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
 }
 
 void TgaImporterTest::invalid() {
@@ -183,10 +183,10 @@ void TgaImporterTest::invalid() {
     const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
-    std::ostringstream debug;
-    Error redirectError{&debug};
+    std::ostringstream out;
+    Error redirectError{&out};
     CORRADE_VERIFY(!importer->image2D(0));
-    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported image type: 9\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): unsupported image type: 9\n");
 }
 
 void TgaImporterTest::unsupportedBits() {
