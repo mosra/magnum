@@ -50,6 +50,7 @@
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Primitives/Circle.h"
 #include "Magnum/Primitives/Icosphere.h"
+#include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -89,6 +90,9 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void render3D();
     void renderWireframe2D();
     void renderWireframe3D();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void renderWireframe3DPerspective();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -209,6 +213,12 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         Containers::arraySize(WireframeData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    addTests({&MeshVisualizerGLTest::renderWireframe3DPerspective},
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -812,6 +822,49 @@ void MeshVisualizerGLTest::renderWireframe3D() {
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void MeshVisualizerGLTest::renderWireframe3DPerspective() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
+
+    MeshVisualizer3D{MeshVisualizer3D::Flag::Wireframe}
+        .setWireframeWidth(8.0f)
+        .setWireframeColor(0xff0000_rgbf)
+        .setViewportSize({80, 80})
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation({0.0f, 0.5f, -3.5f})*
+            Matrix4::rotationX(-60.0_degf)*
+            Matrix4::scaling(Vector3::yScale(2.0f)))
+        .draw(plane);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_EXPECT_FAIL_IF(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>(),
+        "GL_NV_shader_noperspective_interpolation not available.");
+    #endif
+
+    /* Slight rasterization differences on AMD. */
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/wireframe-perspective.tga"),
+        (DebugTools::CompareImageToFile{_manager, 0.667f, 0.002f}));
+}
+#endif
 
 }}}}
 
