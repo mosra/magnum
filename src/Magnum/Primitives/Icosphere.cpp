@@ -25,12 +25,11 @@
 
 #include "Icosphere.h"
 
-#include <Corrade/Containers/GrowableArray.h>
-
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Subdivide.h"
+#include "Magnum/Trade/ArrayAllocator.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
@@ -90,7 +89,8 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
         Vector3 normal;
     };
     Containers::Array<char> vertexData;
-    arrayResize(vertexData, Containers::NoInit, sizeof(Vertex)*vertexCount);
+    Containers::arrayResize<Trade::ArrayAllocator>(vertexData,
+        Containers::NoInit, sizeof(Vertex)*vertexCount);
 
     /* Build up the subdivided positions */
     {
@@ -108,7 +108,8 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
         }
 
         /** @todo i need arrayShrinkAndGiveUpMemoryIfItDoesntCauseRealloc() */
-        arrayResize(vertexData, MeshTools::removeDuplicatesIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(positions))*sizeof(Vertex));
+        Containers::arrayResize<Trade::ArrayAllocator>(vertexData,
+            MeshTools::removeDuplicatesIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(positions))*sizeof(Vertex));
     }
 
     /* Build up the views again with correct size, fill the normals */

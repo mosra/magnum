@@ -31,6 +31,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/ArrayAllocator.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 
@@ -58,10 +59,12 @@ struct VertexTextureCoords {
 void Spheroid::append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords) {
     if(_flags & Flag::TextureCoordinates) {
         const VertexTextureCoords v[]{{position, normal, textureCoords}};
-        arrayAppend(_vertexData, Containers::arrayCast<const char>(Containers::arrayView(v)));
+        Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
+            Containers::arrayCast<const char>(Containers::arrayView(v)));
     } else {
         const Vertex v[]{{position, normal}};
-        arrayAppend(_vertexData, Containers::arrayCast<const char>(Containers::arrayView(v)));
+        Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
+            Containers::arrayCast<const char>(Containers::arrayView(v)));
     }
 }
 
@@ -137,7 +140,7 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
 
 void Spheroid::bottomFaceRing() {
     for(UnsignedInt j = 0; j != _segments; ++j) {
-        arrayAppend(_indexData, {
+        Containers::arrayAppend<Trade::ArrayAllocator>(_indexData, {
             /* Bottom vertex */
             0u,
 
@@ -162,7 +165,7 @@ void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
             const UnsignedInt topLeft = bottomLeft+vertexSegments;
             const UnsignedInt topRight = bottomRight+vertexSegments;
 
-            arrayAppend(_indexData, {
+            Containers::arrayAppend<Trade::ArrayAllocator>(_indexData, {
                 bottomLeft,
                 bottomRight,
                 topRight,
@@ -184,7 +187,7 @@ void Spheroid::topFaceRing() {
         vertexCount = _vertexData.size()/sizeof(Vertex);
 
     for(UnsignedInt j = 0; j != _segments; ++j) {
-        arrayAppend(_indexData, {
+        Containers::arrayAppend<Trade::ArrayAllocator>(_indexData, {
             /* Bottom left vertex */
             vertexCount - vertexSegments + j - 1,
 
@@ -251,8 +254,8 @@ Trade::MeshData Spheroid::finalize() {
     const UnsignedInt vertexCount = _vertexData.size()/attributes[0].stride();
 
     return Trade::MeshData{MeshPrimitive::Triangles,
-        Containers::arrayAllocatorCast<char>(std::move(_indexData)), indices,
-        std::move(_vertexData), std::move(attributes), vertexCount};
+        Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(_indexData)),
+        indices, std::move(_vertexData), std::move(attributes), vertexCount};
 }
 
 }}}
