@@ -27,6 +27,10 @@
 
 #include "Magnum/Types.h"
 
+/* Used by both TgaImporter and TgaImageConverter, which is why it isn't
+   directly inside TgaImporter.cpp. OTOH it doesn't need to be exposed
+   publicly, which is why it has no docblocks. */
+
 namespace Magnum { namespace Trade { namespace Implementation {
 
 #pragma pack(1)
