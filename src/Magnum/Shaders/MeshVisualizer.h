@@ -59,11 +59,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
 
         MAGNUM_SHADERS_LOCAL GL::Version setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const;
 
-        MeshVisualizerBase& setViewportSize(const Vector2& size);
         MeshVisualizerBase& setColor(const Color4& color);
         MeshVisualizerBase& setWireframeColor(const Color4& color);
         MeshVisualizerBase& setWireframeWidth(Float width);
-        MeshVisualizerBase& setSmoothness(Float smoothness);
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -205,9 +203,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          * shaders are used, otherwise it does nothing. Initial value is a zero
          * vector.
          */
-        MeshVisualizer2D& setViewportSize(const Vector2& size) {
-            return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setViewportSize(size));
-        }
+        MeshVisualizer2D& setViewportSize(const Vector2& size);
 
         /**
          * @brief Set base object color
@@ -250,9 +246,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          * initial value is @cpp 2.0f @ce. Expects that @ref Flag::Wireframe is
          * enabled.
          */
-        MeshVisualizer2D& setSmoothness(Float smoothness) {
-            return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setSmoothness(smoothness));
-        }
+        MeshVisualizer2D& setSmoothness(Float smoothness);
 
     private:
         Int _transformationProjectionMatrixUniform{0};
@@ -290,7 +284,34 @@ have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also the
     wireframe rendering without geometry shaders.
 
 If using geometry shaders on OpenGL ES, @gl_extension{NV,shader_noperspective_interpolation}
-is optionally used for improving line appearance.
+is optionally used for improving line appearance. On desktop OpenGL this is
+done implicitly.
+
+@section Shaders-MeshVisualizer-tbn Tangent space visualization
+
+On platforms with geometry shaders (desktop GL, OpenGL ES 3.2), the shader is
+able to visualize tangents, bitangent and normal direction via colored lines
+coming out of vertices (red, green and blue for tangent, bitangent and normal, respectively). This can be enabled together with wireframe visualization,
+however note that when both are enabled, the lines are not antialiased to avoid
+depth ordering artifacts.
+
+For tangents and normals, you need to provide the @ref Tangent and @ref Normal
+attributes and enable @ref Flag::TangentDirection and
+@ref Flag::NormalDirection, respectively. If any of the attributes isn't
+present, its data are implicitly zero and thus the direction isn't shown ---
+which means you don't need to worry about having two active variants of the
+shader and switching between either depending on whether tangents are present
+or not.
+
+For bitangents however, there are two possible representations --- the more
+efficient one is via a fourth component in the tangent attribute that
+indicates tangent space handedness, in which case you'll be using the
+@ref Tangent4 attribute instead of @ref Tangent, and enable
+@ref Flag::BitangentFromTangentDirection. The other, more obvious but less
+efficient representation, is a dedicated @ref Bitangent attribute (in which
+case you'll enable @ref Flag::BitangentDirection). Note that these two are
+mutually exclusive, so you need to choose either of them based on what given
+mesh contains.
 
 @section Shaders-MeshVisualizer-usage Example usage
 
@@ -303,6 +324,18 @@ Common mesh setup:
 Common rendering setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-geom2
+
+@subsection Shaders-MeshVisualizer-usage-wireframe-tbn Tangent space visualization with a geometry shader (desktop GL, OpenGL ES 3.2)
+
+Setup for a mesh that contains four-component tangents
+(@ref Shaders-MeshVisualizer-tbn "see above" if you have a dedicated bitangent
+attribute instead):
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-tbn1
+
+Rendering setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-tbn2
 
 @subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without a geometry shader
 
@@ -335,6 +368,47 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          * @ref Magnum::Vector3 "Vector3".
          */
         typedef typename Generic3D::Position Position;
+
+        /**
+         * @brief Tangent direction
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * attribute. Used only if @ref Flag::TangentDirection is enabled.
+         */
+        typedef typename Generic3D::Tangent Tangent;
+
+        /**
+         * @brief Tangent direction with a bitangent sign
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent
+         * attribute. Used only if @ref Flag::TangentDirection or
+         * @ref Flag::BitangentFromTangentDirection is enabled.
+         */
+        typedef typename Generic3D::Tangent4 Tangent4;
+
+        /**
+         * @brief Bitangent direction
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent4
+         * attribute. Used only if @ref Flag::BitangentDirection is enabled.
+         */
+        typedef typename Generic3D::Bitangent Bitangent;
+
+        /**
+         * @brief Normal direction
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3". Used only if
+         * @ref Flag::NormalDirection is enabled.
+         */
+        typedef typename Generic3D::Normal Normal;
 
         /**
          * @brief Vertex index
@@ -384,8 +458,78 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * enabled, you might need to provide also the @ref VertexIndex
              * attribute in the mesh. In OpenGL ES 2.0 enabled alongside
              * @ref Flag::Wireframe.
+             *
+             * Mutually exclusive with @ref Flag::TangentDirection,
+             * @ref Flag::BitangentFromTangentDirection,
+             * @ref Flag::BitangentDirection and @ref Flag::NormalDirection ---
+             * those need a geometry shader always.
              */
-            NoGeometryShader = 1 << 1
+            NoGeometryShader = 1 << 1,
+
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            /**
+             * Visualize tangent direction with red lines pointing out of
+             * vertices. You need to provide the @ref Tangent or @ref Tangent4
+             * attribute in the mesh. Mutually exclusive with
+             * @ref Flag::NoGeometryShader (as this needs a geometry shader
+             * always).
+             * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
+             * @m_since_latest
+             */
+            TangentDirection = 1 << 2,
+
+            /**
+             * Visualize bitangent direction with green lines pointing out of
+             * vertices. You need to provide both @ref Normal and @ref Tangent4
+             * attributes in the mesh, alternatively you can provide the
+             * @ref Bitangent attribute and enable
+             * @ref Flag::BitangentDirection instead. Mutually exclusive with
+             * @ref Flag::NoGeometryShader (as this needs a geometry shader
+             * always).
+             * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
+             * @m_since_latest
+             */
+            BitangentFromTangentDirection = 1 << 3,
+
+            /**
+             * Visualize bitangent direction with green lines pointing out of
+             * vertices. You need to provide the @ref Bitangent attribute in
+             * the mesh, alternatively you can provide both @ref Normal and
+             * @ref Tangent4 attributes and enable
+             * @ref Flag::BitangentFromTangentDirection instead. Mutually
+             * exclusive with @ref Flag::NoGeometryShader (as this needs a
+             * geometry shader always).
+             * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
+             * @m_since_latest
+             */
+            BitangentDirection = 1 << 4,
+
+            /**
+             * Visualize normal direction with blue lines pointing out of
+             * vertices. You need to provide the @ref Normal attribute in the
+             * mesh. Mutually exclusive with @ref Flag::NoGeometryShader (as
+             * this needs a geometry shader always).
+             * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
+             * @m_since_latest
+             */
+            NormalDirection = 1 << 5
+            #endif
         };
 
         /** @brief Flags */
@@ -428,24 +572,67 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
             return reinterpret_cast<const Flags&>(Implementation::MeshVisualizerBase::_flags);
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set transformation and projection matrix
+         * @m_deprecated_since_latest Use @ref setTransformationMatrix() and
+         *      @ref setProjectionMatrix() instead.
+         */
+        CORRADE_DEPRECATED("use setTransformationMatrix() and setProjectionMatrix() instead") MeshVisualizer3D& setTransformationProjectionMatrix(const Matrix4& matrix) {
+            /* Keep projection at identity, which should still work for
+               wireframe (but of course not for TBN visualization) */
+            return setTransformationMatrix(matrix);
+        }
+        #endif
+
+        /**
+         * @brief Set transformation matrix
          * @return Reference to self (for method chaining)
          *
          * Initial value is an identity matrix.
          */
-        MeshVisualizer3D& setTransformationProjectionMatrix(const Matrix4& matrix);
+        MeshVisualizer3D& setTransformationMatrix(const Matrix4& matrix);
+
+        /**
+         * @brief Set projection matrix
+         * @return Reference to self (for method chaining)
+         *
+         * Initial value is an identity matrix. (i.e., an orthographic
+         * projection of the default @f$ [ -\boldsymbol{1} ; \boldsymbol{1} ] @f$
+         * cube).
+         */
+        MeshVisualizer3D& setProjectionMatrix(const Matrix4& matrix);
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Set transformation matrix
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Expects that @ref Flag::TangentDirection,
+         * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
+         * enabled. The matrix doesn't need to be normalized, as
+         * renormalization is done per-fragment anyway.
+         * Initial value is an identity matrix.
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        MeshVisualizer3D& setNormalMatrix(const Matrix3x3& matrix);
+        #endif
 
         /**
          * @brief Set viewport size
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::Wireframe is enabled and geometry
-         * shaders are used. Initial value is a zero vector.
+         * shaders are used; or if @ref Flag::TangentDirection,
+         * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
+         * enabled, otherwise it does nothing. Initial value is a zero vector.
          */
-        MeshVisualizer3D& setViewportSize(const Vector2& size) {
-            return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setViewportSize(size));
-        }
+        MeshVisualizer3D& setViewportSize(const Vector2& size);
 
         /**
          * @brief Set base object color
@@ -472,27 +659,74 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          * @brief Set wireframe width
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 1.0f @ce. Has effect only if
-         * @ref Flag::Wireframe is enabled.
+         * Value is in screen space (depending on @ref setViewportSize()),
+         * initial value is @cpp 1.0f @ce. Expects that @ref Flag::Wireframe is
+         * enabled.
          */
         MeshVisualizer3D& setWireframeWidth(Float width) {
             return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setWireframeWidth(width));
         }
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Set line width
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Value is in screen space (depending on @ref setViewportSize()),
+         * initial value is @cpp 1.0f @ce. Expects that
+         * @ref Flag::TangentDirection,
+         * @ref Flag::BitangentFromTangentDirection,
+         * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
+         * enabled.
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        MeshVisualizer3D& setLineWidth(Float width);
+
+        /**
+         * @brief Set line length
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Value is in object space, initial value is @cpp 1.0f @ce. Expects
+         * that @ref Flag::TangentDirection,
+         * @ref Flag::BitangentFromTangentDirection,
+         * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
+         * enabled.
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        MeshVisualizer3D& setLineLength(Float length);
+        #endif
 
         /**
          * @brief Set line smoothness
          * @return Reference to self (for method chaining)
          *
          * Value is in screen space (depending on @ref setViewportSize()),
-         * initial value is @cpp 2.0f @ce. Expects that @ref Flag::Wireframe
-         * is enabled.
+         * initial value is @cpp 2.0f @ce. Expects that @ref Flag::Wireframe,
+         * @ref Flag::TangentDirection,
+         * @ref Flag::BitangentFromTangentDirection,
+         * @ref Flag::BitangentDirection or @ref Flag::NormalDirection is
+         * enabled.
          */
-        MeshVisualizer3D& setSmoothness(Float smoothness) {
-            return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setSmoothness(smoothness));
-        }
+        MeshVisualizer3D& setSmoothness(Float smoothness);
 
     private:
-        Int _transformationProjectionMatrixUniform{0};
+        Int _transformationMatrixUniform{0},
+            _projectionMatrixUniform{6};
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        Int _normalMatrixUniform{7},
+            _lineWidthUniform{8},
+            _lineLengthUniform{9};
+        #endif
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED

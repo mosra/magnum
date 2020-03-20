@@ -186,7 +186,7 @@ std::string ShaderVisualizer::meshVisualizer2D() {
 }
 
 std::string ShaderVisualizer::meshVisualizer3D() {
-    const Matrix4 projection = Projection*Transformation*
+    const Matrix4 transformation = Transformation*
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
@@ -195,7 +195,8 @@ std::string ShaderVisualizer::meshVisualizer3D() {
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
         .setViewportSize(Vector2{ImageSize})
-        .setTransformationProjectionMatrix(projection)
+        .setTransformationMatrix(transformation)
+        .setProjectionMatrix(Projection)
         .draw(MeshTools::compile(Primitives::icosphereSolid(1)));
 
     return "meshvisualizer3d.png";

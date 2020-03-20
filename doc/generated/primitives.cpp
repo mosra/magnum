@@ -312,7 +312,8 @@ int PrimitiveVisualizer::exec() {
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
         .setViewportSize(Vector2{ImageSize})
-        .setTransformationProjectionMatrix(Projection3D*Transformation3D);
+        .setTransformationMatrix(Transformation3D)
+        .setProjectionMatrix(Projection3D);
 
     {
         Shaders::Phong phong;

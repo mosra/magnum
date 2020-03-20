@@ -68,7 +68,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void constructWireframeGeometryShader2D();
-    void constructWireframeGeometryShader3D();
+    void constructGeometryShader3D();
+
+    void construct3DGeometryShaderDisabledButNeeded();
+    void construct3DConflictingBitangentInput();
     #endif
 
     void constructMove2D();
@@ -76,6 +79,9 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     void setWireframeNotEnabled2D();
     void setWireframeNotEnabled3D();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void setTangentBitangentNormalNotEnabled3D();
+    #endif
 
     void renderSetup();
     void renderTeardown();
@@ -85,6 +91,7 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderDefaultsWireframe2D();
     void renderDefaultsWireframe3D();
+    void renderDefaultsTangentBitangentNormal();
     #endif
     void render2D();
     void render3D();
@@ -92,13 +99,15 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void renderWireframe3D();
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderWireframe3DPerspective();
+    void renderTangentBitangentNormal();
     #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         std::string _testDir;
 
-        GL::Renderbuffer _color{NoCreate};
+        GL::Renderbuffer _color{NoCreate},
+            _depth{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
         GL::Renderbuffer _objectId{NoCreate};
         #endif
@@ -111,7 +120,7 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     -   Mesa Intel
     -   Mesa AMD
     -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3
+    -   ARM Mali (Huawei P10) ES2/ES3 (except TBN visualization)
     -   WebGL 1 / 2 (on Mesa Intel)
     -   iPhone 6 w/ iOS 12.4
 */
@@ -133,6 +142,22 @@ constexpr struct {
     {"", {}},
     {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader}
 };
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+constexpr struct {
+    const char* name;
+    MeshVisualizer3D::Flags flags;
+} ConstructGeometryShaderData3D[] {
+    {"wireframe", MeshVisualizer3D::Flag::Wireframe},
+    {"tangent direction", MeshVisualizer3D::Flag::TangentDirection},
+    {"bitangent direction from tangent", MeshVisualizer3D::Flag::BitangentFromTangentDirection},
+    {"bitangent direction", MeshVisualizer3D::Flag::BitangentDirection},
+    {"normal direction", MeshVisualizer3D::Flag::NormalDirection},
+    {"tbn direction", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection|MeshVisualizer3D::Flag::NormalDirection},
+    {"tbn direction with bitangent from tangent", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::NormalDirection},
+    {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection}
+};
+#endif
 
 constexpr struct {
     const char* name;
@@ -174,6 +199,60 @@ constexpr struct {
         3.0f, 1.0f, "wireframe-wide3D.tga", "wireframe-nogeo3D.tga"}
 };
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+constexpr struct {
+    const char* name;
+    MeshVisualizer3D::Flags flags;
+    MeshVisualizer3D::Flags secondPassFlags;
+    bool skipBitagnentEvenIfEnabledInFlags;
+    Float smoothness;
+    Float lineWidth;
+    Float lineLength;
+    Float multiply;
+    const char* file;
+} TangentBitangentNormalData[] {
+    {"",
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::BitangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "tbn.tga"},
+    {"bitangents from tangents",
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::BitangentFromTangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "tbn.tga"},
+    {"scaled data",
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::BitangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 5.0f, "tbn.tga"},
+    {"wide blurry lines",
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::BitangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 5.0f, 5.0f, 0.8f, 1.0f, "tbn-wide.tga"},
+    {"only bitangent from tangent",
+        MeshVisualizer3D::Flag::BitangentFromTangentDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "bitangents-from-tangents.tga"},
+    {"wireframe + tangents + normals, single pass",
+        MeshVisualizer3D::Flag::Wireframe|
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn.tga"},
+    {"wireframe, rendering all, but only tangents + normals present",
+        MeshVisualizer3D::Flag::Wireframe|
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::BitangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        true, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn.tga"},
+    {"wireframe + tangents + normals, two passes",
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection,
+        MeshVisualizer3D::Flag::Wireframe,
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn-smooth.tga"},
+};
+#endif
+
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct2D},
         Containers::arraySize(ConstructData2D));
@@ -181,23 +260,35 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addInstancedTests({&MeshVisualizerGLTest::construct3D},
         Containers::arraySize(ConstructData3D));
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    addTests({&MeshVisualizerGLTest::constructWireframeGeometryShader2D});
+
+    addInstancedTests({&MeshVisualizerGLTest::constructGeometryShader3D},
+        Containers::arraySize(ConstructGeometryShaderData3D));
+    #endif
+
     addTests({
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::constructWireframeGeometryShader2D,
-              &MeshVisualizerGLTest::constructWireframeGeometryShader3D,
+              &MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded,
+              &MeshVisualizerGLTest::construct3DConflictingBitangentInput,
               #endif
 
               &MeshVisualizerGLTest::constructMove2D,
               &MeshVisualizerGLTest::constructMove3D,
 
               &MeshVisualizerGLTest::setWireframeNotEnabled2D,
-              &MeshVisualizerGLTest::setWireframeNotEnabled3D});
+              &MeshVisualizerGLTest::setWireframeNotEnabled3D,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D,
+              #endif
+              });
 
     addTests({&MeshVisualizerGLTest::renderDefaults2D,
               &MeshVisualizerGLTest::renderDefaults3D,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &MeshVisualizerGLTest::renderDefaultsWireframe2D,
               &MeshVisualizerGLTest::renderDefaultsWireframe3D,
+              &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal,
               #endif
               &MeshVisualizerGLTest::render2D,
               &MeshVisualizerGLTest::render3D},
@@ -216,6 +307,11 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     addTests({&MeshVisualizerGLTest::renderWireframe3DPerspective},
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+
+    addInstancedTests({&MeshVisualizerGLTest::renderTangentBitangentNormal},
+        Containers::arraySize(TangentBitangentNormalData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -304,7 +400,10 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
     }
 }
 
-void MeshVisualizerGLTest::constructWireframeGeometryShader3D() {
+void MeshVisualizerGLTest::constructGeometryShader3D() {
+    auto&& data = ConstructGeometryShaderData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -318,8 +417,8 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader3D() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    MeshVisualizer3D shader{MeshVisualizer3D::Flag::Wireframe};
-    CORRADE_COMPARE(shader.flags(), MeshVisualizer3D::Flag::Wireframe);
+    MeshVisualizer3D shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -327,6 +426,40 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader3D() {
         CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizer3D{MeshVisualizer3D::Flag::NoGeometryShader|MeshVisualizer3D::Flag::NormalDirection};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer3D: geometry shader has to be enabled when rendering TBN direction\n");
+}
+
+void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshVisualizer3D{MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::BitangentDirection};
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive\n");
 }
 #endif
 
@@ -380,7 +513,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer::setSmoothness(): the shader was not created with wireframe enabled\n");
+        "Shaders::MeshVisualizer2D::setSmoothness(): the shader was not created with wireframe enabled\n");
 }
 
 void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
@@ -395,8 +528,27 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
-        "Shaders::MeshVisualizer::setSmoothness(): the shader was not created with wireframe enabled\n");
+        "Shaders::MeshVisualizer3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshVisualizer3D shader;
+    shader.setNormalMatrix({})
+        .setLineWidth({})
+        .setLineLength({})
+        .setSmoothness({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer3D::setNormalMatrix(): the shader was not created with TBN direction enabled\n"
+        "Shaders::MeshVisualizer3D::setLineWidth(): the shader was not created with TBN direction enabled\n"
+        "Shaders::MeshVisualizer3D::setLineLength(): the shader was not created with TBN direction enabled\n"
+        "Shaders::MeshVisualizer3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
+}
+#endif
 
 constexpr Vector2i RenderSize{80, 80};
 
@@ -414,10 +566,19 @@ void MeshVisualizerGLTest::renderSetup() {
         GL::RenderbufferFormat::RGBA4,
         #endif
         RenderSize);
+    _depth = GL::Renderbuffer{};
+    _depth.setStorage(GL::RenderbufferFormat::DepthComponent16, RenderSize);
     _framebuffer = GL::Framebuffer{{{}, RenderSize}};
-    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        .clear(GL::FramebufferClear::Color)
+    _framebuffer
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+        .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, _depth)
+        .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
         .bind();
+
+    /* Disable depth test & blending by default, particular tests enable it if
+       needed */
+    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 }
 
 void MeshVisualizerGLTest::renderTeardown() {
@@ -575,6 +736,18 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
+
+void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    CORRADE_SKIP("Needs compile() and Primitives supporting TBN, which is not done yet.");
+}
 #endif
 
 void MeshVisualizerGLTest::render2D() {
@@ -610,11 +783,12 @@ void MeshVisualizerGLTest::render3D() {
 
     MeshVisualizer3D{}
         .setColor(0x9999ff_rgbf)
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+        .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
+        .setProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -775,11 +949,11 @@ void MeshVisualizerGLTest::renderWireframe3D() {
         .setWireframeWidth(data.width)
         .setSmoothness(data.smoothness)
         .setViewportSize({80, 80})
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+        .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -845,11 +1019,11 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
         .setWireframeWidth(8.0f)
         .setWireframeColor(0xff0000_rgbf)
         .setViewportSize({80, 80})
-        .setTransformationProjectionMatrix(
-            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+        .setTransformationMatrix(
             Matrix4::translation({0.0f, 0.5f, -3.5f})*
             Matrix4::rotationX(-60.0_degf)*
             Matrix4::scaling(Vector3::yScale(2.0f)))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .draw(plane);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -869,6 +1043,143 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/wireframe-perspective.tga"),
         (DebugTools::CompareImageToFile{_manager, 0.667f, 0.002f}));
+}
+
+void MeshVisualizerGLTest::renderTangentBitangentNormal() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    auto&& data = TangentBitangentNormalData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+
+    /* Creating a primitive from scratch because Primitives::planeSolid() is
+       too regular to test everything properly */
+    struct Vertex {
+        Vector3 position;
+        Vector4 tangent;
+        Vector3 bitangent;
+        Vector3 normal;
+    } vertexData[] {
+        {{ 1.0f, -1.0f, 0.0f},
+         Vector4{Vector3{1.25f, 0.0f, 0.25f}.normalized(), -1.0f}, {},
+         Vector3{0.25f, 0.0f, -1.25f}.normalized()},
+        {{ 1.0f,  1.0f, 0.0f},
+        Vector4{Vector3{-1.0f, 0.25f, 0.0f}.normalized(), -1.0f}, {},
+         Vector3{-0.25f, -1.0f, 0.0f}.normalized()},
+        {{-1.0f, -1.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f, -1.0f}, {},
+         {0.0f, 0.0f, 1.0f}},
+        {{-1.0f,  1.0f, 0.0f},
+         Vector4{Vector3{0.75f, 0.0f, -0.25f}.normalized(), 1.0f}, {},
+         Vector3{0.25f, 0.0f, 0.75f}.normalized()}
+    };
+
+    /* Calculate bitangents from normal+tangent */
+    for(Vertex& i: vertexData)
+        i.bitangent = Math::cross(i.normal, i.tangent.xyz())*i.tangent.w();
+
+    /* Verify the TBN is orthogonal */
+    for(Vertex& i: vertexData) {
+        CORRADE_ITERATION(i.position);
+        CORRADE_VERIFY(i.tangent.xyz().isNormalized());
+        CORRADE_VERIFY(i.bitangent.isNormalized());
+        CORRADE_VERIFY(i.normal.isNormalized());
+        CORRADE_COMPARE(dot(i.normal, i.tangent.xyz()), 0.0f);
+        CORRADE_COMPARE(dot(i.normal, i.bitangent), 0.0f);
+        CORRADE_COMPARE(dot(i.tangent.xyz(), i.bitangent), 0.0f);
+    }
+
+    /* Apply scale to all */
+    for(Vertex& i: vertexData) {
+        i.tangent *= data.multiply;
+        i.bitangent *= data.multiply;
+        i.normal *= data.multiply;
+    }
+
+    GL::Buffer vertices{vertexData};
+    GL::Mesh mesh{MeshPrimitive::TriangleStrip};
+    mesh.setCount(4)
+        .addVertexBuffer(vertices, 0,
+            Shaders::MeshVisualizer3D::Position{},
+            sizeof(Vector4), /* conditionally added below */
+            sizeof(Vector3), /* conditionally added below */
+            Shaders::MeshVisualizer3D::Normal{});
+    if(data.flags & MeshVisualizer3D::Flag::BitangentFromTangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
+        mesh.addVertexBuffer(vertices, 0,
+            sizeof(Vector3),
+            Shaders::MeshVisualizer3D::Tangent4{},
+            sizeof(Vector3),
+            sizeof(Vector3));
+    else if(data.flags & MeshVisualizer3D::Flag::TangentDirection)
+        mesh.addVertexBuffer(vertices, 0,
+            sizeof(Vector3),
+            Shaders::MeshVisualizer3D::Tangent{}, sizeof(Float), sizeof(Vector3),
+            sizeof(Vector3));
+    if(data.flags & MeshVisualizer3D::Flag::BitangentDirection && !data.skipBitagnentEvenIfEnabledInFlags)
+        mesh.addVertexBuffer(vertices, 0,
+            sizeof(Vector3),
+            sizeof(Vector4),
+            Shaders::MeshVisualizer3D::Bitangent{},
+            sizeof(Vector3));
+
+    Matrix4 transformation = Matrix4::translation({0.0f, 0.5f, -3.5f})*
+        Matrix4::rotationX(-60.0_degf)*
+        Matrix4::scaling(Vector3::yScale(1.5f));
+
+    if(data.secondPassFlags) {
+        MeshVisualizer3D{data.secondPassFlags}
+            /** @todo make this unnecessary */
+            .setViewportSize({80, 80})
+            .setTransformationMatrix(transformation)
+            .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+            .setColor(0xffff99_rgbf)
+            .setWireframeColor(0x9999ff_rgbf)
+            .draw(mesh);
+    }
+
+    MeshVisualizer3D shader{data.flags};
+    shader
+        /** @todo make this unnecessary */
+        .setViewportSize({80, 80})
+        .setTransformationMatrix(transformation)
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setNormalMatrix(transformation.normalMatrix()*data.multiply)
+        .setSmoothness(data.smoothness)
+        .setLineLength(data.lineLength)
+        .setLineWidth(data.lineWidth);
+
+    if(data.flags & MeshVisualizer3D::Flag::Wireframe) shader
+        .setColor(0xffff99_rgbf)
+        .setWireframeColor(0x9999ff_rgbf);
+
+    shader.draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Slight rasterization differences on AMD. If
+       GL_NV_shader_noperspective_interpolation is not supported, the artifacts
+       are bigger. */
+    Float maxThreshold = 1.334f, meanThreshold = 0.008f;
+    #ifdef MAGNUM_TARGET_GLES
+    if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
+        maxThreshold = 39.0f;
+        meanThreshold = 1.207f;
+    }
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 #endif
 

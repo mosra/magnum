@@ -44,6 +44,7 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
+#ifndef TBN_DIRECTION
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -53,7 +54,7 @@ uniform lowp vec4 color
     #endif
     ;
 
-#ifdef WIREFRAME_RENDERING
+#if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -62,7 +63,10 @@ uniform lowp vec4 wireframeColor
     = vec4(0.0, 0.0, 0.0, 1.0)
     #endif
     ;
+#endif
+#endif
 
+#ifdef WIREFRAME_RENDERING
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 3)
 #endif
@@ -71,7 +75,18 @@ uniform lowp float wireframeWidth
     = 1.0
     #endif
     ;
+#elif defined(TBN_DIRECTION)
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 8)
+#endif
+uniform lowp float lineWidth
+    #ifndef GL_ES
+    = 1.0
+    #endif
+    ;
+#endif
 
+#if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 4)
 #endif
@@ -91,6 +106,11 @@ in lowp vec3 barycentric;
 #endif
 #endif
 
+#ifdef TBN_DIRECTION
+in lowp vec4 backgroundColor;
+in lowp vec4 lineColor;
+#endif
+
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
@@ -99,13 +119,63 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
-    #ifdef WIREFRAME_RENDERING
-    #ifndef NO_GEOMETRY_SHADER
-    /* Distance to nearest side */
-    lowp const float nearest = min(min(dist.x, dist.y), dist.z);
+    /* 1. For wireframe the line is on the triangle edges, thus dist = 0 at
+          vertices and dist = w (= wireframeWidth) at center of smoothed edge.
+       2. For antialiased TBN (drawn alone) the line is in the center of the
+          bar, thus dist = 0 at the center, dist = ±w (= lineWidth) at center
+          of the smoothed edge, and dist = ±S = w + s (= smoothness) at edge of
+          the primitive.
+       3. For non-antialised TBN (drawn together with wireframe) the bar width
+          is without the extra padding for smoothness.
 
-    /* Smooth step between face color and wireframe color based on distance */
-    fragmentColor = mix(wireframeColor, color, smoothstep(wireframeWidth-smoothness, wireframeWidth+smoothness, nearest));
+        0 _____________ 0          -S_-w_0__w_S         -w_0__w
+          \  _______  /             | |     | |         |     |
+           \ w     w /              | |    /| |         |    /|
+            \ \   / /               | |   / | |         |   / |
+             \ \w/ /                | |  /  | |         |  /  |
+              \ v /                 | | /   | |         | /   |
+               \ /                  | |/    | |         |/    |
+                v                   |_|_____|_|         |_____|
+                0                  -S -w 0  w S         -w 0  w
+    */
+    #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
+    #ifndef NO_GEOMETRY_SHADER
+    /* Distance to nearest side. If signed distance is involved when rendering
+       TBN alone, we need to find an absolute distance */
+    #if defined(TBN_DIRECTION) && !defined(WIREFRAME_RENDERING)
+    lowp const float nearest = min(min(abs(dist.x), abs(dist.y)), abs(dist.z));
+    #else
+    lowp const float nearest = min(min(dist.x, dist.y), dist.z);
+    #endif
+
+    /* Smooth step between two colors based on distance.
+
+       1. For wireframe alone the width and colors are supplied directly from
+          wireframeWidth, wireframeColor, color uniforms
+       2. For TBN alone the width is supplied directly from the lineWidth
+          uniform and colors from the GS
+       3. For TBN and wireframe together wireframeWidth is used to draw the
+          wireframe, and since `nearest` is always 0 for the TBN bars, there it
+          doesn't matter.
+    */
+    fragmentColor = mix(
+        #if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
+        wireframeColor, color,
+        #else
+        lineColor, backgroundColor,
+        #endif
+        #ifdef WIREFRAME_RENDERING
+        smoothstep(wireframeWidth - smoothness,
+                   wireframeWidth + smoothness, nearest)
+        #elif defined(TBN_DIRECTION)
+        smoothstep(lineWidth - smoothness,
+                   lineWidth + smoothness, nearest)
+        #else
+        #error
+        #endif
+        );
+
+    /* Wireframe rendering without a GS. No TBN in this case */
     #else
     const lowp vec3 d = fwidth(barycentric);
     const lowp vec3 factor = smoothstep(vec3(0.0), d*1.5, barycentric);
@@ -113,6 +183,7 @@ void main() {
     fragmentColor = mix(wireframeColor, color, nearest);
     #endif
 
+    /* Plain color rendering */
     #else
     fragmentColor = color;
     #endif

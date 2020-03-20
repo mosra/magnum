@@ -206,6 +206,7 @@ See also:
 @subsubsection changelog-latest-new-shaders Shaders library
 
 -   New @ref Shaders::MeshVisualizer2D for 2D mesh visualization
+-   Tangent space visualization in @ref Shaders::MeshVisualizer3D
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
 -   New attribute definitions and an location allocation scheme in
@@ -502,6 +503,10 @@ See also:
     @ref MeshTools::subdivideInPlace() overloads instead
 -   @cpp Shaders::MeshVisualizer @ce is deprecated as the shader can now handle
     both 2D and 3D, use @ref Shaders::MeshVisualizer3D instead
+-   @cpp Shaders::MeshVisualizer::setTransformationProjectionMatrix() @ce is
+    deprecated on the 3D variant, use separate
+    @ref Shaders::MeshVisualizer3D::setTransformationMatrix() and
+    @ref Shaders::MeshVisualizer3D::setProjectionMatrix() instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

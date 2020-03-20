@@ -41,7 +41,55 @@ uniform lowp vec2 viewportSize; /* defaults to zero */
 
 layout(triangles) in;
 
-layout(triangle_strip, max_vertices = 3) out;
+#if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1)
+#endif
+uniform lowp vec4 color
+    #ifndef GL_ES
+    = vec4(1.0, 1.0, 1.0, 1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
+#endif
+uniform lowp vec4 wireframeColor
+    #ifndef GL_ES
+    = vec4(0.0, 0.0, 0.0, 1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 8)
+#endif
+uniform lowp float lineWidth
+    #ifndef GL_ES
+    = 1.0
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 4)
+#endif
+uniform lowp float smoothness
+    #ifndef GL_ES
+    = 2.0
+    #endif
+    ;
+#endif
+
+#ifdef TANGENT_DIRECTION
+in highp vec4 tangentEndpoint[];
+#endif
+#ifdef BITANGENT_DIRECTION
+in highp vec4 bitangentEndpoint[];
+#endif
+#ifdef NORMAL_DIRECTION
+in highp vec4 normalEndpoint[];
+#endif
+
+layout(triangle_strip, max_vertices = MAX_VERTICES) out;
 
 /* Interpolate in screen space (if possible) */
 #if !defined(GL_ES) || defined(GL_NV_shader_noperspective_interpolation)
@@ -49,12 +97,89 @@ noperspective
 #endif
 out lowp vec3 dist;
 
+#if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+out lowp vec4 backgroundColor;
+out lowp vec4 lineColor;
+
+void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointScreen) {
+    /* Calculate screen-space locations for the bar vertices and form two
+       triangles out of them. In case TBN is rendered alone, half bar width is
+       lineWidth + smoothness to allow for antialiasing, in case it's rendered
+       together with wireframe, it's just lineWidth, as antialiasing would
+       cause depth order issues.
+
+        3 - e - 1     -S_-w_0__w_S         -w_0__w
+        |      /|      | |     | |         |     |
+        |     / |      | |    /| |         |    /|
+        |    /  |      | |   / | |         |   / |
+        |   /   |      | |  /  | |         |  /  |
+        |  /    |      | | /   | |         | /   |
+        | /     |      | |/    | |         |/    |
+        |/      |      |_|_____|_|         |_____|
+        2 - p - 0     -S -w 0  w S         -w 0  w
+
+       The edgeDistance is set to a signed half-width for the antialiased case
+       and to 0 otherwise. See the fragment shader for details.
+    */
+    vec2 direction = normalize(endpointScreen - positionScreen);
+    #ifdef WIREFRAME_RENDERING
+    float edgeDistance = 0.0;
+    vec2 halfSide = lineWidth*vec2(-direction.y, direction.x);
+    #else
+    float edgeDistance = lineWidth + smoothness;
+    vec2 halfSide = edgeDistance*vec2(-direction.y, direction.x);
+    #endif
+
+    /* 0 */
+    dist = vec3(-edgeDistance);
+    gl_Position = vec4((positionScreen - halfSide)*position.w/viewportSize, position.zw);
+    EmitVertex();
+
+    /* 1 */
+    dist = vec3(-edgeDistance);
+    gl_Position = vec4((endpointScreen - halfSide)*endpoint.w/viewportSize, endpoint.zw);
+    EmitVertex();
+
+    /* 2 */
+    dist = vec3(edgeDistance);
+    gl_Position = vec4((positionScreen + halfSide)*position.w/viewportSize, position.zw);
+    EmitVertex();
+
+    /* 3 */
+    dist = vec3(edgeDistance);
+    gl_Position = vec4((endpointScreen + halfSide)*endpoint.w/viewportSize, endpoint.zw);
+    EmitVertex();
+
+    EndPrimitive();
+}
+#endif
+
 void main() {
     /* Screen position of each vertex */
     vec2 p[3];
-    for(int i = 0; i != 3; ++i)
+    #ifdef TANGENT_DIRECTION
+    vec2 t[3];
+    #endif
+    #ifdef BITANGENT_DIRECTION
+    vec2 b[3];
+    #endif
+    #ifdef NORMAL_DIRECTION
+    vec2 n[3];
+    #endif
+    for(int i = 0; i != 3; ++i) {
         p[i] = viewportSize*gl_in[i].gl_Position.xy/gl_in[i].gl_Position.w;
+        #ifdef TANGENT_DIRECTION
+        t[i] = viewportSize*tangentEndpoint[i].xy/tangentEndpoint[i].w;
+        #endif
+        #ifdef BITANGENT_DIRECTION
+        b[i] = viewportSize*bitangentEndpoint[i].xy/bitangentEndpoint[i].w;
+        #endif
+        #ifdef NORMAL_DIRECTION
+        n[i] = viewportSize*normalEndpoint[i].xy/normalEndpoint[i].w;
+        #endif
+    }
 
+    #ifdef WIREFRAME_RENDERING
     /* Vector of each triangle side */
     const vec2 v[3] = vec2[3](
         p[2]-p[1],
@@ -69,9 +194,34 @@ void main() {
     for(int i = 0; i != 3; ++i) {
         dist = vec3(0.0, 0.0, 0.0);
         dist[i] = area/length(v[i]);
+        #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+        backgroundColor = color;
+        lineColor = wireframeColor;
+        #endif
         gl_Position = gl_in[i].gl_Position;
         EmitVertex();
     }
 
     EndPrimitive();
+    #endif
+
+    #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+    backgroundColor = vec4(0.0, 0.0, 0.0, 0.0);
+    for(int i = 0; i != 3; ++i) {
+        #ifdef TANGENT_DIRECTION
+        lineColor = vec4(1.0, 0.0, 0.0, 1.0);
+        emitQuad(gl_in[i].gl_Position, p[i], tangentEndpoint[i], t[i]);
+        #endif
+
+        #ifdef BITANGENT_DIRECTION
+        lineColor = vec4(0.0, 1.0, 0.0, 1.0);
+        emitQuad(gl_in[i].gl_Position, p[i], bitangentEndpoint[i], b[i]);
+        #endif
+
+        #ifdef NORMAL_DIRECTION
+        lineColor = vec4(0.0, 0.0, 1.0, 1.0);
+        emitQuad(gl_in[i].gl_Position, p[i], normalEndpoint[i], n[i]);
+        #endif
+    }
+    #endif
 }

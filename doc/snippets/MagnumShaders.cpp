@@ -100,7 +100,8 @@ visualizerShader
     .setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
     .draw(mesh);
 /* [shaders-meshvisualizer] */
 }
@@ -266,7 +267,8 @@ Shaders::MeshVisualizer3D shader{Shaders::MeshVisualizer3D::Flag::Wireframe};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
     .draw(mesh);
 /* [MeshVisualizer-usage-geom2] */
 
@@ -279,6 +281,46 @@ vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
 
 mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer3D::VertexIndex{});
 /* [MeshVisualizer-usage-no-geom-old] */
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+{
+/* [MeshVisualizer-usage-tbn1] */
+struct Vertex {
+    Vector3 position;
+    Vector4 tangent;
+    Vector3 normal;
+};
+Vertex data[60]{
+    // ...
+};
+
+GL::Buffer vertices;
+vertices.setData(data);
+
+GL::Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::MeshVisualizer3D::Position{},
+    Shaders::MeshVisualizer3D::Tangent4{},
+    Shaders::MeshVisualizer3D::Normal{});
+/* [MeshVisualizer-usage-tbn1] */
+
+/* [MeshVisualizer-usage-tbn2] */
+Matrix4 transformationMatrix, projectionMatrix;
+
+Shaders::MeshVisualizer3D shader{
+    Shaders::MeshVisualizer3D::Flag::TangentDirection|
+    Shaders::MeshVisualizer3D::Flag::BitangentFromTangentDirection|
+    Shaders::MeshVisualizer3D::Flag::NormalDirection};
+shader.setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
+    .setNormalMatrix(transformationMatrix.normalMatrix())
+    .setLineLength(0.3f)
+    .draw(mesh);
+/* [MeshVisualizer-usage-tbn2] */
+
 }
 #endif
 
@@ -305,7 +347,8 @@ Shaders::MeshVisualizer3D shader{
     Shaders::MeshVisualizer3D::Flag::NoGeometryShader};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
     .draw(mesh);
 /* [MeshVisualizer-usage-no-geom2] */
 }
