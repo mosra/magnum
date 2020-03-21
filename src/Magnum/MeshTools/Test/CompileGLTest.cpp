@@ -35,6 +35,8 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Framebuffer.h"
@@ -49,6 +51,7 @@
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Shaders/Phong.h"
 #include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Shaders/MeshVisualizer.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -65,11 +68,14 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 enum class Flag {
     NonIndexed = 1 << 0,
-    Normals = 1 << 1,
-    GeneratedFlatNormals = 1 << 2,
-    GeneratedSmoothNormals = 1 << 3,
-    TextureCoordinates2D = 1 << 4,
-    Colors = 1 << 5
+    Tangents = 1 << 1,
+    Bitangents = 1 << 2,
+    BitangentsFromTangents = 1 << 3,
+    Normals = 1 << 4,
+    GeneratedFlatNormals = 1 << 5,
+    GeneratedSmoothNormals = 1 << 6,
+    TextureCoordinates2D = 1 << 7,
+    Colors = 1 << 8
 };
 
 typedef Containers::EnumSet<Flag> Flags;
@@ -112,6 +118,10 @@ struct CompileGLTest: GL::OpenGLTester {
         Shaders::VertexColor2D _color2D;
         Shaders::VertexColor3D _color3D;
         Shaders::Phong _phong;
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        Shaders::MeshVisualizer3D _meshVisualizer3D{NoCreate};
+        Shaders::MeshVisualizer3D _meshVisualizerBitangentsFromTangents3D{NoCreate};
+        #endif
 
         GL::Renderbuffer _color;
         GL::Framebuffer _framebuffer{{{}, {32, 32}}};
@@ -157,6 +167,8 @@ constexpr struct {
     {"positions, gen smooth normals + texcoords", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D},
     {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors},
     {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals},
+    {"positions, tangents, bitangents, normals", Flag::Tangents|Flag::Bitangents|Flag::Normals},
+    {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals}
 };
 
 constexpr struct {
@@ -257,6 +269,25 @@ CompileGLTest::CompileGLTest() {
             #endif
             {4, 4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, ImageData});
+
+    /* Mesh visualizer shaders only if we have a GS */
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+    #else
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+    #endif
+    {
+        _meshVisualizer3D = Shaders::MeshVisualizer3D{
+            Shaders::MeshVisualizer3D::Flag::TangentDirection|
+            Shaders::MeshVisualizer3D::Flag::BitangentDirection|
+            Shaders::MeshVisualizer3D::Flag::NormalDirection};
+        _meshVisualizerBitangentsFromTangents3D = Shaders::MeshVisualizer3D{
+            Shaders::MeshVisualizer3D::Flag::TangentDirection|
+            Shaders::MeshVisualizer3D::Flag::BitangentFromTangentDirection|
+            Shaders::MeshVisualizer3D::Flag::NormalDirection};
+    }
+    #endif
 }
 
 template<class T> struct MeshTypeName;
@@ -401,6 +432,13 @@ template<class T> void CompileGLTest::threeDimensions() {
     auto&& data = Data3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
+    if(std::is_same<T, Trade::MeshData3D>::value && data.flags & (Flag::Tangents|Flag::Bitangents|Flag::BitangentsFromTangents))
+        CORRADE_SKIP("Not possible with MeshData3D.");
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
     /*
         6-----7-----8
         |    /|    /|
@@ -412,39 +450,73 @@ template<class T> void CompileGLTest::threeDimensions() {
         |/    |/    |
         0-----1-----2
     */
-    const struct Vertex {
+    struct Vertex {
         Vector3 position;
+        Vector4 tangent;
+        Vector3 bitangent;
         Vector3 normal;
         Vector2 textureCoordinates;
         Color4 color;
     } vertexData[]{
-        {{-0.75f, -0.75f, -0.35f}, Vector3{-0.5f, -0.5f, 1.0f}.normalized(),
+        {{-0.75f, -0.75f, -0.35f},
+         Vector4{Vector3{1.0f, 0.5f, 0.5f}.normalized(), -1.0f}, {},
+         Vector3{-0.5f, -0.5f, 1.0f}.normalized(),
          {0.0f, 0.0f}, 0x00ff00_rgbf},
-        {{ 0.00f, -0.75f, -0.25f}, Vector3{ 0.0f, -0.5f, 1.0f}.normalized(),
+        {{ 0.00f, -0.75f, -0.25f},
+         Vector4{Vector3{1.0f, 0.0f, 0.5f}.normalized(), 1.0f}, {},
+         Vector3{ 0.0f, -0.5f, 1.0f}.normalized(),
          {0.5f, 0.0f}, 0x808000_rgbf},
-        {{ 0.75f, -0.75f, -0.35f}, Vector3{ 0.5f, -0.5f, 1.0f}.normalized(),
+        {{ 0.75f, -0.75f, -0.35f},
+         Vector4{Vector3{1.0f, -0.5f, 0.5f}.normalized(), 1.0f}, {},
+         Vector3{ 0.5f, -0.5f, 1.0f}.normalized(),
          {1.0f, 0.0f}, 0xff0000_rgbf},
 
-        {{-0.75f,  0.00f, -0.25f}, Vector3{-0.5f,  0.0f, 1.0f}.normalized(),
+        {{-0.75f,  0.00f, -0.25f},
+         Vector4{Vector3{1.0f, 0.5f, 0.0f}.normalized(), -1.0f}, {},
+         Vector3{-0.5f,  0.0f, 1.0f}.normalized(),
          {0.0f, 0.5f}, 0x00ff80_rgbf},
-        {{ 0.00f,  0.00f,  0.00f}, Vector3{ 0.0f,  0.0f, 1.0f}.normalized(),
+        {{ 0.00f,  0.00f,  0.00f},
+         Vector4{Vector3{1.0f, 0.0f, 0.0f}.normalized(), 1.0f}, {},
+         Vector3{ 0.0f,  0.0f, 1.0f}.normalized(),
          {0.5f, 0.5f}, 0x808080_rgbf},
-        {{ 0.75f,  0.00f, -0.25f}, Vector3{ 0.5f,  0.0f, 1.0f}.normalized(),
+        {{ 0.75f,  0.00f, -0.25f},
+         Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), 1.0f}, {},
+         Vector3{ 0.5f,  0.0f, 1.0f}.normalized(),
          {1.0f, 0.5f}, 0xff0080_rgbf},
 
-        {{-0.75f,  0.75f, -0.35f}, Vector3{-0.5f,  0.5f, 1.0f}.normalized(),
+        {{-0.75f,  0.75f, -0.35f},
+         Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
+         Vector3{-0.5f,  0.5f, 1.0f}.normalized(),
          {0.0f, 1.0f}, 0x00ffff_rgbf},
-        {{ 0.0f,   0.75f, -0.25f}, Vector3{ 0.0f,  0.5f, 1.0f}.normalized(),
+        {{ 0.0f,   0.75f, -0.25f},
+         Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
+         Vector3{ 0.0f,  0.5f, 1.0f}.normalized(),
          {0.5f, 1.0f}, 0x8080ff_rgbf},
-        {{ 0.75f,  0.75f, -0.35f}, Vector3{ 0.5f,  0.5f, 1.0f}.normalized(),
+        {{ 0.75f,  0.75f, -0.35f},
+         Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
+         Vector3{ 0.5f,  0.5f, 1.0f}.normalized(),
          {1.0f, 1.0f}, 0xff00ff_rgbf}
     };
+
+    /* Calculate bitangents from normal+tangent */
+    for(Vertex& i: vertexData)
+        i.bitangent = Math::cross(i.normal, i.tangent.xyz())*i.tangent.w();
 
     Containers::Array<Trade::MeshAttributeData> attributeData;
     arrayAppend(attributeData, Trade::MeshAttributeData{
         Trade::MeshAttribute::Position,
         Containers::stridedArrayView(vertexData, &vertexData[0].position,
             Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::Tangents || data.flags & Flag::BitangentsFromTangents)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::Tangent,
+            Containers::stridedArrayView(vertexData, &vertexData[0].tangent,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::Bitangents)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::Bitangent,
+            Containers::stridedArrayView(vertexData, &vertexData[0].bitangent,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
     if(data.flags & Flag::Normals)
         arrayAppend(attributeData, Trade::MeshAttributeData{
             Trade::MeshAttribute::Normal,
@@ -596,6 +668,48 @@ template<class T> void CompileGLTest::threeDimensions() {
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+    }
+
+    /* Check with the mesh visualizer shader for TBN direction. This has to be
+       last, as it gets skipped on WebGL / ES2. */
+    if(data.flags >= (Flag::Tangents|Flag::Bitangents|Flag::Normals) ||
+       data.flags >= (Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals)) {
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        #else
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        #endif
+
+        _framebuffer.clear(GL::FramebufferClear::Color);
+
+        if(data.flags >= (Flag::Tangents|Flag::Bitangents|Flag::Normals))
+            _meshVisualizer3D
+                .setTransformationMatrix(transformation)
+                .setProjectionMatrix(projection)
+                .setViewportSize({32, 32})
+                .setSmoothness(0.0f) /* To avoid perspective artifacts */
+                .draw(mesh);
+        else if(data.flags >= (Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals))
+            _meshVisualizerBitangentsFromTangents3D
+                .setTransformationMatrix(transformation)
+                .setProjectionMatrix(projection)
+                .setViewportSize({32, 32})
+                .setSmoothness(0.0f) /* To avoid perspective artifacts */
+                .draw(mesh);
+        else CORRADE_VERIFY(false);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE_WITH(
+            _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "tbn.tga"),
+            /* SwiftShader has some minor off-by-one precision differences */
+            (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+        #else
+        CORRADE_SKIP("Geometry shaders not available on ES2 or WebGL.");
+        #endif
     }
 }
 
