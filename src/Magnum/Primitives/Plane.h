@@ -45,7 +45,15 @@ namespace Magnum { namespace Primitives {
 */
 enum class PlaneFlag: UnsignedByte {
     /** Generate texture coordinates with origin in bottom left corner */
-    TextureCoordinates = 1 << 0
+    TextureCoordinates = 1 << 0,
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1
 };
 
 /**
@@ -77,16 +85,22 @@ enum class CORRADE_DEPRECATED_ENUM("use PlaneFlags instead") PlaneTextureCoords:
 @m_since_latest
 
 2x2 plane. Non-indexed @ref MeshPrimitive::TriangleStrip on the XY plane with
-@ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3 normals in
-positive Z direction. The returned instance references data stored in constant
-memory.
+@ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3 normals in
+positive Z direction, optional @ref VertexFormat::Vector4 tangents and optional
+@ref VertexFormat::Vector2 texture coordinates. The returned instance may
+reference data stored in constant memory.
 
 @image html primitives-planesolid.png width=256px
 
 @see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D(),
     @ref MeshTools::generateTriangleStripIndices()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneFlags flags = {});
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid(PlaneFlags flags);
+
+/** @overload */
+/* Separate API so apps that don't need texture coordinate / tangents don't
+   need to drag in the extra code needed to allocate & calculate them */
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid();
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**

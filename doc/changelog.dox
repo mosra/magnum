@@ -196,8 +196,8 @@ See also:
 
 -   @ref Primitives::capsule3DSolid(), @ref Primitives::circle3DSolid(),
     @ref Primitives::coneSolid(), @ref Primitives::cylinderSolid(),
-    @ref Primitives::grid3DSolid() and @ref Primitives::uvSphereSolid() can now
-    have tangents as well
+    @ref Primitives::grid3DSolid(), @ref Primitives::planeSolid() and
+    @ref Primitives::uvSphereSolid() can now have tangents as well
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

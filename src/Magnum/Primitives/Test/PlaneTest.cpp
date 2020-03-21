@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -36,42 +36,64 @@ struct PlaneTest: TestSuite::Tester {
     explicit PlaneTest();
 
     void solid();
-    void solidTextured();
     void wireframe();
 };
 
+constexpr struct {
+    const char* name;
+    PlaneFlags flags;
+} SolidData[] {
+    {"", PlaneFlags{}},
+    {"texture coordinates", PlaneFlag::TextureCoordinates},
+    {"tangents", PlaneFlag::Tangents},
+    {"both", PlaneFlag::TextureCoordinates|PlaneFlag::Tangents}
+};
+
 PlaneTest::PlaneTest() {
-    addTests({&PlaneTest::solid,
-              &PlaneTest::solidTextured,
-              &PlaneTest::wireframe});
+    addInstancedTests({&PlaneTest::solid},
+        Containers::arraySize(SolidData));
+
+    addTests({&PlaneTest::wireframe});
 }
 
 void PlaneTest::solid() {
-    Trade::MeshData plane = Primitives::planeSolid();
+    auto&& data = SolidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Trade::MeshData plane = Primitives::planeSolid(data.flags);
 
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.vertexCount(), 4);
-    CORRADE_COMPARE(plane.attributeCount(), 2);
+
     CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Position)[3],
         (Vector3{-1.0f, 1.0f, 0.0f}));
+
+    if(data.flags & PlaneFlag::Tangents)
+        CORRADE_COMPARE(plane.attribute<Vector4>(Trade::MeshAttribute::Tangent)[1],
+            (Vector4{1.0f, 0.0f, 0.0f, 1.0f}));
+    else CORRADE_VERIFY(!plane.hasAttribute(Trade::MeshAttribute::Tangent));
+
     CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Normal)[2],
         (Vector3{0.0f, 0.0f, 1.0f}));
-}
 
-void PlaneTest::solidTextured() {
-    Trade::MeshData plane = Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates);
+    if(data.flags & PlaneFlag::TextureCoordinates)
+        CORRADE_COMPARE(plane.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates)[1],
+            (Vector2{1.0f, 1.0f}));
+    else CORRADE_VERIFY(!plane.hasAttribute(Trade::MeshAttribute::TextureCoordinates));
 
-    CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
-    CORRADE_VERIFY(!plane.isIndexed());
-    CORRADE_COMPARE(plane.vertexCount(), 4);
-    CORRADE_COMPARE(plane.attributeCount(), 3);
-    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Position)[3],
-        (Vector3{-1.0f, 1.0f, 0.0f}));
-    CORRADE_COMPARE(plane.attribute<Vector3>(Trade::MeshAttribute::Normal)[2],
-        (Vector3{0.0f, 0.0f, 1.0f}));
-    CORRADE_COMPARE(plane.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates)[1],
-        (Vector2{1.0f, 1.0f}));
+    if(data.flags & PlaneFlag::Tangents) {
+        auto tangents = plane.attribute<Vector4>(Trade::MeshAttribute::Tangent);
+        auto normals = plane.attribute<Vector3>(Trade::MeshAttribute::Normal);
+        for(std::size_t i = 0; i != tangents.size(); ++i) {
+            CORRADE_ITERATION(i);
+            CORRADE_ITERATION(tangents[i]);
+            CORRADE_ITERATION(normals[i]);
+            CORRADE_VERIFY(tangents[i].xyz().isNormalized());
+            CORRADE_VERIFY(normals[i].isNormalized());
+            CORRADE_COMPARE(Math::dot(tangents[i].xyz(), normals[i]), 0.0f);
+        }
+    }
 }
 
 void PlaneTest::wireframe() {

@@ -26,7 +26,7 @@
 #include "Plane.h"
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Primitives {
@@ -42,16 +42,6 @@ constexpr struct VertexSolid {
     {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
     {{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}
 };
-constexpr struct VertexSolidTextureCoords {
-    Vector3 position;
-    Vector3 normal;
-    Vector2 textureCoords;
-} VerticesSolidTextureCoords[] {
-    {VerticesSolid[0].position, VerticesSolid[0].normal, {1.0f, 0.0f}},
-    {VerticesSolid[1].position, VerticesSolid[1].normal, {1.0f, 1.0f}},
-    {VerticesSolid[2].position, VerticesSolid[2].normal, {0.0f, 0.0f}},
-    {VerticesSolid[3].position, VerticesSolid[3].normal, {0.0f, 1.0f}}
-};
 constexpr Trade::MeshAttributeData AttributesSolid[]{
     Trade::MeshAttributeData{Trade::MeshAttribute::Position,
         Containers::stridedArrayView(VerticesSolid, &VerticesSolid[0].position,
@@ -60,32 +50,90 @@ constexpr Trade::MeshAttributeData AttributesSolid[]{
         Containers::stridedArrayView(VerticesSolid, &VerticesSolid[0].normal,
             Containers::arraySize(VerticesSolid), sizeof(VertexSolid))}
 };
-constexpr Trade::MeshAttributeData AttributesSolidTextureCoords[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-        Containers::stridedArrayView(VerticesSolidTextureCoords,
-            &VerticesSolidTextureCoords[0].position,
-            Containers::arraySize(VerticesSolidTextureCoords), sizeof(VertexSolidTextureCoords))},
-    Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
-        Containers::stridedArrayView(VerticesSolidTextureCoords,
-            &VerticesSolidTextureCoords[0].normal,
-            Containers::arraySize(VerticesSolidTextureCoords), sizeof(VertexSolidTextureCoords))},
-    Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
-        Containers::stridedArrayView(VerticesSolidTextureCoords,
-            &VerticesSolidTextureCoords[0].textureCoords,
-            Containers::arraySize(VerticesSolidTextureCoords), sizeof(VertexSolidTextureCoords))},
-};
 
 }
 
-Trade::MeshData planeSolid(const PlaneFlags flags) {
-    if(flags & PlaneFlag::TextureCoordinates)
-        return Trade::MeshData{MeshPrimitive::TriangleStrip,
-            {}, VerticesSolidTextureCoords,
-            Trade::meshAttributeDataNonOwningArray(AttributesSolidTextureCoords)};
-
+Trade::MeshData planeSolid() {
     return Trade::MeshData{MeshPrimitive::TriangleStrip,
         {}, VerticesSolid,
         Trade::meshAttributeDataNonOwningArray(AttributesSolid)};
+}
+
+Trade::MeshData planeSolid(const PlaneFlags flags) {
+    /* Return the compile-time data if nothing extra is requested */
+    if(!flags) return planeSolid();
+
+    /* Calculate attribute count and vertex size */
+    std::size_t stride = sizeof(Vector3) + sizeof(Vector3);
+    std::size_t attributeCount = 2;
+    if(flags & PlaneFlag::Tangents) {
+        stride += sizeof(Vector4);
+        ++attributeCount;
+    }
+    if(flags & PlaneFlag::TextureCoordinates) {
+        stride += sizeof(Vector2);
+        ++attributeCount;
+    }
+
+    /* Set up the layout */
+    Containers::Array<char> vertexData{Containers::NoInit, 4*stride};
+    Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
+    std::size_t attributeIndex = 0;
+    std::size_t attributeOffset = 0;
+
+    Containers::StridedArrayView1D<Vector3> positions{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + attributeOffset),
+        4, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position, positions};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + sizeof(Vector3)),
+        4, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Normal, normals};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector4> tangents;
+    if(flags & PlaneFlag::Tangents) {
+        tangents = Containers::StridedArrayView1D<Vector4>{vertexData,
+            reinterpret_cast<Vector4*>(vertexData.data() + attributeOffset),
+            4, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::Tangent, tangents};
+        attributeOffset += sizeof(Vector4);
+    }
+
+    Containers::StridedArrayView1D<Vector2> textureCoordinates;
+    if(flags & PlaneFlag::TextureCoordinates) {
+        textureCoordinates = Containers::StridedArrayView1D<Vector2>{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.data() + attributeOffset),
+            4, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates, textureCoordinates};
+        attributeOffset += sizeof(Vector2);
+    }
+
+    CORRADE_INTERNAL_ASSERT(attributeIndex == attributeCount);
+    CORRADE_INTERNAL_ASSERT(attributeOffset == stride);
+
+    /* Fill the data */
+    for(std::size_t i = 0; i != 4; ++i) {
+        positions[i] = VerticesSolid[i].position;
+        normals[i] = VerticesSolid[i].normal;
+        if(flags & PlaneFlag::Tangents)
+            tangents[i] = {1.0f, 0.0f, 0.0f, 1.0f};
+    }
+    if(flags & PlaneFlag::TextureCoordinates) {
+        textureCoordinates[0] = {1.0f, 0.0f};
+        textureCoordinates[1] = {1.0f, 1.0f};
+        textureCoordinates[2] = {0.0f, 0.0f};
+        textureCoordinates[3] = {0.0f, 1.0f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::TriangleStrip,
+        std::move(vertexData), std::move(attributeData)};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
