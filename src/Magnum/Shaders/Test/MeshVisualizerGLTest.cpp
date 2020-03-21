@@ -746,7 +746,29 @@ void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
         CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
 
-    CORRADE_SKIP("Needs compile() and Primitives supporting TBN, which is not done yet.");
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(4, 8,
+        Primitives::UVSphereFlag::Tangents));
+
+    MeshVisualizer3D{MeshVisualizer3D::Flag::TangentDirection|
+            MeshVisualizer3D::Flag::BitangentFromTangentDirection|
+            MeshVisualizer3D::Flag::NormalDirection}
+        .setViewportSize({80, 80}) /** @todo make this unnecessary */
+        .draw(sphere);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-tbn.tga"),
+        /* AMD has off-by-one errors on edges compared to Intel */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
 #endif
 
