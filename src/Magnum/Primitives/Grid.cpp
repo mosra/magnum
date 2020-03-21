@@ -56,16 +56,20 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
         }
     }
 
-    /* Allocate interleaved array for all vertex data */
+    /* Calculate attribute count and vertex size */
     std::size_t stride = sizeof(Vector3);
     std::size_t attributeCount = 1;
     if(flags & GridFlag::Normals) {
-        ++attributeCount;
         stride += sizeof(Vector3);
+        ++attributeCount;
+    }
+    if(flags & GridFlag::Tangents) {
+        stride += sizeof(Vector4);
+        ++attributeCount;
     }
     if(flags & GridFlag::TextureCoordinates) {
-        ++attributeCount;
         stride += sizeof(Vector2);
+        ++attributeCount;
     }
     Containers::Array<char> vertexData{stride*vertexCount.product()};
     Containers::Array<Trade::MeshAttributeData> attributes{attributeCount};
@@ -86,8 +90,7 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
                 positions[i++] = {(Vector2(x, y)/Vector2(faceCount))*2.0f - Vector2{1.0f}, 0.0f};
     }
 
-    /* Fill normals, if any. It's always the second attribute, right after
-       positions. */
+    /* Fill normals and tangents, if any. Those are the same for all. */
     if(flags & GridFlag::Normals) {
         Containers::StridedArrayView1D<Vector3> normals{vertexData,
             reinterpret_cast<Vector3*>(vertexData.begin() + attributeOffset),
@@ -96,6 +99,15 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
             Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals};
         attributeOffset += sizeof(Vector3);
         for(auto&& i: normals) i = Vector3::zAxis(1.0f);
+    }
+    if(flags & GridFlag::Tangents) {
+        Containers::StridedArrayView1D<Vector4> tangents{vertexData,
+            reinterpret_cast<Vector4*>(vertexData.begin() + attributeOffset),
+            std::size_t(vertexCount.product()), std::ptrdiff_t(stride)};
+        attributes[attributeIndex++] =
+            Trade::MeshAttributeData{Trade::MeshAttribute::Tangent, tangents};
+        attributeOffset += sizeof(Vector4);
+        for(auto&& i: tangents) i = {1.0f, 0.0f, 0.0f, 1.0f};
     }
 
     if(flags & GridFlag::TextureCoordinates) {
@@ -109,8 +121,6 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
             textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
     }
 
-    /* Not using a compile-time attribute array because there's way too many
-       combinations */
     return Trade::MeshData{MeshPrimitive::Triangles,
         std::move(indexData), Trade::MeshIndexData{indices},
         std::move(vertexData), std::move(attributes)};

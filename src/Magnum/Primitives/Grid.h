@@ -70,8 +70,16 @@ enum class GridFlag: UnsignedByte {
      * Generate normals in positive Z direction.
      * @m_deprecated_since_latest Use @ref GridFlag::Normals instead.
      */
-    GenerateNormals CORRADE_DEPRECATED_ENUM("use Normals instead") = Normals
+    GenerateNormals CORRADE_DEPRECATED_ENUM("use Normals instead") = Normals,
     #endif
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 2
 };
 
 /**
@@ -89,8 +97,8 @@ CORRADE_ENUMSET_OPERATORS(GridFlags)
 2x2 grid in the XY plane with normals in positive Z direction.
 @ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
 interleaved @ref VertexFormat::Vector3 positions, optional
-@ref VertexFormat::Vector3 normals and @ref VertexFormat::Vector2 texture
-coordinates.
+@ref VertexFormat::Vector3 normals, optional @ref VertexFormat::Vector4
+tangents and optional @ref VertexFormat::Vector2 texture coordinates.
 
 @image html primitives-grid3dsolid.png width=256px
 
