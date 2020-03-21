@@ -76,9 +76,9 @@ template<class T, class K> void Player<T, K>::advance(const T time, const std::i
     for(Player<T, K>& p: players) p.advance(time);
 }
 
-template<class T, class K> Player<T, K>::Player(Player<T, K>&&) = default;
+template<class T, class K> Player<T, K>::Player(Player<T, K>&&) noexcept = default;
 
-template<class T, class K> Player<T, K>& Player<T, K>::operator=(Player<T, K>&&) = default;
+template<class T, class K> Player<T, K>& Player<T, K>::operator=(Player<T, K>&&) noexcept = default;
 
 template<class T, class K> Player<T, K>::Player(): Player<T, K>{Implementation::DefaultScaler<T, K>::scale} {}
 

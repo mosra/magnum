@@ -278,10 +278,7 @@ template<class T, class K
         Player(const Player<T, K>&) = delete;
 
         /** @brief Move constructor */
-        /* The noexcept specifier was removed because it causes *extreme*
-           issues on various Clang versions (iOS, Android, Emscripten)
-           currently used on Travis CI. Not on my stock 6.0 or NDK r17 tho. */
-        Player(Player<T, K>&&);
+        Player(Player<T, K>&&) noexcept;
 
         ~Player();
 
@@ -289,8 +286,7 @@ template<class T, class K
         Player<T, K>& operator=(const Player<T, K>&) = delete;
 
         /** @brief Move assignment */
-        /* Deliberately not noexcept, see above */
-        Player<T, K>& operator=(Player<T, K>&&);
+        Player<T, K>& operator=(Player<T, K>&&) noexcept;
 
         /** @brief Time-to-key scaler */
         Scaler scaler() const { return _scaler; }

@@ -300,6 +300,9 @@ void PlayerTest::constructMove() {
     CORRADE_COMPARE(c.size(), 2);
     CORRADE_COMPARE(c.track(0).keys().data(), Track.keys().data());
     CORRADE_COMPARE(c.track(1).keys().data(), track2.keys().data());
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Player<Float>>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Player<Float>>::value);
 }
 
 void PlayerTest::setDurationExtend() {
