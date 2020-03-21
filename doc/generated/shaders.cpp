@@ -190,14 +190,20 @@ std::string ShaderVisualizer::meshVisualizer3D() {
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe}
+    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::Wireframe|
+                              Shaders::MeshVisualizer3D::Flag::TangentDirection|
+                              Shaders::MeshVisualizer3D::Flag::BitangentFromTangentDirection|
+                              Shaders::MeshVisualizer3D::Flag::NormalDirection}
         .setColor(BaseColor)
         .setWireframeColor(OutlineColor)
         .setWireframeWidth(2.0f)
+        .setLineLength(0.3333333333f)
+        .setLineWidth(3.0f)
         .setViewportSize(Vector2{ImageSize})
         .setTransformationMatrix(transformation)
         .setProjectionMatrix(Projection)
-        .draw(MeshTools::compile(Primitives::icosphereSolid(1)));
+        .setNormalMatrix(transformation.normalMatrix())
+        .draw(MeshTools::compile(Primitives::uvSphereSolid(4, 8, Primitives::UVSphereFlag::TextureCoordinates|Primitives::UVSphereFlag::Tangents)));
 
     return "meshvisualizer3d.png";
 }
