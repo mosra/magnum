@@ -57,12 +57,17 @@ class Spheroid {
     private:
         UnsignedInt _segments;
         Flags _flags;
+        std::size_t _stride;
+        std::size_t _textureCoordinateOffset;
+        std::size_t _attributeCount;
 
         Containers::Array<UnsignedInt> _indexData;
         Containers::Array<char> _vertexData;
 
         void append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords = {});
-        void setLastVertexTextureCoords(const Vector2& textureCoords);
+        Vector3 lastVertexPosition(std::size_t offsetFromEnd);
+        Vector3 lastVertexNormal(std::size_t offsetFromEnd);
+        Vector2& lastVertexTextureCoords(std::size_t offsetFromEnd);
 };
 
 CORRADE_ENUMSET_OPERATORS(Spheroid::Flags)

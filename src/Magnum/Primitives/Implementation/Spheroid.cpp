@@ -35,48 +35,41 @@
 
 namespace Magnum { namespace Primitives { namespace Implementation {
 
-Spheroid::Spheroid(UnsignedInt segments, Flags flags): _segments(segments), _flags{flags} {}
-
-namespace {
-
-struct Vertex {
-    Vector3 position;
-    Vector3 normal;
-};
-
-struct VertexTextureCoords {
-    Vector3 position;
-    Vector3 normal;
-    Vector2 textureCoords;
-};
-
+Spheroid::Spheroid(UnsignedInt segments, Flags flags): _segments(segments), _flags{flags}, _stride{sizeof(Vector3) + sizeof(Vector3)}, _attributeCount{2} {
+    if(_flags & Flag::TextureCoordinates) {
+        _textureCoordinateOffset = _stride;
+        _stride += sizeof(Vector2);
+        ++_attributeCount;
+    } else _textureCoordinateOffset = ~std::size_t{};
 }
 
-/** @todo gah this is fugly, any idea how to do this less awful? expose
-    arrayGrow? also, with current growth strategy this might realloc too much
-    at the beginning since the growth is optimized for adding a single
-    element */
 void Spheroid::append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords) {
+    Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
+        Containers::arrayCast<const char>(Containers::arrayView(&position, 1)));
+    Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
+        Containers::arrayCast<const char>(Containers::arrayView(&normal, 1)));
     if(_flags & Flag::TextureCoordinates) {
-        const VertexTextureCoords v[]{{position, normal, textureCoords}};
         Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
-            Containers::arrayCast<const char>(Containers::arrayView(v)));
-    } else {
-        const Vertex v[]{{position, normal}};
-        Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
-            Containers::arrayCast<const char>(Containers::arrayView(v)));
+        Containers::arrayCast<const char>(Containers::arrayView(&textureCoords, 1)));
     }
 }
 
-void Spheroid::setLastVertexTextureCoords(const Vector2& textureCoords) {
-    /* Assuming append() was called before */
-    Containers::arrayCast<VertexTextureCoords>(_vertexData).back().textureCoords = textureCoords;
+Vector3 Spheroid::lastVertexPosition(const std::size_t offsetFromEnd) {
+    return Containers::arrayCast<Vector3>(_vertexData.slice<sizeof(Vector3)>(_vertexData.size() - _stride*offsetFromEnd))[0];
+}
+
+Vector3 Spheroid::lastVertexNormal(const std::size_t offsetFromEnd) {
+    return Containers::arrayCast<Vector3>(_vertexData.slice<sizeof(Vector3)>(_vertexData.size() - _stride*offsetFromEnd + sizeof(Vector3)))[0];
+}
+
+Vector2& Spheroid::lastVertexTextureCoords(const std::size_t offsetFromEnd) {
+    return Containers::arrayCast<Vector2>(_vertexData.slice<sizeof(Vector2)>(_vertexData.size() - _stride*offsetFromEnd + _textureCoordinateOffset))[0];
 }
 
 void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
     append({0.0f, y, 0.0f}, {0.0f, normalY, 0.0f});
     if(_flags & Flag::TextureCoordinates)
-        setLastVertexTextureCoords({0.5f, textureCoordsV});
+        lastVertexTextureCoords(1) = {0.5f, textureCoordsV};
 }
 
 void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
@@ -95,16 +88,14 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
                    {x*segmentSinCos.first, y, z*segmentSinCos.second});
 
             if(_flags & Flag::TextureCoordinates)
-                setLastVertexTextureCoords({j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement});
+                lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
 
-        /* Duplicate first segment in the ring for additional vertex for texture coordinate */
+        /* Duplicate first segment in the ring for additional vertex for
+           texture coordinate */
         if(_flags & Flag::TextureCoordinates) {
-            /* This view will become dangling right after append() */
-            auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
-            append(typedVertices[typedVertices.size()-_segments].position,
-                   typedVertices[typedVertices.size()-_segments].normal,
-                   {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+            append(lastVertexPosition(_segments), lastVertexNormal(_segments),
+                {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
         }
     }
 }
@@ -122,16 +113,13 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
                    {baseNormal.x()*segmentSinCos.first, baseNormal.y(), baseNormal.x()*segmentSinCos.second});
 
             if(_flags & Flag::TextureCoordinates)
-                setLastVertexTextureCoords({j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement});
+                lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
         if(_flags & Flag::TextureCoordinates) {
-            /* This view will become dangling right after append() */
-            auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
-            append(typedVertices[typedVertices.size()-_segments].position,
-                   typedVertices[typedVertices.size()-_segments].normal,
-                   {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+            append(lastVertexPosition(_segments), lastVertexNormal(_segments),
+                {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
         }
 
         base += increment;
@@ -180,11 +168,7 @@ void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
 void Spheroid::topFaceRing() {
     const UnsignedInt vertexSegments = _segments + (_flags & Flag::TextureCoordinates ? 1 : 0);
 
-    UnsignedInt vertexCount;
-    if(_flags & Flag::TextureCoordinates)
-        vertexCount = _vertexData.size()/sizeof(VertexTextureCoords);
-    else
-        vertexCount = _vertexData.size()/sizeof(Vertex);
+    const UnsignedInt vertexCount = _vertexData.size()/_stride;
 
     for(UnsignedInt j = 0; j != _segments; ++j) {
         Containers::arrayAppend<Trade::ArrayAllocator>(_indexData, {
@@ -210,52 +194,44 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
         append({segmentSinCos.first, y, segmentSinCos.second}, normal);
 
         if(_flags & Flag::TextureCoordinates)
-            setLastVertexTextureCoords({i*1.0f/_segments, textureCoordsV});
+            lastVertexTextureCoords(1) = {i*1.0f/_segments, textureCoordsV};
     }
 
-    /* Duplicate first segment in the ring for additional vertex for texture coordinate */
+    /* Duplicate first segment in the ring for additional vertex for texture
+       coordinate */
     if(_flags & Flag::TextureCoordinates) {
-        /* This view will become dangling right after append() */
-        auto typedVertices = Containers::arrayCast<VertexTextureCoords>(_vertexData);
-        append(typedVertices[typedVertices.size()-_segments].position,
-               normal,
-               {1.0f, textureCoordsV});
+        append(lastVertexPosition(_segments), normal, {1.0f, textureCoordsV});
     }
-}
-
-namespace {
-
-constexpr Trade::MeshAttributeData AttributeData[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        offsetof(Vertex, position), 0, sizeof(Vertex)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-        offsetof(Vertex, normal), 0, sizeof(Vertex)}
-};
-
-constexpr Trade::MeshAttributeData AttributeDataTextureCoords[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        offsetof(VertexTextureCoords, position), 0, sizeof(VertexTextureCoords)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-        offsetof(VertexTextureCoords, normal), 0, sizeof(VertexTextureCoords)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,
-        offsetof(VertexTextureCoords, textureCoords), 0, sizeof(VertexTextureCoords)}
-};
-
 }
 
 Trade::MeshData Spheroid::finalize() {
     Trade::MeshIndexData indices{_indexData};
 
-    Containers::Array<Trade::MeshAttributeData> attributes;
+    std::size_t attributeOffset = 0;
+    Containers::Array<Trade::MeshAttributeData> attributes{_attributeCount};
+    attributes[attributeOffset++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        Containers::stridedArrayView(_vertexData,
+            _vertexData.data(),
+            _vertexData.size()/_stride, std::ptrdiff_t(_stride))};
+    attributes[attributeOffset++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Normal, VertexFormat::Vector3,
+        Containers::stridedArrayView(_vertexData,
+            _vertexData.data() + sizeof(Vector3),
+            _vertexData.size()/_stride, std::ptrdiff_t(_stride))};
+
     if(_flags & Flag::TextureCoordinates)
-        attributes = Trade::meshAttributeDataNonOwningArray(AttributeDataTextureCoords);
-    else
-        attributes = Trade::meshAttributeDataNonOwningArray(AttributeData);
-    const UnsignedInt vertexCount = _vertexData.size()/attributes[0].stride();
+        attributes[attributeOffset++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,
+            Containers::stridedArrayView(_vertexData,
+                _vertexData.data() + _textureCoordinateOffset,
+                _vertexData.size()/_stride, std::ptrdiff_t(_stride))};
+
+    CORRADE_INTERNAL_ASSERT(attributeOffset == _attributeCount);
 
     return Trade::MeshData{MeshPrimitive::Triangles,
         Containers::arrayAllocatorCast<char, Trade::ArrayAllocator>(std::move(_indexData)),
-        indices, std::move(_vertexData), std::move(attributes), vertexCount};
+        indices, std::move(_vertexData), std::move(attributes)};
 }
 
 }}}
