@@ -81,8 +81,8 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
 
         switch(meshData.attributeName(i)) {
             case Trade::MeshAttribute::Position:
-                /* Pick 3D position always, the type will properly reduce it to
-                   a 2-component version if needed */
+                /* Pick 3D position always, the format will properly reduce it
+                   to a 2-component version if needed */
                 attribute.emplace(Shaders::Generic3D::Position{}, format);
                 break;
             case Trade::MeshAttribute::Normal:
@@ -96,7 +96,7 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             case Trade::MeshAttribute::Color:
                 /** @todo have Generic2D derived from Generic that has all
                     attribute definitions common for 2D and 3D */
-                /* Pick Color4 always, the type will properly reduce it to a
+                /* Pick Color4 always, the format will properly reduce it to a
                    3-component version if needed */
                 attribute.emplace(Shaders::Generic2D::Color4{}, format);
                 break;
