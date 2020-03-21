@@ -121,6 +121,9 @@ Trade::MeshData grid3DSolid(const Vector2i& subdivisions, const GridFlags flags)
             textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
     }
 
+    CORRADE_INTERNAL_ASSERT(attributeIndex == attributeCount);
+    CORRADE_INTERNAL_ASSERT(attributeOffset == stride);
+
     return Trade::MeshData{MeshPrimitive::Triangles,
         std::move(indexData), Trade::MeshIndexData{indices},
         std::move(vertexData), std::move(attributes)};
