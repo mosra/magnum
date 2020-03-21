@@ -119,7 +119,15 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DWireframe(UnsignedInt segments)
 @see @ref Circle3DFlags, @ref circle3DSolid()
 */
 enum class Circle3DFlag: UnsignedByte {
-    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
+    TextureCoordinates = 1 << 0, /**< Generate texture coordinates */
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1
 };
 
 /**
@@ -140,8 +148,9 @@ CORRADE_ENUMSET_OPERATORS(Circle3DFlags)
 
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::TriangleFan with interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals in positive Z direction and
-optional @ref VertexFormat::Vector2 texture coordinates.
+positions, @ref VertexFormat::Vector3 normals in positive Z direction, optional
+@ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
+texture coordinates.
 
 @image html primitives-circle3dsolid.png width=256px
 

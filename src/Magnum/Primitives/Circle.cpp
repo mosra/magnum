@@ -115,74 +115,88 @@ Trade::MeshData circle2DWireframe(const UnsignedInt segments) {
         Trade::meshAttributeDataNonOwningArray(AttributeData2D), UnsignedInt(positions.size())};
 }
 
-namespace {
-
-constexpr Trade::MeshAttributeData AttributeData3D[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        0, 0, 2*sizeof(Vector3)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-        sizeof(Vector3), 0, 2*sizeof(Vector3)}
-};
-
-constexpr Trade::MeshAttributeData AttributeData3DTextureCoords[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        0, 0, 2*sizeof(Vector3) + sizeof(Vector2)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::Normal, VertexFormat::Vector3,
-        sizeof(Vector3), 0, 2*sizeof(Vector3) + sizeof(Vector2)},
-    Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,
-        2*sizeof(Vector3), 0, 2*sizeof(Vector3) + sizeof(Vector2)}
-};
-
-constexpr Trade::MeshAttributeData AttributeData3DWireframe[]{
-    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
-        0, 0, sizeof(Vector3)}
-};
-
-}
-
 Trade::MeshData circle3DSolid(const UnsignedInt segments, const Circle3DFlags flags) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
         (Trade::MeshData{MeshPrimitive::TriangleFan, 0}));
 
-    /* Allocate interleaved array for all vertex data */
-    Containers::Array<Trade::MeshAttributeData> attributes;
-    if(flags & Circle3DFlag::TextureCoordinates)
-        attributes = Trade::meshAttributeDataNonOwningArray(AttributeData3DTextureCoords);
-    else
-        attributes = Trade::meshAttributeDataNonOwningArray(AttributeData3D);
-    const std::size_t stride = attributes[0].stride();
-    Containers::Array<char> vertexData{stride*(segments + 2)};
-
-    /* Fill positions */
-    Containers::StridedArrayView1D<Vector3> positions{vertexData,
-        reinterpret_cast<Vector3*>(vertexData.begin()),
-        segments + 2, std::ptrdiff_t(stride)};
-    positions[0] = {};
-    /* Points on the circle. The first/last point is here twice to close the
-       circle properly. */
-    const Rad angleIncrement(Constants::tau()/segments);
-    for(UnsignedInt i = 0; i != segments + 1; ++i) {
-        const Rad angle(Float(i)*angleIncrement);
-        const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions[i + 1] = {sincos.second, sincos.first, 0.0f};
+    /* Calculate attribute count and vertex size */
+    std::size_t stride = sizeof(Vector3) + sizeof(Vector3);
+    std::size_t attributeCount = 2;
+    if(flags & Circle3DFlag::Tangents) {
+        stride += sizeof(Vector4);
+        ++attributeCount;
     }
-
-    /* Fill normals */
-    Containers::StridedArrayView1D<Vector3> normals{vertexData,
-        reinterpret_cast<Vector3*>(vertexData.begin() + sizeof(Vector3)),
-        segments + 2, std::ptrdiff_t(stride)};
-    for(Vector3& normal: normals) normal = Vector3::zAxis(1.0f);
-
-    /* Fill texture coords, if any */
     if(flags & Circle3DFlag::TextureCoordinates) {
-        Containers::StridedArrayView1D<Vector2> textureCoords{vertexData,
-            reinterpret_cast<Vector2*>(vertexData.begin() + 2*sizeof(Vector3)),
-            positions.size(), std::ptrdiff_t(stride)};
-        for(std::size_t i = 0; i != positions.size(); ++i)
-            textureCoords[i] = positions[i].xy()*0.5f + Vector2{0.5f};
+        stride += sizeof(Vector2);
+        ++attributeCount;
     }
 
-    return Trade::MeshData{MeshPrimitive::TriangleFan, std::move(vertexData), std::move(attributes), UnsignedInt(positions.size())};
+    /* Set up the layout */
+    Containers::Array<char> vertexData{Containers::NoInit, (segments + 2)*stride};
+    Containers::Array<Trade::MeshAttributeData> attributeData{attributeCount};
+    std::size_t attributeIndex = 0;
+    std::size_t attributeOffset = 0;
+
+    Containers::StridedArrayView1D<Vector3> positions{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + attributeOffset),
+        segments + 2, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position, positions};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector3> normals{vertexData,
+        reinterpret_cast<Vector3*>(vertexData.data() + attributeOffset),
+        segments + 2, std::ptrdiff_t(stride)};
+    attributeData[attributeIndex++] = Trade::MeshAttributeData{
+        Trade::MeshAttribute::Normal, normals};
+    attributeOffset += sizeof(Vector3);
+
+    Containers::StridedArrayView1D<Vector4> tangents;
+    if(flags & Circle3DFlag::Tangents) {
+        tangents = Containers::StridedArrayView1D<Vector4>{vertexData,
+            reinterpret_cast<Vector4*>(vertexData.data() + attributeOffset),
+            segments + 2, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::Tangent, tangents};
+        attributeOffset += sizeof(Vector4);
+    }
+
+    Containers::StridedArrayView1D<Vector2> textureCoordinates;
+    if(flags & Circle3DFlag::TextureCoordinates) {
+        textureCoordinates = Containers::StridedArrayView1D<Vector2>{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.data() + attributeOffset),
+            segments + 2, std::ptrdiff_t(stride)};
+        attributeData[attributeIndex++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates, textureCoordinates};
+        attributeOffset += sizeof(Vector2);
+    }
+
+    CORRADE_INTERNAL_ASSERT(attributeIndex == attributeCount);
+    CORRADE_INTERNAL_ASSERT(attributeOffset == stride);
+
+    /* Fill the data. First is center, the first/last point on the edge is
+       twice to close the circle properly. */
+    positions[0] = {};
+    normals[0] = {0.0f, 0.0f, 1.0f};
+    if(flags & Circle3DFlag::Tangents)
+        tangents[0] = {1.0f, 0.0f, 0.0f, 1.0f};
+    if(flags & Circle3DFlag::TextureCoordinates)
+        textureCoordinates[0] = {0.5f, 0.5f};
+    const Rad angleIncrement(Constants::tau()/segments);
+    for(UnsignedInt i = 1; i != segments + 2; ++i) {
+        const Rad angle(Float(i - 1)*angleIncrement);
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
+
+        positions[i] = {sincos.second, sincos.first, 0.0f};
+        normals[i] = {0.0f, 0.0f, 1.0f};
+        if(flags & Circle3DFlag::Tangents)
+            tangents[i] = {1.0f, 0.0f, 0.0f, 1.0f};
+        if(flags & Circle3DFlag::TextureCoordinates)
+            textureCoordinates[i] = positions[i].xy()*0.5f + Vector2{0.5f};
+    }
+
+    return Trade::MeshData{MeshPrimitive::TriangleFan,
+        std::move(vertexData), std::move(attributeData)};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -193,6 +207,15 @@ Trade::MeshData circle3DSolid(const UnsignedInt segments, const CircleTextureCoo
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
+
+namespace {
+
+constexpr Trade::MeshAttributeData AttributeData3DWireframe[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position, VertexFormat::Vector3,
+        0, 0, sizeof(Vector3)}
+};
+
+}
 
 Trade::MeshData circle3DWireframe(const UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): segments must be >= 3",

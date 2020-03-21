@@ -29,7 +29,6 @@
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Vector4.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
