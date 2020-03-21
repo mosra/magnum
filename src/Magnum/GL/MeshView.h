@@ -99,18 +99,6 @@ class MAGNUM_GL_EXPORT MeshView {
          */
         explicit MeshView(Mesh& original);
 
-        /** @brief Copy constructor */
-        MeshView(const MeshView& other) = default;
-
-        /** @brief Movement is not allowed */
-        MeshView(MeshView&& other) = delete;
-
-        /** @brief Copy assignment */
-        MeshView& operator=(const MeshView&) = default;
-
-        /** @brief Movement is not allowed */
-        MeshView& operator=(MeshView&& other) = delete;
-
         /** @brief Original mesh */
         Mesh& mesh() { return _original; }
         const Mesh& mesh() const { return _original; } /**< @overload */
