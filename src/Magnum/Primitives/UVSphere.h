@@ -44,7 +44,15 @@ namespace Magnum { namespace Primitives {
 @see @ref UVSphereFlags, @ref uvSphereSolid()
 */
 enum class UVSphereFlag: UnsignedByte {
-    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
+    TextureCoordinates = 1 << 0, /**< Generate texture coordinates */
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1
 };
 
 /**
@@ -68,9 +76,10 @@ CORRADE_ENUMSET_OPERATORS(UVSphereFlags)
 
 Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals and optional
-@ref VertexFormat::Vector2 texture coordinates. If texture coordinates are
-generated, vertices of one segment are duplicated for texture wrapping.
+positions, @ref VertexFormat::Vector3 normals, optional
+@ref VertexFormat::Vector4 tangents and @ref VertexFormat::Vector2 texture
+coordinates. If texture coordinates are generated, vertices of one segment are
+duplicated for texture wrapping.
 
 @image html primitives-uvspheresolid.png width=256px
 

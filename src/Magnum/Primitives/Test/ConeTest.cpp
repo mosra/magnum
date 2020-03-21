@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Primitives/Cone.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -37,17 +37,30 @@ struct ConeTest: TestSuite::Tester {
 
     void solidWithoutAnything();
     void solidWithCaps();
-    void solidWithTextureCoords();
-    void solidWithTextureCoordsAndCaps();
+    void solidWithTextureCoordinatesOrTangents();
+    void solidWithTextureCoordinatesOrTangentsAndCaps();
     void wireframe();
+};
+
+constexpr struct {
+    const char* name;
+    ConeFlags flags;
+} TextureCoordinatesOrTangentsData[] {
+    {"texture coordinates", ConeFlag::TextureCoordinates},
+    {"tangents", ConeFlag::Tangents},
+    {"both", ConeFlag::TextureCoordinates|ConeFlag::Tangents}
 };
 
 ConeTest::ConeTest() {
     addTests({&ConeTest::solidWithoutAnything,
-              &ConeTest::solidWithCaps,
-              &ConeTest::solidWithTextureCoords,
-              &ConeTest::solidWithTextureCoordsAndCaps,
-              &ConeTest::wireframe});
+              &ConeTest::solidWithCaps});
+
+    addInstancedTests({
+        &ConeTest::solidWithTextureCoordinatesOrTangents,
+        &ConeTest::solidWithTextureCoordinatesOrTangentsAndCaps},
+        Containers::arraySize(TextureCoordinatesOrTangentsData));
+
+    addTests({&ConeTest::wireframe});
 }
 
 void ConeTest::solidWithoutAnything() {
@@ -149,12 +162,14 @@ void ConeTest::solidWithCaps() {
     }), TestSuite::Compare::Container);
 }
 
-void ConeTest::solidWithTextureCoords() {
-    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::TextureCoordinates);
+void ConeTest::solidWithTextureCoordinatesOrTangents() {
+    auto&& data = TextureCoordinatesOrTangentsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Trade::MeshData cone = coneSolid(2, 3, 1.0f, data.flags);
 
     CORRADE_COMPARE(cone.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cone.isIndexed());
-    CORRADE_COMPARE(cone.attributeCount(), 3);
 
     /* Bottom ring duplicated because it has different normals, first vertex of
        each ring duplicated because it has different texture coordinates */
@@ -175,6 +190,25 @@ void ConeTest::solidWithTextureCoords() {
         {0.0f, 1.0f, 0.0f}          /* 11 */
     }), TestSuite::Compare::Container);
 
+    if(data.flags & ConeFlag::Tangents) {
+        CORRADE_COMPARE_AS(cone.attribute<Vector4>(Trade::MeshAttribute::Tangent), Containers::arrayView<Vector4>({
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 0 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 1 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 2 */
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 3 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 4 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 5 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 6 */
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 7 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 8 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 9 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 10 */
+            {1.0f, 0.0f, 0.0f, 1.0f}            /* 11 */
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!cone.hasAttribute(Trade::MeshAttribute::Tangent));
+
     CORRADE_COMPARE_AS(cone.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
         {0.0f, 0.447214f, 0.894427f},           /* 0 */
         {0.774597f, 0.447214f, -0.447214f},     /* 1 */
@@ -192,22 +226,37 @@ void ConeTest::solidWithTextureCoords() {
         {0.0f, 0.447214f, 0.894427f}            /* 11 */
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(cone.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
-        {0.0f, 0.0f},       /* 0 */
-        {0.333333f, 0.0f},  /* 1 */
-        {0.666667f, 0.0f},  /* 2 */
-        {1.0f, 0.0f},       /* 3 */
+    if(data.flags & ConeFlag::TextureCoordinates) {
+        CORRADE_COMPARE_AS(cone.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
+            {0.0f, 0.0f},       /* 0 */
+            {0.333333f, 0.0f},  /* 1 */
+            {0.666667f, 0.0f},  /* 2 */
+            {1.0f, 0.0f},       /* 3 */
 
-        {0.0f, 0.5f},       /* 4 */
-        {0.333333f, 0.5f},  /* 5 */
-        {0.666667f, 0.5f},  /* 6 */
-        {1.0f, 0.5f},       /* 7 */
+            {0.0f, 0.5f},       /* 4 */
+            {0.333333f, 0.5f},  /* 5 */
+            {0.666667f, 0.5f},  /* 6 */
+            {1.0f, 0.5f},       /* 7 */
 
-        {0.0f, 1.0f},       /* 8 */
-        {0.333333f, 1.0f},  /* 9 */
-        {0.666667f, 1.0f},  /* 10 */
-        {1.0f, 1.0f},       /* 11 */
-    }), TestSuite::Compare::Container);
+            {0.0f, 1.0f},       /* 8 */
+            {0.333333f, 1.0f},  /* 9 */
+            {0.666667f, 1.0f},  /* 10 */
+            {1.0f, 1.0f},       /* 11 */
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!cone.hasAttribute(Trade::MeshAttribute::TextureCoordinates));
+
+    if(data.flags & ConeFlag::Tangents) {
+        auto tangents = cone.attribute<Vector4>(Trade::MeshAttribute::Tangent);
+        auto normals = cone.attribute<Vector3>(Trade::MeshAttribute::Normal);
+        for(std::size_t i = 0; i != tangents.size(); ++i) {
+            CORRADE_ITERATION(i);
+            CORRADE_ITERATION(tangents[i]);
+            CORRADE_ITERATION(normals[i]);
+            CORRADE_VERIFY(tangents[i].xyz().isNormalized());
+            CORRADE_VERIFY(normals[i].isNormalized());
+            CORRADE_COMPARE(Math::dot(tangents[i].xyz(), normals[i]), 0.0f);
+        }
+    }
 
     /* Each ring has an extra vertex for texture coords */
     CORRADE_COMPARE_AS(cone.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
@@ -216,12 +265,14 @@ void ConeTest::solidWithTextureCoords() {
     }), TestSuite::Compare::Container);
 }
 
-void ConeTest::solidWithTextureCoordsAndCaps() {
-    Trade::MeshData cone = coneSolid(2, 3, 1.0f, ConeFlag::TextureCoordinates|ConeFlag::CapEnd);
+void ConeTest::solidWithTextureCoordinatesOrTangentsAndCaps() {
+    auto&& data = TextureCoordinatesOrTangentsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Trade::MeshData cone = coneSolid(2, 3, 1.0f, data.flags|ConeFlag::CapEnd);
 
     CORRADE_COMPARE(cone.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(cone.isIndexed());
-    CORRADE_COMPARE(cone.attributeCount(), 3);
 
     /* Bottom ring duplicated because it has different normals, first vertex of
        each ring duplicated because it has different texture coordinates */
@@ -249,6 +300,32 @@ void ConeTest::solidWithTextureCoordsAndCaps() {
         {0.0f, 1.0f, 0.0f}          /* 16 */
     }), TestSuite::Compare::Container);
 
+    if(data.flags & ConeFlag::Tangents) {
+        CORRADE_COMPARE_AS(cone.attribute<Vector4>(Trade::MeshAttribute::Tangent), Containers::arrayView<Vector4>({
+            {-1.0f, 0.0f, 0.0f, 1.0f},          /* 0 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 1 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 2 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 3 */
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 4 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 5 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 6 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 7 */
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 8 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 9 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 10 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 11 */
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 12 */
+
+            {1.0f, 0.0f, 0.0f, 1.0f},           /* 13 */
+            {-0.5f, 0.0f, -0.866025f, 1.0f},    /* 14 */
+            {-0.5f, 0.0f, 0.866025f, 1.0f},     /* 15 */
+            {1.0f, 0.0f, 0.0f, 1.0f}            /* 16 */
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!cone.hasAttribute(Trade::MeshAttribute::Tangent));
+
     CORRADE_COMPARE_AS(cone.attribute<Vector3>(Trade::MeshAttribute::Normal), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},                    /* 0 */
 
@@ -273,29 +350,44 @@ void ConeTest::solidWithTextureCoordsAndCaps() {
         {0.0f, 0.447214f, 0.894427f}            /* 16 */
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(cone.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
-        {0.5f, 0.0f},           /* 0 */
+    if(data.flags & ConeFlag::TextureCoordinates) {
+        CORRADE_COMPARE_AS(cone.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
+            {0.5f, 0.0f},           /* 0 */
 
-        {0.0f, 0.333333f},      /* 1 */
-        {0.333333f, 0.333333f}, /* 2 */
-        {0.666667f, 0.333333f}, /* 3 */
-        {1.0f, 0.333333f},      /* 4 */
+            {0.0f, 0.333333f},      /* 1 */
+            {0.333333f, 0.333333f}, /* 2 */
+            {0.666667f, 0.333333f}, /* 3 */
+            {1.0f, 0.333333f},      /* 4 */
 
-        {0.0f, 0.333333f},      /* 5 */
-        {0.333333f, 0.333333f}, /* 6 */
-        {0.666667f, 0.333333f}, /* 7 */
-        {1.0f, 0.333333f},      /* 8 */
+            {0.0f, 0.333333f},      /* 5 */
+            {0.333333f, 0.333333f}, /* 6 */
+            {0.666667f, 0.333333f}, /* 7 */
+            {1.0f, 0.333333f},      /* 8 */
 
-        {0.0f, 0.666667f},      /* 9 */
-        {0.333333f, 0.666667f}, /* 10 */
-        {0.666667f, 0.666667f}, /* 11 */
-        {1.0f, 0.666667f},      /* 12 */
+            {0.0f, 0.666667f},      /* 9 */
+            {0.333333f, 0.666667f}, /* 10 */
+            {0.666667f, 0.666667f}, /* 11 */
+            {1.0f, 0.666667f},      /* 12 */
 
-        {0.0f, 1.0f},           /* 13 */
-        {0.333333f, 1.0f},      /* 14 */
-        {0.666667f, 1.0f},      /* 15 */
-        {1.0f, 1.0f},           /* 16 */
-    }), TestSuite::Compare::Container);
+            {0.0f, 1.0f},           /* 13 */
+            {0.333333f, 1.0f},      /* 14 */
+            {0.666667f, 1.0f},      /* 15 */
+            {1.0f, 1.0f},           /* 16 */
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!cone.hasAttribute(Trade::MeshAttribute::TextureCoordinates));
+
+    if(data.flags & ConeFlag::Tangents) {
+        auto tangents = cone.attribute<Vector4>(Trade::MeshAttribute::Tangent);
+        auto normals = cone.attribute<Vector3>(Trade::MeshAttribute::Normal);
+        for(std::size_t i = 0; i != tangents.size(); ++i) {
+            CORRADE_ITERATION(i);
+            CORRADE_ITERATION(tangents[i]);
+            CORRADE_ITERATION(normals[i]);
+            CORRADE_VERIFY(tangents[i].xyz().isNormalized());
+            CORRADE_VERIFY(normals[i].isNormalized());
+            CORRADE_COMPARE(Math::dot(tangents[i].xyz(), normals[i]), 0.0f);
+        }
+    }
 
     /* Faces of the caps and sides do not share any vertices due to different
        normals, each ring has an extra vertex for texture coords */

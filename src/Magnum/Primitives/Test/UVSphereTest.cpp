@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -35,18 +35,30 @@ namespace Magnum { namespace Primitives { namespace Test { namespace {
 struct UVSphereTest: TestSuite::Tester {
     explicit UVSphereTest();
 
-    void solidWithoutTextureCoords();
-    void solidWithTextureCoords();
+    void solidWithoutTextureCoordinates();
+    void solidWithTextureCoordinatesOrTangents();
     void wireframe();
 };
 
+constexpr struct {
+    const char* name;
+    UVSphereFlags flags;
+} TextureCoordinatesOrTangentsData[] {
+    {"texture coordinates", UVSphereFlag::TextureCoordinates},
+    {"tangents", UVSphereFlag::Tangents},
+    {"both", UVSphereFlag::TextureCoordinates|UVSphereFlag::Tangents}
+};
+
 UVSphereTest::UVSphereTest() {
-    addTests({&UVSphereTest::solidWithoutTextureCoords,
-              &UVSphereTest::solidWithTextureCoords,
-              &UVSphereTest::wireframe});
+    addTests({&UVSphereTest::solidWithoutTextureCoordinates});
+
+    addInstancedTests({&UVSphereTest::solidWithTextureCoordinatesOrTangents},
+        Containers::arraySize(TextureCoordinatesOrTangentsData));
+
+    addTests({&UVSphereTest::wireframe});
 }
 
-void UVSphereTest::solidWithoutTextureCoords() {
+void UVSphereTest::solidWithoutTextureCoordinates() {
     Trade::MeshData sphere = uvSphereSolid(3, 3);
 
     CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Triangles);
@@ -88,12 +100,14 @@ void UVSphereTest::solidWithoutTextureCoords() {
     }), TestSuite::Compare::Container);
 }
 
-void UVSphereTest::solidWithTextureCoords() {
-    Trade::MeshData sphere = uvSphereSolid(3, 3, UVSphereFlag::TextureCoordinates);
+void UVSphereTest::solidWithTextureCoordinatesOrTangents() {
+    auto&& data = TextureCoordinatesOrTangentsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Trade::MeshData sphere = uvSphereSolid(3, 3, data.flags);
 
     CORRADE_COMPARE(sphere.primitive(), MeshPrimitive::Triangles);
     CORRADE_VERIFY(sphere.isIndexed());
-    CORRADE_COMPARE(sphere.attributeCount(), 3);
 
     CORRADE_COMPARE_AS(sphere.attribute<Vector3>(Trade::MeshAttribute::Position), Containers::arrayView<Vector3>({
         {0.0f, -1.0f, 0.0f},
@@ -111,21 +125,54 @@ void UVSphereTest::solidWithTextureCoords() {
         {0.0f, 1.0f, 0.0f}
     }), TestSuite::Compare::Container);
 
-    CORRADE_COMPARE_AS(sphere.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
-        {0.5f, 0.0f},
+    if(data.flags & UVSphereFlag::Tangents) {
+        CORRADE_COMPARE_AS(sphere.attribute<Vector4>(Trade::MeshAttribute::Tangent), Containers::arrayView<Vector4>({
+            {-1.0f, 0.0f, 0.0f, 1.0f},
 
-        {0.0f, 0.333333f},
-        {0.333333f, 0.333333f},
-        {0.666667f, 0.333333f},
-        {1.0f, 0.333333f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
+            {-0.5f, 0.0f, -0.866025f, 1.0f},
+            {-0.5f, 0.0f, 0.866025f, 1.0f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
 
-        {0.0f, 0.666667f},
-        {0.333333f, 0.666667f},
-        {0.666667f, 0.666667f},
-        {1.0f, 0.666667f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
+            {-0.5f, 0.0f, -0.866025f, 1.0f},
+            {-0.5f, 0.0f, 0.866025f, 1.0f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
 
-        {0.5f, 1.0f}
-    }), TestSuite::Compare::Container);
+            {1.0f, 0.0f, 0.0f, 1.0f}
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!sphere.hasAttribute(Trade::MeshAttribute::Tangent));
+
+    if(data.flags & UVSphereFlag::TextureCoordinates) {
+        CORRADE_COMPARE_AS(sphere.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates), Containers::arrayView<Vector2>({
+            {0.5f, 0.0f},
+
+            {0.0f, 0.333333f},
+            {0.333333f, 0.333333f},
+            {0.666667f, 0.333333f},
+            {1.0f, 0.333333f},
+
+            {0.0f, 0.666667f},
+            {0.333333f, 0.666667f},
+            {0.666667f, 0.666667f},
+            {1.0f, 0.666667f},
+
+            {0.5f, 1.0f}
+        }), TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!sphere.hasAttribute(Trade::MeshAttribute::TextureCoordinates));
+
+    if(data.flags & UVSphereFlag::Tangents) {
+        auto tangents = sphere.attribute<Vector4>(Trade::MeshAttribute::Tangent);
+        auto normals = sphere.attribute<Vector3>(Trade::MeshAttribute::Normal);
+        for(std::size_t i = 0; i != tangents.size(); ++i) {
+            CORRADE_ITERATION(i);
+            CORRADE_ITERATION(tangents[i]);
+            CORRADE_ITERATION(normals[i]);
+            CORRADE_VERIFY(tangents[i].xyz().isNormalized());
+            CORRADE_VERIFY(normals[i].isNormalized());
+            CORRADE_COMPARE(Math::dot(tangents[i].xyz(), normals[i]), 0.0f);
+        }
+    }
 
     CORRADE_COMPARE_AS(sphere.indices<UnsignedInt>(), Containers::arrayView<UnsignedInt>({
         0, 2, 1, 0, 3, 2, 0, 4, 3,

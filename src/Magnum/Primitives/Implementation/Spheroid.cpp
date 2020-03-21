@@ -36,6 +36,12 @@
 namespace Magnum { namespace Primitives { namespace Implementation {
 
 Spheroid::Spheroid(UnsignedInt segments, Flags flags): _segments(segments), _flags{flags}, _stride{sizeof(Vector3) + sizeof(Vector3)}, _attributeCount{2} {
+    if(_flags & Flag::Tangents) {
+        _tangentOffset = _stride;
+        _stride += sizeof(Vector4);
+        ++_attributeCount;
+    } else _tangentOffset = ~std::size_t{};
+
     if(_flags & Flag::TextureCoordinates) {
         _textureCoordinateOffset = _stride;
         _stride += sizeof(Vector2);
@@ -43,14 +49,22 @@ Spheroid::Spheroid(UnsignedInt segments, Flags flags): _segments(segments), _fla
     } else _textureCoordinateOffset = ~std::size_t{};
 }
 
-void Spheroid::append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords) {
+void Spheroid::append(const Vector3& position, const Vector3& normal) {
     Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
         Containers::arrayCast<const char>(Containers::arrayView(&position, 1)));
     Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
         Containers::arrayCast<const char>(Containers::arrayView(&normal, 1)));
-    if(_flags & Flag::TextureCoordinates) {
+    if(_flags & Flag::Tangents) {
+        /** @todo make arrayGrow() a public API instead of this */
+        constexpr const char empty[sizeof(Vector4)]{};
         Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
-        Containers::arrayCast<const char>(Containers::arrayView(&textureCoords, 1)));
+            Containers::arrayView(empty));
+    }
+    if(_flags & Flag::TextureCoordinates) {
+        /** @todo make arrayGrow() a public API instead */
+        constexpr const char empty[sizeof(Vector2)]{};
+        Containers::arrayAppend<Trade::ArrayAllocator>(_vertexData,
+            Containers::arrayView(empty));
     }
 }
 
@@ -62,12 +76,18 @@ Vector3 Spheroid::lastVertexNormal(const std::size_t offsetFromEnd) {
     return Containers::arrayCast<Vector3>(_vertexData.slice<sizeof(Vector3)>(_vertexData.size() - _stride*offsetFromEnd + sizeof(Vector3)))[0];
 }
 
+Vector4& Spheroid::lastVertexTangent(const std::size_t offsetFromEnd) {
+    return Containers::arrayCast<Vector4>(_vertexData.slice<sizeof(Vector4)>(_vertexData.size() - _stride*offsetFromEnd + _tangentOffset))[0];
+}
+
 Vector2& Spheroid::lastVertexTextureCoords(const std::size_t offsetFromEnd) {
     return Containers::arrayCast<Vector2>(_vertexData.slice<sizeof(Vector2)>(_vertexData.size() - _stride*offsetFromEnd + _textureCoordinateOffset))[0];
 }
 
 void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
     append({0.0f, y, 0.0f}, {0.0f, normalY, 0.0f});
+    if(_flags & Flag::Tangents)
+        lastVertexTangent(1) = {normalY > 0.0f ? 1.0f : -1.0f, 0.0f, 0.0f, 1.0f};
     if(_flags & Flag::TextureCoordinates)
         lastVertexTextureCoords(1) = {0.5f, textureCoordsV};
 }
@@ -87,15 +107,20 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
             append({x*segmentSinCos.first, centerY+y, z*segmentSinCos.second},
                    {x*segmentSinCos.first, y, z*segmentSinCos.second});
 
+            if(_flags & Flag::Tangents)
+                lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
             if(_flags & Flag::TextureCoordinates)
                 lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
 
         /* Duplicate first segment in the ring for additional vertex for
            texture coordinate */
-        if(_flags & Flag::TextureCoordinates) {
-            append(lastVertexPosition(_segments), lastVertexNormal(_segments),
-                {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+        if(_flags & (Flag::TextureCoordinates|Flag::Tangents)) {
+            append(lastVertexPosition(_segments), lastVertexNormal(_segments));
+            if(_flags & Flag::Tangents)
+                lastVertexTangent(1) = lastVertexTangent(_segments + 1);
+            if(_flags & Flag::TextureCoordinates)
+                lastVertexTextureCoords(1) = {1.0f, startTextureCoordsV + i*textureCoordsVIncrement};
         }
     }
 }
@@ -112,14 +137,19 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
             append({base.x()*segmentSinCos.first, base.y(), base.x()*segmentSinCos.second},
                    {baseNormal.x()*segmentSinCos.first, baseNormal.y(), baseNormal.x()*segmentSinCos.second});
 
+            if(_flags & Flag::Tangents)
+                lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
             if(_flags & Flag::TextureCoordinates)
                 lastVertexTextureCoords(1) = {j*1.0f/_segments, startTextureCoordsV + i*textureCoordsVIncrement};
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
-        if(_flags & Flag::TextureCoordinates) {
-            append(lastVertexPosition(_segments), lastVertexNormal(_segments),
-                {1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+        if(_flags & (Flag::TextureCoordinates|Flag::Tangents)) {
+            append(lastVertexPosition(_segments), lastVertexNormal(_segments));
+            if(_flags & Flag::Tangents)
+                lastVertexTangent(1) = lastVertexTangent(_segments + 1);
+            if(_flags & Flag::TextureCoordinates)
+                lastVertexTextureCoords(1) = {1.0f, startTextureCoordsV + i*textureCoordsVIncrement};
         }
 
         base += increment;
@@ -133,7 +163,7 @@ void Spheroid::bottomFaceRing() {
             0u,
 
             /* Top right vertex */
-            (j != _segments-1 || _flags & Flag::TextureCoordinates) ?
+            (j != _segments-1 || _flags & (Flag::TextureCoordinates|Flag::Tangents)) ?
             j+2 : 1,
 
             /* Top left vertex */
@@ -143,12 +173,12 @@ void Spheroid::bottomFaceRing() {
 }
 
 void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
-    const UnsignedInt vertexSegments = _segments + (_flags & Flag::TextureCoordinates ? 1 : 0);
+    const UnsignedInt vertexSegments = _segments + (_flags & (Flag::TextureCoordinates|Flag::Tangents) ? 1 : 0);
 
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != _segments; ++j) {
             const UnsignedInt bottomLeft = i*vertexSegments+j+offset;
-            const UnsignedInt bottomRight = ((j != _segments-1 || _flags & Flag::TextureCoordinates) ?
+            const UnsignedInt bottomRight = ((j != _segments-1 || _flags & (Flag::TextureCoordinates|Flag::Tangents)) ?
                 i*vertexSegments+j+1+offset : i*_segments+offset);
             const UnsignedInt topLeft = bottomLeft+vertexSegments;
             const UnsignedInt topRight = bottomRight+vertexSegments;
@@ -166,7 +196,7 @@ void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
 }
 
 void Spheroid::topFaceRing() {
-    const UnsignedInt vertexSegments = _segments + (_flags & Flag::TextureCoordinates ? 1 : 0);
+    const UnsignedInt vertexSegments = _segments + (_flags & (Flag::TextureCoordinates|Flag::Tangents) ? 1 : 0);
 
     const UnsignedInt vertexCount = _vertexData.size()/_stride;
 
@@ -176,7 +206,7 @@ void Spheroid::topFaceRing() {
             vertexCount - vertexSegments + j - 1,
 
             /* Bottom right vertex */
-            (j != _segments-1 || _flags & Flag::TextureCoordinates) ?
+            (j != _segments-1 || _flags & (Flag::TextureCoordinates|Flag::Tangents)) ?
             vertexCount - vertexSegments + j : vertexCount - _segments - 1,
 
             /* Top vertex */
@@ -193,14 +223,20 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
         const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
         append({segmentSinCos.first, y, segmentSinCos.second}, normal);
 
+        if(_flags & Flag::Tangents)
+            lastVertexTangent(1) = {segmentSinCos.second, 0.0f, -segmentSinCos.first, 1.0f};
         if(_flags & Flag::TextureCoordinates)
             lastVertexTextureCoords(1) = {i*1.0f/_segments, textureCoordsV};
     }
 
     /* Duplicate first segment in the ring for additional vertex for texture
        coordinate */
-    if(_flags & Flag::TextureCoordinates) {
-        append(lastVertexPosition(_segments), normal, {1.0f, textureCoordsV});
+    if(_flags & (Flag::TextureCoordinates|Flag::Tangents)) {
+        append(lastVertexPosition(_segments), normal);
+        if(_flags & Flag::Tangents)
+            lastVertexTangent(1) = lastVertexTangent(_segments + 1);
+        if(_flags & Flag::TextureCoordinates)
+            lastVertexTextureCoords(1) = {1.0f, textureCoordsV};
     }
 }
 
@@ -220,6 +256,12 @@ Trade::MeshData Spheroid::finalize() {
             _vertexData.data() + sizeof(Vector3),
             _vertexData.size()/_stride, std::ptrdiff_t(_stride))};
 
+    if(_flags & Flag::Tangents)
+        attributes[attributeOffset++] = Trade::MeshAttributeData{
+            Trade::MeshAttribute::Tangent, VertexFormat::Vector4,
+            Containers::stridedArrayView(_vertexData,
+                _vertexData.data() + _tangentOffset,
+                _vertexData.size()/_stride, std::ptrdiff_t(_stride))};
     if(_flags & Flag::TextureCoordinates)
         attributes[attributeOffset++] = Trade::MeshAttributeData{
             Trade::MeshAttribute::TextureCoordinates, VertexFormat::Vector2,

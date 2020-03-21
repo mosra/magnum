@@ -192,6 +192,12 @@ See also:
     bootstrap project for using Magnum together with gtkmm (see
     [mosra/magnum-bootstrap#24](https://github.com/mosra/magnum-bootstrap/pull/24))
 
+@subsubsection changelog-latest-new-primitives Primitives library
+
+-   @ref Primitives::capsule3DSolid(), @ref Primitives::coneSolid(),
+    @ref Primitives::cylinderSolid() and @ref Primitives::uvSphereSolid() can
+    now have tangents as well
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   All 2D transformation implementations that support rotation now have a

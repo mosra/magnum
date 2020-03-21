@@ -54,7 +54,7 @@ Trade::MeshData coneSolid(const UnsignedInt rings, const UnsignedInt segments, c
 
     /* Faces. Account for the extra vertices for caps and texture coords. */
     if(flags & ConeFlag::CapEnd) cone.bottomFaceRing();
-    if(flags >= (ConeFlag::CapEnd|ConeFlag::TextureCoordinates))
+    if(flags & ConeFlag::CapEnd && flags & (ConeFlag::Tangents|ConeFlag::TextureCoordinates))
         cone.faceRings(rings, 2 + segments);
     else if(flags & ConeFlag::CapEnd)
         cone.faceRings(rings, 1 + segments);

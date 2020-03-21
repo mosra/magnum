@@ -29,7 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace Primitives { namespace Implementation {
@@ -37,7 +37,8 @@ namespace Magnum { namespace Primitives { namespace Implementation {
 class Spheroid {
     public:
         enum class Flag: UnsignedByte {
-            TextureCoordinates = 1 << 0
+            TextureCoordinates = 1 << 0,
+            Tangents = 1 << 1
         };
 
         typedef Containers::EnumSet<Flag> Flags;
@@ -58,15 +59,17 @@ class Spheroid {
         UnsignedInt _segments;
         Flags _flags;
         std::size_t _stride;
-        std::size_t _textureCoordinateOffset;
+        std::size_t _textureCoordinateOffset,
+            _tangentOffset;
         std::size_t _attributeCount;
 
         Containers::Array<UnsignedInt> _indexData;
         Containers::Array<char> _vertexData;
 
-        void append(const Vector3& position, const Vector3& normal, const Vector2& textureCoords = {});
+        void append(const Vector3& position, const Vector3& normal);
         Vector3 lastVertexPosition(std::size_t offsetFromEnd);
         Vector3 lastVertexNormal(std::size_t offsetFromEnd);
+        Vector4& lastVertexTangent(std::size_t offsetFromEnd);
         Vector2& lastVertexTextureCoords(std::size_t offsetFromEnd);
 };
 

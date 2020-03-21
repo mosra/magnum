@@ -59,7 +59,15 @@ enum class ConeFlag: UnsignedByte {
     GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
     #endif
 
-    CapEnd = 1 << 1                 /**< Cap end */
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1,
+
+    CapEnd = 1 << 2                 /**< Cap end */
 };
 
 /**
@@ -82,10 +90,11 @@ CORRADE_ENUMSET_OPERATORS(ConeFlags)
 
 Cone along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals and optional
-@ref VertexFormat::Vector2 texture coordinates. Note that in order to have
-properly smooth normals over the whole area, the tip consists of
-@cpp segments*2 @ce vertices instead of just one.
+positions, @ref VertexFormat::Vector3 normals, optional
+@ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
+texture coordinates. Note that in order to have properly smooth normals over
+the whole area, the tip consists of @cpp segments*2 @ce vertices instead of
+just one.
 
 @image html primitives-conesolid.png width=256px
 

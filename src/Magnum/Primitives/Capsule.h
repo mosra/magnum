@@ -63,7 +63,15 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData capsule2DWireframe(UnsignedInt hemisphe
 @see @ref CapsuleFlags, @ref capsule3DSolid()
 */
 enum class CapsuleFlag: UnsignedByte {
-    TextureCoordinates = 1 << 0 /**< Generate texture coordinates */
+    TextureCoordinates = 1 << 0, /**< Generate texture coordinates */
+
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1
 };
 
 /**
@@ -91,9 +99,9 @@ CORRADE_ENUMSET_OPERATORS(CapsuleFlags)
 Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
 @ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
 interleaved @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3
-normals and optional @ref VertexFormat::Vector2 texture coordinates. If texture
-coordinates are generated, vertices of one segment are duplicated for texture
-wrapping.
+normals, optional @ref VertexFormat::Vector4 tangents and optional
+@ref VertexFormat::Vector2 texture coordinates. If texture coordinates are
+generated, vertices of one segment are duplicated for texture wrapping.
 
 @image html primitives-capsule3dsolid.png width=256px
 

@@ -58,7 +58,15 @@ enum class CylinderFlag: UnsignedByte {
     GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
     #endif
 
-    CapEnds = 1 << 1                 /**< Cap ends */
+    /**
+     * Generate four-component tangents. The last component can be used to
+     * reconstruct a bitangent as described in the documentation of
+     * @ref Trade::MeshAttribute::Tangent.
+     * @m_since_latest
+     */
+    Tangents = 1 << 1,
+
+    CapEnds = 1 << 2                 /**< Cap ends */
 };
 
 /**
@@ -82,9 +90,10 @@ CORRADE_ENUMSET_OPERATORS(CylinderFlags)
 Cylinder along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles
 with @ref MeshIndexType::UnsignedInt indices, interleaved
 @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3 normals,
-optional @ref VertexFormat::Vector2 texture coordinates and optional capped
-ends. If texture coordinates are generated, vertices of one segment are
-duplicated for texture wrapping.
+optional @ref VertexFormat::Vector4 tangents, optional
+@ref VertexFormat::Vector2 texture coordinates and optional capped ends. If
+texture coordinates are generated, vertices of one segment are duplicated for
+texture wrapping.
 
 @image html primitives-cylindersolid.png width=256px
 
