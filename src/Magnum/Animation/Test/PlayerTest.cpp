@@ -24,8 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -1287,8 +1289,8 @@ template<class T> void PlayerTest::addWithCallbackOnChangeTemplate() {
 }
 
 /* Can't use raw lambdas because MSVC 2015 */
-void callback(std::vector<Int>& data, Int value) {
-    data.push_back(value);
+void callback(Containers::Array<Int>& data, Int value) {
+    arrayAppend(data, value);
 }
 
 template<class T> void PlayerTest::addRawCallback() {
@@ -1297,7 +1299,7 @@ template<class T> void PlayerTest::addRawCallback() {
     T track;
 
     Int result = -1;
-    std::vector<Int> data;
+    Containers::Array<Int> data;
 
     Animation::Player<Float> player;
     player.addRawCallback(track,
@@ -1306,16 +1308,19 @@ template<class T> void PlayerTest::addRawCallback() {
             Int value = static_cast<const Animation::TrackView<const Float, const Int>&>(track).at(key, hint);
             if(value == *static_cast<Int*>(destination)) return;
             *static_cast<Int*>(destination) = value;
-            reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)(*static_cast<std::vector<Int>*>(userData), value);
+            reinterpret_cast<void(*)(Containers::Array<Int>&, Int)>(callback)(*static_cast<Containers::Array<Int>*>(userData), value);
         }, &result, reinterpret_cast<void(*)()>(callback), &data)
         .play({});
 
     /* Should add the default-constructed value into the vector, but only once */
-    CORRADE_COMPARE(data, std::vector<Int>{});
+    CORRADE_COMPARE_AS(data, Containers::arrayView<Int>({}),
+        TestSuite::Compare::Container);
     player.advance({});
-    CORRADE_COMPARE(data, std::vector<Int>{0});
+    CORRADE_COMPARE_AS(data, Containers::arrayView<Int>({0}),
+        TestSuite::Compare::Container);
     player.advance(1.0f);
-    CORRADE_COMPARE(data, std::vector<Int>{0});
+    CORRADE_COMPARE_AS(data, Containers::arrayView<Int>({0}),
+        TestSuite::Compare::Container);
 }
 
 void PlayerTest::runFor100YearsFloat() {

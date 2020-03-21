@@ -31,6 +31,7 @@
 
 #include "Player.h"
 
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Reference.h>
 
@@ -105,7 +106,7 @@ template<class T, class K> Player<T, K>& Player<T, K>::addInternal(const TrackVi
         _duration = track.duration();
     else
         _duration = Math::join(track.duration(), _duration);
-    _tracks.emplace_back(track, advancer, destination, userCallback, userCallbackData, 0);
+    arrayAppend(_tracks, Containers::InPlaceInit, track, advancer, destination, userCallback, userCallbackData, 0u);
     return *this;
 }
 

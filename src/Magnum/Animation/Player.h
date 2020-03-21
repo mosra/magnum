@@ -30,7 +30,7 @@
  */
 
 #include <chrono>
-#include <vector>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Animation/Track.h"
 #include "Magnum/Math/Range.h"
@@ -812,7 +812,7 @@ template<class T, class K
 
         Containers::Optional<std::pair<UnsignedInt, K>> elapsedInternal(T time, T& updatedStartTime, T& updatedPauseTime, State& updatedState) const;
 
-        std::vector<Track> _tracks;
+        Containers::Array<Track> _tracks;
         Math::Range1D<K> _duration;
         UnsignedInt _playCount{1};
         State _state{State::Stopped};

@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <vector>
+
 #include "Magnum/Timeline.h"
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/Matrix3.h"
