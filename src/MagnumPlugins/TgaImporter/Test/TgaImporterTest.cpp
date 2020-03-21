@@ -95,7 +95,8 @@ constexpr const char Color24Rle[] = {
     '\x82', 4, 5, 6
 };
 
-constexpr struct {
+/* MSVC 2015 crashes when seeing constexpr here. Not doing that, then. */
+const struct {
     const char* name;
     Containers::ArrayView<const char> data;
     const char* message;
