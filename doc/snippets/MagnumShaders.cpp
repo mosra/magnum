@@ -50,6 +50,8 @@ using namespace Magnum::Math::Literals;
 
 int main() {
 
+/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
+   on GCC 4.8 in the [60] array */
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [shaders-setup] */
@@ -285,6 +287,9 @@ mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer3D::VertexIndex{})
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+/* internal compiler error: in gimplify_init_constructor, at gimplify.c:4271
+   on GCC 4.8 in the [60] array */
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [MeshVisualizer-usage-tbn1] */
 struct Vertex {
@@ -322,6 +327,7 @@ shader.setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
 /* [MeshVisualizer-usage-tbn2] */
 
 }
+#endif
 #endif
 
 {
