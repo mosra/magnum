@@ -472,8 +472,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Set normal matrix
          * @return Reference to self (for method chaining)
          *
-         * The matrix doesn't need to be normalized, as the renormalization
-         * must be done in the shader anyway. You need to set also
+         * The matrix doesn't need to be normalized, as renormalization is done
+         * per-fragment anyway. You need to set also
          * @ref setTransformationMatrix() with a corresponding value. Initial
          * value is an identity matrix. If @ref lightCount() is zero, this
          * function is a no-op, as normals don't contribute to the output in
