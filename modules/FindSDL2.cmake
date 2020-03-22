@@ -117,18 +117,33 @@ if(CORRADE_TARGET_WINDOWS)
         PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 endif()
 
-# (Static) iOS dependencies
-if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
-    set(_SDL2_FRAMEWORKS
-        AudioToolbox
-        AVFoundation
-        CoreGraphics
-        CoreMotion
-        Foundation
-        GameController
-        Metal # needed since 2.0.8
-        QuartzCore
-        UIKit)
+# (Static) macOS / iOS dependencies
+if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
+    if(CORRADE_TARGET_IOS)
+        set(_SDL2_FRAMEWORKS
+            AudioToolbox
+            AVFoundation
+            CoreGraphics
+            CoreMotion
+            Foundation
+            GameController
+            Metal # needed since 2.0.8
+            QuartzCore
+            UIKit)
+    else()
+        # Those are needed when building SDL statically using its CMake project
+        set(_SDL2_FRAMEWORKS
+            iconv # should be in the system
+            AudioToolbox
+            AVFoundation
+            Carbon
+            Cocoa
+            CoreAudio
+            CoreVideo
+            ForceFeedback
+            Foundation
+            IOKit)
+    endif()
     set(_SDL2_FRAMEWORK_LIBRARIES )
     foreach(framework ${_SDL2_FRAMEWORKS})
         find_library(_SDL2_${framework}_LIBRARY ${framework})
@@ -174,8 +189,8 @@ if(NOT TARGET SDL2::SDL2)
                 INTERFACE_LINK_LIBRARIES Threads::Threads ${CMAKE_DL_LIBS})
         endif()
 
-        # Link frameworks on iOS if we have a static SDL
-        if(CORRADE_TARGET_IOS AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
+        # Link frameworks on macOS / iOS if we have a static SDL
+        if(CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES ".*libSDL2.a$")
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()
