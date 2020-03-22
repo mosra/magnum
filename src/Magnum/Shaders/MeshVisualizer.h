@@ -86,15 +86,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
 @m_since_latest
 
 Uses the geometry shader to visualize wireframe of 3D meshes. You need to
-provide the @ref Position attribute in your triangle mesh. By default, the
-shader renders the mesh with a white color in an identity transformation. Use
+provide the @ref Position attribute in your triangle mesh. Use
 @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
 @image html shaders-meshvisualizer2d.png width=256px
 
-This shader is a 2D variant of @ref MeshVisualizer3D with mostly identical
-workflow. See its documentation for more information.
+The shader expects that you enable wireframe visualization by passing an
+appropriate @ref Flag to the constructor --- there's no default behavior with
+nothing enabled. The shader is a 2D variant of @ref MeshVisualizer3D with
+mostly identical workflow. See its documentation for more information.
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisualizerBase {
     public:
@@ -153,8 +154,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
         /**
          * @brief Constructor
          * @param flags     Flags
+         *
+         * At least @ref Flag::Wireframe is expected to be enabled.
          */
-        explicit MeshVisualizer2D(Flags flags = {});
+        explicit MeshVisualizer2D(Flags flags);
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -209,7 +212,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that
+         * @ref Flag::Wireframe is enabled.
          */
         MeshVisualizer2D& setColor(const Color4& color) {
             return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setColor(color));
@@ -255,13 +259,16 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
 /**
 @brief 3D mesh visualization shader
 
-Uses the geometry shader to visualize wireframe of 3D meshes. You need to
-provide the @ref Position attribute in your triangle mesh. By default, the
-shader renders the mesh with a white color in an identity transformation. Use
-@ref setTransformationProjectionMatrix(), @ref setColor() and others to
-configure the shader.
+Uses the geometry shader to visualize wireframe or tangent space of 3D meshes.
+You need to provide the @ref Position attribute in your triangle mesh at the
+very least. Use @ref setTransformationProjectionMatrix(), @ref setColor() and
+others to configure the shader.
 
 @image html shaders-meshvisualizer3d.png width=256px
+
+The shader expects that you enable either wireframe visualization or tangent
+space visualization by passing an appropriate @ref Flag to the constructor ---
+there's no default behavior with nothing enabled.
 
 @section Shaders-MeshVisualizer-wireframe Wireframe visualization
 
@@ -538,8 +545,21 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
         /**
          * @brief Constructor
          * @param flags     Flags
+         *
+         * At least @ref Flag::Wireframe or one of @ref Flag::TangentDirection,
+         * @ref Flag::BitangentFromTangentDirection,
+         * @ref Flag::BitangentDirection, @ref Flag::NormalDirection is
+         * expected to be enabled.
          */
-        explicit MeshVisualizer3D(Flags flags = {});
+        explicit MeshVisualizer3D(Flags flags);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @m_deprecated_since_latest Use @ref MeshVisualizer3D(Flags) instead.
+         */
+        explicit CORRADE_DEPRECATED("use MeshVisualizer3D(Flags) instead") MeshVisualizer3D(): MeshVisualizer3D{{}} {}
+        #endif
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -638,7 +658,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that
+         * @ref Flag::Wireframe is enabled.
          */
         MeshVisualizer3D& setColor(const Color4& color) {
             return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setColor(color));

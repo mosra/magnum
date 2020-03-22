@@ -41,7 +41,7 @@ uniform lowp vec2 viewportSize; /* defaults to zero */
 
 layout(triangles) in;
 
-#if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
+#if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && defined(WIREFRAME_RENDERING)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -59,7 +59,9 @@ uniform lowp vec4 wireframeColor
     = vec4(0.0, 0.0, 0.0, 1.0)
     #endif
     ;
+#endif
 
+#if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 8)
 #endif

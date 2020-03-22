@@ -69,10 +69,10 @@ MeshVisualizerBase::MeshVisualizerBase(FlagsBase flags): _flags{flags} {
 GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const {
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
-    CORRADE_INTERNAL_ASSERT(!_flags || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
+    CORRADE_INTERNAL_ASSERT(_flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
-    CORRADE_INTERNAL_ASSERT(!_flags || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
+    CORRADE_INTERNAL_ASSERT(_flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
     #else
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
@@ -96,6 +96,8 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
 }
 
 MeshVisualizerBase& MeshVisualizerBase::setColor(const Color4& color) {
+    CORRADE_ASSERT(_flags & FlagBase::Wireframe,
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled", *this);
     setUniform(_colorUniform, color);
     return *this;
 }
@@ -117,6 +119,9 @@ MeshVisualizerBase& MeshVisualizerBase::setWireframeWidth(const Float width) {
 }
 
 MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedByte(flags))} {
+    CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
+        "Shaders::MeshVisualizer2D: at least Flag::Wireframe has to be enabled", );
+
     Utility::Resource rs{"MagnumShaders"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
@@ -177,8 +182,8 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        _colorUniform = uniformLocation("color");
         if(flags & Flag::Wireframe) {
+            _colorUniform = uniformLocation("color");
             _wireframeColorUniform = uniformLocation("wireframeColor");
             _wireframeWidthUniform = uniformLocation("wireframeWidth");
             _smoothnessUniform = uniformLocation("smoothness");
@@ -190,8 +195,8 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix({});
-    setColor(Color3(1.0f));
     if(flags & Flag::Wireframe) {
+        setColor(Color3(1.0f));
         /* Viewport size is zero by default */
         setWireframeColor(Color3{0.0f});
         setWireframeWidth(1.0f);
@@ -224,10 +229,15 @@ MeshVisualizer2D& MeshVisualizer2D::setSmoothness(const Float smoothness) {
 
 MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedByte(flags))} {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) & ~Flag::NoGeometryShader),
+        "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled", );
     CORRADE_ASSERT(!(flags & Flag::NoGeometryShader && flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)),
         "Shaders::MeshVisualizer3D: geometry shader has to be enabled when rendering TBN direction", );
     CORRADE_ASSERT(!(flags & Flag::BitangentDirection && flags & Flag::BitangentFromTangentDirection),
         "Shaders::MeshVisualizer3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive", );
+    #else
+    CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
+        "Shaders::MeshVisualizer3D: at least Flag::Wireframe has to be enabled", );
     #endif
 
     Utility::Resource rs{"MagnumShaders"};
@@ -323,8 +333,8 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
-        _colorUniform = uniformLocation("color");
         if(flags & Flag::Wireframe) {
+            _colorUniform = uniformLocation("color");
             _wireframeColorUniform = uniformLocation("wireframeColor");
             _wireframeWidthUniform = uniformLocation("wireframeWidth");
         }
@@ -350,8 +360,8 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #ifdef MAGNUM_TARGET_GLES
     setTransformationMatrix({});
     setProjectionMatrix({});
-    setColor(Color3(1.0f));
     if(flags & Flag::Wireframe) {
+        setColor(Color3(1.0f));
         /* Viewport size is zero by default */
         setWireframeColor(Color3{0.0f});
         setWireframeWidth(1.0f);

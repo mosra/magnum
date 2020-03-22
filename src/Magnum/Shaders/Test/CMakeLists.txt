@@ -151,8 +151,6 @@ if(BUILD_GL_TESTS)
             MagnumShadersTestLib
             MagnumOpenGLTester
         FILES
-            FlatTestFiles/defaults.tga
-            FlatTestFiles/colored3D.tga
             MeshVisualizerTestFiles/defaults-wireframe2D.tga
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
             MeshVisualizerTestFiles/wireframe2D.tga

@@ -530,6 +530,9 @@ See also:
     @ref Primitives::GridFlag::Normals for naming consistency
 -   @cpp Shaders::MeshVisualizer @ce is deprecated as the shader can now handle
     both 2D and 3D, use @ref Shaders::MeshVisualizer3D instead
+-   Default constructor of @ref Shaders::MeshVisualizer3D is deprecated, you're
+    now required to enable at least one visualization feature when constructing
+    it
 -   @cpp Shaders::MeshVisualizer::setTransformationProjectionMatrix() @ce is
     deprecated on the 3D variant, use separate
     @ref Shaders::MeshVisualizer3D::setTransformationMatrix() and

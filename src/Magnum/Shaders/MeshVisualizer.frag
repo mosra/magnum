@@ -44,7 +44,7 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
-#ifndef TBN_DIRECTION
+#if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -54,7 +54,6 @@ uniform lowp vec4 color
     #endif
     ;
 
-#if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
@@ -63,7 +62,6 @@ uniform lowp vec4 wireframeColor
     = vec4(0.0, 0.0, 0.0, 1.0)
     #endif
     ;
-#endif
 #endif
 
 #ifdef WIREFRAME_RENDERING
@@ -183,8 +181,7 @@ void main() {
     fragmentColor = mix(wireframeColor, color, nearest);
     #endif
 
-    /* Plain color rendering */
     #else
-    fragmentColor = color;
+    #error neither wireframe or TBN direction is enabled, huh?
     #endif
 }
