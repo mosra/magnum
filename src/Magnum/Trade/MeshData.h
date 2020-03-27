@@ -1915,6 +1915,10 @@ namespace Implementation {
     template<> constexpr VertexFormat vertexFormatFor<Color4h>() { return VertexFormat::Vector4h; }
     template<> constexpr VertexFormat vertexFormatFor<Color4ub>() { return VertexFormat::Vector4ubNormalized; }
     template<> constexpr VertexFormat vertexFormatFor<Color4us>() { return VertexFormat::Vector4usNormalized; }
+    template<> constexpr VertexFormat vertexFormatFor<Matrix3>() { return VertexFormat::Matrix3x3; }
+    template<> constexpr VertexFormat vertexFormatFor<Matrix3d>() { return VertexFormat::Matrix3x3d; }
+    template<> constexpr VertexFormat vertexFormatFor<Matrix4>() { return VertexFormat::Matrix4x4; }
+    template<> constexpr VertexFormat vertexFormatFor<Matrix4d>() { return VertexFormat::Matrix4x4d; }
 
     /* Check if enum is compatible with a format (1:n). Mostly just 1:1 mapping
        tho, so reusing vertexFormatFor(), with a few exceptions. */
