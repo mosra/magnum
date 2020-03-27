@@ -582,10 +582,10 @@ void MeshData::tangentsInto(const Containers::StridedArrayView1D<Vector3> destin
         format = VertexFormat::Vector3;
     else if(attribute._format == VertexFormat::Vector4h)
         format = VertexFormat::Vector3h;
-    else if(attribute._format == VertexFormat::Vector4ubNormalized)
-        format = VertexFormat::Vector3ubNormalized;
-    else if(attribute._format == VertexFormat::Vector4usNormalized)
-        format = VertexFormat::Vector3usNormalized;
+    else if(attribute._format == VertexFormat::Vector4bNormalized)
+        format = VertexFormat::Vector3bNormalized;
+    else if(attribute._format == VertexFormat::Vector4sNormalized)
+        format = VertexFormat::Vector3sNormalized;
     else format = attribute._format;
     tangentsOrNormalsInto(attributeDataViewInternal(attribute), destination, format);
 }

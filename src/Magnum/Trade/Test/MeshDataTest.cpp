@@ -316,8 +316,12 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::positions3DIntoArrayInvalidSize,
               &MeshDataTest::tangentsAsArray<Vector3>,
               &MeshDataTest::tangentsAsArray<Vector3h>,
+              &MeshDataTest::tangentsAsArray<Vector4>,
+              &MeshDataTest::tangentsAsArray<Vector4h>,
               &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3b>,
               &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector3s>,
+              &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector4b>,
+              &MeshDataTest::tangentsAsArrayPackedSignedNormalized<Vector4s>,
               &MeshDataTest::tangentsIntoArrayInvalidSize,
               &MeshDataTest::bitangentSignsAsArray<Float>,
               &MeshDataTest::bitangentSignsAsArray<Half>,
@@ -1747,6 +1751,10 @@ _c(Vector3ub)
 _c(Vector3b)
 _c(Vector3us)
 _c(Vector3s)
+_c(Vector4)
+_c(Vector4h)
+_c(Vector4b)
+_c(Vector4s)
 _c(Color3)
 _c(Color3h)
 _c(Color3ub)
@@ -1986,9 +1994,9 @@ template<class T> void MeshDataTest::tangentsAsArray() {
     auto tangentView = Containers::arrayCast<T>(vertexData);
     /* Needs to be sufficiently representable to have the test work also for
        half floats */
-    tangentView[0] = {U(2.0f), U(1.0f), U(0.75f)};
-    tangentView[1] = {U(0.0f), U(-1.0f), U(1.25f)};
-    tangentView[2] = {U(-2.0f), U(3.0f), U(2.5f)};
+    tangentView[0] = T::pad(Math::Vector3<U>{U(2.0f), U(1.0f), U(0.75f)});
+    tangentView[1] = T::pad(Math::Vector3<U>{U(0.0f), U(-1.0f), U(1.25f)});
+    tangentView[2] = T::pad(Math::Vector3<U>{U(-2.0f), U(3.0f), U(2.5f)});
 
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, tangentView}}};
     CORRADE_COMPARE_AS(data.tangentsAsArray(), Containers::arrayView<Vector3>({
@@ -1998,11 +2006,12 @@ template<class T> void MeshDataTest::tangentsAsArray() {
 
 template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
     setTestCaseTemplateName(NameTraits<T>::name());
+    typedef typename T::Type U;
 
     Containers::Array<char> vertexData{2*sizeof(T)};
     auto tangentsView = Containers::arrayCast<T>(vertexData);
-    tangentsView[0] = {Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f)};
-    tangentsView[1] = {0, Math::pack<typename T::Type>(-1.0f), 0};
+    tangentsView[0] = T::pad(Math::Vector3<U>{Math::pack<U>(1.0f), 0, Math::pack<U>(1.0f)});
+    tangentsView[1] = T::pad(Math::Vector3<U>{0, Math::pack<U>(-1.0f), 0});
 
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent,
         /* Assuming the normalized enum is always after the non-normalized */
