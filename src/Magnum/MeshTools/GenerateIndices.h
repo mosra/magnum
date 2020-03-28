@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::generateLineStripIndices(), @ref Magnum::MeshTools::generateLineStripIndicesInto(), @ref Magnum::MeshTools::generateLineLoopIndices(), @ref Magnum::MeshTools::generateLineLoopIndicesInto(), @ref Magnum::MeshTools::generateTriangleStripIndices(), @ref Magnum::MeshTools::generateTriangleStripIndicesInto(), @ref Magnum::MeshTools::generateTriangleFanIndices(), @ref Magnum::MeshTools::generateTriangleFanIndicesInto(), @ref Magnum::MeshTools::generateIndices()
+ * @brief Function @ref Magnum::MeshTools::primitiveCount(), @ref Magnum::MeshTools::generateLineStripIndices(), @ref Magnum::MeshTools::generateLineStripIndicesInto(), @ref Magnum::MeshTools::generateLineLoopIndices(), @ref Magnum::MeshTools::generateLineLoopIndicesInto(), @ref Magnum::MeshTools::generateTriangleStripIndices(), @ref Magnum::MeshTools::generateTriangleStripIndicesInto(), @ref Magnum::MeshTools::generateTriangleFanIndices(), @ref Magnum::MeshTools::generateTriangleFanIndicesInto(), @ref Magnum::MeshTools::generateIndices()
  * @m_since_latest
  */
 
@@ -35,6 +35,18 @@
 #include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace MeshTools {
+
+/**
+@brief Actual primitive count for given primitive type and element count
+@m_since_latest
+
+Returns how many primitives is generated for given @p primitive and
+@p elementCount, for example for @ref MeshPrimitive::Triangles returns
+@cpp elementCount/3 @ce. Expects that @p primitive is valid, return value is
+rounded down if there's not enough elements for given primitive type (so for
+14 vertices you get just 4 triangles, for example).
+*/
+MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, UnsignedInt elementCount);
 
 /**
 @brief Create index buffer for a line strip primitive

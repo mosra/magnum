@@ -39,6 +39,9 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct GenerateIndicesTest: TestSuite::Tester {
     explicit GenerateIndicesTest();
 
+    void primitiveCount();
+    void primitiveCountInvalidPrimitive();
+
     void generateLineStripIndices();
     void generateLineStripIndicesWrongVertexCount();
     void generateLineStripIndicesIntoWrongSize();
@@ -91,7 +94,10 @@ const struct {
 };
 
 GenerateIndicesTest::GenerateIndicesTest() {
-    addTests({&GenerateIndicesTest::generateLineStripIndices,
+    addTests({&GenerateIndicesTest::primitiveCount,
+              &GenerateIndicesTest::primitiveCountInvalidPrimitive,
+
+              &GenerateIndicesTest::generateLineStripIndices,
               &GenerateIndicesTest::generateLineStripIndicesWrongVertexCount,
               &GenerateIndicesTest::generateLineStripIndicesIntoWrongSize,
 
@@ -113,6 +119,41 @@ GenerateIndicesTest::GenerateIndicesTest() {
     addTests({&GenerateIndicesTest::generateIndicesMeshDataMove,
               &GenerateIndicesTest::generateIndicesMeshDataIndexed,
               &GenerateIndicesTest::generateIndicesMeshDataInvalidPrimitive});
+}
+
+void GenerateIndicesTest::primitiveCount() {
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Points, 42), 42);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Instances, 13), 13);
+
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Lines, 4), 2);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Lines, 5), 2);
+
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 1), 0);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 2), 1);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineStrip, 4), 3);
+
+    /* This is a degenerate line, which technically still is a primitive */
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineLoop, 1), 1);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::LineLoop, 2), 2);
+
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 2), 0);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 3), 1);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::Triangles, 6), 2);
+
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 2), 0);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 2), 0);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 3), 1);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 3), 1);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleStrip, 7), 5);
+    CORRADE_COMPARE(MeshTools::primitiveCount(MeshPrimitive::TriangleFan, 7), 5);
+}
+
+void GenerateIndicesTest::primitiveCountInvalidPrimitive() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::primitiveCount(MeshPrimitive(0xdead), 2);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::primitiveCount(): invalid primitive MeshPrimitive(0xdead)\n");
 }
 
 void GenerateIndicesTest::generateLineStripIndices() {

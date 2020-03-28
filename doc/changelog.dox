@@ -151,6 +151,8 @@ See also:
     into per-vertex
 -   New @ref MeshTools::concatenate() and @ref MeshTools::concatenateInto()
     tool for batching multiple generic meshes together
+-   @ref MeshTools::primitiveCount() for calculating number of generated
+    primitives for a particular primitive type
 -   New family of @ref MeshTools::generateLineStripIndices(),
     @ref MeshTools::generateLineLoopIndices(),
     @ref MeshTools::generateTriangleStripIndices() and

@@ -33,6 +33,29 @@
 
 namespace Magnum { namespace MeshTools {
 
+UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elementCount) {
+    if(primitive == MeshPrimitive::Points ||
+       primitive == MeshPrimitive::Edges ||
+       primitive == MeshPrimitive::Faces ||
+       primitive == MeshPrimitive::Instances)
+        return elementCount;
+    if(primitive == MeshPrimitive::Lines)
+        return elementCount/2;
+    if(primitive == MeshPrimitive::LineStrip)
+        return elementCount < 1 ? 0 : elementCount - 1;
+    if(primitive == MeshPrimitive::LineLoop)
+        /* For a single element it'll define a degenerate line, which
+           technically still *is* a primitive */
+        return elementCount;
+    if(primitive == MeshPrimitive::Triangles)
+        return elementCount/3;
+    if(primitive == MeshPrimitive::TriangleStrip ||
+       primitive == MeshPrimitive::TriangleFan)
+        return elementCount < 2 ? 0 : elementCount - 2;
+    CORRADE_ASSERT(false,
+        "MeshTools::primitiveCount(): invalid primitive" << primitive, {});
+}
+
 void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
     CORRADE_ASSERT(vertexCount >= 2,
         "MeshTools::generateLineStripIndicesInto(): expected at least two vertices, got" << vertexCount, );
