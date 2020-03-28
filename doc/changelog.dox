@@ -248,6 +248,8 @@ See also:
 -   @ref Trade::PhongMaterialData now supports both color and texture instead
     of just one or the other, can reference normal textures as well and
     specfify texture coordinate transform
+-   @ref magnum-imageconverter "magnum-imageconverter" has a new `--info`
+    option for printing detailed info about a particular file
 -   RLE compression support in @ref Trade::TgaImporter "TgaImporter"
 
 @subsubsection changelog-latest-new-vk Vk library

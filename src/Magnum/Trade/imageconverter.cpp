@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Arguments.h>
@@ -65,7 +66,7 @@ information.
 @code{.sh}
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
     [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--] input output
+    [-c|--converter-options key=val,key2=val2,…] [--info] [--] input output
 @endcode
 
 Arguments:
@@ -82,11 +83,16 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
+-   `--info` --- print info about the input file and exit
 
 Specifying `--importer raw:&lt;format&gt;` will treat the input as a raw
 tightly-packed square of pixels in given @ref PixelFormat. Specifying
 `--converter raw` will save raw imported data instead of using a converter
 plugin.
+
+If `--info` is given, the utility will print information about all images
+present in the file. In this case no conversion is done and output file doesn't
+need to be specified.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -135,11 +141,25 @@ int main(int argc, char** argv) {
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
+        .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
+            /* If --info is passed, we don't need the output argument */
+            if(error == Utility::Arguments::ParseError::MissingArgument &&
+            key == "output" &&
+            args.isSet("info")) return true;
+
+            /* Handle all other errors as usual */
+            return false;
+        })
         .setGlobalHelp(R"(Converts images of different formats.
 
 Specifying --importer raw:<format> will treat the input as a raw tightly-packed
 square of pixels in given pixel format. Specifying --converter raw will save
 raw imported data instead of using a converter plugin.
+
+If --info is given, the utility will print information about all images present
+in the file. In this case no conversion is done and output file doesn't need to
+be specified.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -177,6 +197,12 @@ key=true.)")
             return 5;
         }
 
+        /* Print image info, if requested */
+        if(args.isSet("info")) {
+            Debug{} << "Image 0:\n  Mip 0:" << format << Vector2i{side};
+            return 0;
+        }
+
         image = Trade::ImageData2D(format, Vector2i{side}, std::move(data));
 
     /* Otherwise load it using an importer plugin */
@@ -190,7 +216,43 @@ key=true.)")
         /* Set options, if passed */
         Trade::Implementation::setOptions(*importer, args.value("importer-options"));
 
-        /* Open input file */
+        /* Print image info, if requested */
+        if(args.isSet("info")) {
+            /* Open the file, but don't fail when an image can't be opened */
+            if(!importer->openFile(args.value("input"))) {
+                Error() << "Cannot open file" << args.value("input");
+                return 3;
+            }
+
+            if(!importer->image1DCount() && !importer->image2DCount() && !importer->image2DCount()) {
+                Debug{} << "No images found.";
+                return 0;
+            }
+
+            /* Parse everything first to avoid errors interleaved with output */
+            bool error = false;
+            Containers::Array<Trade::Implementation::ImageInfo> infos =
+                Trade::Implementation::imageInfo(*importer, error);
+
+            for(const Trade::Implementation::ImageInfo& info: infos) {
+                Debug d;
+                if(info.level == 0) {
+                    d << "Image" << info.image << Debug::nospace << ":";
+                    if(!info.name.empty()) d << info.name;
+                    d << Debug::newline;
+                }
+                d << "  Level" << info.level << Debug::nospace << ":";
+                if(info.compressed) d << info.compressedFormat;
+                else d << info.format;
+                if(info.size.z()) d << info.size;
+                else if(info.size.y()) d << info.size.xy();
+                else d << Math::Vector<1, Int>(info.size.x());
+            }
+
+            return error ? 1 : 0;
+        }
+
+        /* Open input file and the first image */
         if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;

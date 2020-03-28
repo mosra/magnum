@@ -25,13 +25,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/StaticArray.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
-#include "Magnum/Magnum.h"
+#include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade { namespace Implementation {
 
@@ -59,6 +61,73 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& option
         else
             plugin.configuration().setValue(keyValue[0], keyValue[2]);
     }
+}
+
+struct ImageInfo {
+    UnsignedInt image, level;
+    bool compressed;
+    PixelFormat format;
+    CompressedPixelFormat compressedFormat;
+    Vector3i size;
+    std::string name;
+};
+
+Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error) {
+    Containers::Array<ImageInfo> infos;
+
+    for(UnsignedInt i = 0; i != importer.image1DCount(); ++i) {
+        for(UnsignedInt j = 0;j != importer.image1DLevelCount(i); ++j) {
+            Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
+            if(!image) {
+                error = true;
+                continue;
+            }
+            arrayAppend(infos, Containers::InPlaceInit, i, j,
+                image->isCompressed(),
+                image->isCompressed() ?
+                    PixelFormat{} : image->format(),
+                image->isCompressed() ?
+                    image->compressedFormat() : CompressedPixelFormat{},
+                Vector3i::pad(image->size()),
+                j ? "" : importer.image1DName(i));
+        }
+    }
+    for(UnsignedInt i = 0; i != importer.image2DCount(); ++i) {
+        for(UnsignedInt j = 0;j != importer.image2DLevelCount(i); ++j) {
+            Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
+            if(!image) {
+                error = true;
+                continue;
+            }
+            arrayAppend(infos, Containers::InPlaceInit, i, j,
+                image->isCompressed(),
+                image->isCompressed() ?
+                    PixelFormat{} : image->format(),
+                image->isCompressed() ?
+                    image->compressedFormat() : CompressedPixelFormat{},
+                Vector3i::pad(image->size()),
+                j ? "" : importer.image2DName(i));
+        }
+    }
+    for(UnsignedInt i = 0; i != importer.image3DCount(); ++i) {
+        for(UnsignedInt j = 0;j != importer.image3DLevelCount(i); ++j) {
+            Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
+            if(!image) {
+                error = true;
+                continue;
+            }
+            arrayAppend(infos, Containers::InPlaceInit, i, j,
+                image->isCompressed(),
+                image->isCompressed() ?
+                    PixelFormat{} : image->format(),
+                image->isCompressed() ?
+                    image->compressedFormat() : CompressedPixelFormat{},
+                image->size(),
+                j ? "" : importer.image2DName(i));
+        }
+    }
+
+    return infos;
 }
 
 }
