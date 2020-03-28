@@ -85,32 +85,26 @@ struct AbstractImporterTest: TestSuite::Tester {
     void setFileCallbackOpenFileAsData();
     void setFileCallbackOpenFileAsDataFailed();
 
+    void thingCountNotImplemented();
+    void thingCountNoFile();
+    void thingForNameNotImplemented();
+    void thingForNameNoFile();
+    void thingNameNoFile();
+    void thingNoFile();
+
     void defaultScene();
     void defaultSceneNotImplemented();
-    void defaultSceneNoFile();
 
     void scene();
-    void sceneCountNotImplemented();
-    void sceneCountNoFile();
-    void sceneForNameNotImplemented();
-    void sceneForNameNoFile();
     void sceneNameNotImplemented();
-    void sceneNameNoFile();
     void sceneNameOutOfRange();
     void sceneNotImplemented();
-    void sceneNoFile();
     void sceneOutOfRange();
 
     void animation();
-    void animationCountNotImplemented();
-    void animationCountNoFile();
-    void animationForNameNotImplemented();
-    void animationForNameNoFile();
     void animationNameNotImplemented();
-    void animationNameNoFile();
     void animationNameOutOfRange();
     void animationNotImplemented();
-    void animationNoFile();
     void animationOutOfRange();
     void animationNonOwningDeleters();
     void animationGrowableDeleters();
@@ -118,70 +112,39 @@ struct AbstractImporterTest: TestSuite::Tester {
     void animationCustomTrackDeleter();
 
     void light();
-    void lightCountNotImplemented();
-    void lightCountNoFile();
-    void lightForNameNotImplemented();
-    void lightForNameNoFile();
     void lightNameNotImplemented();
-    void lightNameNoFile();
     void lightNameOutOfRange();
     void lightNotImplemented();
-    void lightNoFile();
     void lightOutOfRange();
 
     void camera();
-    void cameraCountNotImplemented();
-    void cameraCountNoFile();
-    void cameraForNameNotImplemented();
-    void cameraForNameNoFile();
     void cameraNameNotImplemented();
-    void cameraNameNoFile();
     void cameraNameOutOfRange();
     void cameraNotImplemented();
-    void cameraNoFile();
     void cameraOutOfRange();
 
     void object2D();
-    void object2DCountNotImplemented();
-    void object2DCountNoFile();
-    void object2DForNameNotImplemented();
-    void object2DForNameNoFile();
     void object2DNameNotImplemented();
-    void object2DNameNoFile();
     void object2DNameOutOfRange();
     void object2DNotImplemented();
-    void object2DNoFile();
     void object2DOutOfRange();
 
     void object3D();
-    void object3DCountNotImplemented();
-    void object3DCountNoFile();
-    void object3DForNameNotImplemented();
-    void object3DForNameNoFile();
     void object3DNameNotImplemented();
-    void object3DNameNoFile();
     void object3DNameOutOfRange();
     void object3DNotImplemented();
-    void object3DNoFile();
     void object3DOutOfRange();
 
     void mesh();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void meshDeprecatedFallback();
     #endif
-    void meshCountNotImplemented();
-    void meshCountNoFile();
     void meshLevelCountNotImplemented();
-    void meshLevelCountNoFile();
     void meshLevelCountOutOfRange();
     void meshLevelCountZero();
-    void meshForNameNotImplemented();
-    void meshForNameNoFile();
     void meshNameNotImplemented();
-    void meshNameNoFile();
     void meshNameOutOfRange();
     void meshNotImplemented();
-    void meshNoFile();
     void meshOutOfRange();
     void meshLevelOutOfRange();
     void meshNonOwningDeleters();
@@ -221,43 +184,24 @@ struct AbstractImporterTest: TestSuite::Tester {
     #endif
 
     void material();
-    void materialCountNotImplemented();
-    void materialCountNoFile();
-    void materialForNameNotImplemented();
-    void materialForNameNoFile();
     void materialNameNotImplemented();
-    void materialNameNoFile();
     void materialNameOutOfRange();
     void materialNotImplemented();
-    void materialNoFile();
     void materialOutOfRange();
 
     void texture();
-    void textureCountNotImplemented();
-    void textureCountNoFile();
-    void textureForNameNotImplemented();
-    void textureForNameNoFile();
     void textureNameNotImplemented();
-    void textureNameNoFile();
     void textureNameOutOfRange();
     void textureNotImplemented();
-    void textureNoFile();
     void textureOutOfRange();
 
     void image1D();
-    void image1DCountNotImplemented();
-    void image1DCountNoFile();
     void image1DLevelCountNotImplemented();
-    void image1DLevelCountNoFile();
     void image1DLevelCountOutOfRange();
     void image1DLevelCountZero();
-    void image1DForNameNotImplemented();
-    void image1DForNameNoFile();
     void image1DNameNotImplemented();
-    void image1DNameNoFile();
     void image1DNameOutOfRange();
     void image1DNotImplemented();
-    void image1DNoFile();
     void image1DOutOfRange();
     void image1DLevelOutOfRange();
     void image1DNonOwningDeleter();
@@ -265,19 +209,12 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image1DCustomDeleter();
 
     void image2D();
-    void image2DCountNotImplemented();
-    void image2DCountNoFile();
     void image2DLevelCountNotImplemented();
-    void image2DLevelCountNoFile();
     void image2DLevelCountOutOfRange();
     void image2DLevelCountZero();
-    void image2DForNameNotImplemented();
-    void image2DForNameNoFile();
     void image2DNameNotImplemented();
-    void image2DNameNoFile();
     void image2DNameOutOfRange();
     void image2DNotImplemented();
-    void image2DNoFile();
     void image2DOutOfRange();
     void image2DLevelOutOfRange();
     void image2DNonOwningDeleter();
@@ -285,19 +222,12 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image2DCustomDeleter();
 
     void image3D();
-    void image3DCountNotImplemented();
-    void image3DCountNoFile();
     void image3DLevelCountNotImplemented();
-    void image3DLevelCountNoFile();
     void image3DLevelCountOutOfRange();
     void image3DLevelCountZero();
-    void image3DForNameNotImplemented();
-    void image3DForNameNoFile();
     void image3DNameNotImplemented();
-    void image3DNameNoFile();
     void image3DNameOutOfRange();
     void image3DNotImplemented();
-    void image3DNoFile();
     void image3DOutOfRange();
     void image3DLevelOutOfRange();
     void image3DNonOwningDeleter();
@@ -339,32 +269,26 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFileCallbackOpenFileAsData,
               &AbstractImporterTest::setFileCallbackOpenFileAsDataFailed,
 
+              &AbstractImporterTest::thingCountNotImplemented,
+              &AbstractImporterTest::thingCountNoFile,
+              &AbstractImporterTest::thingForNameNotImplemented,
+              &AbstractImporterTest::thingForNameNoFile,
+              &AbstractImporterTest::thingNameNoFile,
+              &AbstractImporterTest::thingNoFile,
+
               &AbstractImporterTest::defaultScene,
               &AbstractImporterTest::defaultSceneNotImplemented,
-              &AbstractImporterTest::defaultSceneNoFile,
 
               &AbstractImporterTest::scene,
-              &AbstractImporterTest::sceneCountNotImplemented,
-              &AbstractImporterTest::sceneCountNoFile,
-              &AbstractImporterTest::sceneForNameNotImplemented,
-              &AbstractImporterTest::sceneForNameNoFile,
               &AbstractImporterTest::sceneNameNotImplemented,
-              &AbstractImporterTest::sceneNameNoFile,
               &AbstractImporterTest::sceneNameOutOfRange,
               &AbstractImporterTest::sceneNotImplemented,
-              &AbstractImporterTest::sceneNoFile,
               &AbstractImporterTest::sceneOutOfRange,
 
               &AbstractImporterTest::animation,
-              &AbstractImporterTest::animationCountNotImplemented,
-              &AbstractImporterTest::animationCountNoFile,
-              &AbstractImporterTest::animationForNameNotImplemented,
-              &AbstractImporterTest::animationForNameNoFile,
               &AbstractImporterTest::animationNameNotImplemented,
-              &AbstractImporterTest::animationNameNoFile,
               &AbstractImporterTest::animationNameOutOfRange,
               &AbstractImporterTest::animationNotImplemented,
-              &AbstractImporterTest::animationNoFile,
               &AbstractImporterTest::animationOutOfRange,
               &AbstractImporterTest::animationNonOwningDeleters,
               &AbstractImporterTest::animationGrowableDeleters,
@@ -372,70 +296,39 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationCustomTrackDeleter,
 
               &AbstractImporterTest::light,
-              &AbstractImporterTest::lightCountNotImplemented,
-              &AbstractImporterTest::lightCountNoFile,
-              &AbstractImporterTest::lightForNameNotImplemented,
-              &AbstractImporterTest::lightForNameNoFile,
               &AbstractImporterTest::lightNameNotImplemented,
-              &AbstractImporterTest::lightNameNoFile,
               &AbstractImporterTest::lightNameOutOfRange,
               &AbstractImporterTest::lightNotImplemented,
-              &AbstractImporterTest::lightNoFile,
               &AbstractImporterTest::lightOutOfRange,
 
               &AbstractImporterTest::camera,
-              &AbstractImporterTest::cameraCountNotImplemented,
-              &AbstractImporterTest::cameraCountNoFile,
-              &AbstractImporterTest::cameraForNameNotImplemented,
-              &AbstractImporterTest::cameraForNameNoFile,
               &AbstractImporterTest::cameraNameNotImplemented,
-              &AbstractImporterTest::cameraNameNoFile,
               &AbstractImporterTest::cameraNameOutOfRange,
               &AbstractImporterTest::cameraNotImplemented,
-              &AbstractImporterTest::cameraNoFile,
               &AbstractImporterTest::cameraOutOfRange,
 
               &AbstractImporterTest::object2D,
-              &AbstractImporterTest::object2DCountNotImplemented,
-              &AbstractImporterTest::object2DCountNoFile,
-              &AbstractImporterTest::object2DForNameNotImplemented,
-              &AbstractImporterTest::object2DForNameNoFile,
               &AbstractImporterTest::object2DNameNotImplemented,
-              &AbstractImporterTest::object2DNameNoFile,
               &AbstractImporterTest::object2DNameOutOfRange,
               &AbstractImporterTest::object2DNotImplemented,
-              &AbstractImporterTest::object2DNoFile,
               &AbstractImporterTest::object2DOutOfRange,
 
               &AbstractImporterTest::object3D,
-              &AbstractImporterTest::object3DCountNotImplemented,
-              &AbstractImporterTest::object3DCountNoFile,
-              &AbstractImporterTest::object3DForNameNotImplemented,
-              &AbstractImporterTest::object3DForNameNoFile,
               &AbstractImporterTest::object3DNameNotImplemented,
-              &AbstractImporterTest::object3DNameNoFile,
               &AbstractImporterTest::object3DNameOutOfRange,
               &AbstractImporterTest::object3DNotImplemented,
-              &AbstractImporterTest::object3DNoFile,
               &AbstractImporterTest::object3DOutOfRange,
 
               &AbstractImporterTest::mesh,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::meshDeprecatedFallback,
               #endif
-              &AbstractImporterTest::meshCountNotImplemented,
-              &AbstractImporterTest::meshCountNoFile,
               &AbstractImporterTest::meshLevelCountNotImplemented,
-              &AbstractImporterTest::meshLevelCountNoFile,
               &AbstractImporterTest::meshLevelCountOutOfRange,
               &AbstractImporterTest::meshLevelCountZero,
-              &AbstractImporterTest::meshForNameNotImplemented,
-              &AbstractImporterTest::meshForNameNoFile,
               &AbstractImporterTest::meshNameNotImplemented,
-              &AbstractImporterTest::meshNameNoFile,
               &AbstractImporterTest::meshNameOutOfRange,
               &AbstractImporterTest::meshNotImplemented,
-              &AbstractImporterTest::meshNoFile,
               &AbstractImporterTest::meshOutOfRange,
               &AbstractImporterTest::meshLevelOutOfRange,
               &AbstractImporterTest::meshNonOwningDeleters,
@@ -475,43 +368,24 @@ AbstractImporterTest::AbstractImporterTest() {
               #endif
 
               &AbstractImporterTest::material,
-              &AbstractImporterTest::materialCountNotImplemented,
-              &AbstractImporterTest::materialCountNoFile,
-              &AbstractImporterTest::materialForNameNotImplemented,
-              &AbstractImporterTest::materialForNameNoFile,
               &AbstractImporterTest::materialNameNotImplemented,
-              &AbstractImporterTest::materialNameNoFile,
               &AbstractImporterTest::materialNameOutOfRange,
               &AbstractImporterTest::materialNotImplemented,
-              &AbstractImporterTest::materialNoFile,
               &AbstractImporterTest::materialOutOfRange,
 
               &AbstractImporterTest::texture,
-              &AbstractImporterTest::textureCountNotImplemented,
-              &AbstractImporterTest::textureCountNoFile,
-              &AbstractImporterTest::textureForNameNotImplemented,
-              &AbstractImporterTest::textureForNameNoFile,
               &AbstractImporterTest::textureNameNotImplemented,
-              &AbstractImporterTest::textureNameNoFile,
               &AbstractImporterTest::textureNameOutOfRange,
               &AbstractImporterTest::textureNotImplemented,
-              &AbstractImporterTest::textureNoFile,
               &AbstractImporterTest::textureOutOfRange,
 
               &AbstractImporterTest::image1D,
-              &AbstractImporterTest::image1DCountNotImplemented,
-              &AbstractImporterTest::image1DCountNoFile,
               &AbstractImporterTest::image1DLevelCountNotImplemented,
-              &AbstractImporterTest::image1DLevelCountNoFile,
               &AbstractImporterTest::image1DLevelCountOutOfRange,
               &AbstractImporterTest::image1DLevelCountZero,
-              &AbstractImporterTest::image1DForNameNotImplemented,
-              &AbstractImporterTest::image1DForNameNoFile,
               &AbstractImporterTest::image1DNameNotImplemented,
-              &AbstractImporterTest::image1DNameNoFile,
               &AbstractImporterTest::image1DNameOutOfRange,
               &AbstractImporterTest::image1DNotImplemented,
-              &AbstractImporterTest::image1DNoFile,
               &AbstractImporterTest::image1DOutOfRange,
               &AbstractImporterTest::image1DLevelOutOfRange,
               &AbstractImporterTest::image1DNonOwningDeleter,
@@ -519,19 +393,12 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image1DCustomDeleter,
 
               &AbstractImporterTest::image2D,
-              &AbstractImporterTest::image2DCountNotImplemented,
-              &AbstractImporterTest::image2DCountNoFile,
               &AbstractImporterTest::image2DLevelCountNotImplemented,
-              &AbstractImporterTest::image2DLevelCountNoFile,
               &AbstractImporterTest::image2DLevelCountOutOfRange,
               &AbstractImporterTest::image2DLevelCountZero,
-              &AbstractImporterTest::image2DForNameNotImplemented,
-              &AbstractImporterTest::image2DForNameNoFile,
               &AbstractImporterTest::image2DNameNotImplemented,
-              &AbstractImporterTest::image2DNameNoFile,
               &AbstractImporterTest::image2DNameOutOfRange,
               &AbstractImporterTest::image2DNotImplemented,
-              &AbstractImporterTest::image2DNoFile,
               &AbstractImporterTest::image2DOutOfRange,
               &AbstractImporterTest::image2DLevelOutOfRange,
               &AbstractImporterTest::image2DNonOwningDeleter,
@@ -539,19 +406,12 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image2DCustomDeleter,
 
               &AbstractImporterTest::image3D,
-              &AbstractImporterTest::image3DCountNotImplemented,
-              &AbstractImporterTest::image3DCountNoFile,
               &AbstractImporterTest::image3DLevelCountNotImplemented,
-              &AbstractImporterTest::image3DLevelCountNoFile,
               &AbstractImporterTest::image3DLevelCountOutOfRange,
               &AbstractImporterTest::image3DLevelCountZero,
-              &AbstractImporterTest::image3DForNameNotImplemented,
-              &AbstractImporterTest::image3DForNameNoFile,
               &AbstractImporterTest::image3DNameNotImplemented,
-              &AbstractImporterTest::image3DNameNoFile,
               &AbstractImporterTest::image3DNameOutOfRange,
               &AbstractImporterTest::image3DNotImplemented,
-              &AbstractImporterTest::image3DNoFile,
               &AbstractImporterTest::image3DOutOfRange,
               &AbstractImporterTest::image3DLevelOutOfRange,
               &AbstractImporterTest::image3DNonOwningDeleter,
@@ -1044,6 +904,261 @@ void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::openFile(): cannot open file file.dat\n");
 }
 
+void AbstractImporterTest::thingCountNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.sceneCount(), 0);
+    CORRADE_COMPARE(importer.animationCount(), 0);
+    CORRADE_COMPARE(importer.lightCount(), 0);
+    CORRADE_COMPARE(importer.cameraCount(), 0);
+
+    CORRADE_COMPARE(importer.object2DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+
+    CORRADE_COMPARE(importer.meshCount(), 0);
+    CORRADE_COMPARE(importer.materialCount(), 0);
+    CORRADE_COMPARE(importer.textureCount(), 0);
+
+    CORRADE_COMPARE(importer.image1DCount(), 0);
+    CORRADE_COMPARE(importer.image2DCount(), 0);
+    CORRADE_COMPARE(importer.image3DCount(), 0);
+}
+
+void AbstractImporterTest::thingCountNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.sceneCount();
+    importer.animationCount();
+    importer.lightCount();
+    importer.cameraCount();
+
+    importer.object2DCount();
+    importer.object3DCount();
+
+    importer.meshCount();
+    importer.meshLevelCount(7);
+    importer.materialCount();
+    importer.textureCount();
+
+    importer.image1DCount();
+    importer.image1DLevelCount(7);
+    importer.image2DCount();
+    importer.image2DLevelCount(7);
+    importer.image3DCount();
+    importer.image3DLevelCount(7);
+
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::sceneCount(): no file opened\n"
+        "Trade::AbstractImporter::animationCount(): no file opened\n"
+        "Trade::AbstractImporter::lightCount(): no file opened\n"
+        "Trade::AbstractImporter::cameraCount(): no file opened\n"
+        "Trade::AbstractImporter::object2DCount(): no file opened\n"
+        "Trade::AbstractImporter::object3DCount(): no file opened\n"
+        "Trade::AbstractImporter::meshCount(): no file opened\n"
+        "Trade::AbstractImporter::meshLevelCount(): no file opened\n"
+        "Trade::AbstractImporter::materialCount(): no file opened\n"
+
+        "Trade::AbstractImporter::textureCount(): no file opened\n"
+
+        "Trade::AbstractImporter::image1DCount(): no file opened\n"
+        "Trade::AbstractImporter::image1DLevelCount(): no file opened\n"
+        "Trade::AbstractImporter::image2DCount(): no file opened\n"
+        "Trade::AbstractImporter::image2DLevelCount(): no file opened\n"
+        "Trade::AbstractImporter::image3DCount(): no file opened\n"
+        "Trade::AbstractImporter::image3DLevelCount(): no file opened\n");
+}
+
+void AbstractImporterTest::thingForNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.sceneForName(""), -1);
+    CORRADE_COMPARE(importer.animationForName(""), -1);
+    CORRADE_COMPARE(importer.lightForName(""), -1);
+    CORRADE_COMPARE(importer.cameraForName(""), -1);
+
+    CORRADE_COMPARE(importer.object2DForName(""), -1);
+    CORRADE_COMPARE(importer.object3DForName(""), -1);
+
+    CORRADE_COMPARE(importer.meshForName(""), -1);
+    CORRADE_COMPARE(importer.materialForName(""), -1);
+    CORRADE_COMPARE(importer.textureForName(""), -1);
+
+    CORRADE_COMPARE(importer.image1DForName(""), -1);
+    CORRADE_COMPARE(importer.image2DForName(""), -1);
+    CORRADE_COMPARE(importer.image3DForName(""), -1);
+}
+
+void AbstractImporterTest::thingForNameNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.sceneForName("");
+    importer.animationForName("");
+    importer.lightForName("");
+    importer.cameraForName("");
+
+    importer.object2DForName("");
+    importer.object3DForName("");
+
+    importer.meshForName("");
+    importer.materialForName("");
+    importer.textureForName("");
+
+    importer.image1DForName("");
+    importer.image2DForName("");
+    importer.image3DForName("");
+
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::sceneForName(): no file opened\n"
+        "Trade::AbstractImporter::animationForName(): no file opened\n"
+        "Trade::AbstractImporter::lightForName(): no file opened\n"
+        "Trade::AbstractImporter::cameraForName(): no file opened\n"
+
+        "Trade::AbstractImporter::object2DForName(): no file opened\n"
+        "Trade::AbstractImporter::object3DForName(): no file opened\n"
+
+        "Trade::AbstractImporter::meshForName(): no file opened\n"
+        "Trade::AbstractImporter::materialForName(): no file opened\n"
+        "Trade::AbstractImporter::textureForName(): no file opened\n"
+
+        "Trade::AbstractImporter::image1DForName(): no file opened\n"
+        "Trade::AbstractImporter::image2DForName(): no file opened\n"
+        "Trade::AbstractImporter::image3DForName(): no file opened\n");
+}
+
+void AbstractImporterTest::thingNameNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.sceneName(42);
+    importer.animationName(42);
+    importer.lightName(42);
+    importer.cameraName(42);
+
+    importer.object2DName(42);
+    importer.object3DName(42);
+
+    importer.meshName(42);
+    importer.materialName(42);
+    importer.textureName(42);
+
+    importer.image1DName(42);
+    importer.image2DName(42);
+    importer.image3DName(42);
+
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::sceneName(): no file opened\n"
+        "Trade::AbstractImporter::animationName(): no file opened\n"
+        "Trade::AbstractImporter::lightName(): no file opened\n"
+        "Trade::AbstractImporter::cameraName(): no file opened\n"
+        "Trade::AbstractImporter::object2DName(): no file opened\n"
+        "Trade::AbstractImporter::object3DName(): no file opened\n"
+        "Trade::AbstractImporter::meshName(): no file opened\n"
+        "Trade::AbstractImporter::materialName(): no file opened\n"
+        "Trade::AbstractImporter::textureName(): no file opened\n"
+
+        "Trade::AbstractImporter::image1DName(): no file opened\n"
+        "Trade::AbstractImporter::image2DName(): no file opened\n"
+        "Trade::AbstractImporter::image3DName(): no file opened\n");
+}
+
+void AbstractImporterTest::thingNoFile() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.defaultScene();
+    importer.scene(42);
+    importer.scene("foo");
+    importer.animation(42);
+    importer.animation("foo");
+    importer.light(42);
+    importer.light("foo");
+    importer.camera(42);
+    importer.camera("foo");
+
+    importer.object2D(42);
+    importer.object2D("foo");
+    importer.object3D(42);
+    importer.object3D("foo");
+
+    importer.mesh(42);
+    importer.mesh("foo");
+    importer.material(42);
+    importer.material("foo");
+    importer.texture(42);
+    importer.texture("foo");
+
+    importer.image1D(42);
+    importer.image1D("foo");
+    importer.image2D(42);
+    importer.image2D("foo");
+    importer.image3D(42);
+    importer.image3D("foo");
+
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::defaultScene(): no file opened\n"
+        "Trade::AbstractImporter::scene(): no file opened\n"
+        "Trade::AbstractImporter::scene(): no file opened\n"
+        "Trade::AbstractImporter::animation(): no file opened\n"
+        "Trade::AbstractImporter::animation(): no file opened\n"
+        "Trade::AbstractImporter::light(): no file opened\n"
+        "Trade::AbstractImporter::light(): no file opened\n"
+        "Trade::AbstractImporter::camera(): no file opened\n"
+        "Trade::AbstractImporter::camera(): no file opened\n"
+
+        "Trade::AbstractImporter::object2D(): no file opened\n"
+        "Trade::AbstractImporter::object2D(): no file opened\n"
+        "Trade::AbstractImporter::object3D(): no file opened\n"
+        "Trade::AbstractImporter::object3D(): no file opened\n"
+
+        "Trade::AbstractImporter::mesh(): no file opened\n"
+        "Trade::AbstractImporter::mesh(): no file opened\n"
+        "Trade::AbstractImporter::material(): no file opened\n"
+        "Trade::AbstractImporter::material(): no file opened\n"
+        "Trade::AbstractImporter::texture(): no file opened\n"
+        "Trade::AbstractImporter::texture(): no file opened\n"
+
+        "Trade::AbstractImporter::image1D(): no file opened\n"
+        "Trade::AbstractImporter::image1D(): no file opened\n"
+        "Trade::AbstractImporter::image2D(): no file opened\n"
+        "Trade::AbstractImporter::image2D(): no file opened\n"
+        "Trade::AbstractImporter::image3D(): no file opened\n"
+        "Trade::AbstractImporter::image3D(): no file opened\n");
+}
+
 void AbstractImporterTest::defaultScene() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1064,20 +1179,6 @@ void AbstractImporterTest::defaultSceneNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.defaultScene(), -1);
-}
-
-void AbstractImporterTest::defaultSceneNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.defaultScene();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::defaultScene(): no file opened\n");
 }
 
 int state;
@@ -1121,54 +1222,6 @@ void AbstractImporterTest::scene() {
     }
 }
 
-void AbstractImporterTest::sceneCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.sceneCount(), 0);
-}
-
-void AbstractImporterTest::sceneCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.sceneCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneCount(): no file opened\n");
-}
-
-void AbstractImporterTest::sceneForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.sceneForName(""), -1);
-}
-
-void AbstractImporterTest::sceneForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.sceneForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneForName(): no file opened\n");
-}
-
 void AbstractImporterTest::sceneNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1179,20 +1232,6 @@ void AbstractImporterTest::sceneNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.sceneName(7), "");
-}
-
-void AbstractImporterTest::sceneNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.sceneName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::sceneName(): no file opened\n");
 }
 
 void AbstractImporterTest::sceneNameOutOfRange() {
@@ -1225,23 +1264,6 @@ void AbstractImporterTest::sceneNotImplemented() {
 
     importer.scene(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::scene(): not implemented\n");
-}
-
-void AbstractImporterTest::sceneNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.scene(42);
-    importer.scene("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::scene(): no file opened\n"
-        "Trade::AbstractImporter::scene(): no file opened\n");
 }
 
 void AbstractImporterTest::sceneOutOfRange() {
@@ -1304,54 +1326,6 @@ void AbstractImporterTest::animation() {
     }
 }
 
-void AbstractImporterTest::animationCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.animationCount(), 0);
-}
-
-void AbstractImporterTest::animationCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.animationCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationCount(): no file opened\n");
-}
-
-void AbstractImporterTest::animationForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.animationForName(""), -1);
-}
-
-void AbstractImporterTest::animationForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.animationForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationForName(): no file opened\n");
-}
-
 void AbstractImporterTest::animationNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1362,20 +1336,6 @@ void AbstractImporterTest::animationNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.animationName(7), "");
-}
-
-void AbstractImporterTest::animationNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.animationName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationName(): no file opened\n");
 }
 
 void AbstractImporterTest::animationNameOutOfRange() {
@@ -1408,23 +1368,6 @@ void AbstractImporterTest::animationNotImplemented() {
 
     importer.animation(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): not implemented\n");
-}
-
-void AbstractImporterTest::animationNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.animation(42);
-    importer.animation("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::animation(): no file opened\n"
-        "Trade::AbstractImporter::animation(): no file opened\n");
 }
 
 void AbstractImporterTest::animationOutOfRange() {
@@ -1569,54 +1512,6 @@ void AbstractImporterTest::light() {
     }
 }
 
-void AbstractImporterTest::lightCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.lightCount(), 0);
-}
-
-void AbstractImporterTest::lightCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.lightCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::lightCount(): no file opened\n");
-}
-
-void AbstractImporterTest::lightForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.lightForName(""), -1);
-}
-
-void AbstractImporterTest::lightForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.lightForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::lightForName(): no file opened\n");
-}
-
 void AbstractImporterTest::lightNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1627,20 +1522,6 @@ void AbstractImporterTest::lightNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.lightName(7), "");
-}
-
-void AbstractImporterTest::lightNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.lightName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::lightName(): no file opened\n");
 }
 
 void AbstractImporterTest::lightNameOutOfRange() {
@@ -1673,23 +1554,6 @@ void AbstractImporterTest::lightNotImplemented() {
 
     importer.light(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::light(): not implemented\n");
-}
-
-void AbstractImporterTest::lightNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.light(42);
-    importer.light("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::light(): no file opened\n"
-        "Trade::AbstractImporter::light(): no file opened\n");
 }
 
 void AbstractImporterTest::lightOutOfRange() {
@@ -1747,54 +1611,6 @@ void AbstractImporterTest::camera() {
     }
 }
 
-void AbstractImporterTest::cameraCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.cameraCount(), 0);
-}
-
-void AbstractImporterTest::cameraCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.cameraCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::cameraCount(): no file opened\n");
-}
-
-void AbstractImporterTest::cameraForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.cameraForName(""), -1);
-}
-
-void AbstractImporterTest::cameraForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.cameraForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::cameraForName(): no file opened\n");
-}
-
 void AbstractImporterTest::cameraNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1805,20 +1621,6 @@ void AbstractImporterTest::cameraNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.cameraName(7), "");
-}
-
-void AbstractImporterTest::cameraNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.cameraName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::cameraName(): no file opened\n");
 }
 
 void AbstractImporterTest::cameraNameOutOfRange() {
@@ -1851,23 +1653,6 @@ void AbstractImporterTest::cameraNotImplemented() {
 
     importer.camera(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::camera(): not implemented\n");
-}
-
-void AbstractImporterTest::cameraNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.camera(42);
-    importer.camera("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::camera(): no file opened\n"
-        "Trade::AbstractImporter::camera(): no file opened\n");
 }
 
 void AbstractImporterTest::cameraOutOfRange() {
@@ -1925,54 +1710,6 @@ void AbstractImporterTest::object2D() {
     }
 }
 
-void AbstractImporterTest::object2DCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.object2DCount(), 0);
-}
-
-void AbstractImporterTest::object2DCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object2DCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DCount(): no file opened\n");
-}
-
-void AbstractImporterTest::object2DForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.object2DForName(""), -1);
-}
-
-void AbstractImporterTest::object2DForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object2DForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DForName(): no file opened\n");
-}
-
 void AbstractImporterTest::object2DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1983,20 +1720,6 @@ void AbstractImporterTest::object2DNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.object2DName(7), "");
-}
-
-void AbstractImporterTest::object2DNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object2DName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2DName(): no file opened\n");
 }
 
 void AbstractImporterTest::object2DNameOutOfRange() {
@@ -2029,23 +1752,6 @@ void AbstractImporterTest::object2DNotImplemented() {
 
     importer.object2D(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object2D(): not implemented\n");
-}
-
-void AbstractImporterTest::object2DNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object2D(42);
-    importer.object2D("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::object2D(): no file opened\n"
-        "Trade::AbstractImporter::object2D(): no file opened\n");
 }
 
 void AbstractImporterTest::object2DOutOfRange() {
@@ -2103,54 +1809,6 @@ void AbstractImporterTest::object3D() {
     }
 }
 
-void AbstractImporterTest::object3DCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.object3DCount(), 0);
-}
-
-void AbstractImporterTest::object3DCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object3DCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DCount(): no file opened\n");
-}
-
-void AbstractImporterTest::object3DForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.object3DForName(""), -1);
-}
-
-void AbstractImporterTest::object3DForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object3DForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DForName(): no file opened\n");
-}
-
 void AbstractImporterTest::object3DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2161,20 +1819,6 @@ void AbstractImporterTest::object3DNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.object3DName(7), "");
-}
-
-void AbstractImporterTest::object3DNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object3DName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3DName(): no file opened\n");
 }
 
 void AbstractImporterTest::object3DNameOutOfRange() {
@@ -2207,23 +1851,6 @@ void AbstractImporterTest::object3DNotImplemented() {
 
     importer.object3D(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): not implemented\n");
-}
-
-void AbstractImporterTest::object3DNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.object3D(42);
-    importer.object3D("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::object3D(): no file opened\n"
-        "Trade::AbstractImporter::object3D(): no file opened\n");
 }
 
 void AbstractImporterTest::object3DOutOfRange() {
@@ -2326,30 +1953,6 @@ void AbstractImporterTest::meshDeprecatedFallback() {
 }
 #endif
 
-void AbstractImporterTest::meshCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.meshCount(), 0);
-}
-
-void AbstractImporterTest::meshCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.meshCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshCount(): no file opened\n");
-}
-
 void AbstractImporterTest::meshLevelCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2360,19 +1963,6 @@ void AbstractImporterTest::meshLevelCountNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.meshLevelCount(7), 1);
-}
-
-void AbstractImporterTest::meshLevelCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    importer.meshLevelCount(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshLevelCount(): no file opened\n");
 }
 
 void AbstractImporterTest::meshLevelCountOutOfRange() {
@@ -2414,30 +2004,6 @@ void AbstractImporterTest::meshLevelCountZero() {
         "Trade::AbstractImporter::mesh(): implementation reported zero levels\n");
 }
 
-void AbstractImporterTest::meshForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.meshForName(""), -1);
-}
-
-void AbstractImporterTest::meshForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.meshForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshForName(): no file opened\n");
-}
-
 void AbstractImporterTest::meshNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2448,20 +2014,6 @@ void AbstractImporterTest::meshNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.meshName(7), "");
-}
-
-void AbstractImporterTest::meshNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.meshName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::meshName(): no file opened\n");
 }
 
 void AbstractImporterTest::meshNameOutOfRange() {
@@ -2494,23 +2046,6 @@ void AbstractImporterTest::meshNotImplemented() {
 
     importer.mesh(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): not implemented\n");
-}
-
-void AbstractImporterTest::meshNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.mesh(42);
-    importer.mesh("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::mesh(): no file opened\n"
-        "Trade::AbstractImporter::mesh(): no file opened\n");
 }
 
 void AbstractImporterTest::meshOutOfRange() {
@@ -3153,55 +2688,6 @@ void AbstractImporterTest::material() {
         CORRADE_VERIFY(!importer.material("foo"));
     }
 }
-
-void AbstractImporterTest::materialCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.materialCount(), 0);
-}
-
-void AbstractImporterTest::materialCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.materialCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::materialCount(): no file opened\n");
-}
-
-void AbstractImporterTest::materialForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.materialForName(""), -1);
-}
-
-void AbstractImporterTest::materialForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.materialForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::materialForName(): no file opened\n");
-}
-
 void AbstractImporterTest::materialNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3212,20 +2698,6 @@ void AbstractImporterTest::materialNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.materialName(7), "");
-}
-
-void AbstractImporterTest::materialNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.materialName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::materialName(): no file opened\n");
 }
 
 void AbstractImporterTest::materialNameOutOfRange() {
@@ -3258,23 +2730,6 @@ void AbstractImporterTest::materialNotImplemented() {
 
     importer.material(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::material(): not implemented\n");
-}
-
-void AbstractImporterTest::materialNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.material(42);
-    importer.material("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::material(): no file opened\n"
-        "Trade::AbstractImporter::material(): no file opened\n");
 }
 
 void AbstractImporterTest::materialOutOfRange() {
@@ -3332,54 +2787,6 @@ void AbstractImporterTest::texture() {
     }
 }
 
-void AbstractImporterTest::textureCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.textureCount(), 0);
-}
-
-void AbstractImporterTest::textureCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.textureCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::textureCount(): no file opened\n");
-}
-
-void AbstractImporterTest::textureForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.textureForName(""), -1);
-}
-
-void AbstractImporterTest::textureForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.textureForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::textureForName(): no file opened\n");
-}
-
 void AbstractImporterTest::textureNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3390,20 +2797,6 @@ void AbstractImporterTest::textureNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.textureName(7), "");
-}
-
-void AbstractImporterTest::textureNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.textureName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::textureName(): no file opened\n");
 }
 
 void AbstractImporterTest::textureNameOutOfRange() {
@@ -3436,23 +2829,6 @@ void AbstractImporterTest::textureNotImplemented() {
 
     importer.texture(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::texture(): not implemented\n");
-}
-
-void AbstractImporterTest::textureNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.texture(42);
-    importer.texture("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::texture(): no file opened\n"
-        "Trade::AbstractImporter::texture(): no file opened\n");
 }
 
 void AbstractImporterTest::textureOutOfRange() {
@@ -3515,30 +2891,6 @@ void AbstractImporterTest::image1D() {
     }
 }
 
-void AbstractImporterTest::image1DCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image1DCount(), 0);
-}
-
-void AbstractImporterTest::image1DCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image1DCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1DCount(): no file opened\n");
-}
-
 void AbstractImporterTest::image1DLevelCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3549,19 +2901,6 @@ void AbstractImporterTest::image1DLevelCountNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image1DLevelCount(7), 1);
-}
-
-void AbstractImporterTest::image1DLevelCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    importer.image1DLevelCount(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1DLevelCount(): no file opened\n");
 }
 
 void AbstractImporterTest::image1DLevelCountOutOfRange() {
@@ -3603,30 +2942,6 @@ void AbstractImporterTest::image1DLevelCountZero() {
         "Trade::AbstractImporter::image1D(): implementation reported zero levels\n");
 }
 
-void AbstractImporterTest::image1DForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image1DForName(""), -1);
-}
-
-void AbstractImporterTest::image1DForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image1DForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1DForName(): no file opened\n");
-}
-
 void AbstractImporterTest::image1DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3637,20 +2952,6 @@ void AbstractImporterTest::image1DNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image1DName(7), "");
-}
-
-void AbstractImporterTest::image1DNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image1DName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1DName(): no file opened\n");
 }
 
 void AbstractImporterTest::image1DNameOutOfRange() {
@@ -3683,23 +2984,6 @@ void AbstractImporterTest::image1DNotImplemented() {
 
     importer.image1D(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): not implemented\n");
-}
-
-void AbstractImporterTest::image1DNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image1D(42);
-    importer.image1D("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::image1D(): no file opened\n"
-        "Trade::AbstractImporter::image1D(): no file opened\n");
 }
 
 void AbstractImporterTest::image1DOutOfRange() {
@@ -3843,30 +3127,6 @@ void AbstractImporterTest::image2D() {
     }
 }
 
-void AbstractImporterTest::image2DCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image2DCount(), 0);
-}
-
-void AbstractImporterTest::image2DCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image2DCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2DCount(): no file opened\n");
-}
-
 void AbstractImporterTest::image2DLevelCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3877,19 +3137,6 @@ void AbstractImporterTest::image2DLevelCountNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image2DLevelCount(7), 1);
-}
-
-void AbstractImporterTest::image2DLevelCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    importer.image2DLevelCount(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2DLevelCount(): no file opened\n");
 }
 
 void AbstractImporterTest::image2DLevelCountOutOfRange() {
@@ -3931,30 +3178,6 @@ void AbstractImporterTest::image2DLevelCountZero() {
         "Trade::AbstractImporter::image2D(): implementation reported zero levels\n");
 }
 
-void AbstractImporterTest::image2DForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image2DForName(""), -1);
-}
-
-void AbstractImporterTest::image2DForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image2DForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2DForName(): no file opened\n");
-}
-
 void AbstractImporterTest::image2DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3965,20 +3188,6 @@ void AbstractImporterTest::image2DNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image2DName(7), "");
-}
-
-void AbstractImporterTest::image2DNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image2DName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2DName(): no file opened\n");
 }
 
 void AbstractImporterTest::image2DNameOutOfRange() {
@@ -4011,23 +3220,6 @@ void AbstractImporterTest::image2DNotImplemented() {
 
     importer.image2D(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): not implemented\n");
-}
-
-void AbstractImporterTest::image2DNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image2D(42);
-    importer.image2D("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::image2D(): no file opened\n"
-        "Trade::AbstractImporter::image2D(): no file opened\n");
 }
 
 void AbstractImporterTest::image2DOutOfRange() {
@@ -4171,30 +3363,6 @@ void AbstractImporterTest::image3D() {
     }
 }
 
-void AbstractImporterTest::image3DCountNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image3DCount(), 0);
-}
-
-void AbstractImporterTest::image3DCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image3DCount();
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3DCount(): no file opened\n");
-}
-
 void AbstractImporterTest::image3DLevelCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4205,20 +3373,6 @@ void AbstractImporterTest::image3DLevelCountNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image3DLevelCount(7), 1);
-}
-
-void AbstractImporterTest::image3DLevelCountNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image3DLevelCount(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3DLevelCount(): no file opened\n");
 }
 
 void AbstractImporterTest::image3DLevelCountOutOfRange() {
@@ -4260,30 +3414,6 @@ void AbstractImporterTest::image3DLevelCountZero() {
         "Trade::AbstractImporter::image3D(): implementation reported zero levels\n");
 }
 
-void AbstractImporterTest::image3DForNameNotImplemented() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return true; }
-        void doClose() override {}
-    } importer;
-
-    CORRADE_COMPARE(importer.image3DForName(""), -1);
-}
-
-void AbstractImporterTest::image3DForNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image3DForName("");
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3DForName(): no file opened\n");
-}
-
 void AbstractImporterTest::image3DNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -4294,20 +3424,6 @@ void AbstractImporterTest::image3DNameNotImplemented() {
     } importer;
 
     CORRADE_COMPARE(importer.image3DName(7), "");
-}
-
-void AbstractImporterTest::image3DNameNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image3DName(42);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3DName(): no file opened\n");
 }
 
 void AbstractImporterTest::image3DNameOutOfRange() {
@@ -4340,23 +3456,6 @@ void AbstractImporterTest::image3DNotImplemented() {
 
     importer.image3D(7);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): not implemented\n");
-}
-
-void AbstractImporterTest::image3DNoFile() {
-    struct: AbstractImporter {
-        ImporterFeatures doFeatures() const override { return {}; }
-        bool doIsOpened() const override { return false; }
-        void doClose() override {}
-    } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    importer.image3D(42);
-    importer.image3D("foo");
-    CORRADE_COMPARE(out.str(),
-        "Trade::AbstractImporter::image3D(): no file opened\n"
-        "Trade::AbstractImporter::image3D(): no file opened\n");
 }
 
 void AbstractImporterTest::image3DOutOfRange() {
