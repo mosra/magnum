@@ -89,6 +89,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void thingCountNoFile();
     void thingForNameNotImplemented();
     void thingForNameNoFile();
+    void thingByNameNotFound();
     void thingNameNoFile();
     void thingNoFile();
 
@@ -242,6 +243,14 @@ struct AbstractImporterTest: TestSuite::Tester {
     void debugFeatures();
 };
 
+constexpr struct {
+    const char* name;
+    bool checkMessage;
+} ThingByNameData[] {
+    {"check it's not an assert", false},
+    {"verify the message", true}
+};
+
 AbstractImporterTest::AbstractImporterTest() {
     addTests({&AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
@@ -272,8 +281,12 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::thingCountNotImplemented,
               &AbstractImporterTest::thingCountNoFile,
               &AbstractImporterTest::thingForNameNotImplemented,
-              &AbstractImporterTest::thingForNameNoFile,
-              &AbstractImporterTest::thingNameNoFile,
+              &AbstractImporterTest::thingForNameNoFile});
+
+    addInstancedTests({&AbstractImporterTest::thingByNameNotFound},
+        Containers::arraySize(ThingByNameData));
+
+    addTests({&AbstractImporterTest::thingNameNoFile,
               &AbstractImporterTest::thingNoFile,
 
               &AbstractImporterTest::defaultScene,
@@ -1047,6 +1060,58 @@ void AbstractImporterTest::thingForNameNoFile() {
         "Trade::AbstractImporter::image3DForName(): no file opened\n");
 }
 
+void AbstractImporterTest::thingByNameNotFound() {
+    auto&& data = ThingByNameData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    {
+        Containers::Optional<Error> redirectError;
+        if(data.checkMessage) redirectError.emplace(&out);
+
+        CORRADE_VERIFY(!importer.scene("foobar"));
+        CORRADE_VERIFY(!importer.animation("foobar"));
+        CORRADE_VERIFY(!importer.light("foobar"));
+        CORRADE_VERIFY(!importer.camera("foobar"));
+
+        CORRADE_VERIFY(!importer.object2D("foobar"));
+        CORRADE_VERIFY(!importer.object3D("foobar"));
+
+        CORRADE_VERIFY(!importer.mesh("foobar"));
+        CORRADE_VERIFY(!importer.material("foobar"));
+        CORRADE_VERIFY(!importer.texture("foobar"));
+
+        CORRADE_VERIFY(!importer.image1D("foobar"));
+        CORRADE_VERIFY(!importer.image2D("foobar"));
+        CORRADE_VERIFY(!importer.image3D("foobar"));
+    }
+
+    if(data.checkMessage) {
+        CORRADE_COMPARE(out.str(),
+            "Trade::AbstractImporter::scene(): scene foobar not found\n"
+            "Trade::AbstractImporter::animation(): animation foobar not found\n"
+            "Trade::AbstractImporter::light(): light foobar not found\n"
+            "Trade::AbstractImporter::camera(): camera foobar not found\n"
+
+            "Trade::AbstractImporter::object2D(): object foobar not found\n"
+            "Trade::AbstractImporter::object3D(): object foobar not found\n"
+
+            "Trade::AbstractImporter::mesh(): mesh foobar not found\n"
+            "Trade::AbstractImporter::material(): material foobar not found\n"
+            "Trade::AbstractImporter::texture(): texture foobar not found\n"
+
+            "Trade::AbstractImporter::image1D(): image foobar not found\n"
+            "Trade::AbstractImporter::image2D(): image foobar not found\n"
+            "Trade::AbstractImporter::image3D(): image foobar not found\n");
+    }
+}
+
 void AbstractImporterTest::thingNameNoFile() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -1216,9 +1281,6 @@ void AbstractImporterTest::scene() {
         auto data = importer.scene("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.scene("foo"));
     }
 }
 
@@ -1320,9 +1382,6 @@ void AbstractImporterTest::animation() {
         auto data = importer.animation("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.animation("foo"));
     }
 }
 
@@ -1506,9 +1565,6 @@ void AbstractImporterTest::light() {
         auto data = importer.light("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.light("foo"));
     }
 }
 
@@ -1605,9 +1661,6 @@ void AbstractImporterTest::camera() {
         auto data = importer.camera("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.camera("foo"));
     }
 }
 
@@ -1704,9 +1757,6 @@ void AbstractImporterTest::object2D() {
         auto data = importer.object2D("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.object2D("foo"));
     }
 }
 
@@ -1803,9 +1853,6 @@ void AbstractImporterTest::object3D() {
         auto data = importer.object3D("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.object3D("foo"));
     }
 }
 
@@ -1908,9 +1955,6 @@ void AbstractImporterTest::mesh() {
         auto data = importer.mesh("eighth", 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.mesh("foo"));
     }
 }
 
@@ -2683,9 +2727,6 @@ void AbstractImporterTest::material() {
         auto data = importer.material("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.material("foo"));
     }
 }
 void AbstractImporterTest::materialNameNotImplemented() {
@@ -2781,9 +2822,6 @@ void AbstractImporterTest::texture() {
         auto data = importer.texture("eighth");
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.texture("foo"));
     }
 }
 
@@ -2885,9 +2923,6 @@ void AbstractImporterTest::image1D() {
         auto data = importer.image1D("eighth", 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.image1D("foo"));
     }
 }
 
@@ -3121,9 +3156,6 @@ void AbstractImporterTest::image2D() {
         auto data = importer.image2D("eighth", 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.image2D("foo"));
     }
 }
 
@@ -3357,9 +3389,6 @@ void AbstractImporterTest::image3D() {
         auto data = importer.image3D("eighth", 2);
         CORRADE_VERIFY(data);
         CORRADE_COMPARE(data->importerState(), &state);
-    } {
-        /* This should fail gracefully, not assert */
-        CORRADE_VERIFY(!importer.image3D("foo"));
     }
 }
 

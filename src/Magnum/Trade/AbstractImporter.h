@@ -519,8 +519,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref sceneForName() and
-         * @ref scene(UnsignedInt). Returns @ref Containers::NullOpt either
-         * if @ref sceneForName() returns @cpp -1 @ce or if importing fails.
+         * @ref scene(UnsignedInt). If @ref sceneForName() returns @cpp -1 @ce,
+         * prints an error message and returns @ref Containers::NullOpt,
+         * otherwise propagates the result from @ref scene(UnsignedInt).
          * Expects that a file is opened.
          */
         Containers::Optional<SceneData> scene(const std::string& name);
@@ -565,9 +566,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref animationForName() and
-         * @ref animation(UnsignedInt). Returns @ref Containers::NullOpt either
-         * if @ref animationForName() returns @cpp -1 @ce or if importing
-         * fails. Expects that a file is opened.
+         * @ref animation(UnsignedInt). If @ref animationForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref animation(UnsignedInt). Expects that a file is opened.
          */
         Containers::Optional<AnimationData> animation(const std::string& name);
 
@@ -611,8 +613,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref lightForName() and
-         * @ref light(UnsignedInt). Returns @ref Containers::NullOpt either if
-         * @ref lightForName() returns @cpp -1 @ce or if importing fails.
+         * @ref light(UnsignedInt). If @ref lightForName() returns @cpp -1 @ce,
+         * prints an error message and returns @ref Containers::NullOpt,
+         * otherwise propagates the result from @ref light(UnsignedInt).
          * Expects that a file is opened.
          */
         Containers::Optional<LightData> light(const std::string& name);
@@ -657,9 +660,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref cameraForName() and
-         * @ref camera(UnsignedInt). Returns @ref Containers::NullOpt either if
-         * @ref cameraForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref camera(UnsignedInt). If @ref cameraForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref camera(UnsignedInt). Expects that a file is opened.
          */
         Containers::Optional<CameraData> camera(const std::string& name);
 
@@ -703,9 +707,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref object2DForName() and
-         * @ref object2D(UnsignedInt). Returns @cpp nullptr @ce either if
-         * @ref object2DForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref object2D(UnsignedInt). If @ref object2DForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref object2D(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<ObjectData2D> object2D(const std::string& name);
 
@@ -749,9 +754,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref object3DForName() and
-         * @ref object3D(UnsignedInt). Returns @cpp nullptr @ce either if
-         * @ref object3DForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref object3D(UnsignedInt). If @ref object3DForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref object3D(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<ObjectData3D> object3D(const std::string& name);
 
@@ -816,9 +822,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref meshForName() and
-         * @ref mesh(UnsignedInt, UnsignedInt). Returns
-         * @ref Containers::NullOpt either if @ref meshForName() returns
-         * @cpp -1 @ce or if importing fails. Expects that a file is opened.
+         * @ref mesh(UnsignedInt, UnsignedInt). If @ref meshForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref mesh(UnsignedInt, UnsignedInt). Expects that a file is opened.
          */
         Containers::Optional<MeshData> mesh(const std::string& name, UnsignedInt level = 0);
 
@@ -972,9 +979,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref materialForName() and
-         * @ref material(UnsignedInt). Returns @ref Containers::NullOpt either
-         * if @ref materialForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref material(UnsignedInt). If @ref materialForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref material(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<AbstractMaterialData> material(const std::string& name);
 
@@ -1018,9 +1026,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref textureForName() and
-         * @ref texture(UnsignedInt). Returns @ref Containers::NullOpt either
-         * if @ref textureForName() returns @cpp -1 @ce or if importing fails.
-         * Expects that a file is opened.
+         * @ref texture(UnsignedInt). If @ref textureForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref texture(UnsignedInt). Expects that a file is opened.
          */
         Containers::Optional<TextureData> texture(const std::string& name);
 
@@ -1076,9 +1085,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref image1DForName() and
-         * @ref image1D(UnsignedInt, UnsignedInt). Returns
-         * @ref Containers::NullOpt either if @ref image1DForName() returns
-         * @cpp -1 @ce or if importing fails. Expects that a file is opened.
+         * @ref image1D(UnsignedInt, UnsignedInt). If @ref image1DForName()
+         * returns @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref image1D(UnsignedInt, UnsignedInt). Expects that a file is
+         * opened.
          */
         Containers::Optional<ImageData1D> image1D(const std::string& name, UnsignedInt level = 0);
 
@@ -1134,9 +1145,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref image2DForName() and
-         * @ref image2D(UnsignedInt, UnsignedInt). Returns
-         * @ref Containers::NullOpt either if @ref image2DForName() returns
-         * @cpp -1 @ce or if importing fails. Expects that a file is opened.
+         * @ref image2D(UnsignedInt, UnsignedInt). If @ref image2DForName()
+         * returns @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref image2D(UnsignedInt, UnsignedInt). Expects that a file is
+         * opened.
          */
         Containers::Optional<ImageData2D> image2D(const std::string& name, UnsignedInt level = 0);
 
@@ -1192,9 +1205,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @m_since_latest
          *
          * A convenience API combining @ref image3DForName() and
-         * @ref image3D(UnsignedInt, UnsignedInt). Returns
-         * @ref Containers::NullOpt either if @ref image3DForName() returns
-         * @cpp -1 @ce or if importing fails. Expects that a file is opened.
+         * @ref image3D(UnsignedInt, UnsignedInt). If @ref image3DForName()
+         * returns @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref image3D(UnsignedInt, UnsignedInt). Expects that a file is
+         * opened.
          */
         Containers::Optional<ImageData3D> image3D(const std::string& name, UnsignedInt level = 0);
 
