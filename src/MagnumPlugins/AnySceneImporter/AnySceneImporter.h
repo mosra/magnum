@@ -68,8 +68,8 @@ tries to open the file with it. Supported formats:
 -   DirectX X (`*.x`), loaded with any plugin that provides `DirectXImporter`
 -   AutoCAD DXF (`*.dxf`), loaded with any plugin that provides `DxfImporter`
 -   Autodesk FBX (`*.fbx`), loaded with any plugin that provides `FbxImporter`
--   glTF (`*.gltf`), loaded with any plugin that provides `GltfImporter`
--   Binary glTF (`*.glb`), loaded with any plugin that provides `GlbImporter`
+-   glTF (`*.gltf`, `*.glb`), loaded with any plugin that provides
+    `GltfImporter`
 -   Industry Foundation Classes (IFC/Step) (`*.ifc`), loaded with any plugin
     that provides `IfcImporter`
 -   Irrlicht Mesh and Scene (`*.irrmesh`, `*.irr`), loaded with any plugin that

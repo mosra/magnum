@@ -76,7 +76,6 @@ constexpr struct {
     {"COLLADA", "xml.dae", "ColladaImporter"},
     {"FBX", "autodesk.fbx", "FbxImporter"},
     {"glTF", "khronos.gltf", "GltfImporter"},
-    {"glTF binary", "khronos.glb", "GlbImporter"},
     {"OpenGEX", "eric.ogex", "OpenGexImporter"},
     {"Stanford PLY", "bunny.ply", "StanfordImporter"},
     {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordImporter"},

@@ -92,10 +92,9 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
         plugin = "DxfImporter";
     else if(Utility::String::endsWith(normalized, ".fbx"))
         plugin = "FbxImporter";
-    else if(Utility::String::endsWith(normalized, ".gltf"))
+    else if(Utility::String::endsWith(normalized, ".gltf") ||
+            Utility::String::endsWith(normalized, ".glb"))
         plugin = "GltfImporter";
-    else if(Utility::String::endsWith(normalized, ".glb"))
-        plugin = "GlbImporter";
     else if(Utility::String::endsWith(normalized, ".ifc"))
         plugin = "IfcImporter";
     else if(Utility::String::endsWith(normalized, ".irrmesh") ||
