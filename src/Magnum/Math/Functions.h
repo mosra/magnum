@@ -173,7 +173,11 @@ template<class T> inline Rad<T> acos(T value) { return Rad<T>(std::acos(value));
 /** @brief Arc tangent */
 template<class T> inline Rad<T> atan(T value) { return Rad<T>(std::atan(value)); }
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 /**
 @{ @name Scalar/vector functions
@@ -536,7 +540,11 @@ template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size
     return a*b + c;
 }
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 /**
 @{ @name Exponential and power functions
@@ -706,7 +714,11 @@ template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<
     return eta*vector - (eta*dot + std::sqrt(k))*normal;
 }
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 }}
 

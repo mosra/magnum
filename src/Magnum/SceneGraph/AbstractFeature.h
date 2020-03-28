@@ -264,7 +264,11 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
          */
         virtual void cleanInverted(const MatrixTypeFor<dimensions, T>& invertedAbsoluteTransformationMatrix);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */

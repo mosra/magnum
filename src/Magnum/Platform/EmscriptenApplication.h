@@ -532,7 +532,11 @@ class EmscriptenApplication {
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Keyboard handling */
 
@@ -542,7 +546,11 @@ class EmscriptenApplication {
         /** @copydoc Sdl2Application::keyReleaseEvent() */
         virtual void keyReleaseEvent(KeyEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -782,7 +790,11 @@ class EmscriptenApplication {
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Text input handling */
     public:
@@ -836,7 +848,11 @@ class EmscriptenApplication {
          */
         virtual void textInputEvent(TextInputEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         enum class Flag: UnsignedByte {

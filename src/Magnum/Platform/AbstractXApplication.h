@@ -242,7 +242,11 @@ class AbstractXApplication {
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Keyboard handling */
 
@@ -252,7 +256,11 @@ class AbstractXApplication {
         /** @copydoc Sdl2Application::keyReleaseEvent() */
         virtual void keyReleaseEvent(KeyEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -265,7 +273,11 @@ class AbstractXApplication {
         /** @copydoc Sdl2Application::mouseMoveEvent() */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

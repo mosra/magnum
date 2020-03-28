@@ -385,7 +385,11 @@ class AndroidApplication {
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -413,7 +417,11 @@ class AndroidApplication {
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         struct LogOutput;

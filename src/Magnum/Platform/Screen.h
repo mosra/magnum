@@ -376,7 +376,11 @@ template<class Application> class BasicScreen:
          */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Keyboard handling */
 
@@ -402,7 +406,11 @@ template<class Application> class BasicScreen:
         virtual void keyReleaseEvent(KeyEvent& event);
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -446,7 +454,11 @@ template<class Application> class BasicScreen:
         virtual void mouseScrollEvent(MouseScrollEvent& event);
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Text input handling */
 
@@ -472,7 +484,11 @@ template<class Application> class BasicScreen:
         virtual void textEditingEvent(TextEditingEvent& event);
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */

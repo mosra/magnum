@@ -171,7 +171,11 @@ class MAGNUM_AUDIO_EXPORT Source {
             return *this;
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Source behavior */
 
@@ -474,7 +478,11 @@ class MAGNUM_AUDIO_EXPORT Source {
             return *this;
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Buffer management */
 
@@ -534,7 +542,11 @@ class MAGNUM_AUDIO_EXPORT Source {
          */
         std::size_t unqueueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name State management */
 
@@ -742,7 +754,11 @@ class MAGNUM_AUDIO_EXPORT Source {
             return *this;
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         ALuint _id;

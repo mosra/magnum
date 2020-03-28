@@ -181,7 +181,11 @@ template<UnsignedInt dimensions, class T> class AbstractObject
             return doTransformationMatrices(objects, finalTransformationMatrix);
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /**
          * @{ @name Transformation caching
@@ -240,7 +244,11 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          */
         void setClean() { doSetClean(); }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */

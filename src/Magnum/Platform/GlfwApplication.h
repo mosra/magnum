@@ -537,7 +537,11 @@ class GlfwApplication {
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Keyboard handling */
 
@@ -547,7 +551,11 @@ class GlfwApplication {
         /** @copydoc Sdl2Application::keyReleaseEvent() */
         virtual void keyReleaseEvent(KeyEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -643,7 +651,11 @@ class GlfwApplication {
         /** @copydoc Sdl2Application::mouseScrollEvent() */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Text input handling */
     public:
@@ -682,7 +694,11 @@ class GlfwApplication {
          */
         virtual void textInputEvent(TextInputEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Special events */
 
@@ -697,7 +713,11 @@ class GlfwApplication {
          */
         virtual void exitEvent(ExitEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         enum class Flag: UnsignedByte;

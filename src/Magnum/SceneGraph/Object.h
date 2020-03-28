@@ -219,7 +219,11 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         Object<Transformation>& setParentKeepTransformation(Object<Transformation>* parent);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Object transformation */
 
@@ -279,7 +283,11 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             #endif
             ) const;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /**
          * @{ @name Transformation caching
@@ -319,7 +327,11 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /* note: doc verbatim copied from AbstractObject::setClean() */
         void setClean();
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     public:

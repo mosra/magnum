@@ -152,7 +152,11 @@ class Renderer {
             alListeneriv(AL_VELOCITY, velocity.data());
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Global behavior */
 
@@ -265,7 +269,11 @@ class Renderer {
             alDistanceModel(ALenum(model));
         }
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 };
 
 /** @debugoperatorclassenum{Renderer,Renderer::Error} */

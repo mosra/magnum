@@ -890,7 +890,11 @@ class Sdl2Application {
          */
         virtual void drawEvent() = 0;
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Keyboard handling */
 
@@ -908,7 +912,11 @@ class Sdl2Application {
          */
         virtual void keyReleaseEvent(KeyEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Mouse handling */
 
@@ -1020,7 +1028,11 @@ class Sdl2Application {
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Touch gesture handling */
 
@@ -1033,7 +1045,11 @@ class Sdl2Application {
          */
         virtual void multiGestureEvent(MultiGestureEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Text input handling */
     public:
@@ -1093,7 +1109,11 @@ class Sdl2Application {
          */
         virtual void textEditingEvent(TextEditingEvent& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Special events */
 
@@ -1141,7 +1161,11 @@ class Sdl2Application {
          */
         virtual void anyEvent(SDL_Event& event);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         enum class Flag: UnsignedByte;

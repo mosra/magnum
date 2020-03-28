@@ -217,7 +217,11 @@ template<std::size_t size> Vector<size, Float> unpackHalf(const Vector<size, Uns
     return out;
 }
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 }}
 

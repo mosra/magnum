@@ -450,7 +450,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setHint(Hint target, HintMode mode);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Clearing values */
 
@@ -515,9 +519,13 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setClearStencil(Int stencil);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
-        /** @name Polygon drawing settings */
+        /** @{ @name Polygon drawing settings */
 
         /**
          * @brief Front facing polygon winding
@@ -748,7 +756,11 @@ class MAGNUM_GL_EXPORT Renderer {
         static void setPatchDefaultOuterLevel(const Vector4& levels);
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Scissor operations */
 
@@ -760,7 +772,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setScissor(const Range2Di& rectangle);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Stencil operations */
 
@@ -878,7 +894,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setStencilOperation(StencilOperation stencilFail, StencilOperation depthFail, StencilOperation depthPass);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Depth testing */
 
@@ -897,7 +917,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setDepthFunction(DepthFunction function);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Masking writes */
 
@@ -967,7 +991,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setStencilMask(UnsignedInt allowBits);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /**
          * @{ @name Blending
@@ -1501,7 +1529,11 @@ class MAGNUM_GL_EXPORT Renderer {
         static void blendBarrier() { glBlendBarrierKHR(); }
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         #ifndef MAGNUM_TARGET_GLES
         /** @{ @name Logical operation */
@@ -1542,7 +1574,11 @@ class MAGNUM_GL_EXPORT Renderer {
          */
         static void setLogicOperation(LogicOperation operation);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
         #endif
 
         /** @{ @name Renderer synchronization */
@@ -1692,7 +1728,11 @@ class MAGNUM_GL_EXPORT Renderer {
         }
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /** @{ @name Renderer management */
 
@@ -1894,7 +1934,11 @@ class MAGNUM_GL_EXPORT Renderer {
         static GraphicsResetStatus graphicsResetStatus();
         #endif
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         static void MAGNUM_GL_LOCAL initializeContextBasedFunctionality();

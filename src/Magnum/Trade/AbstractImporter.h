@@ -1198,7 +1198,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         Containers::Optional<ImageData3D> image3D(const std::string& name, UnsignedInt level = 0);
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
         /**
          * @brief Plugin-specific access to internal importer state

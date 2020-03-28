@@ -196,7 +196,11 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Sample data */
         Containers::Array<char> data();
 
-        /*@}*/
+        /* Since 1.8.17, the original short-hand group closing doesn't work
+           anymore. FFS. */
+        /**
+         * @}
+         */
 
     private:
         /** @brief Implementation for @ref features() */

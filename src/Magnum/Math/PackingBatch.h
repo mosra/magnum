@@ -324,7 +324,11 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 }}
 

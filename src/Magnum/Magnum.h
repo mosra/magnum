@@ -807,7 +807,11 @@ typedef Math::Range3D<Int> Range3Di;
 /** @brief Float frustum */
 typedef Math::Frustum<Float> Frustum;
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 /** @{ @name Half-precision types
 
@@ -913,7 +917,11 @@ typedef Math::Matrix4x3<Half> Matrix4x3h;
 */
 typedef Math::Matrix4x4<Half> Matrix4x4h;
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 /** @{ @name Double-precision types
 
@@ -1104,7 +1112,11 @@ typedef Math::Range3D<Double> Range3Dd;
 /** @brief Double frustum */
 typedef Math::Frustum<Double> Frustumd;
 
-/*@}*/
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt, class T> class Array;
