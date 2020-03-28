@@ -64,7 +64,8 @@ information.
 
 @code{.sh}
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
-    [--plugin-dir DIR] [--] input output
+    [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
+    [-c|--converter-options key=val,key2=val2,…] [--] input output
 @endcode
 
 Arguments:
@@ -136,10 +137,9 @@ int main(int argc, char** argv) {
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .setGlobalHelp(R"(Converts images of different formats.
 
-Specifying --importer raw:<format>` will treat the input as a raw
-tightly-packed square of pixels in given pixel format. Specifying
---converter raw will save raw imported data instead of using a converter
-plugin.
+Specifying --importer raw:<format> will treat the input as a raw tightly-packed
+square of pixels in given pixel format. Specifying --converter raw will save
+raw imported data instead of using a converter plugin.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
