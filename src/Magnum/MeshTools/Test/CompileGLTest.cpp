@@ -75,7 +75,8 @@ enum class Flag {
     GeneratedFlatNormals = 1 << 5,
     GeneratedSmoothNormals = 1 << 6,
     TextureCoordinates2D = 1 << 7,
-    Colors = 1 << 8
+    Colors = 1 << 8,
+    ObjectId = 1 << 9
 };
 
 typedef Containers::EnumSet<Flag> Flags;
@@ -93,6 +94,9 @@ struct CompileGLTest: GL::OpenGLTester {
     public:
         explicit CompileGLTest();
 
+        void renderSetup();
+        void renderTeardown();
+
         /** @todo remove the template once MeshDataXD is gone */
         template<class T> void twoDimensions();
         template<class T> void threeDimensions();
@@ -100,7 +104,9 @@ struct CompileGLTest: GL::OpenGLTester {
         void packedAttributes();
 
         void customAttribute();
+        void unsupportedAttribute();
         void implementationSpecificAttributeFormat();
+
         void generateNormalsNoPosition();
         void generateNormals2DPosition();
         void generateNormalsNoFloats();
@@ -113,8 +119,14 @@ struct CompileGLTest: GL::OpenGLTester {
 
         Shaders::Flat2D _flat2D;
         Shaders::Flat2D _flatTextured2D{Shaders::Flat2D::Flag::Textured};
+        #ifndef MAGNUM_TARGET_GLES2
+        Shaders::Flat2D _flatObjectId2D{Shaders::Flat2D::Flag::InstancedObjectId};
+        #endif
         Shaders::Flat3D _flat3D;
         Shaders::Flat3D _flatTextured3D{Shaders::Flat3D::Flag::Textured};
+        #ifndef MAGNUM_TARGET_GLES2
+        Shaders::Flat3D _flatObjectId3D{Shaders::Flat3D::Flag::InstancedObjectId};
+        #endif
         Shaders::VertexColor2D _color2D;
         Shaders::VertexColor3D _color3D;
         Shaders::Phong _phong;
@@ -124,6 +136,9 @@ struct CompileGLTest: GL::OpenGLTester {
         #endif
 
         GL::Renderbuffer _color;
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::Renderbuffer _objectId;
+        #endif
         GL::Framebuffer _framebuffer{{{}, {32, 32}}};
         GL::Texture2D _texture;
 };
@@ -136,7 +151,8 @@ constexpr struct {
     {"positions, nonindexed", Flag::NonIndexed},
     {"positions + colors", Flag::Colors},
     {"positions + texture coordinates", Flag::TextureCoordinates2D},
-    {"positions + texture coordinates + colors", Flag::TextureCoordinates2D|Flag::Colors}
+    {"positions + texture coordinates + colors", Flag::TextureCoordinates2D|Flag::Colors},
+    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed}
 };
 
 constexpr struct {
@@ -168,7 +184,8 @@ constexpr struct {
     {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors},
     {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals},
     {"positions, tangents, bitangents, normals", Flag::Tangents|Flag::Bitangents|Flag::Normals},
-    {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals}
+    {"positions, tangents, bitangents from tangents, normals", Flag::Tangents|Flag::BitangentsFromTangents|Flag::Normals},
+    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed}
 };
 
 constexpr struct {
@@ -201,31 +218,43 @@ constexpr Color4ub ImageData[] {
 
 CompileGLTest::CompileGLTest() {
     addInstancedTests<CompileGLTest>({
-        &CompileGLTest::twoDimensions<Trade::MeshData>}, Containers::arraySize(Data2D));
+        &CompileGLTest::twoDimensions<Trade::MeshData>},
+        Containers::arraySize(Data2D),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
     addInstancedTests<CompileGLTest>({
         &CompileGLTest::twoDimensions<Trade::MeshData2D>},
-        Containers::arraySize(Data2D));
+        Containers::arraySize(Data2D),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
     addInstancedTests<CompileGLTest>({
         &CompileGLTest::threeDimensions<Trade::MeshData>},
-        Containers::arraySize(Data3D));
+        Containers::arraySize(Data3D),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
     addInstancedTests<CompileGLTest>({
         &CompileGLTest::threeDimensions<Trade::MeshData3D>},
-        Containers::arraySize(Data3D));
+        Containers::arraySize(Data3D),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    addTests({&CompileGLTest::packedAttributes});
+    addTests({&CompileGLTest::packedAttributes},
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
 
     addInstancedTests({&CompileGLTest::customAttribute,
+                       &CompileGLTest::unsupportedAttribute,
                        &CompileGLTest::implementationSpecificAttributeFormat},
         Containers::arraySize(CustomAttributeWarningData));
 
@@ -234,7 +263,9 @@ CompileGLTest::CompileGLTest() {
               &CompileGLTest::generateNormalsNoFloats});
 
     addInstancedTests({&CompileGLTest::externalBuffers},
-        Containers::arraySize(DataExternal));
+        Containers::arraySize(DataExternal),
+        &CompileGLTest::renderSetup,
+        &CompileGLTest::renderTeardown);
 
     addTests({&CompileGLTest::externalBuffersInvalid});
 
@@ -255,7 +286,18 @@ CompileGLTest::CompileGLTest() {
         GL::RenderbufferFormat::RGBA4,
         #endif
         {32, 32});
-    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+    #ifndef MAGNUM_TARGET_GLES2
+    _objectId.setStorage(GL::RenderbufferFormat::R32UI, {32, 32});
+    #endif
+    _framebuffer
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+        #ifndef MAGNUM_TARGET_GLES2
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+        .mapForDraw({
+            {Shaders::Generic3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {Shaders::Generic3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        #endif
         .bind();
     _texture
         .setMinificationFilter(SamplerFilter::Linear)
@@ -305,12 +347,33 @@ template<> struct MeshTypeName<Trade::MeshData3D> {
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
+void CompileGLTest::renderSetup() {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* To avoid reading from the integer object ID attachment */
+    /** @todo ugh this needs to be a global thing and managed through
+        scoped RendererState */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
+    #endif
+}
+
+void CompileGLTest::renderTeardown() {}
+
 template<class T> void CompileGLTest::twoDimensions() {
     setTestCaseTemplateName(MeshTypeName<T>::name());
     auto&& data = Data2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
+    if(std::is_same<T, Trade::MeshData2D>::value && data.flags & Flag::ObjectId)
+        CORRADE_SKIP("Not possible with MeshData2D.");
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
     /*
+        Object ID initially set to the same value, bottom half changed to 13562
+        after the mesh gets deindexed.
+
         6-----7-----8
         |    /|    /|
         |  /  |  /  |
@@ -325,18 +388,19 @@ template<class T> void CompileGLTest::twoDimensions() {
         Vector2 position;
         Vector2 textureCoordinates;
         Color3 color;
+        UnsignedInt objectId;
     } vertexData[]{
-        {{-0.75f, -0.75f}, {0.0f, 0.0f}, 0x00ff00_rgbf},
-        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, 0x808000_rgbf},
-        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, 0xff0000_rgbf},
+        {{-0.75f, -0.75f}, {0.0f, 0.0f}, 0x00ff00_rgbf, 26234},
+        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, 0x808000_rgbf, 26234},
+        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, 0xff0000_rgbf, 26234},
 
-        {{-0.75f,  0.00f}, {0.0f, 0.5f}, 0x00ff80_rgbf},
-        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, 0x808080_rgbf},
-        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, 0xff0080_rgbf},
+        {{-0.75f,  0.00f}, {0.0f, 0.5f}, 0x00ff80_rgbf, 26234},
+        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, 0x808080_rgbf, 26234},
+        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, 0xff0080_rgbf, 26234},
 
-        {{-0.75f,  0.75f}, {0.0f, 1.0f}, 0x00ffff_rgbf},
-        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, 0x8080ff_rgbf},
-        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, 0xff00ff_rgbf}
+        {{-0.75f,  0.75f}, {0.0f, 1.0f}, 0x00ffff_rgbf, 26234},
+        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, 0x8080ff_rgbf, 26234},
+        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, 0xff00ff_rgbf, 26234}
     };
 
     Containers::Array<Trade::MeshAttributeData> attributeData;
@@ -354,6 +418,11 @@ template<class T> void CompileGLTest::twoDimensions() {
             Trade::MeshAttribute::Color,
             Containers::stridedArrayView(vertexData, &vertexData[0].color,
                 Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::ObjectId)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::ObjectId,
+            Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
 
     const UnsignedInt indexData[]{
         0, 1, 4, 0, 4, 3,
@@ -367,7 +436,16 @@ template<class T> void CompileGLTest::twoDimensions() {
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
-    if(data.flags & Flag::NonIndexed) meshData = duplicate(meshData);
+    if(data.flags & Flag::NonIndexed) {
+        meshData = duplicate(meshData);
+
+        /* Update object IDs in the bottom half */
+        if(data.flags & Flag::ObjectId) {
+            auto objectIds = meshData.mutableAttribute<UnsignedInt>(Trade::MeshAttribute::ObjectId);
+            for(std::size_t i = 0; i != meshData.vertexCount()/2; ++i)
+                objectIds[i] = 13562;
+        }
+    }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -425,6 +503,31 @@ template<class T> void CompileGLTest::twoDimensions() {
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.75f, 0.0906f}));
     }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Check object ID rendering, if we have per-vertex object ID */
+    if(data.flags & Flag::ObjectId) {
+        _framebuffer.clearColor(1, Vector4ui{27});
+        _flatObjectId2D.draw(mesh);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        /* Object ID -- no need to verify the whole image, just check that
+           pixels on known places have expected values. SwiftShader insists
+           that the read format has to be 32bit, so the renderbuffer format is
+           that too to make it the same (ES3 Mesa complains if these don't
+           match). */
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        /* Outside of the object, cleared to 27 */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
+        /* Inside of the object, bottom and top half should be different */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+    }
+    #endif
 }
 
 template<class T> void CompileGLTest::threeDimensions() {
@@ -434,12 +537,15 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
-    if(std::is_same<T, Trade::MeshData3D>::value && data.flags & (Flag::Tangents|Flag::Bitangents|Flag::BitangentsFromTangents))
+    if(std::is_same<T, Trade::MeshData3D>::value && data.flags & (Flag::Tangents|Flag::Bitangents|Flag::BitangentsFromTangents|Flag::ObjectId))
         CORRADE_SKIP("Not possible with MeshData3D.");
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
     /*
+        Object ID initially set to the same value, bottom half changed to 13562
+        after the mesh gets deindexed.
+
         6-----7-----8
         |    /|    /|
         |  /  |  /  |
@@ -457,45 +563,46 @@ template<class T> void CompileGLTest::threeDimensions() {
         Vector3 normal;
         Vector2 textureCoordinates;
         Color4 color;
+        UnsignedInt objectId;
     } vertexData[]{
         {{-0.75f, -0.75f, -0.35f},
          Vector4{Vector3{1.0f, 0.5f, 0.5f}.normalized(), -1.0f}, {},
          Vector3{-0.5f, -0.5f, 1.0f}.normalized(),
-         {0.0f, 0.0f}, 0x00ff00_rgbf},
+         {0.0f, 0.0f}, 0x00ff00_rgbf, 26234},
         {{ 0.00f, -0.75f, -0.25f},
          Vector4{Vector3{1.0f, 0.0f, 0.5f}.normalized(), 1.0f}, {},
          Vector3{ 0.0f, -0.5f, 1.0f}.normalized(),
-         {0.5f, 0.0f}, 0x808000_rgbf},
+         {0.5f, 0.0f}, 0x808000_rgbf, 26234},
         {{ 0.75f, -0.75f, -0.35f},
          Vector4{Vector3{1.0f, -0.5f, 0.5f}.normalized(), 1.0f}, {},
          Vector3{ 0.5f, -0.5f, 1.0f}.normalized(),
-         {1.0f, 0.0f}, 0xff0000_rgbf},
+         {1.0f, 0.0f}, 0xff0000_rgbf, 26234},
 
         {{-0.75f,  0.00f, -0.25f},
          Vector4{Vector3{1.0f, 0.5f, 0.0f}.normalized(), -1.0f}, {},
          Vector3{-0.5f,  0.0f, 1.0f}.normalized(),
-         {0.0f, 0.5f}, 0x00ff80_rgbf},
+         {0.0f, 0.5f}, 0x00ff80_rgbf, 26234},
         {{ 0.00f,  0.00f,  0.00f},
          Vector4{Vector3{1.0f, 0.0f, 0.0f}.normalized(), 1.0f}, {},
          Vector3{ 0.0f,  0.0f, 1.0f}.normalized(),
-         {0.5f, 0.5f}, 0x808080_rgbf},
+         {0.5f, 0.5f}, 0x808080_rgbf, 26234},
         {{ 0.75f,  0.00f, -0.25f},
          Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), 1.0f}, {},
          Vector3{ 0.5f,  0.0f, 1.0f}.normalized(),
-         {1.0f, 0.5f}, 0xff0080_rgbf},
+         {1.0f, 0.5f}, 0xff0080_rgbf, 26234},
 
         {{-0.75f,  0.75f, -0.35f},
          Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
          Vector3{-0.5f,  0.5f, 1.0f}.normalized(),
-         {0.0f, 1.0f}, 0x00ffff_rgbf},
+         {0.0f, 1.0f}, 0x00ffff_rgbf, 26234},
         {{ 0.0f,   0.75f, -0.25f},
          Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
          Vector3{ 0.0f,  0.5f, 1.0f}.normalized(),
-         {0.5f, 1.0f}, 0x8080ff_rgbf},
+         {0.5f, 1.0f}, 0x8080ff_rgbf, 26234},
         {{ 0.75f,  0.75f, -0.35f},
          Vector4{Vector3{1.0f, -0.5f, 0.0f}.normalized(), -1.0f}, {},
          Vector3{ 0.5f,  0.5f, 1.0f}.normalized(),
-         {1.0f, 1.0f}, 0xff00ff_rgbf}
+         {1.0f, 1.0f}, 0xff00ff_rgbf, 26234}
     };
 
     /* Calculate bitangents from normal+tangent */
@@ -532,6 +639,11 @@ template<class T> void CompileGLTest::threeDimensions() {
             Trade::MeshAttribute::Color,
             Containers::stridedArrayView(vertexData, &vertexData[0].color,
                 Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::ObjectId)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::ObjectId,
+            Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
 
     const UnsignedByte indexData[]{
         0, 1, 4, 0, 4, 3,
@@ -545,7 +657,16 @@ template<class T> void CompileGLTest::threeDimensions() {
         {}, vertexData, std::move(attributeData)};
 
     /* Duplicate everything if data is non-indexed */
-    if(data.flags & Flag::NonIndexed) meshData = duplicate(meshData);
+    if(data.flags & Flag::NonIndexed) {
+        meshData = duplicate(meshData);
+
+        /* Update object IDs in the bottom half */
+        if(data.flags & Flag::ObjectId) {
+            auto objectIds = meshData.mutableAttribute<UnsignedInt>(Trade::MeshAttribute::ObjectId);
+            for(std::size_t i = 0; i != meshData.vertexCount()/2; ++i)
+                objectIds[i] = 13562;
+        }
+    }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -670,6 +791,33 @@ template<class T> void CompileGLTest::threeDimensions() {
             (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
     }
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Check object ID rendering, if we have per-vertex object ID */
+    if(data.flags & Flag::ObjectId) {
+        _framebuffer.clearColor(1, Vector4ui{27});
+        _flatObjectId3D
+            .setTransformationProjectionMatrix(projection*transformation)
+            .draw(mesh);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        /* Object ID -- no need to verify the whole image, just check that
+           pixels on known places have expected values. SwiftShader insists
+           that the read format has to be 32bit, so the renderbuffer format is
+           that too to make it the same (ES3 Mesa complains if these don't
+           match). */
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        /* Outside of the object, cleared to 27 */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
+        /* Inside of the object, bottom and top half should be different */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+    }
+    #endif
+
     /* Check with the mesh visualizer shader for TBN direction. This has to be
        last, as it gets skipped on WebGL / ES2. */
     if(data.flags >= (Flag::Tangents|Flag::Bitangents|Flag::Normals) ||
@@ -713,52 +861,85 @@ template<class T> void CompileGLTest::threeDimensions() {
     }
 }
 
+/* Can't be inline because MSVC 2015 doesn't like anonymous bitfields in local
+   structs */
+struct PackedVertex {
+    Vector3s position;
+    Vector3s normal;
+    Vector2us textureCoordinates;
+    Color4ub color;
+    UnsignedShort objectId;
+    UnsignedShort:16;
+};
+
 void CompileGLTest::packedAttributes() {
-    /* Same as above, just packed */
-    const struct Vertex {
-        Vector3s position;
-        Vector3s normal;
-        Vector2us textureCoordinates;
-        Color4ub color;
-    } vertexData[]{
+
+    /*
+        Same as above, except that the middle row of indices is duplicated to
+        make it possible to have different object IDs for the bottom and top
+        row while still be able to test non-default index type as well.
+
+        9----10----11
+        |    /|    /|
+        |  /  |  /  |
+        |/    |/    |
+        6-----7-----8
+        3-----4-----5
+        |    /|    /|
+        |  /  |  /  |
+        |/    |/    |
+        0-----1-----2
+    */
+
+    const PackedVertex vertexData[]{
         {Math::pack<Vector3s>(Vector3{-0.75f, -0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{-0.5f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 0.0f}), 0x00ff00_rgb},
+         Math::pack<Vector2us>(Vector2{0.0f, 0.0f}), 0x00ff00_rgb, 13562},
         {Math::pack<Vector3s>(Vector3{ 0.00f, -0.75f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.0f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 0.0f}), 0x808000_rgb},
+         Math::pack<Vector2us>(Vector2{0.5f, 0.0f}), 0x808000_rgb, 13562},
         {Math::pack<Vector3s>(Vector3{ 0.75f, -0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{ 0.5f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 0.0f}), 0xff0000_rgb},
+         Math::pack<Vector2us>(Vector2{1.0f, 0.0f}), 0xff0000_rgb, 13562},
 
         {Math::pack<Vector3s>(Vector3{-0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{-0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb},
+         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 13562},
         {Math::pack<Vector3s>(Vector3{ 0.00f,  0.00f,  0.00f}),
          Math::pack<Vector3s>(Vector3{ 0.0f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb},
+         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 13562},
         {Math::pack<Vector3s>(Vector3{ 0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb},
+         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 13562},
+
+        {Math::pack<Vector3s>(Vector3{-0.75f,  0.00f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{-0.5f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 26234},
+        {Math::pack<Vector3s>(Vector3{ 0.00f,  0.00f,  0.00f}),
+         Math::pack<Vector3s>(Vector3{ 0.0f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 26234},
+        {Math::pack<Vector3s>(Vector3{ 0.75f,  0.00f, -0.25f}),
+         Math::pack<Vector3s>(Vector3{ 0.5f,  0.0f, 1.0f}.normalized()),
+         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 26234},
 
         {Math::pack<Vector3s>(Vector3{-0.75f,  0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{-0.5f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 1.0f}), 0x00ffff_rgb},
+         Math::pack<Vector2us>(Vector2{0.0f, 1.0f}), 0x00ffff_rgb, 26234},
         {Math::pack<Vector3s>(Vector3{ 0.0f,   0.75f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.0f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 1.0f}), 0x8080ff_rgb},
+         Math::pack<Vector2us>(Vector2{0.5f, 1.0f}), 0x8080ff_rgb, 26234},
         {Math::pack<Vector3s>(Vector3{ 0.75f,  0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{ 0.5f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 1.0f}), 0xff00ff_rgb}
+         Math::pack<Vector2us>(Vector2{1.0f, 1.0f}), 0xff00ff_rgb, 26234}
     };
-    static_assert(sizeof(Vertex) % 4 == 0,
+    static_assert(sizeof(PackedVertex) % 4 == 0,
         "the vertex is not 4-byte aligned and that's bad");
 
     const UnsignedByte indexData[]{
         0, 1, 4, 0, 4, 3,
         1, 2, 5, 1, 5, 4,
-        3, 4, 7, 3, 7, 6,
-        4, 5, 8, 4, 8, 7
+        6, 7, 10, 6, 10, 9,
+        7, 8, 11, 7, 11, 10
     };
 
     Trade::MeshData meshData{MeshPrimitive::Triangles, {}, indexData,
@@ -767,22 +948,28 @@ void CompileGLTest::packedAttributes() {
                 Trade::MeshAttribute::Position,
                 VertexFormat::Vector3sNormalized,
                 Containers::stridedArrayView(vertexData, &vertexData[0].position,
-                    Containers::arraySize(vertexData), sizeof(Vertex))},
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
             Trade::MeshAttributeData{
                 Trade::MeshAttribute::Normal,
                 VertexFormat::Vector3sNormalized,
                 Containers::stridedArrayView(vertexData, &vertexData[0].normal,
-                    Containers::arraySize(vertexData), sizeof(Vertex))},
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
             Trade::MeshAttributeData{
                 Trade::MeshAttribute::TextureCoordinates,
                 VertexFormat::Vector2usNormalized,
                 Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
-                    Containers::arraySize(vertexData), sizeof(Vertex))},
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
             Trade::MeshAttributeData{
                 Trade::MeshAttribute::Color,
                 /* It should figure out the type itself here */
                 Containers::stridedArrayView(vertexData, &vertexData[0].color,
-                    Containers::arraySize(vertexData), sizeof(Vertex))}
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
+            #ifndef MAGNUM_TARGET_GLES2
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::ObjectId,
+                Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))}
+            #endif
     }};
 
     GL::Mesh mesh = compile(meshData);
@@ -838,6 +1025,29 @@ void CompileGLTest::packedAttributes() {
         Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
         /* SwiftShader has some minor off-by-one precision differences */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    _framebuffer.clearColor(1, Vector4ui{27});
+    _flatObjectId3D
+        .setTransformationProjectionMatrix(projection*transformation)
+        .draw(mesh);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Outside of the object, cleared to 27 */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
+    /* Inside of the object, bottom and top half should be different */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+    #endif
 }
 
 void CompileGLTest::customAttribute() {
@@ -855,7 +1065,29 @@ void CompileGLTest::customAttribute() {
     else
         MeshTools::compile(data);
     CORRADE_COMPARE(out.str(), instanceData.flags ? "" :
-        "MeshTools::compile(): ignoring unknown attribute Trade::MeshAttribute::Custom(115)\n");
+        "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::Custom(115)\n");
+}
+
+void CompileGLTest::unsupportedAttribute() {
+    auto&& instanceData = CustomAttributeWarningData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("All attributes are supported on ES3+.");
+    #else
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+            VertexFormat::UnsignedByte, nullptr}}};
+
+    std::ostringstream out;
+    Warning redirectError{&out};
+    if(instanceData.flags)
+        MeshTools::compile(data, instanceData.flags);
+    else
+        MeshTools::compile(data);
+    /* Warns always, regardless of the flag */
+    CORRADE_COMPARE(out.str(), "MeshTools::compile(): ignoring unknown/unsupported attribute Trade::MeshAttribute::ObjectId\n");
+    #endif
 }
 
 void CompileGLTest::implementationSpecificAttributeFormat() {

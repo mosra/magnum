@@ -108,14 +108,24 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             case Trade::MeshAttribute::Normal:
                 attribute.emplace(Shaders::Generic3D::Normal{}, format);
                 break;
+            #ifndef MAGNUM_TARGET_GLES2
+            case Trade::MeshAttribute::ObjectId:
+                attribute.emplace(Shaders::Generic3D::ObjectId{}, format);
+                break;
+            #endif
 
-            /* So it doesn't yell that we didn't handle a known attribute */
-            case Trade::MeshAttribute::Custom: break; /* LCOV_EXCL_LINE */
+            /* To avoid the compiler warning that we didn't handle an enum
+               value. For these a runtime warning is printed below. */
+            #ifdef MAGNUM_TARGET_GLES2
+            case Trade::MeshAttribute::ObjectId:
+            #endif
+            case Trade::MeshAttribute::Custom:
+                break; /* LCOV_EXCL_LINE */
         }
 
         if(!attribute) {
-            if(!(flags & CompileFlag::NoWarnOnCustomAttributes))
-                Warning{} << "MeshTools::compile(): ignoring unknown attribute" << meshData.attributeName(i);
+            if(!Trade::isMeshAttributeCustom(meshData.attributeName(i)) || !(flags & CompileFlag::NoWarnOnCustomAttributes))
+                Warning{} << "MeshTools::compile(): ignoring unknown/unsupported attribute" << meshData.attributeName(i);
             continue;
         }
 
