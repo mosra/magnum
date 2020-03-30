@@ -24,11 +24,13 @@
 #
 
 set(MagnumDebugTools_SRCS
+    ColorMap.cpp
     Profiler.cpp)
 
 set(MagnumDebugTools_GracefulAssert_SRCS )
 
 set(MagnumDebugTools_HEADERS
+    ColorMap.h
     DebugTools.h
     Profiler.h
 

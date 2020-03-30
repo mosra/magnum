@@ -29,6 +29,7 @@
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ResourceManager.h"
@@ -37,6 +38,7 @@
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/SceneGraph/Object.h"
@@ -66,6 +68,23 @@ manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
 new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 /* [debug-tools-renderers] */
 }
+
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+{
+/* [ColorMap] */
+const auto map = DebugTools::ColorMap::turbo();
+const Vector2i size{Int(map.size()), 1};
+
+GL::Texture2D colorMapTexture;
+colorMapTexture
+    .setMinificationFilter(SamplerFilter::Linear)
+    .setMagnificationFilter(SamplerFilter::Linear)
+    .setWrapping(SamplerWrapping::ClampToEdge) // or Repeat
+    .setStorage(1, GL::TextureFormat::RGBA8, size) // or SRGBA8
+    .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+/* [ColorMap] */
+}
+#endif
 
 {
 DebugTools::ResourceManager manager;

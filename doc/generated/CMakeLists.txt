@@ -30,6 +30,7 @@ project(MagnumDocumentationImageGenerator CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 
 find_package(Magnum REQUIRED
+    DebugTools
     MeshTools
     Primitives
     Shaders
@@ -46,6 +47,11 @@ elseif(CORRADE_TARGET_WINDOWS)
 else()
     message(FATAL_ERROR "No windowless application available on this platform")
 endif()
+
+add_executable(colormaps colormaps.cpp)
+target_link_libraries(colormaps
+    Magnum::Magnum
+    Magnum::DebugTools)
 
 add_executable(easings easings.cpp)
 target_link_libraries(easings
