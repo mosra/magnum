@@ -101,6 +101,9 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        #endif
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
@@ -111,6 +114,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
@@ -146,6 +150,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
             bindFragmentDataLocation(ColorOutput, "color");
             bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
+        if(flags >= Flag::InstancedObjectId)
+            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
     }
     #endif
@@ -355,6 +361,7 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         _c(VertexColor)
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedObjectId)
         _c(ObjectId)
         #endif
         #undef _c
@@ -374,6 +381,7 @@ Debug& operator<<(Debug& debug, const Phong::Flags value) {
         Phong::Flag::VertexColor,
         Phong::Flag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        Phong::Flag::InstancedObjectId, /* Superset of ObjectId */
         Phong::Flag::ObjectId
         #endif
         });

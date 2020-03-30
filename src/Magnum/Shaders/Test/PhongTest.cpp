@@ -39,6 +39,9 @@ struct PhongTest: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsInstancedObjectId();
+    #endif
 };
 
 PhongTest::PhongTest() {
@@ -46,7 +49,11 @@ PhongTest::PhongTest() {
               &PhongTest::constructCopy,
 
               &PhongTest::debugFlag,
-              &PhongTest::debugFlags});
+              &PhongTest::debugFlags,
+              #ifndef MAGNUM_TARGET_GLES2
+              &PhongTest::debugFlagsInstancedObjectId
+              #endif
+              });
 }
 
 void PhongTest::constructNoCreate() {
@@ -76,6 +83,17 @@ void PhongTest::debugFlags() {
     Debug{&out} << (Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture) << Phong::Flags{};
     CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture Shaders::Phong::Flags{}\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongTest::debugFlagsInstancedObjectId() {
+    std::ostringstream out;
+
+    /* InstancedObjectId is a superset of ObjectId so only one should be
+     *printed */
+    Debug{&out} << (Phong::Flag::ObjectId|Phong::Flag::InstancedObjectId);
+    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::InstancedObjectId\n");
+}
+#endif
 
 }}}}
 

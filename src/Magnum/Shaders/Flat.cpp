@@ -69,6 +69,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(dimensions == 2 ? "#define TWO_DIMENSIONS\n" : "#define THREE_DIMENSIONS\n")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        #endif
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Flat.vert"));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
@@ -76,6 +79,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Flat.frag"));
@@ -101,6 +105,8 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
             bindFragmentDataLocation(ColorOutput, "color");
             bindFragmentDataLocation(ObjectIdOutput, "objectId");
         }
+        if(flags >= Flag::InstancedObjectId)
+            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
         #endif
     }
     #endif
@@ -195,6 +201,7 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         _c(TextureTransformation)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
+        _c(InstancedObjectId)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -210,6 +217,7 @@ Debug& operator<<(Debug& debug, const FlatFlags value) {
         FlatFlag::VertexColor,
         FlatFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
+        FlatFlag::InstancedObjectId, /* Superset of ObjectId */
         FlatFlag::ObjectId
         #endif
         });

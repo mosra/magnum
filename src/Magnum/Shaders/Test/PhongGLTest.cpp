@@ -151,6 +151,7 @@ constexpr struct {
     {"vertex colors + diffuse texture", Phong::Flag::VertexColor|Phong::Flag::DiffuseTexture, 1},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Phong::Flag::ObjectId, 1},
+    {"instanced object ID", Phong::Flag::InstancedObjectId, 1},
     {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
     #endif
     {"five lights", {}, 5},
@@ -266,6 +267,23 @@ const struct {
         0xffffffff_rgbaf, 0x9999ff00_rgbaf}
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    Phong::Flags flags;
+    UnsignedInt uniformId;
+    UnsignedInt instanceCount;
+    UnsignedInt expected;
+} RenderObjectIdData[] {
+    {"", /* Verify that it can hold 16 bits at least */
+        Phong::Flag::ObjectId, 48526, 0, 48526},
+    {"instanced, first instance",
+        Phong::Flag::InstancedObjectId, 13524, 1, 24526},
+    {"instanced, second instance",
+        Phong::Flag::InstancedObjectId, 13524, 2, 62347}
+};
+#endif
+
 PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct}, Containers::arraySize(ConstructData));
 
@@ -322,7 +340,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addTests({&PhongGLTest::renderObjectId},
+    addInstancedTests({&PhongGLTest::renderObjectId},
+        Containers::arraySize(RenderObjectIdData),
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
     #endif
@@ -1158,11 +1177,20 @@ void PhongGLTest::renderObjectIdTeardown() {
 }
 
 void PhongGLTest::renderObjectId() {
+    auto&& data = RenderObjectIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Phong{Phong::Flag::ObjectId, 2}
+    if(data.instanceCount) sphere
+        .setInstanceCount(data.instanceCount)
+        .addVertexBufferInstanced(
+            GL::Buffer{Containers::arrayView({11002u, 48823u})},
+            1, 0, Phong::ObjectId{});
+
+    Phong{data.flags, 2}
         .setLightColors({0x993366_rgbf, 0x669933_rgbf})
         .setLightPositions({{-3.0f, -3.0f, 0.0f},
                             { 3.0f, -3.0f, 0.0f}})
@@ -1171,7 +1199,7 @@ void PhongGLTest::renderObjectId() {
         .setSpecularColor(0x6666ff_rgbf)
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setObjectId(48526)
+        .setObjectId(data.uniformId)
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1205,8 +1233,8 @@ void PhongGLTest::renderObjectId() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
-    /* Inside of the object. Verify that it can hold 16 bits at least. */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+    /* Inside of the object */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 #endif
 

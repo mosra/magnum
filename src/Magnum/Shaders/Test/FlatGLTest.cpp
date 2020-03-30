@@ -143,6 +143,7 @@ constexpr struct {
     {"vertex colors + textured", Flat2D::Flag::VertexColor|Flat2D::Flag::Textured},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Flat2D::Flag::ObjectId},
+    {"instanced object ID", Flat2D::Flag::InstancedObjectId},
     {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
     #endif
 };
@@ -181,6 +182,23 @@ const struct {
     {"masking 1.0", "TestFiles/alpha-mask1.0.tga", "TestFiles/alpha-mask1.0.tga", false,
         Flat2D::Flag::Textured|Flat2D::Flag::AlphaMask, 1.0f}
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    Flat2D::Flags flags;
+    UnsignedInt uniformId;
+    UnsignedInt instanceCount;
+    UnsignedInt expected;
+} RenderObjectIdData[] {
+    {"", /* Verify that it can hold 16 bits at least */
+        Flat2D::Flag::ObjectId, 48526, 0, 48526},
+    {"instanced, first instance",
+        Flat2D::Flag::InstancedObjectId, 13524, 1, 24526},
+    {"instanced, second instance",
+        Flat2D::Flag::InstancedObjectId, 13524, 2, 62347}
+};
+#endif
 
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
@@ -236,8 +254,9 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderAlphaTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addTests({&FlatGLTest::renderObjectId2D,
-              &FlatGLTest::renderObjectId3D},
+    addInstancedTests({&FlatGLTest::renderObjectId2D,
+                       &FlatGLTest::renderObjectId3D},
+        Containers::arraySize(RenderObjectIdData),
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
     #endif
@@ -975,14 +994,23 @@ void FlatGLTest::renderObjectIdTeardown() {
 }
 
 void FlatGLTest::renderObjectId2D() {
+    auto&& data = RenderObjectIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
 
-    Flat2D{Flat3D::Flag::ObjectId}
+    if(data.instanceCount) circle
+        .setInstanceCount(data.instanceCount)
+        .addVertexBufferInstanced(
+            GL::Buffer{Containers::arrayView({11002u, 48823u})},
+            1, 0, Flat2D::ObjectId{});
+
+    Flat2D{data.flags}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        .setObjectId(47523)
+        .setObjectId(data.uniformId)
         .draw(circle);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1014,23 +1042,32 @@ void FlatGLTest::renderObjectId2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
-    /* Inside of the object. Verify that it can hold 16 bits at least. */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 47523);
+    /* Inside of the object */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 
 void FlatGLTest::renderObjectId3D() {
+    auto&& data = RenderObjectIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
-    Flat3D{Flat3D::Flag::ObjectId}
+    if(data.instanceCount) sphere
+        .setInstanceCount(data.instanceCount)
+        .addVertexBufferInstanced(
+            GL::Buffer{Containers::arrayView({11002u, 48823u})},
+            1, 0, Flat2D::ObjectId{});
+
+    Flat3D{data.flags}
         .setColor(0x9999ff_rgbf)
         .setTransformationProjectionMatrix(
             Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        .setObjectId(48526)
+        .setObjectId(data.uniformId)
         .draw(sphere);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -1065,8 +1102,8 @@ void FlatGLTest::renderObjectId3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Outside of the object, cleared to 27 */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
-    /* Inside of the object. Verify that it can hold 16 bits at least. */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+    /* Inside of the object */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 #endif
 

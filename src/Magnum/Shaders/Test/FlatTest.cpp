@@ -39,6 +39,9 @@ struct FlatTest: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugFlagsInstancedObjectId();
+    #endif
 };
 
 FlatTest::FlatTest() {
@@ -49,7 +52,11 @@ FlatTest::FlatTest() {
               &FlatTest::constructCopy<3>,
 
               &FlatTest::debugFlag,
-              &FlatTest::debugFlags});
+              &FlatTest::debugFlags,
+              #ifndef MAGNUM_TARGET_GLES2
+              &FlatTest::debugFlagsInstancedObjectId
+              #endif
+              });
 }
 
 template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
@@ -86,6 +93,17 @@ void FlatTest::debugFlags() {
     Debug{&out} << (Flat3D::Flag::Textured|Flat3D::Flag::AlphaMask) << Flat3D::Flags{};
     CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured|Shaders::Flat::Flag::AlphaMask Shaders::Flat::Flags{}\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void FlatTest::debugFlagsInstancedObjectId() {
+    std::ostringstream out;
+
+    /* InstancedObjectId is a superset of ObjectId so only one should be
+     *printed */
+    Debug{&out} << (Flat3D::Flag::ObjectId|Flat3D::Flag::InstancedObjectId);
+    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedObjectId\n");
+}
+#endif
 
 }}}}
 

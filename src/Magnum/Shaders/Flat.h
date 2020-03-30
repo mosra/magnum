@@ -43,7 +43,8 @@ namespace Implementation {
         VertexColor = 1 << 2,
         TextureTransformation = 1 << 3,
         #ifndef MAGNUM_TARGET_GLES2
-        ObjectId = 1 << 4
+        ObjectId = 1 << 4,
+        InstancedObjectId = (1 << 5)|ObjectId
         #endif
     };
     typedef Containers::EnumSet<FlatFlag> FlatFlags;
@@ -115,6 +116,11 @@ on framebuffers with integer attachments.
 
 @snippet MagnumShaders.cpp Flat-usage-object-id
 
+If you have a batch of meshes with different object IDs, enable
+@ref Flag::InstancedObjectId and supply per-vertex IDs to the @ref ObjectId
+attribute. The output will contain a sum of the per-vertex ID and ID coming
+from @ref setObjectId().
+
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
 
@@ -159,6 +165,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * @ref Flag::VertexColor is set.
          */
         typedef typename Generic<dimensions>::Color4 Color4;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) object ID
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
+         * Used only if @ref Flag::InstancedObjectId is set.
+         * @requires_gles30 Object ID output requires integer buffer
+         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
+         *      1.0.
+         */
+        typedef typename Generic<dimensions>::ObjectId ObjectId;
+        #endif
 
         enum: UnsignedInt {
             /**
@@ -234,7 +254,20 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      WebGL 1.0.
              * @m_since{2019,10}
              */
-            ObjectId = 1 << 4
+            ObjectId = 1 << 4,
+
+            /**
+             * Instanced object ID. Retrieves a per-instance / per-vertex
+             * object ID from the @ref ObjectId attribute, outputting a sum of
+             * the per-vertex ID and ID coming from @ref setObjectId().
+             * Implicitly enables @ref Flag::ObjectId. See
+             * @ref Shaders-Flat-usage-object-id for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedObjectId = (1 << 5)|ObjectId
             #endif
         };
 
@@ -346,7 +379,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
          * @ref Shaders-Flat-usage-object-id for more information. Default is
-         * @cpp 0 @ce.
+         * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
+         * value is combined with ID coming from the @ref ObjectId attribute.
          * @requires_gles30 Object ID output requires integer buffer
          *      attachments, which are not available in OpenGL ES 2.0 or WebGL
          *      1.0.

@@ -98,10 +98,14 @@ diffuse part and then separate the alpha like this:
 
 The shader supports writing object ID to the framebuffer for object picking or
 other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
-integer buffer attached to the @ref ObjectIdOutput attachment. The
-functionality is practically the same as in the @ref Flat shader, see its
-@ref Shaders-Flat-usage-object-id documentation for more information and usage
-example.
+integer buffer attached to the @ref ObjectIdOutput attachment. If you have a
+batch of meshes with different object IDs, enable @ref Flag::InstancedObjectId
+and supply per-vertex IDs to the @ref ObjectId attribute. The output will
+contain a sum of the per-vertex ID and ID coming from @ref setObjectId().
+
+The functionality is practically the same as in the @ref Flat shader, see
+@ref Shaders-Flat-usage-object-id "its documentation" for more information and
+usage example.
 
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
@@ -175,6 +179,20 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         typedef Generic3D::Color4 Color4;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) object ID
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
+         * Used only if @ref Flag::InstancedObjectId is set.
+         * @requires_gles30 Object ID output requires integer buffer
+         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
+         *      1.0.
+         */
+        typedef Generic3D::ObjectId ObjectId;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -205,7 +223,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedByte {
+        enum class Flag: UnsignedShort {
             /**
              * Multiply ambient color with a texture.
              * @see @ref setAmbientColor(), @ref bindAmbientTexture()
@@ -271,7 +289,20 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      WebGL 1.0.
              * @m_since{2019,10}
              */
-            ObjectId = 1 << 7
+            ObjectId = 1 << 7,
+
+            /**
+             * Instanced object ID. Retrieves a per-instance / per-vertex
+             * object ID from the @ref ObjectId attribute, outputting a sum of
+             * the per-vertex ID and ID coming from @ref setObjectId().
+             * Implicitly enables @ref Flag::ObjectId. See
+             * @ref Shaders-Phong-usage-object-id for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedObjectId = (1 << 8)|ObjectId
             #endif
         };
 

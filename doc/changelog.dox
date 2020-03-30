@@ -223,6 +223,8 @@ See also:
 -   Tangent space visualization in @ref Shaders::MeshVisualizer3D
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
+-   Ability to render Per-instance / per-vertex object ID in @ref Shaders::Flat
+    and @ref Shaders::Phong, in addition to uniform object ID
 -   New attribute definitions and an location allocation scheme in
     @ref Shaders::Generic --- @ref Shaders::Generic::Tangent4,
     @ref Shaders::Generic::Bitangent, @ref Shaders::Generic::ObjectId plus

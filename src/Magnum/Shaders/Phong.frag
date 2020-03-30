@@ -153,6 +153,10 @@ in mediump vec2 interpolatedTextureCoordinates;
 in lowp vec4 interpolatedVertexColor;
 #endif
 
+#ifdef INSTANCED_OBJECT_ID
+flat in highp uint interpolatedInstanceObjectId;
+#endif
+
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
@@ -229,6 +233,10 @@ void main() {
     #endif
 
     #ifdef OBJECT_ID
-    fragmentObjectId = objectId;
+    fragmentObjectId =
+        #ifdef INSTANCED_OBJECT_ID
+        interpolatedInstanceObjectId +
+        #endif
+        objectId;
     #endif
 }

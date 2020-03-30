@@ -87,6 +87,15 @@ in lowp vec4 vertexColor;
 out lowp vec4 interpolatedVertexColor;
 #endif
 
+#ifdef INSTANCED_OBJECT_ID
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
+#endif
+in highp uint instanceObjectId;
+
+flat out highp uint interpolatedInstanceObjectId;
+#endif
+
 void main() {
     #ifdef TWO_DIMENSIONS
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
@@ -110,5 +119,10 @@ void main() {
     #ifdef VERTEX_COLOR
     /* Vertex colors, if enabled */
     interpolatedVertexColor = vertexColor;
+    #endif
+
+    #ifdef INSTANCED_OBJECT_ID
+    /* Instanced object ID, if enabled */
+    interpolatedInstanceObjectId = instanceObjectId;
     #endif
 }
