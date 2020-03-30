@@ -99,7 +99,7 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     #endif
     {
         GL::AbstractShaderProgram::setUniform(GL::AbstractShaderProgram::uniformLocation("vectorTexture"),
-            AbstractVector<dimensions>::VectorTextureLayer);
+            AbstractVector<dimensions>::VectorTextureUnit);
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */

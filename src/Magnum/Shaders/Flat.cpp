@@ -42,7 +42,7 @@
 namespace Magnum { namespace Shaders {
 
 namespace {
-    enum: Int { TextureLayer = 0 };
+    enum: Int { TextureUnit = 0 };
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _flags(flags) {
@@ -125,7 +125,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureLayer);
+        if(flags & Flag::Textured) setUniform(uniformLocation("textureData"), TextureUnit);
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
@@ -158,7 +158,7 @@ template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setColor(co
 template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::bindTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::Textured,
         "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled", *this);
-    texture.bind(TextureLayer);
+    texture.bind(TextureUnit);
     return *this;
 }
 

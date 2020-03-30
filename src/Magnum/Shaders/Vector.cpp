@@ -96,7 +96,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(const Flags flags): 
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        GL::AbstractShaderProgram::setUniform(GL::AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);
+        GL::AbstractShaderProgram::setUniform(GL::AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureUnit);
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */

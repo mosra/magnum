@@ -47,10 +47,10 @@ namespace Magnum { namespace Shaders {
 
 namespace {
     enum: Int {
-        AmbientTextureLayer = 0,
-        DiffuseTextureLayer = 1,
-        SpecularTextureLayer = 2,
-        NormalTextureLayer = 3
+        AmbientTextureUnit = 0,
+        DiffuseTextureUnit = 1,
+        SpecularTextureUnit = 2,
+        NormalTextureUnit = 3
     };
 }
 
@@ -179,11 +179,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     if(flags && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>(version))
     #endif
     {
-        if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureLayer);
+        if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureUnit);
         if(lightCount) {
-            if(flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
-            if(flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
-            if(flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureLayer);
+            if(flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureUnit);
+            if(flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureUnit);
+            if(flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureUnit);
         }
     }
 
@@ -216,7 +216,7 @@ Phong& Phong::setAmbientColor(const Magnum::Color4& color) {
 Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::AmbientTexture,
         "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
-    texture.bind(AmbientTextureLayer);
+    texture.bind(AmbientTextureUnit);
     return *this;
 }
 
@@ -228,7 +228,7 @@ Phong& Phong::setDiffuseColor(const Magnum::Color4& color) {
 Phong& Phong::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
-    if(_lightCount) texture.bind(DiffuseTextureLayer);
+    if(_lightCount) texture.bind(DiffuseTextureUnit);
     return *this;
 }
 
@@ -240,21 +240,21 @@ Phong& Phong::setSpecularColor(const Magnum::Color4& color) {
 Phong& Phong::bindSpecularTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::SpecularTexture,
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
-    if(_lightCount) texture.bind(SpecularTextureLayer);
+    if(_lightCount) texture.bind(SpecularTextureUnit);
     return *this;
 }
 
 Phong& Phong::bindNormalTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
         "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
-    if(_lightCount) texture.bind(NormalTextureLayer);
+    if(_lightCount) texture.bind(NormalTextureUnit);
     return *this;
 }
 
 Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
     CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled", *this);
-    GL::AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular, normal});
+    GL::AbstractTexture::bind(AmbientTextureUnit, {ambient, diffuse, specular, normal});
     return *this;
 }
 
