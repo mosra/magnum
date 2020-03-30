@@ -28,6 +28,8 @@ namespace Magnum {
 /** @page credits-third-party Third-party components
 @brief Third-party dependencies and their corresponding license information
 
+@m_keyword{3rd party components,,}
+
 This page lists libraries, data files and other components that some Magnum
 libraries, plugins, executables or tests depend on. See the
 @ref mainpage-license "main page" for license of Magnum itself. For easier
