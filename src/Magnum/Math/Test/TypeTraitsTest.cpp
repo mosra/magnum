@@ -48,6 +48,8 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
 
     void underlyingTypeOf();
 
+    template<class T> void epsilonConsistentWithCorrade();
+
     template<class T> void equalsIntegral();
     void equalsHalf();
     template<class T> void equalsFloatingPoint0();
@@ -116,6 +118,10 @@ TypeTraitsTest::TypeTraitsTest() {
 
               &TypeTraitsTest::underlyingTypeOf,
 
+              &TypeTraitsTest::epsilonConsistentWithCorrade<Float>,
+              &TypeTraitsTest::epsilonConsistentWithCorrade<Double>,
+              &TypeTraitsTest::epsilonConsistentWithCorrade<long double>,
+
               &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
               &TypeTraitsTest::equalsIntegral<UnsignedShort>,
@@ -131,19 +137,13 @@ TypeTraitsTest::TypeTraitsTest() {
 
               &TypeTraitsTest::equalsFloatingPoint0<Float>,
               &TypeTraitsTest::equalsFloatingPoint0<Double>,
-              #ifndef CORRADE_TARGET_EMSCRIPTEN
               &TypeTraitsTest::equalsFloatingPoint0<long double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPoint1<Float>,
               &TypeTraitsTest::equalsFloatingPoint1<Double>,
-              #ifndef CORRADE_TARGET_EMSCRIPTEN
               &TypeTraitsTest::equalsFloatingPoint1<long double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointLarge<Float>,
               &TypeTraitsTest::equalsFloatingPointLarge<Double>,
-              #ifndef CORRADE_TARGET_EMSCRIPTEN
               &TypeTraitsTest::equalsFloatingPointLarge<long double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
               &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
               &TypeTraitsTest::equalsFloatingPointNaN<Float>,
@@ -268,6 +268,14 @@ void TypeTraitsTest::underlyingTypeOf() {
     CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Matrix4<Float>>, Float>::value));
 }
 
+template<class T> void TypeTraitsTest::epsilonConsistentWithCorrade() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    /* Using VERIFY because we *don't* want fuzzy comparison in this case. The
+       equals*() tests below do further checks against TestSuite. */
+    CORRADE_VERIFY(TypeTraits<T>::epsilon() == Corrade::Utility::Implementation::FloatPrecision<T>::epsilon());
+}
+
 template<class T> void TypeTraitsTest::equalsIntegral() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
@@ -289,7 +297,9 @@ template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
 
-    /* Ensure we have the same behavior as TestSuite */
+    /* Ensure we have the same behavior as TestSuite. Done in addition to the
+       epsilonConsistentWithCorrade() test above, since that one alone might
+       give a false sense of security. */
     CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
         T(0)+TypeTraits<T>::epsilon()/T(2), T(0)),
         Corrade::TestSuite::ComparisonStatusFlags{});
@@ -304,7 +314,9 @@ template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
 
-    /* Ensure we have the same behavior as TestSuite */
+    /* Ensure we have the same behavior as TestSuite. Done in addition to the
+       epsilonConsistentWithCorrade() test above, since that one alone might
+       give a false sense of security. */
     CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
         T(1)+TypeTraits<T>::epsilon()/T(2), T(1)),
         Corrade::TestSuite::ComparisonStatusFlags{});
@@ -319,7 +331,9 @@ template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 
-    /* Ensure we have the same behavior as TestSuite */
+    /* Ensure we have the same behavior as TestSuite. Done in addition to the
+       epsilonConsistentWithCorrade() test above, since that one alone might
+       give a false sense of security. */
     CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
         T(25)+TypeTraits<T>::epsilon()*T(2), T(25)),
         Corrade::TestSuite::ComparisonStatusFlags{});
@@ -336,7 +350,9 @@ template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::inf(),
                                          -Constants<T>::inf()));
 
-    /* Ensure we have the same behavior as TestSuite */
+    /* Ensure we have the same behavior as TestSuite. Done in addition to the
+       epsilonConsistentWithCorrade() test above, since that one alone might
+       give a false sense of security. */
     CORRADE_COMPARE(Corrade::TestSuite::Implementation::FloatComparator<T>{}(
         Constants<T>::inf(), Constants<T>::inf()),
         Corrade::TestSuite::ComparisonStatusFlags{});

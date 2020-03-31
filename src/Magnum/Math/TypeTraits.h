@@ -34,29 +34,42 @@
 #include "Magnum/Math/Math.h"
 #include "Magnum/Types.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Precision when testing floats for equality
+@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+    instead.
 
 They have "at least" 6 significant digits of precision, taking one digit less
 for more headroom.
 */
 #ifndef FLOAT_EQUALITY_PRECISION
-#define FLOAT_EQUALITY_PRECISION 1.0e-5f
+#define FLOAT_EQUALITY_PRECISION \
+    CORRADE_DEPRECATED_MACRO(FLOAT_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-5f
 #endif
 
 /**
 @brief Precision when testing doubles for equality
+@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+    instead.
 
 They have "at least" 15 significant digits of precision, taking one digit less
 for more headroom.
 */
 #ifndef DOUBLE_EQUALITY_PRECISION
-#define DOUBLE_EQUALITY_PRECISION 1.0e-14
+#define DOUBLE_EQUALITY_PRECISION \
+    CORRADE_DEPRECATED_MACRO(DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-14
 #endif
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Precision when testing long doubles for equality
+@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+    instead.
 
 They have "at least" 18 significant digits of precision, taking one digit less
 for more headroom.
@@ -71,9 +84,12 @@ for more headroom.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
 #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
+#define LONG_DOUBLE_EQUALITY_PRECISION \
+    CORRADE_DEPRECATED_MACRO(LONG_DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-17l
 #else
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14
+#define LONG_DOUBLE_EQUALITY_PRECISION \
+    CORRADE_DEPRECATED_MACRO(LONG_DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-14l
+#endif
 #endif
 #endif
 #endif
@@ -338,8 +354,18 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * @brief Epsilon value for fuzzy compare
      *
      * Returns minimal difference between numbers to be considered
-     * inequal. Returns 1 for integer types and reasonably small value for
-     * floating-point types. Not implemented for arbitrary types.
+     * inequal. Not implemented for arbitrary types. Returns @cpp 1 @ce for
+     * integer types and
+     *
+     * -    @cpp 1.0e-5f @ce for @cpp float @ce,
+     * -    @cpp 1.0e-15 @ce for @cpp double @ce,
+     * -    @cpp 1.0e-17l @ce for @cpp long double @ce on platforms where it is
+     *      80-bit, and @cpp 1.0e-14l @ce on platforms
+     *      @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE "where it is 64-bit".
+     *
+     * This matches fuzzy comparison precision in @ref Corrade::TestSuite and
+     * is always one digit less than how @ref Corrade::Utility::Debug or
+     * @ref Corrade::Utility::format() prints given type.
      */
     constexpr static T epsilon();
 
@@ -414,9 +440,7 @@ namespace Implementation {
     _c(Float)
     _c(Half)
     _c(Double)
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     _c(long double)
-    #endif
     #undef _c
     #endif
 
@@ -499,7 +523,7 @@ template<class T> bool TypeTraitsFloatingPoint<T>::equalsZero(const T a, const T
 template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Float> {
     typedef Float FloatingPointType;
 
-    constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
+    constexpr static Float epsilon() { return 1.0e-5f; }
 };
 /* A bit special -- using integer comparison for equality but presenting itself
    as a floating-point type so Color's fullChannel() works correctly */
@@ -509,15 +533,17 @@ template<> struct TypeTraits<Half>: Implementation::TypeTraitsName<Half>, Implem
 template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
 
-    constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
+    constexpr static Double epsilon() { return 1.0e-14; }
 };
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 
-    constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
+    #ifndef CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
+    constexpr static long double epsilon() { return 1.0e-17l; }
+    #else
+    constexpr static long double epsilon() { return 1.0e-14l; }
+    #endif
 };
-#endif
 
 namespace Implementation {
 

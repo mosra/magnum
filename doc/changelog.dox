@@ -549,6 +549,13 @@ See also:
     deprecated on the 3D variant, use separate
     @ref Shaders::MeshVisualizer3D::setTransformationMatrix() and
     @ref Shaders::MeshVisualizer3D::setProjectionMatrix() instead
+-   The unprefixed and alien-looking @cpp FLOAT_EQUALITY_PRECISION @ce,
+    @cpp DOUBLE_EQUALITY_PRECISION @ce and @cpp LONG_DOUBLE_EQUALITY_PRECISION @ce
+    macros are no longer used by any code and thus deprecated in favor of using
+    @ref Math::TypeTraits::epsilon() instead, which is also consistent with how
+    This also means it's no longer
+    possible to override equality comparison epsilons at compile time, but that
+    was a rarely (if ever) used feature.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
