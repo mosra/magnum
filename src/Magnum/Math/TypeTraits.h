@@ -29,6 +29,7 @@
  * @brief Type traits
  */
 
+#include <type_traits>
 #include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Math/Math.h"
