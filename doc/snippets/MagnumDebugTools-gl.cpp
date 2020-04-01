@@ -80,7 +80,7 @@ colorMapTexture
     .setMinificationFilter(SamplerFilter::Linear)
     .setMagnificationFilter(SamplerFilter::Linear)
     .setWrapping(SamplerWrapping::ClampToEdge) // or Repeat
-    .setStorage(1, GL::TextureFormat::RGBA8, size) // or SRGBA8
+    .setStorage(1, GL::TextureFormat::RGB8, size) // or SRGB8
     .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
 /* [ColorMap] */
 }
