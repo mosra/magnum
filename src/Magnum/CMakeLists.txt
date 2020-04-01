@@ -47,6 +47,7 @@ set(Magnum_GracefulAssert_SRCS
 set(Magnum_HEADERS
     AbstractResourceLoader.h
     Array.h
+    British.h
     DimensionTraits.h
     FileCallback.h
     Image.h
