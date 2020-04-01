@@ -37,10 +37,18 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace Shaders {
+
+namespace {
+    enum: Int {
+        /* First four taken by Phong (A/D/S/N) */
+        ColorMapTextureUnit = 4
+    };
+}
 
 namespace Implementation {
 
@@ -59,6 +67,16 @@ MeshVisualizerBase::MeshVisualizerBase(FlagsBase flags): _flags{flags} {
         MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::OES::standard_derivatives);
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(_flags & FlagBase::PrimitiveId && !(_flags >= FlagBase::PrimitiveIdFromVertexId)) {
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL320);
+        #else
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GLES320);
+        #endif
+    }
+    #endif
+
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -69,10 +87,12 @@ MeshVisualizerBase::MeshVisualizerBase(FlagsBase flags): _flags{flags} {
 GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag, const Utility::Resource& rs) const {
     #ifndef MAGNUM_TARGET_GLES
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
-    CORRADE_INTERNAL_ASSERT(_flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
+    /* Extended in MeshVisualizer3D for TBN visualization */
+    CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
-    CORRADE_INTERNAL_ASSERT(_flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
+    /* Extended in MeshVisualizer3D for TBN visualization */
+    CORRADE_INTERNAL_ASSERT(!(_flags & FlagBase::Wireframe) || _flags & FlagBase::NoGeometryShader || version >= GL::Version::GLES310);
     #else
     const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
@@ -82,6 +102,10 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
 
     vert.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(_flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
+        #endif
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
         #elif defined(MAGNUM_TARGET_GLES2)
@@ -90,14 +114,27 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
         #endif
         ;
     frag.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
-        .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "");
+        .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(_flags & FlagBase::PrimitiveId ?
+            (_flags >= FlagBase::PrimitiveIdFromVertexId ?
+                "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
+                "#define PRIMITIVE_ID\n") : "")
+        #endif
+        ;
 
     return version;
 }
 
 MeshVisualizerBase& MeshVisualizerBase::setColor(const Color4& color) {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(_flags & (FlagBase::Wireframe|FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled", *this);
+    #else
     CORRADE_ASSERT(_flags & FlagBase::Wireframe,
         "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled", *this);
+    #endif
     setUniform(_colorUniform, color);
     return *this;
 }
@@ -116,11 +153,37 @@ MeshVisualizerBase& MeshVisualizerBase::setWireframeWidth(const Float width) {
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+MeshVisualizerBase& MeshVisualizerBase::setColorMapTransformation(const Float offset, const Float scale) {
+    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled", *this);
+    setUniform(_colorMapOffsetScaleUniform, Vector2{offset, scale});
+    return *this;
 }
 
-MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedByte(flags))} {
+MeshVisualizerBase& MeshVisualizerBase::bindColorMapTexture(GL::Texture2D& texture) {
+    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled", *this);
+    texture.bind(ColorMapTextureUnit);
+    return *this;
+}
+#endif
+
+}
+
+MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedShort(flags))} {
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+        "Shaders::MeshVisualizer2D: at least one visualization feature has to be enabled", );
+    #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer2D: at least Flag::Wireframe has to be enabled", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::PrimitiveIdFromVertexId),
+        "Shaders::MeshVisualizer2D: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
+    #endif
 
     Utility::Resource rs{"MagnumShaders"};
     GL::Shader vert{NoCreate};
@@ -139,6 +202,11 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
         geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         (*geom)
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
+            .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+            .addSource(_flags & FlagBase::PrimitiveId ?
+                (_flags >= FlagBase::PrimitiveIdFromVertexId ?
+                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
+                    "#define PRIMITIVE_ID\n") : "")
             .addSource(rs.get("MeshVisualizer.geom"));
     }
     #else
@@ -163,7 +231,10 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::InstancedObjectId)
+            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+        #endif
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isVersionSupported(GL::Version::GL310))
@@ -182,26 +253,46 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        if(flags & Flag::Wireframe) {
+        if(flags & (Flag::Wireframe
+            #ifndef MAGNUM_TARGET_GLES2
+            |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+            #endif
+        ))
             _colorUniform = uniformLocation("color");
+        if(flags & Flag::Wireframe) {
             _wireframeColorUniform = uniformLocation("wireframeColor");
             _wireframeWidthUniform = uniformLocation("wireframeWidth");
             _smoothnessUniform = uniformLocation("smoothness");
             if(!(flags & Flag::NoGeometryShader))
                 _viewportSizeUniform = uniformLocation("viewportSize");
         }
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId)) {
+            _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
+            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+        }
+        #endif
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix({});
-    if(flags & Flag::Wireframe) {
+    if(flags & (Flag::Wireframe
+        #ifndef MAGNUM_TARGET_GLES2
+        |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+        #endif
+    ))
         setColor(Color3(1.0f));
+    if(flags & Flag::Wireframe) {
         /* Viewport size is zero by default */
         setWireframeColor(Color3{0.0f});
         setWireframeWidth(1.0f);
         setSmoothness(2.0f);
     }
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId))
+        setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
+    #endif
     #endif
 }
 
@@ -227,23 +318,38 @@ MeshVisualizer2D& MeshVisualizer2D::setSmoothness(const Float smoothness) {
     return *this;
 }
 
-MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedByte(flags))} {
+MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedShort(flags))} {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled", );
     CORRADE_ASSERT(!(flags & Flag::NoGeometryShader && flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)),
         "Shaders::MeshVisualizer3D: geometry shader has to be enabled when rendering TBN direction", );
     CORRADE_ASSERT(!(flags & Flag::BitangentDirection && flags & Flag::BitangentFromTangentDirection),
         "Shaders::MeshVisualizer3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive", );
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+        "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled", );
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer3D: at least Flag::Wireframe has to be enabled", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::PrimitiveIdFromVertexId),
+        "Shaders::MeshVisualizer3D: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
     #endif
 
     Utility::Resource rs{"MagnumShaders"};
     GL::Shader vert{NoCreate};
     GL::Shader frag{NoCreate};
     const GL::Version version = setupShaders(vert, frag, rs);
+
+    /* Expands the check done for wireframe in MeshVisualizerBase with TBN */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_INTERNAL_ASSERT(!(flags & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GL320);
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_INTERNAL_ASSERT(!(flags & (Flag::NormalDirection|Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection)) || version >= GL::Version::GLES310);
+    #endif
 
     vert.addSource("#define THREE_DIMENSIONS\n")
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -275,6 +381,11 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
         (*geom)
             .addSource(Utility::formatString("#define MAX_VERTICES {}\n", maxVertices))
             .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
+            .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+            .addSource(_flags & FlagBase::PrimitiveId ?
+                (_flags >= FlagBase::PrimitiveIdFromVertexId ?
+                    "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
+                    "#define PRIMITIVE_ID\n") : "")
             .addSource(flags & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
             .addSource(flags & (Flag::BitangentDirection|Flag::BitangentFromTangentDirection) ? "#define BITANGENT_DIRECTION\n" : "")
             .addSource(flags & Flag::NormalDirection ? "#define NORMAL_DIRECTION\n" : "")
@@ -302,7 +413,10 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags >= Flag::InstancedObjectId)
+            bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+        #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(flags & Flag::TangentDirection ||
            flags & Flag::BitangentFromTangentDirection)
@@ -333,8 +447,13 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
-        if(flags & Flag::Wireframe) {
+        if(flags & (Flag::Wireframe
+            #ifndef MAGNUM_TARGET_GLES2
+            |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+            #endif
+        ))
             _colorUniform = uniformLocation("color");
+        if(flags & Flag::Wireframe) {
             _wireframeColorUniform = uniformLocation("wireframeColor");
             _wireframeWidthUniform = uniformLocation("wireframeWidth");
         }
@@ -347,6 +466,12 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
             if(!(flags & Flag::NoGeometryShader))
                 _viewportSizeUniform = uniformLocation("viewportSize");
         }
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId)) {
+            _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
+            setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
+        }
+        #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
             _normalMatrixUniform = uniformLocation("normalMatrix");
@@ -360,8 +485,13 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #ifdef MAGNUM_TARGET_GLES
     setTransformationMatrix({});
     setProjectionMatrix({});
-    if(flags & Flag::Wireframe) {
+    if(flags & (Flag::Wireframe
+        #ifndef MAGNUM_TARGET_GLES2
+        |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+        #endif
+    ))
         setColor(Color3(1.0f));
+    if(flags & Flag::Wireframe) {
         /* Viewport size is zero by default */
         setWireframeColor(Color3{0.0f});
         setWireframeWidth(1.0f);
@@ -373,6 +503,10 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     )) {
         setSmoothness(2.0f);
     }
+    #ifndef MAGNUM_TARGET_GLES2
+    if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId))
+        setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
         setNormalMatrix({});
@@ -454,6 +588,13 @@ Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flag value) {
         #define _c(v) case MeshVisualizer2D::Flag::v: return debug << "::" #v;
         _c(NoGeometryShader)
         _c(Wireframe)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedObjectId)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(PrimitiveId)
+        #endif
+        _c(PrimitiveIdFromVertexId)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -475,6 +616,13 @@ Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flag value) {
         _c(BitangentDirection)
         _c(NormalDirection)
         #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(InstancedObjectId)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(PrimitiveId)
+        #endif
+        _c(PrimitiveIdFromVertexId)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -486,7 +634,14 @@ Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizer2D::Flags{}", {
         MeshVisualizer2D::Flag::Wireframe,
         /* Wireframe contains this on ES2 so it's not reported there */
-        MeshVisualizer2D::Flag::NoGeometryShader
+        MeshVisualizer2D::Flag::NoGeometryShader,
+        #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizer2D::Flag::InstancedObjectId,
+        MeshVisualizer2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizer2D::Flag::PrimitiveId
+        #endif
+        #endif
     });
 }
 
@@ -494,7 +649,20 @@ Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizer3D::Flags{}", {
         MeshVisualizer3D::Flag::Wireframe,
         /* Wireframe contains this on ES2 so it's not reported there */
-        MeshVisualizer3D::Flag::NoGeometryShader
+        MeshVisualizer3D::Flag::NoGeometryShader,
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        MeshVisualizer3D::Flag::TangentDirection,
+        MeshVisualizer3D::Flag::BitangentFromTangentDirection,
+        MeshVisualizer3D::Flag::BitangentDirection,
+        MeshVisualizer3D::Flag::NormalDirection,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        MeshVisualizer3D::Flag::InstancedObjectId,
+        MeshVisualizer3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
+        #ifndef MAGNUM_TARGET_WEBGL
+        MeshVisualizer3D::Flag::PrimitiveId
+        #endif
+        #endif
     });
 }
 

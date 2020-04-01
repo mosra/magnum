@@ -41,6 +41,7 @@
 #include <Magnum/Image.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
+#include <Magnum/DebugTools/ColorMap.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Mesh.h>
@@ -79,7 +80,9 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
 
     std::string phong();
     std::string meshVisualizer2D();
+    std::string meshVisualizer2DPrimitiveId();
     std::string meshVisualizer3D();
+    std::string meshVisualizer3DPrimitiveId();
     std::string flat();
     std::string vertexColor();
 
@@ -129,7 +132,9 @@ int ShaderVisualizer::exec() {
 
     for(auto fun: {&ShaderVisualizer::phong,
                    &ShaderVisualizer::meshVisualizer2D,
+                   &ShaderVisualizer::meshVisualizer2DPrimitiveId,
                    &ShaderVisualizer::meshVisualizer3D,
+                   &ShaderVisualizer::meshVisualizer3DPrimitiveId,
                    &ShaderVisualizer::flat,
                    &ShaderVisualizer::vertexColor,
                    &ShaderVisualizer::vector,
@@ -185,6 +190,30 @@ std::string ShaderVisualizer::meshVisualizer2D() {
     return "meshvisualizer2d.png";
 }
 
+std::string ShaderVisualizer::meshVisualizer2DPrimitiveId() {
+    const Matrix3 projection =
+        Matrix3::projection(Vector2{3.0f})*
+        Matrix3::rotation(13.7_degf);
+
+    const auto map = DebugTools::ColorMap::turbo();
+    const Vector2i size{Int(map.size()), 1};
+    GL::Texture2D colorMapTexture;
+    colorMapTexture
+        .setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::Repeat)
+        .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+
+    Shaders::MeshVisualizer2D{Shaders::MeshVisualizer2D::Flag::PrimitiveId}
+        .setTransformationProjectionMatrix(projection)
+        .setColorMapTransformation(1.0f/255.0f, 1.0f/8.0f)
+        .bindColorMapTexture(colorMapTexture)
+        .draw(MeshTools::compile(Primitives::circle2DSolid(8)));
+
+    return "meshvisualizer2d-primitiveid.png";
+}
+
 std::string ShaderVisualizer::meshVisualizer3D() {
     const Matrix4 transformation = Transformation*
         Matrix4::rotationZ(13.7_degf)*
@@ -206,6 +235,31 @@ std::string ShaderVisualizer::meshVisualizer3D() {
         .draw(MeshTools::compile(Primitives::uvSphereSolid(4, 8, Primitives::UVSphereFlag::TextureCoordinates|Primitives::UVSphereFlag::Tangents)));
 
     return "meshvisualizer3d.png";
+}
+
+std::string ShaderVisualizer::meshVisualizer3DPrimitiveId() {
+    const Matrix4 transformation = Transformation*
+        Matrix4::rotationZ(13.7_degf)*
+        Matrix4::rotationX(-12.6_degf);
+
+    const auto map = DebugTools::ColorMap::turbo();
+    const Vector2i size{Int(map.size()), 1};
+    GL::Texture2D colorMapTexture;
+    colorMapTexture
+        .setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::Repeat)
+        .setStorage(1, GL::TextureFormat::SRGB8Alpha8, size)
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+
+    Shaders::MeshVisualizer3D{Shaders::MeshVisualizer3D::Flag::PrimitiveId}
+        .setTransformationMatrix(transformation)
+        .setProjectionMatrix(Projection)
+        .setColorMapTransformation(1.0f/255.0f, 1.0f/32.0f)
+        .bindColorMapTexture(colorMapTexture)
+        .draw(MeshTools::compile(Primitives::uvSphereSolid(4, 8)));
+
+    return "meshvisualizer3d-primitiveid.png";
 }
 
 std::string ShaderVisualizer::flat() {

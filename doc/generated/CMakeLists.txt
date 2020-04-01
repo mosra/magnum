@@ -60,6 +60,7 @@ target_link_libraries(easings
 add_executable(shaders shaders.cpp)
 target_link_libraries(shaders
     Magnum::Magnum
+    Magnum::DebugTools
     Magnum::MeshTools
     Magnum::Primitives
     Magnum::Shaders

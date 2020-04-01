@@ -47,7 +47,7 @@ uniform highp mat4 transformationMatrix
     #endif
     ;
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 6)
+layout(location = 7)
 #endif
 uniform highp mat4 projectionMatrix
     #ifndef GL_ES
@@ -60,7 +60,7 @@ uniform highp mat4 projectionMatrix
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
+layout(location = 8)
 #endif
 uniform highp mat3 normalMatrix
     #ifndef GL_ES
@@ -69,7 +69,7 @@ uniform highp mat3 normalMatrix
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 uniform highp float lineLength
     #ifndef GL_ES
@@ -122,6 +122,27 @@ in lowp float vertexIndex;
 out vec3 barycentric;
 #endif
 
+#ifdef INSTANCED_OBJECT_ID
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
+#endif
+in highp uint instanceObjectId;
+
+#if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+flat out highp uint interpolatedInstanceObjectId;
+#else
+flat out highp uint interpolatedVsInstanceObjectId;
+#endif
+#endif
+
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+#if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+flat out highp uint interpolatedPrimitiveId;
+#else
+flat out highp uint interpolatedVsPrimitiveId;
+#endif
+#endif
+
 #ifdef TANGENT_DIRECTION
 out highp vec4 tangentEndpoint;
 #endif
@@ -171,6 +192,22 @@ void main() {
     #else
     barycentric[gl_VertexID % 3] = 1.0;
     #endif
+    #endif
 
+    #ifdef INSTANCED_OBJECT_ID
+    #if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+    interpolatedInstanceObjectId
+    #else
+    interpolatedVsInstanceObjectId
+    #endif
+        = instanceObjectId;
+    #endif
+    #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+    #if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+    interpolatedPrimitiveId
+    #else
+    interpolatedVsPrimitiveId
+    #endif
+        = uint(gl_VertexID/3);
     #endif
 }

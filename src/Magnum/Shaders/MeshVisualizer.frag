@@ -44,7 +44,7 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
-#if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
+#if (defined(WIREFRAME_RENDERING) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID) || defined(INSTANCED_OBJECT_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -75,7 +75,7 @@ uniform lowp float wireframeWidth
     ;
 #elif defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
+layout(location = 9)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -93,7 +93,27 @@ uniform lowp float smoothness
     = 2.0
     #endif
     ;
+#endif
 
+#if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 4)
+#endif
+uniform lowp sampler2D colorMapTexture;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 6)
+#endif
+uniform lowp vec2 colorMapOffsetScale
+    #ifndef GL_ES
+    = vec2(1.0/512.0, 1.0/256.0)
+    #endif
+    ;
+#define colorMapOffset colorMapOffsetScale.x
+#define colorMapScale colorMapOffsetScale.y
+#endif
+
+#if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
 #ifndef NO_GEOMETRY_SHADER
 #if !defined(GL_ES) || defined(GL_NV_shader_noperspective_interpolation)
 noperspective
@@ -102,6 +122,13 @@ in lowp vec3 dist;
 #else
 in lowp vec3 barycentric;
 #endif
+#endif
+
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+flat in highp uint interpolatedPrimitiveId;
+#endif
+#ifdef INSTANCED_OBJECT_ID
+flat in highp uint interpolatedInstanceObjectId;
 #endif
 
 #ifdef TBN_DIRECTION
@@ -117,6 +144,23 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
+    /* Map object/primitive ID to a color. Will be either combined with the
+       wireframe background color (if wireframe is enabled), ignored (if
+       rendering TBN direction) or used as-is if nothing else is enabled */
+    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    lowp vec4 faceColor = texture(colorMapTexture, vec2(colorMapOffset + float(
+        #ifdef INSTANCED_OBJECT_ID
+        interpolatedInstanceObjectId
+        #elif defined(PRIMITIVE_ID)
+        gl_PrimitiveID
+        #elif defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+        interpolatedPrimitiveId
+        #else
+        #error mosra messed up
+        #endif
+    )*colorMapScale, 0.0));
+    #endif
+
     /* 1. For wireframe the line is on the triangle edges, thus dist = 0 at
           vertices and dist = w (= wireframeWidth) at center of smoothed edge.
        2. For antialiased TBN (drawn alone) the line is in the center of the
@@ -137,6 +181,24 @@ void main() {
                 0                  -S -w 0  w S         -w 0  w
     */
     #if defined(WIREFRAME_RENDERING) || defined(TBN_DIRECTION)
+
+    /* Fill with background color first:
+
+       1. For wireframe alone the color is supplied directly from the color
+          uniform
+       2. For TBN alone the backgroundColor is supplied from the GS
+
+       If primitive/object ID is enabled, it multiplies the color.
+    */
+    #if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
+    fragmentColor = color;
+    #else
+    fragmentColor = backgroundColor;
+    #endif
+    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    fragmentColor *= faceColor;
+    #endif
+
     #ifndef NO_GEOMETRY_SHADER
     /* Distance to nearest side. If signed distance is involved when rendering
        TBN alone, we need to find an absolute distance */
@@ -146,7 +208,7 @@ void main() {
     lowp const float nearest = min(min(dist.x, dist.y), dist.z);
     #endif
 
-    /* Smooth step between two colors based on distance.
+    /* Mix in the line color:
 
        1. For wireframe alone the width and colors are supplied directly from
           wireframeWidth, wireframeColor, color uniforms
@@ -158,10 +220,11 @@ void main() {
     */
     fragmentColor = mix(
         #if defined(WIREFRAME_RENDERING) && !defined(TBN_DIRECTION)
-        wireframeColor, color,
+        wireframeColor,
         #else
-        lineColor, backgroundColor,
+        lineColor,
         #endif
+        fragmentColor,
         #ifdef WIREFRAME_RENDERING
         smoothstep(wireframeWidth - smoothness,
                    wireframeWidth + smoothness, nearest)
@@ -178,10 +241,14 @@ void main() {
     const lowp vec3 d = fwidth(barycentric);
     const lowp vec3 factor = smoothstep(vec3(0.0), d*1.5, barycentric);
     const lowp float nearest = min(min(factor.x, factor.y), factor.z);
-    fragmentColor = mix(wireframeColor, color, nearest);
+    fragmentColor = mix(wireframeColor, fragmentColor, nearest);
     #endif
 
+    /* Object / Primitive ID visualization using a colormap */
+    #elif defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    fragmentColor = color*faceColor;
+
     #else
-    #error neither wireframe or TBN direction is enabled, huh?
+    #error no visualization enabled, huh?
     #endif
 }

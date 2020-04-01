@@ -41,7 +41,7 @@ uniform lowp vec2 viewportSize; /* defaults to zero */
 
 layout(triangles) in;
 
-#if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && defined(WIREFRAME_RENDERING)
+#if (defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)) && (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID))
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -63,7 +63,7 @@ uniform lowp vec4 wireframeColor
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
+layout(location = 9)
 #endif
 uniform lowp float lineWidth
     #ifndef GL_ES
@@ -99,6 +99,15 @@ noperspective
 #endif
 out lowp vec3 dist;
 
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+flat in highp uint interpolatedVsPrimitiveId[];
+flat out highp uint interpolatedPrimitiveId;
+#endif
+#ifdef INSTANCED_OBJECT_ID
+flat in highp uint interpolatedVsInstanceObjectId[];
+flat out highp uint interpolatedInstanceObjectId;
+#endif
+
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 out lowp vec4 backgroundColor;
 out lowp vec4 lineColor;
@@ -124,7 +133,7 @@ void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointSc
        and to 0 otherwise. See the fragment shader for details.
     */
     vec2 direction = normalize(endpointScreen - positionScreen);
-    #ifdef WIREFRAME_RENDERING
+    #if defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     float edgeDistance = 0.0;
     vec2 halfSide = lineWidth*vec2(-direction.y, direction.x);
     #else
@@ -157,6 +166,20 @@ void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointSc
 #endif
 
 void main() {
+    /* Passthrough for unchanged variables */
+    #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+    interpolatedPrimitiveId = interpolatedVsPrimitiveId[0];
+    #elif defined(PRIMITIVE_ID)
+    /* This has to be done explicitly, otherwise the fragment input is
+       undefined. Interestingly enough this worked well on Mesa / Intel with
+       the GS emitting always just 3 vertices, but not anymore when it emits
+       also the TBN direction. */
+    gl_PrimitiveID = gl_PrimitiveIDIn;
+    #endif
+    #ifdef INSTANCED_OBJECT_ID
+    interpolatedInstanceObjectId = interpolatedVsInstanceObjectId[0];
+    #endif
+
     /* Screen position of each vertex */
     vec2 p[3];
     #ifdef TANGENT_DIRECTION
@@ -181,7 +204,7 @@ void main() {
         #endif
     }
 
-    #ifdef WIREFRAME_RENDERING
+    #if defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     /* Vector of each triangle side */
     const vec2 v[3] = vec2[3](
         p[2]-p[1],
@@ -192,10 +215,15 @@ void main() {
     /* Compute area using perp-dot product */
     const float area = abs(dot(vec2(-v[1].y, v[1].x), v[2]));
 
-    /* Add distance to opposite side to each vertex */
+    /* If wireframe is enabled, add distance to opposite side to each vertex.
+       Otherwise make all distances the same to avoid any lines being drawn. */
     for(int i = 0; i != 3; ++i) {
         dist = vec3(0.0, 0.0, 0.0);
+        #ifdef WIREFRAME_RENDERING
         dist[i] = area/length(v[i]);
+        #else
+        dist = vec3(area/length(v[i]));
+        #endif
         #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
         backgroundColor = color;
         lineColor = wireframeColor;

@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/FormatStl.h>
 
+#include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -40,12 +41,15 @@
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/MeshTools/Combine.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
@@ -84,6 +88,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     void setWireframeNotEnabled2D();
     void setWireframeNotEnabled3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setColorMapNotEnabled2D();
+    void setColorMapNotEnabled3D();
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void setTangentBitangentNormalNotEnabled3D();
     #endif
@@ -94,10 +102,22 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderDefaultsWireframe2D();
     void renderDefaultsWireframe3D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderDefaultsObjectId2D();
+    void renderDefaultsObjectId3D();
+    void renderDefaultsPrimitiveId2D();
+    void renderDefaultsPrimitiveId3D();
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderDefaultsTangentBitangentNormal();
     #endif
     void renderWireframe2D();
     void renderWireframe3D();
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderObjectPrimitiveId2D();
+    void renderObjectPrimitiveId3D();
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderWireframe3DPerspective();
     void renderTangentBitangentNormal();
@@ -109,10 +129,10 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
         GL::Renderbuffer _color{NoCreate},
             _depth{NoCreate};
-        #ifndef MAGNUM_TARGET_GLES2
-        GL::Renderbuffer _objectId{NoCreate};
-        #endif
         GL::Framebuffer _framebuffer{NoCreate};
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::Texture2D _colorMapTexture;
+        #endif
 };
 
 /*
@@ -122,8 +142,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     -   Mesa AMD
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3 (except TBN visualization)
-    -   WebGL 1 / 2 (on Mesa Intel)
-    -   iPhone 6 w/ iOS 12.4
+    -   WebGL 1 / 2 (on Mesa Intel) (except primitive/object ID)
+    -   iPhone 6 w/ iOS 12.4 (except primitive/object ID)
 */
 
 using namespace Math::Literals;
@@ -133,13 +153,27 @@ constexpr struct {
     MeshVisualizer2D::Flags flags;
 } ConstructData2D[] {
     {"wireframe w/o GS", MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"object ID", MeshVisualizer2D::Flag::InstancedObjectId},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"primitive ID", MeshVisualizer2D::Flag::PrimitiveId},
+    #endif
+    {"primitive ID from vertex ID", MeshVisualizer2D::Flag::PrimitiveIdFromVertexId}
+    #endif
 };
 
 constexpr struct {
     const char* name;
     MeshVisualizer3D::Flags flags;
 } ConstructData3D[] {
-    {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader}
+    {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"object ID", MeshVisualizer3D::Flag::InstancedObjectId},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"primitive ID", MeshVisualizer3D::Flag::InstancedObjectId},
+    #endif
+    {"primitive ID from vertex ID", MeshVisualizer3D::Flag::PrimitiveIdFromVertexId}
+    #endif
 };
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -154,7 +188,8 @@ constexpr struct {
     {"normal direction", MeshVisualizer3D::Flag::NormalDirection},
     {"tbn direction", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection|MeshVisualizer3D::Flag::NormalDirection},
     {"tbn direction with bitangent from tangent", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection}
+    {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection},
+    {"wireframe + object id + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection}
 };
 #endif
 
@@ -165,7 +200,17 @@ constexpr struct {
 } ConstructInvalidData2D[] {
     {"no feature enabled",
         MeshVisualizer2D::Flag::NoGeometryShader, /* not a feature flag */
-        "at least Flag::Wireframe has to be enabled"}
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        "at least one visualization feature has to be enabled"
+        #else
+        "at least Flag::Wireframe has to be enabled"
+        #endif
+        },
+    #ifndef MAGNUM_TARGET_GLES2
+    {"both object and primitive id",
+        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
+        "Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+    #endif
 };
 
 constexpr struct {
@@ -180,8 +225,26 @@ constexpr struct {
         #else
         "at least Flag::Wireframe has to be enabled"
         #endif
-        }
+        },
+    #ifndef MAGNUM_TARGET_GLES2
+    {"both object and primitive id",
+        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        "Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+    #endif
 };
+
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    SamplerFilter filter;
+    SamplerWrapping wrapping;
+} ObjectIdDefaultsData[] {
+    {"nearest, clamp", SamplerFilter::Nearest, SamplerWrapping::ClampToEdge},
+    {"nearest, repeat", SamplerFilter::Nearest, SamplerWrapping::Repeat},
+    {"linear, clamp", SamplerFilter::Linear, SamplerWrapping::ClampToEdge},
+    {"linear, repeat", SamplerFilter::Linear, SamplerWrapping::Repeat}
+};
+#endif
 
 constexpr struct {
     const char* name;
@@ -223,6 +286,41 @@ constexpr struct {
         3.0f, 1.0f, "wireframe-wide3D.tga", "wireframe-nogeo3D.tga"}
 };
 
+#ifndef MAGNUM_TARGET_GLES2
+constexpr struct {
+    const char* name;
+    MeshVisualizer2D::Flags flags2D;
+    MeshVisualizer3D::Flags flags3D;
+    const char* file2D;
+    const char* file3D;
+} ObjectPrimitiveIdData[] {
+    {"object ID",
+        MeshVisualizer2D::Flag::InstancedObjectId,
+        MeshVisualizer3D::Flag::InstancedObjectId,
+        "objectid2D.tga", "objectid3D.tga"},
+    #ifndef MAGNUM_TARGET_WEBGL
+    {"primitive ID",
+        MeshVisualizer2D::Flag::PrimitiveId,
+        MeshVisualizer3D::Flag::PrimitiveId,
+        "primitiveid2D.tga", "primitiveid3D.tga"},
+    #endif
+    {"primitive ID from vertex ID",
+        MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
+        MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        "primitiveid2D.tga", "primitiveid3D.tga"},
+    {"wireframe + object ID",
+        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::Wireframe,
+        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::Wireframe,
+        "wireframe-objectid2D.tga", "wireframe-objectid3D.tga"},
+    {"wireframe + object ID, no geometry shader",
+        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::Wireframe|
+        MeshVisualizer2D::Flag::NoGeometryShader,
+        MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::Wireframe|
+        MeshVisualizer3D::Flag::NoGeometryShader,
+        "wireframe-nogeo-objectid2D.tga", "wireframe-nogeo-objectid3D.tga"}
+};
+#endif
+
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 constexpr struct {
     const char* name;
@@ -258,22 +356,29 @@ constexpr struct {
     {"only bitangent from tangent",
         MeshVisualizer3D::Flag::BitangentFromTangentDirection, {},
         false, 2.0f, 1.0f, 0.6f, 1.0f, "bitangents-from-tangents.tga"},
-    {"wireframe + tangents + normals, single pass",
+    {"wireframe + primitive ID + tangents + normals, single pass",
         MeshVisualizer3D::Flag::Wireframe|
+        MeshVisualizer3D::Flag::PrimitiveId|
         MeshVisualizer3D::Flag::TangentDirection|
         MeshVisualizer3D::Flag::NormalDirection, {},
-        false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn.tga"},
-    {"wireframe, rendering all, but only tangents + normals present",
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-primitiveid-tn.tga"},
+    {"wireframe + primitive ID, rendering all, but only tangents + normals present",
         MeshVisualizer3D::Flag::Wireframe|
+        MeshVisualizer3D::Flag::PrimitiveId|
         MeshVisualizer3D::Flag::TangentDirection|
         MeshVisualizer3D::Flag::BitangentDirection|
         MeshVisualizer3D::Flag::NormalDirection, {},
-        true, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn.tga"},
+        true, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-primitiveid-tn.tga"},
     {"wireframe + tangents + normals, two passes",
         MeshVisualizer3D::Flag::TangentDirection|
         MeshVisualizer3D::Flag::NormalDirection,
         MeshVisualizer3D::Flag::Wireframe,
         false, 2.0f, 1.0f, 0.6f, 1.0f, "wireframe-tn-smooth.tga"},
+    {"primitive ID + tangents + normals",
+        MeshVisualizer3D::Flag::PrimitiveId|
+        MeshVisualizer3D::Flag::TangentDirection|
+        MeshVisualizer3D::Flag::NormalDirection, {},
+        false, 2.0f, 1.0f, 0.6f, 1.0f, "primitiveid-tn.tga"}
 };
 #endif
 
@@ -307,6 +412,10 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
               &MeshVisualizerGLTest::setWireframeNotEnabled2D,
               &MeshVisualizerGLTest::setWireframeNotEnabled3D,
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshVisualizerGLTest::setColorMapNotEnabled2D,
+              &MeshVisualizerGLTest::setColorMapNotEnabled3D,
+              #endif
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D,
               #endif
@@ -314,8 +423,27 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     addTests({&MeshVisualizerGLTest::renderDefaultsWireframe2D,
-              &MeshVisualizerGLTest::renderDefaultsWireframe3D,
-              &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal},
+              &MeshVisualizerGLTest::renderDefaultsWireframe3D},
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::renderDefaultsObjectId2D,
+                       &MeshVisualizerGLTest::renderDefaultsObjectId3D},
+        Containers::arraySize(ObjectIdDefaultsData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addTests({
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D,
+        &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D,
+        #ifndef MAGNUM_TARGET_WEBGL
+        &MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal
+        #endif
+        },
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -329,6 +457,14 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         Containers::arraySize(WireframeData3D),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addInstancedTests({&MeshVisualizerGLTest::renderObjectPrimitiveId2D,
+                       &MeshVisualizerGLTest::renderObjectPrimitiveId3D},
+        Containers::arraySize(ObjectPrimitiveIdData),
+        &MeshVisualizerGLTest::renderSetup,
+        &MeshVisualizerGLTest::renderTeardown);
+    #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     addTests({&MeshVisualizerGLTest::renderWireframe3DPerspective},
@@ -363,11 +499,35 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     {
         _testDir = SHADERS_TEST_DIR;
     }
+
+    /* Set up a color map texture for use by object / primitive ID tests */
+    #ifndef MAGNUM_TARGET_GLES2
+    {
+        const auto map = DebugTools::ColorMap::turbo();
+        const Vector2i size{Int(map.size()), 1};
+        _colorMapTexture
+            .setMinificationFilter(SamplerFilter::Linear)
+            .setMagnificationFilter(SamplerFilter::Linear)
+            .setWrapping(SamplerWrapping::Repeat)
+            .setStorage(1, GL::TextureFormat::RGB8, size)
+            .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+    }
+    #endif
 }
 
 void MeshVisualizerGLTest::construct2D() {
     auto&& data = ConstructData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
 
     MeshVisualizer2D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -385,6 +545,16 @@ void MeshVisualizerGLTest::construct2D() {
 void MeshVisualizerGLTest::construct3D() {
     auto&& data = ConstructData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+    #endif
 
     MeshVisualizer3D shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
@@ -554,13 +724,23 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
        is just wireframe in case of 2D), so fake it with a NoCreate */
     MeshVisualizer2D shader{NoCreate};
     shader
-        .setColor({})
+        .setColor({});
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
+    #endif
+
+    out.str({});
+    shader
         .setWireframeColor({})
         .setWireframeWidth({})
         .setSmoothness({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer2D::setSmoothness(): the shader was not created with wireframe enabled\n");
@@ -575,17 +755,57 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
        with a NoCreate */
     MeshVisualizer3D shader{NoCreate};
     shader
-        .setColor({})
+        .setColor({});
+
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
+    #endif
+
+    out.str({});
+    shader
         .setWireframeColor({})
         .setWireframeWidth({})
         .setSmoothness({});
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
         "Shaders::MeshVisualizer3D::setSmoothness(): the shader was not created with wireframe or TBN direction enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2D texture;
+    MeshVisualizer2D shader{NoCreate};
+    shader.setColorMapTransformation({}, {})
+        .bindColorMapTexture(texture);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled\n"
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled\n");
+}
+
+void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2D texture;
+    MeshVisualizer3D shader{NoCreate};
+    shader.setColorMapTransformation({}, {})
+        .bindColorMapTexture(texture);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled\n"
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled\n");
+}
+#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
@@ -746,7 +966,177 @@ void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
+    auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Configure a texture with preset filtering and wrapping. The goal here is
+       that the default config should be filtering/wrapping-independent for the
+       first 256 items */
+    const auto map = DebugTools::ColorMap::turbo();
+    const Vector2i size{Int(map.size()), 1};
+    GL::Texture2D colorMapTexture;
+    colorMapTexture
+        .setMinificationFilter(data.filter)
+        .setMagnificationFilter(data.filter)
+        .setWrapping(data.wrapping)
+        .setStorage(1, GL::TextureFormat::RGB8, size)
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+
+    /* Generate per-face IDs going from 0 to 240 to cover the whole range */
+    Containers::Array<UnsignedInt> ids{16};
+    for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*16;
+    GL::Mesh circle = MeshTools::compile(MeshTools::combineFaceAttributes(
+        MeshTools::generateIndices(Primitives::circle2DSolid(16)), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                Containers::arrayView(ids)}
+        }));
+
+    MeshVisualizer2D{MeshVisualizer2D::Flag::InstancedObjectId}
+        .bindColorMapTexture(colorMapTexture)
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid2D.tga"),
+        /* SwiftShader has a few rounding errors on edges */
+        (DebugTools::CompareImageToFile{_manager, 150.67f, 0.45f}));
+}
+
+void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
+    auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Configure a texture with preset filtering and wrapping. The goal here is
+       that the default config should be filtering/wrapping-independent for the
+       first 256 items */
+    const auto map = DebugTools::ColorMap::turbo();
+    const Vector2i size{Int(map.size()), 1};
+    GL::Texture2D colorMapTexture;
+    colorMapTexture
+        .setMinificationFilter(data.filter)
+        .setMagnificationFilter(data.filter)
+        .setWrapping(data.wrapping)
+        .setStorage(1, GL::TextureFormat::RGB8, size)
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+
+    /* Generate per-face IDs going from 0 to 228 to cover the whole range */
+    Containers::Array<UnsignedInt> ids{20};
+    for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i*12;
+    GL::Mesh icosphere = MeshTools::compile(MeshTools::combineFaceAttributes(
+        Primitives::icosphereSolid(0), {
+            Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                Containers::arrayView(ids)}
+        }));
+
+    MeshVisualizer3D{MeshVisualizer3D::Flag::InstancedObjectId}
+        .bindColorMapTexture(colorMapTexture)
+        .draw(icosphere);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-objectid3D.tga"),
+        /* SwiftShader has a few rounding errors on edges */
+        (DebugTools::CompareImageToFile{_manager, 150.67f, 0.165f}));
+}
+
+void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    MeshVisualizer2D::Flags flags;
+    #ifdef MAGNUM_TARGET_WEBGL
+    flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    #else
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
+    #else
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES320))
+    #endif
+    {
+        Debug{} << "Using primitive ID from vertex ID";
+        flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    }
+    else flags = MeshVisualizer2D::Flag::PrimitiveId;
+    #endif
+
+    Trade::MeshData circleData = Primitives::circle2DSolid(16);
+    if(flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+        circleData = MeshTools::duplicate(MeshTools::generateIndices(circleData));
+
+    MeshVisualizer2D{flags}
+        .bindColorMapTexture(_colorMapTexture)
+        .draw(MeshTools::compile(circleData));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid2D.tga"),
+        /* SwiftShader has a few rounding errors on edges */
+        (DebugTools::CompareImageToFile{_manager, 76.67f, 0.23f}));
+}
+
+void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    MeshVisualizer2D::Flags flags;
+    #ifdef MAGNUM_TARGET_WEBGL
+    flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    #else
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
+    #else
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES320))
+    #endif
+    {
+        Debug{} << "Using primitive ID from vertex ID";
+        flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
+    }
+    else flags = MeshVisualizer2D::Flag::PrimitiveId;
+    #endif
+
+    Trade::MeshData icosphereData = Primitives::icosphereSolid(0);
+    if(flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+        icosphereData = MeshTools::duplicate(icosphereData);
+
+    MeshVisualizer2D{flags}
+        .bindColorMapTexture(_colorMapTexture)
+        .draw(MeshTools::compile(icosphereData));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-primitiveid3D.tga"),
+        /* SwiftShader has a few rounding errors on edges */
+        (DebugTools::CompareImageToFile{_manager, 88.34f, 0.071f}));
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
@@ -974,6 +1364,178 @@ void MeshVisualizerGLTest::renderWireframe3D() {
     }
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
+    auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags2D & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+    #endif
+
+    Trade::MeshData circleData = Primitives::circle2DSolid(16);
+
+    if(data.flags2D & MeshVisualizer2D::Flag::InstancedObjectId) {
+        Containers::Array<UnsignedInt> ids{16};
+        /* Each two faces share the same ID */
+        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/2;
+        circleData = MeshTools::combineFaceAttributes(
+            MeshTools::generateIndices(circleData), {
+                Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                    Containers::arrayView(ids)}
+            });
+    }
+
+    /* Duplicate the data if using primitive ID from vertex ID or if geometry
+       shader is disabled */
+    if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
+        circleData = MeshTools::generateIndices(circleData);
+    if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId ||
+       data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader)
+        circleData = MeshTools::duplicate(circleData);
+
+    GL::Mesh circle = MeshTools::compile(circleData);
+
+    MeshVisualizer2D shader{data.flags2D};
+    shader
+        /* Remove blue so it's clear the (wireframe) background and mapped ID
+           colors got mixed */
+        .setColor(0xffff00_rgbf)
+        /* Shouldn't assert (nor warn) when wireframe is not enabled */
+        .setViewportSize({80, 80})
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        /* Should cover the first half of the colormap, in reverse order; for
+           primitive ID the whole colormap due to the repeat wrapping */
+        .setColorMapTransformation(0.5f, -1.0f/16.0f)
+        .bindColorMapTexture(_colorMapTexture);
+
+    /* OTOH the wireframe color should stay at full channels, not mixed */
+    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe)
+        shader.setWireframeColor(0xffffff_rgbf);
+
+    shader.draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file2D}),
+        /* AMD has slight off-by-one errors compared to Intel, SwiftShader a
+           bit more */
+        (DebugTools::CompareImageToFile{_manager, 4.0f, 0.141f}));
+}
+
+void MeshVisualizerGLTest::renderObjectPrimitiveId3D() {
+    auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(data.flags3D & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL320)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES320)
+        #endif
+    ) CORRADE_SKIP("gl_PrimitiveID not supported.");
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+    #endif
+
+    Trade::MeshData icosphereData = Primitives::icosphereSolid(1);
+
+    if(data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) {
+        Containers::Array<UnsignedInt> ids{80};
+        /* Each four faces share the same ID */
+        for(std::size_t i = 0; i != ids.size(); ++i) ids[i] = i/4;
+        icosphereData = MeshTools::combineFaceAttributes(
+            icosphereData, {
+                Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+                    Containers::arrayView(ids)}
+            });
+    }
+
+    /* Duplicate the data if using primitive ID from vertex ID or if geometry
+       shader is disabled */
+    if(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId ||
+       data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader)
+        icosphereData = MeshTools::duplicate(icosphereData);
+
+    GL::Mesh circle = MeshTools::compile(icosphereData);
+
+    MeshVisualizer3D shader{data.flags3D};
+    shader
+        /* Remove blue so it's clear the wireframe background and mapped ID
+           colors got mixed */
+        .setColor(0xffff00_rgbf)
+        /* Shouldn't assert (nor warn) when wireframe is not enabled */
+        .setViewportSize({80, 80})
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        /* Should cover the first half of the colormap, in reverse order; for
+           primitive ID the whole colormap due to the repeat wrapping */
+        .setColorMapTransformation(0.5f, -1.0f/40.0f)
+        .bindColorMapTexture(_colorMapTexture);
+
+    /* OTOH the wireframe color should stay at full channels, not mixed */
+    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe)
+        shader.setWireframeColor(0xffffff_rgbf);
+
+    shader.draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    /* Release build has 1 pixel slightly off. Huh. AMD has additional
+       off-by-one errors compared to Intel. If
+       GL_NV_shader_noperspective_interpolation is not supported, the artifacts
+       are bigger when wireframe is enabled. */
+    Float maxThreshold = 1.0f, meanThreshold = 0.026f;
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
+        /* SwiftShader has a bit more rounding errors */
+        maxThreshold = 238.0f;
+        meanThreshold = 1.957f;
+    }
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file3D}),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+#endif
+
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::renderWireframe3DPerspective() {
     #ifndef MAGNUM_TARGET_GLES
@@ -1131,6 +1693,9 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
     if(data.flags & MeshVisualizer3D::Flag::Wireframe) shader
         .setColor(0xffff99_rgbf)
         .setWireframeColor(0x9999ff_rgbf);
+    if(data.flags & MeshVisualizer3D::Flag::PrimitiveId) shader
+        .bindColorMapTexture(_colorMapTexture)
+        .setColorMapTransformation(1.0f/512.0f, 0.5f);
 
     shader.draw(mesh);
 
@@ -1141,7 +1706,7 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
        are bigger. */
     Float maxThreshold = 1.334f, meanThreshold = 0.008f;
     #ifdef MAGNUM_TARGET_GLES
-    if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         maxThreshold = 39.0f;
         meanThreshold = 1.207f;
     }

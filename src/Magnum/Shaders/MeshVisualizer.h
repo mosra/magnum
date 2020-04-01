@@ -42,13 +42,18 @@ namespace Implementation {
 
 class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram {
     protected:
-        enum class FlagBase: UnsignedByte {
+        enum class FlagBase: UnsignedShort {
             #ifndef MAGNUM_TARGET_GLES2
             Wireframe = 1 << 0,
             #else
             Wireframe = (1 << 0) | (1 << 1),
             #endif
-            NoGeometryShader = 1 << 1
+            NoGeometryShader = 1 << 1,
+            #ifndef MAGNUM_TARGET_GLES2
+            InstancedObjectId = 1 << 2,
+            PrimitiveId = 1 << 3,
+            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId
+            #endif
         };
         typedef Containers::EnumSet<FlagBase> FlagsBase;
 
@@ -62,6 +67,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
         MeshVisualizerBase& setColor(const Color4& color);
         MeshVisualizerBase& setWireframeColor(const Color4& color);
         MeshVisualizerBase& setWireframeWidth(Float width);
+        MeshVisualizerBase& setColorMapTransformation(Float offset, Float scale);
+        MeshVisualizerBase& bindColorMapTexture(GL::Texture2D& texture);
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -77,6 +84,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
             _wireframeWidthUniform{3},
             _smoothnessUniform{4},
             _viewportSizeUniform{5};
+        #ifndef MAGNUM_TARGET_GLES2
+        Int _colorMapOffsetScaleUniform{6};
+        #endif
 };
 
 }
@@ -85,12 +95,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
 @brief 2D mesh visualization shader
 @m_since_latest
 
-Uses the geometry shader to visualize wireframe of 3D meshes. You need to
-provide the @ref Position attribute in your triangle mesh. Use
-@ref setTransformationProjectionMatrix(), @ref setColor() and others to
+Visualizes wireframe, per-vertex/per-instance object ID or primitive ID of 2D
+meshes. You need to provide the @ref Position attribute in your triangle mesh.
+Use @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-t-6 m-push-m-2 m-nopadt m-nopadx}
 @image html shaders-meshvisualizer2d.png width=256px
+@m_enddiv
+
+@m_div{m-col-m-4 m-col-t-6 m-push-m-2 m-nopadt m-nopadx}
+@image html shaders-meshvisualizer2d-primitiveid.png width=256px
+@m_enddiv
+
+@endparblock
 
 The shader expects that you enable wireframe visualization by passing an
 appropriate @ref Flag to the constructor --- there's no default behavior with
@@ -114,6 +136,21 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          */
         typedef GL::Attribute<4, Float> VertexIndex;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) object ID
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
+         * Used only if @ref Flag::InstancedObjectId is set.
+         * @requires_gles30 Object ID input requires integer attributes, which
+         *      are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer attributes, which
+         *      are not available in WebGL 1.0.
+         */
+        typedef Generic3D::ObjectId ObjectId;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -128,7 +165,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          *
          * @see @ref Flags, @ref MeshVisualizer2D()
          */
-        enum class Flag: UnsignedByte {
+        enum class Flag: UnsignedShort {
             /**
              * Visualize wireframe. On OpenGL ES 2.0 this also enables
              * @ref Flag::NoGeometryShader.
@@ -145,7 +182,24 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
              * attribute in the mesh. In OpenGL ES 2.0 enabled alongside
              * @ref Flag::Wireframe.
              */
-            NoGeometryShader = 1 << 1
+            NoGeometryShader = 1 << 1,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /** @copydoc MeshVisualizer3D::Flag::InstancedObjectId */
+            InstancedObjectId = 1 << 2,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /** @copydoc MeshVisualizer3D::Flag::PrimitiveId */
+            PrimitiveId = 1 << 3,
+            #endif
+
+            /** @copydoc MeshVisualizer3D::Flag::PrimitiveIdFromVertexId */
+            #ifndef MAGNUM_TARGET_WEBGL
+            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId
+            #else
+            PrimitiveIdFromVertexId = (1 << 4)|(1 << 3)
+            #endif
+            #endif
         };
 
         /** @brief Flags */
@@ -212,8 +266,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that
-         * @ref Flag::Wireframe is enabled.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that either
+         * @ref Flag::Wireframe or @ref Flag::InstancedObjectId /
+         * @ref Flag::PrimitiveId is enabled. In case of the latter, the color
+         * is multiplied with the color map coming from
+         * @ref bindColorMapTexture().
          */
         MeshVisualizer2D& setColor(const Color4& color) {
             return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setColor(color));
@@ -242,6 +299,18 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
             return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setWireframeWidth(width));
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @copydoc MeshVisualizer3D::setColorMapTransformation() */
+        MeshVisualizer2D& setColorMapTransformation(Float offset, Float scale) {
+            return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::setColorMapTransformation(offset, scale));
+        }
+
+        /** @copydoc MeshVisualizer3D::bindColorMapTexture() */
+        MeshVisualizer2D& bindColorMapTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizer2D&>(Implementation::MeshVisualizerBase::bindColorMapTexture(texture));
+        }
+        #endif
+
         /**
          * @brief Set line smoothness
          * @return Reference to self (for method chaining)
@@ -259,16 +328,32 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
 /**
 @brief 3D mesh visualization shader
 
-Uses the geometry shader to visualize wireframe or tangent space of 3D meshes.
-You need to provide the @ref Position attribute in your triangle mesh at the
-very least. Use @ref setTransformationProjectionMatrix(), @ref setColor() and
-others to configure the shader.
+Visualizes wireframe, per-vertex/per-instance object ID, primitive ID or
+tangent space of 3D meshes. You need to provide the @ref Position attribute in
+your triangle mesh at the very least. Use @ref setTransformationProjectionMatrix(),
+@ref setColor() and others to configure the shader.
 
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-4 m-col-t-6 m-push-m-2 m-text-center m-nopadt m-nopadx}
 @image html shaders-meshvisualizer3d.png width=256px
+@ref Shaders-MeshVisualizer-wireframe, \n
+@ref Shaders-MeshVisualizer-tbn
+@m_enddiv
 
-The shader expects that you enable either wireframe visualization or tangent
-space visualization by passing an appropriate @ref Flag to the constructor ---
-there's no default behavior with nothing enabled.
+@m_div{m-col-m-4 m-col-t-6 m-push-m-2 m-text-center m-nopadt m-nopadx}
+@image html shaders-meshvisualizer3d-primitiveid.png width=256px
+@ref Shaders-MeshVisualizer-object-id
+@m_enddiv
+
+@endparblock
+
+The shader expects that you enable wireframe visualization, tangent space
+visualization or object/primitive ID visualization by passing an appropriate
+@ref Flag to the constructor --- there's no default behavior with nothing
+enabled.
 
 @section Shaders-MeshVisualizer-wireframe Wireframe visualization
 
@@ -355,6 +440,37 @@ Rendering setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-tbn2
 
+@section Shaders-MeshVisualizer-object-id Object and primitive ID visualization
+
+If the mesh contains a per-vertex (or instanced) @ref ObjectId, it can be
+visualized by enabling @ref Flag::InstancedObjectId. For the actual
+visualization you need to provide a color map using @ref bindColorMapTexture()
+and use @ref setColorMapTransformation() to map given range of discrete IDs to
+the @f$ [0, 1] @f$ texture range. Various colormap presets are in the
+@ref DebugTools::ColorMap namespace. Example usage:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-object-id
+
+If you enable @ref Flag::PrimitiveId instead, the shader will use the color map
+to visualize the order in which primitives are drawn. That's useful for example
+to see how well is the mesh optimized for a post-transform vertex cache. This
+by default relies on the @glsl gl_PrimitiveID @ce GLSL builtin; with
+@ref Flag::PrimitiveIdFromVertexId it's emulated using @glsl gl_VertexID @ce,
+expecting you to draw a non-indexed triangle mesh. You can use
+@ref MeshTools::duplicate() (and potentially @ref MeshTools::generateIndices())
+to conveniently convert the mesh to a non-indexed @ref MeshPrimitive::Triangles.
+
+@requires_gl32 The `gl_PrimitiveID` shader variable is not available on OpenGL
+    3.1 and lower.
+@requires_gl30 The `gl_VertexID` shader variable is not available on OpenGL
+    2.1.
+@requires_gles32 The `gl_PrimitiveID` shader variable is not available on
+    OpenGL ES 3.1 and lower.
+@requires_gles30 The `gl_VertexID` shader variable is not available on OpenGL
+    ES 2.0.
+@requires_gles `gl_PrimitiveID` is not available in WebGL.
+@requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
+
 @see @ref shaders, @ref MeshVisualizer2D
 @todo Understand and add support wireframe width/smoothness without GS
 */
@@ -427,6 +543,21 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          */
         typedef GL::Attribute<4, Float> VertexIndex;
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief (Instanced) object ID
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
+         * Used only if @ref Flag::InstancedObjectId is set.
+         * @requires_gles30 Object ID input requires integer attributes, which
+         *      are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Object ID input requires integer attributes, which
+         *      are not available in WebGL 1.0.
+         */
+        typedef Generic3D::ObjectId ObjectId;
+        #endif
+
         enum: UnsignedInt {
             /**
              * Color shader output. @ref shaders-generic "Generic output",
@@ -441,7 +572,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          *
          * @see @ref Flags, @ref MeshVisualizer()
          */
-        enum class Flag: UnsignedByte {
+        enum class Flag: UnsignedShort {
             /**
              * Visualize wireframe. On OpenGL ES 2.0 this also enables
              * @ref Flag::NoGeometryShader.
@@ -465,6 +596,54 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              */
             NoGeometryShader = 1 << 1,
 
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Visualize instanced object ID. You need to provide the
+             * @ref ObjectId attribute in the mesh. Mutually exclusive with
+             * @ref Flag::PrimitiveId.
+             * @requires_gles30 Object ID input requires integer attributes,
+             *      which are not available in OpenGL ES 2.0 or WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedObjectId = 1 << 2,
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Visualize primitive ID (@cpp gl_PrimitiveID @ce). Mutually
+             * exclusive with @ref Flag::InstancedObjectId. See also
+             * @ref Flag::PrimitiveIdFromVertexId.
+             * @requires_gl32 The `gl_PrimitiveID` shader variable is not
+             *      available on OpenGL 3.1 and lower.
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 The `gl_PrimitiveID` shader variable is not
+             *      available on OpenGL ES 3.1 and lower.
+             * @requires_gles `gl_PrimitiveID` is not available in WebGL.
+             * @m_since_latest
+             */
+            PrimitiveId = 1 << 3,
+            #endif
+
+            /**
+             * Visualize primitive ID on a non-indexed triangle mesh using
+             * @cpp gl_VertexID/3 @ce. Implicitly enables
+             * @ref Flag::PrimitiveId, mutually exclusive with
+             * @ref Flag::InstancedObjectId. Usable on OpenGL < 3.2,
+             * OpenGL ES < 3.2 and WebGL where @cpp gl_PrimitiveID @ce is not
+             * available.
+             * @requires_gl30 The `gl_VertexID` shader variable is not
+             *      available on OpenGL 2.1.
+             * @requires_gles30 The `gl_VertexID` shader variable is not
+             *      available on OpenGL ES 2.0.
+             * @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_WEBGL
+            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId,
+            #else
+            PrimitiveIdFromVertexId = (1 << 4)|(1 << 3),
+            #endif
+            #endif
+
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Visualize tangent direction with red lines pointing out of
@@ -479,7 +658,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            TangentDirection = 1 << 2,
+            TangentDirection = 1 << 5,
 
             /**
              * Visualize bitangent direction with green lines pointing out of
@@ -496,7 +675,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            BitangentFromTangentDirection = 1 << 3,
+            BitangentFromTangentDirection = 1 << 6,
 
             /**
              * Visualize bitangent direction with green lines pointing out of
@@ -513,7 +692,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            BitangentDirection = 1 << 4,
+            BitangentDirection = 1 << 7,
 
             /**
              * Visualize normal direction with blue lines pointing out of
@@ -527,7 +706,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            NormalDirection = 1 << 5
+            NormalDirection = 1 << 8
             #endif
         };
 
@@ -650,8 +829,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that
-         * @ref Flag::Wireframe is enabled.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. Expects that either
+         * @ref Flag::Wireframe or @ref Flag::InstancedObjectId /
+         * @ref Flag::PrimitiveId is enabled. In case of the latter, the color
+         * is multiplied with the color map coming from
+         * @ref bindColorMapTexture().
          */
         MeshVisualizer3D& setColor(const Color4& color) {
             return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setColor(color));
@@ -679,6 +861,62 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
         MeshVisualizer3D& setWireframeWidth(Float width) {
             return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setWireframeWidth(width));
         }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set color map transformation
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Offset and scale applied to the input value coming either from the
+         * @ref ObjectId attribute or @glsl gl_PrimitiveID @ce, resulting value
+         * is then used to fetch a color from a color map bound with
+         * @ref bindColorMapTexture(). Initial value is @cpp 1.0f/512.0f @ce
+         * and @cpp 1.0/256.0f @ce, meaning that for a 256-entry colormap the
+         * first 256 values get an exact color from it and the next values will
+         * be either clamped to last color or repeated depending on the color
+         * map texture wrapping mode. Expects that either
+         * @ref Flag::InstancedObjectId or @ref Flag::PrimitiveId /
+         * @ref Flag::PrimitiveIdFromVertexId is enabled.
+         *
+         * Note that this shader doesn't directly offer a
+         * @ref Flat::setObjectId() "setObjectId()" uniform that's used to
+         * offset the per-vertex / per-instance ID. Instead, you need to encode
+         * the base offset into the @p offset parameter.
+         * @requires_gles30 Object ID visualization requires integer attributes
+         *      while primitive ID visualization requires the `gl_VertexID` /
+         *      `gl_PrimitiveID` builtins, neither of which is available in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Object ID visualization requires integer
+         *      attributes while primitive ID visualization requires at least
+         *      the `gl_VertexID` builtin, neither of which is available in
+         *      WebGL 1.
+         */
+        MeshVisualizer3D& setColorMapTransformation(Float offset, Float scale) {
+            return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::setColorMapTransformation(offset, scale));
+        }
+
+        /**
+         * @brief Bind a color map texture
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * See also @ref setColorMapTransformation(). Expects that either
+         * @ref Flag::InstancedObjectId or @ref Flag::PrimitiveId /
+         * @ref Flag::PrimitiveIdFromVertexId is enabled.
+         * @requires_gles30 Object ID visualization requires integer attributes
+         *      while primitive ID visualization requires the `gl_VertexID` /
+         *      `gl_PrimitiveID` builtins, neither of which is available in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Object ID visualization requires integer
+         *      attributes while primitive ID visualization requires at least
+         *      the `gl_VertexID` builtin, neither of which is available in
+         *      WebGL 1.
+         */
+        MeshVisualizer3D& bindColorMapTexture(GL::Texture2D& texture) {
+            return static_cast<MeshVisualizer3D&>(Implementation::MeshVisualizerBase::bindColorMapTexture(texture));
+        }
+        #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -734,11 +972,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
 
     private:
         Int _transformationMatrixUniform{0},
-            _projectionMatrixUniform{6};
+            _projectionMatrixUniform{7};
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Int _normalMatrixUniform{7},
-            _lineWidthUniform{8},
-            _lineLengthUniform{9};
+        Int _normalMatrixUniform{8},
+            _lineWidthUniform{9},
+            _lineLengthUniform{10};
         #endif
 };
 

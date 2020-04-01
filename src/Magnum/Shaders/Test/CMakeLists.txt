@@ -152,15 +152,26 @@ if(BUILD_GL_TESTS)
             MagnumOpenGLTester
         FILES
             MeshVisualizerTestFiles/bitangents-from-tangents.tga
+            MeshVisualizerTestFiles/defaults-objectid2D.tga
+            MeshVisualizerTestFiles/defaults-objectid3D.tga
+            MeshVisualizerTestFiles/defaults-primitiveid2D.tga
+            MeshVisualizerTestFiles/defaults-primitiveid3D.tga
             MeshVisualizerTestFiles/defaults-tbn.tga
             MeshVisualizerTestFiles/defaults-wireframe2D.tga
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
+            MeshVisualizerTestFiles/objectid2D.tga
+            MeshVisualizerTestFiles/objectid3D.tga
+            MeshVisualizerTestFiles/primitiveid-tn.tga
+            MeshVisualizerTestFiles/primitiveid2D.tga
+            MeshVisualizerTestFiles/primitiveid3D.tga
             MeshVisualizerTestFiles/tbn-wide.tga
             MeshVisualizerTestFiles/tbn.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo-objectid2D.tga
+            MeshVisualizerTestFiles/wireframe-nogeo-objectid3D.tga
             MeshVisualizerTestFiles/wireframe-perspective.tga
-            MeshVisualizerTestFiles/wireframe-tn.tga
+            MeshVisualizerTestFiles/wireframe-primitiveid-tn.tga
             MeshVisualizerTestFiles/wireframe-tn-smooth.tga
             MeshVisualizerTestFiles/wireframe-wide2D.tga
             MeshVisualizerTestFiles/wireframe-wide3D.tga

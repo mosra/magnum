@@ -27,6 +27,9 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/DebugTools/ColorMap.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Framebuffer.h"
@@ -34,9 +37,11 @@
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Shaders/Flat.h"
@@ -358,6 +363,35 @@ shader.setColor(0x2f83cc_rgbf)
     .draw(mesh);
 /* [MeshVisualizer-usage-no-geom2] */
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Mesh mesh;
+Containers::ArrayView<UnsignedInt> objectIds;
+Matrix4 transformationMatrix, projectionMatrix;
+/* [MeshVisualizer-usage-object-id] */
+const auto map = DebugTools::ColorMap::turbo();
+const Vector2i size{Int(map.size()), 1};
+
+GL::Texture2D colorMapTexture;
+colorMapTexture
+    .setMinificationFilter(SamplerFilter::Linear)
+    .setMagnificationFilter(SamplerFilter::Linear)
+    .setWrapping(SamplerWrapping::ClampToEdge)
+    .setStorage(1, GL::TextureFormat::RGBA8, size)
+    .setSubImage(0, {}, ImageView2D{PixelFormat::RGB8Srgb, size, map});
+
+Shaders::MeshVisualizer3D shader{
+    Shaders::MeshVisualizer3D::Flag::InstancedObjectId};
+shader.setColorMapTransformation(0.0f, 1.0f/Math::max(objectIds))
+    .setTransformationMatrix(transformationMatrix)
+    .setProjectionMatrix(projectionMatrix)
+    .bindColorMapTexture(colorMapTexture)
+    .draw(mesh);
+/* [MeshVisualizer-usage-object-id] */
+}
+#endif
+
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [Phong-usage-colored1] */
