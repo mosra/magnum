@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -51,6 +52,7 @@ struct CombineTest: TestSuite::Tester {
     void combineFaceAttributesUnexpectedPrimitive();
     void combineFaceAttributesUnexpectedFaceCount();
     void combineFaceAttributesFacesNotInterleaved();
+    void combineFaceAttributesFaceAttributeOffsetOnly();
 };
 
 constexpr struct {
@@ -76,7 +78,8 @@ CombineTest::CombineTest() {
     addTests({&CombineTest::combineFaceAttributesMeshNotIndexed,
               &CombineTest::combineFaceAttributesUnexpectedPrimitive,
               &CombineTest::combineFaceAttributesUnexpectedFaceCount,
-              &CombineTest::combineFaceAttributesFacesNotInterleaved});
+              &CombineTest::combineFaceAttributesFacesNotInterleaved,
+              &CombineTest::combineFaceAttributesFaceAttributeOffsetOnly});
 }
 
 void CombineTest::combineIndexedAttributes() {
@@ -256,15 +259,6 @@ void CombineTest::combineFaceAttributes() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
                 Containers::arrayView(positions)}
         }};
-    const Trade::MeshData faceAttributes{MeshPrimitive::Faces,
-        {}, faceData, {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
-                Containers::StridedArrayView1D<const Color3>{faceData,
-                    &faceData[0].color, 4, sizeof(FaceData)}},
-            Trade::MeshAttributeData{Trade::meshAttributeCustom(25),
-                Containers::StridedArrayView1D<const Byte>{faceData,
-                    &faceData[0].id, 4, sizeof(FaceData)}},
-        }};
     const Trade::MeshData faceAttributesIndexed{MeshPrimitive::Faces,
         {}, faceIndices, Trade::MeshIndexData{faceIndices},
         {}, faceDataIndexed, {
@@ -276,19 +270,31 @@ void CombineTest::combineFaceAttributes() {
                     &faceDataIndexed[0].id, 3, sizeof(FaceData)}},
         }};
 
-    Trade::MeshData combined = data.indexed ?
-        MeshTools::combineFaceAttributes(mesh, faceAttributesIndexed) :
-        MeshTools::combineFaceAttributes(mesh, faceAttributes);
-    CORRADE_COMPARE(combined.attributeCount(), 3);
-    CORRADE_COMPARE(combined.indexType(), MeshIndexType::UnsignedInt);
-    CORRADE_COMPARE_AS(combined.indices<UnsignedInt>(),
+    /* For a non-indexed variant test the overload that takes the attributes
+       directly, not wrapped in a MeshData */
+    Containers::Optional<Trade::MeshData> combined;
+    if(data.indexed)
+        combined = MeshTools::combineFaceAttributes(mesh, faceAttributesIndexed);
+    else
+        combined = MeshTools::combineFaceAttributes(mesh, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+                Containers::StridedArrayView1D<const Color3>{faceData,
+                    &faceData[0].color, 4, sizeof(FaceData)}},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(25),
+                Containers::StridedArrayView1D<const Byte>{faceData,
+                    &faceData[0].id, 4, sizeof(FaceData)}}
+        });
+
+    CORRADE_COMPARE(combined->attributeCount(), 3);
+    CORRADE_COMPARE(combined->indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(combined->indices<UnsignedInt>(),
         Containers::arrayView<UnsignedInt>({
             0, 1, 2,
             3, 4, 5,
             3, 5, 6,
             7, 8, 9
         }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(combined.attribute<Vector2>(Trade::MeshAttribute::Position),
+    CORRADE_COMPARE_AS(combined->attribute<Vector2>(Trade::MeshAttribute::Position),
         Containers::arrayView<Vector2>({
             {0.0f, 0.0f},
             {1.0f, 0.0f},
@@ -301,13 +307,13 @@ void CombineTest::combineFaceAttributes() {
             {1.0f, 2.0f},
             {0.0f, 2.0f}
         }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(combined.attribute<Color3>(Trade::MeshAttribute::Color),
+    CORRADE_COMPARE_AS(combined->attribute<Color3>(Trade::MeshAttribute::Color),
         Containers::arrayView<Color3>({
             0xaaaaaa_rgbf, 0xaaaaaa_rgbf, 0xaaaaaa_rgbf,
             0xbbbbbb_rgbf, 0xbbbbbb_rgbf, 0xbbbbbb_rgbf, 0xbbbbbb_rgbf,
             0xcccccc_rgbf, 0xcccccc_rgbf, 0xcccccc_rgbf
         }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(combined.attribute<Byte>(Trade::meshAttributeCustom(25)),
+    CORRADE_COMPARE_AS(combined->attribute<Byte>(Trade::meshAttributeCustom(25)),
         Containers::arrayView<Byte>({
             'A', 'A', 'A',
             'B', 'B', 'B', 'B',
@@ -383,6 +389,19 @@ void CombineTest::combineFaceAttributesFacesNotInterleaved() {
     MeshTools::combineFaceAttributes(mesh, faceAttributes);
     CORRADE_COMPARE(out.str(),
         "MeshTools::combineFaceAttributes(): face attributes are not interleaved\n");
+}
+
+void CombineTest::combineFaceAttributesFaceAttributeOffsetOnly() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::combineFaceAttributes(Trade::MeshData{MeshPrimitive::Triangles, 0}, {
+        Trade::MeshAttributeData{Trade::MeshAttribute::ObjectId,
+            Containers::ArrayView<UnsignedInt>{}},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector4, 0, 5, 16}
+    });
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::combineFaceAttributes(): face attribute 1 is offset-only, which is not supported\n");
 }
 
 }}}}

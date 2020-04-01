@@ -210,4 +210,23 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
         }));
 }
 
+Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> faceAttributes) {
+    #ifndef CORRADE_NO_ASSERT
+    for(std::size_t i = 0; i != faceAttributes.size(); ++i)
+        CORRADE_ASSERT(!faceAttributes[i].isOffsetOnly(),
+            "MeshTools::combineFaceAttributes(): face attribute" << i << "is offset-only, which is not supported",
+                (Trade::MeshData{MeshPrimitive::Triangles, 0}));
+    #endif
+
+    return combineFaceAttributes(mesh, Trade::MeshData{MeshPrimitive::Faces,
+        /* Supply a vertex data view spanning the whole memory. It's not used
+           directly and this shuts off asserts for attribute bounds */
+        {}, {nullptr, ~std::size_t{}},
+        Trade::meshAttributeDataNonOwningArray(faceAttributes)});
+}
+
+Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> faceAttributes) {
+    return combineFaceAttributes(mesh, Containers::arrayView(faceAttributes));
+}
+
 }}

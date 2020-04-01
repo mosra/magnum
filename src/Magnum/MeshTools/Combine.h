@@ -108,6 +108,24 @@ be interleaved.
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::MeshData& faceAttributes);
 
+/**
+@overload
+@m_since_latest
+
+Same as above with @p faceAttributes wrapped in a @ref Trade::MeshData with
+@ref MeshPrimitive::Faces and no index buffer. Same as in the above case,
+@p faceAttributes is expected to be interleaved. Note that offset-only
+@ref Trade::MeshAttributeData instances are not supported in the
+@p faceAttributes array.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, Containers::ArrayView<const Trade::MeshAttributeData> faceAttributes);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> faceAttributes);
+
 }}
 
 #endif
