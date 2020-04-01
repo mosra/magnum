@@ -151,14 +151,21 @@ if(BUILD_GL_TESTS)
             MagnumShadersTestLib
             MagnumOpenGLTester
         FILES
+            MeshVisualizerTestFiles/bitangents-from-tangents.tga
+            MeshVisualizerTestFiles/defaults-tbn.tga
             MeshVisualizerTestFiles/defaults-wireframe2D.tga
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
-            MeshVisualizerTestFiles/wireframe2D.tga
-            MeshVisualizerTestFiles/wireframe3D.tga
+            MeshVisualizerTestFiles/tbn-wide.tga
+            MeshVisualizerTestFiles/tbn.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/wireframe-perspective.tga
+            MeshVisualizerTestFiles/wireframe-tn.tga
+            MeshVisualizerTestFiles/wireframe-tn-smooth.tga
             MeshVisualizerTestFiles/wireframe-wide2D.tga
-            MeshVisualizerTestFiles/wireframe-wide3D.tga)
+            MeshVisualizerTestFiles/wireframe-wide3D.tga
+            MeshVisualizerTestFiles/wireframe2D.tga
+            MeshVisualizerTestFiles/wireframe3D.tga)
     target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
