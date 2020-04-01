@@ -99,8 +99,8 @@ accordingly. The resulting mesh has the same amount of indices, but likely
 more vertices.
 
 Expects that @p mesh is indexed @ref MeshPrimitive::Triangles and
-@p faceAttributes is indexed @ref MeshPrimitive::Faces, index count of the
-latter corresponding to index count of the former. If @p faceAttributes is
+@p faceAttributes is @ref MeshPrimitive::Faces, with face element count of the
+latter corresponding to triangle count of the former. If @p faceAttributes is
 indexed, it's assumed to have the data unique; if it's not indexed, it's first
 made unique using @ref removeDuplicates() and in that case it's expected to
 be interleaved.
