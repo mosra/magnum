@@ -25,6 +25,7 @@
 
 #include "Interleave.h"
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Math/Functions.h"
@@ -34,17 +35,16 @@ namespace Magnum { namespace MeshTools {
 
 namespace {
 
-Containers::StridedArrayView2D<const char> interleavedDataInternal(const Trade::MeshData& data) {
-    /* There is no attributes, return a non-nullptr zero-sized view to indicate
-       a success */
-    if(!data.attributeCount() || !data.vertexData())
+Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedDataInternal(const Trade::MeshData& data) {
+    /* There is no attributes, return a zero-sized view to indicate a success */
+    if(!data.attributeCount())
         return Containers::StridedArrayView2D<const char>{data.vertexData(), {data.vertexCount(), 0}};
 
     const UnsignedInt stride = data.attributeStride(0);
     std::size_t minOffset = data.attributeOffset(0);
     std::size_t maxOffset = minOffset + vertexFormatSize(data.attributeFormat(0));
     for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
-        if(data.attributeStride(i) != stride) return nullptr;
+        if(data.attributeStride(i) != stride) return Containers::NullOpt;
 
         const std::size_t offset = data.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
@@ -52,7 +52,7 @@ Containers::StridedArrayView2D<const char> interleavedDataInternal(const Trade::
     }
 
     /* The offsets can't fit into the stride, report failure */
-    if(maxOffset - minOffset > stride) return nullptr;
+    if(maxOffset - minOffset > stride) return Containers::NullOpt;
 
     return Containers::StridedArrayView2D<const char>{
         data.vertexData(), data.vertexData().data() + minOffset,
@@ -63,16 +63,13 @@ Containers::StridedArrayView2D<const char> interleavedDataInternal(const Trade::
 }
 
 bool isInterleaved(const Trade::MeshData& data) {
-    /* If a nullptr value is returned but the mesh vertex data is not nullptr,
-       the mesh is not interleaved. Otherwise it is */
-    return !!interleavedDataInternal(data).data() == !!data.vertexData().data();
+    return !!interleavedDataInternal(data);
 }
 
 Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data) {
     auto out = interleavedDataInternal(data);
-    CORRADE_ASSERT(out || !data.vertexData(),
-        "MeshTools::interleavedData(): the mesh is not interleaved", {});
-    return out;
+    CORRADE_ASSERT(out, "MeshTools::interleavedData(): the mesh is not interleaved", {});
+    return *out;
 }
 
 namespace Implementation {

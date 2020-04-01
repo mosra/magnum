@@ -57,11 +57,13 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void isInterleavedAliased();
     void isInterleavedUnordered();
     void isInterleavedAttributeAcrossStride();
+    void isInterleavedVertexDataWholeMemory();
 
     void interleavedData();
     void interleavedDataNoAttributes();
     void interleavedDataNoVertices();
     void interleavedDataNotInterleaved();
+    void interleavedDataVertexDataWholeMemory();
 
     void interleavedLayout();
     void interleavedLayoutExtra();
@@ -104,11 +106,13 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::isInterleavedAliased,
               &InterleaveTest::isInterleavedUnordered,
               &InterleaveTest::isInterleavedAttributeAcrossStride,
+              &InterleaveTest::isInterleavedVertexDataWholeMemory,
 
               &InterleaveTest::interleavedData,
               &InterleaveTest::interleavedDataNoAttributes,
               &InterleaveTest::interleavedDataNoVertices,
               &InterleaveTest::interleavedDataNotInterleaved,
+              &InterleaveTest::interleavedDataVertexDataWholeMemory,
 
               &InterleaveTest::interleavedLayout,
               &InterleaveTest::interleavedLayoutExtra,
@@ -347,6 +351,25 @@ void InterleaveTest::isInterleavedAttributeAcrossStride() {
     CORRADE_VERIFY(!MeshTools::isInterleaved(data2));
 }
 
+void InterleaveTest::isInterleavedVertexDataWholeMemory() {
+    struct Vertex {
+        Vector2 position;
+        Vector3 normal;
+    } vertexData[3];
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData,
+            &vertexData[0].position, 3, sizeof(Vertex)}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::StridedArrayView1D<Vector3>{vertexData,
+            &vertexData[0].normal, 3, sizeof(Vertex)}};
+
+    /* This is used internally by combineFaceAttributes(), as long as the
+       vertex data array isn't accessed directly it's okay */
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        {}, {nullptr, ~std::size_t{}}, {positions, normals}};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+}
+
 void InterleaveTest::interleavedData() {
     Containers::Array<char> vertexData{100 + 3*40};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -415,6 +438,37 @@ void InterleaveTest::interleavedDataNotInterleaved() {
     Error redirectError{&out};
     MeshTools::interleavedData(data);
     CORRADE_COMPARE(out.str(), "MeshTools::interleavedData(): the mesh is not interleaved\n");
+}
+
+void InterleaveTest::interleavedDataVertexDataWholeMemory() {
+    struct Vertex {
+        int:32;
+        Vector2 position;
+        int:32;
+        int:32;
+        Vector3 normal;
+        int:32;
+        int:32;
+    } vertexData[3];
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData,
+            &vertexData[0].position, 3, sizeof(Vertex)}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        Containers::StridedArrayView1D<Vector3>{vertexData,
+            &vertexData[0].normal, 3, sizeof(Vertex)}};
+
+    /* This is used internally by combineFaceAttributes(), as long as the
+       vertex data array isn't accessed directly it's okay */
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        {}, {nullptr, ~std::size_t{}}, {normals, positions}};
+
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+    Containers::StridedArrayView2D<const char> interleaved = MeshTools::interleavedData(data);
+    CORRADE_COMPARE(interleaved.data(), positions.data().data());
+    CORRADE_COMPARE(interleaved.size()[0], 3);
+    CORRADE_COMPARE(interleaved.size()[1], 28);
+    CORRADE_COMPARE(interleaved.stride()[0], 40);
+    CORRADE_COMPARE(interleaved.stride()[1], 1);
 }
 
 void InterleaveTest::interleavedLayout() {
