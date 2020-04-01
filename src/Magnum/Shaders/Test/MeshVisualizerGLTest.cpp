@@ -30,6 +30,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/Context.h"
@@ -71,8 +72,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void constructGeometryShader3D();
     #endif
 
-    void construct2DNoFeatureEnabled();
-    void construct3DNoFeatureEnabled();
+    void construct2DInvalid();
+    void construct3DInvalid();
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void construct3DGeometryShaderDisabledButNeeded();
     void construct3DConflictingBitangentInput();
@@ -156,6 +157,31 @@ constexpr struct {
     {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection}
 };
 #endif
+
+constexpr struct {
+    const char* name;
+    MeshVisualizer2D::Flags flags;
+    const char* message;
+} ConstructInvalidData2D[] {
+    {"no feature enabled",
+        MeshVisualizer2D::Flag::NoGeometryShader, /* not a feature flag */
+        "at least Flag::Wireframe has to be enabled"}
+};
+
+constexpr struct {
+    const char* name;
+    MeshVisualizer3D::Flags flags;
+    const char* message;
+} ConstructInvalidData3D[] {
+    {"no feature enabled",
+        MeshVisualizer3D::Flag::NoGeometryShader, /* not a feature flag */
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        "at least one visualization feature has to be enabled"
+        #else
+        "at least Flag::Wireframe has to be enabled"
+        #endif
+        }
+};
 
 constexpr struct {
     const char* name;
@@ -265,8 +291,12 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         Containers::arraySize(ConstructGeometryShaderData3D));
     #endif
 
-    addTests({&MeshVisualizerGLTest::construct2DNoFeatureEnabled,
-              &MeshVisualizerGLTest::construct3DNoFeatureEnabled,
+    addInstancedTests({&MeshVisualizerGLTest::construct2DInvalid},
+        Containers::arraySize(ConstructInvalidData2D));
+    addInstancedTests({&MeshVisualizerGLTest::construct3DInvalid},
+        Containers::arraySize(ConstructInvalidData3D));
+
+    addTests({
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded,
               &MeshVisualizerGLTest::construct3DConflictingBitangentInput,
@@ -424,27 +454,24 @@ void MeshVisualizerGLTest::constructGeometryShader3D() {
 }
 #endif
 
-void MeshVisualizerGLTest::construct2DNoFeatureEnabled() {
+void MeshVisualizerGLTest::construct2DInvalid() {
+    auto&& data = ConstructInvalidData2D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     std::ostringstream out;
     Error redirectError{&out};
-    /* This isn't a feature flag */
-    MeshVisualizer2D{MeshVisualizer2D::Flag::NoGeometryShader};
-    CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer2D: at least Flag::Wireframe has to be enabled\n");
+    MeshVisualizer2D{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer2D: {}\n", data.message));
 }
 
-void MeshVisualizerGLTest::construct3DNoFeatureEnabled() {
+void MeshVisualizerGLTest::construct3DInvalid() {
+    auto&& data = ConstructInvalidData3D[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     std::ostringstream out;
     Error redirectError{&out};
-    /* This isn't a feature flag */
-    MeshVisualizer3D{MeshVisualizer3D::Flag::NoGeometryShader};
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled\n");
-    #else
-    CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer3D: at least Flag::Wireframe has to be enabled\n");
-    #endif
+    MeshVisualizer3D{data.flags};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer3D: {}\n", data.message));
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
