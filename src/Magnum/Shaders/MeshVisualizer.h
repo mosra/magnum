@@ -294,6 +294,35 @@ If using geometry shaders on OpenGL ES, @gl_extension{NV,shader_noperspective_in
 is optionally used for improving line appearance. On desktop OpenGL this is
 done implicitly.
 
+@subsection Shaders-MeshVisualizer-wireframe-geom Example setup with a geometry shader (desktop GL, OpenGL ES 3.2)
+
+Common mesh setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-geom1
+
+Common rendering setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-geom2
+
+@subsection Shaders-MeshVisualizer-wireframe-no-geom Example setup for indexed meshes without a geometry shader
+
+The vertices have to be converted to a non-indexed array first. Mesh setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom1
+
+Rendering setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom2
+
+@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization of non-indexed meshes without a geometry shader on older hardware
+
+You need to provide also the @ref VertexIndex attribute. Mesh setup *in
+addition to the above*:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old
+
+Rendering setup the same as above.
+
 @section Shaders-MeshVisualizer-tbn Tangent space visualization
 
 On platforms with geometry shaders (desktop GL, OpenGL ES 3.2), the shader is
@@ -318,50 +347,13 @@ indicates tangent space handedness, in which case you'll be using the
 efficient representation, is a dedicated @ref Bitangent attribute (in which
 case you'll enable @ref Flag::BitangentDirection). Note that these two are
 mutually exclusive, so you need to choose either of them based on what given
-mesh contains.
-
-@section Shaders-MeshVisualizer-usage Example usage
-
-@subsection Shaders-MeshVisualizer-usage-wireframe-geom Wireframe visualization with a geometry shader (desktop GL, OpenGL ES 3.2)
-
-Common mesh setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-geom1
-
-Common rendering setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-geom2
-
-@subsection Shaders-MeshVisualizer-usage-wireframe-tbn Tangent space visualization with a geometry shader (desktop GL, OpenGL ES 3.2)
-
-Setup for a mesh that contains four-component tangents
-(@ref Shaders-MeshVisualizer-tbn "see above" if you have a dedicated bitangent
-attribute instead):
+mesh contains. Example for the first case:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-tbn1
 
 Rendering setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-tbn2
-
-@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without a geometry shader
-
-The vertices have to be converted to a non-indexed array first. Mesh setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom1
-
-Rendering setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom2
-
-@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization of non-indexed meshes without a geometry shader on older hardware
-
-You need to provide also the @ref VertexIndex attribute. Mesh setup *in
-addition to the above*:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old
-
-Rendering setup the same as above.
 
 @see @ref shaders, @ref MeshVisualizer2D
 @todo Understand and add support wireframe width/smoothness without GS
