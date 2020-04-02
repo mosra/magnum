@@ -1579,6 +1579,9 @@ void MeshVisualizerGLTest::renderWireframe3DPerspective() {
 }
 
 void MeshVisualizerGLTest::renderTangentBitangentNormal() {
+    auto&& data = TangentBitangentNormalData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -1586,9 +1589,6 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
         CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
-
-    auto&& data = TangentBitangentNormalData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
