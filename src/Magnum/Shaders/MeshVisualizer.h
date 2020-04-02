@@ -241,7 +241,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
 
         /** @brief Flags */
         Flags flags() const {
-            return reinterpret_cast<const Flags&>(Implementation::MeshVisualizerBase::_flags);
+            return Flag(UnsignedShort(Implementation::MeshVisualizerBase::_flags));
         }
 
         /**
@@ -760,7 +760,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
 
         /** @brief Flags */
         Flags flags() const {
-            return reinterpret_cast<const Flags&>(Implementation::MeshVisualizerBase::_flags);
+            return Flag(UnsignedShort(Implementation::MeshVisualizerBase::_flags));
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
