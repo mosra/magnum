@@ -67,8 +67,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
         MeshVisualizerBase& setColor(const Color4& color);
         MeshVisualizerBase& setWireframeColor(const Color4& color);
         MeshVisualizerBase& setWireframeWidth(Float width);
+        #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizerBase& setColorMapTransformation(Float offset, Float scale);
         MeshVisualizerBase& bindColorMapTexture(GL::Texture2D& texture);
+        #endif
 
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
