@@ -177,7 +177,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         setTargetHintImplementation = &Buffer::setTargetHintImplementationDefault;
     }
 
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
         dataImplementation = &Buffer::dataImplementationApple;
         subDataImplementation = &Buffer::subDataImplementationApple;
