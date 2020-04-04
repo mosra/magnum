@@ -300,6 +300,9 @@ See also:
 -   @ref GL::DynamicAttribute can now describe matrix attributes similarly to
     @ref GL::Attribute, previously this was possible only by specifying each
     column vector separately
+-   Added @ref GL::Context::State::UnbindPixelBuffer that's now implicitly
+    included in @ref GL::Context::State::EnterExternal to make Magnum work
+    correctly with 3rd party code that's not aware of PBOs.
 
 @subsubsection changelog-latest-changes-math Math library
 

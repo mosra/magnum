@@ -1008,6 +1008,17 @@ Version Context::supportedVersion(std::initializer_list<Version> versions) const
 }
 
 void Context::resetState(const States states) {
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Unbind a PBO (if any) to avoid confusing external GL code that is not
+       aware of those. Doing this before all buffer state is reset so we can
+       reuse the knowledge in our state tracker and unbind only if Magnum
+       actually bound a PBO before. */
+    if(states & State::UnbindPixelBuffer) {
+        Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+        Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    }
+    #endif
+
     if(states & State::Buffers)
         _state->buffer->reset();
     if(states & State::Framebuffers)
