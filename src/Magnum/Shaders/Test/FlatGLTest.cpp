@@ -155,7 +155,7 @@ const struct {
     bool flip;
 } RenderTexturedData[]{
     {"", Flat2D::Flag::Textured, {}, false},
-    {"texture transformeation",
+    {"texture transformation",
         Flat2D::Flag::Textured|Flat2D::Flag::TextureTransformation,
         Matrix3::translation(Vector2{1.0f})*Matrix3::scaling(Vector2{-1.0f}),
         true},
