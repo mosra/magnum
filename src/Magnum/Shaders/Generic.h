@@ -366,6 +366,12 @@ template<UnsignedInt dimensions> struct Generic {
      *
      * @ref Magnum::Matrix3 "Matrix3" in 2D and @ref Magnum::Matrix4 "Matrix4"
      * in 3D. Currently doesn't have a corresponding @ref Trade::MeshAttribute.
+     * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+     * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+     *      @gl_extension{EXT,instanced_arrays} or
+     *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+     * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+     *      in WebGL 1.0.
      */
     typedef GL::Attribute<8, T> TransformationMatrix;
 
@@ -377,6 +383,12 @@ template<UnsignedInt dimensions> struct Generic {
      *
      * @ref Magnum::Matrix3 "Matrix3x3", defined only in 3D. Currently doesn't
      * have a corresponding @ref Trade::MeshAttribute.
+     * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+     * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+     *      @gl_extension{EXT,instanced_arrays} or
+     *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+     * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+     *      in WebGL 1.0.
      */
     typedef GL::Attribute<12, Matrix3x3> NormalMatrix;
 
@@ -388,6 +400,12 @@ template<UnsignedInt dimensions> struct Generic {
      *
      * @ref Magnum::Vector2 "Vector2". Currently doesn't have a corresponding
      * @ref Trade::MeshAttribute.
+     * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+     * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+     *      @gl_extension{EXT,instanced_arrays} or
+     *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+     * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+     *      in WebGL 1.0.
      */
     typedef GL::Attribute<15, Vector2> TextureOffset;
 
