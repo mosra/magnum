@@ -59,24 +59,9 @@ shader renders the mesh with a white color in an identity transformation.
 Use @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
-If you want to use a texture, you need to provide also the
-@ref TextureCoordinates attribute. Pass @ref Flag::Textured to the constructor
-and then at render time don't forget to bind also the texture via
-@ref bindTexture(). The texture is multipled by the color, which is by default
-set to @cpp 0xffffffff_rgbaf @ce.
-
 @image html shaders-flat.png width=256px
 
-For coloring the texture based on intensity you can use the @ref Vector shader.
-The 3D version of this shader is equivalent to @ref Phong with zero lights,
-however this implementation is much simpler and thus likely also faster. See
-@ref Shaders-Phong-zero-lights "its documentation" for more information.
-Conversely, enabling @ref Flag::VertexColor and using a default color with no
-texturing makes this shader equivalent to @ref VertexColor.
-
-@section Shaders-Flat-usage Example usage
-
-@subsection Shaders-Flat-usage-colored Colored mesh
+@section Shaders-Flat-colored Colored rendering
 
 Common mesh setup:
 
@@ -86,9 +71,13 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Flat-usage-colored2
 
-@subsection Shaders-Flat-usage-textured Textured mesh
+@section Shaders-Flat-textured Textured rendering
 
-Common mesh setup:
+If you want to use a texture, you need to provide also the
+@ref TextureCoordinates attribute. Pass @ref Flag::Textured to the constructor
+and then at render time don't forget to bind also the texture via
+@ref bindTexture(). The texture is multipled by the color, which is by default
+set to @cpp 0xffffffff_rgbaf @ce. Common mesh setup:
 
 @snippet MagnumShaders.cpp Flat-usage-textured1
 
@@ -96,7 +85,14 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Flat-usage-textured2
 
-@subsection Shaders-Flat-usage-alpha Alpha blending and masking
+For coloring the texture based on intensity you can use the @ref Vector shader.
+The 3D version of this shader is equivalent to @ref Phong with zero lights,
+however this implementation is much simpler and thus likely also faster. See
+@ref Shaders-Phong-zero-lights "its documentation" for more information.
+Conversely, enabling @ref Flag::VertexColor and using a default color with no
+texturing makes this shader equivalent to @ref VertexColor.
+
+@section Shaders-Flat-alpha Alpha blending and masking
 
 Enable @ref Flag::AlphaMask and tune @ref setAlphaMask() for simple
 binary alpha-masked drawing that doesn't require depth sorting or blending
@@ -105,7 +101,7 @@ operation which is known to have considerable performance impact on some
 platforms. With proper depth sorting and blending you'll usually get much
 better performance and output quality.
 
-@subsection Shaders-Flat-usage-object-id Object ID output
+@section Shaders-Flat-object-id Object ID output
 
 The shader supports writing object ID to the framebuffer for object picking or
 other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
@@ -194,7 +190,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * present only if @ref Flag::ObjectId is set. Expects a
              * single-component unsigned integral attachment. Writes the value
              * set in @ref setObjectId() there, see
-             * @ref Shaders-Phong-usage-object-id for more information.
+             * @ref Shaders-Phong-object-id for more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
@@ -247,8 +243,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
-             * Enable object ID output. See @ref Shaders-Flat-usage-object-id
-             * for more information.
+             * Enable object ID output. See @ref Shaders-Flat-object-id for
+             * more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
@@ -261,7 +257,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * object ID from the @ref ObjectId attribute, outputting a sum of
              * the per-vertex ID and ID coming from @ref setObjectId().
              * Implicitly enables @ref Flag::ObjectId. See
-             * @ref Shaders-Flat-usage-object-id for more information.
+             * @ref Shaders-Flat-object-id for more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
@@ -378,7 +374,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
-         * @ref Shaders-Flat-usage-object-id for more information. Default is
+         * @ref Shaders-Flat-object-id for more information. Default is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
          * value is combined with ID coming from the @ref ObjectId attribute.
          * @requires_gles30 Object ID output requires integer buffer

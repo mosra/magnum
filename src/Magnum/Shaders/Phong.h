@@ -45,19 +45,9 @@ transformation. Use @ref setTransformationMatrix(), @ref setNormalMatrix(),
 @ref setProjectionMatrix(), @ref setLightPosition() and others to configure
 the shader.
 
-If you want to use textures, you need to provide also the
-@ref TextureCoordinates attribute. Pass appropriate @ref Flag combination to
-the constructor and then at render time don't forget to also call appropriate
-subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
-@ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
-is multipled by the color, which is by default set to fully opaque white for
-enabled textures.
-
 @image html shaders-phong.png width=256px
 
-@section Shaders-Phong-usage Example usage
-
-@subsection Shaders-Phong-usage-colored Colored mesh
+@section Shaders-Phong-colored Colored rendering
 
 Common mesh setup:
 
@@ -67,9 +57,15 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Phong-usage-colored2
 
-@subsection Shaders-Phong-usage-texture Diffuse and specular texture
+@section Shaders-Phong-texture Textured rendering
 
-Common mesh setup:
+If you want to use textures, you need to provide also the
+@ref TextureCoordinates attribute. Pass appropriate @ref Flag combination to
+the constructor and then at render time don't forget to also call appropriate
+subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
+@ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
+is multipled by the color, which is by default set to fully opaque white for
+enabled textures. Mesh setup with a diffuse and a specular texture:
 
 @snippet MagnumShaders.cpp Phong-usage-texture1
 
@@ -77,7 +73,7 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Phong-usage-texture2
 
-@subsection Shaders-Phong-usage-alpha Alpha blending and masking
+@section Shaders-Phong-alpha Alpha blending and masking
 
 Enable @ref Flag::AlphaMask and tune @ref setAlphaMask() for simple
 binary alpha-masked drawing that doesn't require depth sorting or blending
@@ -94,7 +90,7 @@ diffuse part and then separate the alpha like this:
 
 @snippet MagnumShaders.cpp Phong-usage-alpha
 
-@subsection Shaders-Phong-usage-object-id Object ID output
+@section Shaders-Phong-object-id Object ID output
 
 The shader supports writing object ID to the framebuffer for object picking or
 other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
@@ -104,8 +100,8 @@ and supply per-vertex IDs to the @ref ObjectId attribute. The output will
 contain a sum of the per-vertex ID and ID coming from @ref setObjectId().
 
 The functionality is practically the same as in the @ref Flat shader, see
-@ref Shaders-Flat-usage-object-id "its documentation" for more information and
-usage example.
+@ref Shaders-Flat-object-id "its documentation" for more information and usage
+example.
 
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
@@ -208,7 +204,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * present only if @ref Flag::ObjectId is set. Expects a
              * single-component unsigned integral attachment. Writes the value
              * set in @ref setObjectId() there, see
-             * @ref Shaders-Phong-usage-object-id for more information.
+             * @ref Shaders-Phong-object-id for more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
@@ -282,7 +278,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
-             * Enable object ID output. See @ref Shaders-Phong-usage-object-id
+             * Enable object ID output. See @ref Shaders-Phong-object-id
              * for more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
@@ -296,7 +292,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * object ID from the @ref ObjectId attribute, outputting a sum of
              * the per-vertex ID and ID coming from @ref setObjectId().
              * Implicitly enables @ref Flag::ObjectId. See
-             * @ref Shaders-Phong-usage-object-id for more information.
+             * @ref Shaders-Phong-object-id for more information.
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
@@ -481,7 +477,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with @ref Flag::ObjectId
          * enabled. Value set here is written to the @ref ObjectIdOutput, see
-         * @ref Shaders-Phong-usage-object-id for more information. Default is
+         * @ref Shaders-Phong-object-id for more information. Default is
          * @cpp 0 @ce.
          * @requires_gles30 Object ID output requires integer buffer
          *      attachments, which are not available in OpenGL ES 2.0 or WebGL

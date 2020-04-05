@@ -99,8 +99,8 @@ Besides vertex attributes, the @ref Shaders::Generic contains generic
 definitions for framebuffer outputs as well --- in many cases a shader has just
 one (color) output, but some shaders such as @ref Shaders::Flat or
 @ref Shaders::Phong offer an object ID output as well. A setup equivalent to
-what's done in Flat shader's @ref Shaders-Flat-usage-object-id but using the
-generic definitions would look like this:
+what's done in Flat shader's @ref Shaders-Flat-object-id but using the generic
+definitions would look like this:
 
 @snippet MagnumShaders.cpp shaders-generic-object-id
 */
