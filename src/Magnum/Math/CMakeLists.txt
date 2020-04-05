@@ -49,6 +49,7 @@ set(MagnumMath_HEADERS
     Quaternion.h
     Packing.h
     PackingBatch.h
+    Random.h
     Range.h
     RectangularMatrix.h
     StrictWeakOrdering.h
