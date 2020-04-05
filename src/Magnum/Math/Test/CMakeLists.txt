@@ -70,6 +70,8 @@ corrade_add_test(MathStrictWeakOrderingTest StrictWeakOrderingTest.cpp LIBRARIES
 
 corrade_add_test(MathMatrixBenchmark MatrixBenchmark.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathRandomTest RandomTest.cpp LIBRARIES MagnumMathTestLib)
+
 set_property(TARGET
     MathVectorTest
     MathMatrixTest
@@ -85,6 +87,8 @@ set_property(TARGET
 
     MathDistanceTest
     MathIntersectionTest
+
+    MathRandomTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
 set_target_properties(
@@ -130,4 +134,6 @@ set_target_properties(
 
     MathConfigurationValueTest
     MathStrictWeakOrderingTest
+
+    MathRandomTest
     PROPERTIES FOLDER "Magnum/Math/Test")

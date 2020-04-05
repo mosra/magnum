@@ -11,6 +11,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Functions.h"
+#include <iostream>
 
 namespace Magnum
 {
@@ -70,7 +71,7 @@ T randomSignedScalar() // range [-1, 1]
 }
 
 template <class T = Float>
-Vector3<T> randomUnitVector2()
+Vector2<T> randomUnitVector2()
 {
     auto a = Implementation::RandomGenerator::generate(0.0f, 2 * Math::Constants<T>::pi());
     return {std::cos(a), std::sin(a)};
@@ -100,15 +101,21 @@ Vector2<T> randomPointInACircle() // always length < 1
 template <class T = Float>
 Vector3<T> randomPointInASphere() // always length < 1
 {
-    auto x = randomSignedScalar();
-    auto y = randomSignedScalar();
+
     while (true)
     {
-        auto p = Vector3<T>(x, y, randomSignedScalar());
+        auto p = Vector3<T>(randomSignedScalar(),
+                            randomSignedScalar(),
+                            randomSignedScalar());
         if (p.length() >= 1)
             continue;
         return p;
     }
+}
+
+bool randomBool()
+{
+    return static_cast<bool>(randomUnsignedScalar<Int>());
 }
 
 template <class T = Float>
