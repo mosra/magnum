@@ -462,7 +462,7 @@ template<class T, class K
          * @brief Add a track with a result callback
          *
          * Equivalent to calling the above with a lambda wrapper that casts
-         * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
+         * @cpp void* @ce back to @cpp U* @ce and dereferences it in order to
          * pass it to @p callback. There is no additional overhead compared to
          * the overload taking the @cpp void* @ce pointer, however see
          * @ref addRawCallback() for optimization possibilities.
@@ -546,16 +546,16 @@ template<class T, class K
          * @brief Add a track with a result callback that's called on change
          *
          * Equivalent to calling the above with a lambda wrapper that casts
-         * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
+         * @cpp void* @ce back to @cpp U* @ce and dereferences it in order to
          * pass it to @p callback. There is no additional overhead compared to
          * the overload taking the @cpp void* @ce pointer, however see
          * @ref addRawCallback() for optimization possibilities.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<const K, const V, R>& track, void(*callback)(K, const R&, void*), R& destination, U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<const K, const V, R>& track, void(*callback)(K, const R&, U&), R& destination, U& userData);
 
         /** @overload */
-        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(K, const R&, U&), R& destination, U& userData);
         #else /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const TrackView<const K, const V, R>& track, Callback callback, R& destination, U& userData);
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, Callback callback, R& destination, U& userData) {
