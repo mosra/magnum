@@ -122,6 +122,25 @@ in highp uint instanceObjectId;
 flat out highp uint interpolatedInstanceObjectId;
 #endif
 
+#ifdef INSTANCED_TRANSFORMATION
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION)
+#endif
+in highp mat4 instancedTransformationMatrix;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = NORMAL_MATRIX_ATTRIBUTE_LOCATION)
+#endif
+in highp mat3 instancedNormalMatrix;
+#endif
+
+#ifdef INSTANCED_TEXTURE_OFFSET
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec2 instancedTextureOffset;
+#endif
+
 #if LIGHT_COUNT
 out mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
@@ -133,14 +152,26 @@ out highp vec3 cameraDirection;
 
 void main() {
     /* Transformed vertex position */
-    highp vec4 transformedPosition4 = transformationMatrix*position;
+    highp vec4 transformedPosition4 = transformationMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedTransformationMatrix*
+        #endif
+        position;
     highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
 
     #if LIGHT_COUNT
     /* Transformed normal and tangent vector */
-    transformedNormal = normalMatrix*normal;
+    transformedNormal = normalMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedNormalMatrix*
+        #endif
+        normal;
     #ifdef NORMAL_TEXTURE
-    transformedTangent = normalMatrix*tangent;
+    transformedTangent = normalMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedNormalMatrix*
+        #endif
+        tangent;
     #endif
 
     /* Direction to the light */
@@ -158,7 +189,11 @@ void main() {
     /* Texture coordinates, if needed */
     interpolatedTextureCoordinates =
         #ifdef TEXTURE_TRANSFORMATION
-        (textureMatrix*vec3(textureCoordinates, 1.0)).xy
+        (textureMatrix*vec3(
+            #ifdef INSTANCED_TEXTURE_OFFSET
+            instancedTextureOffset +
+            #endif
+            textureCoordinates, 1.0)).xy
         #else
         textureCoordinates
         #endif

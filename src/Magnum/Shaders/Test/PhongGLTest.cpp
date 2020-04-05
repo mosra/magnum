@@ -35,6 +35,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -104,6 +105,8 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void renderZeroLights();
 
+    void renderInstanced();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         std::string _testDir;
@@ -121,12 +124,12 @@ struct PhongGLTest: GL::OpenGLTester {
     -   Mesa Intel
     -   Mesa AMD
     -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3
-    -   WebGL 1 / 2 (on Mesa Intel)
-    -   NVidia Windows
-    -   Intel Windows
-    -   AMD on macOS
-    -   iPhone 6 w/ iOS 12.4
+    -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
+    -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
+    -   NVidia Windows (except instancing)
+    -   Intel Windows (except instancing)
+    -   AMD on macOS (except instancing)
+    -   iPhone 6 w/ iOS 12.4 (except instancing)
 */
 
 constexpr struct {
@@ -155,7 +158,10 @@ constexpr struct {
     {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
     #endif
     {"five lights", {}, 5},
-    {"zero lights", {}, 0}
+    {"zero lights", {}, 0},
+    {"instanced transformation", Phong::Flag::InstancedTransformation, 3},
+    {"instanced specular texture offset", Phong::Flag::SpecularTexture|Phong::Flag::InstancedTextureOffset, 3},
+    {"instanced normal texture offset", Phong::Flag::NormalTexture|Phong::Flag::InstancedTextureOffset, 3}
 };
 
 using namespace Math::Literals;
@@ -284,6 +290,32 @@ constexpr struct {
 };
 #endif
 
+constexpr struct {
+    const char* name;
+    const char* file;
+    Phong::Flags flags;
+    Float maxThreshold, meanThreshold;
+} RenderInstancedData[] {
+    {"diffuse", "instanced.tga", {},
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /* AMD has one off pixel; SwiftShader a bit more */
+        93.67f, 0.106f,
+        #else
+        /* WebGL 1 doesn't have 8bit renderbuffer storage */
+        93.67f, 0.106f,
+        #endif
+        },
+    {"diffuse + normal", "instanced-normal.tga", Phong::Flag::NormalTexture,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /* AMD has one off pixel */
+        94.0f, 0.132f,
+        #else
+        /* WebGL 1 doesn't have 8bit renderbuffer storage */
+        94.0f, 0.132f,
+        #endif
+        }
+};
+
 PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct}, Containers::arraySize(ConstructData));
 
@@ -355,6 +387,11 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderTeardown
         #endif
     );
+
+    addInstancedTests({&PhongGLTest::renderInstanced},
+        Containers::arraySize(RenderInstancedData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -1330,6 +1367,115 @@ void PhongGLTest::renderZeroLights() {
     /* Inside of the object. Verify that it can hold 16 bits at least. */
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 65534);
     #endif
+}
+
+void PhongGLTest::renderInstanced() {
+    auto&& data = RenderInstancedData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() + std::string(" is not supported"));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("GL_{ANGLE,EXT,NV}_instanced_arrays is not supported");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() + std::string(" is not supported"));
+    #endif
+    #endif
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereFlag::TextureCoordinates|
+        Primitives::UVSphereFlag::Tangents));
+
+    /* Three spheres, each in a different location, differently rotated to
+       ensure the normal matrix is properly used as well. */
+    struct {
+        Matrix4 transformation;
+        Matrix3x3 normal;
+        Color3 color;
+        Vector2 textureOffset;
+    } instanceData[] {
+        {Matrix4::translation({-1.25f, -1.25f, 0.0f})*
+         Matrix4::rotationX(90.0_degf),
+            {}, 0xff3333_rgbf, {0.0f, 0.0f}},
+        {Matrix4::translation({ 1.25f, -1.25f, 0.0f})*
+         Matrix4::rotationY(90.0_degf),
+            {}, 0x33ff33_rgbf, {1.0f, 0.0f}},
+        {Matrix4::translation({  0.0f,  1.0f, 1.0f})*
+         Matrix4::rotationZ(90.0_degf),
+            {}, 0x9999ff_rgbf, {0.5f, 1.0f}}
+    };
+    for(auto& instance: instanceData)
+        instance.normal = instance.transformation.normalMatrix();
+
+    sphere
+        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+            Phong::TransformationMatrix{},
+            Phong::NormalMatrix{},
+            Phong::Color3{},
+            Phong::TextureOffset{})
+        .setInstanceCount(3);
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    GL::Texture2D diffuse;
+    diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+    GL::Texture2D normal;
+    normal.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Phong shader{Phong::Flag::DiffuseTexture|
+          Phong::Flag::VertexColor|
+          Phong::Flag::InstancedTransformation|
+          Phong::Flag::InstancedTextureOffset|data.flags, 2};
+    shader
+        .setLightPositions({{-3.0f, -3.0f, 0.0f},
+                            { 3.0f, -3.0f, 0.0f}})
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-1.75f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf)*
+            Matrix4::scaling(Vector3{0.4f}))
+        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf)).normalMatrix())
+        .setProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        .bindDiffuseTexture(diffuse)
+        .setDiffuseColor(0xffff99_rgbf);
+
+    if(data.flags & Phong::Flag::NormalTexture)
+        shader.bindNormalTexture(normal);
+
+    shader.draw(sphere);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
+        (DebugTools::CompareImageToFile{_manager, data.maxThreshold, data.meanThreshold}));
 }
 
 }}}}

@@ -233,7 +233,7 @@ See also:
     @ref Shaders::Generic::TransformationMatrix,
     @ref Shaders::Generic::NormalMatrix and
     @ref Shaders::Generic::TextureOffset for instancing
--   Instancing in @ref Shaders::Flat
+-   Instancing in @ref Shaders::Flat and @ref Shaders::Phong
 
 @subsubsection changelog-latest-new-trade Trade library
 

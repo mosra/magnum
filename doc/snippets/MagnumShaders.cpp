@@ -270,6 +270,28 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
 }
 
 {
+GL::Mesh mesh;
+/* [Phong-usage-instancing] */
+struct {
+    Matrix4 transformation;
+    Matrix3x3 normal;
+} instanceData[] {
+    {Matrix4::translation({1.0f, 2.0f, 0.0f})*Matrix4::rotationX(90.0_degf), {}},
+    {Matrix4::translation({2.0f, 1.0f, 0.0f})*Matrix4::rotationY(90.0_degf), {}},
+    {Matrix4::translation({3.0f, 0.0f, 1.0f})*Matrix4::rotationZ(90.0_degf), {}},
+    // ...
+};
+for(auto& instance: instanceData)
+    instance.normal = instance.transformation.normalMatrix();
+
+mesh.setInstanceCount(Containers::arraySize(instanceData))
+    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        Shaders::Phong::TransformationMatrix{},
+        Shaders::Phong::NormalMatrix{});
+/* [Phong-usage-instancing] */
+}
+
+{
 /* [MeshVisualizer-usage-geom1] */
 struct Vertex {
     Vector3 position;

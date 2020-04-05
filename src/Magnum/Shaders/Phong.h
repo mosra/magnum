@@ -106,6 +106,30 @@ example.
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
 
+@section Shaders-Phong-instancing Instanced rendering
+
+Enabling @ref Flag::InstancedTransformation will turn the shader into an
+instanced one. It'll take per-instance transformation and normal matrix from
+the @ref TransformationMatrix and @ref NormalMatrix attributes, applying those
+before the matrix set by @ref setTransformationMatrix() and
+@ref setNormalMatrix(). Besides that, @ref Flag::VertexColor (and the
+@ref Color3 / @ref Color4) attributes can work as both per-vertex and
+per-instance, and for texturing it's possible to have per-instance texture
+offset taken from @ref TextureOffset when @ref Flag::InstancedTextureOffset is
+enabled (similarly to transformation, applied before @ref setTextureMatrix()).
+The snippet below shows adding a buffer with per-instance transformation to a
+mesh --- note how a normal matrix attribute has to be populated and supplied as
+well to ensure lighting works:
+
+@snippet MagnumShaders.cpp Phong-usage-instancing
+
+@requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+@requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+    @gl_extension{EXT,instanced_arrays} or @gl_extension{NV,instanced_arrays}
+    in OpenGL ES 2.0.
+@requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
+    1.0.
+
 @section Shaders-Phong-zero-lights Zero lights
 
 Creating this shader with zero lights makes its output equivalent to the
@@ -113,7 +137,10 @@ Creating this shader with zero lights makes its output equivalent to the
 (if @ref Flag::AmbientTexture is enabled) are taken into account, which
 correspond to @ref Flat::setColor() and @ref Flat::bindTexture(). This is
 useful to reduce complexity in apps that render models with pre-baked lights.
-In addition, enabling @ref Flag::VertexColor and using a default ambient color with no texturing makes this shader equivalent to @ref VertexColor.
+For instanced workflows using zero lights means the @ref NormalMatrix instance
+attribute doesn't need to be supplied either. In addition, enabling
+@ref Flag::VertexColor and using a default ambient color with no texturing
+makes this shader equivalent to @ref VertexColor.
 
 @see @ref shaders
 */
@@ -188,6 +215,51 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         typedef Generic3D::ObjectId ObjectId;
         #endif
+
+        /**
+         * @brief (Instanced) transformation matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix4.
+         * Used only if @ref Flag::InstancedTransformation is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef Generic3D::TransformationMatrix TransformationMatrix;
+
+        /**
+         * @brief (Instanced) normal matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3x3.
+         * Used only if @ref Flag::InstancedTransformation is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef Generic3D::NormalMatrix NormalMatrix;
+
+        /**
+         * @brief (Instanced) texture offset
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
+         * only if @ref Flag::InstancedTextureOffset is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef typename Generic3D::TextureOffset TextureOffset;
 
         enum: UnsignedInt {
             /**
@@ -298,8 +370,45 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      WebGL 1.0.
              * @m_since_latest
              */
-            InstancedObjectId = (1 << 8)|ObjectId
+            InstancedObjectId = (1 << 8)|ObjectId,
             #endif
+
+            /**
+             * Instanced transformation. Retrieves a per-instance
+             * transformation and normal matrix from the
+             * @ref TransformationMatrix / @ref NormalMatrix attributes and
+             * uses them together with matrices coming from
+             * @ref setTransformationMatrix() and @ref setNormalMatrix() (first
+             * the per-instance, then the uniform matrix). See
+             * @ref Shaders-Phong-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTransformation = 1 << 9,
+
+            /**
+             * Instanced texture offset. Retrieves a per-instance offset vector
+             * from the @ref TextureOffset attribute and uses it together with
+             * the matrix coming from @ref setTextureMatrix() (first the
+             * per-instance vector, then the uniform matrix). Instanced texture
+             * scaling and rotation is not supported at the moment, you can
+             * specify that only via the uniform @ref setTextureMatrix().
+             * Implicitly enables @ref Flag::TextureTransformation. See
+             * @ref Shaders-Phong-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTextureOffset = (1 << 10)|TextureTransformation
         };
 
         /**
