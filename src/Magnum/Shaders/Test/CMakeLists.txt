@@ -223,6 +223,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/textured-diffuse-alpha-mask0.5.tga
             PhongTestFiles/textured-diffuse-alpha.tga
             PhongTestFiles/textured-diffuse.tga
+            PhongTestFiles/textured-diffuse-transformed.tga
             PhongTestFiles/textured-normal.tga
             PhongTestFiles/textured-specular.tga
             PhongTestFiles/textured.tga
