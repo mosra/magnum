@@ -348,8 +348,9 @@ class MAGNUM_GL_EXPORT Context {
              *
              * Resets Magnum state tracker to avoid being confused by external
              * state changes. This resets all states, however
-             * @ref UnbindPixelBuffer is excluded as Magnum's state tracker
-             * will ensure no PBO is bound when calling related OpenGL APIs.
+             * @ref State::UnbindPixelBuffer is excluded as Magnum's state
+             * tracker will ensure no PBO is bound when calling related OpenGL
+             * APIs.
              */
             ExitExternal = Buffers|Framebuffers|Meshes|MeshVao|PixelStorage|Renderer|Shaders|Textures
                 #ifndef MAGNUM_TARGET_GLES2
