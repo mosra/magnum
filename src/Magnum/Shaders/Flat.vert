@@ -96,11 +96,39 @@ in highp uint instanceObjectId;
 flat out highp uint interpolatedInstanceObjectId;
 #endif
 
+#ifdef INSTANCED_TRANSFORMATION
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TRANSFORMATION_MATRIX_ATTRIBUTE_LOCATION)
+#endif
+#ifdef TWO_DIMENSIONS
+in highp mat3 instancedTransformationMatrix;
+#elif defined(THREE_DIMENSIONS)
+in highp mat4 instancedTransformationMatrix;
+#else
+#error
+#endif
+#endif
+
+#ifdef INSTANCED_TEXTURE_OFFSET
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TEXTURE_OFFSET_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec2 instancedTextureOffset;
+#endif
+
 void main() {
     #ifdef TWO_DIMENSIONS
-    gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
+    gl_Position.xywz = vec4(transformationProjectionMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedTransformationMatrix*
+        #endif
+        vec3(position, 1.0), 0.0);
     #elif defined(THREE_DIMENSIONS)
-    gl_Position = transformationProjectionMatrix*position;
+    gl_Position = transformationProjectionMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedTransformationMatrix*
+        #endif
+        position;
     #else
     #error
     #endif
@@ -109,7 +137,11 @@ void main() {
     /* Texture coordinates, if needed */
     interpolatedTextureCoordinates =
         #ifdef TEXTURE_TRANSFORMATION
-        (textureMatrix*vec3(textureCoordinates, 1.0)).xy
+        (textureMatrix*vec3(
+            #ifdef INSTANCED_TEXTURE_OFFSET
+            instancedTextureOffset +
+            #endif
+            textureCoordinates, 1.0)).xy
         #else
         textureCoordinates
         #endif

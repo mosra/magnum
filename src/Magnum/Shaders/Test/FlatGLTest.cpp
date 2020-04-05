@@ -35,6 +35,8 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Renderer.h"
@@ -103,6 +105,9 @@ struct FlatGLTest: GL::OpenGLTester {
     void renderObjectId3D();
     #endif
 
+    void renderInstanced2D();
+    void renderInstanced3D();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         std::string _testDir;
@@ -120,12 +125,12 @@ struct FlatGLTest: GL::OpenGLTester {
     -   Mesa Intel
     -   Mesa AMD
     -   SwiftShader ES2/ES3
-    -   ARM Mali (Huawei P10) ES2/ES3
-    -   WebGL 1 / 2 (on Mesa Intel)
-    -   NVidia Windows
-    -   Intel Windows
-    -   AMD on macOS
-    -   iPhone 6 w/ iOS 12.4
+    -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
+    -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
+    -   NVidia Windows (except instancing)
+    -   Intel Windows (except instancing)
+    -   AMD on macOS (except instancing)
+    -   iPhone 6 w/ iOS 12.4 (except instancing)
 */
 
 using namespace Math::Literals;
@@ -144,8 +149,10 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Flat2D::Flag::ObjectId},
     {"instanced object ID", Flat2D::Flag::InstancedObjectId},
-    {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
+    {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
     #endif
+    {"instanced transformation", Flat2D::Flag::InstancedTransformation},
+    {"instanced texture offset", Flat2D::Flag::Textured|Flat2D::Flag::InstancedTextureOffset}
 };
 
 const struct {
@@ -260,6 +267,11 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::renderObjectIdSetup,
         &FlatGLTest::renderObjectIdTeardown);
     #endif
+
+    addTests({&FlatGLTest::renderInstanced2D,
+              &FlatGLTest::renderInstanced3D},
+        &FlatGLTest::renderSetup,
+        &FlatGLTest::renderTeardown);
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -1106,6 +1118,175 @@ void FlatGLTest::renderObjectId3D() {
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 #endif
+
+void FlatGLTest::renderInstanced2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() + std::string(" is not supported"));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("GL_{ANGLE,EXT,NV}_instanced_arrays is not supported");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() + std::string(" is not supported"));
+    #endif
+    #endif
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
+        Primitives::Circle2DFlag::TextureCoordinates));
+
+    /* Three circles, each in a different location */
+    struct {
+        Matrix3 transformation;
+        Color3 color;
+        Vector2 textureOffset;
+    } instanceData[] {
+        {Matrix3::translation({-1.25f, -1.25f}), 0xff3333_rgbf,
+            {0.0f, 0.0f}},
+        {Matrix3::translation({ 1.25f, -1.25f}), 0x33ff33_rgbf,
+            {1.0f, 0.0f}},
+        {Matrix3::translation({ 0.00f,  1.25f}), 0x9999ff_rgbf,
+            {0.5f, 1.0f}}
+    };
+
+    circle
+        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+            Flat2D::TransformationMatrix{},
+            Flat2D::Color3{},
+            Flat2D::TextureOffset{})
+        .setInstanceCount(3);
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Flat2D{Flat2D::Flag::Textured|
+           Flat2D::Flag::VertexColor|
+           Flat2D::Flag::InstancedTransformation|
+           Flat2D::Flag::InstancedTextureOffset}
+        .setColor(0xffff99_rgbf)
+        .setTransformationProjectionMatrix(
+            Matrix3::projection({2.1f, 2.1f})*
+            Matrix3::scaling(Vector2{0.4f}))
+        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        .bindTexture(texture)
+        .draw(circle);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Minor differences on AMD, SwiftShader a bit more */
+    const Float maxThreshold = 3.0f, meanThreshold = 0.018f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage */
+    const Float maxThreshold = 3.0f, meanThreshold = 0.018f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "FlatTestFiles/instanced2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+void FlatGLTest::renderInstanced3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() + std::string(" is not supported"));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::instanced_arrays>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("GL_{ANGLE,EXT,NV}_instanced_arrays is not supported");
+    #else
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() + std::string(" is not supported"));
+    #endif
+    #endif
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereFlag::TextureCoordinates));
+
+    /* Three spheres, each in a different location */
+    struct {
+        Matrix4 transformation;
+        Color3 color;
+        Vector2 textureOffset;
+    } instanceData[] {
+        {Matrix4::translation({-1.25f, -1.25f, 0.0f}), 0xff3333_rgbf,
+            {0.0f, 0.0f}},
+        {Matrix4::translation({ 1.25f, -1.25f, 0.0f}), 0x33ff33_rgbf,
+            {1.0f, 0.0f}},
+        {Matrix4::translation({  0.0f,  1.0f, 1.0f}), 0x9999ff_rgbf,
+            {0.5f, 1.0f}}
+    };
+
+    sphere
+        .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+            Flat3D::TransformationMatrix{},
+            Flat3D::Color3{},
+            Flat3D::TextureOffset{})
+        .setInstanceCount(3);
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Flat3D{Flat3D::Flag::Textured|
+           Flat3D::Flag::VertexColor|
+           Flat3D::Flag::InstancedTransformation|
+           Flat3D::Flag::InstancedTextureOffset}
+        .setColor(0xffff99_rgbf)
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::scaling(Vector3{0.4f}))
+        .setTextureMatrix(Matrix3::scaling(Vector2{0.5f}))
+        .bindTexture(texture)
+        .draw(sphere);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Minor differences on AMD, SwiftShader a bit more */
+    const Float maxThreshold = 67.67f, meanThreshold = 0.062f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage */
+    const Float maxThreshold = 67.67f, meanThreshold = 0.062f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "FlatTestFiles/instanced3D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 }}}}
 

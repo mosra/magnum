@@ -72,6 +72,8 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
+        .addSource(flags & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
+        .addSource(flags >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Flat.vert"));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
@@ -107,6 +109,10 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         }
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+        if(flags & Flag::InstancedTransformation)
+            bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
+        if(flags >= Flag::InstancedTextureOffset)
+            bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
         #endif
     }
     #endif
@@ -203,6 +209,8 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         _c(ObjectId)
         _c(InstancedObjectId)
         #endif
+        _c(InstancedTransformation)
+        _c(InstancedTextureOffset)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -215,12 +223,13 @@ Debug& operator<<(Debug& debug, const FlatFlags value) {
         FlatFlag::Textured,
         FlatFlag::AlphaMask,
         FlatFlag::VertexColor,
+        FlatFlag::InstancedTextureOffset, /* Superset of TextureTransformation */
         FlatFlag::TextureTransformation,
         #ifndef MAGNUM_TARGET_GLES2
         FlatFlag::InstancedObjectId, /* Superset of ObjectId */
-        FlatFlag::ObjectId
+        FlatFlag::ObjectId,
         #endif
-        });
+        FlatFlag::InstancedTransformation});
 }
 
 }

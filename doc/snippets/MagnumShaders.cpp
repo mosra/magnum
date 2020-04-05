@@ -250,6 +250,26 @@ framebuffer.mapForDraw({
 #endif
 
 {
+GL::Mesh mesh;
+/* [Flat-usage-instancing] */
+struct {
+    Matrix4 transformation;
+    Color3 color;
+} instanceData[] {
+    {Matrix4::translation({1.0f, 2.0f, 0.0f}), 0xff3333_rgbf},
+    {Matrix4::translation({2.0f, 1.0f, 0.0f}), 0x33ff33_rgbf},
+    {Matrix4::translation({3.0f, 0.0f, 1.0f}), 0x3333ff_rgbf},
+    // ...
+};
+
+mesh.setInstanceCount(Containers::arraySize(instanceData))
+    .addVertexBufferInstanced(GL::Buffer{instanceData}, 1, 0,
+        Shaders::Flat3D::TransformationMatrix{},
+        Shaders::Flat3D::Color3{});
+/* [Flat-usage-instancing] */
+}
+
+{
 /* [MeshVisualizer-usage-geom1] */
 struct Vertex {
     Vector3 position;

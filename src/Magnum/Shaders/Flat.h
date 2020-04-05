@@ -44,8 +44,10 @@ namespace Implementation {
         TextureTransformation = 1 << 3,
         #ifndef MAGNUM_TARGET_GLES2
         ObjectId = 1 << 4,
-        InstancedObjectId = (1 << 5)|ObjectId
+        InstancedObjectId = (1 << 5)|ObjectId,
         #endif
+        InstancedTransformation = 1 << 6,
+        InstancedTextureOffset = (1 << 7)|TextureTransformation
     };
     typedef Containers::EnumSet<FlatFlag> FlatFlags;
 }
@@ -120,6 +122,28 @@ from @ref setObjectId().
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
 
+@section Shaders-Flat-instancing Instanced rendering
+
+Enabling @ref Flag::InstancedTransformation will turn the shader into an
+instanced one. It'll take per-instance transformation from the
+@ref TransformationMatrix attribute, applying it before the matrix set by
+@ref setTransformationProjectionMatrix(). Besides that, @ref Flag::VertexColor
+(and the @ref Color3 / @ref Color4) attributes can work as both per-vertex and
+per-instance, and for texturing it's possible to have per-instance texture
+offset taken from @ref TextureOffset when @ref Flag::InstancedTextureOffset is
+enabled (similarly to transformation, applied before @ref setTextureMatrix()).
+The snippet below shows adding a buffer with per-instance transformation and
+color to a mesh:
+
+@snippet MagnumShaders.cpp Flat-usage-instancing
+
+@requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+@requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+    @gl_extension{EXT,instanced_arrays} or @gl_extension{NV,instanced_arrays}
+    in OpenGL ES 2.0.
+@requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
+    1.0.
+
 @see @ref shaders, @ref Flat2D, @ref Flat3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::AbstractShaderProgram {
@@ -175,6 +199,37 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          */
         typedef typename Generic<dimensions>::ObjectId ObjectId;
         #endif
+
+        /**
+         * @brief (Instanced) transformation matrix
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3 in
+         * 2D, @ref Magnum::Matrix4 in 3D. Used only if
+         * @ref Flag::InstancedTransformation is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef typename Generic<dimensions>::TransformationMatrix TransformationMatrix;
+
+        /**
+         * @brief (Instanced) texture offset
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
+         * only if @ref Flag::InstancedTextureOffset is set.
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
+         */
+        typedef typename Generic<dimensions>::TextureOffset TextureOffset;
 
         enum: UnsignedInt {
             /**
@@ -263,8 +318,44 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      WebGL 1.0.
              * @m_since_latest
              */
-            InstancedObjectId = (1 << 5)|ObjectId
+            InstancedObjectId = (1 << 5)|ObjectId,
             #endif
+
+            /**
+             * Instanced transformation. Retrieves a per-instance
+             * transformation matrix from the @ref TransformationMatrix
+             * attribute and uses it together with the matrix coming from
+             * @ref setTransformationProjectionMatrix() (first the
+             * per-instance, then the uniform matrix). See
+             * @ref Shaders-Flat-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTransformation = 1 << 6,
+
+            /**
+             * Instanced texture offset. Retrieves a per-instance offset vector
+             * from the @ref TextureOffset attribute and uses it together with
+             * the matrix coming from @ref setTextureMatrix() (first the
+             * per-instance vector, then the uniform matrix). Instanced texture
+             * scaling and rotation is not supported at the moment, you can
+             * specify that only via the uniform @ref setTextureMatrix().
+             * Implicitly enables @ref Flag::TextureTransformation. See
+             * @ref Shaders-Flat-instancing for more information.
+             * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays}
+             * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+             *      @gl_extension{EXT,instanced_arrays} or
+             *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+             *      in WebGL 1.0.
+             * @m_since_latest
+             */
+            InstancedTextureOffset = (1 << 7)|TextureTransformation
         };
 
         /**

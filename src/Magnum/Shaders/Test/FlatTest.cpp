@@ -39,9 +39,7 @@ struct FlatTest: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
-    #ifndef MAGNUM_TARGET_GLES2
-    void debugFlagsInstancedObjectId();
-    #endif
+    void debugFlagsSupersets();
 };
 
 FlatTest::FlatTest() {
@@ -53,10 +51,7 @@ FlatTest::FlatTest() {
 
               &FlatTest::debugFlag,
               &FlatTest::debugFlags,
-              #ifndef MAGNUM_TARGET_GLES2
-              &FlatTest::debugFlagsInstancedObjectId
-              #endif
-              });
+              &FlatTest::debugFlagsSupersets});
 }
 
 template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
@@ -94,16 +89,23 @@ void FlatTest::debugFlags() {
     CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured|Shaders::Flat::Flag::AlphaMask Shaders::Flat::Flags{}\n");
 }
 
-#ifndef MAGNUM_TARGET_GLES2
-void FlatTest::debugFlagsInstancedObjectId() {
-    std::ostringstream out;
-
+void FlatTest::debugFlagsSupersets() {
+    #ifndef MAGNUM_TARGET_GLES2
     /* InstancedObjectId is a superset of ObjectId so only one should be
-     *printed */
-    Debug{&out} << (Flat3D::Flag::ObjectId|Flat3D::Flag::InstancedObjectId);
-    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedObjectId\n");
+       printed */
+    {
+        std::ostringstream out;
+        Debug{&out} << (Flat3D::Flag::ObjectId|Flat3D::Flag::InstancedObjectId);
+        CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedObjectId\n");
+    }
+    #endif
+
+    /* InstancedTextureOffset is a superset of TextureTransformation so only
+       one should be printed */
+    std::ostringstream out;
+    Debug{&out} << (Flat3D::Flag::InstancedTextureOffset|Flat3D::Flag::TextureTransformation);
+    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::InstancedTextureOffset\n");
 }
-#endif
 
 }}}}
 
