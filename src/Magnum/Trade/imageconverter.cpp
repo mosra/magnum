@@ -147,8 +147,7 @@ int main(int argc, char** argv) {
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
             /* If --info is passed, we don't need the output argument */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-            key == "output" &&
-            args.isSet("info")) return true;
+               key == "output" && args.isSet("info")) return true;
 
             /* Handle all other errors as usual */
             return false;
