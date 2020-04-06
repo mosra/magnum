@@ -35,6 +35,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/Implementation/converterUtilities.h"
 
 namespace Magnum {
@@ -63,33 +64,41 @@ information.
 @section magnum-sceneconverter-usage Usage
 
 @code{.sh}
-magnum-sceneconverter [-h|--help] [--importer IMPORTER] [--plugin-dir DIR]
-    [-i|--importer-options key=val,key2=val2,…] [--info] [-v|--verbose]
-    [--profile] [--] input
+magnum-sceneconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
+    [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
+    [-c|--converter-options key=val,key2=val2,…] [--info] [-v|--verbose]
+    [--profile] [--] input output
 @endcode
 
 Arguments:
 
 -   `input` --- input file
+-   `output` --- output file
 -   `-h`, `--help` --- display this help message and exit
 -   `--importer IMPORTER` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
+-   `--converter CONVERTER` --- scene converter plugin (default:
+    @ref Trade::AnyImageConverter "AnySceneConverter")
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
+-   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
+    to pass to the converter
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer plugins
--   `--profile` --- measure import time
+-   `--profile` --- measure import and conversion time
 
 If `--info` is given, the utility will print information about all meshes
 and images present in the file. **This option is currently mandatory.**
 
-The `-i` / `--importer-options` argument accepts a comma-separated list of
-key/value pairs to set in the importer plugin configuration. If the `=`
-character is omitted, it's equivalent to saying `key=true`.
+The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
+accept a comma-separated list of key/value pairs to set in the importer /
+converter plugin configuration. If the `=` character is omitted, it's
+equivalent to saying `key=true`.
 
 @see @ref magnum-imageconverter
 */
+
 }
 
 using namespace Magnum;
@@ -113,22 +122,32 @@ struct Duration {
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input file")
+        .addArgument("output").setHelp("output", "output file")
         .addOption("importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
+        .addOption("converter", "AnySceneConverter").setHelp("converter", "scene converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
+        .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
-        .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer plugins")
-        .addBooleanOption("profile").setHelp("profile", "measure import time")
-        /** @todo add the parse error callback from imageconverter once there's
-            an output argument, also remove the "mandatory" from all docs */
+        .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
+        .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
+        .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
+            /* If --info is passed, we don't need the output argument */
+            if(error == Utility::Arguments::ParseError::MissingArgument &&
+                key == "output" && args.isSet("info")) return true;
+
+            /* Handle all other errors as usual */
+            return false;
+        })
         .setGlobalHelp(R"(Converts scenes of different formats.
 
 If --info is given, the utility will print information about all meshes and
-images present in the file. This option is currently mandatory.
+images present in the file.
 
-The -i / --importer-options argument accepts a comma-separated list of
-key/value pairs to set in the importer plugin configuration. If the = character
-is omitted, it's equivalent to saying key=true.)")
+The -i / --importer-options and -c / --converter-options arguments accept a
+comma-separated list of key/value pairs to set in the importer / converter
+plugin configuration. If the = character is omitted, it's equivalent to saying
+key=true.)")
         .parse(argc, argv);
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
@@ -282,6 +301,42 @@ is omitted, it's equivalent to saying key=true.)")
         return error ? 1 : 0;
     }
 
-    Error{} << "Sorry, only the --info option is currently implemented";
-    return 6;
+    Containers::Optional<Trade::MeshData> mesh;
+    {
+        Duration d{importTime};
+        if(!importer->meshCount() || !(mesh = importer->mesh(0))) {
+            Error{} << "Cannot import mesh 0";
+            return 4;
+        }
+    }
+
+    /* Load converter plugin */
+    PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
+    Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    if(!converter) {
+        Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+        return 2;
+    }
+
+    /* Set options, if passed */
+    if(args.isSet("verbose")) converter->setFlags(Trade::SceneConverterFlag::Verbose);
+    Trade::Implementation::setOptions(*converter, args.value("converter-options"));
+
+    std::chrono::high_resolution_clock::duration conversionTime;
+
+    /* Save output file */
+    {
+        Duration d{conversionTime};
+        if(!converter->convertToFile(args.value("output"), *mesh)) {
+            Error{} << "Cannot save file" << args.value("output");
+            return 5;
+        }
+    }
+
+    if(args.isSet("profile")) {
+        Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds, conversion"
+            << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(conversionTime).count())/1.0e3f << "seconds";
+    }
 }
