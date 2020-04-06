@@ -50,6 +50,25 @@ matrix:
   - language: cpp
     os: linux
     dist: xenial
+    compiler: clang
+    env:
+    - JOBID=linux-threadsanitizer
+    - TARGET=desktop-sanitizers
+    - CMAKE_CXX_FLAGS=-fsanitize=thread
+    addons:
+      apt:
+        sources:
+        - llvm-toolchain-xenial
+        packages:
+        - libgl1-mesa-dev
+        - ninja-build
+        - clang-3.8
+        - libsdl2-dev
+        - libglfw3-dev
+        - libopenal-dev
+  - language: cpp
+    os: linux
+    dist: xenial
     compiler: gcc
     env:
     - JOBID=linux-vulkan
