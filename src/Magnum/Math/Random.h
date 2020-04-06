@@ -11,7 +11,6 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Functions.h"
-#include <iostream>
 
 namespace Magnum
 {
