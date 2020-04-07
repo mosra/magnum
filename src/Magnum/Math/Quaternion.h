@@ -57,13 +57,6 @@ template<class T> inline T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
     return dot(a.vector(), b.vector()) + a.scalar()*b.scalar();
 }
 
-namespace Implementation {
-    /* Used in angle() and slerp() (no assertions) */
-    template<class T> inline T angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-        return std::acos(dot(normalizedA, normalizedB));
-    }
-}
-
 /** @relatesalso Quaternion
 @brief Angle between normalized quaternions
 
@@ -77,7 +70,7 @@ Expects that both quaternions are normalized. @f[
 template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
-    return Rad<T>{Implementation::angle(normalizedA, normalizedB)};
+    return Rad<T>{std::acos(dot(normalizedA, normalizedB))};
 }
 
 /** @relatesalso Quaternion
