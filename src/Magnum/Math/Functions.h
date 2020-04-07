@@ -318,9 +318,8 @@ set to @p max. Equivalent to:
 <em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref max()
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type clamp(T value, T min, T max) {
-    return Math::min(Math::max(value, min), max);
-}
+/* defined in Vector.h */
+template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type clamp(T value, T min, T max);
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<size, T>& value, const Vector<size, T>& min, const Vector<size, T>& max) {

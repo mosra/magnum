@@ -56,6 +56,9 @@ template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type max(T value, T max) {
     return value < max ? max : value;
 }
+template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type clamp(T value, T min, T max) {
+    return Math::min(Math::max(value, min), max);
+}
 #endif
 
 namespace Implementation {
