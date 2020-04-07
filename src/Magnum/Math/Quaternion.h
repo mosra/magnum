@@ -61,7 +61,7 @@ template<class T> inline T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
 @brief Angle between normalized quaternions
 
 Expects that both quaternions are normalized. @f[
-     \theta = \arccos \left( \frac{p \cdot q}{|p| |q|} \right) = \arccos(p \cdot q)
+    \theta = \arccos \left( \frac{p \cdot q}{|p| |q|} \right) = \arccos(p \cdot q)
 @f]
 
 To avoid numerical issues when two complex numbers are very close to each
