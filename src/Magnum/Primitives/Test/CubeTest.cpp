@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Trade/MeshData.h"
@@ -37,12 +38,14 @@ struct CubeTest: TestSuite::Tester {
 
     void solid();
     void solidStrip();
+    void solidStripGlsl();
     void wireframe();
 };
 
 CubeTest::CubeTest() {
     addTests({&CubeTest::solid,
               &CubeTest::solidStrip,
+              &CubeTest::solidStripGlsl,
               &CubeTest::wireframe});
 }
 
@@ -70,6 +73,25 @@ void CubeTest::solidStrip() {
     CORRADE_COMPARE(cube.attributeCount(), 1);
     CORRADE_COMPARE(cube.attribute<Vector3>(Trade::MeshAttribute::Position)[4],
         (Vector3{-1.0f, -1.0f, -1.0f}));
+}
+
+void CubeTest::solidStripGlsl() {
+    Trade::MeshData cube = Primitives::cubeSolidStrip();
+
+    /* Yes, really. */
+    auto solidStripVertex = [](UnsignedInt gl_VertexID) {
+        typedef Vector3 vec3;
+        #define mix Math::lerp
+        #include "data.glsl"
+        #undef mix
+        return corner;
+    };
+
+    auto vertices = cube.attribute<Vector3>(Trade::MeshAttribute::Position);
+    for(UnsignedInt i = 0; i != cube.vertexCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(solidStripVertex(i), vertices[i]);
+    }
 }
 
 void CubeTest::wireframe() {

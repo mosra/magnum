@@ -56,7 +56,11 @@ with @ref VertexFormat::Vector3 positions. The returned instance references
 data stored in constant memory. No normals or anything else --- use
 @ref cubeSolid() instead if you need these.
 
-@image html primitives-cubesolid.png width=256px
+Vertex positions of this mesh can be also generated directly in the vertex
+shader using @glsl gl_VertexID @ce ([source](https://twitter.com/turanszkij/status/1141638406956617730),
+adapted to exactly match the output of this function):
+
+@snippet Magnum/Primitives/Test/data.glsl cubeSolidStrip
 
 @see @ref cubeWireframe(), @ref MeshTools::generateTriangleStripIndices()
 */
