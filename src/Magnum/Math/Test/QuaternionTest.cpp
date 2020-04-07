@@ -110,6 +110,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void slerpLinearFallback();
     template<class T> void slerpLinearFallbackIsNormalized();
     void slerp2D();
+    void slerpNormalizedButOver1();
     void slerpNotNormalized();
     void slerpShortestPath();
     void slerpShortestPathLinearFallback();
@@ -193,6 +194,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::slerpLinearFallbackIsNormalized<Float>,
               &QuaternionTest::slerpLinearFallbackIsNormalized<Double>,
               &QuaternionTest::slerp2D,
+              &QuaternionTest::slerpNormalizedButOver1,
               &QuaternionTest::slerpNotNormalized,
               &QuaternionTest::slerpShortestPath,
               &QuaternionTest::slerpShortestPathLinearFallback,
@@ -745,6 +747,21 @@ void QuaternionTest::slerp2D() {
     CORRADE_VERIFY(slerp.isNormalized());
     CORRADE_COMPARE(slerp.angle(), 29.7_degf); /* 15 + (57-15)*0.35 */
     CORRADE_COMPARE(slerp, (Quaternion{{0.0f, 0.0f, 0.256289f}, 0.9666f}));
+}
+
+void QuaternionTest::slerpNormalizedButOver1() {
+    /* This quaternion *is* normalized, but its length is larger than 1, which
+       would cause acos() to return a NaN. Ensure it's clamped to correct range
+       before passing it there. */
+    Quaternion a{{1.0f + Math::TypeTraits<Float>::epsilon()/2,  0.0f, 0.0f}, 0.0f};
+
+    /* Returning the same */
+    CORRADE_COMPARE(Math::slerp(a, a, 0.25f), a);
+
+    /* Returning the second when negated */
+    CORRADE_COMPARE(Math::slerp(a, -a, 0.0f), -a);
+    CORRADE_COMPARE(Math::slerp(a, -a, 0.5f), -a);
+    CORRADE_COMPARE(Math::slerp(a, -a, 1.0f), -a);
 }
 
 void QuaternionTest::slerpNotNormalized() {
