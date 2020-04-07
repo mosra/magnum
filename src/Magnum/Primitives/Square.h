@@ -76,10 +76,10 @@ enum class CORRADE_DEPRECATED_ENUM("use SquareFlags instead") SquareTextureCoord
 @param flags        Flags
 @m_since_latest
 
-2x2 square. Non-indexed @ref MeshPrimitive::TriangleStrip with interleaved
-@ref VertexFormat::Vector2 positions and optional @ref VertexFormat::Vector2
-texture coordinates. The returned instance references data stored in constant
-memory.
+2x2 square, centered at origin. Non-indexed @ref MeshPrimitive::TriangleStrip
+with interleaved @ref VertexFormat::Vector2 positions and optional
+@ref VertexFormat::Vector2 texture coordinates. The returned instance
+references data stored in constant memory.
 
 @image html primitives-squaresolid.png width=256px
 
@@ -101,7 +101,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 /**
 @brief Wireframe 2D square
 
-2x2 square. Non-indexed @ref MeshPrimitive::LineLoop with
+2x2 square, centered at origin. Non-indexed @ref MeshPrimitive::LineLoop with
 @ref VertexFormat::Vector2 positions. The returned instance references data
 stored in constant memory.
 

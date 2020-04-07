@@ -38,11 +38,11 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D square with a gradient
 
-2x2 square with vertex colors. Non-indexed @ref MeshPrimitive::TriangleStrip
-with interleaved @ref VertexFormat::Vector2 positions and
-@ref VertexFormat::Vector4 colors. Vertex colors correspond to the gradient
-defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
-@p colorB.
+2x2 square with vertex colors, centered at origin. Non-indexed
+@ref MeshPrimitive::TriangleStrip with interleaved @ref VertexFormat::Vector2
+positions and @ref VertexFormat::Vector4 colors. Vertex colors correspond to
+the gradient defined by the endpoints @p a and @p b, linearly interpolated from
+@p colorA to @p colorB.
 
 @image html primitives-gradient2d.png width=256px
 
@@ -80,9 +80,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData gradient2DVertical(const Color4& colorB
 /**
 @brief 3D plane with a gradient
 
-2x2 plane with vertex colors. Non-indexed @ref MeshPrimitive::TriangleStrip on
-the XY plane with interleaved @ref VertexFormat::Vector3 positions,
-@ref VertexFormat::Vector3 normals in positive Z direction and
+2x2 square on the XY plane with vertex colors, centered at origin. Non-indexed
+@ref MeshPrimitive::TriangleStrip with interleaved @ref VertexFormat::Vector3
+positions, @ref VertexFormat::Vector3 normals in positive Z direction and
 @ref VertexFormat::Vector4 colors. Vertex colors correspond to the gradient
 defined by the endpoints @p a and @p b, linearly interpolated from @p colorA to
 @p colorB.

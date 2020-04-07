@@ -88,13 +88,13 @@ CORRADE_ENUMSET_OPERATORS(ConeFlags)
 @param halfLength   Half the cone length
 @param flags        Flags
 
-Cone along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
-@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals, optional
-@ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
-texture coordinates. Note that in order to have properly smooth normals over
-the whole area, the tip consists of @cpp segments*2 @ce vertices instead of
-just one.
+Cone of radius @cpp 1.0f @ce along the Y axis, centered at origin.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3
+normals, optional @ref VertexFormat::Vector4 tangents and optional
+@ref VertexFormat::Vector2 texture coordinates. Note that in order to have
+properly smooth normals over the whole area, the tip consists of
+@cpp segments*2 @ce vertices instead of just one.
 
 @image html primitives-conesolid.png width=256px
 
@@ -112,9 +112,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData coneSolid(UnsignedInt rings, UnsignedIn
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cone length
 
-Cone along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
-@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
-positions.
+Cone of radius @cpp 1.0f @ce along the Y axis, centered at origin.
+@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedInt indices and
+@ref VertexFormat::Vector3 positions.
 
 @image html primitives-conewireframe.png width=256px
 

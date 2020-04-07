@@ -87,10 +87,10 @@ CORRADE_ENUMSET_OPERATORS(CylinderFlags)
 @param halfLength   Half the cylinder length
 @param flags        Flags
 
-Cylinder along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles
-with @ref MeshIndexType::UnsignedInt indices, interleaved
-@ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3 normals,
-optional @ref VertexFormat::Vector4 tangents, optional
+Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3
+normals, optional @ref VertexFormat::Vector4 tangents, optional
 @ref VertexFormat::Vector2 texture coordinates and optional capped ends. If
 texture coordinates are generated, vertices of one segment are duplicated for
 texture wrapping.
@@ -113,9 +113,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData cylinderSolid(UnsignedInt rings, Unsign
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength   Half the cylinder length
 
-Cylinder along Y axis of radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
-@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
-positions.
+Cylinder of radius @cpp 1.0f @ce along the Y axis, centerd at origin.
+@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedInt indices and
+@ref VertexFormat::Vector3 positions.
 
 @image html primitives-cylinderwireframe.png width=256px
 

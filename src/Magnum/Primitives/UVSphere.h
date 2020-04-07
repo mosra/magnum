@@ -74,12 +74,12 @@ CORRADE_ENUMSET_OPERATORS(UVSphereFlags)
 @param flags            Flags
 @m_since_latest
 
-Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
-@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals, optional
-@ref VertexFormat::Vector4 tangents and @ref VertexFormat::Vector2 texture
-coordinates. If texture coordinates are generated, vertices of one segment are
-duplicated for texture wrapping.
+Sphere of radius @cpp 1.0f @ce, centered at origin.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3
+normals, optional @ref VertexFormat::Vector4 tangents and
+@ref VertexFormat::Vector2 texture coordinates. If texture coordinates are
+generated, vertices of one segment are duplicated for texture wrapping.
 
 @image html primitives-uvspheresolid.png width=256px
 
@@ -114,8 +114,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 @param segments         Number of (line) segments. Must be larger or equal to
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 
-Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Lines with
-@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+Sphere of radius @cpp 1.0f @ce, centered at origin. @ref MeshPrimitive::Lines
+with @ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
 positions.
 
 @image html primitives-uvspherewireframe.png width=256px

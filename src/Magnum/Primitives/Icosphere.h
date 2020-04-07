@@ -38,9 +38,10 @@ namespace Magnum { namespace Primitives {
 @brief Solid 3D icosphere
 @param subdivisions      Number of subdivisions
 
-Sphere with radius @cpp 1.0f @ce. @ref MeshPrimitive::Triangles with
-@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
-positions and @ref VertexFormat::Vector3 normals.
+Sphere of radius @cpp 1.0f @ce, centered at origin.
+@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3
+normals.
 
 @image html primitives-icospheresolid.png width=256px
 

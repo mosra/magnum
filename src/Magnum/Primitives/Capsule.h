@@ -45,9 +45,10 @@ namespace Magnum { namespace Primitives {
     equal to @cpp 1 @ce.
 @param halfLength    Half the length of cylinder part
 
-Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
-@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedInt indices and
-@ref VertexFormat::Vector2 positions.
+Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
+hemispheres instead of caps. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector2
+positions.
 
 @image html primitives-capsule2dwireframe.png width=256px
 
@@ -96,12 +97,13 @@ CORRADE_ENUMSET_OPERATORS(CapsuleFlags)
 @param flags            Flags
 @m_since_latest
 
-Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
-@ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
-interleaved @ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3
-normals, optional @ref VertexFormat::Vector4 tangents and optional
-@ref VertexFormat::Vector2 texture coordinates. If texture coordinates are
-generated, vertices of one segment are duplicated for texture wrapping.
+Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
+hemispheres instead of caps. @ref MeshPrimitive::Triangles with
+@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3
+positions, @ref VertexFormat::Vector3 normals, optional
+@ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
+texture coordinates. If texture coordinates are generated, vertices of one
+segment are duplicated for texture wrapping.
 
 @image html primitives-capsule3dsolid.png width=256px
 
@@ -143,9 +145,10 @@ CORRADE_IGNORE_DEPRECATED_POP
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 @param halfLength       Half the length of cylinder part
 
-Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
-@ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedInt indices and
-@ref VertexFormat::Vector3 positions.
+Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
+hemispheres instead of caps. @ref MeshPrimitive::Lines with
+@ref MeshIndexType::UnsignedInt indices and @ref VertexFormat::Vector3
+positions.
 
 @image html primitives-capsule3dwireframe.png width=256px
 

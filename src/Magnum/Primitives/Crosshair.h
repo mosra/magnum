@@ -37,9 +37,9 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D crosshair
 
-2x2 crosshair (two crossed lines). Non-indexed @ref MeshPrimitive::Lines with
-@ref VertexFormat::Vector2 positions. The returned instance references data
-stored in constant memory.
+2x2 crosshair (two crossed lines), centered at origin. Non-indexed
+@ref MeshPrimitive::Lines with @ref VertexFormat::Vector2 positions. The
+returned instance references data astored in constant memory.
 
 @image html primitives-crosshair2d.png width=256px
 
@@ -50,9 +50,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData crosshair2D();
 /**
 @brief 3D crosshair
 
-2x2x2 crosshair (three crossed lines). Non-indexed @ref MeshPrimitive::Lines
-with @ref VertexFormat::Vector3 positions. The returned instance references
-data stored in constant memory.
+2x2x2 crosshair (three crossed lines), centered at origin. Non-indexed
+@ref MeshPrimitive::Lines with @ref VertexFormat::Vector3 positions. The
+returned instance references data stored in constant memory.
 
 @image html primitives-crosshair3d.png width=256px
 

@@ -75,9 +75,10 @@ enum class CORRADE_DEPRECATED_ENUM("use Circle2DFlags or Circle3DFlags instead")
 @param flags        Flags
 @m_since_latest
 
-Circle with radius @cpp 1.0f @ce. @ref MeshPrimitive::TriangleFan with
-@ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector2
-positions and optional @ref VertexFormat::Vector2 texture coordinates.
+Circle with radius @cpp 1.0f @ce, centered at origin.
+@ref MeshPrimitive::TriangleFan with @ref MeshIndexType::UnsignedInt indices,
+interleaved @ref VertexFormat::Vector2 positions and optional
+@ref VertexFormat::Vector2 texture coordinates.
 
 @image html primitives-circle2dsolid.png width=256px
 
@@ -102,8 +103,8 @@ CORRADE_IGNORE_DEPRECATED_POP
 @param segments         Number of segments. Must be greater or equal to
     @cpp 3 @ce.
 
-Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop with
-@ref VertexFormat::Vector2 positions.
+Circle with radius @cpp 1.0f @ce, centered at origin. Non-indexed
+@ref MeshPrimitive::LineLoop with @ref VertexFormat::Vector2 positions.
 
 @image html primitives-circle2dwireframe.png width=256px
 
@@ -146,11 +147,11 @@ CORRADE_ENUMSET_OPERATORS(Circle3DFlags)
 @param flags        Flags
 @m_since_latest
 
-Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
-@ref MeshPrimitive::TriangleFan with interleaved @ref VertexFormat::Vector3
-positions, @ref VertexFormat::Vector3 normals in positive Z direction, optional
-@ref VertexFormat::Vector4 tangents and optional @ref VertexFormat::Vector2
-texture coordinates.
+Circle on the XY plane with radius @cpp 1.0f @ce, centered at origin.
+Non-indexed @ref MeshPrimitive::TriangleFan with interleaved
+@ref VertexFormat::Vector3 positions, @ref VertexFormat::Vector3 normals in
+positive Z direction, optional @ref VertexFormat::Vector4 tangents and optional
+@ref VertexFormat::Vector2 texture coordinates.
 
 @image html primitives-circle3dsolid.png width=256px
 
@@ -174,7 +175,9 @@ CORRADE_IGNORE_DEPRECATED_POP
 @brief Wireframe 3D circle
 @param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
-Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop with @ref VertexFormat::Vector2 positions.
+Circle on the XY plane with radius @cpp 1.0f @ce, centered at origin.
+Non-indexed @ref MeshPrimitive::LineLoop with @ref VertexFormat::Vector2
+positions.
 
 @image html primitives-circle3dwireframe.png width=256px
 
