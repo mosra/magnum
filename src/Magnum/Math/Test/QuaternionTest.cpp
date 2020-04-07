@@ -491,12 +491,24 @@ void QuaternionTest::rotationNotNormalized() {
 }
 
 void QuaternionTest::angle() {
+    auto a = Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized();
+    auto b = Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized();
+
     /* Verify also that the angle is the same as angle between 4D vectors */
-    Rad angle = Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(),
-                            Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
-    CORRADE_COMPARE(angle, Math::angle(Vector4(1.0f, 2.0f, -3.0f, -4.0f).normalized(),
-                                       Vector4(4.0f, -3.0f, 2.0f, -1.0f).normalized()));
-    CORRADE_COMPARE(angle, Rad(1.704528f));
+    CORRADE_COMPARE(Math::angle(a, b), Math::angle(
+        Vector4{1.0f, 2.0f, -3.0f, -4.0f}.normalized(),
+        Vector4{4.0f, -3.0f, 2.0f, -1.0f}.normalized()));
+    CORRADE_COMPARE(Math::angle(a, b), 1.704528_radf);
+    CORRADE_COMPARE(Math::angle(-a, -b), 1.704528_radf);
+    CORRADE_COMPARE(Math::angle(-a, b), Rad(180.0_degf) - 1.704528_radf);
+    CORRADE_COMPARE(Math::angle(a, -b), Rad(180.0_degf) - 1.704528_radf);
+
+    /* Same / opposite. Well, almost. It's interesting how imprecise
+       normalization can get. */
+    CORRADE_COMPARE_WITH(Math::angle(a, a), 0.0_radf,
+        Corrade::TestSuite::Compare::around(0.0005_radf));
+    CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
+        Corrade::TestSuite::Compare::around(0.0005_radf));
 }
 
 void QuaternionTest::angleNotNormalized() {

@@ -425,12 +425,21 @@ void ComplexTest::invertedNormalizedNotNormalized() {
 }
 
 void ComplexTest::angle() {
+    auto a = Complex{ 1.5f, -2.0f}.normalized();
+    auto b = Complex{-4.0f,  3.5f}.normalized();
+
     /* Verify also that the angle is the same as angle between 2D vectors */
-    Rad angle = Math::angle(Complex( 1.5f, -2.0f).normalized(),
-                            Complex(-4.0f,  3.5f).normalized());
-    CORRADE_COMPARE(angle, Math::angle(Vector2( 1.5f, -2.0f).normalized(),
-                                       Vector2(-4.0f,  3.5f).normalized()));
-    CORRADE_COMPARE(angle, Rad(2.933128f));
+    CORRADE_COMPARE(Math::angle(a, b), Math::angle(
+        Vector2{ 1.5f, -2.0f}.normalized(),
+        Vector2{-4.0f,  3.5f}.normalized()));
+    CORRADE_COMPARE(Math::angle(a, b), 2.933128_radf);
+    CORRADE_COMPARE(Math::angle(-a, -b), 2.933128_radf);
+    CORRADE_COMPARE(Math::angle(-a, b), Rad(180.0_degf) - 2.933128_radf);
+    CORRADE_COMPARE(Math::angle(a, -b), Rad(180.0_degf) - 2.933128_radf);
+
+    /* Same / opposite */
+    CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
+    CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
 }
 
 void ComplexTest::angleNotNormalized() {

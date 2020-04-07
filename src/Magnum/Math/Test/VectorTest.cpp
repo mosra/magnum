@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Half.h"
@@ -125,6 +126,8 @@ typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Half> Vector4h;
 typedef Vector<4, Int> Vector4i;
+
+using namespace Literals;
 
 VectorTest::VectorTest() {
     addTests({&VectorTest::construct,
@@ -565,9 +568,19 @@ void VectorTest::flipped() {
 }
 
 void VectorTest::angle() {
-    CORRADE_COMPARE(Math::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
-                                Vector3(1.0f, -2.0f, 3.0f).normalized()),
-                    Rad(1.162514f));
+    auto a = Vector3{2.0f,  3.0f, 4.0f}.normalized();
+    auto b = Vector3{1.0f, -2.0f, 3.0f}.normalized();
+    CORRADE_COMPARE(Math::angle(a, b), 1.162514_radf);
+    CORRADE_COMPARE(Math::angle(-a, -b), 1.162514_radf);
+    CORRADE_COMPARE(Math::angle(-a, b), Rad(180.0_degf) - 1.162514_radf);
+    CORRADE_COMPARE(Math::angle(a, -b), Rad(180.0_degf) - 1.162514_radf);
+
+    /* Same / opposite. Well, almost. It's interesting how imprecise
+       normalization can get. */
+    CORRADE_COMPARE_WITH(Math::angle(a, a), 0.0_radf,
+        Corrade::TestSuite::Compare::around(0.0005_radf));
+    CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
+        Corrade::TestSuite::Compare::around(0.0005_radf));
 }
 
 void VectorTest::angleNotNormalized() {
