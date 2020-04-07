@@ -112,6 +112,10 @@ Expects that both vectors are normalized. Enabled only for floating-point
 types. @f[
     \theta = \arccos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = \arccos (\boldsymbol a \cdot \boldsymbol b)
 @f]
+
+To avoid numerical issues when two vectors are very close to each other, the
+dot product is clamped to the @f$ [-1, +1] @f$ range before being passed to
+@f$ \arccos @f$.
 @see @ref Vector::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),
     @ref angle(const Quaternion<T>&, const Quaternion<T>&)
@@ -125,7 +129,7 @@ typename std::enable_if<std::is_floating_point<FloatingPoint>::value, Rad<Floati
 angle(const Vector<size, FloatingPoint>& normalizedA, const Vector<size, FloatingPoint>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): vectors" << normalizedA << "and" << normalizedB << "are not normalized", {});
-    return Rad<FloatingPoint>(std::acos(dot(normalizedA, normalizedB)));
+    return Rad<FloatingPoint>(std::acos(clamp(dot(normalizedA, normalizedB), FloatingPoint(-1), FloatingPoint(1))));
 }
 
 /**

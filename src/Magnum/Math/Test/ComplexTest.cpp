@@ -89,6 +89,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void invertedNormalizedNotNormalized();
 
     void angle();
+    void angleNormalizedButOver1();
     void angleNotNormalized();
     void rotation();
     void matrix();
@@ -142,6 +143,7 @@ ComplexTest::ComplexTest() {
               &ComplexTest::invertedNormalizedNotNormalized,
 
               &ComplexTest::angle,
+              &ComplexTest::angleNormalizedButOver1,
               &ComplexTest::angleNotNormalized,
               &ComplexTest::rotation,
               &ComplexTest::matrix,
@@ -438,6 +440,17 @@ void ComplexTest::angle() {
     CORRADE_COMPARE(Math::angle(a, -b), Rad(180.0_degf) - 2.933128_radf);
 
     /* Same / opposite */
+    CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
+    CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
+}
+
+void ComplexTest::angleNormalizedButOver1() {
+    /* This complex *is* normalized, but its length is larger than 1, which
+       would cause acos() to return a NaN. Ensure it's clamped to correct range
+       before passing it there. */
+    Complex a{1.0f + Math::TypeTraits<Float>::epsilon()/2,  0.0f};
+    CORRADE_VERIFY(a.isNormalized());
+
     CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
     CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
 }

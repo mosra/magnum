@@ -461,6 +461,8 @@ See also:
 -   @ref Shaders::MeshVisualizer3D accidentally didn't enable
     @glsl noperspective @ce interpolation on desktop, resulting in minor
     wireframe rendering artifacts
+-   @ref Math::angle() got fixed to not produce NaN results for vectors,
+    complex numbers or quaternions very close to each other
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

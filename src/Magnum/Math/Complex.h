@@ -67,6 +67,10 @@ template<class T> inline T dot(const Complex<T>& a, const Complex<T>& b) {
 Expects that both complex numbers are normalized. @f[
     \theta = \arccos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = \arccos (a_0 a_1 + b_0 b_1)
 @f]
+
+To avoid numerical issues when two complex numbers are very close to each
+other, the dot product is clamped to the @f$ [-1, +1] @f$ range before being
+passed to @f$ \arccos @f$.
 @see @ref Complex::isNormalized(),
     @ref angle(const Quaternion<T>&, const Quaternion<T>&),
     @ref angle(const Vector<size, FloatingPoint>&, const Vector<size, FloatingPoint>&)
@@ -74,7 +78,7 @@ Expects that both complex numbers are normalized. @f[
 template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
-    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
+    return Rad<T>(std::acos(clamp(dot(normalizedA, normalizedB), T(-1), T(1))));
 }
 
 /**

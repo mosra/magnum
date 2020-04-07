@@ -108,6 +108,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void flipped();
 
     void angle();
+    void angleNormalizedButOver1();
     void angleNotNormalized();
 
     void subclassTypes();
@@ -181,6 +182,7 @@ VectorTest::VectorTest() {
               &VectorTest::flipped,
 
               &VectorTest::angle,
+              &VectorTest::angleNormalizedButOver1,
               &VectorTest::angleNotNormalized,
 
               &VectorTest::subclassTypes,
@@ -581,6 +583,17 @@ void VectorTest::angle() {
         Corrade::TestSuite::Compare::around(0.0005_radf));
     CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
         Corrade::TestSuite::Compare::around(0.0005_radf));
+}
+
+void VectorTest::angleNormalizedButOver1() {
+    /* This vector *is* normalized, but its length is larger than 1, which
+       would cause acos() to return a NaN. Ensure it's clamped to correct range
+       before passing it there. */
+    Vector3 a{1.0f + Math::TypeTraits<Float>::epsilon()/2,  0.0f, 0.0f};
+    CORRADE_VERIFY(a.isNormalized());
+
+    CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
+    CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
 }
 
 void VectorTest::angleNotNormalized() {

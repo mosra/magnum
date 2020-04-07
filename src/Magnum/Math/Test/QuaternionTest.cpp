@@ -94,6 +94,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void rotation();
     void rotationNotNormalized();
     void angle();
+    void angleNormalizedButOver1();
     void angleNotNormalized();
     void matrix();
     void matrixNotOrthogonal();
@@ -175,6 +176,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::rotation,
               &QuaternionTest::rotationNotNormalized,
               &QuaternionTest::angle,
+              &QuaternionTest::angleNormalizedButOver1,
               &QuaternionTest::angleNotNormalized,
               &QuaternionTest::matrix,
               &QuaternionTest::matrixNotOrthogonal,
@@ -509,6 +511,17 @@ void QuaternionTest::angle() {
         Corrade::TestSuite::Compare::around(0.0005_radf));
     CORRADE_COMPARE_WITH(Math::angle(a, -a), 180.0_degf,
         Corrade::TestSuite::Compare::around(0.0005_radf));
+}
+
+void QuaternionTest::angleNormalizedButOver1() {
+    /* This quaternion *is* normalized, but its length is larger than 1, which
+       would cause acos() to return a NaN. Ensure it's clamped to correct range
+       before passing it there. */
+    Quaternion a{{1.0f + Math::TypeTraits<Float>::epsilon()/2,  0.0f, 0.0f}, 0.0f};
+    CORRADE_VERIFY(a.isNormalized());
+
+    CORRADE_COMPARE(Math::angle(a, a), 0.0_radf);
+    CORRADE_COMPARE(Math::angle(a, -a), 180.0_degf);
 }
 
 void QuaternionTest::angleNotNormalized() {
