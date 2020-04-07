@@ -242,7 +242,7 @@ This application library is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is
 enabled when building Magnum. To use this library from CMake, put [FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake)
 into your `modules/` directory, request the `WindowlessWindowsEglApplication`
 component of the `Magnum` package and link to the
-`Magnum::WindowlessGlxApplication` target:
+`Magnum::WindowlessWindowsEglApplication` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED)
