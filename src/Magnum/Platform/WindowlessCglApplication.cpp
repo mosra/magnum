@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessCglContext::WindowlessCglContext(const Configuration&, GLContext*) {
+WindowlessCglContext::WindowlessCglContext(const Configuration & configuration, GLContext*) {
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
@@ -68,7 +68,7 @@ WindowlessCglContext::WindowlessCglContext(const Configuration&, GLContext*) {
         }
     }
 
-    if(CGLCreateContext(_pixelFormat, nullptr, &_context) != kCGLNoError)
+    if(CGLCreateContext(_pixelFormat, configuration.sharedContext(), &_context) != kCGLNoError)
         Error() << "Platform::WindowlessCglContext: cannot create context";
 }
 

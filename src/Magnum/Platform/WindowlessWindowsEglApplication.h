@@ -203,8 +203,31 @@ class WindowlessWindowsEglContext::Configuration {
             return *this;
         }
 
+        /**
+         * @brief Create a shared context
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * When set, the created context will share a subset of OpenGL objects
+         * with @p context, instead of being independent. Many caveats and
+         * limitations apply to shared OpenGL contexts, please consult the
+         * OpenGL specification for details. Default is `EGL_NO_CONTEXT`, i.e.
+         * no sharing.
+         */
+        Configuration& setSharedContext(EGLContext context) {
+            _sharedContext = context;
+            return *this;
+        }
+
+        /**
+         * @brief Shared context
+         * @m_since_latest
+         */
+        EGLContext sharedContext() const { return _sharedContext; }
+
     private:
         Flags _flags;
+        EGLContext _sharedContext = EGL_NO_CONTEXT;
 };
 
 CORRADE_ENUMSET_OPERATORS(WindowlessWindowsEglContext::Configuration::Flags)

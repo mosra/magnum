@@ -142,6 +142,31 @@ class WindowlessCglContext {
 class WindowlessCglContext::Configuration {
     public:
         constexpr /*implicit*/ Configuration() {}
+
+        /**
+         * @brief Create a shared context
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * When set, the created context will share a subset of OpenGL objects
+         * with @p context, instead of being independent. Many caveats and
+         * limitations apply to shared OpenGL contexts, please consult the
+         * OpenGL specification for details. Default is @cpp nullptr @ce, i.e.
+         * no sharing.
+         */
+        Configuration& setSharedContext(CGLContextObj context) {
+            _sharedContext = context;
+            return *this;
+        }
+
+        /**
+         * @brief Shared context
+         * @m_since_latest
+         */
+        CGLContextObj sharedContext() const { return _sharedContext; }
+
+    private:
+        CGLContextObj _sharedContext = nullptr;
 };
 
 /**
