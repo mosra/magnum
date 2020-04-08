@@ -238,8 +238,34 @@ class WindowlessGlxContext::Configuration {
             _flags &= ~flags;
             return *this;
         }
+        
+        /**
+         * @brief Creates an OpenGL shared context with @param ctx instead
+         * of creating a brand new one.
+         */
+        Configuration& setSharedcontext(GLXContext ctx) {
+            _sharedContext = ctx;
+            return *this;
+        }
+        
+        /**
+         * @brief Returns the configuration shared context.
+         * If this has not been specified, (meaning the configuration uses a new opengl context), 
+         * then returns nullptr
+         */
+        GLXContext sharedContext() const {
+            return _sharedContext;
+        }
 
     private:
+        /**
+         * If the @ref Configuration opengl context
+         * is shared with another context, then _sharedContext points to 
+         * this context.
+         * 
+         * Otherwise = nullptr;
+         */
+        GLXContext _sharedContext{nullptr};
         Flags _flags;
 };
 
