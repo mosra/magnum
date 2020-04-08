@@ -273,7 +273,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     }
     #endif
 
-    if(!(_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, attributes))) {
+    if(!(_context = eglCreateContext(_display, config, configuration.sharedContext(), attributes))) {
         Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
         return;
     }
