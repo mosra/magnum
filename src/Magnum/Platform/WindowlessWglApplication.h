@@ -232,9 +232,29 @@ class WindowlessWglContext::Configuration {
             _flags &= ~flags;
             return *this;
         }
+        
+                /**
+         * @brief Creates an OpenGL shared context with @param ctx instead
+         * of creating a brand new one.
+         */
+        Configuration& setSharedcontext(HGLRC ctx) {
+            _sharedContext = ctx;
+            return *this;
+        }
+        
+        /**
+         * @brief Returns the configuration shared context.
+         * If this has not been specified, (meaning the configuration uses a new opengl context), 
+         * then returns nullptr
+         */
+        HGLRC sharedContext() const {
+            return _sharedContext;
+        }
 
     private:
+        HGLRC _sharedContext;
         Flags _flags;
+        
 };
 
 CORRADE_ENUMSET_OPERATORS(WindowlessWglContext::Configuration::Flags)

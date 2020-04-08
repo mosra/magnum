@@ -145,7 +145,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         #endif
         0
     };
-    _context = wglCreateContextAttribsARB(_deviceContext, nullptr, contextAttributes);
+    _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1 if core context creation fails */
@@ -157,7 +157,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
             WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
             0
         };
-        _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
+        _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary
        NVidia/AMD/Intel drivers on Windows. Instead of creating forward-compatible
@@ -196,7 +196,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
                 WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
                 0
             };
-            _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
+            _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
         }
     }
     #endif

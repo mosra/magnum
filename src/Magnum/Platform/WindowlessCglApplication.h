@@ -142,6 +142,28 @@ class WindowlessCglContext {
 class WindowlessCglContext::Configuration {
     public:
         constexpr /*implicit*/ Configuration() {}
+        
+        /**
+         * @brief Creates an OpenGL shared context with @param ctx instead
+         * of creating a brand new one.
+         */
+        Configuration& setSharedcontext(CGLContextObj ctx) {
+            _sharedContext = ctx;
+            return *this;
+        }
+        
+        /**
+         * @brief Returns the configuration shared context.
+         * If this has not been specified, (meaning the configuration uses a new opengl context), 
+         * then returns nullptr
+         */
+        CGLContextObj sharedContext() const {
+            return _sharedContext;
+        }
+        
+private:
+    CGLContextObj _context{};
+    CGLContextObj _sharedContext{};
 };
 
 /**
