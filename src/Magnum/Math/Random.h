@@ -80,48 +80,25 @@ Vector2<T> randomUnitVector2()
 template <class T = Float>
 Vector3<T> randomUnitVector3()
 {
+    // Better to have it "theta" and "z" than three random numbers.
+    // https://mathworld.wolfram.com/SpherePointPicking.html
     auto a = Implementation::RandomGenerator::generate(0.0f, 2 * Math::Constants<T>::pi());
     auto z = randomSignedScalar();
     auto r = sqrt<T>(1 - z * z);
     return {r * std::cos(a), r * std::sin(a), z};
 }
-template <class T = Float>
-Vector2<T> randomPointInACircle() // always length < 1
-{
-    while (true)
-    {
-        auto p = Vector2<T>(
-            randomSignedScalar(), randomSignedScalar());
-        if (p.length() >= 1)
-            continue;
-        return p;
-    }
-}
-
-template <class T = Float>
-Vector3<T> randomPointInASphere() // always length < 1
-{
-
-    while (true)
-    {
-        auto p = Vector3<T>(randomSignedScalar(),
-                            randomSignedScalar(),
-                            randomSignedScalar());
-        if (p.length() >= 1)
-            continue;
-        return p;
-    }
-}
-
-bool randomBool()
-{
-    return static_cast<bool>(randomUnsignedScalar<Int>());
-}
 
 template <class T = Float>
 Quaternion<T> randomRotation()
 {
-    return Quaternion<T>({randomSignedScalar<T>(), randomSignedScalar<T>(), randomSignedScalar<T>()}, randomSignedScalar<T>()).normalized();
+    //http://planning.cs.uiuc.edu/node198.html
+    auto u{randomUnsignedScalar()};
+    auto v{2 * Math::Constants<T>::pi() * randomUnsignedScalar()};
+    auto w{2 * Math::Constants<T>::pi() * randomUnsignedScalar()};
+    return Quaternion<T>({sqrt<T>(1 - u) * std::sin(v),
+                          sqrt<T>(1 - u) * std::cos(v),
+                          sqrt<T>(u) * std::sin(w)},
+                         sqrt<T>(u) * std::cos(w));
 }
 
 } // namespace Random
