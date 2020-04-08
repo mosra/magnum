@@ -183,6 +183,25 @@ class WindowlessEglContext::Configuration {
         #endif
 
         /*implicit*/ Configuration();
+        
+        /**
+         * @brief Creates an OpenGL shared context with @param ctx instead
+         * of creating a brand new one.
+         */
+        Configuration& setSharedcontext(EGLContext ctx) {
+            _sharedContext = ctx;
+            return *this;
+        }
+        
+        /**
+         * @brief Returns the configuration shared context.
+         * If this has not been specified, (meaning the configuration uses a new opengl context), 
+         * then returns nullptr
+         */
+        EGLContext sharedContext() const {
+            return _sharedContext;
+        }      
+        
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -255,28 +274,11 @@ class WindowlessEglContext::Configuration {
             _device = id;
             return *this;
         }
-        /**
-         * @brief Creates an OpenGL shared context with @param ctx instead
-         * of creating a brand new one.
-         */
-        Configuration& setSharedcontext(EGLContext ctx) {
-            _sharedContext = ctx;
-            return *this;
-        }
-        
-        /**
-         * @brief Returns the configuration shared context.
-         * If this has not been specified, (meaning the configuration uses a new opengl context), 
-         * then returns nullptr
-         */
-        EGLContext sharedContext() const {
-            return _sharedContext;
-        }       
         #endif
 
     private:
-        #ifndef MAGNUM_TARGET_WEBGL
         EGLContext _sharedContext{EGL_NO_CONTEXT};
+        #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
         UnsignedInt _device;
         #endif
