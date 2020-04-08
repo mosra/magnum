@@ -40,15 +40,6 @@ namespace Magnum { namespace Platform {
 WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configuration& configuration, GLContext* const magnumContext) {
     _display = XOpenDisplay(nullptr);
 
-    /**
-     * The user can choose to create a windowless application with a dedicated OpenGL context
-     * or give an OpenGL context to create a shared Context instead.
-     * 
-     * Here, we ask the configuration whether a context has been specified by the user 
-     * (!= nullptr) or not.
-     */
-    GLXContext ctx = configuration.sharedContext();
-    
     /* Check version */
     int major, minor;
     glXQueryVersion(_display, &major, &minor);
@@ -103,7 +94,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         #endif
         0
     };
-    _context = glXCreateContextAttribsARB(_display, configs[0], ctx, True, contextAttributes);
+    _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1 if core context creation fails */
@@ -114,7 +105,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
             GLX_CONTEXT_FLAGS_ARB, GLint(flags),
             0
         };
-        _context = glXCreateContextAttribsARB(_display, configs[0], ctx, True, fallbackContextAttributes);
+        _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
        drivers on Linux. Instead of creating forward-compatible context with
@@ -151,7 +142,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
                 GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
                 0
             };
-            _context = glXCreateContextAttribsARB(_display, configs[0], ctx, True, fallbackContextAttributes);
+            _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
         }
 
         /* Revert back the old context */

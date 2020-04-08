@@ -258,13 +258,7 @@ class WindowlessGlxContext::Configuration {
         }
 
     private:
-        /**
-         * If the @ref Configuration opengl context
-         * is shared with another context, then _sharedContext points to 
-         * this context.
-         * 
-         * Otherwise = nullptr;
-         */
+
         GLXContext _sharedContext{nullptr};
         Flags _flags;
 };
