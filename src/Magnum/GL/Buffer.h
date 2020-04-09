@@ -108,7 +108,7 @@ enum class BufferUsage: GLenum {
 
     /**
      * Updated frequently by the application and used frequently for drawing or
-     * copying to other images.
+     * copying to other buffers.
      */
     DynamicDraw = GL_DYNAMIC_DRAW,
 
