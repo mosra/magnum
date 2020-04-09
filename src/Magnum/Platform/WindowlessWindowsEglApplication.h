@@ -119,6 +119,17 @@ class WindowlessWindowsEglContext {
          */
         bool makeCurrent();
 
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call EGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        EGLContext glContext() { return _context; }
+
     private:
         HWND _window{};
         EGLDisplay _display{};
@@ -213,6 +224,8 @@ class WindowlessWindowsEglContext::Configuration {
          * limitations apply to shared OpenGL contexts, please consult the
          * OpenGL specification for details. Default is `EGL_NO_CONTEXT`, i.e.
          * no sharing.
+         * @see @ref WindowlessWindowsEglContext::glContext(),
+         *      @ref WindowlessWindowsEglApplication::glContext()
          */
         Configuration& setSharedContext(EGLContext context) {
             _sharedContext = context;
@@ -377,6 +390,17 @@ class WindowlessWindowsEglApplication {
          * information.
          */
         virtual int exec() = 0;
+
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call EGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        EGLContext glContext() { return _glContext.glContext(); }
 
     protected:
         /* Nobody will need to have (and delete) WindowlessWindowsEglApplication*,

@@ -134,6 +134,17 @@ class WindowlessWglContext {
          */
         bool makeCurrent();
 
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call WGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        HGLRC glContext() { return _context; }
+
     private:
         HWND _window{};
         HDC _deviceContext{};
@@ -243,6 +254,8 @@ class WindowlessWglContext::Configuration {
          * limitations apply to shared OpenGL contexts, please consult the
          * OpenGL specification for details. Default is @cpp nullptr @ce, i.e.
          * no sharing.
+         * @see @ref WindowlessWglContext::glContext(),
+         *      @ref WindowlessWglApplication::glContext()
          */
         Configuration& setSharedContext(HGLRC context) {
             _sharedContext = context;
@@ -407,6 +420,17 @@ class WindowlessWglApplication {
          * information.
          */
         virtual int exec() = 0;
+
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call WGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        HGLRC glContext() { return _glContext.glContext(); }
 
     protected:
         /* Nobody will need to have (and delete) WindowlessWglApplication*,

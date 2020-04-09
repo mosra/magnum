@@ -126,6 +126,17 @@ class WindowlessCglContext {
          */
         bool makeCurrent();
 
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call CGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        CGLContextObj glContext() { return _context; }
+
     private:
         CGLPixelFormatObj _pixelFormat{};
         CGLContextObj _context{};
@@ -153,6 +164,8 @@ class WindowlessCglContext::Configuration {
          * limitations apply to shared OpenGL contexts, please consult the
          * OpenGL specification for details. Default is @cpp nullptr @ce, i.e.
          * no sharing.
+         * @see @ref WindowlessCglContext::glContext(),
+         *      @ref WindowlessCglApplication::glContext()
          */
         Configuration& setSharedContext(CGLContextObj context) {
             _sharedContext = context;
@@ -313,6 +326,17 @@ class WindowlessCglApplication {
          * information.
          */
         virtual int exec() = 0;
+
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call CGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        CGLContextObj glContext() { return _glContext.glContext(); }
 
     protected:
         /* Nobody will need to have (and delete) WindowlessCglApplication*,

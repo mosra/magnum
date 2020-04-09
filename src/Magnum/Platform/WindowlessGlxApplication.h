@@ -140,6 +140,17 @@ class WindowlessGlxContext {
          */
         bool makeCurrent();
 
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call GLX functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        GLXContext glContext() { return _context; }
+
     private:
         Display* _display{};
         GLXPbuffer _pbuffer{};
@@ -249,6 +260,8 @@ class WindowlessGlxContext::Configuration {
          * limitations apply to shared OpenGL contexts, please consult the
          * OpenGL specification for details. Default is @cpp nullptr @ce, i.e.
          * no sharing.
+         * @see @ref WindowlessGlxContext::glContext(),
+         *      @ref WindowlessGlxApplication::glContext()
          */
         Configuration& setSharedContext(GLXContext ctx) {
             _sharedContext = ctx;
@@ -415,6 +428,17 @@ class WindowlessGlxApplication {
          * information.
          */
         virtual int exec() = 0;
+
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call GLX functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         * @see @ref Configuration::setSharedContext()
+         */
+        GLXContext glContext() { return _glContext.glContext(); }
 
     protected:
         /* Nobody will need to have (and delete) WindowlessGlxApplication*,
