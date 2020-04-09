@@ -110,7 +110,8 @@ class AbstractXApplication {
          * @brief Execute main loop
          * @return Value for returning from @cpp main() @ce
          *
-         * See @ref MAGNUM_GLXAPPLICATION_MAIN() or
+         * Calls @ref mainLoopIteration() in a loop until @ref exit() is
+         * called. See @ref MAGNUM_GLXAPPLICATION_MAIN() or
          * @ref MAGNUM_XEGLAPPLICATION_MAIN() for usage information.
          */
         int exec();
@@ -124,7 +125,8 @@ class AbstractXApplication {
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
          * yourself from your own `main()` function instead of it being called
-         * automatically from @ref exec().
+         * automatically from @ref exec() / @ref MAGNUM_GLXAPPLICATION_MAIN()
+         * / @ref MAGNUM_XEGLAPPLICATION_MAIN().
          */
         bool mainLoopIteration();
 
