@@ -720,14 +720,14 @@ void GlfwApplication::setSwapInterval(const Int interval) {
 void GlfwApplication::redraw() { _flags |= Flag::Redraw; }
 
 int GlfwApplication::exec() {
-    CORRADE_ASSERT(_window, "Platform::GlfwApplication::exec(): no window opened", {});
-
     while(mainLoopIteration()) {}
 
     return _exitCode;
 }
 
 bool GlfwApplication::mainLoopIteration() {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::mainLoopIteration(): no window opened", {});
+
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
