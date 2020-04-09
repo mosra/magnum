@@ -49,6 +49,13 @@ struct GlfwApplicationTest: Platform::Application {
             << event.dpiScaling();
     }
 
+    void exitEvent(ExitEvent& event) override {
+        Debug{} << "application exiting";
+        event.setAccepted(); /* Comment-out to test app exit suppression */
+    }
+
+    void drawEvent() override {}
+
     void keyPressEvent(KeyEvent& event) override {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         Debug{} << "key press event:" << int(event.key()) << event.keyName();
@@ -89,13 +96,6 @@ struct GlfwApplicationTest: Platform::Application {
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
     }
-
-    void exitEvent(ExitEvent& event) override {
-        Debug{} << "application exiting";
-        event.setAccepted(); /* Comment-out to test app exit suppression */
-    }
-
-    void drawEvent() override {}
 };
 
 GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
