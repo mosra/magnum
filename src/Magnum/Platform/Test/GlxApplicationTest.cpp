@@ -29,7 +29,11 @@ namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlxApplicationTest: Platform::Application {
     explicit GlxApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
-    void drawEvent() override {}
+
+    void drawEvent() override {
+        Debug{} << "draw event";
+        swapBuffers();
+    }
 };
 
 }}}}

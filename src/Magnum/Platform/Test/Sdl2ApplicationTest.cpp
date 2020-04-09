@@ -57,8 +57,6 @@ struct Sdl2ApplicationTest: Platform::Application {
         event.setAccepted(); /* Comment-out to test app exit suppression */
     }
 
-    void drawEvent() override {}
-
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
         Debug{} << "viewport event" << event.windowSize()
@@ -66,6 +64,11 @@ struct Sdl2ApplicationTest: Platform::Application {
             << event.framebufferSize()
             #endif
             << event.dpiScaling();
+    }
+
+    void drawEvent() override {
+        Debug{} << "draw event";
+        swapBuffers();
     }
 
     /* For testing event coordinates */

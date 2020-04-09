@@ -54,7 +54,10 @@ struct GlfwApplicationTest: Platform::Application {
         event.setAccepted(); /* Comment-out to test app exit suppression */
     }
 
-    void drawEvent() override {}
+    void drawEvent() override {
+        Debug{} << "draw event";
+        swapBuffers();
+    }
 
     void keyPressEvent(KeyEvent& event) override {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
