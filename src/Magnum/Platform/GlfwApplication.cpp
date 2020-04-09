@@ -58,18 +58,6 @@ enum class GlfwApplication::Flag: UnsignedByte {
     TextInputActive = 1 << 1,
     #ifdef CORRADE_TARGET_APPLE
     HiDpiWarningPrinted = 1 << 2
-    #elif defined(CORRADE_TARGET_WINDOWS)
-    /* On Windows, GLFW fires a viewport event already when creating the
-       window, which means viewportEvent() gets called even before the
-       constructor exits. That's not a problem if the window is created
-       implicitly (because derived class vtable is not setup yet and so the
-       call goes into the base class no-op viewportEvent()), but when calling
-       create() / tryCreate() from user constructor, this might lead to crashes
-       as things touched by viewportEvent() might not be initialized yet. To
-       fix this, we ignore the first ever viewport event. This behavior was not
-       observed on Linux or macOS (and thus ignoring the first viewport event
-       there may be harmful), so keeping this Windows-only. */
-    FirstViewportEventIgnored = 1 << 2
     #endif
 };
 
@@ -370,9 +358,6 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    /* Set callbacks */
-    setupCallbacks();
-
     return true;
 }
 
@@ -561,9 +546,6 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    /* Set callbacks */
-    setupCallbacks();
-
     /* Make the final context current */
     glfwMakeContextCurrent(_window);
 
@@ -600,13 +582,6 @@ void GlfwApplication::setupCallbacks() {
     #endif
     (_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        #ifdef CORRADE_TARGET_WINDOWS
-        /* See the flag for details */
-        if(!(app._flags & Flag::FirstViewportEventIgnored)) {
-            app._flags |= Flag::FirstViewportEventIgnored;
-            return;
-        }
-        #endif
         #ifdef MAGNUM_TARGET_GL
         ViewportEvent e{app.windowSize(), {w, h}, app.dpiScaling()};
         #else
@@ -727,6 +702,31 @@ int GlfwApplication::exec() {
 
 bool GlfwApplication::mainLoopIteration() {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::mainLoopIteration(): no window opened", {});
+
+    /*
+        If callbacks are not set up yet, do that. Can't be done inside
+        tryCreate() because:
+
+        1.  On Windows, GLFW fires a viewport event already when creating the
+            window, which means viewportEvent() gets called even before the
+            constructor exits. That's not a problem if the window is created
+            implicitly (because derived class vtable is not setup yet and so
+            the call goes into the base class no-op viewportEvent()), but when
+            calling create() / tryCreate() from user constructor, this might
+            lead to crashes as things touched by viewportEvent() might not be
+            initialized yet. To fix this, we ignore the first ever viewport
+            event. This behavior was not observed on Linux or macOS (and thus
+            ignoring the first viewport event there may be harmful), so keeping
+            this Windows-only.
+        2.  On macOS, GLFW might sometimes (hard to reproduce) trigger a draw
+            event when creating the window. That's even worse than on Windows
+            because this leads to pure virtual drawEvent() getting called and
+            the application aborting due to a pure virtual method call in case
+            GL context is created implicitly by the base class constructor (at
+            which point the vtable pointers for the derived class are not set
+            up yet).
+    */
+    if(glfwGetWindowUserPointer(_window) != this) setupCallbacks();
 
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;

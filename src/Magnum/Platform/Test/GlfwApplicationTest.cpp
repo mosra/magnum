@@ -108,10 +108,6 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
-    /* Creating the window in the constructor exhibits a Windows-specific GLFW
-       issue where viewportEvent() gets called even before constructor exits;
-       it's now worked around but the same problem might start occuring on
-       other platforms as well in the future */
     create(conf);
 
     /* For testing resize events */
