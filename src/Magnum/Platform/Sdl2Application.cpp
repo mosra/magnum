@@ -813,6 +813,12 @@ void Sdl2Application::exit(const int exitCode) {
 
 bool Sdl2Application::mainLoopIteration() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
+    #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
     #endif
 
