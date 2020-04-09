@@ -18,10 +18,11 @@ struct RandomTest : Corrade::TestSuite::Tester
 {
     explicit RandomTest();
 
-    void signedScalar();
+    void randScalar();
     void unitVector2();
     void unitVector3();
     void randomRotation();
+    void randomDiceChiSquare();
 };
 
 typedef Vector<2, Float> Vector2;
@@ -31,32 +32,62 @@ typedef Math::Constants<Float> Constants;
 RandomTest::RandomTest()
 {
     Corrade::TestSuite::Tester::addRepeatedTests(
-        {&RandomTest::signedScalar,
+        {&RandomTest::randScalar,
          &RandomTest::unitVector2,
          &RandomTest::unitVector3,
          &RandomTest::randomRotation},
-        /*repeat number*/200);
+        /*repeat number*/ 200);
+    Corrade::TestSuite::Tester::addTests(
+        {&RandomTest::randomDiceChiSquare});
 }
 
-void RandomTest::signedScalar()
+void RandomTest::randScalar()
 {
-        CORRADE_COMPARE_AS(Math::Random::randomSignedScalar<Float>(), 1.0f, Corrade::TestSuite::Compare::LessOrEqual);
-        CORRADE_COMPARE_AS(Math::Random::randomSignedScalar<Float>(), -1.0f, Corrade::TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(-1.0, 1.0), 1.0f, Corrade::TestSuite::Compare::LessOrEqual);
+    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(-1.0, 1.0), -1.0f, Corrade::TestSuite::Compare::GreaterOrEqual);
 }
 
 void RandomTest::unitVector2()
 {
-        CORRADE_COMPARE((Math::Random::randomUnitVector2()).length(), 1.0f);
+    CORRADE_COMPARE((Math::Random::randomUnitVector2()).length(), 1.0f);
 }
 void RandomTest::unitVector3()
 {
-        CORRADE_COMPARE((Math::Random::randomUnitVector3()).length(), 1.0f);
+    CORRADE_COMPARE((Math::Random::randomUnitVector3()).length(), 1.0f);
 }
 
 void RandomTest::randomRotation()
 {
-        CORRADE_COMPARE(Math::Random::randomRotation().length(), 1.0f);
+    CORRADE_COMPARE(Math::Random::randomRotation().length(), 1.0f);
 }
+
+void RandomTest::randomDiceChiSquare()
+{
+    // A step by step explanation
+    // https://rpg.stackexchange.com/questions/70802/how-can-i-test-whether-a-die-is-fair
+    
+    int error_count = 0; // We have 1 chance to over shoot. Thats why no repeated test.
+
+    const Int dice_side = 20;
+    const Int expected = 10000;
+    const Float thresholdfor100 = 36.191;
+
+    for (auto i = 0; i < 100; i++)
+    {
+
+        std::vector<Int> faces(dice_side, 0);
+        for (std::size_t i = 0; i < expected * dice_side; i++)
+            faces[Math::Random::randomScalar<Int>(0, dice_side - 1)]++;
+        std::vector<Int> residual(dice_side, 0);
+        for (std::size_t i = 0; i < dice_side; i++)
+            residual[i] = Float(pow((faces[i] - expected), 2)) / expected;
+        Float chi_square = std::accumulate(residual.begin(), residual.end(), 0.0);
+        if (chi_square > thresholdfor100)
+            error_count++;
+    }
+    CORRADE_COMPARE_AS(error_count, 2, Corrade::TestSuite::Compare::Less);
+}
+
 } // namespace
 } // namespace Test
 } // namespace Math
