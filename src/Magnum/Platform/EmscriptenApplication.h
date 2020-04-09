@@ -347,10 +347,21 @@ class EmscriptenApplication {
 
         /**
          * @brief Exit application main loop
+         * @param exitCode  Ignored, present only for API compatibility with
+         *      other app implementations.
          *
-         * Stops execution started by @ref exec(). The @p exitCode is ignored
-         * and present only for API compatibility with other app
-         * implementations.
+         * When called from application constructor, it will cause the
+         * application to exit immediately after constructor ends, without any
+         * events being processed. Calling this function is recommended over
+         * @ref std::exit() or @ref Corrade::Utility::Fatal "Fatal", which exit
+         * immediately and without calling destructors on local scope. Note
+         * that, however, you need to explicitly @cpp return @ce after calling
+         * it, as it can't exit the constructor on its own:
+         *
+         * @snippet MagnumPlatform.cpp exit-from-constructor
+         *
+         * When called from the main loop, the application exits cleanly
+         * before next main loop iteration is executed.
          */
         void exit(int exitCode = 0);
 

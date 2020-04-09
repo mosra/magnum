@@ -23,18 +23,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
+
 #include "Magnum/Platform/GlxApplication.h"
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlxApplicationTest: Platform::Application {
-    explicit GlxApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
+    explicit GlxApplicationTest(const Arguments& arguments);
 
     void drawEvent() override {
         Debug{} << "draw event";
         swapBuffers();
     }
 };
+
+GlxApplicationTest::GlxApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    Utility::Arguments args;
+    args.addSkippedPrefix("magnum", "engine-specific options")
+        .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        .parse(arguments.argc, arguments.argv);
+
+    if(args.isSet("exit-immediately")) {
+        exit();
+        return;
+    }
+
+    create(Configuration{});
+}
 
 }}}}
 

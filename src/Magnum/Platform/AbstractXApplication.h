@@ -131,8 +131,21 @@ class AbstractXApplication {
         bool mainLoopIteration();
 
         /**
-         * @brief Exit application main loop
+         * @brief Exit application
          * @param exitCode  The exit code the application should return
+         *
+         * When called from application constructor, it will cause the
+         * application to exit immediately after constructor ends, without any
+         * events being processed. Calling this function is recommended over
+         * @ref std::exit() or @ref Corrade::Utility::Fatal "Fatal", which exit
+         * without calling destructors on local scope. Note that, however, you
+         * need to explicitly @cpp return @ce after calling it, as it can't
+         * exit the constructor on its own:
+         *
+         * @snippet MagnumPlatform.cpp exit-from-constructor
+         *
+         * When called from the main loop, the application exits cleanly
+         * before next main loop iteration is executed.
          */
         void exit(int exitCode = 0) {
             _flags |= Flag::Exit;

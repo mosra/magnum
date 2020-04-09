@@ -812,6 +812,10 @@ void Sdl2Application::exit(const int exitCode) {
 }
 
 bool Sdl2Application::mainLoopIteration() {
+    /* If exit was requested directly in the constructor, exit immediately
+       without calling anything else */
+    if(_flags & Flag::Exit) return false;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::mainLoopIteration(): no window opened", {});
     #else

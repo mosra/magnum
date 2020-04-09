@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Platform/EmscriptenApplication.h"
@@ -35,22 +36,7 @@ namespace Magnum { namespace Platform { namespace Test {
 
 struct EmscriptenApplicationTest: Platform::Application {
     /* For testing resize events */
-    explicit EmscriptenApplicationTest(const Arguments& arguments):
-        Platform::Application{arguments,
-            Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)
-            //, GLConfiguration{}.setFlags({})
-        } {
-
-        Debug{} << "window size" << windowSize()
-            #ifdef MAGNUM_TARGET_GL
-            << framebufferSize()
-            #endif
-            << dpiScaling() << devicePixelRatio();
-
-        /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
-           missing EnableExtensionsByDefault (uncomment above) */
-        GL::Mesh mesh;
-    }
+    explicit EmscriptenApplicationTest(const Arguments& arguments);
 
     virtual void drawEvent() override {
         Debug() << "draw event";
@@ -149,6 +135,32 @@ struct EmscriptenApplicationTest: Platform::Application {
         bool _fullscreen = false;
         bool _redraw = false;
 };
+
+EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
+    Utility::Arguments args;
+    args.addSkippedPrefix("magnum", "engine-specific options")
+        .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        .parse(arguments.argc, arguments.argv);
+
+    if(args.isSet("exit-immediately")) {
+        exit();
+        return;
+    }
+
+    create(Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)
+        //, GLConfiguration{}.setFlags({})
+    );
+
+    Debug{} << "window size" << windowSize()
+        #ifdef MAGNUM_TARGET_GL
+        << framebufferSize()
+        #endif
+        << dpiScaling() << devicePixelRatio();
+
+    /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
+       missing EnableExtensionsByDefault (uncomment above) */
+    GL::Mesh mesh;
+}
 
 }}}
 

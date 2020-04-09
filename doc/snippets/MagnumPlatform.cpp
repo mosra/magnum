@@ -204,3 +204,27 @@ for(Platform::Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) 
 }
 
 }
+
+namespace G {
+
+struct MyApplication: Platform::Application {
+    MyApplication(const Arguments& arguments);
+    bool everythingGoingAsExpected = false;
+};
+
+/* [exit-from-constructor] */
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments, NoCreate}
+{
+    // …
+
+    if(!everythingGoingAsExpected) {
+        exit(1);
+        return;
+    }
+
+    // …
+}
+/* [exit-from-constructor] */
+
+}

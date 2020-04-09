@@ -696,6 +696,10 @@ EmscriptenApplication::GLConfiguration::GLConfiguration():
 #endif
 
 int EmscriptenApplication::exec() {
+    /* If exit was requested directly in the constructor, exit immediately
+       without calling anything else */
+    if(_flags & Flag::ExitRequested) return 0;
+
     redraw();
     return 0;
 }

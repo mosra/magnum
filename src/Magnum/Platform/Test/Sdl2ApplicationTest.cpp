@@ -150,7 +150,13 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     Utility::Arguments args;
     args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
         .addSkippedPrefix("magnum", "engine-specific options")
+        .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .parse(arguments.argc, arguments.argv);
+
+    if(args.isSet("exit-immediately")) {
+        exit();
+        return;
+    }
 
     Configuration conf;
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);

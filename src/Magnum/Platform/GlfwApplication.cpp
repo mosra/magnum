@@ -56,8 +56,9 @@ static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane
 enum class GlfwApplication::Flag: UnsignedByte {
     Redraw = 1 << 0,
     TextInputActive = 1 << 1,
+    Exit = 1 << 2,
     #ifdef CORRADE_TARGET_APPLE
-    HiDpiWarningPrinted = 1 << 2
+    HiDpiWarningPrinted = 1 << 3
     #endif
 };
 
@@ -546,6 +547,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
+    /* If exit() was called before the window got created, be sure to propagate
+       it */
+    glfwSetWindowShouldClose(_window, !!(_flags & Flag::Exit));
+
     /* Make the final context current */
     glfwMakeContextCurrent(_window);
 
@@ -701,6 +706,10 @@ int GlfwApplication::exec() {
 }
 
 bool GlfwApplication::mainLoopIteration() {
+    /* If exit was requested directly in the constructor, exit immediately
+       without calling anything else */
+    if(_flags & Flag::Exit || glfwWindowShouldClose(_window)) return false;
+
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::mainLoopIteration(): no window opened", {});
 
     /*
@@ -735,6 +744,15 @@ bool GlfwApplication::mainLoopIteration() {
     glfwPollEvents();
 
     return !glfwWindowShouldClose(_window);
+}
+
+void GlfwApplication::exit(int exitCode) {
+    _flags |= Flag::Exit;
+    _exitCode = exitCode;
+
+    /* If the window is already created, tell GLFW that it should close. If
+       not, this is done in tryCreate() once the window is created */
+    if(_window) glfwSetWindowShouldClose(_window, true);
 }
 
 namespace {

@@ -530,14 +530,6 @@ class Sdl2Application {
         int exec();
 
         /**
-         * @brief Exit application main loop
-         * @param exitCode  The exit code the application should return
-         *
-         * Stops main loop started by @ref exec().
-         */
-        void exit(int exitCode = 0);
-
-        /**
          * @brief Run one iteration of application main loop
          * @return @cpp false @ce if @ref exit() was called and the application
          *      should exit, @cpp true @ce otherwise
@@ -548,6 +540,26 @@ class Sdl2Application {
          * automatically from @ref exec() / @ref MAGNUM_SDL2APPLICATION_MAIN().
          */
         bool mainLoopIteration();
+
+        /**
+         * @brief Exit application
+         * @param exitCode  The exit code the application should return
+         *
+         * When called from application constructor, it will cause the
+         * application to exit immediately after constructor ends, without any
+         * events being processed (thus not even @ref exitEvent()). Calling
+         * this function is recommended over @ref std::exit() or
+         * @ref Corrade::Utility::Fatal "Fatal", which exit without calling
+         * destructors on local scope. Note that, however, you need to
+         * explicitly @cpp return @ce after calling it, as it can't exit the
+         * constructor on its own:
+         *
+         * @snippet MagnumPlatform.cpp exit-from-constructor
+         *
+         * When called from the main loop, the application exits cleanly
+         * before next main loop iteration is executed.
+         */
+        void exit(int exitCode = 0);
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
