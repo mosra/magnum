@@ -277,7 +277,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
 }
 
 AndroidApplication::GLConfiguration::GLConfiguration():
-    _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0} {}
+    _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0} {}
 
 void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApplication>(*instancer)(const Arguments&)) {
     state->onAppCmd = commandEvent;

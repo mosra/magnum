@@ -374,6 +374,11 @@ See also:
 -   Calling @ref Platform::Sdl2Application::exit() "Platform::*Application::exit()"
     directly in the application constructor will now make it exit right after
     constructor finished, without any event processing (see [mosra/magnum#429](https://github.com/mosra/magnum/issues/429))
+-   @ref Platform::AndroidApplication, @ref Platform::EmscriptenApplication,
+    @ref Platform::GlfwApplication and @ref Platform::Sdl2Application now
+    default to 32-bit RGBA color buffer instead of 24-bit RGB, to avoid the
+    framebuffer degrading to 16-bit colors on some platforms (see
+    [mosra/magnum-integration#59](https://github.com/mosra/magnum-integration/issues/59))
 
 @subsubsection changelog-latest-changes-trade Trade library
 

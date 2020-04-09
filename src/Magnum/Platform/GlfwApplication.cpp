@@ -875,7 +875,7 @@ void GlfwApplication::stopTextInput() {
 
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
-    _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
+    _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
     _sampleCount{0}, _version{GL::Version::None},
     #ifndef MAGNUM_TARGET_GLES
     _flags{Flag::ForwardCompatible},

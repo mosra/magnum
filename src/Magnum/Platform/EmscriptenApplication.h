@@ -1043,7 +1043,7 @@ class EmscriptenApplication::GLConfiguration {
         /**
          * @brief Set color buffer size
          *
-         * Default is @cpp {8, 8, 8, 0} @ce (8-bit-per-channel RGB, no alpha).
+         * Default is @cpp {8, 8, 8, 8} @ce (8-bit-per-channel RGBA).
          * @see @ref setDepthBufferSize(), @ref setStencilBufferSize()
          */
         GLConfiguration& setColorBufferSize(const Vector4i& size) {
