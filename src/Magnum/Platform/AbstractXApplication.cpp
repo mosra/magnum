@@ -114,8 +114,8 @@ AbstractXApplication::~AbstractXApplication() {
     _contextHandler.reset();
 
     /* Shut down X */
-    XDestroyWindow(_display, _window);
-    XCloseDisplay(_display);
+    if(_window) XDestroyWindow(_display, _window);
+    if(_display) XCloseDisplay(_display);
 }
 
 void AbstractXApplication::swapBuffers() {
