@@ -101,6 +101,7 @@ struct GlfwApplicationTest: Platform::Application {
 GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, NoCreate} {
     Utility::Arguments args;
     args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .parse(arguments.argc, arguments.argv);
 
     Configuration conf;
