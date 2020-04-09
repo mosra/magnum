@@ -198,6 +198,11 @@ See also:
 -   New [base-gtkmm](https://github.com/mosra/magnum-bootstrap/tree/base-gtkmm)
     bootstrap project for using Magnum together with gtkmm (see
     [mosra/magnum-bootstrap#24](https://github.com/mosra/magnum-bootstrap/pull/24))
+-   Context sharing in @ref Platform::WindowlessCglApplication,
+    @ref Platform::WindowlessEglApplication,
+    @ref Platform::WindowlessGlxApplication,
+    @ref Platform::WindowlessWglApplication and
+    @ref Platform::WindowlessWindowsEglApplication (see [mosra/magnum#](https://github.com/mosra/magnum/pull/433))
 
 @subsubsection changelog-latest-new-primitives Primitives library
 

@@ -189,6 +189,8 @@ Are the below lists missing your name or something's wrong?
     buildsystem improvements
 -   **Stefan Wasilewski** ([\@smw](https://github.com/smw)) --- macOS port
     improvements
+-   **Stéphane Brard** ([\@aspioupiou](https://github.com/aspioupiou)) ---
+    shared context support in windowless applications
 -   **Thibault Jochem** ([\@Tryum](https://github.com/Tryum)) ---
     @ref Platform::GlfwApplication improvements
 -   **Thomas Tissot-Dupont** ([\@dolphineye](https://github.com/dolphineye))
