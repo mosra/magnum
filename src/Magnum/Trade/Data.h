@@ -47,14 +47,14 @@ namespace Magnum { namespace Trade {
 */
 enum class DataFlag: UnsignedByte {
     /**
-     * Data are owned by the instance. If this flag is not set, the instance
+     * Data is owned by the instance. If this flag is not set, the instance
      * might be for example referencing a memory-mapped file or a constant
      * memory.
      */
     Owned = 1 << 0,
 
     /**
-     * Data are mutable. If this flag is not set, the instance might be for
+     * Data is mutable. If this flag is not set, the instance might be for
      * example referencing a readonly memory-mapped file or a constant memory.
      */
     Mutable = 2 << 0
