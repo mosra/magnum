@@ -23,7 +23,6 @@ struct RandomTest : Corrade::TestSuite::Tester
     void unitVector3();
     void randomRotation();
     void randomDiceChiSquare();
-
 };
 
 typedef Vector<2, Float> Vector2;
@@ -51,19 +50,19 @@ void RandomTest::randScalar()
 
 void RandomTest::unitVector2()
 {
-        Math::Random::RandomGenerator g;
+    Math::Random::RandomGenerator g;
     CORRADE_COMPARE((Math::Random::randomUnitVector2(g)).length(), 1.0f);
 }
 void RandomTest::unitVector3()
 {
-        Math::Random::RandomGenerator g;
+    Math::Random::RandomGenerator g;
 
     CORRADE_COMPARE((Math::Random::randomUnitVector3(g)).length(), 1.0f);
 }
 
 void RandomTest::randomRotation()
 {
-        Math::Random::RandomGenerator g;
+    Math::Random::RandomGenerator g;
 
     CORRADE_COMPARE(Math::Random::randomRotation(g).length(), 1.0f);
 }
@@ -82,14 +81,12 @@ void RandomTest::randomDiceChiSquare()
 
     for (auto i = 0; i < 100; i++)
     {
-
         std::vector<Int> faces(dice_side, 0);
         for (std::size_t i = 0; i < expected * dice_side; i++)
             faces[Math::Random::randomScalar<Int>(g, 0, dice_side - 1)]++;
-        std::vector<Int> residual(dice_side, 0);
+        Float chi_square = 0.0f;
         for (std::size_t i = 0; i < dice_side; i++)
-            residual[i] = Float(pow((faces[i] - expected), 2)) / expected;
-        Float chi_square = std::accumulate(residual.begin(), residual.end(), 0.0);
+            chi_square += Float(pow((faces[i] - expected), 2)) / expected;
         if (chi_square > thresholdfor100)
             error_count++;
     }
