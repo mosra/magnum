@@ -23,6 +23,7 @@ struct RandomTest : Corrade::TestSuite::Tester
     void unitVector3();
     void randomRotation();
     void randomDiceChiSquare();
+
 };
 
 typedef Vector<2, Float> Vector2;
@@ -43,29 +44,36 @@ RandomTest::RandomTest()
 
 void RandomTest::randScalar()
 {
-    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(-1.0, 1.0), 1.0f, Corrade::TestSuite::Compare::LessOrEqual);
-    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(-1.0, 1.0), -1.0f, Corrade::TestSuite::Compare::GreaterOrEqual);
+    Math::Random::RandomGenerator g;
+    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(g, -1.0, 1.0), 1.0f, Corrade::TestSuite::Compare::LessOrEqual);
+    CORRADE_COMPARE_AS(Math::Random::randomScalar<Float>(g, -1.0, 1.0), -1.0f, Corrade::TestSuite::Compare::GreaterOrEqual);
 }
 
 void RandomTest::unitVector2()
 {
-    CORRADE_COMPARE((Math::Random::randomUnitVector2()).length(), 1.0f);
+        Math::Random::RandomGenerator g;
+    CORRADE_COMPARE((Math::Random::randomUnitVector2(g)).length(), 1.0f);
 }
 void RandomTest::unitVector3()
 {
-    CORRADE_COMPARE((Math::Random::randomUnitVector3()).length(), 1.0f);
+        Math::Random::RandomGenerator g;
+
+    CORRADE_COMPARE((Math::Random::randomUnitVector3(g)).length(), 1.0f);
 }
 
 void RandomTest::randomRotation()
 {
-    CORRADE_COMPARE(Math::Random::randomRotation().length(), 1.0f);
+        Math::Random::RandomGenerator g;
+
+    CORRADE_COMPARE(Math::Random::randomRotation(g).length(), 1.0f);
 }
 
 void RandomTest::randomDiceChiSquare()
 {
     // A step by step explanation
     // https://rpg.stackexchange.com/questions/70802/how-can-i-test-whether-a-die-is-fair
-    
+    Math::Random::RandomGenerator g;
+
     int error_count = 0; // We have 1 chance to over shoot. Thats why no repeated test.
 
     const Int dice_side = 20;
@@ -77,7 +85,7 @@ void RandomTest::randomDiceChiSquare()
 
         std::vector<Int> faces(dice_side, 0);
         for (std::size_t i = 0; i < expected * dice_side; i++)
-            faces[Math::Random::randomScalar<Int>(0, dice_side - 1)]++;
+            faces[Math::Random::randomScalar<Int>(g, 0, dice_side - 1)]++;
         std::vector<Int> residual(dice_side, 0);
         for (std::size_t i = 0; i < dice_side; i++)
             residual[i] = Float(pow((faces[i] - expected), 2)) / expected;
