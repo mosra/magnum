@@ -86,9 +86,9 @@ template <class T = Float>
 Quaternion<T> randomRotation()
 {
     //http://planning.cs.uiuc.edu/node198.html
-    auto u{randomScalar()};
-    auto v{2 * Math::Constants<T>::pi() * randomScalar()};
-    auto w{2 * Math::Constants<T>::pi() * randomScalar()};
+    auto u = randomScalar();
+    auto v = 2 * Math::Constants<T>::pi() * randomScalar();
+    auto w = 2 * Math::Constants<T>::pi() * randomScalar();
     return Quaternion<T>({sqrt<T>(1 - u) * std::sin(v),
                           sqrt<T>(1 - u) * std::cos(v),
                           sqrt<T>(u) * std::sin(w)},
