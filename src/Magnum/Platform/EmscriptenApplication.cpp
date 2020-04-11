@@ -293,10 +293,10 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
         !!(glConfiguration.flags() & GLConfiguration::Flag::PreserveDrawingBuffer);
     /* powerPreference replaced preferLowPowerToHighPerformance in emscripten
        version 1.38.26 */
-    #ifdef EM_WEBGL_POWERPREFERENCE_LOW_POWER
+    #ifdef EM_WEBGL_POWER_PREFERENCE_LOW_POWER
     attrs.powerPreference =
         !!(glConfiguration.flags() & GLConfiguration::Flag::PreferLowPowerToHighPerformance)
-        ? EM_WEBGL_POWERPREFERENCE_LOW_POWER : EM_WEBGL_POWERPREFERENCE_HIGH_PERFORMANCE;
+        ? EM_WEBGL_POWER_PREFERENCE_LOW_POWER : EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
     #else
     attrs.preferLowPowerToHighPerformance =
         !!(glConfiguration.flags() & GLConfiguration::Flag::PreferLowPowerToHighPerformance);
