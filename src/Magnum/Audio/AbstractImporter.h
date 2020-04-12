@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Audio::AbstractImporter
+ * @brief Class @ref Magnum::Audio::AbstractImporter, enum @ref Magnum::Audio::ImporterFeature, enum set @ref Magnum::Audio::ImporterFeatures
  */
 
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>

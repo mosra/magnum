@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractFontConverter
+ * @brief Class @ref Magnum::Text::AbstractFontConverter, enum @ref Magnum::Text::FontConverterFeature, enum set @ref Magnum::Text::FontConverterFeatures
  */
 
 #include <vector>

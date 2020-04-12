@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::AbstractImporter
+ * @brief Class @ref Magnum::Trade::AbstractImporter, enum @ref Magnum::Trade::ImporterFeature, enum set @ref Magnum::Trade::ImporterFeatures
  */
 
 #include <Corrade/Containers/EnumSet.h>

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter
+ * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter, enum @ref Magnum::Text::FontFeature, enum set @ref Magnum::Text::FontFeatures
  */
 
 #include <string>
