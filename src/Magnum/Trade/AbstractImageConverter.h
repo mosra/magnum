@@ -119,7 +119,7 @@ such instances after the plugin module has been unloaded.
 
 @section Trade-AbstractImageConverter-subclassing Subclassing
 
-The plugin needs to implement the@ref doFeatures() function and one or more of
+The plugin needs to implement the @ref doFeatures() function and one or more of
 @ref doExportToImage(), @ref doExportToCompressedImage(), @ref doExportToData()
 or @ref doExportToFile() functions based on what features are supported.
 
@@ -134,6 +134,11 @@ checked by the implementation:
     @ref ImageConverterFeature::ConvertData is supported.
 -   The function @ref doExportToData(const CompressedImageView2D&) is called
     only if @ref ImageConverterFeature::ConvertCompressedData is supported.
+-   The function @ref doExportToFile(const ImageView2D&, const std::string&) is
+    called only if @ref ImageConverterFeature::ConvertFile is supported.
+-   The function @ref doExportToFile(const CompressedImageView2D&, const std::string&)
+    is called only if @ref ImageConverterFeature::ConvertCompressedFile is
+    supported.
 
 @m_class{m-block m-warning}
 
