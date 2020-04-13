@@ -338,7 +338,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * initialization of the attribute array for @ref MeshData, expected to
          * be replaced with concrete values later.
          */
-        constexpr explicit MeshAttributeData() noexcept: _data{}, _vertexCount{}, _format{}, _stride{}, _name{}, _arraySize{}, _isOffsetOnly{false} {}
+        constexpr explicit MeshAttributeData() noexcept: _format{}, _name{}, _isOffsetOnly{false}, _vertexCount{}, _stride{}, _arraySize{}, _data{} {}
 
         /**
          * @brief Type-erased constructor
@@ -485,10 +485,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * passed to @ref MeshData.
          * @see @ref stride()
          */
-        constexpr explicit MeshAttributeData(Int padding): _data{nullptr}, _vertexCount{0}, _format{}, _stride{
+        constexpr explicit MeshAttributeData(Int padding): _format{}, _name{}, _isOffsetOnly{false}, _vertexCount{0}, _stride{
             (CORRADE_CONSTEXPR_ASSERT(padding >= -32768 && padding <= 32767,
                 "Trade::MeshAttributeData: at most 32k padding supported, got" << padding), Short(padding))
-        }, _name{}, _arraySize{}, _isOffsetOnly{false} {}
+        }, _arraySize{}, _data{nullptr} {}
 
         /**
          * @brief If the attribute is offset-only
@@ -559,9 +559,26 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         }
 
     private:
+        friend MeshData;
+
         constexpr explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept;
 
-        friend MeshData;
+        VertexFormat _format;
+        MeshAttribute _name;
+        bool _isOffsetOnly;
+        /* 1 byte free for more stuff on 64b (23, aligned to 24) and on 32b
+           (19, aligned to 20) */
+
+        /* Vertex count in MeshData is currently 32-bit, so this doesn't need
+           to be 64-bit either */
+        UnsignedInt _vertexCount;
+        /* According to https://opengl.gpuinfo.org/displaycapability.php?name=GL_MAX_VERTEX_ATTRIB_STRIDE,
+           current largest reported stride is 4k so 32k should be enough */
+        Short _stride;
+        UnsignedShort _arraySize;
+
+        /* Data pointer last. Its size varies between 32 and 64 bit and having
+           it last reduces the amount of pain when serializing. */
         union Data {
             /* FFS C++ why this doesn't JUST WORK goddamit?! */
             constexpr Data(const void* pointer = nullptr): pointer{pointer} {}
@@ -570,18 +587,6 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
             const void* pointer;
             std::size_t offset;
         } _data;
-        /* Vertex count in MeshData is currently 32-bit, so this doesn't need
-           to be 64-bit either */
-        UnsignedInt _vertexCount;
-        VertexFormat _format;
-        /* According to https://opengl.gpuinfo.org/displaycapability.php?name=GL_MAX_VERTEX_ATTRIB_STRIDE,
-           current largest reported stride is 4k so 32k should be enough */
-        Short _stride;
-        MeshAttribute _name;
-        UnsignedShort _arraySize;
-        bool _isOffsetOnly;
-        /* 1 byte free for more stuff on 64b (23, aligned to 24) and on 32b
-           (19, aligned to 20) */
 };
 
 /** @relatesalso MeshAttributeData
@@ -2069,30 +2074,32 @@ namespace Implementation {
 #endif
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
-    _data{data.data()}, _vertexCount{UnsignedInt(data.size())}, _format{format},
+    _format{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
+        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), format)},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
+        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
+    _isOffsetOnly{false}, _vertexCount{UnsignedInt(data.size())},
     /** @todo support zero / negative stride? would be hard to transfer to GL */
     _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(data.stride()) & 0xffff8000),
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << data.stride()),
-        Short(data.stride()))
-    }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
-        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
-    }, _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
-        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)
-    }, _isOffsetOnly{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), false)} {}
+        Short(data.stride()))},
+    _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
+        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},
+    _data{data.data()} {}
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const std::size_t offset, const UnsignedInt vertexCount, const std::ptrdiff_t stride, UnsignedShort arraySize) noexcept:
-    _data{offset}, _vertexCount{vertexCount}, _format{format},
+    _format{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
+        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), format)},
+    _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
+        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)},
+    _isOffsetOnly{true}, _vertexCount{vertexCount},
     /** @todo support zero / negative stride? would be hard to transfer to GL */
     _stride{(CORRADE_CONSTEXPR_ASSERT(!(UnsignedInt(stride) & 0xffff8000),
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got" << stride),
-        Short(stride))
-    }, _name{(CORRADE_CONSTEXPR_ASSERT(Implementation::isVertexFormatCompatibleWithAttribute(name, format),
-        "Trade::MeshAttributeData:" << format << "is not a valid format for" << name), name)
-    }, _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
-        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)
-    }, _isOffsetOnly{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
-        "Trade::MeshAttributeData: array attributes can't have an implementation-specific format"), true)} {}
+        Short(stride))},
+    _arraySize{(CORRADE_CONSTEXPR_ASSERT(!arraySize || Implementation::isAttributeArrayAllowed(name),
+        "Trade::MeshAttributeData:" << name << "can't be an array attribute"), arraySize)},
+    _data{offset} {}
 
 template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView1D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), 0, data, nullptr} {}
 
