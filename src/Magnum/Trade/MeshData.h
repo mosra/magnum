@@ -1789,15 +1789,14 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /* GPUs don't currently support more than 32-bit index types / vertex
            counts so this should be enough. Sanity check:
            https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkIndexType.html */
-        UnsignedInt _vertexCount;
-        MeshIndexType _indexType;
+        UnsignedInt _indexCount, _vertexCount;
         MeshPrimitive _primitive;
+        MeshIndexType _indexType;
         DataFlags _indexDataFlags, _vertexDataFlags;
         const void* _importerState;
-        Containers::Array<char> _indexData, _vertexData;
+        const char* _indices;
         Containers::Array<MeshAttributeData> _attributes;
-        /* MeshIndexData are "unpacked" in order to avoid excessive padding */
-        Containers::ArrayView<const char> _indices;
+        Containers::Array<char> _indexData, _vertexData;
 };
 
 #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
