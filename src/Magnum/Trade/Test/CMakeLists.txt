@@ -52,7 +52,24 @@ corrade_add_test(TradeDataTest DataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
-corrade_add_test(TradeMeshDataTest MeshDataTest.cpp LIBRARIES MagnumTradeTestLib)
+
+corrade_add_test(TradeMeshDataTest MeshDataTest.cpp
+    LIBRARIES MagnumTradeTestLib
+    FILES
+        mesh-be32.blob
+        mesh-be64.blob
+        mesh-le32.blob
+        mesh-le64.blob
+        mesh-empty-be32.blob
+        mesh-empty-be64.blob
+        mesh-empty-le32.blob
+        mesh-empty-le64.blob
+        mesh-nonindexed-be32.blob
+        mesh-nonindexed-be64.blob
+        mesh-nonindexed-le32.blob
+        mesh-nonindexed-le64.blob)
+target_include_directories(TradeMeshDataTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
 corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTrade)

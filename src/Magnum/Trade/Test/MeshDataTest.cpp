@@ -26,11 +26,17 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/StringToFile.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Trade/MeshData.h"
+
+#include "configure.h"
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
@@ -164,6 +170,13 @@ struct MeshDataTest: TestSuite::Tester {
     void releaseIndexData();
     void releaseAttributeData();
     void releaseVertexData();
+
+    void serialize();
+    void serializeEmpty();
+    void serializeIntoTooSmall();
+
+    void deserialize();
+    void deserializeInvalid();
 };
 
 const struct {
@@ -192,6 +205,87 @@ const struct {
 } SingleNotOwnedData[] {
     {"", {}},
     {"mutable", DataFlag::Mutable}
+};
+
+const struct {
+    const char* name;
+    const char* filePrefix;
+    bool indexed;
+} SerializeData[] {
+    {"", "mesh", true},
+    {"non-indexed", "mesh-nonindexed", false}
+};
+
+const struct {
+    const char* name;
+    std::size_t size;
+    std::size_t offset;
+    Containers::Array<char> replace;
+    const char* message;
+} DeserializeInvalidData[] {
+    /* This checks we correctly propagate chunk header errors, the rest is
+       verified in DataTest */
+    {"too short to contain a chunk header",
+        sizeof(void*) == 4 ? 19 : 23, 0, nullptr,
+        sizeof(void*) == 4 ?
+            "dataChunkHeaderDeserialize(): expected at least 20 bytes for a header but got 19" :
+            "dataChunkHeaderDeserialize(): expected at least 24 bytes for a header but got 23"},
+
+    {"chunk too short to contain a meshdata header",
+        0, 16, /* not cutting the file, only adapting header */
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        sizeof(void*) == 4 ? Containers::array<char>({0x2f, 0, 0, 0}) :
+            Containers::array<char>({0x3f, 0, 0, 0, 0, 0, 0, 0}),
+        #else
+        sizeof(void*) == 4 ? Containers::array<char>({0, 0, 0, 0x2f}) :
+            Containers::array<char>({0, 0, 0, 0, 0, 0, 0, 0x3f}),
+        #endif
+        sizeof(void*) == 4 ?
+            "MeshData::deserialize(): expected at least a 48-byte chunk for a header but got 47" :
+            "MeshData::deserialize(): expected at least a 64-byte chunk for a header but got 63"},
+    {"chunk too short to contain all data",
+        0, 16, /* not cutting the file, only adapting header */
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        sizeof(void*) == 4 ? Containers::array<char>({'\xd3', 0, 0, 0}) :
+            Containers::array<char>({'\xf3', 0, 0, 0, 0, 0, 0, 0}),
+        #else
+        sizeof(void*) == 4 ? Containers::array<char>({0, 0, 0, '\xd3'}) :
+            Containers::array<char>({0, 0, 0, 0, 0, 0, 0, '\xf3'}),
+        #endif
+        sizeof(void*) == 4 ?
+            "MeshData::deserialize(): expected a 212-byte chunk but got 211" :
+            "MeshData::deserialize(): expected a 244-byte chunk but got 243"},
+    {"invalid type",
+        0, 12, Containers::array({'M', 'e', 'h', 'h'}),
+        "MeshData::deserialize(): expected data chunk type Trade::DataChunkType('M', 'e', 's', 'h') but got Trade::DataChunkType('M', 'e', 'h', 'h')"},
+    {"invalid type version",
+        0, 10,
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        Containers::array<char>({1, 0}),
+        #else
+        Containers::array<char>({0, 1}),
+        #endif
+        "MeshData::deserialize(): invalid chunk type version, expected 0 but got 1"},
+    {"index array out of bounds",
+        0, sizeof(void*) == 4 ? 36 : 40,
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        sizeof(void*) == 4 ? Containers::array<char>({5, 0, 0, 0}) :
+            Containers::array<char>({5, 0, 0, 0, 0, 0, 0, 0}),
+        #else
+        sizeof(void*) == 4 ? Containers::array<char>({0, 0, 0, 5}) :
+            Containers::array<char>({0, 0, 0, 0, 0, 0, 0, 5}),
+        #endif
+        "MeshData::deserialize(): indices [5:13] out of range for 12 bytes of index data"},
+    {"attribute out of bounds",
+        0, sizeof(void*) == 4 ? 48 + 20 + 16 : 64 + 24 + 16,
+        #ifndef CORRADE_TARGET_BIG_ENDIAN
+        sizeof(void*) == 4 ? Containers::array<char>({23, 0, 0, 0}) :
+            Containers::array<char>({23, 0, 0, 0, 0, 0, 0, 0}),
+        #else
+        sizeof(void*) == 4 ? Containers::array<char>({0, 0, 0, 23}) :
+            Containers::array<char>({0, 0, 0, 0, 0, 0, 0, 23}),
+        #endif
+        "MeshData::deserialize(): attribute 1 [23:73] out of range for 72 bytes of vertex data"}
 };
 
 MeshDataTest::MeshDataTest() {
@@ -382,6 +476,18 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::releaseIndexData,
               &MeshDataTest::releaseAttributeData,
               &MeshDataTest::releaseVertexData});
+
+    addInstancedTests({&MeshDataTest::serialize},
+        Containers::arraySize(SerializeData));
+
+    addTests({&MeshDataTest::serializeEmpty,
+              &MeshDataTest::serializeIntoTooSmall});
+
+    addInstancedTests({&MeshDataTest::deserialize},
+        Containers::arraySize(SerializeData));
+
+    addInstancedTests({&MeshDataTest::deserializeInvalid},
+        Containers::arraySize(DeserializeInvalidData));
 }
 
 void MeshDataTest::customAttributeName() {
@@ -2961,6 +3067,193 @@ void MeshDataTest::releaseVertexData() {
     CORRADE_COMPARE(static_cast<const void*>(data.vertexData()), released.data());
     CORRADE_COMPARE(data.vertexCount(), 0);
     CORRADE_COMPARE(data.attributeOffset(0), 48);
+}
+
+constexpr char BlobFileSuffix[] {
+    '-',
+    #ifndef CORRADE_TARGET_BIG_ENDIAN
+    'l',
+    #else
+    'b',
+    #endif
+    'e', sizeof(void*) == 4 ? '3' : '6', sizeof(void*) == 4 ? '2' : '4',
+    '.', 'b', 'l', 'o', 'b', '\0'
+};
+
+void MeshDataTest::serialize() {
+    auto&& data = SerializeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Clang on iOS and Android doesn't like constexpr here */
+    constexpr struct Vertex {
+        Vector2 position;
+        Vector2ub textureCoordinates;
+        UnsignedShort props[2];
+        /* I'd use UnsignedShort:16 here but (at least on Android) the bytes
+           get random values, breaking the test. On iOS and Android that would
+           also make the compiler complain about constexpr, and finally MSVC
+           2015 chokes on the : if this is an inline struct. */
+        UnsignedShort _padding;
+        Double weight;
+    } vertexData[] {
+        {{1.0f, 0.5f}, {23, 15}, {3247, 1256}, 0, 1.1},
+        {{2.0f, 1.5f}, {232, 144}, {6243, 1241}, 0, 1.2},
+        {{3.0f, 2.5f}, {17, 242}, {15, 2323}, 0, 1.3}
+    };
+
+    constexpr UnsignedShort indexData[] {
+        2555, 3241, 1, 0, 1, 0
+    };
+
+    Containers::ArrayView<const void> indexView;
+    MeshIndexData indices;
+    if(data.indexed) {
+        indexView = indexData;
+        indices = MeshIndexData{Containers::arrayView(indexData).suffix(2)};
+    }
+
+    MeshData meshData{MeshPrimitive::TriangleFan,
+        {}, indexView, indices,
+        {}, vertexData, {
+            /* Test all attribute type sizes (2, 4, 8) for endian swapping in
+               the MagnumImporter / MagnumSceneConverter plugins */
+            MeshAttributeData{MeshAttribute::Position,
+                Containers::StridedArrayView1D<const Vector2>{vertexData, &vertexData[0].position, 3, sizeof(Vertex)}},
+            MeshAttributeData{MeshAttribute::TextureCoordinates,
+                Containers::StridedArrayView1D<const Vector2ub>{vertexData, &vertexData[0].textureCoordinates, 3, sizeof(Vertex)}},
+            /* Test array attribs */
+            MeshAttributeData{meshAttributeCustom(23),
+                VertexFormat::UnsignedShort, 2,
+                Containers::StridedArrayView1D<const UnsignedShort>{vertexData, &vertexData[0].props[0], 3, sizeof(Vertex)}},
+            /* Test offset-only attribs as well */
+            MeshAttributeData{meshAttributeCustom(14), VertexFormat::Double,
+                16, 3, sizeof(Vertex)}
+        }};
+
+    Containers::Array<char> blob = meshData.serialize();
+    CORRADE_COMPARE_AS((std::string{blob.data(), blob.size()}),
+        Utility::Directory::join(TRADE_TEST_DIR, std::string{data.filePrefix} + BlobFileSuffix),
+        TestSuite::Compare::StringToFile);
+}
+
+void MeshDataTest::serializeEmpty() {
+    MeshData meshData{MeshPrimitive::Edges, 1256};
+
+    Containers::Array<char> blob = meshData.serialize();
+    CORRADE_COMPARE_AS((std::string{blob.data(), blob.size()}),
+        Utility::Directory::join(TRADE_TEST_DIR, std::string{"mesh-empty"} + BlobFileSuffix),
+        TestSuite::Compare::StringToFile);
+}
+
+void MeshDataTest::serializeIntoTooSmall() {
+    constexpr UnsignedInt indexData[]{0, 1, 0};
+
+    MeshData meshData{MeshPrimitive::Faces,
+        {}, indexData, MeshIndexData{indexData}, 2};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    char blob[sizeof(void*) == 4 ? 59 : 75];
+    meshData.serializeInto(blob);
+    if(sizeof(void*) == 4) CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::serializeInto(): data too small, expected at least 60 bytes but got 59\n");
+    else CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::serializeInto(): data too small, expected at least 76 bytes but got 75\n");
+}
+
+void MeshDataTest::deserialize() {
+    auto&& data = SerializeData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> blob = Utility::Directory::read(Utility::Directory::join(TRADE_TEST_DIR, std::string{data.filePrefix} + BlobFileSuffix));
+
+    Containers::Optional<MeshData> meshData = MeshData::deserialize(blob);
+    CORRADE_VERIFY(meshData);
+    CORRADE_COMPARE(meshData->attributeCount(), 4);
+    CORRADE_COMPARE(meshData->vertexCount(), 3);
+    CORRADE_COMPARE(meshData->indexDataFlags(), DataFlag::Mutable);
+    CORRADE_COMPARE(meshData->vertexDataFlags(), DataFlag::Mutable);
+
+    CORRADE_COMPARE(meshData->attributeName(0), MeshAttribute::Position);
+    CORRADE_COMPARE(meshData->attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE(meshData->attributeOffset(0), 0);
+    CORRADE_COMPARE(meshData->attributeStride(0), 24);
+    CORRADE_COMPARE(meshData->attributeArraySize(0), 0);
+    CORRADE_COMPARE_AS(meshData->attribute<Vector2>(0),
+        Containers::arrayView<Vector2>({
+            {1.0f, 0.5f}, {2.0f, 1.5f}, {3.0f, 2.5f}
+        }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(meshData->attributeName(1), MeshAttribute::TextureCoordinates);
+    CORRADE_COMPARE(meshData->attributeFormat(1), VertexFormat::Vector2ub);
+    CORRADE_COMPARE(meshData->attributeOffset(1), 8);
+    CORRADE_COMPARE(meshData->attributeStride(1), 24);
+    CORRADE_COMPARE(meshData->attributeArraySize(1), 0);
+    CORRADE_COMPARE_AS(meshData->attribute<Vector2ub>(1),
+        Containers::arrayView<Vector2ub>({
+            {23, 15}, {232, 144}, {17, 242}
+        }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(meshData->attributeName(2), meshAttributeCustom(23));
+    CORRADE_COMPARE(meshData->attributeFormat(2), VertexFormat::UnsignedShort);
+    CORRADE_COMPARE(meshData->attributeOffset(2), 10);
+    CORRADE_COMPARE(meshData->attributeStride(2), 24);
+    CORRADE_COMPARE(meshData->attributeArraySize(2), 2);
+    CORRADE_COMPARE_AS((meshData->attribute<UnsignedShort[]>(2).transposed<0, 1>()[0]),
+        Containers::arrayView<UnsignedShort>({3247, 6243, 15}), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS((meshData->attribute<UnsignedShort[]>(2).transposed<0, 1>()[1]),
+        Containers::arrayView<UnsignedShort>({1256, 1241, 2323}), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(meshData->attributeName(3), meshAttributeCustom(14));
+    CORRADE_COMPARE(meshData->attributeFormat(3), VertexFormat::Double);
+    CORRADE_COMPARE(meshData->attributeOffset(3), 16);
+    CORRADE_COMPARE(meshData->attributeStride(3), 24);
+    CORRADE_COMPARE(meshData->attributeArraySize(3), 0);
+    CORRADE_COMPARE_AS(meshData->attribute<Double>(3),
+        Containers::arrayView<Double>({
+            1.1, 1.2, 1.3
+        }), TestSuite::Compare::Container);
+
+    if(data.indexed) {
+        CORRADE_VERIFY(meshData->isIndexed());
+        CORRADE_COMPARE(meshData->indexCount(), 4);
+        CORRADE_COMPARE(meshData->indexType(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE(meshData->indexOffset(), 4);
+        CORRADE_COMPARE_AS(meshData->indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({1, 0, 1, 0}),
+            TestSuite::Compare::Container);
+    } else CORRADE_VERIFY(!meshData->isIndexed());
+
+    /* Constant data should not have mutable flags set. Test just basics
+       otherwise, as all this should be mostly handled by the same code. */
+    meshData = MeshData::deserialize(Containers::arrayView<const char>(blob));
+    CORRADE_VERIFY(meshData);
+    CORRADE_COMPARE(meshData->attributeCount(), 4);
+    CORRADE_COMPARE(meshData->vertexCount(), 3);
+    CORRADE_COMPARE(meshData->indexDataFlags(), DataFlags{});
+    CORRADE_COMPARE(meshData->vertexDataFlags(), DataFlags{});
+    if(data.indexed) {
+        CORRADE_VERIFY(meshData->isIndexed());
+        CORRADE_COMPARE(meshData->indexCount(), 4);
+    }
+}
+
+void MeshDataTest::deserializeInvalid() {
+    auto&& data = DeserializeInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Array<char> blob = Utility::Directory::read(Utility::Directory::join(TRADE_TEST_DIR, std::string{"mesh"} + BlobFileSuffix));
+    CORRADE_VERIFY(blob);
+
+    Containers::ArrayView<char> view = blob;
+    if(data.size) view = view.prefix(data.size);
+    if(data.replace) Utility::copy(data.replace, view.slice(data.offset, data.offset + data.replace.size()));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!MeshData::deserialize(view));
+    CORRADE_COMPARE(out.str(),
+        Utility::formatString("Trade::{}\n", data.message));
 }
 
 }}}}

@@ -31,6 +31,7 @@
  */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Mesh.h"
@@ -709,6 +710,54 @@ you can also supply implementation-specific values that are not available in
 the generic @ref MeshPrimitive enum, similarly see also
 @ref Trade-MeshAttributeData-custom-vertex-format for details on
 implementation-specific @ref VertexFormat values.
+
+@section Trade-MeshData-serialization Memory-mappable serialization format
+
+Using @ref serialize(), an instance of this class can be serialized into
+Magnum's memory-mappable serialization format, and deserialized back using
+@ref deserialize().
+
+The deserialization only involves various sanity checks followed by a creation
+of a new @ref MeshData instance referencing the index, vertex and attribute
+data in the original memory view. The binary representation begins with
+@ref DataChunkHeader of type @ref DataChunkType::Mesh and type version
+@cpp 0 @ce, the rest is defined like below, with bitness and endianness
+matching the header signature. Fields that are stored in an endian-dependent
+way are marked with @m_class{m-label m-primary} **E**:
+
+@m_class{m-fullwidth}
+
+Byte offset | Byte size | Contents
+----------- | --------- | -----------------------------------------------------
+20 or 24 | 4 @m_class{m-label m-primary} **E** | Index count, or @cpp 0 @ce if the mesh has no indices
+24 or 28 | 4 @m_class{m-label m-primary} **E** | Vertex count, or @cpp 0 @ce if the mesh has no vertices
+28 or 32 | 4 @m_class{m-label m-primary} **E** | Mesh primitive, defined with @ref MeshPrimitive
+32 or 36    | 1         | Index type, defined with @ref MeshIndexType, or zero if the mesh is not indexed
+33 or 37    | 1         | @m_class{m-text m-dim} *Padding / reserved*
+34 or 38 | 2 @m_class{m-label m-primary} **E** | Attribute count
+36 or 40 | 4 or 8 @m_class{m-label m-primary} **E** | Index offset in the index data array
+40 or 44 | 4 or 8 @m_class{m-label m-primary} **E** | Index data size in bytes
+44 or 56 | 4 or 8 @m_class{m-label m-primary} **E** | Vertex data size in bytes
+48 or 64 | ... @m_class{m-label m-primary} **E** | List of @ref MeshAttributeData entries, count defined by attribute count above
+... | ... @m_class{m-label m-primary} **E** | Index data, byte count defined by index data size above
+... | ... @m_class{m-label m-primary} **E** | Vertex data, byte count defined by vertex data size above
+
+For the attribute list, each @ref MeshAttributeData entry is either 20 or 24
+bytes, with fields defined like this. In this case it exactly matches the
+internals of @ref MeshAttributeData to allow the attribute array to be
+referenced directly from the original memory:
+
+Byte offset | Byte size | Contents
+----------- | --------- | -----------------------------------------------------
+0 | 4 @m_class{m-label m-primary} **E** | Vertex format, defined with @ref VertexFormat
+4 | 2 @m_class{m-label m-primary} **E** | Mesh attribute name, defined with @ref MeshAttribute
+6           | 1         | Whether the attribute is offset-only. Always @cpp 1 @ce.
+7           | 1         | @m_class{m-text m-dim} *Padding / reserved*
+8 | 4 @m_class{m-label m-primary} **E** | Vertex count. Same value as the vertex count field above.
+12 | 2 @m_class{m-label m-primary} **E** | Vertex stride. Always positive and not larger than @cpp 32767 @ce.
+14 | 2 @m_class{m-label m-primary} **E** | Attribute array size
+16 | 4 or 8 @m_class{m-label m-primary} **E** | Attribute offset in the vertex data array
+
 @see @ref AbstractImporter::mesh()
 */
 class MAGNUM_TRADE_EXPORT MeshData {
@@ -720,6 +769,30 @@ class MAGNUM_TRADE_EXPORT MeshData {
              */
             ImplicitVertexCount = ~UnsignedInt{}
         };
+
+        /**
+         * @brief Try to deserialize from a memory-mappable representation
+         *
+         * If @p data is a valid serialized representation of @ref MeshData
+         * matching current platform, returns a @ref MeshData instance
+         * referencing the original data. On failure prints an error message
+         * and returns @ref Containers::NullOpt.
+         *
+         * The returned instance doesn't provide mutable access to the original
+         * data, pass a non-const view to the overload below to get that.
+         * @see @ref serialize()
+         */
+        static Containers::Optional<MeshData> deserialize(Containers::ArrayView<const void> data);
+
+        /** @overload */
+        template<class T, class = typename std::enable_if<std::is_convertible<T&&, Containers::ArrayView<void>>::value>::type> static Containers::Optional<MeshData> deserialize(T&& data) {
+            Containers::Optional<MeshData> out = deserialize(Containers::ArrayView<const void>{data});
+            if(out) {
+                out->_indexDataFlags = DataFlag::Mutable;
+                out->_vertexDataFlags = DataFlag::Mutable;
+            }
+            return out;
+        }
 
         /**
          * @brief Construct an indexed mesh data
@@ -1774,6 +1847,30 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * See @ref AbstractImporter::importerState() for more information.
          */
         const void* importerState() const { return _importerState; }
+
+        /**
+         * @brief Size of serialized data
+         *
+         * Amount of bytes written by @ref serializeInto() or @ref serialize().
+         */
+        std::size_t serializedSize() const;
+
+        /**
+         * @brief Serialize to a memory-mappable representation
+         *
+         * @see @ref serializeInto(), @ref deserialize()
+         */
+        Containers::Array<char> serialize() const;
+
+        /**
+         * @brief Serialize to a memory-mappable representation into an existing array
+         * @param[out] out      Where to write the output
+         * @return  Number of bytes written. Same as @ref serializedSize().
+         *
+         * Expects that @p data is at least @ref serializedSize().
+         * @see @ref serialize(), @ref deserialize()
+         */
+        std::size_t serializeInto(Containers::ArrayView<char> out) const;
 
     private:
         /* For custom deleter checks. Not done in the constructors here because

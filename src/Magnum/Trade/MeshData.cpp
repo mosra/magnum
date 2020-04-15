@@ -795,6 +795,156 @@ Containers::Array<char> MeshData::releaseVertexData() {
     return out;
 }
 
+namespace {
+    struct MeshDataHeader: DataChunkHeader {
+        UnsignedInt indexCount;
+        UnsignedInt vertexCount;
+        MeshPrimitive primitive;
+        MeshIndexType indexType;
+        Byte:8;
+        UnsignedShort attributeCount;
+        std::size_t indexOffset;
+        std::size_t indexDataSize;
+        std::size_t vertexDataSize;
+    };
+
+    static_assert(sizeof(MeshDataHeader) == (sizeof(void*) == 4 ? 48 : 64),
+        "MeshDataHeader has unexpected size");
+}
+
+Containers::Optional<MeshData> MeshData::deserialize(Containers::ArrayView<const void> data) {
+    /* Validate the header. If that fails, the error has been already printed,
+       so just propagate */
+    const DataChunkHeader* chunk = dataChunkHeaderDeserialize(data);
+    if(!chunk) return Containers::NullOpt;
+
+    /* Basic header validity */
+    if(chunk->type != DataChunkType::Mesh) {
+        Error{} << "Trade::MeshData::deserialize(): expected data chunk type" << DataChunkType::Mesh << "but got" << chunk->type;
+        return Containers::NullOpt;
+    }
+    if(chunk->typeVersion != 0) {
+        Error{} << "Trade::MeshData::deserialize(): invalid chunk type version, expected 0 but got" << chunk->typeVersion;
+        return Containers::NullOpt;
+    }
+    if(chunk->size < sizeof(MeshDataHeader)) {
+        Error{} << "Trade::MeshData::deserialize(): expected at least a" << sizeof(MeshDataHeader) << Debug::nospace << "-byte chunk for a header but got" << chunk->size;
+        return Containers::NullOpt;
+    }
+
+    /* Reinterpret as a mesh data and check that everything can fit */
+    const MeshDataHeader& header = static_cast<const MeshDataHeader&>(*chunk);
+    const std::size_t size = sizeof(MeshDataHeader) + header.attributeCount*sizeof(MeshAttributeData) + header.indexDataSize + header.vertexDataSize;
+    if(chunk->size != size) {
+        Error{} << "Trade::MeshData::deserialize(): expected a" << size << Debug::nospace << "-byte chunk but got" << chunk->size;
+        return Containers::NullOpt;
+    }
+
+    Containers::ArrayView<const MeshAttributeData> attributeData{reinterpret_cast<const MeshAttributeData*>(reinterpret_cast<const char*>(data.data()) + sizeof(MeshDataHeader)), header.attributeCount};
+    Containers::ArrayView<const char> vertexData{reinterpret_cast<const char*>(data.data()) + sizeof(MeshDataHeader) + header.attributeCount*sizeof(MeshAttributeData) + header.indexDataSize, header.vertexDataSize};
+
+    /* Check bounds of indices and all attributes */
+    /** @todo this will assert on invalid index type */
+    Containers::ArrayView<const char> indexData;
+    MeshIndexData indices;
+    if(header.indexType != MeshIndexType{}) {
+        const std::size_t indexEnd = header.indexOffset + header.indexCount*meshIndexTypeSize(header.indexType);
+        if(indexEnd > header.indexDataSize) {
+            Error{} << "Trade::MeshData::deserialize(): indices [" <<  Debug::nospace << header.indexOffset << Debug::nospace << ":" << Debug::nospace << indexEnd << Debug::nospace << "] out of range for" << header.indexDataSize << "bytes of index data";
+            return Containers::NullOpt;
+        }
+
+        indexData = Containers::ArrayView<const char>{reinterpret_cast<const char*>(data.data()) + sizeof(MeshDataHeader) + header.attributeCount*sizeof(MeshAttributeData), header.indexDataSize};
+        indices = MeshIndexData{header.indexType, indexData.suffix(header.indexOffset)};
+    }
+    for(std::size_t i = 0; i != attributeData.size(); ++i) {
+        const MeshAttributeData& attribute = attributeData[i];
+
+        /** @todo this will assert on invalid vertex format */
+        /** @todo check also consistency of vertex count and _isOffsetOnly? */
+        /* Check that the view fits into the provided vertex data array. For
+           implementation-specific formats we don't know the size so use 0 to
+           check at least partially. */
+        const UnsignedInt typeSize =
+            isVertexFormatImplementationSpecific(attribute._format) ? 0 :
+            vertexFormatSize(attribute._format);
+        const std::size_t attributeEnd = attribute._data.offset + (header.vertexCount - 1)*attribute._stride + typeSize;
+        if(header.vertexCount && attributeEnd > header.vertexDataSize) {
+            Error{} << "Trade::MeshData::deserialize(): attribute" << i << "[" << Debug::nospace << attribute._data.offset << Debug::nospace << ":" << Debug::nospace << attributeEnd << Debug::nospace << "] out of range for" << header.vertexDataSize << "bytes of vertex data";
+            return Containers::NullOpt;
+        }
+    }
+
+    return MeshData{header.primitive,
+        {}, indexData, indices,
+        {}, vertexData, meshAttributeDataNonOwningArray(attributeData),
+        header.vertexCount};
+}
+
+std::size_t MeshData::serializedSize() const {
+    return sizeof(MeshDataHeader) + sizeof(MeshAttributeData)*_attributes.size() +
+        _indexData.size() + _vertexData.size();
+}
+
+std::size_t MeshData::serializeInto(Containers::ArrayView<char> out) const {
+    #ifndef CORRADE_NO_DEBUG
+    const std::size_t size = serializedSize();
+    CORRADE_ASSERT(out.size() == size, "Trade::MeshData::serializeInto(): data too small, expected at least" << size << "bytes but got" << out.size(), {});
+    #endif
+
+    /* Serialize the header */
+    dataChunkHeaderSerializeInto(out, DataChunkType::Mesh, 0);
+
+    /* Memset the header to avoid padding getting random values */
+    std::memset(out.data() + sizeof(DataChunkHeader), 0, sizeof(MeshDataHeader) + _attributes.size()*sizeof(MeshAttributeData) - sizeof(DataChunkHeader));
+
+    MeshDataHeader& header = *reinterpret_cast<MeshDataHeader*>(out.data());
+    header.indexCount = _indexCount;
+    header.vertexCount = _vertexCount;
+    header.primitive = _primitive;
+    header.indexType = _indexType;
+    header.attributeCount = _attributes.size();
+    header.indexOffset = _indices - _indexData.data();
+    header.indexDataSize = _indexData.size();
+    header.vertexDataSize = _vertexData.size();
+
+    std::size_t offset = sizeof(MeshDataHeader);
+
+    /* Copy the attribute data, turning them into offset-only */
+    auto outAttributeData = Containers::arrayCast<MeshAttributeData>(out.slice(offset, offset + sizeof(MeshAttributeData)*_attributes.size()));
+    for(std::size_t i = 0; i != outAttributeData.size(); ++i) {
+        if(_attributes[i]._isOffsetOnly)
+            outAttributeData[i]._data.offset = _attributes[i]._data.offset;
+        else
+            outAttributeData[i]._data.offset = reinterpret_cast<const char*>(_attributes[i]._data.pointer) - _vertexData;
+        outAttributeData[i]._vertexCount = _attributes[i]._vertexCount;
+        outAttributeData[i]._format = _attributes[i]._format;
+        outAttributeData[i]._stride = _attributes[i]._stride;
+        outAttributeData[i]._name = _attributes[i]._name;
+        outAttributeData[i]._arraySize = _attributes[i]._arraySize;
+        outAttributeData[i]._isOffsetOnly = true;
+    }
+    offset += sizeof(MeshAttributeData)*_attributes.size();
+
+    /* Copy the index data */
+    Utility::copy(_indexData, out.slice(offset, offset + _indexData.size()));
+    offset += _indexData.size();
+
+    /* Copy the vertex data */
+    Utility::copy(_vertexData, out.slice(offset, offset + _vertexData.size()));
+    offset += _vertexData.size();
+
+    /* Check we calculated correctly, return number of bytes written */
+    CORRADE_INTERNAL_ASSERT(offset == size);
+    return offset;
+}
+
+Containers::Array<char> MeshData::serialize() const {
+    Containers::Array<char> out{Containers::NoInit, serializedSize()};
+    serializeInto(out);
+    return out;
+}
+
 Debug& operator<<(Debug& debug, const MeshAttribute value) {
     debug << "Trade::MeshAttribute" << Debug::nospace;
 
