@@ -166,7 +166,7 @@ struct MeshDataTest: TestSuite::Tester {
     void releaseVertexData();
 };
 
-struct {
+const struct {
     const char* name;
     UnsignedInt vertexCount, expectedVertexCount;
 } ConstructData[] {
@@ -176,7 +176,7 @@ struct {
     {"explicit zero vertex count", 0, 0}
 };
 
-struct {
+const struct {
     const char* name;
     DataFlags indexDataFlags, vertexDataFlags;
 } NotOwnedData[] {
@@ -186,7 +186,7 @@ struct {
     {"both mutable", DataFlag::Mutable, DataFlag::Mutable}
 };
 
-struct {
+const struct {
     const char* name;
     DataFlags dataFlags;
 } SingleNotOwnedData[] {

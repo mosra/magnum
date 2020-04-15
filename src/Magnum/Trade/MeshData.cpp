@@ -243,7 +243,7 @@ Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
     CORRADE_ASSERT(isIndexed(),
         "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
-    /* Build a 2D view using information about attribute type size */
+    /* Build a 2D view using information about index type size */
     Containers::StridedArrayView2D<const char> out{{_indices, _indexCount*indexTypeSize}, {_indexCount, indexTypeSize}};
     /** @todo some arrayConstCast? UGH */
     return Containers::StridedArrayView2D<char>{
