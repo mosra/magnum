@@ -438,6 +438,8 @@ See also:
 -   Fixed broken @ref Platform::EmscriptenApplication mouse event coordinates
     when `-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1` is enabled (see
     [mosra/magnum#408](https://github.com/mosra/magnum/issues/408))
+-   Fixed compilation of @ref Platform::EmscriptenApplication on recent
+    Emscripten versions (see [mosra/magnum#434](https://github.com/mosra/magnum/pull/434))
 -   Due to Windows- and macOS-specific issues in GLFW,
     @ref Platform::GlfwApplication::viewportEvent() and/or
     @ref Platform::GlfwApplication::drawEvent() could get fired already during
