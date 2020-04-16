@@ -76,7 +76,7 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
 
 Containers::Array<MeshAttributeData> meshAttributeDataNonOwningArray(const Containers::ArrayView<const MeshAttributeData> view) {
     /* Ugly, eh? */
-    return Containers::Array<Trade::MeshAttributeData>{const_cast<Trade::MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(Trade::MeshAttributeData*, std::size_t)>(Trade::Implementation::nonOwnedArrayDeleter)};
+    return Containers::Array<MeshAttributeData>{const_cast<MeshAttributeData*>(view.data()), view.size(), reinterpret_cast<void(*)(MeshAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)};
 }
 
 MeshData::MeshData(const MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const UnsignedInt vertexCount, const void* const importerState) noexcept: _indexType{indices._type}, _primitive{primitive}, _indexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _vertexDataFlags{DataFlag::Owned|DataFlag::Mutable}, _importerState{importerState}, _indexData{std::move(indexData)}, _vertexData{std::move(vertexData)}, _attributes{std::move(attributes)}, _indices{Containers::arrayCast<const char>(indices._data)} {
