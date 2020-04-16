@@ -210,6 +210,7 @@ See also:
     @ref Primitives::coneSolid(), @ref Primitives::cylinderSolid(),
     @ref Primitives::grid3DSolid(), @ref Primitives::planeSolid() and
     @ref Primitives::uvSphereSolid() can now have tangents as well
+-   Added @ref Primitives::icosphereWireframe()
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

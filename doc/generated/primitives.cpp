@@ -108,6 +108,7 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
     std::pair<Trade::MeshData, std::string> cubeWireframe();
     std::pair<Trade::MeshData, std::string> cylinderWireframe();
     std::pair<Trade::MeshData, std::string> grid3DWireframe();
+    std::pair<Trade::MeshData, std::string> icosphereWireframe();
     std::pair<Trade::MeshData, std::string> line3D();
     std::pair<Trade::MeshData, std::string> planeWireframe();
     std::pair<Trade::MeshData, std::string> uvSphereWireframe();
@@ -257,6 +258,7 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::cubeWireframe,
                        &PrimitiveVisualizer::cylinderWireframe,
                        &PrimitiveVisualizer::grid3DWireframe,
+                       &PrimitiveVisualizer::icosphereWireframe,
                        &PrimitiveVisualizer::line3D,
                        &PrimitiveVisualizer::planeWireframe,
                        &PrimitiveVisualizer::uvSphereWireframe})
@@ -495,6 +497,10 @@ std::pair<Trade::MeshData, std::string> PrimitiveVisualizer::cylinderWireframe()
 
 std::pair<Trade::MeshData, std::string> PrimitiveVisualizer::grid3DWireframe() {
     return {Primitives::grid3DWireframe({5, 3}), "grid3dwireframe.png"};
+}
+
+std::pair<Trade::MeshData, std::string> PrimitiveVisualizer::icosphereWireframe() {
+    return {Primitives::icosphereWireframe(), "icospherewireframe.png"};
 }
 
 std::pair<Trade::MeshData, std::string> PrimitiveVisualizer::line3D() {

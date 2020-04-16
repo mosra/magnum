@@ -42,16 +42,19 @@ constexpr UnsignedInt Indices[]{
     3, 4, 5,
     4, 3, 8,
     6, 5, 11,
+
     5, 6, 10,
     9, 10, 2,
     10, 9, 3,
     7, 8, 9,
     8, 7, 0,
+
     11, 0, 1,
     0, 11, 4,
     6, 2, 10,
     1, 6, 11,
     3, 5, 10,
+
     5, 4, 11,
     2, 7, 9,
     7, 1, 0,
@@ -59,26 +62,30 @@ constexpr UnsignedInt Indices[]{
     4, 8, 0
 };
 
-constexpr Vector3 Positions[]{
-    {0.0f, -0.525731f, 0.850651f},
-    {0.850651f, 0.0f, 0.525731f},
-    {0.850651f, 0.0f, -0.525731f},
-    {-0.850651f, 0.0f, -0.525731f},
-    {-0.850651f, 0.0f, 0.525731f},
-    {-0.525731f, 0.850651f, 0.0f},
-    {0.525731f, 0.850651f, 0.0f},
-    {0.525731f, -0.850651f, 0.0f},
-    {-0.525731f, -0.850651f, 0.0f},
-    {0.0f, -0.525731f, -0.850651f},
-    {0.0f, 0.525731f, -0.850651f},
-    {0.0f, 0.525731f, 0.850651f}
+/* Can't be just an array of Vector3 because MSVC 2015 is special. See
+   Crosshair.cpp for details. */
+constexpr struct VertexSolidStrip {
+    Vector3 position;
+} Vertices[]{
+    {{0.0f, -0.525731f, 0.850651f}},
+    {{0.850651f, 0.0f, 0.525731f}},
+    {{0.850651f, 0.0f, -0.525731f}},
+    {{-0.850651f, 0.0f, -0.525731f}},
+    {{-0.850651f, 0.0f, 0.525731f}},
+    {{-0.525731f, 0.850651f, 0.0f}},
+    {{0.525731f, 0.850651f, 0.0f}},
+    {{0.525731f, -0.850651f, 0.0f}},
+    {{-0.525731f, -0.850651f, 0.0f}},
+    {{0.0f, -0.525731f, -0.850651f}},
+    {{0.0f, 0.525731f, -0.850651f}},
+    {{0.0f, 0.525731f, 0.850651f}}
 };
 
 }
 
 Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
     const std::size_t indexCount = Containers::arraySize(Indices)*(1 << subdivisions*2);
-    const std::size_t vertexCount = Containers::arraySize(Positions) + ((indexCount - Containers::arraySize(Indices))/3);
+    const std::size_t vertexCount = Containers::arraySize(Vertices) + ((indexCount - Containers::arraySize(Indices))/3);
 
     Containers::Array<char> indexData{indexCount*sizeof(UnsignedInt)};
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
@@ -96,12 +103,12 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
     {
         auto vertices = Containers::arrayCast<Vertex>(vertexData);
         Containers::StridedArrayView1D<Vector3> positions{vertices, &vertices[0].position, vertices.size(), sizeof(Vertex)};
-        for(std::size_t i = 0; i != Containers::arraySize(Positions); ++i)
-            positions[i] = Positions[i];
+        for(std::size_t i = 0; i != Containers::arraySize(Vertices); ++i)
+            positions[i] = Vertices[i].position;
 
         for(std::size_t i = 0; i != subdivisions; ++i) {
             const std::size_t iterationIndexCount = Containers::arraySize(Indices)*(1 << (i + 1)*2);
-            const std::size_t iterationVertexCount = Containers::arraySize(Positions) + ((iterationIndexCount - Containers::arraySize(Indices))/3);
+            const std::size_t iterationVertexCount = Containers::arraySize(Vertices) + ((iterationIndexCount - Containers::arraySize(Indices))/3);
             MeshTools::subdivideInPlace(indices.prefix(iterationIndexCount), positions.prefix(iterationVertexCount), [](const Vector3& a, const Vector3& b) {
                 return (a+b).normalized();
             });
@@ -123,6 +130,41 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
         Trade::MeshIndexData{indices}, std::move(vertexData),
         {Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions},
          Trade::MeshAttributeData{Trade::MeshAttribute::Normal, normals}}};
+}
+
+namespace {
+
+/* Taking the above, converting each triangle to three lines and leaving out
+   the duplicates. Because each edge is shared by two triangles and there was
+   20 triangles to begin with, there's 30 edges. */
+constexpr UnsignedInt IndicesWireframe[]{
+    1, 2, 2, 6, 6, 1,
+    1, 7, 7, 2,
+    3, 4, 4, 5, 5, 3,
+    3, 8, 8, 4,
+    6, 5, 5, 11, 11, 6,
+
+    6, 10, 10, 5,
+    9, 10, 10, 2, 2, 9,
+    9, 3, 3, 10,
+    7, 8, 8, 9, 9, 7,
+    7, 0, 0, 8,
+
+    11, 0, 0, 1, 1, 11,
+    11, 4, 4, 0
+};
+constexpr Trade::MeshAttributeData AttributesWireframe[]{
+    Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(Vertices, &Vertices[0].position,
+            Containers::arraySize(Vertices), sizeof(Vector3))}
+};
+
+}
+
+Trade::MeshData icosphereWireframe() {
+    return Trade::MeshData{MeshPrimitive::Lines,
+        {}, IndicesWireframe, Trade::MeshIndexData{IndicesWireframe},
+        {}, Vertices, Trade::meshAttributeDataNonOwningArray(AttributesWireframe)};
 }
 
 }}

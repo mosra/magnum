@@ -38,12 +38,16 @@ struct IcosphereTest: TestSuite::Tester {
     void count0();
     void data1();
     void count2();
+
+    void wireframe();
 };
 
 IcosphereTest::IcosphereTest() {
     addTests({&IcosphereTest::count0,
               &IcosphereTest::data1,
-              &IcosphereTest::count2});
+              &IcosphereTest::count2,
+
+              &IcosphereTest::wireframe});
 }
 
 void IcosphereTest::count0() {
@@ -144,6 +148,16 @@ void IcosphereTest::count2() {
     CORRADE_COMPARE(icosphere.indexCount(), 960);
     CORRADE_COMPARE(icosphere.vertexCount(), 162);
     CORRADE_COMPARE(icosphere.attributeCount(), 2);
+}
+
+void IcosphereTest::wireframe() {
+    Trade::MeshData icosphere = Primitives::icosphereWireframe();
+
+    CORRADE_COMPARE(icosphere.primitive(), MeshPrimitive::Lines);
+    CORRADE_VERIFY(icosphere.isIndexed());
+    CORRADE_COMPARE(icosphere.indexCount(), 60);
+    CORRADE_COMPARE(icosphere.vertexCount(), 12);
+    CORRADE_COMPARE(icosphere.attributeCount(), 1);
 }
 
 }}}}
