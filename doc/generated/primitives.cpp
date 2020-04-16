@@ -298,7 +298,6 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData> data;
             std::tie(data, filename) = (this->*fun)();
 
-            /* TODO: use MeshVisualizer2D once it exists */
             GL::Mesh mesh = MeshTools::compile(*data);
             flat.draw(mesh);
             wireframe2D.draw(mesh);
