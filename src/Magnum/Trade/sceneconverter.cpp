@@ -132,7 +132,8 @@ class BlobImporter: public Trade::AbstractImporter {
 
     UnsignedInt doMeshCount() const override { return 1; }
     Containers::Optional<Trade::MeshData> doMesh(UnsignedInt, UnsignedInt) override {
-        return Trade::MeshData::deserialize(_in);
+        /* GCC 4.8 and old Clang has problems with an implicit cast here */
+        return Trade::MeshData::deserialize(Containers::ArrayView<const void>(_in));
     }
 
     Containers::Array<const char, Utility::Directory::MapDeleter> _in;

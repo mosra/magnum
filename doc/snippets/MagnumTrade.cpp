@@ -65,6 +65,8 @@ using namespace Magnum::Math::Literals;
 
 int main() {
 
+/* GCC 4.8 and Clang 3.8 has problems with an implicit cast here */
+#if (defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))) && (!defined(CORRADE_TARGET_GCC) || __GNUC__ > 5 || (!defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ >= 4) || (defined(CORRADE_TARGET_APPLE_CLANG) && __clang_major__ >= 9))
 {
 /* [blob-deserialize-mesh] */
 Containers::Array<const char, Utility::Directory::MapDeleter> blob =
@@ -77,6 +79,7 @@ if(!spaceship) Fatal{} << "oh no";
 // ...
 /* [blob-deserialize-mesh] */
 }
+#endif
 
 {
 /* [AbstractImporter-usage] */
