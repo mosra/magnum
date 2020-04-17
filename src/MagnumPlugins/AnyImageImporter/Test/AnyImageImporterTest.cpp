@@ -152,10 +152,10 @@ void AnyImageImporterTest::detect() {
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageImporter::{1}(): cannot load {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageImporter::{1}(): cannot load {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageImporter::{1}(): cannot load the {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));
     #endif
 }
 
@@ -166,7 +166,7 @@ void AnyImageImporterTest::unknownExtension() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     CORRADE_VERIFY(!importer->openFile("image.xcf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openFile(): cannot determine type of file image.xcf\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openFile(): cannot determine the format of image.xcf\n");
 }
 
 void AnyImageImporterTest::unknownSignature() {
@@ -178,7 +178,7 @@ void AnyImageImporterTest::unknownSignature() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     CORRADE_VERIFY(!importer->openData(data));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): cannot determine type from signature 0x253a0000\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x253a0000\n");
 }
 
 void AnyImageImporterTest::emptyData() {

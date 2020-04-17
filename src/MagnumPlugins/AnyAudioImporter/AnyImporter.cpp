@@ -51,7 +51,7 @@ void AnyImporter::doOpenFile(const std::string& filename) {
     /** @todo lowercase only the extension, once Directory::split() is done */
     const std::string normalized = Utility::String::lowercase(filename);
 
-    /* Detect type from extension */
+    /* Detect the plugin from extension */
     std::string plugin;
     if(Utility::String::endsWith(normalized, ".aac"))
         plugin = "AacAudioImporter";
@@ -64,13 +64,13 @@ void AnyImporter::doOpenFile(const std::string& filename) {
     else if(Utility::String::endsWith(normalized, ".flac"))
         plugin = "FlacAudioImporter";
     else {
-        Error() << "Audio::AnyImporter::openFile(): cannot determine type of file" << filename;
+        Error{} << "Audio::AnyImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error() << "Audio::AnyImporter::openFile(): cannot load" << plugin << "plugin";
+        Error{} << "Audio::AnyImporter::openFile(): cannot load the" << plugin << "plugin";
         return;
     }
 

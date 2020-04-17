@@ -57,7 +57,7 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
     /** @todo lowercase only the extension, once Directory::split() is done */
     const std::string normalized = Utility::String::lowercase(filename);
 
-    /* Detect type from extension */
+    /* Detect the plugin from extension */
     std::string plugin;
     if(Utility::String::endsWith(normalized, ".basis"))
         plugin = "BasisImporter";
@@ -109,13 +109,13 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
             Utility::String::endsWith(normalized, ".vst"))
         plugin = "TgaImporter";
     else {
-        Error() << "Trade::AnyImageImporter::openFile(): cannot determine type of file" << filename;
+        Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error() << "Trade::AnyImageImporter::openFile(): cannot load" << plugin << "plugin";
+        Error{} << "Trade::AnyImageImporter::openFile(): cannot load the" << plugin << "plugin";
         return;
     }
 
@@ -180,13 +180,13 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
         if(data.size() > 1) signature |= data[1] << 16;
         if(data.size() > 2) signature |= data[2] << 8;
         if(data.size() > 3) signature |= data[3];
-        Error() << "Trade::AnyImageImporter::openData(): cannot determine type from signature" << reinterpret_cast<void*>(signature);
+        Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature" << reinterpret_cast<void*>(signature);
         return;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error() << "Trade::AnyImageImporter::openData(): cannot load" << plugin << "plugin";
+        Error{} << "Trade::AnyImageImporter::openData(): cannot load the" << plugin << "plugin";
         return;
     }
 

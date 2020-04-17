@@ -50,7 +50,7 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
     /** @todo lowercase only the extension, once Directory::split() is done */
     const std::string normalized = Utility::String::lowercase(filename);
 
-    /* Detect type from extension */
+    /* Detect the plugin from extension */
     std::string plugin;
     if(Utility::String::endsWith(normalized, ".bmp"))
         plugin = "BmpImageConverter";
@@ -72,13 +72,13 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
             Utility::String::endsWith(normalized, ".vst"))
         plugin = "TgaImageConverter";
     else {
-        Error() << "Trade::AnyImageConverter::exportToFile(): cannot determine type of file" << filename;
+        Error{} << "Trade::AnyImageConverter::exportToFile(): cannot determine the format of" << filename;
         return false;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error() << "Trade::AnyImageConverter::exportToFile(): cannot load" << plugin << "plugin";
+        Error{} << "Trade::AnyImageConverter::exportToFile(): cannot load the" << plugin << "plugin";
         return false;
     }
 
@@ -92,12 +92,11 @@ bool AnyImageConverter::doExportToFile(const CompressedImageView2D&, const std::
 
     /* No file formats to store compressed data yet */
 
-    Error() << "Trade::AnyImageConverter::exportToFile(): cannot determine type of file" << filename << "to store compressed data";
+    Error{} << "Trade::AnyImageConverter::exportToFile(): cannot determine the format of" << filename << "to store compressed data";
     return false;
 }
 
 }}
-
 
 CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
     "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")

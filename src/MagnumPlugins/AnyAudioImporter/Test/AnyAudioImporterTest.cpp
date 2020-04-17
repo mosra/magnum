@@ -116,10 +116,10 @@ void AnyImporterTest::detect() {
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nAudio::AnyImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nAudio::AnyImporter::openFile(): cannot load the {0} plugin\n", data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nAudio::AnyImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} was not found\nAudio::AnyImporter::openFile(): cannot load the {0} plugin\n", data.plugin));
     #endif
 }
 
@@ -130,7 +130,7 @@ void AnyImporterTest::unknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     CORRADE_VERIFY(!importer->openFile("sound.mid"));
 
-    CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine type of file sound.mid\n");
+    CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine the format of sound.mid\n");
 }
 
 }}}}

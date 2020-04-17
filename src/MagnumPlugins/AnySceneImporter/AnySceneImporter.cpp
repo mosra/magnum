@@ -71,7 +71,7 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
     /** @todo lowercase only the extension, once Directory::split() is done */
     const std::string normalized = Utility::String::lowercase(filename);
 
-    /* Detect type from extension */
+    /* Detect the plugin from extension */
     std::string plugin;
     if(Utility::String::endsWith(normalized, ".3ds") ||
        Utility::String::endsWith(normalized, ".ase"))
@@ -129,13 +129,13 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
             Utility::String::endsWith(normalized, ".zgl"))
         plugin = "XglImporter";
     else {
-        Error() << "Trade::AnySceneImporter::openFile(): cannot determine type of file" << filename;
+        Error{} << "Trade::AnySceneImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
-        Error() << "Trade::AnySceneImporter::openFile(): cannot load" << plugin << "plugin";
+        Error{} << "Trade::AnySceneImporter::openFile(): cannot load the" << plugin << "plugin";
         return;
     }
 

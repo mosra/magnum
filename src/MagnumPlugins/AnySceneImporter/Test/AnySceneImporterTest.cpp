@@ -160,10 +160,10 @@ void AnySceneImporterTest::detect() {
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnySceneImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnySceneImporter::openFile(): cannot load the {0} plugin\n", data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnySceneImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnySceneImporter::openFile(): cannot load the {0} plugin\n", data.plugin));
     #endif
 }
 
@@ -174,7 +174,7 @@ void AnySceneImporterTest::unknown() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
     CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.wtf\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
 }
 
 }}}}

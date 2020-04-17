@@ -133,10 +133,10 @@ void AnyImageConverterTest::detect() {
     /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageConverter::exportToFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageConverter::exportToFile(): cannot load the {0} plugin\n", data.plugin));
     #else
     CORRADE_COMPARE(out.str(), Utility::formatString(
-"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageConverter::exportToFile(): cannot load {0} plugin\n", data.plugin));
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageConverter::exportToFile(): cannot load the {0} plugin\n", data.plugin));
     #endif
 }
 
@@ -147,7 +147,7 @@ void AnyImageConverterTest::unknown() {
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(!converter->exportToFile(Image, "image.xcf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine type of file image.xcf\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine the format of image.xcf\n");
 }
 
 }}}}
