@@ -34,7 +34,7 @@ macro(add_plugin plugin_name debug_install_dirs release_install_dirs metadata_fi
     endif()
 endmacro()
 
-if(WITH_AUDIO AND WITH_ANYAUDIOIMPORTER)
+if(WITH_ANYAUDIOIMPORTER)
     add_subdirectory(AnyAudioImporter)
 endif()
 
@@ -50,11 +50,11 @@ if(WITH_ANYSCENEIMPORTER)
     add_subdirectory(AnySceneImporter)
 endif()
 
-if(WITH_TEXT AND WITH_MAGNUMFONT)
+if(WITH_MAGNUMFONT)
     add_subdirectory(MagnumFont)
 endif()
 
-if(WITH_TEXT AND WITH_MAGNUMFONTCONVERTER AND NOT MAGNUM_TARGET_GLES)
+if(WITH_MAGNUMFONTCONVERTER)
     add_subdirectory(MagnumFontConverter)
 endif()
 
@@ -70,6 +70,6 @@ if(WITH_TGAIMPORTER)
     add_subdirectory(TgaImporter)
 endif()
 
-if(WITH_AUDIO AND WITH_WAVAUDIOIMPORTER)
+if(WITH_WAVAUDIOIMPORTER)
     add_subdirectory(WavAudioImporter)
 endif()

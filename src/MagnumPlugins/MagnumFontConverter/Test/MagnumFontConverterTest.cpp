@@ -69,6 +69,9 @@ MagnumFontConverterTest::MagnumFontConverterTest() {
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
+
+    /* Create the output directory if it doesn't exist yet */
+    CORRADE_INTERNAL_ASSERT(Utility::Directory::mkpath(MAGNUMFONTCONVERTER_TEST_WRITE_DIR));
 }
 
 void MagnumFontConverterTest::exportFont() {
@@ -129,7 +132,7 @@ void MagnumFontConverterTest::exportFont() {
 
     /* Convert the file */
     Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
-    converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    CORRADE_VERIFY(converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
 
     /* Verify font parameters */
     CORRADE_COMPARE_AS(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"),

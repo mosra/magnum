@@ -23,6 +23,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(MAGNUMFONTCONVERTER_TEST_WRITE_DIR "write")
+    set(MAGNUMFONT_TEST_DIR ".")
+else()
+    set(MAGNUMFONTCONVERTER_TEST_WRITE_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    set(MAGNUMFONT_TEST_DIR ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/MagnumFont/Test)
+endif()
+
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
 # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
 # doesn't support dynamic plugins on iOS, this sorta works around that. Should
@@ -42,7 +50,10 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
-    LIBRARIES MagnumText MagnumTrade)
+    LIBRARIES MagnumText MagnumTrade
+    FILES
+        ../../MagnumFont/Test/font.conf
+        ../../MagnumFont/Test/font.tga)
 target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(MagnumFontConverterTest PRIVATE
