@@ -61,6 +61,8 @@ tries to open the file with it. Supported formats:
 -   AC3D (`*.ac`), loaded with any plugin that provides `Ac3dImporter`
 -   Blender 3D (`*.blend`), loaded with any plugin that provides
     `BlenderImporter`
+-   @ref blob "Magnum's memory-mappable serialization format" (`*.blob`),
+    loaded with @ref MagnumImporter
 -   Biovision BVH (`*.bvh`), loaded with any plugin that provides `BvhImporter`
 -   CharacterStudio Motion (`*.csm`), loaded with any plugin that provides
     `CsmImporter`
