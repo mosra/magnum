@@ -1,0 +1,107 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page blob Magnum's memory-mappable serialization format
+@brief Efficient and extensible format for storing binary data
+@m_since_latest
+
+@tableofcontents
+@m_footernavigation
+
+Apart from various data import and conversion plugins, described in the
+@ref plugins "previous chapter", Magnum provides its own binary format. Files
+stored in this format have a `*.blob` extension and are identified by various
+permutations of the letters `BLOB` in their first few bytes.
+
+The goal of the format is being usable directly without having to process the
+data payload in any way. That allows for example the file contents to be
+memory-mapped and operated on directly. In order to achieve this, there's four
+different variants of the format based on whether it's running on a 32-bit or
+64-bit system and whether the machine is Little- or Big-Endian. The @ref Trade
+library itself provides serialization and deserialization of blob formats
+matching the platform it's running on. Import and conversion of blobs with
+different endianness or bitness (as well as compatibility with previous format
+versions as the format will evolve) is handled by the
+@ref Trade::MagnumImporter "MagnumImporter" and
+@ref Trade::MagnumSceneConverter "MagnumSceneConverter" plugins --- since this
+functionality is not strictly needed when shipping an application, it's
+provided separately.
+
+@section blob-implementation Implementation
+
+The binary format consists of "chunks" similar to [RIFF](https://en.wikipedia.org/wiki/Resource_Interchange_File_Format),
+and the main property is an ability to combine arbitrary chunks together in the
+most trivial way possible as well as extracting them back. Each chunk has a
+@ref Trade::DataChunkHeader containing a [FourCC](https://en.wikipedia.org/wiki/FourCC)-like @ref Trade::DataChunkType identifier and a chunk size, allowing applications to pick chunks that they're interested in and reliably skip the
+others. Compared to RIFF the file doesn't have any "global" chunk in order to
+make trivial file concatenation possible:
+
+@code{.sh}
+cat chair.blob table.blob > furniture.blob
+@endcode
+
+@section blob-iteration Chunk iteration
+
+To be designed & written first.
+
+@section blob-meshdata Mesh data
+
+Currently there's just a single serializable data type, @ref Trade::MeshData.
+You can create serialized blobs using @ref Trade::MeshData::serialize() or
+alternatively using the @ref magnum-sceneconverter "magnum-sceneconverter"
+tool, for example:
+
+@code{.sh}
+magnum-sceneconverter avocado.glb avocado.blob
+@endcode
+
+Deserialization is then done with @ref Trade::MeshData::deserialize(). The
+function takes a memory view as an input and returns a @ref Trade::MeshData
+instance pointing to that view, without copying or processing the data in any
+way. A recommended way to access serialized data is thus via memory-mapping the
+file (for example using @ref Utility::Directory::mapRead() or any other way
+your platform allows), and keeping it around for as long as you need:
+
+@snippet MagnumTrade.cpp blob-deserialize-mesh
+
+@section blob-custom Custom chunk types
+
+As said above, the format is designed to allow custom chunk types to be mixed
+together with data recognized by Magnum. To make a custom chunk, create your
+own @ref Trade::DataChunkType using @ref Corrade::Utility::Endianness::fourCC()
+--- identifiers starting with an uppercase letter are reserved for Magnum
+itself, custom application-specific data types should use a lowercase first
+letter instead.
+
+Then write a serialization/deserialization API similar to
+@ref Trade::MeshData::serialize() / @ref Trade::MeshData::deserialize() with
+the help of low-level @ref Trade::dataChunkHeaderSerializeInto() and
+@ref Trade::dataChunkHeaderDeserialize(). Those functions will take care of
+properly filling in required chunk header fields when serializing and checking
+chunk validity when deserializing. Validation of the chunk data itself is then
+up to you.
+*/
+}

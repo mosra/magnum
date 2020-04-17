@@ -104,6 +104,8 @@ specified effect in the current version of the header. It doesn't need to be
 alphanumeric either, but for additional versioning of a particular chunk type
 it's recommended to use @ref DataChunkHeader::typeVersion, keeping the chunk
 type FourCC clearly recognizable.
+
+@see @ref blob
 */
 enum class DataChunkType: UnsignedInt {
     /**
@@ -139,7 +141,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataChunkType value);
 
 Reads as `BLOB` letters for a Little-Endian 64 bit data chunk. For Big-Endian
 the order is reversed (thus `BOLB`), 32-bit data have the `L` letter lowercase.
-@see @ref DataChunkHeader::signature
+@see @ref blob, @ref DataChunkHeader::signature
 */
 enum class DataChunkSignature: UnsignedInt {
     /** Little-Endian 32-bit data. The letters `BlOB`. */
@@ -175,6 +177,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataChunkSignature value);
 /**
 @brief Header for memory-mappable data chunks
 @m_since_latest
+
+See @ref blob for an introduction.
 
 Since the goal of the serialization format is to be a direct equivalent to the
 in-memory data layout, there's four different variants of the header based on
@@ -241,6 +245,7 @@ current platform and @p data is large enough to contain the whole chunk,
 @cpp false @ce otherwise. The function doesn't print any diagnostic messages on
 validation failure, use @ref dataChunkHeaderDeserialize() instead if you need
 to know why.
+@see @ref blob
 */
 MAGNUM_TRADE_EXPORT bool isDataChunk(Containers::ArrayView<const void> data);
 
@@ -251,7 +256,7 @@ MAGNUM_TRADE_EXPORT bool isDataChunk(Containers::ArrayView<const void> data);
 Checks that @p data is large enough to contain a valid data chunk, validates
 the header and then returns @p data reinterpreted as a @ref DataChunkHeader
 pointer. On failure prints an error message and returns @cpp nullptr @ce.
-@see @ref isDataChunk(), @ref dataChunkHeaderSerializeInto()
+@see @ref blob, @ref isDataChunk(), @ref dataChunkHeaderSerializeInto()
 */
 MAGNUM_TRADE_EXPORT const DataChunkHeader* dataChunkHeaderDeserialize(Containers::ArrayView<const void> data);
 
@@ -267,7 +272,7 @@ Expects that @p data is at least the size of @ref DataChunkHeader. Fills in
 @ref DataChunkHeader::typeVersion and @ref DataChunkHeader::type with passed
 values used in constructor, and @ref DataChunkHeader::size with @p data size.
 
-@see @ref dataChunkHeaderDeserialize()
+@see @ref blob, @ref dataChunkHeaderDeserialize()
 */
 MAGNUM_TRADE_EXPORT std::size_t dataChunkHeaderSerializeInto(Containers::ArrayView<char> out, DataChunkType type, UnsignedShort typeVersion);
 

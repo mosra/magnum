@@ -66,6 +66,19 @@ using namespace Magnum::Math::Literals;
 int main() {
 
 {
+/* [blob-deserialize-mesh] */
+Containers::Array<const char, Utility::Directory::MapDeleter> blob =
+    Utility::Directory::mapRead("extremely-huge-spaceship.blob");
+
+Containers::Optional<Trade::MeshData> spaceship =
+    Trade::MeshData::deserialize(blob);
+if(!spaceship) Fatal{} << "oh no";
+
+// ...
+/* [blob-deserialize-mesh] */
+}
+
+{
 /* [AbstractImporter-usage] */
 PluginManager::Manager<Trade::AbstractImporter> manager;
 Containers::Pointer<Trade::AbstractImporter> importer =

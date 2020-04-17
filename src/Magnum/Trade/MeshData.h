@@ -715,7 +715,7 @@ implementation-specific @ref VertexFormat values.
 
 Using @ref serialize(), an instance of this class can be serialized into
 Magnum's memory-mappable serialization format, and deserialized back using
-@ref deserialize().
+@ref deserialize(). See @ref blob for a high-level introduction.
 
 The deserialization only involves various sanity checks followed by a creation
 of a new @ref MeshData instance referencing the index, vertex and attribute

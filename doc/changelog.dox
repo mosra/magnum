@@ -272,6 +272,9 @@ See also:
     scene formats
 -   New @ref Trade::AbstractSceneConverter plugin interface and an
     @ref Trade::AnySceneConverter "AnySceneConverter" plugin
+-   Efficient and extensible memory-mappable serialization format for binary
+    data. See @ref blob for an introduction, see also
+    [mosra/magnum#427](https://github.com/mosra/magnum/pull/427).
 -   Ability to import image mip levels via an additional parameter in
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
