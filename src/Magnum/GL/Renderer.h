@@ -1000,7 +1000,7 @@ class MAGNUM_GL_EXPORT Renderer {
         /**
          * @{ @name Blending
          *
-         * You have to enable blending with @ref enable() first.
+         * You have to enable @ref Feature::Blending first.
          * @todo Blending for given draw buffer
          */
 
@@ -1433,6 +1433,20 @@ class MAGNUM_GL_EXPORT Renderer {
          * @param destination   How the destination blending factor is
          *      computed from framebuffer. Initial value is @ref BlendFunction::Zero.
          *
+         * @m_keyword{Alpha blending,,}
+         * @m_keywords{Blending Transparency}
+         *
+         * Common setup for alpha blending is the following, depending on
+         * whether your colors / textures have a [premultiplied alpha](https://developer.nvidia.com/content/alpha-blending-pre-or-not-pre)
+         * (RGB channels always less than or equal to the alpha) or not:
+         *
+         * @snippet MagnumGL.cpp Renderer-setBlendFunction
+         *
+         * Note that in 3D you need to sort and render transparent objects
+         * back-to-front after all opaque objects in order for them to appear
+         * correctly. Alternatively, builtin shaders such as @ref Shaders::Flat
+         * or @ref Shaders::Phong support alpha masking, which works without
+         * alpha blending enabled and doesn't require depth sorting.
          * @see @ref Feature::Blending, @ref setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
          *      @ref setBlendEquation(), @ref setBlendColor(),
          *      @fn_gl_keyword{BlendFunc}

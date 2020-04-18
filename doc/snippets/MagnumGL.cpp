@@ -1330,6 +1330,15 @@ enabled ? GL::Renderer::enable(feature) : GL::Renderer::disable(feature)
 ;
 }
 
+{
+/* [Renderer-setBlendFunction] */
+GL::Renderer::enable(GL::Renderer::Feature::Blending);
+GL::Renderer::setBlendFunction(
+    GL::Renderer::BlendFunction::One, /* or SourceAlpha for non-premultiplied */
+    GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+/* [Renderer-setBlendFunction] */
+}
+
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 {
 /* [SampleQuery-usage] */

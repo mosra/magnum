@@ -56,6 +56,11 @@ configure the shader.
 
 @image html shaders-vector.png width=256px
 
+Alpha / transparency is supported by the shader implicitly, but to have it
+working on the framebuffer, you need to enable
+@ref GL::Renderer::Feature::Blending and set up the blending function. See
+@ref GL::Renderer::setBlendFunction() for details.
+
 @section Shaders-Vector-usage Example usage
 
 Common mesh setup:

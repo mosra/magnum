@@ -75,12 +75,17 @@ Common rendering setup:
 
 @section Shaders-Phong-alpha Alpha blending and masking
 
-Enable @ref Flag::AlphaMask and tune @ref setAlphaMask() for simple
-binary alpha-masked drawing that doesn't require depth sorting or blending
-enabled. Note that this feature is implemented using the GLSL @glsl discard @ce
-operation which is known to have considerable performance impact on some
-platforms. With proper depth sorting and blending you'll usually get much
-better performance and output quality.
+Alpha / transparency is supported by the shader implicitly, but to have it
+working on the framebuffer, you need to enable
+@ref GL::Renderer::Feature::Blending and set up the blending function. See
+@ref GL::Renderer::setBlendFunction() for details.
+
+An alternative is to enable @ref Flag::AlphaMask and tune @ref setAlphaMask()
+for simple binary alpha-masked drawing that doesn't require depth sorting or
+blending enabled. Note that this feature is implemented using the GLSL
+@glsl discard @ce operation which is known to have considerable performance
+impact on some platforms. With proper depth sorting and blending you'll usually
+get much better performance and output quality.
 
 For general alpha-masked drawing you need to provide an ambient texture with
 alpha channel and set alpha channel of the diffuse/specular color to @cpp 0.0f @ce

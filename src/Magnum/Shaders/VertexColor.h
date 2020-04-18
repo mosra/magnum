@@ -51,6 +51,11 @@ enabled; the 3D version of this shader is equivalent to @ref Phong with
 @ref Phong::Flag::VertexColor enabled. In both cases this implementation is
 much simpler and thus likely also faster.
 
+Alpha / transparency is supported by the shader implicitly, but to have it
+working on the framebuffer, you need to enable
+@ref GL::Renderer::Feature::Blending and set up the blending function. See
+@ref GL::Renderer::setBlendFunction() for details.
+
 @section Shaders-VertexColor-example Example usage
 
 Common mesh setup. The shader accepts either three- or four-component color

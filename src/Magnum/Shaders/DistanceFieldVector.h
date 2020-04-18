@@ -55,6 +55,11 @@ texture with a white color in an identity transformation, use
 @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
+Alpha / transparency is supported by the shader implicitly, but to have it
+working on the framebuffer, you need to enable
+@ref GL::Renderer::Feature::Blending and set up the blending function. See
+@ref GL::Renderer::setBlendFunction() for details.
+
 @image html shaders-distancefieldvector.png width=256px
 
 @section Shaders-DistanceFieldVector-usage Example usage

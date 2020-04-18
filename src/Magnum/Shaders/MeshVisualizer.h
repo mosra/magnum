@@ -381,6 +381,12 @@ If using geometry shaders on OpenGL ES, @gl_extension{NV,shader_noperspective_in
 is optionally used for improving line appearance. On desktop OpenGL this is
 done implicitly.
 
+If you want to render just the wireframe on top of an existing mesh, call
+@ref setColor() with @cpp 0x00000000_rgbaf @ce. Alpha / transparency is
+supported by the shader implicitly, but to have it working on the framebuffer,
+you need to enable @ref GL::Renderer::Feature::Blending and set up the blending
+function. See @ref GL::Renderer::setBlendFunction() for details.
+
 @subsection Shaders-MeshVisualizer-wireframe-geom Example setup with a geometry shader (desktop GL, OpenGL ES 3.2)
 
 Common mesh setup:
