@@ -1001,7 +1001,6 @@ class MAGNUM_GL_EXPORT Renderer {
          * @{ @name Blending
          *
          * You have to enable @ref Feature::Blending first.
-         * @todo Blending for given draw buffer
          */
 
         /**
