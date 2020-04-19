@@ -151,6 +151,12 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
+        #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
+        .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
+        #endif
+        #endif
         .parse(arguments.argc, arguments.argv);
 
     if(args.isSet("exit-immediately")) {
@@ -162,6 +168,14 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    if(args.isSet("borderless"))
+        conf.addWindowFlags(Configuration::WindowFlag::Borderless);
+    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
+    if(args.isSet("always-on-top"))
+        conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
+    #endif
+    #endif
     create(conf);
 
     /* For testing resize events */

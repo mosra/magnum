@@ -1535,6 +1535,14 @@ class Sdl2Application::Configuration {
             Fullscreen = SDL_WINDOW_FULLSCREEN,
 
             /**
+             * Fullscreen window at the current desktop resolution
+             * @m_since_latest
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            FullscreenDesktop = SDL_WINDOW_FULLSCREEN_DESKTOP,
+
+            /**
              * No window decoration. On iOS this hides the menu bar.
              *
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
@@ -1579,8 +1587,66 @@ class Sdl2Application::Configuration {
              * Window with mouse locked
              *
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @todo SDL_WINDOW_MOUSE_CAPTURE, also what all those do? isn't it
+             *      redundant / better handled with cursor APIs?
              */
             MouseLocked = SDL_WINDOW_INPUT_GRABBED,
+
+            /** @todo SDL_WINDOW_INPUT_FOCUS, SDL_WINDOW_MOUSE_FOCUS, GLFW has
+                GLFW_FOCUSED (exposed as Focused) and GLFW_FOCUS_ON_SHOW (not
+                exposed) -- what's the relation? How to make these compatible? */
+
+            #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * Always on top
+             * @m_since_latest
+             *
+             * @note Available since SDL 2.0.5, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
+             *      SDL docs works only on X11.
+             */
+            AlwaysOnTop = SDL_WINDOW_ALWAYS_ON_TOP,
+
+            /**
+             * Don't add the window to taskbar
+             * @m_since_latest
+             *
+             * @note Available since SDL 2.0.5, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
+             *      SDL docs works only on X11.
+             */
+            SkipTaskbar = SDL_WINDOW_SKIP_TASKBAR,
+
+            /**
+             * Window should be treated as a utility window
+             * @m_since_latest
+             *
+             * @note Available since SDL 2.0.5, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
+             *      SDL docs works only on X11.
+             */
+            Utility = SDL_WINDOW_UTILITY,
+
+            /**
+             * Window should be treated as a tooltip
+             * @m_since_latest
+             *
+             * @note Available since SDL 2.0.5, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
+             *      SDL docs works only on X11.
+             */
+            Tooltip = SDL_WINDOW_TOOLTIP,
+
+            /**
+             * Window should be treated as a popup menu
+             * @m_since_latest
+             *
+             * @note Available since SDL 2.0.5, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
+             *      SDL docs works only on X11.
+             */
+            PopupMenu = SDL_WINDOW_POPUP_MENU,
+            #endif
             #endif
 
             /**
@@ -1797,6 +1863,35 @@ class Sdl2Application::Configuration {
          */
         Configuration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearWindowFlags()
+         */
+        Configuration& addWindowFlags(WindowFlags flags) {
+            _windowFlags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
+         * existing instead of replacing them. Useful for removing default
+         * flags.
+         * @see @ref addWindowFlags()
+         */
+        Configuration& clearWindowFlags(WindowFlags flags) {
+            _windowFlags &= ~flags;
             return *this;
         }
 

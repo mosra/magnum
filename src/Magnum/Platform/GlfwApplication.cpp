@@ -327,12 +327,13 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
         glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
     } else {
         const Configuration::WindowFlags& flags = configuration.windowFlags();
+        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
         glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
         #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
         #endif
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
+        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
@@ -402,12 +403,13 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
     } else {
         const Configuration::WindowFlags& flags = configuration.windowFlags();
+        glfwWindowHint(GLFW_DECORATED, !(flags >= Configuration::WindowFlag::Borderless));
         glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
         #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
         #endif
-        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
+        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::AlwaysOnTop);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 

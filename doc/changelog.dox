@@ -203,6 +203,18 @@ See also:
     @ref Platform::WindowlessGlxApplication,
     @ref Platform::WindowlessWglApplication and
     @ref Platform::WindowlessWindowsEglApplication (see [mosra/magnum#](https://github.com/mosra/magnum/pull/433))
+-   Added @ref Platform::GlfwApplication::Configuration::WindowFlag::Borderless
+-   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop,
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::AlwaysOnTop "AlwaysOnTop",
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::SkipTaskbar "SkipTaskbar",
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::Utility "Utility",
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::Tooltip "Tooltip"
+    and @ref Platform::Sdl2Application::Configuration::WindowFlag::PopupMenu "PopupMenu"
+-   Added @ref Platform::Sdl2Application::Configuration::addWindowFlags() and
+    @ref Platform::Sdl2Application::Configuration::clearWindowFlags() "clearWindowFlags()"
+    for consistency with similar functions in
+    @ref Platform::Sdl2Application::GLConfiguration; same done for
+    @ref Platform::GlfwApplication as well
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
@@ -518,6 +530,10 @@ See also:
     @cpp Platform::Sdl2Application::Configuration::isMouseLocked() @ce is
     deprecated in favor of the new @ref Platform::Sdl2Application::setCursor()
     together with @ref Platform::Sdl2Application::Cursor::HiddenLocked
+-   @cpp Platform::GlfwApplication::Configuration::WindowFlag::Floating @ce is
+    deprecated in favor of a more descriptive
+    @ref Platform::GlfwApplication::Configuration::WindowFlag::AlwaysOnTop,
+    which is also consistent with @ref Platform::Sdl2Application
 -   @cpp Audio::AbstractImporter::Features @ce,
     @cpp Text::AbstractFont::Features @ce,
     @cpp Text::AbstractFontConverter::Features @ce,

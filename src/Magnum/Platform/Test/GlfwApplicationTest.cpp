@@ -106,6 +106,8 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     args.addOption("dpi-scaling").setHelp("dpi-scaling", "DPI scaled passed via Configuration instead of --magnum-dpi-scaling, to test app overrides")
         .addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
+        .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
+        .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
         .parse(arguments.argc, arguments.argv);
 
     if(args.isSet("exit-immediately")) {
@@ -117,6 +119,10 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
     if(!args.value("dpi-scaling").empty())
         conf.setSize({800, 600}, args.value<Vector2>("dpi-scaling"));
+    if(args.isSet("borderless"))
+        conf.addWindowFlags(Configuration::WindowFlag::Borderless);
+    if(args.isSet("always-on-top"))
+        conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
     create(conf);
 
     /* For testing resize events */

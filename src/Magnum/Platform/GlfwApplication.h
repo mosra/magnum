@@ -1016,8 +1016,15 @@ class GlfwApplication::Configuration {
          */
         enum class WindowFlag: UnsignedShort {
             Fullscreen = 1 << 0,   /**< Fullscreen window */
-            Resizable = 1 << 1,    /**< Resizable window */
-            Hidden = 1 << 2,       /**< Hidden window */
+
+            /**
+             * No window decoration
+             * @m_since_latest
+             */
+            Borderless = 1 << 1,
+
+            Resizable = 1 << 2,    /**< Resizable window */
+            Hidden = 1 << 3,       /**< Hidden window */
 
             #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_MAXIMIZED)
             /**
@@ -1025,19 +1032,37 @@ class GlfwApplication::Configuration {
              *
              * @note Supported since GLFW 3.2.
              */
-            Maximized = 1 << 3,
+            Maximized = 1 << 4,
             #endif
 
-            Minimized = 1 << 4,    /**< Minimized window */
-            Floating = 1 << 5,     /**< Window floating above others, top-most */
+            Minimized = 1 << 5,    /**< Minimized window */
+
+            /**
+             * Always on top
+             * @m_since_latest
+             */
+            AlwaysOnTop = 1 << 6,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Always on top
+             * @deprecated Use @ref WindowFlag::AlwaysOnTop instead.
+             */
+            Floating CORRADE_DEPRECATED_ENUM("use AlwaysOnTop instead") = AlwaysOnTop,
+            #endif
 
             /**
              * Automatically iconify (minimize) if fullscreen window loses
              * input focus
              */
-            AutoIconify = 1 << 6,
+            AutoIconify = 1 << 7,
 
-            Focused = 1 << 7,      /**< Window has input focus */
+            /**
+             * Window has input focus
+             *
+             * @todo there's also GLFW_FOCUS_ON_SHOW, what's the difference?
+             */
+            Focused = 1 << 8,
 
             #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_NO_API)
             /**
@@ -1050,7 +1075,7 @@ class GlfwApplication::Configuration {
              *
              * @note Supported since GLFW 3.2.
              */
-            Contextless = 1 << 8
+            Contextless = 1 << 9
             #endif
         };
 
@@ -1239,6 +1264,35 @@ class GlfwApplication::Configuration {
          */
         Configuration& setWindowFlags(WindowFlags windowFlags) {
             _windowFlags = windowFlags;
+            return *this;
+        }
+
+        /**
+         * @brief Add window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearWindowFlags()
+         */
+        Configuration& addWindowFlags(WindowFlags flags) {
+            _windowFlags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
+         * existing instead of replacing them. Useful for removing default
+         * flags.
+         * @see @ref addWindowFlags()
+         */
+        Configuration& clearWindowFlags(WindowFlags flags) {
+            _windowFlags &= ~flags;
             return *this;
         }
 
