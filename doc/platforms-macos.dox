@@ -31,6 +31,8 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@m_keyword{Apple macOS,,}
+
 @todoc code coverage
 
 With Apple decision to focus on Metal, macOS OpenGL support is stuck on version

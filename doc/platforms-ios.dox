@@ -31,6 +31,8 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@m_keyword{Apple iOS,,}
+
 With Apple decision to focus on Metal, iOS OpenGL ES support is stuck on
 version 3.0 (i.e., a version before compute shaders are available). Moreover,
 OpenGL ES is deprecated since iOS 12.
