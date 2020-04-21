@@ -171,7 +171,7 @@ void CombineTest::combineIndexedAttributesNotIndexed() {
         {}, indices, Trade::MeshIndexData{indices}, 1};
     Trade::MeshData b{MeshPrimitive::Lines,
         {}, indices, Trade::MeshIndexData{indices}, 1};
-    Trade::MeshData c{MeshPrimitive::Lines, 5};
+    Trade::MeshData c{MeshPrimitive::Lines, 1};
 
     std::ostringstream out;
     Error redirectError{&out};
