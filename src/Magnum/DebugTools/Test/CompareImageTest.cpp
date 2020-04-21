@@ -739,9 +739,22 @@ void CompareImageTest::compareSpecials() {
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #endif
 
-    /* Linux, Emscripten */
+    /* Linux, Emscripten. Somehow, a Release build sometimes gives a positive
+       NaN, so test for both. */
     #else
-    CORRADE_COMPARE(out.str(),
+    constexpr const char* expectedPositive =
+        "Images a and b have both max and mean delta above threshold, actual 3.1/nan but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n";
+    if(out.str() == expectedPositive)
+        CORRADE_COMPARE(out.str(), expectedPositive);
+    else CORRADE_COMPARE(out.str(),
         "Images a and b have both max and mean delta above threshold, actual 3.1/-nan but at most 1.5/0.5 expected. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
@@ -821,9 +834,22 @@ void CompareImageTest::compareSpecialsMeanOnly() {
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
     #endif
 
-    /* Linux, Emscripten */
+    /* Linux, Emscripten. Somehow, a Release build sometimes gives a positive
+       NaN, so test for both. */
     #else
-    CORRADE_COMPARE(out.str(),
+    constexpr const char* expectedPositive =
+        "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n";
+    if(out.str() == expectedPositive)
+        CORRADE_COMPARE(out.str(), expectedPositive);
+    else CORRADE_COMPARE(out.str(),
         "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
