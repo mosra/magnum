@@ -40,6 +40,7 @@ struct TranslationTransformationTest: TestSuite::Tester {
     explicit TranslationTransformationTest();
 
     void fromMatrix();
+    void fromMatrixInvalid();
     void toMatrix();
     void compose();
     void inverted();
@@ -54,6 +55,7 @@ struct TranslationTransformationTest: TestSuite::Tester {
 
 TranslationTransformationTest::TranslationTransformationTest() {
     addTests({&TranslationTransformationTest::fromMatrix,
+              &TranslationTransformationTest::fromMatrixInvalid,
               &TranslationTransformationTest::toMatrix,
               &TranslationTransformationTest::compose,
               &TranslationTransformationTest::inverted,
@@ -67,13 +69,19 @@ TranslationTransformationTest::TranslationTransformationTest() {
 }
 
 void TranslationTransformationTest::fromMatrix() {
+    const Vector2 v(1.0f, -0.3f);
+    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::translation(v)), v);
+}
+
+void TranslationTransformationTest::fromMatrixInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream o;
     Error redirectError{&o};
     Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
-
-    const Vector2 v(1.0f, -0.3f);
-    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::translation(v)), v);
 }
 
 void TranslationTransformationTest::toMatrix() {

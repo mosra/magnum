@@ -153,10 +153,10 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
@@ -216,6 +216,10 @@ template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove()
 
 template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::setTextureMatrixNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};

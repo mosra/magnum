@@ -134,7 +134,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
                 reinterpretFormat = GL::PixelFormat::RGBAInteger;
                 break;
             default:
-                CORRADE_ASSERT(false, "DebugTools::textureSubImage(): unsupported pixel format" << format, );
+                CORRADE_ASSERT_UNREACHABLE("DebugTools::textureSubImage(): unsupported pixel format" << format, );
         }
 
         GL::Texture2D output;

@@ -26,6 +26,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Magnum.h"

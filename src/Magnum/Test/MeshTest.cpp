@@ -166,6 +166,10 @@ void MeshTest::primitiveWrap() {
 }
 
 void MeshTest::primitiveWrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -180,6 +184,10 @@ void MeshTest::primitiveUnwrap() {
 }
 
 void MeshTest::primitiveUnwrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -195,6 +203,10 @@ void MeshTest::indexTypeSize() {
 }
 
 void MeshTest::indexTypeSizeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

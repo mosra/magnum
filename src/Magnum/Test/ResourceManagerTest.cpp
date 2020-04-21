@@ -46,6 +46,7 @@ struct ResourceManagerTest: TestSuite::Tester {
     void stateFallback();
     void stateDisallowed();
     void basic();
+    void changeFinalResource();
     void residentPolicy();
     void referenceCountedPolicy();
     void manualPolicy();
@@ -82,6 +83,7 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::stateFallback,
               &ResourceManagerTest::stateDisallowed,
               &ResourceManagerTest::basic,
+              &ResourceManagerTest::changeFinalResource,
               &ResourceManagerTest::residentPolicy,
               &ResourceManagerTest::referenceCountedPolicy,
               &ResourceManagerTest::manualPolicy,
@@ -259,6 +261,10 @@ void ResourceManagerTest::stateFallback() {
 }
 
 void ResourceManagerTest::stateDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     ResourceManager rm;
 
     std::ostringstream out;
@@ -291,18 +297,33 @@ void ResourceManagerTest::basic() {
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(rm.count<Int>(), 2);
 
-    /* Cannot change already final resource */
+    /* Non-final can be changed */
+    rm.set(questionKey, 20, ResourceDataState::Final, ResourcePolicy::Resident);
+    CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
+    CORRADE_COMPARE(*theQuestion, 20);
+}
+
+void ResourceManagerTest::changeFinalResource() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    ResourceManager rm;
+
+    ResourceKey answerKey("the-answer");
+    rm.set(answerKey, 42, ResourceDataState::Final, ResourcePolicy::Resident);
+    Resource<Int> theAnswer = rm.get<Int>(answerKey);
+    CORRADE_COMPARE(theAnswer.state(), ResourceState::Final);
+    CORRADE_COMPARE(*theAnswer, 42);
+    CORRADE_COMPARE(rm.count<Int>(), 1);
+
+    /* Final can not be changed */
     std::ostringstream out;
     Error redirectError{&out};
     int a = 43; /* Done this way to prevent a memory leak on assert (yes, the code is bad) */
     rm.set(answerKey, &a, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), Utility::formatString("ResourceManager::set(): cannot change already final resource ResourceKey(0x{})\n", answerKey.hexString()));
-
-    /* But non-final can be changed */
-    rm.set(questionKey, 20, ResourceDataState::Final, ResourcePolicy::Resident);
-    CORRADE_COMPARE(theQuestion.state(), ResourceState::Final);
-    CORRADE_COMPARE(*theQuestion, 20);
 }
 
 void ResourceManagerTest::residentPolicy() {
@@ -391,6 +412,10 @@ void ResourceManagerTest::clear() {
 }
 
 void ResourceManagerTest::clearWhileReferenced() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     /* Should cover also the destruction case */
 
     std::ostringstream out;

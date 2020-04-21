@@ -289,7 +289,7 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
         else if(image.format() == PixelFormat::RGBA8Snorm ||
                 image.format() == PixelFormat::RGBA8Unorm)
             packPixels(image.pixels<Color4ub>(), out);
-        else CORRADE_ASSERT(false, "Platform::GlfwApplication::setWindowIcon(): unexpected format" << image.format(), );
+        else CORRADE_ASSERT_UNREACHABLE("Platform::GlfwApplication::setWindowIcon(): unexpected format" << image.format(), );
 
         /* Specify the image metadata */
         glfwImages[i].width = image.size().x();

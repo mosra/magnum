@@ -673,7 +673,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::None: return;
     }
 
-    CORRADE_ASSERT(false, "GL::Shader::Shader(): unsupported version" << version, );
+    CORRADE_ASSERT_UNREACHABLE("GL::Shader::Shader(): unsupported version" << version, );
 }
 
 Shader::~Shader() {

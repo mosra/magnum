@@ -398,6 +398,10 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
 }
 
 void AnimationDataTest::constructNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     AnimationData data{DataFlag::Owned, nullptr, {}, {-1.0f, 7.0f}};
@@ -406,6 +410,10 @@ void AnimationDataTest::constructNotOwnedFlagOwned() {
 }
 
 void AnimationDataTest::constructImplicitDurationNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     AnimationData data{DataFlag::Owned, nullptr, {}};
@@ -516,6 +524,10 @@ void AnimationDataTest::constructMove() {
 }
 
 void AnimationDataTest::mutableAccessNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const std::pair<Float, bool> keyframes[] {
         {1.0f, true},
         {5.0f, false}
@@ -564,6 +576,10 @@ void AnimationDataTest::trackCustomResultType() {
 }
 
 void AnimationDataTest::trackWrongIndex() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -583,6 +599,10 @@ void AnimationDataTest::trackWrongIndex() {
 }
 
 void AnimationDataTest::trackWrongType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -598,6 +618,10 @@ void AnimationDataTest::trackWrongType() {
 }
 
 void AnimationDataTest::trackWrongResultType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

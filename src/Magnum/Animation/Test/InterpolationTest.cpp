@@ -41,15 +41,25 @@ struct InterpolationTest: TestSuite::Tester {
     explicit InterpolationTest();
 
     void interpolatorFor();
+    void interpolatorForInvalid();
     void interpolatorForBool();
+    void interpolatorForBoolInvalid();
     void interpolatorForBoolVector();
+    void interpolatorForBoolVectorInvalid();
     void interpolatorForComplex();
+    void interpolatorForComplexInvalid();
     void interpolatorForQuaternion();
+    void interpolatorForQuaternionInvalid();
     void interpolatorForDualQuaternion();
+    void interpolatorForDualQuaternionInvalid();
     void interpolatorForCubicHermiteScalar();
+    void interpolatorForCubicHermiteScalarInvalid();
     void interpolatorForCubicHermiteVector();
+    void interpolatorForCubicHermiteVectorInvalid();
     void interpolatorForCubicHermiteComplex();
+    void interpolatorForCubicHermiteComplexInvalid();
     void interpolatorForCubicHermiteQuaternion();
+    void interpolatorForCubicHermiteQuaternionInvalid();
 
     void interpolate();
     void interpolateStrict();
@@ -148,15 +158,25 @@ const struct {
 
 InterpolationTest::InterpolationTest() {
     addTests({&InterpolationTest::interpolatorFor,
+              &InterpolationTest::interpolatorForInvalid,
               &InterpolationTest::interpolatorForBool,
+              &InterpolationTest::interpolatorForBoolInvalid,
               &InterpolationTest::interpolatorForBoolVector,
+              &InterpolationTest::interpolatorForBoolVectorInvalid,
               &InterpolationTest::interpolatorForComplex,
+              &InterpolationTest::interpolatorForComplexInvalid,
               &InterpolationTest::interpolatorForQuaternion,
+              &InterpolationTest::interpolatorForQuaternionInvalid,
               &InterpolationTest::interpolatorForDualQuaternion,
+              &InterpolationTest::interpolatorForDualQuaternionInvalid,
               &InterpolationTest::interpolatorForCubicHermiteScalar,
+              &InterpolationTest::interpolatorForCubicHermiteScalarInvalid,
               &InterpolationTest::interpolatorForCubicHermiteVector,
+              &InterpolationTest::interpolatorForCubicHermiteVectorInvalid,
               &InterpolationTest::interpolatorForCubicHermiteComplex,
-              &InterpolationTest::interpolatorForCubicHermiteQuaternion});
+              &InterpolationTest::interpolatorForCubicHermiteComplexInvalid,
+              &InterpolationTest::interpolatorForCubicHermiteQuaternion,
+              &InterpolationTest::interpolatorForCubicHermiteQuaternionInvalid});
 
     addInstancedTests({&InterpolationTest::interpolate,
                        &InterpolationTest::interpolateStrict},
@@ -195,6 +215,12 @@ void InterpolationTest::interpolatorFor() {
         Vector2{0.3f, 0.5f}, Vector2{-0.3f, -1.5f}, 0.5f), (Vector2{0.3f, 0.5f}));
     CORRADE_COMPARE(Animation::interpolatorFor<Vector2>(Interpolation::Linear)(
         Vector2{0.3f, 0.5f}, Vector2{-0.3f, -1.5f}, 0.5f), (Vector2{0.0f, -0.5f}));
+}
+
+void InterpolationTest::interpolatorForInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -211,6 +237,12 @@ void InterpolationTest::interpolatorForBool() {
         true, false, 0.5f), true);
     CORRADE_COMPARE(Animation::interpolatorFor<bool>(Interpolation::Linear)(
         true, false, 0.5f), true);
+}
+
+void InterpolationTest::interpolatorForBoolInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -227,6 +259,12 @@ void InterpolationTest::interpolatorForBoolVector() {
         Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
     CORRADE_COMPARE(Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Linear)(
         Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
+}
+
+void InterpolationTest::interpolatorForBoolVectorInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -247,6 +285,12 @@ void InterpolationTest::interpolatorForComplex() {
         Complex::rotation(25.0_degf),
         Complex::rotation(75.0_degf), 0.5f),
         Complex::rotation(50.0_degf));
+}
+
+void InterpolationTest::interpolatorForComplexInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -267,6 +311,12 @@ void InterpolationTest::interpolatorForQuaternion() {
         Quaternion::rotation(25.0_degf, Vector3::xAxis()),
         Quaternion::rotation(75.0_degf, Vector3::xAxis()), 0.5f),
         Quaternion::rotation(50.0_degf, Vector3::xAxis()));
+}
+
+void InterpolationTest::interpolatorForQuaternionInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -287,6 +337,12 @@ void InterpolationTest::interpolatorForDualQuaternion() {
         DualQuaternion::translation(Vector3::xAxis(2.5f)),
         DualQuaternion::translation(Vector3::xAxis(7.5f)), 0.5f),
         DualQuaternion::translation(Vector3::xAxis(5.0f)));
+}
+
+void InterpolationTest::interpolatorForDualQuaternionInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -304,6 +360,12 @@ void InterpolationTest::interpolatorForCubicHermiteScalar() {
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Constant)(a, b, 0.8f), 3.0f);
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Linear)(a, b, 0.8f), -1.0f);
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Spline)(a, b, 0.8f), -2.152f);
+}
+
+void InterpolationTest::interpolatorForCubicHermiteScalarInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -321,6 +383,12 @@ void InterpolationTest::interpolatorForCubicHermiteVector() {
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Constant)(a, b, 0.8f), (Vector2{3.0f, 0.1f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Linear)(a, b, 0.8f), (Vector2{-1.0f, 0.9f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Spline)(a, b, 0.8f), (Vector2{-2.152f, 0.9576f}));
+}
+
+void InterpolationTest::interpolatorForCubicHermiteVectorInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -338,6 +406,12 @@ void InterpolationTest::interpolatorForCubicHermiteComplex() {
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Constant)(a, b, 0.8f), (Complex{0.999445f, 0.0333148f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Linear)(a, b, 0.8f), (Complex{-0.78747f, 0.616353f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Spline)(a, b, 0.8f), (Complex{-0.95958f, 0.281435f}));
+}
+
+void InterpolationTest::interpolatorForCubicHermiteComplexInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -361,6 +435,12 @@ void InterpolationTest::interpolatorForCubicHermiteQuaternion() {
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Constant)(a, b, 0.8f), (Quaternion{{0.780076f, 0.0260025f, 0.598059f}, 0.182018f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Linear)(a, b, 0.8f), (Quaternion{{-0.533196f, 0.410685f, 0.521583f}, 0.524396f}));
     CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Spline)(a, b, 0.8f), (Quaternion{{-0.911408f, 0.23368f, 0.185318f}, 0.283524f}));
+}
+
+void InterpolationTest::interpolatorForCubicHermiteQuaternionInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -477,6 +557,10 @@ void InterpolationTest::interpolateStrictIntegerKey() {
 }
 
 void InterpolationTest::interpolateError() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -490,6 +574,10 @@ void InterpolationTest::interpolateError() {
 }
 
 void InterpolationTest::interpolateStrictError() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

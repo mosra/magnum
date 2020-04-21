@@ -192,6 +192,10 @@ void DistanceTest::pointPlaneNormalized() {
 }
 
 void DistanceTest::pointPlaneNormalizedNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

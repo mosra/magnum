@@ -238,6 +238,10 @@ const ImageView2D ActualRed{PixelFormat::R32F, {3, 3}, ActualRedData};
 const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
 
 void CompareImageTest::formatUnknown() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -248,6 +252,10 @@ void CompareImageTest::formatUnknown() {
 }
 
 void CompareImageTest::formatHalf() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -258,6 +266,10 @@ void CompareImageTest::formatHalf() {
 }
 
 void CompareImageTest::formatImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -825,6 +837,10 @@ void CompareImageTest::compareSpecialsMeanOnly() {
 }
 
 void CompareImageTest::compareSpecialsDisallowedThreshold() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
 
     {
@@ -844,16 +860,16 @@ void CompareImageTest::setupExternalPluginManager() {
     /* Load the plugin directly from the build tree. Otherwise it's either
        static and already loaded or not present in the build tree */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_importerManager->load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_importerManager->load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_converterManager->load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_converterManager->load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_importerManager->load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_importerManager->load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_converterManager->load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_converterManager->load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 }
 

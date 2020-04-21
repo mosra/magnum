@@ -799,7 +799,7 @@ void AbstractShaderProgramGLTest::compute() {
                 #endif
                 Shader::Type::Compute);
             compute.addSource(rs.get("ComputeShader.comp"));
-            CORRADE_INTERNAL_ASSERT(compute.compile());
+            CORRADE_INTERNAL_ASSERT_OUTPUT(compute.compile());
 
             attachShader(compute);
             link();

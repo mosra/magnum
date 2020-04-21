@@ -205,6 +205,10 @@ template<class T> void CompressIndicesTest::compressOffsetNegative() {
 }
 
 void CompressIndicesTest::compressErasedNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char indices[6*4]{};
 
     std::stringstream out;
@@ -215,6 +219,10 @@ void CompressIndicesTest::compressErasedNonContiguous() {
 }
 
 void CompressIndicesTest::compressErasedWrongIndexSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char indices[6*3]{};
 
     std::stringstream out;
@@ -316,6 +324,10 @@ void CompressIndicesTest::compressMeshDataMove() {
 }
 
 void CompressIndicesTest::compressMeshDataNonIndexed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     /* Test both r-value and l-value overload */
     std::ostringstream out;
     Error redirectError{&out};
@@ -329,6 +341,10 @@ void CompressIndicesTest::compressMeshDataNonIndexed() {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void CompressIndicesTest::compressAsShort() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
         Containers::arrayView<UnsignedShort>({123, 456}),

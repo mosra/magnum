@@ -125,7 +125,7 @@ bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
 }
 
 void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::openData(): feature advertised but not implemented", );
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::openData(): feature advertised but not implemented", );
 }
 
 bool AbstractImporter::openState(const void* state, const std::string& filePath) {
@@ -138,7 +138,7 @@ bool AbstractImporter::openState(const void* state, const std::string& filePath)
 }
 
 void AbstractImporter::doOpenState(const void*, const std::string&) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::openState(): feature advertised but not implemented", );
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::openState(): feature advertised but not implemented", );
 }
 
 bool AbstractImporter::openFile(const std::string& filename) {
@@ -245,7 +245,7 @@ Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
 }
 
 Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::scene(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::scene(): not implemented", {});
 }
 
 Containers::Optional<SceneData> AbstractImporter::scene(const std::string& name) {
@@ -292,7 +292,7 @@ Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedIn
 }
 
 Containers::Optional<AnimationData> AbstractImporter::doAnimation(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::animation(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::animation(): not implemented", {});
 }
 
 Containers::Optional<AnimationData> AbstractImporter::animation(const std::string& name) {
@@ -334,7 +334,7 @@ Containers::Optional<LightData> AbstractImporter::light(const UnsignedInt id) {
 }
 
 Containers::Optional<LightData> AbstractImporter::doLight(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::light(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::light(): not implemented", {});
 }
 
 Containers::Optional<LightData> AbstractImporter::light(const std::string& name) {
@@ -376,7 +376,7 @@ Containers::Optional<CameraData> AbstractImporter::camera(const UnsignedInt id) 
 }
 
 Containers::Optional<CameraData> AbstractImporter::doCamera(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::camera(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::camera(): not implemented", {});
 }
 
 Containers::Optional<CameraData> AbstractImporter::camera(const std::string& name) {
@@ -418,7 +418,7 @@ Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const UnsignedInt i
 }
 
 Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::object2D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::object2D(): not implemented", {});
 }
 
 Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const std::string& name) {
@@ -460,7 +460,7 @@ Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const UnsignedInt i
 }
 
 Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::object3D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::object3D(): not implemented", {});
 }
 
 Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& name) {
@@ -529,7 +529,7 @@ Containers::Optional<MeshData> AbstractImporter::mesh(const UnsignedInt id, cons
 }
 
 Containers::Optional<MeshData> AbstractImporter::doMesh(UnsignedInt, UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::mesh(): not implemented", {});
 }
 
 Containers::Optional<MeshData> AbstractImporter::mesh(const std::string& name, const UnsignedInt level) {
@@ -598,7 +598,7 @@ Containers::Optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) 
 }
 
 Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh2D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::mesh2D(): not implemented", {});
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
@@ -680,7 +680,7 @@ Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const Unsig
 }
 
 Containers::Pointer<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::material(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::material(): not implemented", {});
 }
 
 Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const std::string& name) {
@@ -722,7 +722,7 @@ Containers::Optional<TextureData> AbstractImporter::texture(const UnsignedInt id
 }
 
 Containers::Optional<TextureData> AbstractImporter::doTexture(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::texture(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::texture(): not implemented", {});
 }
 
 Containers::Optional<TextureData> AbstractImporter::texture(const std::string& name) {
@@ -788,7 +788,7 @@ Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id
 }
 
 Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt, UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::image1D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image1D(): not implemented", {});
 }
 
 Containers::Optional<ImageData1D> AbstractImporter::image1D(const std::string& name, const UnsignedInt level) {
@@ -855,7 +855,7 @@ Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id
 }
 
 Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt, UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::image2D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image2D(): not implemented", {});
 }
 
 Containers::Optional<ImageData2D> AbstractImporter::image2D(const std::string& name, const UnsignedInt level) {
@@ -922,7 +922,7 @@ Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id
 }
 
 Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt, UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::image3D(): not implemented", {});
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::image3D(): not implemented", {});
 }
 
 Containers::Optional<ImageData3D> AbstractImporter::image3D(const std::string& name, const UnsignedInt level) {

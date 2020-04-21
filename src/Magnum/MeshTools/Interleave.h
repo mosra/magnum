@@ -48,7 +48,7 @@ namespace Implementation {
    cyclic dependencies) */
 struct AttributeCount {
     template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&...
-        #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+        #ifndef CORRADE_NO_ASSERT
         next
         #endif
     ) const {
@@ -180,7 +180,7 @@ large enough to contain the interleaved data.
 */
 template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
     /* Verify expected buffer size */
-    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+    #ifndef CORRADE_NO_ASSERT
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     #endif
     const std::size_t stride = Implementation::Stride{}(first, next...);

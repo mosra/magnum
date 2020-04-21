@@ -144,6 +144,10 @@ namespace GL {
     UnsignedInt pixelSize(PixelFormat format, PixelType type) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::RGB);
         CORRADE_INTERNAL_ASSERT(type == PixelType::UnsignedShort);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        static_cast<void>(type);
+        #endif
         return 6;
     }
 
@@ -157,6 +161,9 @@ namespace Vk {
     UnsignedInt pixelSize(PixelFormat);
     UnsignedInt pixelSize(PixelFormat format) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::R32G32B32F);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
         return 12;
     }
 
@@ -605,6 +612,10 @@ void ImageViewTest::constructNullptr() {
     CORRADE_SKIP("This is still allowed on a deprecated build, can't test.");
     #endif
 
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
@@ -612,6 +623,10 @@ void ImageViewTest::constructNullptr() {
 }
 
 void ImageViewTest::constructInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -700,6 +715,10 @@ template<class T> void ImageViewTest::setDataCompressed() {
 }
 
 void ImageViewTest::setDataInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

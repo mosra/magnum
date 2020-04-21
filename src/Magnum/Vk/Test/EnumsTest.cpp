@@ -161,6 +161,10 @@ void EnumsTest::mapVkPrimitiveTopologyImplementationSpecific() {
 }
 
 void EnumsTest::mapVkPrimitiveTopologyUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     CORRADE_VERIFY(!hasVkPrimitiveTopology(Magnum::MeshPrimitive::LineLoop));
 
     std::ostringstream out;
@@ -173,6 +177,10 @@ void EnumsTest::mapVkPrimitiveTopologyUnsupported() {
 }
 
 void EnumsTest::mapVkPrimitiveTopologyInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -218,6 +226,10 @@ void EnumsTest::mapVkIndexType() {
 }
 
 void EnumsTest::mapVkIndexTypeUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #if 1
     CORRADE_SKIP("All index formats are supported.");
     #else
@@ -233,6 +245,10 @@ void EnumsTest::mapVkIndexTypeUnsupported() {
 }
 
 void EnumsTest::mapVkIndexTypeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -315,6 +331,10 @@ void EnumsTest::mapVkFormatVertexFormatImplementationSpecific() {
 }
 
 void EnumsTest::mapVkFormatVertexFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #if 1
     CORRADE_SKIP("All vertex formats are supported.");
     #else
@@ -327,6 +347,10 @@ void EnumsTest::mapVkFormatVertexFormatUnsupported() {
 }
 
 void EnumsTest::mapVkFormatVertexFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -408,6 +432,10 @@ void EnumsTest::mapVkFormatPixelFormatImplementationSpecific() {
 }
 
 void EnumsTest::mapVkFormatPixelFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #if 1
     CORRADE_SKIP("All pixel formats are supported.");
     #else
@@ -420,6 +448,10 @@ void EnumsTest::mapVkFormatPixelFormatUnsupported() {
 }
 
 void EnumsTest::mapVkFormatPixelFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -501,6 +533,10 @@ void EnumsTest::mapVkFormatCompressedPixelFormatImplementationSpecific() {
 }
 
 void EnumsTest::mapVkFormatCompressedPixelFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     CORRADE_VERIFY(!hasVkFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
     std::ostringstream out;
@@ -510,6 +546,10 @@ void EnumsTest::mapVkFormatCompressedPixelFormatUnsupported() {
 }
 
 void EnumsTest::mapVkFormatCompressedPixelFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -530,6 +570,10 @@ void EnumsTest::mapVkFilter() {
 }
 
 void EnumsTest::mapVkFilterInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -545,6 +589,10 @@ void EnumsTest::mapVkSamplerMipmapMode() {
 }
 
 void EnumsTest::mapVkSamplerMipmapModeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -572,6 +620,10 @@ void EnumsTest::mapVkSamplerAddressModeArray() {
 }
 
 void EnumsTest::mapVkSamplerAddressModeUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     CORRADE_VERIFY(!hasVkSamplerAddressMode(Magnum::SamplerWrapping::MirrorClampToEdge));
     std::ostringstream out;
     {
@@ -583,6 +635,10 @@ void EnumsTest::mapVkSamplerAddressModeUnsupported() {
 }
 
 void EnumsTest::mapVkSamplerAddressModeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

@@ -1770,6 +1770,10 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
 }
 
 void MeshGLTest::addVertexBufferMovedOutInstance() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Buffer buffer{NoCreate};
     Mesh mesh;
 
@@ -2095,6 +2099,10 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 }
 
 void MeshGLTest::setIndexBufferMovedOutInstance() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Buffer buffer{NoCreate};
     Mesh mesh;
 

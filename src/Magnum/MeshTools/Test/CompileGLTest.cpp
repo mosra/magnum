@@ -272,10 +272,10 @@ CompileGLTest::CompileGLTest() {
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     /* Set up the rendering */
@@ -1109,6 +1109,10 @@ void CompileGLTest::implementationSpecificAttributeFormat() {
 }
 
 void CompileGLTest::generateNormalsNoPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::MeshData data{MeshPrimitive::Triangles, 1};
 
     std::ostringstream out;
@@ -1119,6 +1123,10 @@ void CompileGLTest::generateNormalsNoPosition() {
 }
 
 void CompileGLTest::generateNormals2DPosition() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector2, nullptr}}};
@@ -1131,6 +1139,10 @@ void CompileGLTest::generateNormals2DPosition() {
 }
 
 void CompileGLTest::generateNormalsNoFloats() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::MeshData data{MeshPrimitive::Triangles,
         nullptr, {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
@@ -1229,6 +1241,10 @@ void CompileGLTest::externalBuffers() {
 }
 
 void CompileGLTest::externalBuffersInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::MeshData data{MeshPrimitive::Triangles, 5};
     Trade::MeshData indexedData{MeshPrimitive::Triangles,
         nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedInt, nullptr},

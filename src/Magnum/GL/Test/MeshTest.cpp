@@ -129,6 +129,10 @@ struct Shader: AbstractShaderProgram {
 };
 
 void MeshTest::drawCountNotSet() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -139,6 +143,10 @@ void MeshTest::drawCountNotSet() {
 }
 
 void MeshTest::drawViewCountNotSet() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -189,6 +197,10 @@ void MeshTest::mapPrimitiveImplementationSpecific() {
 }
 
 void MeshTest::mapPrimitiveUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     meshPrimitive(Magnum::MeshPrimitive::Instances);
@@ -196,6 +208,10 @@ void MeshTest::mapPrimitiveUnsupported() {
 }
 
 void MeshTest::mapPrimitiveInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -235,6 +251,10 @@ void MeshTest::mapIndexType() {
 }
 
 void MeshTest::mapIndexTypeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

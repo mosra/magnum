@@ -153,7 +153,6 @@ CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedIma
 }
 
 void CubeMapTexture::compressedImage(const Int level, const MutableCompressedImageView3D& image) {
-    #ifndef CORRADE_NO_ASSERT
     const Vector3i size{imageSize(level), 6};
 
     CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
@@ -172,6 +171,7 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
     CORRADE_ASSERT(image.data().size() == dataOffsetSize.first + dataOffsetSize.second,
         "GL::CubeMapTexture::compressedImage(): expected image view data size" << dataOffsetSize.first + dataOffsetSize.second << "bytes but got" << image.data().size(), );
 
+    #ifndef CORRADE_NO_ASSERT
     /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
@@ -239,13 +239,11 @@ Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int leve
 }
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, const MutableImageView2D& image) {
-    #ifndef CORRADE_NO_ASSERT
     const Vector2i size = imageSize(level);
     CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
         "GL::CubeMapTexture::image(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
-    #endif
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
@@ -306,7 +304,6 @@ CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordi
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, const MutableCompressedImageView2D& image) {
-    #ifndef CORRADE_NO_ASSERT
     const Vector2i size = imageSize(level);
 
     CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
@@ -314,6 +311,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
+    #ifndef CORRADE_NO_ASSERT
     /* If the user-provided pixel storage doesn't tell us all properties about
        the compression, we need to ask GL for it */
     std::size_t dataSize;

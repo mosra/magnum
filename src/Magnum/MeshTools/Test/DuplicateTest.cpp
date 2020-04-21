@@ -109,6 +109,10 @@ void DuplicateTest::duplicate() {
 }
 
 void DuplicateTest::duplicateOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr UnsignedByte indices[]{1, 1, 0, 4, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
 
@@ -141,6 +145,10 @@ void DuplicateTest::duplicateInto() {
 }
 
 void DuplicateTest::duplicateIntoWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
     Int output[5];
@@ -170,6 +178,10 @@ template<class T> void DuplicateTest::duplicateIntoErased() {
 }
 
 void DuplicateTest::duplicateIntoErasedWrongTypeSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
     Short output[6];
@@ -186,6 +198,10 @@ void DuplicateTest::duplicateIntoErasedWrongTypeSize() {
 }
 
 void DuplicateTest::duplicateIntoErasedNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
     constexpr Int data[]{-7, 35, 12, -18};
     Short output[6];
@@ -218,6 +234,10 @@ template<class T> void DuplicateTest::duplicateErasedIndicesIntoErased() {
 }
 
 void DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr char indices[6*3]{};
     constexpr Int data[]{-7, 35, 12, -18};
     Short output[6];
@@ -234,6 +254,10 @@ void DuplicateTest::duplicateErasedIndicesIntoErasedWrongTypeSize() {
 }
 
 void DuplicateTest::duplicateErasedIndicesIntoErasedNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     constexpr char indices[3*6]{};
     constexpr Int data[]{-7, 35, 12, -18};
     Short output[6];
@@ -286,6 +310,10 @@ template<class T> void DuplicateTest::duplicateMeshData() {
 }
 
 void DuplicateTest::duplicateMeshDataNotIndexed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     MeshTools::duplicate(Trade::MeshData{MeshPrimitive::Points, 0});
@@ -351,6 +379,10 @@ void DuplicateTest::duplicateMeshDataExtraEmpty() {
 }
 
 void DuplicateTest::duplicateMeshDataExtraWrongCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
     Trade::MeshData data{MeshPrimitive::Lines,
@@ -370,6 +402,10 @@ void DuplicateTest::duplicateMeshDataExtraWrongCount() {
 }
 
 void DuplicateTest::duplicateMeshDataExtraOffsetOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     UnsignedByte indices[]{0, 1, 2, 2, 1, 0};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indices, Trade::MeshIndexData{indices}, 3};

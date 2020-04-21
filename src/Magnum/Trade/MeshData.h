@@ -1804,7 +1804,6 @@ class MAGNUM_TRADE_EXPORT MeshData {
         Containers::Array<char> _indexData, _vertexData;
 };
 
-#if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
 namespace Implementation {
     /* LCOV_EXCL_START */
     template<class T> constexpr MeshIndexType meshIndexTypeFor() {
@@ -1924,6 +1923,7 @@ namespace Implementation {
     template<> constexpr VertexFormat vertexFormatFor<Matrix4>() { return VertexFormat::Matrix4x4; }
     template<> constexpr VertexFormat vertexFormatFor<Matrix4d>() { return VertexFormat::Matrix4x4d; }
 
+    #ifndef CORRADE_NO_ASSERT
     /* Check if enum is compatible with a format (1:n). Mostly just 1:1 mapping
        tho, so reusing vertexFormatFor(), with a few exceptions. */
     template<class T> constexpr bool isVertexFormatCompatible(VertexFormat type) {
@@ -2070,8 +2070,8 @@ namespace Implementation {
     constexpr bool isAttributeArrayAllowed(MeshAttribute name) {
         return isMeshAttributeCustom(name);
     }
+    #endif
 }
-#endif
 
 constexpr MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, const UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data, std::nullptr_t) noexcept:
     _format{(CORRADE_CONSTEXPR_ASSERT(!arraySize || !isVertexFormatImplementationSpecific(format),
@@ -2153,8 +2153,8 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    const MeshAttributeData& attribute = _attributes[id];
     #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[id];
     if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
@@ -2176,8 +2176,8 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    const MeshAttributeData& attribute = _attributes[id];
     #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[id];
     if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);
@@ -2199,8 +2199,8 @@ template<class T, class> Containers::StridedArrayView2D<const typename std::remo
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::attribute():")) return {};
     #endif
     return Containers::arrayCast<2, const typename std::remove_extent<T>::type>(data);
@@ -2222,8 +2222,8 @@ template<class T, class> Containers::StridedArrayView2D<typename std::remove_ext
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
     #endif
-    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     #ifndef CORRADE_NO_ASSERT
+    const MeshAttributeData& attribute = _attributes[attributeFor(name, id)];
     if(!checkAttributeTypeCompatibility<T>(attribute, "Trade::MeshData::mutableAttribute():")) return {};
     #endif
     return Containers::arrayCast<2, typename std::remove_extent<T>::type>(data);

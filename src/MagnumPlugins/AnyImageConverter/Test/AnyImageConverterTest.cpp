@@ -84,15 +84,15 @@ AnyImageConverterTest::AnyImageConverterTest() {
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
     #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     /* Optional plugins that don't have to be here */
     #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_DIR));
 }
 
 constexpr const char Data[] = {

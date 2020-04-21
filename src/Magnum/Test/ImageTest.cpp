@@ -150,6 +150,10 @@ namespace GL {
     UnsignedInt pixelSize(PixelFormat format, PixelType type) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::RGB);
         CORRADE_INTERNAL_ASSERT(type == PixelType::UnsignedShort);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        static_cast<void>(type);
+        #endif
         return 6;
     }
 
@@ -163,6 +167,9 @@ namespace Vk {
     UnsignedInt pixelSize(PixelFormat);
     UnsignedInt pixelSize(PixelFormat format) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::R32G32B32F);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
         return 12;
     }
 
@@ -415,6 +422,10 @@ void ImageTest::constructCompressedImplementationSpecific() {
 }
 
 void ImageTest::constructInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

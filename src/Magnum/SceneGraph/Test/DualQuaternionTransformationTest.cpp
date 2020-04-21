@@ -39,13 +39,16 @@ struct DualQuaternionTransformationTest: TestSuite::Tester {
     explicit DualQuaternionTransformationTest();
 
     void fromMatrix();
+    void fromMatrixInvalid();
     void toMatrix();
     void compose();
     void inverted();
 
     void setTransformation();
+    void setTransformationInvalid();
     void resetTransformation();
     void transform();
+    void transformInvalid();
     void translate();
     void rotate();
     void normalizeRotation();
@@ -53,13 +56,16 @@ struct DualQuaternionTransformationTest: TestSuite::Tester {
 
 DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
     addTests({&DualQuaternionTransformationTest::fromMatrix,
+              &DualQuaternionTransformationTest::fromMatrixInvalid,
               &DualQuaternionTransformationTest::toMatrix,
               &DualQuaternionTransformationTest::compose,
               &DualQuaternionTransformationTest::inverted,
 
               &DualQuaternionTransformationTest::setTransformation,
+              &DualQuaternionTransformationTest::setTransformationInvalid,
               &DualQuaternionTransformationTest::resetTransformation,
               &DualQuaternionTransformationTest::transform,
+              &DualQuaternionTransformationTest::transformInvalid,
               &DualQuaternionTransformationTest::translate,
               &DualQuaternionTransformationTest::rotate,
               &DualQuaternionTransformationTest::normalizeRotation});
@@ -68,14 +74,20 @@ DualQuaternionTransformationTest::DualQuaternionTransformationTest() {
 using namespace Math::Literals;
 
 void DualQuaternionTransformationTest::fromMatrix() {
-    std::ostringstream o;
-    Error redirectError{&o};
-    Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
-    CORRADE_COMPARE(o.str(), "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
-
     Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
     DualQuaternion q = DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis())*DualQuaternion::translation({1.0f, -0.3f, 2.3f});
     CORRADE_COMPARE(Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(m), q);
+}
+
+void DualQuaternionTransformationTest::fromMatrixInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Implementation::Transformation<DualQuaternionTransformation>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation: the matrix doesn't represent rigid transformation\n");
 }
 
 void DualQuaternionTransformationTest::toMatrix() {
@@ -98,12 +110,6 @@ void DualQuaternionTransformationTest::inverted() {
 void DualQuaternionTransformationTest::setTransformation() {
     Object3D o;
 
-    /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
-    Error redirectError{&out};
-    o.setTransformation(DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized\n");
-
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
@@ -120,6 +126,20 @@ void DualQuaternionTransformationTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
 }
 
+void DualQuaternionTransformationTest::setTransformationInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Object3D o;
+
+    /* Can't transform with non-rigid transformation */
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.setTransformation(DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}));
+    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::setTransformation(): the dual quaternion is not normalized\n");
+}
+
 void DualQuaternionTransformationTest::resetTransformation() {
     Object3D o;
     o.setTransformation(DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis()));
@@ -130,13 +150,6 @@ void DualQuaternionTransformationTest::resetTransformation() {
 
 void DualQuaternionTransformationTest::transform() {
     {
-        /* Can't transform with non-rigid transformation */
-        Object3D o;
-        std::ostringstream out;
-        Error redirectError{&out};
-        o.transform(DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}));
-        CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized\n");
-    } {
         Object3D o;
         o.setTransformation(DualQuaternion::rotation(Deg(17.0f), Vector3::xAxis()));
         o.transform(DualQuaternion::translation({1.0f, -0.3f, 2.3f}));
@@ -147,6 +160,19 @@ void DualQuaternionTransformationTest::transform() {
         o.transformLocal(DualQuaternion::translation({1.0f, -0.3f, 2.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
+}
+
+void DualQuaternionTransformationTest::transformInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Can't transform with non-rigid transformation */
+    Object3D o;
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.transform(DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}));
+    CORRADE_COMPARE(out.str(), "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized\n");
 }
 
 void DualQuaternionTransformationTest::translate() {

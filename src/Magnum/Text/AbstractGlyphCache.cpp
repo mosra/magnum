@@ -72,7 +72,7 @@ Image2D AbstractGlyphCache::image() {
 }
 
 Image2D AbstractGlyphCache::doImage() {
-    CORRADE_ASSERT(false, "Text::AbstractGlyphCache::image(): feature advertised but not implemented", Image2D{PixelFormat::R8Unorm});
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractGlyphCache::image(): feature advertised but not implemented", Image2D{PixelFormat::R8Unorm});
 }
 
 }}

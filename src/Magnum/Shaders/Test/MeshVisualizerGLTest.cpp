@@ -480,10 +480,10 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
@@ -628,6 +628,10 @@ void MeshVisualizerGLTest::construct2DInvalid() {
     auto&& data = ConstructInvalidData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizer2D{data.flags};
@@ -638,6 +642,10 @@ void MeshVisualizerGLTest::construct3DInvalid() {
     auto&& data = ConstructInvalidData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizer3D{data.flags};
@@ -646,6 +654,10 @@ void MeshVisualizerGLTest::construct3DInvalid() {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -662,6 +674,10 @@ void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
 }
 
 void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -717,6 +733,10 @@ void MeshVisualizerGLTest::constructMove3D() {
 }
 
 void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -747,6 +767,10 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -779,6 +803,10 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -793,6 +821,10 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -809,6 +841,10 @@ void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));

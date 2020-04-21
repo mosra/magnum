@@ -85,6 +85,10 @@ void SamplerTest::mapFilter() {
 }
 
 void SamplerTest::mapFilterInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -100,6 +104,10 @@ void SamplerTest::mapMipmap() {
 }
 
 void SamplerTest::mapMipmapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -134,6 +142,10 @@ void SamplerTest::mapWrappingArray() {
 }
 
 void SamplerTest::mapWrappingInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

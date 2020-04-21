@@ -108,7 +108,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT(false, "pixelSize(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("pixelSize(): invalid format" << format, {});
 }
 
 namespace {

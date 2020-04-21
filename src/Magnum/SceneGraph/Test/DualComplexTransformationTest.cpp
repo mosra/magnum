@@ -44,8 +44,10 @@ struct DualComplexTransformationTest: TestSuite::Tester {
     void inverted();
 
     void setTransformation();
+    void setTransformationInvalid();
     void resetTransformation();
     void transform();
+    void transformInvalid();
     void translate();
     void rotate();
     void normalizeRotation();
@@ -58,8 +60,10 @@ DualComplexTransformationTest::DualComplexTransformationTest() {
               &DualComplexTransformationTest::inverted,
 
               &DualComplexTransformationTest::setTransformation,
+              &DualComplexTransformationTest::setTransformationInvalid,
               &DualComplexTransformationTest::resetTransformation,
               &DualComplexTransformationTest::transform,
+              &DualComplexTransformationTest::transformInvalid,
               &DualComplexTransformationTest::translate,
               &DualComplexTransformationTest::rotate,
               &DualComplexTransformationTest::normalizeRotation});
@@ -93,12 +97,6 @@ void DualComplexTransformationTest::inverted() {
 void DualComplexTransformationTest::setTransformation() {
     Object2D o;
 
-    /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
-    Error redirectError{&out};
-    o.setTransformation(DualComplex({1.0f, 2.0f}, {}));
-    CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
-
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
@@ -114,6 +112,20 @@ void DualComplexTransformationTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
 }
 
+void DualComplexTransformationTest::setTransformationInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Object2D o;
+
+    /* Can't transform with non-rigid transformation */
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.setTransformation(DualComplex({1.0f, 2.0f}, {}));
+    CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
+}
+
 void DualComplexTransformationTest::resetTransformation() {
     Object2D o;
     o.setTransformation(DualComplex::rotation(Deg(17.0f)));
@@ -124,13 +136,6 @@ void DualComplexTransformationTest::resetTransformation() {
 
 void DualComplexTransformationTest::transform() {
     {
-        /* Can't transform with non-rigid transformation */
-        Object2D o;
-        std::ostringstream out;
-        Error redirectError{&out};
-        o.transform(DualComplex({1.0f, 2.0f}, {}));
-        CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
-    } {
         Object2D o;
         o.setTransformation(DualComplex::rotation(Deg(17.0f)));
         o.transform(DualComplex::translation({1.0f, -0.3f}));
@@ -141,6 +146,19 @@ void DualComplexTransformationTest::transform() {
         o.transformLocal(DualComplex::translation({1.0f, -0.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
+}
+
+void DualComplexTransformationTest::transformInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Can't transform with non-rigid transformation */
+    Object2D o;
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.transform(DualComplex({1.0f, 2.0f}, {}));
+    CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
 }
 
 void DualComplexTransformationTest::translate() {

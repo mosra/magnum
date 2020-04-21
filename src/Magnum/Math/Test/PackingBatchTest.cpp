@@ -575,6 +575,10 @@ template<class T> void PackingBatchTest::castSignedInteger() {
 }
 
 template<class T> void PackingBatchTest::assertionsPackUnpack() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Math::Vector2<T> data[2]{};
     Vector2 resultWrongCount[1]{};
     Vector3 resultWrongVectorSize[2]{};
@@ -607,6 +611,10 @@ template<class T> void PackingBatchTest::assertionsPackUnpack() {
 }
 
 void PackingBatchTest::assertionsPackUnpackHalf() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2us data[2]{};
     Vector2 resultWrongCount[1]{};
     Vector3 resultWrongVectorSize[2]{};
@@ -639,6 +647,10 @@ void PackingBatchTest::assertionsPackUnpackHalf() {
 }
 
 template<class U, class T> void PackingBatchTest::assertionsCast() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     setTestCaseTemplateName(Corrade::Utility::formatString("{}, {}", TypeTraits<U>::name(), TypeTraits<T>::name()));
 
     Math::Vector2<T> data[2]{};

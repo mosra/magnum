@@ -188,6 +188,10 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 }
 
 void AbstractImporterTest::openFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct Importer: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -206,6 +210,10 @@ void AbstractImporterTest::openFileNotImplemented() {
 }
 
 void AbstractImporterTest::openDataNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -224,6 +232,10 @@ void AbstractImporterTest::openDataNotSupported() {
 }
 
 void AbstractImporterTest::openDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -256,6 +268,10 @@ void AbstractImporterTest::format() {
 }
 
 void AbstractImporterTest::formatNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -288,6 +304,10 @@ void AbstractImporterTest::frequency() {
 }
 
 void AbstractImporterTest::frequencyNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -324,6 +344,10 @@ void AbstractImporterTest::data() {
 }
 
 void AbstractImporterTest::dataNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -342,6 +366,10 @@ void AbstractImporterTest::dataNoFile() {
 }
 
 void AbstractImporterTest::dataCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }

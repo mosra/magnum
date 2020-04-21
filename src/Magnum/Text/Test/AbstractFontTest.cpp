@@ -251,6 +251,10 @@ void AbstractFontTest::openFileAsDataNotFound() {
 }
 
 void AbstractFontTest::openFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractFont {
         /* Supports neither file nor data opening */
         FontFeatures doFeatures() const override { return {}; }
@@ -271,6 +275,10 @@ void AbstractFontTest::openFileNotImplemented() {
 }
 
 void AbstractFontTest::openDataNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractFont {
         /* Supports neither file nor data opening */
         FontFeatures doFeatures() const override { return {}; }
@@ -291,6 +299,10 @@ void AbstractFontTest::openDataNotSupported() {
 }
 
 void AbstractFontTest::openDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
@@ -492,6 +504,10 @@ void AbstractFontTest::setFileCallbackTemplateConst() {
 }
 
 void AbstractFontTest::setFileCallbackFileOpened() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -537,6 +553,10 @@ void AbstractFontTest::setFileCallbackNotImplemented() {
 }
 
 void AbstractFontTest::setFileCallbackNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -811,6 +831,10 @@ void AbstractFontTest::properties() {
 }
 
 void AbstractFontTest::propertiesNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -853,6 +877,10 @@ void AbstractFontTest::glyphId() {
 }
 
 void AbstractFontTest::glyphIdNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -888,6 +916,10 @@ void AbstractFontTest::glyphAdvance() {
 }
 
 void AbstractFontTest::glyphAdvanceNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -937,6 +969,10 @@ void AbstractFontTest::layout() {
 }
 
 void AbstractFontTest::layoutNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -982,6 +1018,10 @@ void AbstractFontTest::fillGlyphCache() {
 }
 
 void AbstractFontTest::fillGlyphCacheNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return true; }
@@ -1000,6 +1040,10 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
 }
 
 void AbstractFontTest::fillGlyphCacheNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -1018,6 +1062,10 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
 }
 
 void AbstractFontTest::fillGlyphCacheNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -1062,6 +1110,10 @@ void AbstractFontTest::createGlyphCache() {
 }
 
 void AbstractFontTest::createGlyphCacheNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
@@ -1079,6 +1131,10 @@ void AbstractFontTest::createGlyphCacheNotSupported() {
 }
 
 void AbstractFontTest::createGlyphCacheNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return true; }
@@ -1096,6 +1152,10 @@ void AbstractFontTest::createGlyphCacheNotImplemented() {
 }
 
 void AbstractFontTest::createGlyphCacheNoFont() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct MyFont: AbstractFont {
         FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return false; }

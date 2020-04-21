@@ -252,7 +252,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
 
         /* Handled above */
         case PixelFormat::DepthStencil:
-            CORRADE_ASSERT(false, "GL::pixelSize(): invalid" << type << "specified for" << format, 0);
+            CORRADE_ASSERT_UNREACHABLE("GL::pixelSize(): invalid" << type << "specified for" << format, 0);
     }
     #ifdef __GNUC__
     #pragma GCC diagnostic pop

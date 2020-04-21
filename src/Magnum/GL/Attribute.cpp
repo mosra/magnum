@@ -605,7 +605,7 @@ DynamicAttribute::DynamicAttribute(const Kind kind, UnsignedInt location, const 
         #endif
     }
 
-    #ifndef CORRADE_NO_DEBUG
+    #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(_vectors <= maxVectors,
         "GL::DynamicAttribute: can't use" << format << "for a" << maxVectors << Debug::nospace << "-vector attribute", );
     /* Should pass also if maxComponents is GL_BGRA */

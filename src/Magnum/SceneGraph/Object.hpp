@@ -220,7 +220,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     }
     std::vector<std::reference_wrapper<Object<Transformation>>> jointObjects(objects);
 
-    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+    #ifndef CORRADE_NO_ASSERT
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
     #endif

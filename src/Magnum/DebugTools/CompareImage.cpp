@@ -99,6 +99,9 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         {std::size_t(expected.size().y()), std::size_t(expected.size().x())}};
 
     CORRADE_INTERNAL_ASSERT(actualFormat == expected.format());
+    #ifdef CORRADE_NO_ASSERT
+    static_cast<void>(actualFormat);
+    #endif
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
 
@@ -167,8 +170,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         case PixelFormat::RG16F:
         case PixelFormat::RGB16F:
         case PixelFormat::RGBA16F:
-            CORRADE_ASSERT(false,
-                "DebugTools::CompareImage: half-float formats are not supported yet", {});
+            CORRADE_ASSERT_UNREACHABLE("DebugTools::CompareImage: half-float formats are not supported yet", {});
     }
     #ifdef __GNUC__
     #pragma GCC diagnostic pop
@@ -667,6 +669,9 @@ void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags fl
                 << _state->maxThreshold << Debug::nospace << ".";
         else if(_state->result == Result::VerboseMessage) {
             CORRADE_INTERNAL_ASSERT(flags & TestSuite::ComparisonStatusFlag::Verbose);
+            #ifdef CORRADE_NO_ASSERT
+            static_cast<void>(flags);
+            #endif
             out << "deltas" << _state->max << Debug::nospace << "/"
                 << Debug::nospace << _state->mean << "below threshold"
                 << _state->maxThreshold << Debug::nospace << "/"

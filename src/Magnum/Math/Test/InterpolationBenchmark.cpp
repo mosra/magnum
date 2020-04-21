@@ -25,7 +25,10 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#ifndef CORRADE_NO_ASSERT
 #define CORRADE_NO_ASSERT
+#endif
+
 #include "Magnum/Math/DualQuaternion.h"
 
 namespace Magnum { namespace Math { namespace Test { namespace {

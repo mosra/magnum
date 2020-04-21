@@ -151,6 +151,10 @@ void GenerateNormalsTest::flatDeprecated() {
 #endif
 
 void GenerateNormalsTest::flatWrongCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -160,6 +164,10 @@ void GenerateNormalsTest::flatWrongCount() {
 }
 
 void GenerateNormalsTest::flatIntoWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -384,6 +392,10 @@ void GenerateNormalsTest::smoothNanPosition() {
 }
 
 void GenerateNormalsTest::smoothWrongCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -394,6 +406,10 @@ void GenerateNormalsTest::smoothWrongCount() {
 }
 
 void GenerateNormalsTest::smoothOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -404,6 +420,10 @@ void GenerateNormalsTest::smoothOutOfBounds() {
 }
 
 void GenerateNormalsTest::smoothIntoWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -454,6 +474,10 @@ template<class T> void GenerateNormalsTest::smoothErased() {
 }
 
 void GenerateNormalsTest::smoothErasedNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char indices[6*4]{};
     const Vector3 positions[3];
 
@@ -465,6 +489,10 @@ void GenerateNormalsTest::smoothErasedNonContiguous() {
 }
 
 void GenerateNormalsTest::smoothErasedWrongIndexSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char indices[6*3]{};
     const Vector3 positions[3];
 

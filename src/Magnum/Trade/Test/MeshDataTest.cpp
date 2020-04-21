@@ -407,6 +407,10 @@ void MeshDataTest::customAttributeName() {
 }
 
 void MeshDataTest::customAttributeNameTooLarge() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     meshAttributeCustom(32768);
@@ -414,6 +418,10 @@ void MeshDataTest::customAttributeNameTooLarge() {
 }
 
 void MeshDataTest::customAttributeNameNotCustom() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     meshAttributeCustom(MeshAttribute::TextureCoordinates);
@@ -477,6 +485,10 @@ void MeshDataTest::constructIndexTypeErased() {
 }
 
 void MeshDataTest::constructIndexTypeErasedWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char indexData[3*2]{};
 
     std::ostringstream out;
@@ -505,6 +517,10 @@ void MeshDataTest::constructIndex2D() {
 }
 
 void MeshDataTest::constructIndex2DWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char data[3*3]{};
 
     std::ostringstream out;
@@ -514,6 +530,10 @@ void MeshDataTest::constructIndex2DWrongSize() {
 }
 
 void MeshDataTest::constructIndex2DNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char data[3*4]{};
 
     std::ostringstream out;
@@ -584,6 +604,10 @@ void MeshDataTest::constructAttribute2D() {
 }
 
 void MeshDataTest::constructAttribute2DWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char positionData[4*sizeof(Vector2)]{};
 
     std::ostringstream out;
@@ -595,6 +619,10 @@ void MeshDataTest::constructAttribute2DWrongSize() {
 }
 
 void MeshDataTest::constructAttribute2DNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char positionData[4*sizeof(Vector2)]{};
 
     std::ostringstream out;
@@ -687,6 +715,10 @@ void MeshDataTest::constructAttributeImplementationSpecificFormat() {
 }
 
 void MeshDataTest::constructAttributeWrongFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 positionData[3];
 
     std::ostringstream out;
@@ -699,6 +731,10 @@ void MeshDataTest::constructAttributeWrongFormat() {
 }
 
 void MeshDataTest::constructAttributeWrongStride() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char positionData[3*sizeof(Vector3)]{};
 
     std::ostringstream out;
@@ -719,6 +755,10 @@ void MeshDataTest::constructAttributeWrongStride() {
 }
 
 void MeshDataTest::constructAttributeWrongDataAccess() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 positionData[3];
     MeshAttributeData a{MeshAttribute::Position, Containers::arrayView(positionData)};
     MeshAttributeData b{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, sizeof(Vector2)};
@@ -763,6 +803,10 @@ void MeshDataTest::constructArrayAttribute() {
 }
 
 void MeshDataTest::constructArrayAttributeNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 vertexData[4*3]{};
 
     std::ostringstream out;
@@ -786,6 +830,10 @@ void MeshDataTest::constructArrayAttribute2D() {
 }
 
 void MeshDataTest::constructArrayAttribute2DWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char vertexData[3*4*sizeof(Vector2)]{};
 
     std::ostringstream out;
@@ -797,6 +845,10 @@ void MeshDataTest::constructArrayAttribute2DWrongSize() {
 }
 
 void MeshDataTest::constructArrayAttribute2DNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char vertexData[4*3*sizeof(Vector2)]{};
 
     std::ostringstream out;
@@ -840,6 +892,10 @@ void MeshDataTest::constructArrayAttributeOffsetOnly() {
 }
 
 void MeshDataTest::constructArrayAttributeNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 positionData[3*3];
     Containers::ArrayView<Vector2> positions{positionData};
     Containers::StridedArrayView2D<Vector2> positions2D{positionData, {3, 3}};
@@ -1485,6 +1541,10 @@ void MeshDataTest::constructIndexlessAttributelessZeroVertices() {
 }
 
 void MeshDataTest::constructIndexDataButNotIndexed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> indexData{6};
 
     std::ostringstream out;
@@ -1495,6 +1555,10 @@ void MeshDataTest::constructIndexDataButNotIndexed() {
 }
 
 void MeshDataTest::constructAttributelessImplicitVertexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     MeshData{MeshPrimitive::Points, nullptr, {}};
@@ -1502,6 +1566,10 @@ void MeshDataTest::constructAttributelessImplicitVertexCount() {
 }
 
 void MeshDataTest::constructIndicesNotContained() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> indexData{reinterpret_cast<char*>(0xbadda9), 6, [](char*, std::size_t){}};
     Containers::ArrayView<UnsignedShort> indexData2{reinterpret_cast<UnsignedShort*>(0xdead), 3};
     MeshIndexData indices{indexData2};
@@ -1516,6 +1584,10 @@ void MeshDataTest::constructIndicesNotContained() {
 }
 
 void MeshDataTest::constructAttributeNotContained() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 24, [](char*, std::size_t){}};
     Containers::ArrayView<Vector2> vertexData2{reinterpret_cast<Vector2*>(0xdead), 3};
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)};
@@ -1546,6 +1618,10 @@ void MeshDataTest::constructAttributeNotContained() {
 }
 
 void MeshDataTest::constructInconsitentVertexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{136};
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData).prefix(3)};
     MeshAttributeData positions2{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData).prefix(2)};
@@ -1563,6 +1639,10 @@ void MeshDataTest::constructInconsitentVertexCount() {
 }
 
 void MeshDataTest::constructNotOwnedIndexFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const UnsignedShort indexData[]{0, 1, 0};
     const Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
 
@@ -1577,6 +1657,10 @@ void MeshDataTest::constructNotOwnedIndexFlagOwned() {
 }
 
 void MeshDataTest::constructNotOwnedVertexFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const UnsignedShort indexData[]{0, 1, 0};
     const Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
 
@@ -1591,6 +1675,10 @@ void MeshDataTest::constructNotOwnedVertexFlagOwned() {
 }
 
 void MeshDataTest::constructIndicesNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     UnsignedShort indexData[]{0, 1, 0};
     Containers::Array<char> vertexData{2*sizeof(Vector2)};
     auto vertexView = Containers::arrayCast<Vector2>(vertexData);
@@ -1608,6 +1696,10 @@ void MeshDataTest::constructIndicesNotOwnedFlagOwned() {
 }
 
 void MeshDataTest::constructVerticesNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> indexData{3*sizeof(UnsignedShort)};
     auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
     indexView[0] = 0;
@@ -1626,6 +1718,10 @@ void MeshDataTest::constructVerticesNotOwnedFlagOwned() {
 }
 
 void MeshDataTest::constructIndexlessNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
     MeshAttributeData positions{MeshAttribute::Position, Containers::arrayView(vertexData)};
 
@@ -1637,6 +1733,10 @@ void MeshDataTest::constructIndexlessNotOwnedFlagOwned() {
 }
 
 void MeshDataTest::constructAttributelessNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const UnsignedShort indexData[]{0, 1, 0};
     MeshIndexData indices{indexData};
 
@@ -1648,6 +1748,10 @@ void MeshDataTest::constructAttributelessNotOwnedFlagOwned() {
 }
 
 void MeshDataTest::constructInvalidAttributeData() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     MeshAttributeData a;
     MeshAttributeData b{3};
 
@@ -1781,6 +1885,10 @@ template<class T> void MeshDataTest::indicesAsArray() {
 }
 
 void MeshDataTest::indicesIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> indexData{3*sizeof(UnsignedInt)};
     MeshData data{MeshPrimitive::Points, std::move(indexData), MeshIndexData{Containers::arrayCast<UnsignedInt>(indexData)}, 1};
 
@@ -1873,6 +1981,10 @@ template<class T> void MeshDataTest::positions2DAsArrayPackedSignedNormalized() 
 }
 
 void MeshDataTest::positions2DIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector2)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector2>(vertexData)}}};
 
@@ -1975,6 +2087,10 @@ template<class T> void MeshDataTest::positions3DAsArrayPackedSignedNormalized() 
 }
 
 void MeshDataTest::positions3DIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector3)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Position, Containers::arrayCast<Vector3>(vertexData)}}};
 
@@ -2023,6 +2139,10 @@ template<class T> void MeshDataTest::tangentsAsArrayPackedSignedNormalized() {
 }
 
 void MeshDataTest::tangentsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector3)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector3>(vertexData)}}};
 
@@ -2069,6 +2189,10 @@ template<class T> void MeshDataTest::bitangentSignsAsArrayPackedSignedNormalized
 }
 
 void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector3s)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, VertexFormat::Vector3sNormalized, Containers::arrayCast<Vector3s>(vertexData)}}};
 
@@ -2081,6 +2205,10 @@ void MeshDataTest::bitangentSignsAsArrayNotFourComponent() {
 }
 
 void MeshDataTest::bitangentSignsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector4)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Tangent, Containers::arrayCast<Vector4>(vertexData)}}};
 
@@ -2128,6 +2256,10 @@ template<class T> void MeshDataTest::bitangentsAsArrayPackedSignedNormalized() {
 }
 
 void MeshDataTest::bitangentsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector3)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Bitangent, Containers::arrayCast<Vector3>(vertexData)}}};
 
@@ -2175,6 +2307,10 @@ template<class T> void MeshDataTest::normalsAsArrayPackedSignedNormalized() {
 }
 
 void MeshDataTest::normalsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector3)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Normal, Containers::arrayCast<Vector3>(vertexData)}}};
 
@@ -2267,6 +2403,10 @@ template<class T> void MeshDataTest::textureCoordinates2DAsArrayPackedSignedNorm
 }
 
 void MeshDataTest::textureCoordinates2DIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Vector2)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::TextureCoordinates, Containers::arrayCast<Vector2>(vertexData)}}};
 
@@ -2312,6 +2452,10 @@ template<class T> void MeshDataTest::colorsAsArrayPackedUnsignedNormalized() {
 }
 
 void MeshDataTest::colorsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(Color4)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Color, Containers::arrayCast<Color4>(vertexData)}}};
 
@@ -2341,6 +2485,10 @@ template<class T> void MeshDataTest::objectIdsAsArray() {
 }
 
 void MeshDataTest::objectIdsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*sizeof(UnsignedInt)};
     MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::ObjectId, Containers::arrayCast<UnsignedInt>(vertexData)}}};
 
@@ -2400,6 +2548,10 @@ void MeshDataTest::implementationSpecificVertexFormat() {
 }
 
 void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     VertexWithImplementationSpecificData vertexData[] {
         {456.0l},
         {456.0l}
@@ -2463,6 +2615,10 @@ void MeshDataTest::implementationSpecificVertexFormatWrongAccess() {
 }
 
 void MeshDataTest::implementationSpecificVertexFormatNotContained() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{reinterpret_cast<char*>(0xbadda9), 3, [](char*, std::size_t){}};
     Containers::ArrayView<char> vertexData2{reinterpret_cast<char*>(0xdead), 3};
     MeshAttributeData positions{MeshAttribute::Position, vertexFormatWrap(0x3a), vertexData};
@@ -2536,6 +2692,10 @@ void MeshDataTest::arrayAttribute() {
 }
 
 void MeshDataTest::arrayAttributeWrongAccess() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 vertexData[3*4]{
         {1.0f, 2.0f}, {3.0f, 4.0f}, {5.0f, 6.0f}, {7.0f, 8.0f},
         {1.1f, 2.2f}, {3.3f, 4.4f}, {5.5f, 6.6f}, {7.7f, 8.8f},
@@ -2571,6 +2731,10 @@ void MeshDataTest::arrayAttributeWrongAccess() {
 }
 
 void MeshDataTest::mutableAccessNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const UnsignedShort indexData[]{0, 1, 0};
     const Vector2 vertexData[]{{0.1f, 0.2f}, {0.4f, 0.5f}};
 
@@ -2602,6 +2766,10 @@ void MeshDataTest::mutableAccessNotAllowed() {
 }
 
 void MeshDataTest::indicesNotIndexed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     MeshData data{MeshPrimitive::Triangles, 37};
 
     std::ostringstream out;
@@ -2625,6 +2793,10 @@ void MeshDataTest::indicesNotIndexed() {
 }
 
 void MeshDataTest::indicesWrongType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> indexData{sizeof(UnsignedShort)};
     auto indexView = Containers::arrayCast<UnsignedShort>(indexData);
     indexView[0] = 57616;
@@ -2637,6 +2809,10 @@ void MeshDataTest::indicesWrongType() {
 }
 
 void MeshDataTest::attributeNotFound() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     MeshAttributeData colors1{MeshAttribute::Color, VertexFormat::Vector3, nullptr};
     MeshAttributeData colors2{MeshAttribute::Color, VertexFormat::Vector4, nullptr};
     MeshData data{MeshPrimitive::Points, nullptr, {colors1, colors2}};
@@ -2707,6 +2883,10 @@ void MeshDataTest::attributeNotFound() {
 }
 
 void MeshDataTest::attributeWrongType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     MeshAttributeData positions{MeshAttribute::Position, VertexFormat::Vector3, nullptr};
     MeshData data{MeshPrimitive::Points, nullptr, {positions}};
 

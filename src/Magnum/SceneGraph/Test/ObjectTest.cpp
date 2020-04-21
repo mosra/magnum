@@ -42,6 +42,7 @@ struct ObjectTest: TestSuite::Tester {
     void addChild();
     void scene();
     void setParentKeepTransformation();
+    void setParentKeepTransformationInvalid();
     void absoluteTransformation();
     void transformations();
     void transformationsRelative();
@@ -79,6 +80,7 @@ ObjectTest::ObjectTest() {
               &ObjectTest::addChild,
               &ObjectTest::scene,
               &ObjectTest::setParentKeepTransformation,
+              &ObjectTest::setParentKeepTransformationInvalid,
               &ObjectTest::absoluteTransformation,
               &ObjectTest::transformations,
               &ObjectTest::transformationsRelative,
@@ -176,19 +178,29 @@ void ObjectTest::setParentKeepTransformation() {
     childOne->translate(Vector3::xAxis(2.0f));
     childTwo->rotateY(Deg(90.0f));
 
-    /* Old parent and new parent must share the same scene */
-    std::ostringstream o;
-    Error redirectError{&o};
-    Scene3D scene;
-    childOne->setParentKeepTransformation(&scene);
-    CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
-    CORRADE_COMPARE(childOne->parent(), &root);
-
     /* Reparent to another and keep absolute transformation */
     auto transformation = childOne->absoluteTransformation();
     childOne->setParentKeepTransformation(childTwo);
     CORRADE_VERIFY(childOne->parent() == childTwo);
     CORRADE_COMPARE(childOne->absoluteTransformation(), transformation);
+}
+
+void ObjectTest::setParentKeepTransformationInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Object3D root;
+    root.rotateZ(Deg(35.0f));
+
+    Object3D* child = new Object3D(&root);
+
+    /* Old parent and new parent must share the same scene */
+    std::ostringstream o;
+    Error redirectError{&o};
+    Scene3D scene;
+    child->setParentKeepTransformation(&scene);
+    CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
 }
 
 void ObjectTest::absoluteTransformation() {
@@ -283,6 +295,10 @@ void ObjectTest::transformationsRelative() {
 }
 
 void ObjectTest::transformationsOrphan() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream o;
     Error redirectError{&o};
 

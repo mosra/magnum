@@ -65,7 +65,9 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear);
 
+    #ifndef CORRADE_NO_ASSERT
     const GL::PixelFormat format = GL::pixelFormat(image.format());
+    #endif
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_ASSERT(format == GL::PixelFormat::Red,
         "Text::DistanceFieldGlyphCache::setImage(): expected"
@@ -93,7 +95,9 @@ void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
+    #ifndef CORRADE_NO_ASSERT
     const GL::PixelFormat format = GL::pixelFormat(image.format());
+    #endif
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_ASSERT(format == GL::PixelFormat::Red,
         "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << GL::PixelFormat::Red << "but got" << format, );

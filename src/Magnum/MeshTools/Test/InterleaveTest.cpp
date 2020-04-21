@@ -42,6 +42,8 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
 
     void attributeCount();
     void attributeCountGaps();
+    void attributeCountInvalid();
+
     void stride();
     void strideGaps();
     void interleave();
@@ -91,6 +93,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
 InterleaveTest::InterleaveTest() {
     addTests({&InterleaveTest::attributeCount,
               &InterleaveTest::attributeCountGaps,
+              &InterleaveTest::attributeCountInvalid,
               &InterleaveTest::stride,
               &InterleaveTest::strideGaps,
               &InterleaveTest::interleave,
@@ -138,12 +141,6 @@ InterleaveTest::InterleaveTest() {
 }
 
 void InterleaveTest::attributeCount() {
-    std::stringstream ss;
-    Error redirectError{&ss};
-    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
-        std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
-    CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
-
     CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
         std::vector<Byte>{3, 4, 5})), std::size_t(3));
 }
@@ -154,6 +151,18 @@ void InterleaveTest::attributeCountGaps() {
 
     /* No arrays from which to get size */
     CORRADE_COMPARE(Implementation::AttributeCount{}(3, 5), ~std::size_t(0));
+}
+
+void InterleaveTest::attributeCountInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::stringstream ss;
+    Error redirectError{&ss};
+    CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
+        std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
+    CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
 }
 
 void InterleaveTest::stride() {
@@ -426,6 +435,10 @@ void InterleaveTest::interleavedDataNoVertices() {
 }
 
 void InterleaveTest::interleavedDataNotInterleaved() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{100 + 3*20};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::arrayCast<Vector2>(vertexData.suffix(100).prefix(3*8))};
@@ -580,6 +593,10 @@ void InterleaveTest::interleavedLayoutExtraAliased() {
 }
 
 void InterleaveTest::interleavedLayoutExtraTooNegativePadding() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Containers::Array<char> vertexData{3*12};
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
         Containers::StridedArrayView1D<Vector2>{vertexData, reinterpret_cast<Vector2*>(vertexData.data()), 3, 12}};
@@ -909,6 +926,10 @@ void InterleaveTest::interleaveMeshDataExtraOriginalEmpty() {
 }
 
 void InterleaveTest::interleaveMeshDataExtraWrongCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Vector2 positions[]{{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}};
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, Containers::arrayView(positions), {
@@ -926,6 +947,10 @@ void InterleaveTest::interleaveMeshDataExtraWrongCount() {
 }
 
 void InterleaveTest::interleaveMeshDataExtraOffsetOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::MeshData data{MeshPrimitive::TriangleFan, 5};
 
     std::ostringstream out;

@@ -125,6 +125,10 @@ void AbstractTextureGLTest::constructMove() {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTextureGLTest::imageQueryViewNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Texture2D texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
 
@@ -139,6 +143,10 @@ void AbstractTextureGLTest::imageQueryViewNullptr() {
 }
 
 void AbstractTextureGLTest::imageQueryViewBadSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Texture2D texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
 
@@ -154,6 +162,10 @@ void AbstractTextureGLTest::imageQueryViewBadSize() {
 }
 
 void AbstractTextureGLTest::subImageQueryViewNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Texture2D texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2});
 
@@ -168,6 +180,10 @@ void AbstractTextureGLTest::subImageQueryViewNullptr() {
 }
 
 void AbstractTextureGLTest::subImageQueryViewBadSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
@@ -186,6 +202,10 @@ void AbstractTextureGLTest::subImageQueryViewBadSize() {
 }
 
 void AbstractTextureGLTest::compressedImageQueryViewNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
@@ -203,6 +223,10 @@ void AbstractTextureGLTest::compressedImageQueryViewNullptr() {
 }
 
 void AbstractTextureGLTest::compressedImageQueryViewBadSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
@@ -221,6 +245,10 @@ void AbstractTextureGLTest::compressedImageQueryViewBadSize() {
 }
 
 void AbstractTextureGLTest::compressedImageQueryViewBadDataSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
@@ -239,6 +267,10 @@ void AbstractTextureGLTest::compressedImageQueryViewBadDataSize() {
 }
 
 void AbstractTextureGLTest::compressedImageQueryViewBadFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
@@ -257,6 +289,10 @@ void AbstractTextureGLTest::compressedImageQueryViewBadFormat() {
 }
 
 void AbstractTextureGLTest::compressedSubImageQueryViewNullptr() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
@@ -278,6 +314,10 @@ void AbstractTextureGLTest::compressedSubImageQueryViewNullptr() {
 }
 
 void AbstractTextureGLTest::compressedSubImageQueryViewBadSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
@@ -300,6 +340,10 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadSize() {
 }
 
 void AbstractTextureGLTest::compressedSubImageQueryViewBadDataSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
@@ -322,6 +366,10 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadDataSize() {
 }
 
 void AbstractTextureGLTest::compressedSubImageQueryViewBadFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())

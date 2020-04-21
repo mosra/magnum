@@ -343,7 +343,7 @@ void Sdl2Application::setWindowIcon(const ImageView2D& image) {
             format = SDL_PIXELFORMAT_RGBA32;
             break;
         default:
-            CORRADE_ASSERT(false, "Platform::Sdl2Application::setWindowIcon(): unexpected format" << image.format(), );
+            CORRADE_ASSERT_UNREACHABLE("Platform::Sdl2Application::setWindowIcon(): unexpected format" << image.format(), );
     }
 
     /* Images are loaded with origin at bottom left, flip it to top left.
@@ -1089,7 +1089,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     SDL_SetWindowGrab(_window, enabled ? SDL_TRUE : SDL_FALSE);
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
     #else
-    CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );
+    CORRADE_ASSERT_UNREACHABLE("Sdl2Application::setMouseLocked(): not implemented", );
     static_cast<void>(enabled);
     #endif
 }

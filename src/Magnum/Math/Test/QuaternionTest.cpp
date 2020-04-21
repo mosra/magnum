@@ -361,6 +361,10 @@ void QuaternionTest::axisAngle() {
 }
 
 void QuaternionTest::axisAngleNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -459,6 +463,10 @@ void QuaternionTest::invertedNormalized() {
 }
 
 void QuaternionTest::invertedNormalizedNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -487,6 +495,10 @@ void QuaternionTest::rotation() {
 }
 
 void QuaternionTest::rotationNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -527,6 +539,10 @@ void QuaternionTest::angleNormalizedButOver1() {
 }
 
 void QuaternionTest::angleNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -583,6 +599,10 @@ void QuaternionTest::matrix() {
 }
 
 void QuaternionTest::matrixNotOrthogonal() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -617,6 +637,10 @@ void QuaternionTest::euler() {
 }
 
 void QuaternionTest::eulerNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -652,6 +676,10 @@ void QuaternionTest::lerp2D() {
 }
 
 void QuaternionTest::lerpNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -682,6 +710,10 @@ void QuaternionTest::lerpShortestPath() {
 }
 
 void QuaternionTest::lerpShortestPathNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -765,6 +797,10 @@ void QuaternionTest::slerpNormalizedButOver1() {
 }
 
 void QuaternionTest::slerpNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -824,6 +860,10 @@ template<class T> void QuaternionTest::slerpShortestPathLinearFallbackIsNormaliz
 }
 
 void QuaternionTest::slerpShortestPathNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -856,6 +896,10 @@ void QuaternionTest::transformVectorNormalized() {
 }
 
 void QuaternionTest::transformVectorNormalizedNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

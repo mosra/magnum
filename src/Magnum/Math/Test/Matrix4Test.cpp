@@ -399,6 +399,10 @@ void Matrix4Test::rotation() {
 }
 
 void Matrix4Test::rotationNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -447,6 +451,10 @@ void Matrix4Test::reflection() {
 }
 
 void Matrix4Test::reflectionNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -691,6 +699,10 @@ void Matrix4Test::rotationPart() {
 }
 
 void Matrix4Test::rotationPartNotOrthogonal() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -743,6 +755,10 @@ void Matrix4Test::rotationNormalizedPart() {
 }
 
 void Matrix4Test::rotationNormalizedPartNotOrthogonal() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -804,6 +820,10 @@ void Matrix4Test::uniformScalingPart() {
 }
 
 void Matrix4Test::uniformScalingPartNotUniform() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out}; Matrix4::scaling(Vector3::yScale(3.0f)).uniformScaling();
     CORRADE_COMPARE(out.str(), "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling:\n"
@@ -886,6 +906,10 @@ void Matrix4Test::invertedRigid() {
 }
 
 void Matrix4Test::invertedRigidNotRigid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

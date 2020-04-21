@@ -45,7 +45,7 @@ MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& d
     if(data.size()[1] == 4) _type = MeshIndexType::UnsignedInt;
     else if(data.size()[1] == 2) _type = MeshIndexType::UnsignedShort;
     else if(data.size()[1] == 1) _type = MeshIndexType::UnsignedByte;
-    else CORRADE_ASSERT(false, "Trade::MeshIndexData: expected index type size 1, 2 or 4 but got" << data.size()[1], );
+    else CORRADE_ASSERT_UNREACHABLE("Trade::MeshIndexData: expected index type size 1, 2 or 4 but got" << data.size()[1], );
 
     CORRADE_ASSERT(data.isContiguous(), "Trade::MeshIndexData: view is not contiguous", );
     _data = data.asContiguous();
@@ -619,7 +619,7 @@ void MeshData::bitangentSignsInto(const Containers::StridedArrayView1D<Float> de
         Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4).suffix({0, 3}), destination1f);
     else if(attribute._format == VertexFormat::Vector4sNormalized)
         Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4).suffix({0, 3}), destination1f);
-    else CORRADE_ASSERT(false, "Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got" << attribute._format, );
+    else CORRADE_ASSERT_UNREACHABLE("Trade::MeshData::bitangentSignsInto(): expected four-component tangents, but got" << attribute._format, );
 }
 
 Containers::Array<Float> MeshData::bitangentSignsAsArray(const UnsignedInt id) const {

@@ -580,7 +580,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
             /* RGTC is on WebGL 1 but there's no Red pixel format (which is
                okay because WebGL doesn't allow compression by upload anyway).
                Assert here to have the enum value handled. */
-            CORRADE_ASSERT(false, "No single-component pixel format in WebGL 1 for RGTC compression", {});
+            CORRADE_ASSERT_UNREACHABLE("No single-component pixel format in WebGL 1 for RGTC compression", {});
             #endif
         #endif
 
@@ -630,7 +630,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
             /* RGTC is on WebGL 1 but there's no RG pixel format (which is okay
                because WebGL doesn't allow compression by upload anyway).
                Assert here to have the enum value handled. */
-            CORRADE_ASSERT(false, "No two-component pixel format in WebGL 1 for RGTC compression", {});
+            CORRADE_ASSERT_UNREACHABLE("No two-component pixel format in WebGL 1 for RGTC compression", {});
             #endif
         #endif
 
@@ -1031,7 +1031,7 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
             /* RGTC is on WebGL 1 but there's no RG pixel format (which is okay
                because WebGL doesn't allow compression by upload anyway).
                Assert here to have the enum value handled. */
-            CORRADE_ASSERT(false, "No signed pixel type in OpenGL ES 2.0 for RGTC compression", {});
+            CORRADE_ASSERT_UNREACHABLE("No signed pixel type in OpenGL ES 2.0 for RGTC compression", {});
             #endif
         #endif
 
@@ -1975,7 +1975,6 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, con
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableCompressedImageView<dimensions>& image) {
-    #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr || !(Math::Vector<dimensions, Int>(range.size()).product()),
         "GL::AbstractTexture::compressedSubImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
@@ -1985,6 +1984,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
 
     const Math::Vector<dimensions, Int> size = range.size();
 
+    #ifndef CORRADE_NO_ASSERT
     /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);

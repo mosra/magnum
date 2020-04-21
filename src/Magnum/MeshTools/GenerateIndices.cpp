@@ -52,8 +52,7 @@ UnsignedInt primitiveCount(const MeshPrimitive primitive, const UnsignedInt elem
     if(primitive == MeshPrimitive::TriangleStrip ||
        primitive == MeshPrimitive::TriangleFan)
         return elementCount < 2 ? 0 : elementCount - 2;
-    CORRADE_ASSERT(false,
-        "MeshTools::primitiveCount(): invalid primitive" << primitive, {});
+    CORRADE_ASSERT_UNREACHABLE("MeshTools::primitiveCount(): invalid primitive" << primitive, {});
 }
 
 void generateLineStripIndicesInto(const UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
@@ -214,8 +213,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
         primitive = MeshPrimitive::Triangles;
         indexData = Containers::Array<char>{Containers::NoInit, 3*(vertexCount - 2)*sizeof(UnsignedInt)};
         generateTriangleFanIndicesInto(vertexCount, Containers::arrayCast<UnsignedInt>(indexData));
-    } else CORRADE_ASSERT(false,
-        "MeshTools::generateIndices(): invalid primitive" << data.primitive(),
+    } else CORRADE_ASSERT_UNREACHABLE("MeshTools::generateIndices(): invalid primitive" << data.primitive(),
         (Trade::MeshData{MeshPrimitive::Triangles, 0}));
 
     Trade::MeshIndexData indices{MeshIndexType::UnsignedInt, indexData};

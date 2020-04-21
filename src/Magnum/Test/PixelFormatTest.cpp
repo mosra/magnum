@@ -201,6 +201,10 @@ void PixelFormatTest::size() {
 }
 
 void PixelFormatTest::sizeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -213,6 +217,10 @@ void PixelFormatTest::sizeInvalid() {
 }
 
 void PixelFormatTest::sizeImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -235,6 +243,10 @@ void PixelFormatTest::compressedBlockSize() {
 }
 
 void PixelFormatTest::compressedBlockSizeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -251,6 +263,10 @@ void PixelFormatTest::compressedBlockSizeInvalid() {
 }
 
 void PixelFormatTest::compressedBlockSizeImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -275,6 +291,10 @@ void PixelFormatTest::wrap() {
 }
 
 void PixelFormatTest::wrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -289,6 +309,10 @@ void PixelFormatTest::unwrap() {
 }
 
 void PixelFormatTest::unwrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -307,6 +331,10 @@ void PixelFormatTest::compressedWrap() {
 }
 
 void PixelFormatTest::compressedWrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -320,6 +348,10 @@ void PixelFormatTest::compressedUnwrap() {
 }
 
 void PixelFormatTest::compressedUnwrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

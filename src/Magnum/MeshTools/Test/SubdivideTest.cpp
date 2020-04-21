@@ -96,6 +96,10 @@ void SubdivideTest::subdivideStl() {
 #endif
 
 void SubdivideTest::subdivideWrongIndexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -122,6 +126,10 @@ template<class T> void SubdivideTest::subdivideInPlace() {
 }
 
 void SubdivideTest::subdivideInPlaceWrongIndexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -133,6 +141,10 @@ void SubdivideTest::subdivideInPlaceWrongIndexCount() {
 }
 
 void SubdivideTest::subdivideInPlaceSmallIndexType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 

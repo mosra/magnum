@@ -172,6 +172,10 @@ namespace GL {
     UnsignedInt pixelSize(PixelFormat format, PixelType type) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::RGB);
         CORRADE_INTERNAL_ASSERT(type == PixelType::UnsignedShort);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        static_cast<void>(type);
+        #endif
         return 6;
     }
 
@@ -185,6 +189,9 @@ namespace Vk {
     UnsignedInt pixelSize(PixelFormat);
     UnsignedInt pixelSize(PixelFormat format) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::R32G32B32F);
+        #ifdef CORRADE_NO_ASSERT
+        static_cast<void>(format);
+        #endif
         return 12;
     }
 
@@ -566,6 +573,10 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwned() {
 }
 
 void ImageDataTest::constructGenericNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char data[4*4];
 
     std::ostringstream out;
@@ -578,6 +589,10 @@ void ImageDataTest::constructGenericNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char data[3*12];
 
     std::ostringstream out;
@@ -590,6 +605,10 @@ void ImageDataTest::constructImplementationSpecificNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructCompressedGenericNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char data[8];
 
     std::ostringstream out;
@@ -603,6 +622,10 @@ void ImageDataTest::constructCompressedGenericNotOwnedFlagOwned() {
 }
 
 void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     char data[8];
 
     std::ostringstream out;
@@ -614,6 +637,10 @@ void ImageDataTest::constructCompressedImplementationSpecificNotOwnedFlagOwned()
 }
 
 void ImageDataTest::constructInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -927,6 +954,10 @@ void ImageDataTest::dataRvalue() {
 }
 
 void ImageDataTest::mutableAccessNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     const char data[4*4]{};
     ImageData2D a{PixelFormat::RGBA8Unorm, {2, 2}, DataFlags{}, data};
 
@@ -1058,6 +1089,10 @@ void ImageDataTest::pixels3D() {
 }
 
 void ImageDataTest::pixelsCompressed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Trade::ImageData2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, Containers::Array<char>{8}};
 
     std::ostringstream out;

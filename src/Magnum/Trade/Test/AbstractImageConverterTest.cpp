@@ -149,6 +149,10 @@ void AbstractImageConverterTest::constructWithPluginManagerReference() {
 }
 
 void AbstractImageConverterTest::thingNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return {}; }
     } converter;
@@ -185,6 +189,10 @@ void AbstractImageConverterTest::exportToImage() {
 }
 
 void AbstractImageConverterTest::exportToImageNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertImage; }
     } converter;
@@ -196,6 +204,10 @@ void AbstractImageConverterTest::exportToImageNotImplemented() {
 }
 
 void AbstractImageConverterTest::exportToImageCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertImage; }
         Containers::Optional<Image2D> doExportToImage(const ImageView2D&) override {
@@ -224,6 +236,10 @@ void AbstractImageConverterTest::exportToCompressedImage() {
 }
 
 void AbstractImageConverterTest::exportToCompressedImageNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedImage; }
     } converter;
@@ -235,6 +251,10 @@ void AbstractImageConverterTest::exportToCompressedImageNotImplemented() {
 }
 
 void AbstractImageConverterTest::exportToCompressedImageCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedImage; }
         Containers::Optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D&) override {
@@ -261,6 +281,10 @@ void AbstractImageConverterTest::exportToData() {
 }
 
 void AbstractImageConverterTest::exportToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData; }
     } converter;
@@ -272,6 +296,10 @@ void AbstractImageConverterTest::exportToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::exportToDataCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData; }
         Containers::Array<char> doExportToData(const ImageView2D&) override {
@@ -298,6 +326,10 @@ void AbstractImageConverterTest::exportCompressedToData() {
 }
 
 void AbstractImageConverterTest::exportCompressedToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData; }
     } converter;
@@ -309,6 +341,10 @@ void AbstractImageConverterTest::exportCompressedToDataNotImplemented() {
 }
 
 void AbstractImageConverterTest::exportCompressedToDataCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedData; }
         Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
@@ -409,6 +445,10 @@ void AbstractImageConverterTest::exportToFileThroughDataNotWritable() {
 }
 
 void AbstractImageConverterTest::exportToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertFile; }
     } converter;
@@ -469,6 +509,10 @@ void AbstractImageConverterTest::exportCompressedToFileThroughDataNotWritable() 
 }
 
 void AbstractImageConverterTest::exportCompressedToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedFile; }
     } converter;

@@ -601,7 +601,6 @@ plugin binary to avoid dangling function pointers on plugin unload.
 */
 template<class V, class R = Animation::ResultOf<V>> MAGNUM_TRADE_EXPORT auto animationInterpolatorFor(Animation::Interpolation interpolation) -> R(*)(const V&, const V&, Float);
 
-#if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
 namespace Implementation {
     /* LCOV_EXCL_START */
     template<class> constexpr AnimationTrackType animationTypeFor();
@@ -649,7 +648,6 @@ namespace Implementation {
     template<> constexpr AnimationTrackType animationTypeFor<CubicHermiteQuaternion>() { return AnimationTrackType::CubicHermiteQuaternion; }
     /* LCOV_EXCL_STOP */
 }
-#endif
 
 template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackView<const Float, const V, R> view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetType, target, view} {}
 

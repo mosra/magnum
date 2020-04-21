@@ -227,6 +227,10 @@ void VertexFormatTest::wrap() {
 }
 
 void VertexFormatTest::wrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -241,6 +245,10 @@ void VertexFormatTest::unwrap() {
 }
 
 void VertexFormatTest::unwrapInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -263,6 +271,10 @@ void VertexFormatTest::size() {
 }
 
 void VertexFormatTest::sizeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -275,6 +287,10 @@ void VertexFormatTest::sizeInvalid() {
 }
 
 void VertexFormatTest::sizeImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormatSize(vertexFormatWrap(0xdead));
@@ -296,6 +312,10 @@ void VertexFormatTest::componentCount() {
 }
 
 void VertexFormatTest::componentCountInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -308,6 +328,10 @@ void VertexFormatTest::componentCountInvalid() {
 }
 
 void VertexFormatTest::componentCountImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormatComponentCount(vertexFormatWrap(0xdead));
@@ -337,6 +361,10 @@ void VertexFormatTest::componentFormat() {
 }
 
 void VertexFormatTest::componentFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -349,6 +377,10 @@ void VertexFormatTest::componentFormatInvalid() {
 }
 
 void VertexFormatTest::componentFormatImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormatComponentFormat(vertexFormatWrap(0xdead));
@@ -369,6 +401,10 @@ void VertexFormatTest::vectorCount() {
 }
 
 void VertexFormatTest::vectorCountInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -381,6 +417,10 @@ void VertexFormatTest::vectorCountInvalid() {
 }
 
 void VertexFormatTest::vectorCountImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormatVectorCount(vertexFormatWrap(0xdead));
@@ -403,6 +443,10 @@ void VertexFormatTest::vectorStride() {
 }
 
 void VertexFormatTest::vectorStrideInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -415,6 +459,10 @@ void VertexFormatTest::vectorStrideInvalid() {
 }
 
 void VertexFormatTest::vectorStrideImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormatVectorStride(vertexFormatWrap(0xdead));
@@ -433,6 +481,10 @@ void VertexFormatTest::isNormalized() {
 }
 
 void VertexFormatTest::isNormalizedInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -445,6 +497,10 @@ void VertexFormatTest::isNormalizedInvalid() {
 }
 
 void VertexFormatTest::isNormalizedImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     isVertexFormatNormalized(vertexFormatWrap(0xdead));
@@ -491,6 +547,10 @@ void VertexFormatTest::assembleRoundtrip() {
 }
 
 void VertexFormatTest::assembleCantNormalize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector2, 1, true);
@@ -499,6 +559,10 @@ void VertexFormatTest::assembleCantNormalize() {
 }
 
 void VertexFormatTest::assembleInvalidComponentCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector3, 5, false);
@@ -507,6 +571,10 @@ void VertexFormatTest::assembleInvalidComponentCount() {
 }
 
 void VertexFormatTest::assembleImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(vertexFormatWrap(0xdead), 1, true);
@@ -556,6 +624,10 @@ void VertexFormatTest::assembleMatrixRoundtrip() {
 }
 
 void VertexFormatTest::assembleMatrixInvalidType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::UnsignedByte, 3, 2, false);
@@ -570,6 +642,10 @@ void VertexFormatTest::assembleMatrixInvalidType() {
 }
 
 void VertexFormatTest::assembleMatrixInvalidCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(VertexFormat::Vector3, 2, 1, false);
@@ -584,6 +660,10 @@ void VertexFormatTest::assembleMatrixInvalidCount() {
 }
 
 void VertexFormatTest::assembleMatrixImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     vertexFormat(vertexFormatWrap(0xdead), 2, 2, true);

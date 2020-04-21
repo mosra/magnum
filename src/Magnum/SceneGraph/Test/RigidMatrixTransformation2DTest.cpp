@@ -40,13 +40,16 @@ struct RigidMatrixTransformation2DTest: TestSuite::Tester {
     explicit RigidMatrixTransformation2DTest();
 
     void fromMatrix();
+    void fromMatrixInvalid();
     void toMatrix();
     void compose();
     void inverted();
 
     void setTransformation();
+    void setTransformationInvalid();
     void resetTransformation();
     void transform();
+    void transformInvalid();
     void translate();
     void rotate();
     void reflect();
@@ -55,13 +58,16 @@ struct RigidMatrixTransformation2DTest: TestSuite::Tester {
 
 RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
     addTests({&RigidMatrixTransformation2DTest::fromMatrix,
+              &RigidMatrixTransformation2DTest::fromMatrixInvalid,
               &RigidMatrixTransformation2DTest::toMatrix,
               &RigidMatrixTransformation2DTest::compose,
               &RigidMatrixTransformation2DTest::inverted,
 
               &RigidMatrixTransformation2DTest::setTransformation,
+              &RigidMatrixTransformation2DTest::setTransformationInvalid,
               &RigidMatrixTransformation2DTest::resetTransformation,
               &RigidMatrixTransformation2DTest::transform,
+              &RigidMatrixTransformation2DTest::transformInvalid,
               &RigidMatrixTransformation2DTest::translate,
               &RigidMatrixTransformation2DTest::rotate,
               &RigidMatrixTransformation2DTest::reflect,
@@ -71,13 +77,19 @@ RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
 using namespace Math::Literals;
 
 void RigidMatrixTransformation2DTest::fromMatrix() {
-    std::ostringstream o;
-    Error redirectError{&o};
-    Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
-    CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation2D: the matrix doesn't represent rigid transformation\n");
-
     Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
     CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(m), m);
+}
+
+void RigidMatrixTransformation2DTest::fromMatrixInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D: the matrix doesn't represent rigid transformation\n");
 }
 
 void RigidMatrixTransformation2DTest::toMatrix() {
@@ -99,12 +111,6 @@ void RigidMatrixTransformation2DTest::inverted() {
 void RigidMatrixTransformation2DTest::setTransformation() {
     Object2D o;
 
-    /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
-    Error redirectError{&out};
-    o.setTransformation(Matrix3::scaling(Vector2(3.0f)));
-    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::setTransformation(): the matrix doesn't represent rigid transformation\n");
-
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
@@ -120,6 +126,20 @@ void RigidMatrixTransformation2DTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
 }
 
+void RigidMatrixTransformation2DTest::setTransformationInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Object2D o;
+
+    /* Can't transform with non-rigid transformation */
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.setTransformation(Matrix3::scaling(Vector2(3.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::setTransformation(): the matrix doesn't represent rigid transformation\n");
+}
+
 void RigidMatrixTransformation2DTest::resetTransformation() {
     Object2D o;
     o.setTransformation(Matrix3::rotation(Deg(17.0f)));
@@ -130,13 +150,6 @@ void RigidMatrixTransformation2DTest::resetTransformation() {
 
 void RigidMatrixTransformation2DTest::transform() {
     {
-        /* Can't transform with non-rigid transformation */
-        Object2D o;
-        std::ostringstream out;
-        Error redirectError{&out};
-        o.transform(Matrix3::scaling(Vector2(3.0f)));
-        CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::transform(): the matrix doesn't represent rigid transformation\n");
-    } {
         Object2D o;
         o.setTransformation(Matrix3::rotation(Deg(17.0f)));
         o.transform(Matrix3::translation({1.0f, -0.3f}));
@@ -147,6 +160,19 @@ void RigidMatrixTransformation2DTest::transform() {
         o.transformLocal(Matrix3::translation({1.0f, -0.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
+}
+
+void RigidMatrixTransformation2DTest::transformInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Can't transform with non-rigid transformation */
+    Object2D o;
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.transform(Matrix3::scaling(Vector2(3.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::transform(): the matrix doesn't represent rigid transformation\n");
 }
 
 void RigidMatrixTransformation2DTest::translate() {

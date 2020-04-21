@@ -99,6 +99,10 @@ void RemoveDuplicatesTest::removeDuplicates() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Int data[8]{};
 
     std::ostringstream out;
@@ -111,6 +115,10 @@ void RemoveDuplicatesTest::removeDuplicatesNonContiguous() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIntoWrongOutputSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     Int data[8]{};
     UnsignedInt output[7];
 
@@ -144,6 +152,10 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesIndexedInPlace() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceSmallType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 
@@ -237,6 +249,10 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream out;
     Error redirectError{&out};
 

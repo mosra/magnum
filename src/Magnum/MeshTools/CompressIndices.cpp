@@ -183,7 +183,7 @@ std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> com
 }
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
-    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+    #ifndef CORRADE_NO_ASSERT
     const auto max = Math::max(indices);
     CORRADE_ASSERT(Math::log(256, max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << max, {});
     #endif

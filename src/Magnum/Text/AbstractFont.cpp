@@ -112,8 +112,7 @@ bool AbstractFont::openData(Containers::ArrayView<const char> data, const Float 
 }
 
 auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Metrics {
-    CORRADE_ASSERT(false, "Text::AbstractFont::openData(): feature advertised but not implemented", {});
-    return {};
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::openData(): feature advertised but not implemented", {});
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -165,7 +164,7 @@ bool AbstractFont::openFile(const std::string& filename, const Float size) {
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     _size = metrics.size;
     _ascent = metrics.ascent;
@@ -255,7 +254,7 @@ void AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const std::string& 
 }
 
 void AbstractFont::doFillGlyphCache(AbstractGlyphCache&, const std::u32string&) {
-    CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
 Containers::Pointer<AbstractGlyphCache> AbstractFont::createGlyphCache() {
@@ -268,8 +267,7 @@ Containers::Pointer<AbstractGlyphCache> AbstractFont::createGlyphCache() {
 }
 
 Containers::Pointer<AbstractGlyphCache> AbstractFont::doCreateGlyphCache() {
-    CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
-    return nullptr;
+    CORRADE_ASSERT_UNREACHABLE("Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
 }
 
 Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const std::string& text) {

@@ -396,10 +396,10 @@ PhongGLTest::PhongGLTest() {
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     #ifdef CORRADE_TARGET_APPLE
@@ -457,6 +457,10 @@ void PhongGLTest::constructMove() {
 }
 
 void PhongGLTest::constructTextureTransformationNotTextured() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     Phong{Phong::Flag::TextureTransformation};
@@ -465,6 +469,10 @@ void PhongGLTest::constructTextureTransformationNotTextured() {
 }
 
 void PhongGLTest::bindTexturesNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -485,6 +493,10 @@ void PhongGLTest::bindTexturesNotEnabled() {
 }
 
 void PhongGLTest::setAlphaMaskNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -496,6 +508,10 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 }
 
 void PhongGLTest::setTextureMatrixNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -508,6 +524,10 @@ void PhongGLTest::setTextureMatrixNotEnabled() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void PhongGLTest::setObjectIdNotEnabled() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -520,6 +540,10 @@ void PhongGLTest::setObjectIdNotEnabled() {
 #endif
 
 void PhongGLTest::setWrongLightCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -541,6 +565,10 @@ void PhongGLTest::setWrongLightCount() {
 }
 
 void PhongGLTest::setWrongLightId() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

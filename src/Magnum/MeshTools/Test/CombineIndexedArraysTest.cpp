@@ -51,6 +51,10 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 
 CORRADE_IGNORE_DEPRECATED_PUSH
 void CombineIndexedArraysTest::wrongIndexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::stringstream ss;
     Error redirectError{&ss};
     std::vector<UnsignedInt> a{0, 1, 0};

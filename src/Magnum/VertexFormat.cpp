@@ -166,7 +166,7 @@ UnsignedInt vertexFormatSize(const VertexFormat format) {
             return 128;
     }
 
-    CORRADE_ASSERT(false, "vertexFormatSize(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("vertexFormatSize(): invalid format" << format, {});
 }
 
 UnsignedInt vertexFormatComponentCount(const VertexFormat format) {
@@ -292,7 +292,7 @@ UnsignedInt vertexFormatComponentCount(const VertexFormat format) {
             return 4;
     }
 
-    CORRADE_ASSERT(false, "vertexFormatComponentCount(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("vertexFormatComponentCount(): invalid format" << format, {});
 }
 
 VertexFormat vertexFormatComponentFormat(const VertexFormat format) {
@@ -428,7 +428,7 @@ VertexFormat vertexFormatComponentFormat(const VertexFormat format) {
             return VertexFormat::Int;
     }
 
-    CORRADE_ASSERT(false, "vertexFormatComponentType(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("vertexFormatComponentType(): invalid format" << format, {});
 }
 
 UnsignedInt vertexFormatVectorCount(const VertexFormat format) {
@@ -554,7 +554,7 @@ UnsignedInt vertexFormatVectorCount(const VertexFormat format) {
             return 4;
     }
 
-    CORRADE_ASSERT(false, "vertexFormatVectorCount(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("vertexFormatVectorCount(): invalid format" << format, {});
 }
 
 UnsignedInt vertexFormatVectorStride(const VertexFormat format) {
@@ -683,7 +683,7 @@ UnsignedInt vertexFormatVectorStride(const VertexFormat format) {
             return 32;
     }
 
-    CORRADE_ASSERT(false, "vertexFormatVectorStride(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("vertexFormatVectorStride(): invalid format" << format, {});
 }
 
 bool isVertexFormatNormalized(const VertexFormat format) {
@@ -805,7 +805,7 @@ bool isVertexFormatNormalized(const VertexFormat format) {
             return true;
     }
 
-    CORRADE_ASSERT(false, "isVertexFormatNormalized(): invalid format" << format, {});
+    CORRADE_ASSERT_UNREACHABLE("isVertexFormatNormalized(): invalid format" << format, {});
 }
 
 VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt componentCount, const bool normalized) {
@@ -829,8 +829,7 @@ VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt component
             case VertexFormat::Short:
                 componentFormat = VertexFormat::ShortNormalized;
                 break;
-            default: CORRADE_ASSERT(false,
-                "vertexFormat():" << format << "can't be made normalized", {});
+            default: CORRADE_ASSERT_UNREACHABLE("vertexFormat():" << format << "can't be made normalized", {});
         }
     }
 
@@ -847,10 +846,7 @@ VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt component
     else if(componentCount == 4)
         return VertexFormat(UnsignedInt(VertexFormat::Vector4) +
             UnsignedInt(componentFormat) - UnsignedInt(VertexFormat::Float));
-    else CORRADE_ASSERT(false,
-        "vertexFormat(): invalid component count" << componentCount, {});
-
-    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_ASSERT_UNREACHABLE("vertexFormat(): invalid component count" << componentCount, {});
 }
 
 VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt vectorCount, UnsignedInt componentCount, const bool aligned) {
@@ -897,8 +893,7 @@ VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt vectorCou
             else
                 out = UnsignedInt(VertexFormat::Matrix2x2sNormalized) + componentDistance;
             break;
-        default: CORRADE_ASSERT(false,
-            "vertexFormat(): invalid matrix component type" << componentFormat << Debug::nospace << ", only floating-point or 8-/16-bit signed integer types are supported", {});
+        default: CORRADE_ASSERT_UNREACHABLE("vertexFormat(): invalid matrix component type" << componentFormat << Debug::nospace << ", only floating-point or 8-/16-bit signed integer types are supported", {});
     }
 
     return VertexFormat(out + vectorDistance);

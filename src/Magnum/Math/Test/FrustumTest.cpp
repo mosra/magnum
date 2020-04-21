@@ -299,6 +299,10 @@ void FrustumTest::convert() {
 }
 
 void FrustumTest::data() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     /* Using default-constructed to verify that the planes are in correct order */
     constexpr Frustum a;
 

@@ -355,6 +355,10 @@ void Matrix3Test::reflection() {
 }
 
 void Matrix3Test::reflectionNotNormalized() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -466,6 +470,10 @@ void Matrix3Test::rotationPart() {
 }
 
 void Matrix3Test::rotationPartNotOrthogonal() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -510,6 +518,10 @@ void Matrix3Test::rotationNormalizedPart() {
 }
 
 void Matrix3Test::rotationNormalizedPartNotOrthogonal() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -570,6 +582,10 @@ void Matrix3Test::uniformScalingPart() {
 }
 
 void Matrix3Test::uniformScalingPartNotUniform() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     Matrix3::scaling(Vector2::yScale(3.0f)).uniformScaling();
@@ -614,6 +630,10 @@ void Matrix3Test::invertedRigid() {
 }
 
 void Matrix3Test::invertedRigidNotRigid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     (Matrix3::rotation(60.0_degf)*2.0f).invertedRigid();

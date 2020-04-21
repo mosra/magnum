@@ -90,7 +90,7 @@ bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
 }
 
 void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
-    CORRADE_ASSERT(false, "Audio::AbstractImporter::openData(): feature advertised but not implemented", );
+    CORRADE_ASSERT_UNREACHABLE("Audio::AbstractImporter::openData(): feature advertised but not implemented", );
 }
 
 bool AbstractImporter::openFile(const std::string& filename) {

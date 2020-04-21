@@ -197,6 +197,10 @@ void PixelFormatTest::mapFormatImplementationSpecific() {
 }
 
 void PixelFormatTest::mapFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
@@ -210,6 +214,10 @@ void PixelFormatTest::mapFormatUnsupported() {
 }
 
 void PixelFormatTest::mapFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -230,6 +238,10 @@ void PixelFormatTest::mapTypeImplementationSpecific() {
 }
 
 void PixelFormatTest::mapTypeImplementationSpecificZero() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -238,6 +250,10 @@ void PixelFormatTest::mapTypeImplementationSpecificZero() {
 }
 
 void PixelFormatTest::mapTypeUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
@@ -251,6 +267,10 @@ void PixelFormatTest::mapTypeUnsupported() {
 }
 
 void PixelFormatTest::mapTypeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     pixelType(Magnum::PixelFormat{});
@@ -261,6 +281,10 @@ void PixelFormatTest::mapTypeInvalid() {
 }
 
 void PixelFormatTest::mapTextureFormatImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     hasTextureFormat(Magnum::pixelFormatWrap(PixelFormat::RGBA));
@@ -271,6 +295,10 @@ void PixelFormatTest::mapTextureFormatImplementationSpecific() {
 }
 
 void PixelFormatTest::mapTextureFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -289,6 +317,10 @@ void PixelFormatTest::mapTextureFormatUnsupported() {
 }
 
 void PixelFormatTest::mapTextureFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -320,6 +352,10 @@ void PixelFormatTest::size() {
 }
 
 void PixelFormatTest::sizeInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     pixelSize(PixelFormat::DepthStencil, PixelType::Float);
@@ -400,6 +436,10 @@ void PixelFormatTest::mapCompressedFormatImplementationSpecific() {
 }
 
 void PixelFormatTest::mapCompressedFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
 
@@ -420,6 +460,10 @@ void PixelFormatTest::mapCompressedFormatUnsupported() {
 }
 
 void PixelFormatTest::mapCompressedFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 
@@ -441,6 +485,10 @@ void PixelFormatTest::mapCompressedTextureFormatImplementationSpecific() {
 }
 
 void PixelFormatTest::mapCompressedTextureFormatUnsupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(!hasTextureFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
 
@@ -461,6 +509,10 @@ void PixelFormatTest::mapCompressedTextureFormatUnsupported() {
 }
 
 void PixelFormatTest::mapCompressedTextureFormatInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
 

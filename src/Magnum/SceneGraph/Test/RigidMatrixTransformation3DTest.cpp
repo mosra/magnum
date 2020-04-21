@@ -40,13 +40,16 @@ struct RigidMatrixTransformation3DTest: TestSuite::Tester {
     explicit RigidMatrixTransformation3DTest();
 
     void fromMatrix();
+    void fromMatrixInvalid();
     void toMatrix();
     void compose();
     void inverted();
 
     void setTransformation();
+    void setTransformationInvalid();
     void resetTransformation();
     void transform();
+    void transformInvalid();
     void translate();
     void rotate();
     void reflect();
@@ -55,13 +58,16 @@ struct RigidMatrixTransformation3DTest: TestSuite::Tester {
 
 RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
     addTests({&RigidMatrixTransformation3DTest::fromMatrix,
+              &RigidMatrixTransformation3DTest::fromMatrixInvalid,
               &RigidMatrixTransformation3DTest::toMatrix,
               &RigidMatrixTransformation3DTest::compose,
               &RigidMatrixTransformation3DTest::inverted,
 
               &RigidMatrixTransformation3DTest::setTransformation,
+              &RigidMatrixTransformation3DTest::setTransformationInvalid,
               &RigidMatrixTransformation3DTest::resetTransformation,
               &RigidMatrixTransformation3DTest::transform,
+              &RigidMatrixTransformation3DTest::transformInvalid,
               &RigidMatrixTransformation3DTest::translate,
               &RigidMatrixTransformation3DTest::rotate,
               &RigidMatrixTransformation3DTest::reflect,
@@ -71,13 +77,19 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
 using namespace Math::Literals;
 
 void RigidMatrixTransformation3DTest::fromMatrix() {
+    Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
+    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(m), m);
+}
+
+void RigidMatrixTransformation3DTest::fromMatrixInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream o;
     Error redirectError{&o};
     Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation\n");
-
-    Matrix4 m = Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f});
-    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(m), m);
 }
 
 void RigidMatrixTransformation3DTest::toMatrix() {
@@ -99,12 +111,6 @@ void RigidMatrixTransformation3DTest::inverted() {
 void RigidMatrixTransformation3DTest::setTransformation() {
     Object3D o;
 
-    /* Can't transform with non-rigid transformation */
-    std::ostringstream out;
-    Error redirectError{&out};
-    o.setTransformation(Matrix4::scaling(Vector3(3.0f)));
-    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
-
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
@@ -121,6 +127,20 @@ void RigidMatrixTransformation3DTest::setTransformation() {
     CORRADE_COMPARE(s.transformationMatrix(), Matrix4());
 }
 
+void RigidMatrixTransformation3DTest::setTransformationInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Object3D o;
+
+    /* Can't transform with non-rigid transformation */
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.setTransformation(Matrix4::scaling(Vector3(3.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
+}
+
 void RigidMatrixTransformation3DTest::resetTransformation() {
     Object3D o;
     o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
@@ -131,13 +151,6 @@ void RigidMatrixTransformation3DTest::resetTransformation() {
 
 void RigidMatrixTransformation3DTest::transform() {
     {
-        /* Can't transform with non-rigid transformation */
-        Object3D o;
-        std::ostringstream out;
-        Error redirectError{&out};
-        o.transform(Matrix4::scaling(Vector3(3.0f)));
-        CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
-    } {
         Object3D o;
         o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
         o.transform(Matrix4::translation({1.0f, -0.3f, 2.3f}));
@@ -148,6 +161,19 @@ void RigidMatrixTransformation3DTest::transform() {
         o.transformLocal(Matrix4::translation({1.0f, -0.3f, 2.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
+}
+
+void RigidMatrixTransformation3DTest::transformInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Can't transform with non-rigid transformation */
+    Object3D o;
+    std::ostringstream out;
+    Error redirectError{&out};
+    o.transform(Matrix4::scaling(Vector3(3.0f)));
+    CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
 }
 
 void RigidMatrixTransformation3DTest::translate() {

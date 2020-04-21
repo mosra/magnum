@@ -429,7 +429,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
             /* Indexed mesh */
             } else glDrawElementsBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
             #else
-            CORRADE_ASSERT(false, "GL::Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT_UNREACHABLE("GL::Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
             #endif
 
         /* Indexed mesh */
@@ -488,7 +488,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
                 glDrawElementsInstancedBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex);
             }
             #else
-            CORRADE_ASSERT(false, "GL::Mesh::draw(): OpenGL ES 3.2 or desktop GL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT_UNREACHABLE("GL::Mesh::draw(): OpenGL ES 3.2 or desktop GL is required for base vertex specification in indexed meshes", );
             #endif
 
         /* Indexed mesh */

@@ -152,6 +152,10 @@ void MaterialDataTest::constructPhongTexturedTextureTransform() {
 }
 
 void MaterialDataTest::constructPhongTextureTransformNoTextures() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     std::ostringstream out;
     Error redirectError{&out};
     PhongMaterialData a{PhongMaterialData::Flag::TextureTransformation,
@@ -226,6 +230,10 @@ void MaterialDataTest::constructMovePhong() {
 }
 
 void MaterialDataTest::accessInvalidTextures() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     PhongMaterialData a{{},
         {}, {},
         {}, {},

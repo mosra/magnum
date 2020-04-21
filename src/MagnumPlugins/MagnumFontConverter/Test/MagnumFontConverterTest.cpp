@@ -62,16 +62,16 @@ MagnumFontConverterTest::MagnumFontConverterTest() {
     /* Load the plugins directly from the build tree. Otherwise they are static
        and already loaded. */
     #if defined(TGAIMAGECONVERTER_PLUGIN_FILENAME) && defined(MAGNUMFONTCONVERTER_PLUGIN_FILENAME)
-    CORRADE_INTERNAL_ASSERT(_imageConverterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
-    CORRADE_INTERNAL_ASSERT(_fontConverterManager.load(MAGNUMFONTCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_imageConverterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_fontConverterManager.load(MAGNUMFONTCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
     /* Optional plugins that don't have to be here */
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
-    CORRADE_INTERNAL_ASSERT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT(Utility::Directory::mkpath(MAGNUMFONTCONVERTER_TEST_WRITE_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(MAGNUMFONTCONVERTER_TEST_WRITE_DIR));
 }
 
 void MagnumFontConverterTest::exportFont() {
