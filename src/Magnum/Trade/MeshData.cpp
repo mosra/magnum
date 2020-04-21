@@ -305,7 +305,7 @@ UnsignedInt MeshData::attributeFor(const MeshAttribute name, UnsignedInt id) con
     }
 
     #ifdef CORRADE_NO_ASSERT
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #else
     return ~UnsignedInt{};
     #endif
@@ -411,7 +411,7 @@ void MeshData::indicesInto(const Containers::StridedArrayView1D<UnsignedInt> des
         return Math::castInto(Containers::arrayCast<2, const UnsignedShort>(Containers::arrayView(reinterpret_cast<const UnsignedShort*>(_indices), _indexCount)), destination1ui);
     else if(_indexType == MeshIndexType::UnsignedByte)
         return Math::castInto(Containers::arrayCast<2, const UnsignedByte>(Containers::arrayView(reinterpret_cast<const UnsignedByte*>(_indices), _indexCount)), destination1ui);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Containers::Array<UnsignedInt> MeshData::indicesAsArray() const {
@@ -464,7 +464,7 @@ void MeshData::positions2DInto(const Containers::StridedArrayView1D<Vector2> des
     else if(attribute._format == VertexFormat::Vector2sNormalized ||
             attribute._format == VertexFormat::Vector3sNormalized)
         Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 2), destination2f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Containers::Array<Vector2> MeshData::positions2DAsArray(const UnsignedInt id) const {
@@ -528,7 +528,7 @@ void MeshData::positions3DInto(const Containers::StridedArrayView1D<Vector3> des
         Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 3), destination3f);
     else if(attribute._format == VertexFormat::Vector3sNormalized)
         Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 3), destination3f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* For 2D positions finally fill the Z with a single value */
     if(attribute._format == VertexFormat::Vector2 ||
@@ -567,7 +567,7 @@ void tangentsOrNormalsInto(const Containers::StridedArrayView1D<const void> attr
         Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 3), destination3f);
     else if(format == VertexFormat::Vector3sNormalized)
         Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 3), destination3f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 }
@@ -690,7 +690,7 @@ void MeshData::textureCoordinates2DInto(const Containers::StridedArrayView1D<Vec
         Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 2), destination2f);
     else if(attribute._format == VertexFormat::Vector2sNormalized)
         Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 2), destination2f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Containers::Array<Vector2> MeshData::textureCoordinates2DAsArray(const UnsignedInt id) const {
@@ -732,7 +732,7 @@ void MeshData::colorsInto(const Containers::StridedArrayView1D<Color4> destinati
         Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4f);
     else if(attribute._format == VertexFormat::Vector4usNormalized)
         Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* For three-component colors finally fill the alpha with a single value */
     if(attribute._format == VertexFormat::Vector3 ||
@@ -768,7 +768,7 @@ void MeshData::objectIdsInto(const Containers::StridedArrayView1D<UnsignedInt> d
         Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 1), destination1ui);
     else if(attribute._format == VertexFormat::UnsignedByte)
         Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 1), destination1ui);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) const {
@@ -815,7 +815,7 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         /* LCOV_EXCL_STOP */
 
         /* To silence compiler warning about unhandled values */
-        case MeshAttribute::Custom: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        case MeshAttribute::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";

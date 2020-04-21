@@ -694,7 +694,7 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::UnsignedInt});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -727,7 +727,7 @@ void MeshGLTest::addVertexBufferInt() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Int});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -765,7 +765,7 @@ void MeshGLTest::addVertexBufferFloat() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Float});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -806,7 +806,7 @@ void MeshGLTest::addVertexBufferDouble() {
             DynamicAttribute::Kind::Long, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Double});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -841,7 +841,7 @@ void MeshGLTest::addVertexBufferVectorNui() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::Three,
             DynamicAttribute::DataType::UnsignedInt});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -874,7 +874,7 @@ void MeshGLTest::addVertexBufferVectorNi() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::Two,
             DynamicAttribute::DataType::Int});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -912,7 +912,7 @@ void MeshGLTest::addVertexBufferVectorN() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Three,
             DynamicAttribute::DataType::Float});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -956,7 +956,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
             DynamicAttribute::Kind::Long, 0,
             DynamicAttribute::Components::Four,
             DynamicAttribute::DataType::Double});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -998,7 +998,7 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Three, 3,
             DynamicAttribute::DataType::Float});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1044,7 +1044,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
             DynamicAttribute::Kind::Long, 0,
             DynamicAttribute::Components::Three, 3,
             DynamicAttribute::DataType::Double});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1090,7 +1090,7 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Four, 3,
             DynamicAttribute::DataType::Float});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1128,7 +1128,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
             DynamicAttribute::Kind::Long, 0,
             DynamicAttribute::Components::Four, 3,
             DynamicAttribute::DataType::Double});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1175,7 +1175,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::UnsignedShort});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1213,7 +1213,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Short});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1251,7 +1251,7 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::UnsignedShort});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1289,7 +1289,7 @@ void MeshGLTest::addVertexBufferIntWithShort() {
             DynamicAttribute::Kind::Integral, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Short});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1332,7 +1332,7 @@ void MeshGLTest::addVertexBufferFloatWithHalf() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Half});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1363,7 +1363,7 @@ void MeshGLTest::addVertexBufferFloatWithDouble() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::One,
             DynamicAttribute::DataType::Double});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1395,7 +1395,7 @@ void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Three,
             DynamicAttribute::DataType::UnsignedInt10f11f11fRev});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Won't test the actual values */
@@ -1424,7 +1424,7 @@ void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Four,
             DynamicAttribute::DataType::UnsignedInt2101010Rev});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Won't test the actual values */
@@ -1451,7 +1451,7 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Four,
             DynamicAttribute::DataType::Int2101010Rev});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     /* Won't test the actual values */
@@ -1485,7 +1485,7 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
             DynamicAttribute::Kind::Generic, 0,
             DynamicAttribute::Components::Three,
             DynamicAttribute::DataType::Float});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1532,7 +1532,7 @@ void MeshGLTest::addVertexBufferNormalized() {
             DynamicAttribute::Kind::GenericNormalized, 0,
             DynamicAttribute::Components::Three,
             DynamicAttribute::DataType::UnsignedByte});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1574,7 +1574,7 @@ void MeshGLTest::addVertexBufferBGRA() {
             DynamicAttribute::Kind::GenericNormalized, 0,
             DynamicAttribute::Components::BGRA,
             DynamicAttribute::DataType::UnsignedByte});
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

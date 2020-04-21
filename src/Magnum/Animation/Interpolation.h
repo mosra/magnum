@@ -315,7 +315,7 @@ template<class V> auto TypeTraits<V, V>::interpolator(Interpolation interpolatio
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
 /* Specialization for booleans (no linear interpolation) */
@@ -333,7 +333,7 @@ template<class T> auto TypeTraitsBool<T>::interpolator(Interpolation interpolati
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 template<> struct TypeTraits<bool, bool>: TypeTraitsBool<bool> {};
 template<std::size_t size> struct TypeTraits<Math::BoolVector<size>, Math::BoolVector<size>>: TypeTraitsBool<Math::BoolVector<size>> {};

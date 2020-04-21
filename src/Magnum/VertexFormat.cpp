@@ -850,7 +850,7 @@ VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt component
     else CORRADE_ASSERT(false,
         "vertexFormat(): invalid component count" << componentCount, {});
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 VertexFormat vertexFormat(const VertexFormat format, const UnsignedInt vectorCount, UnsignedInt componentCount, const bool aligned) {

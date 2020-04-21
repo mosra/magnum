@@ -490,7 +490,7 @@ Containers::ArrayView<const Extension> Extension::extensions(Version version) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)

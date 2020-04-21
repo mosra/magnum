@@ -351,7 +351,7 @@ Containers::Optional<MeshData> ObjImporter::doMesh(UnsignedInt id, UnsignedInt) 
 
                 primitive = MeshPrimitive::Triangles;
 
-            } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             for(const std::string& indexTuple: indexTuples) {
                 std::vector<std::string> indexStrings = Utility::String::split(indexTuple, '/');

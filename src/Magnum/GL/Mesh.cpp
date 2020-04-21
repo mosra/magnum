@@ -354,7 +354,7 @@ UnsignedInt Mesh::indexTypeSize() const {
         case MeshIndexType::UnsignedInt: return 4;
     }
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {

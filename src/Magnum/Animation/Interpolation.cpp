@@ -76,7 +76,7 @@ template<class T> auto TypeTraits<Math::Complex<T>, Math::Complex<T>>::interpola
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
 template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -88,7 +88,7 @@ template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::int
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
 template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -100,7 +100,7 @@ template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
 template<class T> auto TypeTraits<Math::CubicHermite<T>, T>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -112,7 +112,7 @@ template<class T> auto TypeTraits<Math::CubicHermite<T>, T>::interpolator(Interp
         case Interpolation::Custom: ; /* nope */
     }
 
-    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE("Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
 template struct MAGNUM_EXPORT TypeTraits<Math::Complex<Float>, Math::Complex<Float>>;

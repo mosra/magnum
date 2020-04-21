@@ -198,7 +198,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
         /* LCOV_EXCL_STOP */
 
         /* To silence compiler warning about unhandled values */
-        case AnimationTrackTargetType::Custom: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        case AnimationTrackTargetType::Custom: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
     return debug << "Trade::AnimationTrackTargetType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";

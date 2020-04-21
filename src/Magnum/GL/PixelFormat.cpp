@@ -258,7 +258,7 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -154,7 +154,7 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
     } else if(target == FramebufferTarget::Draw) {
         if(state.drawBinding == _id) return;
         state.drawBinding = _id;
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Binding the framebuffer finally creates it */
     _flags |= ObjectFlag::Created;
@@ -492,7 +492,7 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #else
     static_cast<void>(count);
     static_cast<void>(attachments);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 

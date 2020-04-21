@@ -876,7 +876,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
@@ -1175,7 +1175,7 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 }
@@ -1363,7 +1363,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     #endif
 
     /* No other targets are available */
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -1424,7 +1424,7 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     #endif
 
     /* No other targets are available */
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 

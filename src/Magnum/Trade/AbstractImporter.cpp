@@ -172,7 +172,7 @@ bool AbstractImporter::openFile(const std::string& filename) {
         _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
-    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     return isOpened();
 }

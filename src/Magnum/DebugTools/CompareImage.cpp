@@ -312,7 +312,7 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         case PixelFormat::RGB16F:
         case PixelFormat::RGBA16F:
             /* Already handled by a printing assert before */
-            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
     #ifdef __GNUC__
     #pragma GCC diagnostic pop
@@ -671,7 +671,7 @@ void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags fl
                 << Debug::nospace << _state->mean << "below threshold"
                 << _state->maxThreshold << Debug::nospace << "/"
                 << Debug::nospace << _state->meanThreshold << Debug::nospace << ".";
-        } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
         out << "Delta image:" << Debug::newline;
         DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);

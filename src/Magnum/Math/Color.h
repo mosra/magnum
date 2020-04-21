@@ -66,7 +66,7 @@ template<class T> typename std::enable_if<IsFloatingPoint<T>::value, Color3<T>>:
         case 3: return {p, q, hsv.value};
         case 4: return {t, p, hsv.value};
         case 5: return {hsv.value, p, q};
-        default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        default: CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
 template<class T> inline typename std::enable_if<IsIntegral<T>::value, Color3<T>>::type fromHsv(const ColorHsv<typename TypeTraits<T>::FloatingPointType>& hsv) {

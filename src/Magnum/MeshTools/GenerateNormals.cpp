@@ -203,7 +203,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
             if(v == v0i) angle = crossAngle.second[0];
             else if(v == v1i) angle = crossAngle.second[1];
             else if(v == v2i) angle = crossAngle.second[2];
-            else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* The normal is cross.normalized(), we need to multiply it it by
                surface area which is cross.length()/2. Since normalization is

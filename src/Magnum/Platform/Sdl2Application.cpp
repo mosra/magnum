@@ -868,7 +868,7 @@ bool Sdl2Application::mainLoopIteration() {
                         /* If anybody sees this assert, then emscripten finally
                            implemented resize events. Praise them for that.
                            https://github.com/kripken/emscripten/issues/1731 */
-                        CORRADE_ASSERT_UNREACHABLE();
+                        CORRADE_INTERNAL_ASSERT_UNREACHABLE();
                         #else
                         /* {event.window.data1, event.window.data2} seems to be
                            framebuffer size and not window size on macOS, which

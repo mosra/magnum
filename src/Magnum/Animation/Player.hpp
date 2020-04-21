@@ -191,7 +191,7 @@ template<class T, class K> Player<T, K>& Player<T, K>::setState(State state, T t
         case State::Stopped: return stop();
     }
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 namespace Implementation {
