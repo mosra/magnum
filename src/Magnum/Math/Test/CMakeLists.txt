@@ -68,6 +68,7 @@ corrade_add_test(MathInterpolationBenchmark InterpolationBenchmark.cpp LIBRARIES
 corrade_add_test(MathConfigurationValueTest ConfigurationValueTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathStrictWeakOrderingTest StrictWeakOrderingTest.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathVectorBenchmark VectorBenchmark.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrixBenchmark MatrixBenchmark.cpp LIBRARIES MagnumMathTestLib)
 
 set_property(TARGET
