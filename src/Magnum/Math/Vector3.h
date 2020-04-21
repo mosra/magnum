@@ -30,29 +30,25 @@
  */
 
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Math/Swizzle.h"
 
 namespace Magnum { namespace Math {
 
 /**
 @brief Cross product
 
-Result has length of `0` either when one of them is zero or they are parallel
-or antiparallel and length of `1` when two *normalized* vectors are
-perpendicular. Done using the following equation: @f[
-     \boldsymbol a \times \boldsymbol b = \begin{pmatrix} c_y \\ c_z \\ c_x \end{pmatrix} ~~~~~
-     \boldsymbol c = \boldsymbol a \begin{pmatrix} b_y \\ b_z \\ b_x \end{pmatrix} -
-                     \boldsymbol b \begin{pmatrix} a_y \\ a_z \\ a_x \end{pmatrix}
-@f]
-Which is equivalent to the common one (source:
-https://twitter.com/sjb3d/status/563640846671953920): @f[
-     \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
+Result has length of @cpp 0 @ce either when one of them is zero or they are
+parallel or antiparallel and length of @cpp 1 @ce when two *normalized* vectors
+are perpendicular. @f[
+    \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
 @f]
 @see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-    return gather<'y', 'z', 'x'>(a*gather<'y', 'z', 'x'>(b) -
-                                 b*gather<'y', 'z', 'x'>(a));
+    return {
+        a._data[1]*b._data[2] - b._data[1]*a._data[2],
+        a._data[2]*b._data[0] - b._data[2]*a._data[0],
+        a._data[0]*b._data[1] - b._data[0]*a._data[1]
+    };
 }
 
 /**
@@ -232,6 +228,9 @@ template<class T> class Vector3: public Vector<3, T> {
         } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
+
+    private:
+        template<class U> friend Vector3<U> cross(const Vector3<U>&, const Vector3<U>&);
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

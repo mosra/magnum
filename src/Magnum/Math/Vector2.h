@@ -48,7 +48,7 @@ perpendicular. @f[
     @ref dot(const Vector<size, T>&, const Vector<size, T>&)
  */
 template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
-    return dot(a.perpendicular(), b);
+    return a._data[0]*b._data[1] - a._data[1]*b._data[0];
 }
 
 /**
@@ -182,6 +182,9 @@ template<class T> class Vector2: public Vector<2, T> {
         aspectRatio() const { return x()/y(); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
+
+    private:
+        template<class U> friend U cross(const Vector2<U>&, const Vector2<U>&);
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

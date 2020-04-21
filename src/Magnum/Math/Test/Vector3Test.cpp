@@ -29,6 +29,7 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
+#include "Magnum/Math/Swizzle.h"
 
 struct Vec3 {
     float x, y, z;

@@ -29,6 +29,7 @@
 
 #include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
 #include "Magnum/Math/StrictWeakOrdering.h"
+#include "Magnum/Math/Swizzle.h"
 
 struct Vec2 {
     float x, y;

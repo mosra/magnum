@@ -39,6 +39,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
+#include "Magnum/Math/Swizzle.h"
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;

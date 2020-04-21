@@ -35,6 +35,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
+#include "Magnum/Math/Swizzle.h"
 
 struct Vec3 {
     float x, y, z;

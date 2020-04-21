@@ -27,6 +27,10 @@
 
 #include "Magnum/Math/Vector3.h"
 
+#ifdef CORRADE_TARGET_SSE2
+#include <xmmintrin.h>
+#endif
+
 namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct VectorBenchmark: Corrade::TestSuite::Tester {
@@ -39,6 +43,10 @@ struct VectorBenchmark: Corrade::TestSuite::Tester {
 
     template<class T> void cross3Baseline();
     void cross3();
+    #ifdef CORRADE_TARGET_SSE2
+    void cross3SseNaive();
+    void cross3SseOneShuffleLess();
+    #endif
 };
 
 VectorBenchmark::VectorBenchmark() {
@@ -52,6 +60,10 @@ VectorBenchmark::VectorBenchmark() {
         &VectorBenchmark::cross3Baseline<Float>,
         &VectorBenchmark::cross3Baseline<Double>,
         &VectorBenchmark::cross3,
+        #ifdef CORRADE_TARGET_SSE2
+        &VectorBenchmark::cross3SseNaive,
+        &VectorBenchmark::cross3SseOneShuffleLess,
+        #endif
     }, 500);
 }
 
@@ -148,6 +160,73 @@ void VectorBenchmark::cross3() {
 
     CORRADE_VERIFY(a != a);
 }
+
+#ifdef CORRADE_TARGET_SSE2
+inline Vector3 crossSseNaive(const Vector3& a, const Vector3& b) {
+    union {
+        __m128 v;
+        Float s[4];
+    };
+
+    const __m128 aa = _mm_set_ps(0.0f, a[2], a[1], a[0]);
+    const __m128 bb = _mm_set_ps(0.0f, b[2], b[1], b[0]);
+
+    v = _mm_sub_ps(
+        _mm_mul_ps(_mm_shuffle_ps(aa, aa, _MM_SHUFFLE(3, 0, 2, 1)),
+                   _mm_shuffle_ps(bb, bb, _MM_SHUFFLE(3, 1, 0, 2))),
+        _mm_mul_ps(_mm_shuffle_ps(aa, aa, _MM_SHUFFLE(3, 1, 0, 2)),
+                   _mm_shuffle_ps(bb, bb, _MM_SHUFFLE(3, 0, 2, 1))));
+    return {s[0], s[1], s[2]};
+}
+
+/* https://twitter.com/sjb3d/status/563640846671953920. Originally the
+   Math::cross() was doing this, implemented as
+    gather<'y', 'z', 'x'>(a*gather<'y', 'z', 'x'>(b) -
+                          b*gather<'y', 'z', 'x'>(a))
+   but while slightly faster in Release (on GCC at least) than the
+   straightforward version, it was insanely slow in Debug. */
+inline Vector3 crossSseOneShuffleLess(const Vector3& a, const Vector3& b) {
+    union {
+        __m128 v;
+        Float s[4];
+    };
+
+    const __m128 aa = _mm_set_ps(0.0f, a[2], a[1], a[0]);
+    const __m128 bb = _mm_set_ps(0.0f, b[2], b[1], b[0]);
+    const __m128 cc = _mm_sub_ps(
+        _mm_mul_ps(aa, _mm_shuffle_ps(bb, bb, _MM_SHUFFLE(3, 0, 2, 1))),
+        _mm_mul_ps(bb, _mm_shuffle_ps(aa, aa, _MM_SHUFFLE(3, 0, 2, 1))));
+
+    v = _mm_shuffle_ps(cc, cc, _MM_SHUFFLE(3, 0, 2, 1));
+    return {s[0], s[1], s[2]};
+}
+
+void VectorBenchmark::cross3SseNaive() {
+    Vector3 a{1.3f, -1.1f, 1.0f};
+    Vector3 b{4.5f, 3.2f, 7.3f};
+    CORRADE_COMPARE(Test::crossSseNaive(a, b),
+        (Vector3{-11.23f, -4.99f, 9.11f}));
+
+    CORRADE_BENCHMARK(Repeats) {
+        a = Test::crossSseNaive(a, b);
+    }
+
+    CORRADE_VERIFY(a != a);
+}
+
+void VectorBenchmark::cross3SseOneShuffleLess() {
+    Vector3 a{1.3f, -1.1f, 1.0f};
+    Vector3 b{4.5f, 3.2f, 7.3f};
+    CORRADE_COMPARE(Test::crossSseOneShuffleLess(a, b),
+        (Vector3{-11.23f, -4.99f, 9.11f}));
+
+    CORRADE_BENCHMARK(Repeats) {
+        a = Test::crossSseOneShuffleLess(a, b);
+    }
+
+    CORRADE_VERIFY(a != a);
+}
+#endif
 
 }}}}
 
