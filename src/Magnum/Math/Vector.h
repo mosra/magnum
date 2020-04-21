@@ -102,7 +102,10 @@ the same general direction, `1` when two *normalized* vectors are parallel,
 @see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
 */
 template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-    return (a*b).sum();
+    T out{};
+    for(std::size_t i = 0; i != size; ++i)
+        out += a._data[i]*b._data[i];
+    return out;
 }
 
 /** @relatesalso Vector
@@ -685,6 +688,8 @@ template<std::size_t size, class T> class Vector {
            function call overhead */
         template<std::size_t size_, class T_> friend BoolVector<size_> equal(const Vector<size_, T_>&, const Vector<size_, T_>&);
         template<std::size_t size_, class T_> friend BoolVector<size_> notEqual(const Vector<size_, T_>&, const Vector<size_, T_>&);
+
+        template<std::size_t size_, class U> friend U dot(const Vector<size_, U>&, const Vector<size_, U>&);
 
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
