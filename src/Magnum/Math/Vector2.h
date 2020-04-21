@@ -33,6 +33,16 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    /* https://pharr.org/matt/blog/2019/11/03/difference-of-floats.html */
+    template<class T> inline T differenceOfProducts(T a, T b, T c, T d) {
+        T cd = c*d;
+        T err = std::fma(-c, d, cd);
+        T dop = std::fma(a, b, -cd);
+        return dop + err;
+    }
+}
+
 /**
 @brief 2D cross product
 
@@ -44,11 +54,15 @@ are parallel or antiparallel and `1` when two *normalized* vectors are
 perpendicular. @f[
     \boldsymbol a \times \boldsymbol b = \boldsymbol a_\bot \cdot \boldsymbol b = a_xb_y - a_yb_x
 @f]
+
+The precision of the calculation is further improved using Kahan's algorithm
+as described in [an article by Matt Pharr](https://pharr.org/matt/blog/2019/11/03/difference-of-floats.html).
 @see @ref Vector2::perpendicular(),
     @ref dot(const Vector<size, T>&, const Vector<size, T>&)
  */
 template<class T> inline T cross(const Vector2<T>& a, const Vector2<T>& b) {
-    return a._data[0]*b._data[1] - a._data[1]*b._data[0];
+    return Implementation::differenceOfProducts(a._data[0], b._data[1],
+                                                a._data[1], b._data[0]);
 }
 
 /**

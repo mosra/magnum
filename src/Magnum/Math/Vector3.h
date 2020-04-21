@@ -41,13 +41,19 @@ parallel or antiparallel and length of @cpp 1 @ce when two *normalized* vectors
 are perpendicular. @f[
     \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
 @f]
+
+The precision of the calculation is further improved using Kahan's algorithm
+as described in [an article by Matt Pharr](https://pharr.org/matt/blog/2019/11/03/difference-of-floats.html).
 @see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
     return {
-        a._data[1]*b._data[2] - b._data[1]*a._data[2],
-        a._data[2]*b._data[0] - b._data[2]*a._data[0],
-        a._data[0]*b._data[1] - b._data[0]*a._data[1]
+        Implementation::differenceOfProducts(a._data[1], b._data[2],
+                                             a._data[2], b._data[1]),
+        Implementation::differenceOfProducts(a._data[2], b._data[0],
+                                             a._data[0], b._data[2]),
+        Implementation::differenceOfProducts(a._data[0], b._data[1],
+                                             a._data[1], b._data[0])
     };
 }
 

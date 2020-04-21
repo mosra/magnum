@@ -67,6 +67,7 @@ struct Vector3Test: Corrade::TestSuite::Tester {
 
     void access();
     void cross();
+    void crossCatastrophicCancellation();
     void axes();
     void scales();
     void twoComponent();
@@ -78,6 +79,7 @@ struct Vector3Test: Corrade::TestSuite::Tester {
 };
 
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector3<Double> Vector3d;
 typedef Math::Vector3<Int> Vector3i;
 typedef Math::Vector2<Float> Vector2;
 
@@ -93,6 +95,7 @@ Vector3Test::Vector3Test() {
 
               &Vector3Test::access,
               &Vector3Test::cross,
+              &Vector3Test::crossCatastrophicCancellation,
               &Vector3Test::axes,
               &Vector3Test::scales,
               &Vector3Test::twoComponent,
@@ -226,6 +229,17 @@ void Vector3Test::cross() {
     Vector3i b(4, 3, 7);
 
     CORRADE_COMPARE(Math::cross(a, b), Vector3i(-10, -3, 7));
+}
+
+void Vector3Test::crossCatastrophicCancellation() {
+    /* Repro case and algorithm from
+       https://pharr.org/matt/blog/2019/11/03/difference-of-floats.html */
+    Vector3 a{33962.035f, 41563.4f, 7706.415f};
+    Vector3 b{-24871.969f, -30438.8f, -5643.727f};
+
+    Vector3 expected{1556.0276f, -1257.5151f, -75.1656f};
+    CORRADE_COMPARE(Vector3{Math::cross(Vector3d{a}, Vector3d{b})}, expected);
+    CORRADE_COMPARE(Math::cross(a, b), expected);
 }
 
 void Vector3Test::axes() {
