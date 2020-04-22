@@ -53,8 +53,15 @@ the process works as follows, with @f$ \boldsymbol{v}_k @f$ being columns of
 Note that the above is not performed directly due to numerical instability,
 the stable [modified Gram-Schmidt](https://en.wikipedia.org/wiki/Gram–Schmidt_process#Numerical_stability)
 algorithm is used instead.
-@see @ref gramSchmidtOrthogonalize(), @ref gramSchmidtOrthonormalizeInPlace(),
-    @ref Vector::projected()
+
+@attention Note that while this operation produces orthogonal column vectors,
+    it doesn't produce an [orthogonal matrix](https://en.wikipedia.org/wiki/Orthogonal_matrix)
+    --- an orthogonal matrix, as confusing as it may sound, has its column
+    vectors normalized. To produce an orthogonal matrix (for which
+    @ref Matrix::isOrthogonal() returns @cpp true @ce), use
+    @ref gramSchmidtOrthonormalizeInPlace() instead.
+
+@see @ref gramSchmidtOrthogonalize(), @ref Vector::projected()
 */
 template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");
@@ -69,6 +76,13 @@ template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonal
 
 Unlike @ref gramSchmidtOrthogonalizeInPlace() returns the modified matrix
 instead of performing the orthogonalization in-place.
+
+@attention Note that while this operation produces orthogonal column vectors,
+    it doesn't produce an [orthogonal matrix](https://en.wikipedia.org/wiki/Orthogonal_matrix)
+    --- an orthogonal matrix, as confusing as it may sound, has its column
+    vectors normalized. To produce an orthogonal matrix (for which
+    @ref Matrix::isOrthogonal() returns @cpp true @ce), use
+    @ref gramSchmidtOrthonormalize() instead.
 */
 template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, rows, T> gramSchmidtOrthogonalize(RectangularMatrix<cols, rows, T> matrix) {
     gramSchmidtOrthogonalizeInPlace(matrix);

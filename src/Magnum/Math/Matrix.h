@@ -122,12 +122,16 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Whether the matrix is orthogonal
          *
-         * The matrix is orthogonal if its transpose is equal to its inverse: @f[
+         * Returns @cpp true @ce if all basis vectors have unit length and are
+         * orthogonal to each other. In other words, when its transpose is
+         * equal to its inverse: @f[
          *      Q^T = Q^{-1}
          * @f]
          * @see @ref transposed(), @ref inverted(),
          *      @ref Matrix3::isRigidTransformation(),
-         *      @ref Matrix4::isRigidTransformation()
+         *      @ref Matrix4::isRigidTransformation(),
+         *      @ref Algorithms::gramSchmidtOrthogonalizeInPlace(),
+         *      @ref Algorithms::gramSchmidtOrthonormalizeInPlace()
          */
         bool isOrthogonal() const;
 
