@@ -46,20 +46,34 @@ void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& option
         Utility::String::trimInPlace(keyValue[0]);
         Utility::String::trimInPlace(keyValue[2]);
 
+        std::vector<std::string> keyParts = Utility::String::split(keyValue[0], '/');
+        CORRADE_INTERNAL_ASSERT(!keyParts.empty());
+        Utility::ConfigurationGroup* group = &plugin.configuration();
+        bool groupNotRecognized = false;
+        for(std::size_t i = 0; i != keyParts.size() - 1; ++i) {
+            Utility::ConfigurationGroup* subgroup = group->group(keyParts[i]);
+            if(!subgroup) {
+                groupNotRecognized = true;
+                subgroup = group->addGroup(keyParts[i]);
+            }
+            group = subgroup;
+        }
+
         /* Provide a warning message in case the plugin doesn't define given
            option in its default config. The plugin is not *required* to have
            those tho (could be backward compatibility entries, for example), so
            not an error. */
-        if(!plugin.configuration().valueCount(keyValue[0]))
+        if(groupNotRecognized || !group->hasValue(keyParts.back())) {
             Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
+        }
 
         /* If the option doesn't have an =, treat it as a boolean flag that's
            set to true. While there's no similar way to do an inverse, it's
            still nicer than causing a fatal error with those. */
         if(keyValue[1].empty())
-            plugin.configuration().setValue(keyValue[0], true);
+            group->setValue(keyParts.back(), true);
         else
-            plugin.configuration().setValue(keyValue[0], keyValue[2]);
+            group->setValue(keyParts.back(), keyValue[2]);
     }
 }
 

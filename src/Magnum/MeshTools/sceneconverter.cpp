@@ -94,7 +94,8 @@ and images present in the file. **This option is currently mandatory.**
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
 converter plugin configuration. If the `=` character is omitted, it's
-equivalent to saying `key=true`.
+equivalent to saying `key=true`; configuration subgroups are delimited with
+`/`.
 
 @see @ref magnum-imageconverter
 */
@@ -147,7 +148,7 @@ images present in the file.
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
-key=true.)")
+key=true; configuration subgroups are delimited with /.)")
         .parse(argc, argv);
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
