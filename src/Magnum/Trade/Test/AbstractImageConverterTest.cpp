@@ -48,6 +48,9 @@ struct AbstractImageConverterTest: TestSuite::Tester {
     void construct();
     void constructWithPluginManagerReference();
 
+    void setFlags();
+    void setFlagsNotImplemented();
+
     void thingNotSupported();
 
     void exportToImage();
@@ -82,11 +85,16 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void debugFeature();
     void debugFeatures();
+    void debugFlag();
+    void debugFlags();
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
     addTests({&AbstractImageConverterTest::construct,
               &AbstractImageConverterTest::constructWithPluginManagerReference,
+
+              &AbstractImageConverterTest::setFlags,
+              &AbstractImageConverterTest::setFlagsNotImplemented,
 
               &AbstractImageConverterTest::thingNotSupported,
 
@@ -121,7 +129,9 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::exportImageDataToFile,
 
               &AbstractImageConverterTest::debugFeature,
-              &AbstractImageConverterTest::debugFeatures});
+              &AbstractImageConverterTest::debugFeatures,
+              &AbstractImageConverterTest::debugFlag,
+              &AbstractImageConverterTest::debugFlags});
 
     /* Create testing dir */
     Utility::Directory::mkpath(TRADE_TEST_OUTPUT_DIR);
@@ -145,6 +155,34 @@ void AbstractImageConverterTest::constructWithPluginManagerReference() {
     } converter{manager};
 
     CORRADE_COMPARE(converter.features(), ImageConverterFeatures{});
+}
+
+void AbstractImageConverterTest::setFlags() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return {}; }
+        void doSetFlags(ImageConverterFlags flags) override {
+            _flags = flags;
+        }
+
+        ImageConverterFlags _flags;
+    } converter;
+
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlags{});
+    CORRADE_COMPARE(converter._flags, ImageConverterFlags{});
+    converter.setFlags(ImageConverterFlag::Verbose);
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlag::Verbose);
+    CORRADE_COMPARE(converter._flags, ImageConverterFlag::Verbose);
+}
+
+void AbstractImageConverterTest::setFlagsNotImplemented() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return {}; }
+    } converter;
+
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlags{});
+    converter.setFlags(ImageConverterFlag::Verbose);
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlag::Verbose);
+    /* Should just work, no need to implement the function */
 }
 
 void AbstractImageConverterTest::thingNotSupported() {
@@ -552,6 +590,20 @@ void AbstractImageConverterTest::debugFeatures() {
 
     Debug{&out} << (ImageConverterFeature::ConvertData|ImageConverterFeature::ConvertCompressedFile) << ImageConverterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImageConverterFeature::ConvertData|Trade::ImageConverterFeature::ConvertCompressedFile Trade::ImageConverterFeatures{}\n");
+}
+
+void AbstractImageConverterTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << ImageConverterFlag::Verbose << ImageConverterFlag(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::ImageConverterFlag::Verbose Trade::ImageConverterFlag(0xf0)\n");
+}
+
+void AbstractImageConverterTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (ImageConverterFlag::Verbose|ImageConverterFlag(0xf0)) << ImageConverterFlags{};
+    CORRADE_COMPARE(out.str(), "Trade::ImageConverterFlag::Verbose|Trade::ImageConverterFlag(0xf0) Trade::ImageConverterFlags{}\n");
 }
 
 }}}}

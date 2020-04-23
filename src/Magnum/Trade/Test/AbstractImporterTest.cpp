@@ -62,6 +62,10 @@ struct AbstractImporterTest: TestSuite::Tester {
     void construct();
     void constructWithPluginManagerReference();
 
+    void setFlags();
+    void setFlagsFileOpened();
+    void setFlagsNotImplemented();
+
     void openData();
     void openFileAsData();
     void openFileAsDataNotFound();
@@ -241,6 +245,8 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void debugFeature();
     void debugFeatures();
+    void debugFlag();
+    void debugFlags();
 };
 
 constexpr struct {
@@ -254,6 +260,10 @@ constexpr struct {
 AbstractImporterTest::AbstractImporterTest() {
     addTests({&AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
+
+              &AbstractImporterTest::setFlags,
+              &AbstractImporterTest::setFlagsFileOpened,
+              &AbstractImporterTest::setFlagsNotImplemented,
 
               &AbstractImporterTest::openData,
               &AbstractImporterTest::openFileAsData,
@@ -436,7 +446,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::importerStateNoFile,
 
               &AbstractImporterTest::debugFeature,
-              &AbstractImporterTest::debugFeatures});
+              &AbstractImporterTest::debugFeatures,
+              &AbstractImporterTest::debugFlag,
+              &AbstractImporterTest::debugFlags});
 }
 
 void AbstractImporterTest::construct() {
@@ -465,6 +477,55 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
     } importer{manager};
 
     CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::setFlags() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        void doSetFlags(ImporterFlags flags) override {
+            _flags = flags;
+        }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        ImporterFlags _flags;
+    } importer;
+
+    CORRADE_COMPARE(importer.flags(), ImporterFlags{});
+    CORRADE_COMPARE(importer._flags, ImporterFlags{});
+    importer.setFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
+    CORRADE_COMPARE(importer._flags, ImporterFlag::Verbose);
+}
+
+void AbstractImporterTest::setFlagsNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    } importer;
+
+    CORRADE_COMPARE(importer.flags(), ImporterFlags{});
+    importer.setFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(importer.flags(), ImporterFlag::Verbose);
+    /* Should just work, no need to implement the function */
+}
+
+void AbstractImporterTest::setFlagsFileOpened() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    importer.setFlags(ImporterFlag::Verbose);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::setFlags(): can't be set while a file is opened\n");
 }
 
 void AbstractImporterTest::openData() {
@@ -3963,6 +4024,20 @@ void AbstractImporterTest::debugFeatures() {
 
     Debug{&out} << (ImporterFeature::OpenData|ImporterFeature::OpenState) << ImporterFeatures{};
     CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData|Trade::ImporterFeature::OpenState Trade::ImporterFeatures{}\n");
+}
+
+void AbstractImporterTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << ImporterFlag::Verbose << ImporterFlag(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose Trade::ImporterFlag(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (ImporterFlag::Verbose|ImporterFlag(0xf0)) << ImporterFlags{};
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFlag::Verbose|Trade::ImporterFlag(0xf0) Trade::ImporterFlags{}\n");
 }
 
 }}}}

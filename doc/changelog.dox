@@ -276,6 +276,9 @@ See also:
 -   @ref Trade::PhongMaterialData now supports both color and texture instead
     of just one or the other, can reference normal textures as well and
     specfify texture coordinate transform
+-   Added @ref Trade::AbstractImporter::setFlags() and
+    @ref Trade::AbstractImageConverter::setFlags() for configuring common
+    plugin behavior such as output verbosity level
 -   @ref magnum-imageconverter "magnum-imageconverter" has a new `--info`
     option for printing detailed info about a particular file
 -   RLE compression support in @ref Trade::TgaImporter "TgaImporter"

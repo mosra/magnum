@@ -100,6 +100,45 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFeature value)
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFeatures value);
 
 /**
+@brief Image converter flag
+@m_since_latest
+
+@see @ref ImageConverterFlags, @ref AbstractImageConverter::setFlags()
+*/
+enum class ImageConverterFlag: UnsignedByte {
+    /**
+     * Print verbose diagnostic during import. By default the importer only
+     * prints messages on error or when some operation might cause unexpected
+     * data modification or loss.
+     */
+    Verbose = 1 << 0
+
+    /** @todo Y flip */
+};
+
+/**
+@brief Image converter flags
+@m_since_latest
+
+@see @ref AbstractImporter::setFlags()
+*/
+typedef Containers::EnumSet<ImageConverterFlag> ImageConverterFlags;
+
+CORRADE_ENUMSET_OPERATORS(ImageConverterFlags)
+
+/**
+@debugoperatorenum{ImageConverterFlag}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlag value);
+
+/**
+@debugoperatorenum{ImageConverterFlags}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlags value);
+
+/**
 @brief Base for image converter plugins
 
 Provides functionality for converting images between various internal formats
@@ -203,6 +242,22 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         ImageConverterFeatures features() const { return doFeatures(); }
 
         /**
+         * @brief Converter flags
+         * @m_since_latest
+         */
+        ImageConverterFlags flags() const { return _flags; }
+
+        /**
+         * @brief Set converter flags
+         * @m_since_latest
+         *
+         * Some flags can be set only if the converter supports particular
+         * features, see documentation of each @ref ImageConverterFlag for more
+         * information. By default no flags are set.
+         */
+        void setFlags(ImageConverterFlags flags);
+
+        /**
          * @brief Convert image to different format
          *
          * Available only if @ref ImageConverterFeature::ConvertImage is
@@ -288,6 +343,21 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         /** @brief Implementation of @ref features() */
         virtual ImageConverterFeatures doFeatures() const = 0;
 
+        /**
+         * @brief Implementation for @ref setFlags()
+         *
+         * Useful when the converter needs to modify some internal state on
+         * flag setup. Default implementation does nothing and this
+         * function doesn't need to be implemented --- the flags are available
+         * through @ref flags().
+         *
+         * To reduce the amount of error checking on user side, this function
+         * isn't expected to fail --- if a flag combination is invalid /
+         * unsuported, error reporting should be delayed to various conversion
+         * functions, where the user is expected to do error handling anyway.
+         */
+        virtual void doSetFlags(ImageConverterFlags flags);
+
         /** @brief Implementation of @ref exportToImage() */
         virtual Containers::Optional<Image2D> doExportToImage(const ImageView2D& image);
 
@@ -317,6 +387,8 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * and saves the result to given file.
          */
         virtual bool doExportToFile(const CompressedImageView2D& image, const std::string& filename);
+
+        ImageConverterFlags _flags;
 };
 
 }}

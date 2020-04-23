@@ -90,6 +90,15 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
+void AbstractImporter::setFlags(ImporterFlags flags) {
+    CORRADE_ASSERT(!isOpened(),
+        "Trade::AbstractImporter::setFlags(): can't be set while a file is opened", );
+    _flags = flags;
+    doSetFlags(flags);
+}
+
+void AbstractImporter::doSetFlags(ImporterFlags) {}
+
 void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
     CORRADE_ASSERT(features() & (ImporterFeature::FileCallback|ImporterFeature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );
@@ -953,6 +962,25 @@ Debug& operator<<(Debug& debug, const ImporterFeatures value) {
         ImporterFeature::OpenData,
         ImporterFeature::OpenState,
         ImporterFeature::FileCallback});
+}
+
+Debug& operator<<(Debug& debug, const ImporterFlag value) {
+    debug << "Trade::ImporterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImporterFlag::v: return debug << "::" #v;
+        _c(Verbose)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ImporterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFlags{}", {
+        ImporterFlag::Verbose});
 }
 
 }}

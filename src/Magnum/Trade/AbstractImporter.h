@@ -93,6 +93,45 @@ typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallb
 #endif
 
 /**
+@brief Importer flag
+@m_since_latest
+
+@see @ref ImporterFlags, @ref AbstractImporter::setFlags()
+*/
+enum class ImporterFlag: UnsignedByte {
+    /**
+     * Print verbose diagnostic during import. By default the importer only
+     * prints messages on error or when some operation might cause unexpected
+     * data modification or loss.
+     */
+    Verbose = 1 << 0,
+
+    /** @todo Y flip for images, "I want to import just once, don't copy" ... */
+};
+
+/**
+@brief Importer flags
+@m_since_latest
+
+@see @ref AbstractImporter::setFlags()
+*/
+typedef Containers::EnumSet<ImporterFlag> ImporterFlags;
+
+CORRADE_ENUMSET_OPERATORS(ImporterFlags)
+
+/**
+@debugoperatorenum{ImporterFlag}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlag value);
+
+/**
+@debugoperatorenum{ImporterFlags}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlags value);
+
+/**
 @brief Base for importer plugins
 
 Provides interface for importing 2D/3D scene, camera, light, animation, mesh,
@@ -321,6 +360,23 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Features supported by this importer */
         ImporterFeatures features() const { return doFeatures(); }
+
+        /**
+         * @brief Importer flags
+         * @m_since_latest
+         */
+        ImporterFlags flags() const { return _flags; }
+
+        /**
+         * @brief Set importer flags
+         * @m_since_latest
+         *
+         * It's expected that this function is called *before* a file is
+         * opened. Some flags can be set only if the importer supports
+         * particular features, see documentation of each @ref ImporterFlag for
+         * more information. By default no flags are set.
+         */
+        void setFlags(ImporterFlags flags);
 
         /**
          * @brief File opening callback function
@@ -1256,6 +1312,21 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual ImporterFeatures doFeatures() const = 0;
 
         /**
+         * @brief Implementation for @ref setFlags()
+         *
+         * Useful when the importer needs to modify some internal state on
+         * flag setup. Default implementation does nothing and this
+         * function doesn't need to be implemented --- the flags are available
+         * through @ref flags().
+         *
+         * To reduce the amount of error checking on user side, this function
+         * isn't expected to fail --- if a flag combination is invalid /
+         * unsuported, error reporting should be delayed to @ref openFile() and
+         * others, where the user is expected to do error handling anyway.
+         */
+        virtual void doSetFlags(ImporterFlags flags);
+
+        /**
          * @brief Implementation for @ref setFileCallback()
          *
          * Useful when the importer needs to modify some internal state on
@@ -1760,6 +1831,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Implementation for @ref importerState() */
         virtual const void* doImporterState() const;
+
+        ImporterFlags _flags;
 
         Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, InputFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};

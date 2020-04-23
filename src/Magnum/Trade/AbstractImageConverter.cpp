@@ -74,6 +74,13 @@ AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractIm
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
 
+void AbstractImageConverter::setFlags(ImageConverterFlags flags) {
+    _flags = flags;
+    doSetFlags(flags);
+}
+
+void AbstractImageConverter::doSetFlags(ImageConverterFlags) {}
+
 Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
@@ -206,6 +213,25 @@ Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
         /* These are implied by Convert[Compressed]Data, so have to be last */
         ImageConverterFeature::ConvertFile,
         ImageConverterFeature::ConvertCompressedFile});
+}
+
+Debug& operator<<(Debug& debug, const ImageConverterFlag value) {
+    debug << "Trade::ImageConverterFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImageConverterFlag::v: return debug << "::" #v;
+        _c(Verbose)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ImageConverterFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFlags{}", {
+        ImageConverterFlag::Verbose});
 }
 
 }}
