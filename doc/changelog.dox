@@ -260,6 +260,9 @@ See also:
     conversions or copies. Importers expose it through the new
     @ref Trade::AbstractImporter::mesh() family of APIs. See
     [mosra/magnum#371](https://github.com/mosra/magnum/pull/371).
+-   New @ref magnum-sceneconverter "magnum-sceneconverter" tool, similar to
+    @ref magnum-imageconverter "magnum-imageconverter" but suited for general
+    scene formats
 -   Ability to import image mip levels via an additional parameter in
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
