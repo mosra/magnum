@@ -48,6 +48,8 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void unknownSignature();
     void emptyData();
 
+    void propagateFlags();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -103,6 +105,9 @@ AnyImageImporterTest::AnyImageImporterTest() {
               &AnyImageImporterTest::unknownSignature,
               &AnyImageImporterTest::emptyData});
 
+    addInstancedTests({&AnyImageImporterTest::propagateFlags},
+        Containers::arraySize(LoadData));
+
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
     #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
@@ -131,7 +136,7 @@ void AnyImageImporterTest::load() {
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(image->size(), Vector2i(3, 2));
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
@@ -189,6 +194,29 @@ void AnyImageImporterTest::emptyData() {
     CORRADE_VERIFY(!importer->openData(nullptr));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
+}
+
+void AnyImageImporterTest::propagateFlags() {
+    auto&& data = LoadData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    importer->setFlags(ImporterFlag::Verbose);
+
+    Containers::Array<char> storage;
+    importer->setFileCallback(data.callback, storage);
+
+    CORRADE_VERIFY(importer->openFile(data.filename));
+
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        CORRADE_VERIFY(importer->image2D(0));
+    }
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): converting from BGR to RGB\n");
 }
 
 }}}}

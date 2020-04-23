@@ -25,10 +25,10 @@
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(TEST_FILE_DIR .)
-    set(TGA_FILE file.tga)
+    set(TGA_FILE rgb.tga)
 else()
     set(TEST_FILE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-    set(TGA_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/TgaImporter/Test/file.tga)
+    set(TGA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/rgb.tga)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -56,8 +56,8 @@ corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
         rgb.basis
         rgb.hdr
         rgb.png
-        rgba_dxt1.dds
-        ../../TgaImporter/Test/file.tga)
+        rgb.tga
+        rgba_dxt1.dds)
 target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(AnyImageImporterTest PRIVATE AnyImageImporter)

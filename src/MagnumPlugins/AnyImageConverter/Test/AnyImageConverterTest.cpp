@@ -47,6 +47,8 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void unknown();
 
+    void propagateFlags();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
 };
@@ -79,7 +81,9 @@ AnyImageConverterTest::AnyImageConverterTest() {
     addInstancedTests({&AnyImageConverterTest::detect},
         Containers::arraySize(DetectData));
 
-    addTests({&AnyImageConverterTest::unknown});
+    addTests({&AnyImageConverterTest::unknown,
+
+              &AnyImageConverterTest::propagateFlags});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -148,6 +152,27 @@ void AnyImageConverterTest::unknown() {
     CORRADE_VERIFY(!converter->exportToFile(Image, "image.xcf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine the format of image.xcf\n");
+}
+
+void AnyImageConverterTest::propagateFlags() {
+    if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
+
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    converter->setFlags(ImageConverterFlag::Verbose);
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        CORRADE_VERIFY(converter->exportToFile(Image, filename));
+    }
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n");
 }
 
 }}}}

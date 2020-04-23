@@ -56,6 +56,8 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void unknown();
 
+    void propagateFlags();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
@@ -94,7 +96,9 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addInstancedTests({&AnySceneImporterTest::detect},
         Containers::arraySize(DetectData));
 
-    addTests({&AnySceneImporterTest::unknown});
+    addTests({&AnySceneImporterTest::unknown,
+
+              &AnySceneImporterTest::propagateFlags});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -175,6 +179,10 @@ void AnySceneImporterTest::unknown() {
     CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
+}
+
+void AnySceneImporterTest::propagateFlags() {
+    CORRADE_SKIP("No plugin with verbose output available to test.");
 }
 
 }}}}

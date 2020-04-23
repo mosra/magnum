@@ -82,9 +82,13 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
         return false;
     }
 
+    /* Instantiate the plugin, propagate flags */
+    Containers::Pointer<AbstractImageConverter> converter = static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin);
+    converter->setFlags(flags());
+
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
-    return static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin)->exportToFile(image, filename);
+    return converter->exportToFile(image, filename);
 }
 
 bool AnyImageConverter::doExportToFile(const CompressedImageView2D&, const std::string& filename) {
