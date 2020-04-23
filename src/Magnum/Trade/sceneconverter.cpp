@@ -24,6 +24,7 @@
 */
 
 #include <algorithm>
+#include <chrono>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -63,8 +64,8 @@ information.
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [--importer IMPORTER] [--plugin-dir DIR]
-    [-i|--importer-options key=val,key2=val2,…] [--info] [-v|--verbose] [--]
-    input
+    [-i|--importer-options key=val,key2=val2,…] [--info] [-v|--verbose]
+    [--profile] [--] input
 @endcode
 
 Arguments:
@@ -78,6 +79,7 @@ Arguments:
     pass to the importer
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer plugins
+-   `--profile` --- measure import time
 
 If `--info` is given, the utility will print information about all meshes
 and images present in the file. **This option is currently mandatory.**
@@ -92,6 +94,22 @@ character is omitted, it's equivalent to saying `key=true`.
 
 using namespace Magnum;
 
+namespace {
+
+struct Duration {
+    explicit Duration(std::chrono::high_resolution_clock::duration& output): _output(output), _t{std::chrono::high_resolution_clock::now()} {}
+
+    ~Duration() {
+        _output += std::chrono::high_resolution_clock::now() - _t;
+    }
+
+    private:
+        std::chrono::high_resolution_clock::duration& _output;
+        std::chrono::high_resolution_clock::time_point _t;
+};
+
+}
+
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input file")
@@ -100,6 +118,7 @@ int main(int argc, char** argv) {
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer plugins")
+        .addBooleanOption("profile").setHelp("profile", "measure import time")
         /** @todo add the parse error callback from imageconverter once there's
             an output argument, also remove the "mandatory" from all docs */
         .setGlobalHelp(R"(Converts scenes of different formats.
@@ -126,14 +145,19 @@ is omitted, it's equivalent to saying key=true.)")
     if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
     Trade::Implementation::setOptions(*importer, args.value("importer-options"));
 
-    /* Print file info, if requested */
-    if(args.isSet("info")) {
-        /* Open the file, but don't fail when an image can't be opened */
+    std::chrono::high_resolution_clock::duration importTime;
+
+    /* Open the file */
+    {
+        Duration d{importTime};
         if(!importer->openFile(args.value("input"))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
         }
+    }
 
+    /* Print file info, if requested */
+    if(args.isSet("info")) {
         if(!importer->meshCount() && !importer->image1DCount() && !importer->image2DCount() && !importer->image2DCount()) {
             Debug{} << "No meshes or images found.";
             return 0;
@@ -162,10 +186,13 @@ is omitted, it's equivalent to saying key=true.)")
         Containers::Array<MeshInfo> meshInfos;
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
             for(UnsignedInt j = 0; j != importer->meshLevelCount(i); ++j) {
-                Containers::Optional<Trade::MeshData> mesh = importer->mesh(i, j);
-                if(!mesh) {
-                    error = true;
-                    continue;
+                Containers::Optional<Trade::MeshData> mesh;
+                {
+                    Duration d{importTime};
+                    if(!(mesh = importer->mesh(i, j))) {
+                        error = true;
+                        continue;
+                    }
                 }
 
                 MeshInfo info{};
@@ -246,6 +273,10 @@ is omitted, it's equivalent to saying key=true.)")
             if(info.size.z()) d << info.size;
             else if(info.size.y()) d << info.size.xy();
             else d << Math::Vector<1, Int>(info.size.x());
+        }
+
+        if(args.isSet("profile")) {
+            Debug{} << "Import took" << UnsignedInt(std::chrono::duration_cast<std::chrono::milliseconds>(importTime).count())/1.0e3f << "seconds";
         }
 
         return error ? 1 : 0;
