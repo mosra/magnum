@@ -189,9 +189,13 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt, UnsignedIn
         storage.setAlignment(1);
 
     if(format == PixelFormat::RGB8Unorm) {
+        if(flags() & ImporterFlag::Verbose)
+            Debug{} << "Trade::TgaImporter::image2D(): converting from BGR to RGB";
         for(Vector3ub& pixel: Containers::arrayCast<Vector3ub>(data))
             pixel = Math::gather<'b', 'g', 'r'>(pixel);
     } else if(format == PixelFormat::RGBA8Unorm) {
+        if(flags() & ImporterFlag::Verbose)
+            Debug{} << "Trade::TgaImporter::image2D(): converting from BGRA to RGBA";
         for(Vector4ub& pixel: Containers::arrayCast<Vector4ub>(data))
             pixel = Math::gather<'b', 'g', 'r', 'a'>(pixel);
     }

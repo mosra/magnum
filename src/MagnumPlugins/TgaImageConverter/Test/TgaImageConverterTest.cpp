@@ -55,6 +55,18 @@ struct TgaImageConverterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _importerManager{"nonexistent"};
 };
 
+constexpr struct {
+    const char* name;
+    ImageConverterFlags flags;
+    const char* message24;
+    const char* message32;
+} VerboseData[] {
+    {"", {}, "", ""},
+    {"verbose", ImageConverterFlag::Verbose,
+        "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n",
+        "Trade::TgaImageConverter::exportToData(): converting from RGBA to BGRA\n"}
+};
+
 /* Padded to four byte alignment (the resulting file is *not* padded) */
 constexpr char OriginalDataRGB[] = {
     /* Skip */
@@ -81,10 +93,12 @@ constexpr char OriginalDataRGBA[] = {
 const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
 
 TgaImageConverterTest::TgaImageConverterTest() {
-    addTests({&TgaImageConverterTest::wrongFormat,
+    addTests({&TgaImageConverterTest::wrongFormat});
 
-              &TgaImageConverterTest::rgb,
-              &TgaImageConverterTest::rgba});
+    addInstancedTests({
+        &TgaImageConverterTest::rgb,
+        &TgaImageConverterTest::rgba},
+        Containers::arraySize(VerboseData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -110,15 +124,25 @@ void TgaImageConverterTest::wrongFormat() {
 }
 
 void TgaImageConverterTest::rgb() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    const auto data = converter->exportToData(OriginalRGB);
-    CORRADE_VERIFY(data);
+    converter->setFlags(data.flags);
+
+    std::ostringstream out;
+    Containers::Array<char> array;
+    {
+        Debug redirectOutput{&out};
+        array = converter->exportToData(OriginalRGB);
+    }
+    CORRADE_VERIFY(out);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
     Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(array));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 
@@ -127,18 +151,29 @@ void TgaImageConverterTest::rgb() {
     CORRADE_COMPARE(converted->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(ConvertedDataRGB),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message24);
 }
 
 void TgaImageConverterTest::rgba() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    const auto data = converter->exportToData(OriginalRGBA);
-    CORRADE_VERIFY(data);
+    converter->setFlags(data.flags);
+
+    std::ostringstream out;
+    Containers::Array<char> array;
+    {
+        Debug redirectOutput{&out};
+        array = converter->exportToData(OriginalRGBA);
+    }
+    CORRADE_VERIFY(out);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
     Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(array));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 
@@ -147,6 +182,7 @@ void TgaImageConverterTest::rgba() {
     CORRADE_COMPARE(converted->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message32);
 }
 
 }}}}

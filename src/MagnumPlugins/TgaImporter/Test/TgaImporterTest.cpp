@@ -78,6 +78,18 @@ constexpr struct {
     {"RLE grayscale 16", 11, 16, "unsupported grayscale bits-per-pixel: 16"}
 };
 
+constexpr struct {
+    const char* name;
+    ImporterFlags flags;
+    const char* message24;
+    const char* message32;
+} VerboseData[] {
+    {"", {}, "", ""},
+    {"verbose", ImporterFlag::Verbose,
+        "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
+        "Trade::TgaImporter::image2D(): converting from BGRA to RGBA\n"}
+};
+
 constexpr const char Color24[] = {
     0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
     1, 2, 3, 2, 3, 4,
@@ -124,11 +136,14 @@ TgaImporterTest::TgaImporterTest() {
         &TgaImporterTest::unsupportedBits},
         Containers::arraySize(UnsupportedBitsData));
 
-    addTests({&TgaImporterTest::color24,
-              &TgaImporterTest::color24Rle,
-              &TgaImporterTest::color32,
-              &TgaImporterTest::color32Rle,
-              &TgaImporterTest::grayscale8,
+    addInstancedTests({
+        &TgaImporterTest::color24,
+        &TgaImporterTest::color24Rle,
+        &TgaImporterTest::color32,
+        &TgaImporterTest::color32Rle},
+        Containers::arraySize(VerboseData));
+
+    addTests({&TgaImporterTest::grayscale8,
               &TgaImporterTest::grayscale8Rle,
 
               &TgaImporterTest::rleTooLarge});
@@ -207,7 +222,11 @@ void TgaImporterTest::unsupportedBits() {
 }
 
 void TgaImporterTest::color24() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    importer->setFlags(data.flags);
     const char pixels[] = {
         3, 2, 1, 4, 3, 2,
         5, 4, 3, 6, 5, 4,
@@ -215,17 +234,27 @@ void TgaImporterTest::color24() {
     };
     CORRADE_VERIFY(importer->openData(Color24));
 
-    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    std::ostringstream out;
+    Containers::Optional<Trade::ImageData2D> image;
+    {
+        Debug redirectOutput{&out};
+        image = importer->image2D(0);
+    }
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message24);
 }
 
 void TgaImporterTest::color24Rle() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    importer->setFlags(data.flags);
     const char pixels[] = {
         3, 2, 1, 4, 3, 2,
         5, 4, 3, 6, 5, 4,
@@ -233,18 +262,28 @@ void TgaImporterTest::color24Rle() {
     };
     CORRADE_VERIFY(importer->openData(Color24Rle));
 
-    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    std::ostringstream out;
+    Containers::Optional<Trade::ImageData2D> image;
+    {
+        Debug redirectOutput{&out};
+        image = importer->image2D(0);
+    }
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message24);
 }
 
 void TgaImporterTest::color32() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
+    importer->setFlags(data.flags);
+    const char input[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 4, 2, 3, 4, 5,
         3, 4, 5, 6, 4, 5, 6, 7,
@@ -255,20 +294,30 @@ void TgaImporterTest::color32() {
         5, 4, 3, 6, 6, 5, 4, 7,
         7, 6, 5, 8, 8, 7, 6, 9
     };
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(input));
 
-    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    std::ostringstream out;
+    Containers::Optional<Trade::ImageData2D> image;
+    {
+        Debug redirectOutput{&out};
+        image = importer->image2D(0);
+    }
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message32);
 }
 
 void TgaImporterTest::color32Rle() {
+    auto&& data = VerboseData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
+    importer->setFlags(data.flags);
+    const char input[] = {
         0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         /* 2 pixels repeated */
         '\x81', 1, 2, 3, 4,
@@ -283,15 +332,21 @@ void TgaImporterTest::color32Rle() {
         5, 4, 3, 6, 6, 5, 4, 7,
         7, 6, 5, 8, 8, 7, 6, 9
     };
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(input));
 
-    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+    std::ostringstream out;
+    Containers::Optional<Trade::ImageData2D> image;
+    {
+        Debug redirectOutput{&out};
+        image = importer->image2D(0);
+    }
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
+    CORRADE_COMPARE(out.str(), data.message32);
 }
 
 void TgaImporterTest::grayscale8() {
