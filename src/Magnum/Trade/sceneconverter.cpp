@@ -377,13 +377,36 @@ key=true; configuration subgroups are delimited with /.)")
 
     std::chrono::high_resolution_clock::duration conversionTime;
 
-    /* Save output file */
-    {
+    /* Save output file directly, if it supports that */
+    if(converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile) {
         Duration d{conversionTime};
         if(!converter->convertToFile(args.value("output"), *mesh)) {
             Error{} << "Cannot save file" << args.value("output");
             return 5;
         }
+
+    /* Otherwise convert the meshdata and then save as a blob */
+    } else if(converter->features() & (Trade::SceneConverterFeature::ConvertMesh|Trade::SceneConverterFeature::ConvertMeshInPlace)) {
+        if(converter->features() & Trade::SceneConverterFeature::ConvertMesh) {
+            Duration d{conversionTime};
+            if(!(mesh = converter->convert(*mesh))) {
+                Error{} << "Cannot convert the mesh";
+                return 5;
+            }
+        } else if(converter->features() & Trade::SceneConverterFeature::ConvertMeshInPlace) {
+            Duration d{conversionTime};
+            if(!converter->convertInPlace(*mesh)) {
+                Error{} << "Cannot convert the mesh in-place";
+                return 5;
+            }
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+
+        Containers::Array<char, Utility::Directory::MapDeleter> out = Utility::Directory::mapWrite(args.value("output"), mesh->serializedSize());
+        if(!out) {
+            Error{} << "Cannot save file" << args.value("output");
+            return 6;
+        }
+        mesh->serializeInto(out);
     }
 
     if(args.isSet("profile")) {
