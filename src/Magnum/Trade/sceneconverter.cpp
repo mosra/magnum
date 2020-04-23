@@ -63,7 +63,8 @@ information.
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [--importer IMPORTER] [--plugin-dir DIR]
-    [-i|--importer-options key=val,key2=val2,…] [--info] [--] input
+    [-i|--importer-options key=val,key2=val2,…] [--info] [-v|--verbose] [--]
+    input
 @endcode
 
 Arguments:
@@ -76,6 +77,7 @@ Arguments:
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `--info` --- print info about the input file and exit
+-   `-v`, `--verbose` --- verbose output from importer plugins
 
 If `--info` is given, the utility will print information about all meshes
 and images present in the file. **This option is currently mandatory.**
@@ -97,6 +99,7 @@ int main(int argc, char** argv) {
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer plugins")
         /** @todo add the parse error callback from imageconverter once there's
             an output argument, also remove the "mandatory" from all docs */
         .setGlobalHelp(R"(Converts scenes of different formats.
@@ -120,6 +123,7 @@ is omitted, it's equivalent to saying key=true.)")
     }
 
     /* Set options, if passed */
+    if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
     Trade::Implementation::setOptions(*importer, args.value("importer-options"));
 
     /* Print file info, if requested */

@@ -66,7 +66,8 @@ information.
 @code{.sh}
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
     [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--info] [--] input output
+    [-c|--converter-options key=val,key2=val2,…] [--info] [-v|--verbose] [--]
+    input output
 @endcode
 
 Arguments:
@@ -84,6 +85,7 @@ Arguments:
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
 -   `--info` --- print info about the input file and exit
+-   `-v`, `--verbose` --- verbose output from importer and converter plugins
 
 Specifying `--importer raw:&lt;format&gt;` will treat the input as a raw
 tightly-packed square of pixels in given @ref PixelFormat. Specifying
@@ -144,6 +146,7 @@ int main(int argc, char** argv) {
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
             /* If --info is passed, we don't need the output argument */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
@@ -215,6 +218,7 @@ key=true.)")
         }
 
         /* Set options, if passed */
+        if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
         Trade::Implementation::setOptions(*importer, args.value("importer-options"));
 
         /* Print image info, if requested */
@@ -289,6 +293,7 @@ key=true.)")
     }
 
     /* Set options, if passed */
+    if(args.isSet("verbose")) converter->setFlags(Trade::ImageConverterFlag::Verbose);
     Trade::Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
