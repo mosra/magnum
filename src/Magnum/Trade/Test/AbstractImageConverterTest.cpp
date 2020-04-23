@@ -42,47 +42,46 @@
 
 namespace Magnum { namespace Trade { namespace Test { namespace {
 
-class AbstractImageConverterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractImageConverterTest();
+struct AbstractImageConverterTest: TestSuite::Tester {
+    explicit AbstractImageConverterTest();
 
-        void construct();
-        void constructWithPluginManagerReference();
+    void construct();
+    void constructWithPluginManagerReference();
 
-        void thingNotSupported();
+    void thingNotSupported();
 
-        void exportToImage();
-        void exportToImageNotImplemented();
-        void exportToImageCustomDeleter();
+    void exportToImage();
+    void exportToImageNotImplemented();
+    void exportToImageCustomDeleter();
 
-        void exportToCompressedImage();
-        void exportToCompressedImageNotImplemented();
-        void exportToCompressedImageCustomDeleter();
+    void exportToCompressedImage();
+    void exportToCompressedImageNotImplemented();
+    void exportToCompressedImageCustomDeleter();
 
-        void exportToData();
-        void exportToDataNotImplemented();
-        void exportToDataCustomDeleter();
+    void exportToData();
+    void exportToDataNotImplemented();
+    void exportToDataCustomDeleter();
 
-        void exportCompressedToData();
-        void exportCompressedToDataNotImplemented();
-        void exportCompressedToDataCustomDeleter();
+    void exportCompressedToData();
+    void exportCompressedToDataNotImplemented();
+    void exportCompressedToDataCustomDeleter();
 
-        void exportImageDataToData();
+    void exportImageDataToData();
 
-        void exportToFile();
-        void exportToFileThroughData();
-        void exportToFileThroughDataNotWritable();
-        void exportToFileNotImplemented();
+    void exportToFile();
+    void exportToFileThroughData();
+    void exportToFileThroughDataNotWritable();
+    void exportToFileNotImplemented();
 
-        void exportCompressedToFile();
-        void exportCompressedToFileThroughData();
-        void exportCompressedToFileThroughDataNotWritable();
-        void exportCompressedToFileNotImplemented();
+    void exportCompressedToFile();
+    void exportCompressedToFileThroughData();
+    void exportCompressedToFileThroughDataNotWritable();
+    void exportCompressedToFileNotImplemented();
 
-        void exportImageDataToFile();
+    void exportImageDataToFile();
 
-        void debugFeature();
-        void debugFeatures();
+    void debugFeature();
+    void debugFeatures();
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
