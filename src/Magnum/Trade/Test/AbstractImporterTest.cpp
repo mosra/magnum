@@ -723,7 +723,6 @@ void AbstractImporterTest::setFileCallbackFileOpened() {
 
     std::ostringstream out;
     Error redirectError{&out};
-
     importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
