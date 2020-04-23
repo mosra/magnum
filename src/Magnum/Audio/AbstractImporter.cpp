@@ -43,34 +43,23 @@ std::string AbstractImporter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
-    return {
-        /* Debug build */
+    return PluginManager::implicitPluginSearchPaths(
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::libraryLocation(&pluginInterface),
+        #else
+        {},
+        #endif
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/audioimporters"),
+        MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_DIR,
         #else
-        #ifndef CORRADE_TARGET_WINDOWS
-        /* On Windows, the plugin DLLs are next to the executable, so the one
-           below works. Elsewhere the plugins are in the lib dir instead */
-        "../lib/magnum-d/audioimporters",
+        MAGNUM_PLUGINS_AUDIOIMPORTER_DIR,
         #endif
-        "magnum-d/audioimporters",
-        #endif
-        Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "audioimporters")
-
-        /* Release build */
+        #ifdef CORRADE_IS_DEBUG_BUILD
+        "magnum-d/"
         #else
-        #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/audioimporters"),
-        #else
-        #ifndef CORRADE_TARGET_WINDOWS
-        "../lib/magnum/audioimporters",
+        "magnum/"
         #endif
-        "magnum/audioimporters",
-        #endif
-        Utility::Directory::join(MAGNUM_PLUGINS_DIR, "audioimporters")
-        #endif
-    };
+        "audioimporters");
 }
 #endif
 

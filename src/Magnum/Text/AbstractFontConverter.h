@@ -182,14 +182,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Plugin search paths
          *
-         * First looks in `magnum/fontconverters/` or `magnum-d/fontconverters/`
-         * next to the dynamic @ref Text library (unless it's a static build),
-         * then in the same location next to the executable and as a fallback
-         * in `magnum/fontconverters/` or `magnum-d/fontconverters/` in the
-         * runtime install location (`lib[64]/` on Unix-like systems, `bin/` on
-         * Windows). The system-wide plugin search directory is configurable
-         * using the `MAGNUM_PLUGINS_DIR` CMake variables, see @ref building
-         * for more information.
+         * Looks into `magnum/fontconverters/` or `magnum-d/fontconverters/`
+         * next to the dynamic @ref Trade library, next to the executable and
+         * elsewhere according to the rules documented in
+         * @ref Corrade::PluginManager::implicitPluginSearchPaths(). The search
+         * directory can be also hardcoded using the `MAGNUM_PLUGINS_DIR` CMake
+         * variables, see @ref building for more information.
          *
          * Not defined on platforms without
          *      @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".

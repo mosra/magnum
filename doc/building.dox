@@ -521,14 +521,19 @@ thread-local Magnum contents. This is inherited from the
 @ref CORRADE_BUILD_MULTITHREADED option --- if you are sure that you will never
 need such feature, disable it when building Corrade itself.
 
-Various plugin interfaces by default search for plugins in pre-defined
-locations. By default those are defined to the installation location and can be
-overriden using the `MAGNUM_PLUGINS_DIR`, `MAGNUM_PLUGINS_DEBUG_DIR` and
-`MAGNUM_PLUGINS_RELEASE_DIR` CMake variables --- see also
+Various plugin interfaces search for plugins in locations and order documented
+in @ref Corrade::PluginManager::implicitPluginSearchPaths(),
 @ref Trade::AbstractImporter::pluginSearchPaths() and equivalent functions in
-other plugin interfaces. Another option is supplying the plugin search path
-explicitly on the user side either using the same CMake variables (passed
-through to preprocessor, see @ref cmake) or via other autodetection means.
+other plugin interfaces. In most cases the implicit behavior does the right
+thing, but if you need to override those, use the `MAGNUM_PLUGINS_DIR`,
+`MAGNUM_PLUGINS_DEBUG_DIR` and `MAGNUM_PLUGINS_RELEASE_DIR` CMake variables.
+Those are empty by default, which means no hardcoded path is used. Another
+option is supplying the plugin search path to the
+@ref Corrade::PluginManager::Manger constructor either using the same CMake
+variables (passed through to preprocessor, see @ref cmake) or via any other
+means. All builtin Magnum utilities such as @ref magnum-imageconverter also
+provide a way to override the plugin directory via the `--plugin-dir`
+command-line option.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more

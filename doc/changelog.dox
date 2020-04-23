@@ -297,6 +297,10 @@ See also:
     @ref Corrade::Utility::Arguments
 -   @ref Resource is now nothrow-movable and thus can be used with growable
     @ref Corrade::Containers::Array instances
+-   Reworked plugin search paths to prefer autodetection based on library or
+    executable location where possible and use hardcoded paths only if
+    explicitly specified. See @ref Trade::AbstractImporter::pluginSearchPaths()
+    for more information.
 
 @subsubsection changelog-latest-changes-audio Audio library
 

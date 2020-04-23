@@ -63,34 +63,23 @@ std::string AbstractFontConverter::pluginInterface() {
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
-    return {
-        /* Debug build */
+    return PluginManager::implicitPluginSearchPaths(
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::libraryLocation(&pluginInterface),
+        #else
+        {},
+        #endif
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/fontconverters"),
+        MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_DIR,
         #else
-        #ifndef CORRADE_TARGET_WINDOWS
-        /* On Windows, the plugin DLLs are next to the executable, so the one
-           below works. Elsewhere the plugins are in the lib dir instead */
-        "../lib/magnum-d/fontconverters",
+        MAGNUM_PLUGINS_FONTCONVERTER_DIR,
         #endif
-        "magnum-d/fontconverters",
-        #endif
-        Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "fontconverters")
-
-        /* Release build */
+        #ifdef CORRADE_IS_DEBUG_BUILD
+        "magnum-d/"
         #else
-        #ifndef MAGNUM_BUILD_STATIC
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/fontconverters"),
-        #else
-        #ifndef CORRADE_TARGET_WINDOWS
-        "../lib/magnum/fontconverters",
+        "magnum/"
         #endif
-        "magnum/fontconverters",
-        #endif
-        Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fontconverters")
-        #endif
-    };
+        "fontconverters");
 }
 #endif
 

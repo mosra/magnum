@@ -154,12 +154,12 @@ following:
 -   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Prefix where to put
     platform-independent include and other files, defaults to `.`. If a
     relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
--   `MAGNUM_PLUGINS_DEBUG_DIR` --- Base directory with dynamic plugins for debug
-    builds, defaults to `magnum-d/` subdirectory of dir where Magnum library
-    was found
+-   `MAGNUM_PLUGINS_DEBUG_DIR` --- Base directory with dynamic plugins for
+    debug builds. Empty by default, which means the directory is autodetected
+    based on library and executable location; override if needed.
 -   `MAGNUM_PLUGINS_RELEASE_DIR` --- Base directory with dynamic plugins for
-    release builds, defaults to `magnum/` subdirectory of dir where Magnum
-    library was found
+    release builds. Empty by default, which means the directory is autodetected
+    based on library and executable location; override if needed.
 -   `MAGNUM_PLUGINS_DIR` --- Base directory with dynamic plugins, defaults to
     `MAGNUM_PLUGINS_RELEASE_DIR` in release builds and multi-configuration
     builds or to `MAGNUM_PLUGINS_DEBUG_DIR` in debug builds.
@@ -297,7 +297,7 @@ release libraries). Note that this autodetection might fail for the
 `MAGNUM_PLUGINS_DIR` variable, especially on multi-configuration build systems.
 You can make use of @ref corrade-cmake "CORRADE_IS_DEBUG_BUILD" preprocessor
 variable along with `MAGNUM_PLUGINS_*_DEBUG_DIR` / `MAGNUM_PLUGINS_*_RELEASE_DIR`
-variables to decide in preprocessing step instead.
+variables to decide in a preprocessing step instead.
 
 Features of found Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including
