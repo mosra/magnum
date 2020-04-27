@@ -119,6 +119,12 @@ if(WITH_DEBUGTOOLS)
     target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
     set_target_properties(snippets-MagnumDebugTools PROPERTIES FOLDER "Magnum/doc/snippets")
 
+    if(BUILD_GL_TESTS AND NOT MAGNUM_TARGET_GLES)
+        add_executable(debugtools-frameprofiler debugtools-frameprofiler.cpp)
+        target_link_libraries(debugtools-frameprofiler PRIVATE
+            MagnumDebugTools MagnumOpenGLTester)
+    endif()
+
     # TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
     if(NOT CORRADE_TARGET_IOS)
         set(SNIPPETS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
