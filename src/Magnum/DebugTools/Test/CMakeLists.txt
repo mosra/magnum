@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(DebugToolsFrameProfilerTest FrameProfilerTest.cpp
+    LIBRARIES MagnumDebugToolsTestLib)
+set_target_properties(DebugToolsFrameProfilerTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
+
 if(WITH_TRADE)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
     find_package(Corrade REQUIRED PluginManager)
@@ -94,6 +98,10 @@ if(TARGET_GL)
     endif()
 
     if(BUILD_GL_TESTS)
+        corrade_add_test(DebugToolsFrameProfilerGLTest FrameProfilerGLTest.cpp
+            LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+        set_target_properties(DebugToolsFrameProfilerTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
+
         corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
         set_target_properties(DebugToolsTextureImageGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 

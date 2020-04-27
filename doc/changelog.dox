@@ -72,6 +72,7 @@ See also:
 
 -   New @ref DebugTools::ColorMap namespace containing a few presets for
     gradient visualization
+-   New @ref DebugTools::FrameProfiler utility for CPU and GPU profiling
 
 @subsubsection changelog-latest-new-gl GL library
 
