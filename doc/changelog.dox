@@ -631,6 +631,8 @@ See also:
     This also means it's no longer
     possible to override equality comparison epsilons at compile time, but that
     was a rarely (if ever) used feature.
+-   @cpp DebugTools::Profiler @ce is obsolete, replaced with a much more
+    flexible and extensible @ref DebugTools::FrameProfiler
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

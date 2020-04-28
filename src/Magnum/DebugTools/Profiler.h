@@ -25,22 +25,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::DebugTools::Profiler
+ * @m_deprecated_since_latest Obsolete, use
+ *      @ref Magnum/DebugTools/FrameProfiler.h and the
+ *      @ref Magnum::DebugTools::FrameProfiler class instead.
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 #include <chrono>
 #include <initializer_list>
 #include <string>
 #include <vector>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Types.h"
 #include "Magnum/DebugTools/visibility.h"
+
+#ifndef _MAGNUM_NO_DEPRECATED_PROFILER
+CORRADE_DEPRECATED_FILE("use Magnum/DebugTools/FrameProfiler.h and the FrameProfiler class instead")
+#endif
 
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Profiler
+@m_deprecated_since_latest Obsolete, use @ref FrameProfiler instead.
 
 Measures time passed during specified sections of each frame. It's meant to be
 used in rendering and event loops (e.g. @ref Platform::Sdl2Application::drawEvent()),
@@ -97,11 +111,8 @@ p.printStatistics();
 It's possible to start profiler only for certain parts of the code and then
 stop it again using @ref stop(), if you are not interested in profiling the
 rest.
-
-@todo Some unit testing
-@todo More time intervals
 */
-class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
+class CORRADE_DEPRECATED("use FrameProfiler instead") MAGNUM_DEBUGTOOLS_EXPORT Profiler {
     public:
         /**
          * @brief Section ID
@@ -213,5 +224,6 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
 };
 
 }}
+#endif
 
 #endif
