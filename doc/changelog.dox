@@ -404,6 +404,7 @@ See also:
     default to 32-bit RGBA color buffer instead of 24-bit RGB, to avoid the
     framebuffer degrading to 16-bit colors on some platforms (see
     [mosra/magnum-integration#59](https://github.com/mosra/magnum-integration/issues/59))
+-   Added @ref Platform::BasicScreenedApplication::globalBeforeDrawEvent()
 
 @subsubsection changelog-latest-changes-trade Trade library
 

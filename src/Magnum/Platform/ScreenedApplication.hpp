@@ -212,7 +212,12 @@ template<class Application> void BasicScreenedApplication<Application>::viewport
     for(BasicScreen<Application>& s: *this) s.viewportEvent(event);
 }
 
+template<class Application> void BasicScreenedApplication<Application>::globalBeforeDrawEvent() {}
+
 template<class Application> void BasicScreenedApplication<Application>::drawEvent() {
+    /* Call the "before" global event before all other */
+    globalBeforeDrawEvent();
+
     /* Back-to-front rendering */
     for(BasicScreen<Application>* s = screens().last(); s; s = s->nextNearerScreen())
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Draw) s->drawEvent();

@@ -294,12 +294,22 @@ template<class Application> class BasicScreenedApplication:
         virtual void globalViewportEvent(typename Application::ViewportEvent& size);
 
         /**
+         * @brief Before draw event
+         * @m_since_latest
+         *
+         * Called *before* all screens' @ref BasicScreen::drawEvent() "drawEvent()".
+         * Unlike @ref globalDrawEvent() doesn't need to be implemented.
+         */
+        virtual void globalBeforeDrawEvent();
+
+        /**
          * @brief Draw event
          *
          * Called *after* all screens' @ref BasicScreen::drawEvent() "drawEvent()".
          * You should call at least @ref Sdl2Application::swapBuffers() "swapBuffers()".
          * If you want to draw immediately again, call also
-         * @ref Sdl2Application::redraw() "redraw()".
+         * @ref Sdl2Application::redraw() "redraw()". See also
+         * @ref globalBeforeDrawEvent().
          */
         virtual void globalDrawEvent() = 0;
 
@@ -308,9 +318,9 @@ template<class Application> class BasicScreenedApplication:
         friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
         friend BasicScreen<Application>;
         #endif
-        /* The user is supposed to override only globalViewportEvent() and
-           globalDrawEvent(), these implementations are dispatching the events
-           to attached screens. */
+        /* The user is supposed to override only globalViewportEvent(),
+           globalDrawEvent() and possibly globalBeforeDrawEvent(), these
+           implementations are dispatching the events to attached screens. */
         void viewportEvent(typename Application::ViewportEvent& event) override final;
         void drawEvent() override final;
         void mousePressEvent(typename Application::MouseEvent& event) override final;
