@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_PROFILER
+
 #include "Profiler.h"
 
 #include <algorithm>

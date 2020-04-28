@@ -24,8 +24,7 @@
 #
 
 set(MagnumDebugTools_SRCS
-    ColorMap.cpp
-    Profiler.cpp)
+    ColorMap.cpp)
 
 set(MagnumDebugTools_GracefulAssert_SRCS
     FrameProfiler.cpp)
@@ -34,12 +33,16 @@ set(MagnumDebugTools_HEADERS
     ColorMap.h
     DebugTools.h
     FrameProfiler.h
-    Profiler.h
 
     visibility.h)
 
 # Header files to display in project view of IDEs only
 set(MagnumDebugTools_PRIVATE_HEADERS )
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumDebugTools_SRCS Profiler.cpp)
+    list(APPEND MagnumDebugTools_HEADERS Profiler.h)
+endif()
 
 if(TARGET_GL)
     list(APPEND MagnumDebugTools_SRCS
