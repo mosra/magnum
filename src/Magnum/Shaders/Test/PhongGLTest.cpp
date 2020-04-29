@@ -422,6 +422,11 @@ void PhongGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & Phong::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
     Phong shader{data.flags, data.lightCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
@@ -1223,22 +1228,30 @@ void PhongGLTest::renderObjectIdSetup() {
 
     _color = GL::Renderbuffer{};
     _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
-    _objectId = GL::Renderbuffer{};
-    _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
     _framebuffer = GL::Framebuffer{{{}, RenderSize}};
-    _framebuffer
-        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
-        .mapForDraw({
-            {Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-            {Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
-        })
+    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
         /* Pick a color that's directly representable on RGBA4 as well to
            reduce artifacts (well, and this needs to be consistent with other
            tests that *need* to run on WebGL 1) */
         .clearColor(0, 0x111111_rgbf)
-        .clearColor(1, Vector4ui{27})
         .bind();
+
+    /* If we don't have EXT_gpu_shader4, we likely don't have integer
+       framebuffers either (Mesa's Zink), so skip setting up integer
+       attachments to avoid GL errors */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _objectId = GL::Renderbuffer{};
+        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+            .mapForDraw({
+                {Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+            })
+            .clearColor(1, Vector4ui{27});
+    }
 }
 
 void PhongGLTest::renderObjectIdTeardown() {
@@ -1250,6 +1263,11 @@ void PhongGLTest::renderObjectIdTeardown() {
 void PhongGLTest::renderObjectId() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
@@ -1319,12 +1337,17 @@ void PhongGLTest::renderZeroLights() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
 
-    Phong shader{
-        Phong::Flag::AmbientTexture|Phong::Flag::AlphaMask
-        #ifndef MAGNUM_TARGET_GLES2
-        |Phong::Flag::ObjectId
-        #endif
-    , 0};
+    /* Enable also Object ID, if supported */
+    Phong::Flags flags = Phong::Flag::AmbientTexture|Phong::Flag::AlphaMask;
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        flags |= Phong::Flag::ObjectId;
+    }
+    #endif
+    Phong shader{flags, 0};
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -1349,9 +1372,6 @@ void PhongGLTest::renderZeroLights() {
             Matrix4::rotationX(15.0_degf))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         /* Keep alpha mask at the default 0.5 to test the default */
-        #ifndef MAGNUM_TARGET_GLES2
-        .setObjectId(65534)
-        #endif
         /* Passing a zero-sized light position / color array, shouldn't assert */
         .setLightPositions({})
         .setLightColors({})
@@ -1361,6 +1381,15 @@ void PhongGLTest::renderZeroLights() {
         .setDiffuseColor(0xfa9922_rgbf)
         .setSpecularColor(0xfa9922_rgbf)
         .setShininess(0.2f);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        shader.setObjectId(65534);
+    }
+    #endif
 
     /* For proper Z order draw back faces first and then front faces */
     GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
@@ -1392,14 +1421,19 @@ void PhongGLTest::renderZeroLights() {
        on known places have expected values. SwiftShader insists that the read
        format has to be 32bit, so the renderbuffer format is that too to make
        it the same (ES3 Mesa complains if these don't match). */
-    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
-    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
-    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    /* Outside of the object, cleared to 27 */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
-    /* Inside of the object. Verify that it can hold 16 bits at least. */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 65534);
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        /* Outside of the object, cleared to 27 */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
+        /* Inside of the object. Verify that it can hold 16 bits at least. */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 65534);
+    }
     #endif
 }
 

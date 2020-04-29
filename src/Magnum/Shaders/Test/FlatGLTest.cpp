@@ -304,6 +304,11 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & Flat2D::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
     Flat<dimensions> shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_VERIFY(shader.id());
@@ -1002,22 +1007,30 @@ void FlatGLTest::renderObjectIdSetup() {
 
     _color = GL::Renderbuffer{};
     _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
-    _objectId = GL::Renderbuffer{};
-    _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
     _framebuffer = GL::Framebuffer{{{}, RenderSize}};
-    _framebuffer
-        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
-        .mapForDraw({
-            {Flat3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-            {Flat3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
-        })
+    _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
         /* Pick a color that's directly representable on RGBA4 as well to
            reduce artifacts (well, and this needs to be consistent with other
            tests that *need* to run on WebGL 1) */
         .clearColor(0, 0x111111_rgbf)
-        .clearColor(1, Vector4ui{27})
         .bind();
+
+    /* If we don't have EXT_gpu_shader4, we likely don't have integer
+       framebuffers either (Mesa's Zink), so skip setting up integer
+       attachments to avoid GL errors */
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _objectId = GL::Renderbuffer{};
+        _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+        _framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+            .mapForDraw({
+                {Flat2D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {Flat2D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+            })
+            .clearColor(1, Vector4ui{27});
+    }
 }
 
 void FlatGLTest::renderObjectIdTeardown() {
@@ -1029,6 +1042,11 @@ void FlatGLTest::renderObjectIdTeardown() {
 void FlatGLTest::renderObjectId2D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 
@@ -1082,6 +1100,11 @@ void FlatGLTest::renderObjectId2D() {
 void FlatGLTest::renderObjectId3D() {
     auto&& data = RenderObjectIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
 

@@ -265,6 +265,9 @@ void AbstractShaderProgramGLTest::create() {
 
 void AbstractShaderProgramGLTest::createMultipleOutputs() {
     #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
@@ -319,6 +322,11 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::blend_func_extended>())
+        CORRADE_SKIP(GL::Extensions::ARB::blend_func_extended::string() + std::string(" is not supported"));
+
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
@@ -641,6 +649,11 @@ void AbstractShaderProgramGLTest::uniformDoubleArray() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramGLTest::createUniformBlocks() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+    #endif
+
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
     Shader vert(
@@ -693,6 +706,11 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
 }
 
 void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+    #endif
+
     MyPublicShader program;
 
     Shader vert(
@@ -767,6 +785,11 @@ UniformBlockShader::UniformBlockShader() {
 #endif
 
 void AbstractShaderProgramGLTest::uniformBlock() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+    #endif
+
     UniformBlockShader shader;
 
     MAGNUM_VERIFY_NO_GL_ERROR();

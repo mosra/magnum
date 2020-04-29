@@ -519,6 +519,21 @@ void MeshVisualizerGLTest::construct2D() {
     auto&& data = ConstructData2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(data.flags & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
@@ -545,6 +560,21 @@ void MeshVisualizerGLTest::construct2D() {
 void MeshVisualizerGLTest::construct3D() {
     auto&& data = ConstructData3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(data.flags >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId &&
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(data.flags & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
@@ -1009,6 +1039,11 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
     auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
     /* Configure a texture with preset filtering and wrapping. The goal here is
        that the default config should be filtering/wrapping-independent for the
        first 256 items */
@@ -1052,6 +1087,11 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
 void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
     auto&& data = ObjectIdDefaultsData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     /* Configure a texture with preset filtering and wrapping. The goal here is
        that the default config should be filtering/wrapping-independent for the
@@ -1098,6 +1138,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
     MeshVisualizer2D::Flags flags;
     #ifdef MAGNUM_TARGET_WEBGL
     flags = MeshVisualizer2D::Flag::PrimitiveIdFromVertexId;
@@ -1136,6 +1186,16 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
 
     MeshVisualizer2D::Flags flags;
     #ifdef MAGNUM_TARGET_WEBGL
@@ -1405,6 +1465,11 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
     auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags2D & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
+
     #ifndef MAGNUM_TARGET_WEBGL
     if(data.flags2D & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
@@ -1483,6 +1548,11 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
 void MeshVisualizerGLTest::renderObjectPrimitiveId3D() {
     auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(data.flags3D & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&

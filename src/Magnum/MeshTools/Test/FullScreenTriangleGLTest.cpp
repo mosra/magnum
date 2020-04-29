@@ -74,6 +74,9 @@ void FullScreenTriangleGLTest::test() {
     auto&& data = VersionData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
+    if(!GL::Context::current().isVersionSupported(data.version))
+        CORRADE_SKIP("Version not supported");
+
     struct FullscreenFlatShader: GL::AbstractShaderProgram {
         FullscreenFlatShader(GL::Version version) {
             Utility::Resource rs{"FullScreenTriangleTest"};

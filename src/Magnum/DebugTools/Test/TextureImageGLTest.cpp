@@ -29,7 +29,9 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/TextureImage.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
@@ -204,6 +206,11 @@ constexpr UnsignedInt Data2DUInt[] = { 0xcafebabe,
                                        0xdeadbabe };
 
 void TextureImageGLTest::subImage2DUInt() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_integer>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() + std::string(" is not supported"));
+    #endif
+
     GL::Texture2D texture;
     texture.setImage(0, GL::TextureFormat::R32UI, ImageView2D{GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt, Vector2i{2}, Data2DUInt});
 

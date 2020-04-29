@@ -179,6 +179,7 @@ constexpr struct {
     RenderbufferFormat renderbufferFormat;
     PixelFormat expectedFormat;
     PixelType expectedType;
+    bool integer;
 } ImplementationColorReadFormatData[]{
     {"classic",
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
@@ -188,14 +189,14 @@ constexpr struct {
         #endif
         PixelFormat::RGBA,
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        PixelType::UnsignedByte
+        PixelType::UnsignedByte,
         #else
-        GL::PixelType::UnsignedShort4444
+        GL::PixelType::UnsignedShort4444,
         #endif
-        },
+        false},
     #ifndef MAGNUM_TARGET_GLES2
-    {"integer", RenderbufferFormat::RG32UI, PixelFormat::RGInteger, PixelType::UnsignedInt},
-    {"float", RenderbufferFormat::RGBA16F, PixelFormat::RGBA, PixelType::Half}
+    {"integer", RenderbufferFormat::RG32UI, PixelFormat::RGInteger, PixelType::UnsignedInt, true},
+    {"float", RenderbufferFormat::RGBA16F, PixelFormat::RGBA, PixelType::Half, false}
     #endif
 };
 
@@ -2254,6 +2255,11 @@ void FramebufferGLTest::blit() {
 void FramebufferGLTest::implementationColorReadFormat() {
     auto&& data = ImplementationColorReadFormatData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.integer && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_integer>())
+        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() + std::string(" is not supported"));
+    #endif
 
     Renderbuffer color;
     color.setStorage(data.renderbufferFormat, {32, 32});

@@ -120,12 +120,12 @@ struct CompileGLTest: GL::OpenGLTester {
         Shaders::Flat2D _flat2D;
         Shaders::Flat2D _flatTextured2D{Shaders::Flat2D::Flag::Textured};
         #ifndef MAGNUM_TARGET_GLES2
-        Shaders::Flat2D _flatObjectId2D{Shaders::Flat2D::Flag::InstancedObjectId};
+        Shaders::Flat2D _flatObjectId2D{NoCreate};
         #endif
         Shaders::Flat3D _flat3D;
         Shaders::Flat3D _flatTextured3D{Shaders::Flat3D::Flag::Textured};
         #ifndef MAGNUM_TARGET_GLES2
-        Shaders::Flat3D _flatObjectId3D{Shaders::Flat3D::Flag::InstancedObjectId};
+        Shaders::Flat3D _flatObjectId3D{NoCreate};
         #endif
         Shaders::VertexColor2D _color2D;
         Shaders::VertexColor3D _color3D;
@@ -286,18 +286,8 @@ CompileGLTest::CompileGLTest() {
         GL::RenderbufferFormat::RGBA4,
         #endif
         {32, 32});
-    #ifndef MAGNUM_TARGET_GLES2
-    _objectId.setStorage(GL::RenderbufferFormat::R32UI, {32, 32});
-    #endif
     _framebuffer
         .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
-        #ifndef MAGNUM_TARGET_GLES2
-        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
-        .mapForDraw({
-            {Shaders::Generic3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
-            {Shaders::Generic3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
-        })
-        #endif
         .bind();
     _texture
         .setMinificationFilter(SamplerFilter::Linear)
@@ -311,6 +301,23 @@ CompileGLTest::CompileGLTest() {
             #endif
             {4, 4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, ImageData});
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _flatObjectId2D = Shaders::Flat2D{Shaders::Flat2D::Flag::InstancedObjectId};
+        _flatObjectId3D = Shaders::Flat3D{Shaders::Flat3D::Flag::InstancedObjectId};
+        _objectId.setStorage(GL::RenderbufferFormat::R32UI, {32, 32});
+        _framebuffer
+            .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+            .mapForDraw({
+                {Shaders::Generic3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+                {Shaders::Generic3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+            });
+    }
+    #endif
 
     /* Mesh visualizer shaders only if we have a GS */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -362,6 +369,11 @@ template<class T> void CompileGLTest::twoDimensions() {
     setTestCaseTemplateName(MeshTypeName<T>::name());
     auto&& data = Data2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
@@ -535,6 +547,11 @@ template<class T> void CompileGLTest::threeDimensions() {
     setTestCaseTemplateName(MeshTypeName<T>::name());
     auto&& data = Data3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+    #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH /** @todo remove once MeshDataXD is gone */
@@ -1030,26 +1047,32 @@ void CompileGLTest::packedAttributes() {
         (DebugTools::CompareImageToFile{_manager, 2.0f, 0.259f}));
 
     #ifndef MAGNUM_TARGET_GLES2
-    _framebuffer.clearColor(1, Vector4ui{27});
-    _flatObjectId3D
-        .setTransformationProjectionMatrix(projection*transformation)
-        .draw(mesh);
+    #ifndef MAGNUM_TARGET_GLES
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
+    #endif
+    {
+        _framebuffer.clearColor(1, Vector4ui{27});
+        _flatObjectId3D
+            .setTransformationProjectionMatrix(projection*transformation)
+            .draw(mesh);
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
 
-    /* Object ID -- no need to verify the whole image, just check that pixels
-       on known places have expected values. SwiftShader insists that the read
-       format has to be 32bit, so the renderbuffer format is that too to make
-       it the same (ES3 Mesa complains if these don't match). */
-    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
-    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
-    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    /* Outside of the object, cleared to 27 */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
-    /* Inside of the object, bottom and top half should be different */
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
-    CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+        /* Object ID -- no need to verify the whole image, just check that
+           pixels on known places have expected values. SwiftShader insists
+           that the read format has to be 32bit, so the renderbuffer format is
+           that too to make it the same (ES3 Mesa complains if these don't
+           match). */
+        _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+        CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+        Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        /* Outside of the object, cleared to 27 */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[2][2], 27);
+        /* Inside of the object, bottom and top half should be different */
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[11][18], 13562);
+        CORRADE_COMPARE(image.pixels<UnsignedInt>()[19][15], 26234);
+    }
     #endif
 }
 
