@@ -1737,6 +1737,10 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
     /* Slight rasterization differences on AMD. If
        GL_NV_shader_noperspective_interpolation is not supported, the artifacts
        are bigger. */
