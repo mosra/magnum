@@ -965,10 +965,16 @@ bool Context::isCoreProfile() {
 bool Context::isCoreProfileInternal(Implementation::ContextState& state) {
     Implementation::ContextState::CoreProfile& value = state.coreProfile;
 
-    if(value == Implementation::ContextState::CoreProfile::Initial)
-        value = (this->*state.isCoreProfileImplementation)() ?
+    if(value == Implementation::ContextState::CoreProfile::Initial) {
+        /* GL < 3.2 is never a core profile, moreover querying
+           GL_CONTEXT_PROFILE_MASK would result in a GL error, so don't do
+           that */
+        if(_version < Version::GL320)
+            value = Implementation::ContextState::CoreProfile::Compatibility;
+        else value = (this->*state.isCoreProfileImplementation)() ?
             Implementation::ContextState::CoreProfile::Core :
             Implementation::ContextState::CoreProfile::Compatibility;
+    }
 
     return value == Implementation::ContextState::CoreProfile::Core;
 }
