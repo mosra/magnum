@@ -335,6 +335,11 @@ See also:
 -   Added @ref GL::Context::State::UnbindPixelBuffer that's now implicitly
     included in @ref GL::Context::State::EnterExternal to make Magnum work
     correctly with 3rd party code that's not aware of PBOs.
+-   The @cpp "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped" @ce
+    workaround now unconditionally disables @gl_extension{ARB,explicit_uniform_location}
+    on Intel Windows drivers because it was discovered to be too buggy to be
+    useful, affecting most shaders from the @ref Shaders library. See also
+    @ref opengl-workarounds.
 
 @subsubsection changelog-latest-changes-math Math library
 

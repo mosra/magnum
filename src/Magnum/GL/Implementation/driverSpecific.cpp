@@ -333,9 +333,11 @@ namespace {
    or, if you are lucky, a highly-cryptic-but-still-better-than-nothing
     Error has been generated. GL error GL_INVALID_OPERATION in ProgramUniform4fv: (ID: 1725519030) GL error GL_INVALID_OPERATION: mismatched type setting uniform of location "3" in program 1, "" using shaders, 2, "", 3, "", 8, ""
    *unless* you have vertex uniform locations first, fragment locations second
-   and geometry locations last. Not sure about the other stages. Note that this
-   workaround doesn't actually do anything, it's just printed as a heads-up
-   for the sleepless nights debugging issues that happen only on Intel. */
+   and geometry locations last. Another case is happening with color for a
+   Flat3D shader --  because a (compiled out / unused) texture matrix was at
+   location 1, setting color to location 2 didn't work, ending up with a
+   Generic error again (driver version 27). Because this is impossible to
+   prevent, the extension is completely disabled on all Intel Windows drivers. */
 "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped",
 #endif
 
@@ -504,9 +506,7 @@ void Context::setupDriverWorkarounds() {
         _setRequiredVersion(ARB::shading_language_420pack, None);
 
     if((detectedDriver() & DetectedDriver::IntelWindows) && isExtensionSupported<Extensions::ARB::explicit_uniform_location>() && !isDriverWorkaroundDisabled("intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped")) {
-        /* Just to have it printed in the log. Ideal would be to have this
-           covered with a minimal repro case but I have better things to do
-           in my life. */
+        _setRequiredVersion(ARB::explicit_uniform_location, None);
     }
     #endif
     #endif
