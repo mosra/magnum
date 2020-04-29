@@ -529,7 +529,7 @@ thing, but if you need to override those, use the `MAGNUM_PLUGINS_DIR`,
 `MAGNUM_PLUGINS_DEBUG_DIR` and `MAGNUM_PLUGINS_RELEASE_DIR` CMake variables.
 Those are empty by default, which means no hardcoded path is used. Another
 option is supplying the plugin search path to the
-@ref Corrade::PluginManager::Manger constructor either using the same CMake
+@ref Corrade::PluginManager::Manager constructor either using the same CMake
 variables (passed through to preprocessor, see @ref cmake) or via any other
 means. All builtin Magnum utilities such as @ref magnum-imageconverter also
 provide a way to override the plugin directory via the `--plugin-dir`

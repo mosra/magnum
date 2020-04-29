@@ -154,7 +154,7 @@ template<class T> class Vector2: public Vector<2, T> {
          * types. @f[
          *      \boldsymbol v_\bot = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
          * @f]
-         * @see @ref cross(),
+         * @see @ref cross(const Vector2<T>&, const Vector2<T>&),
          *      @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref Vector::operator-() const "operator-() const"
          */
