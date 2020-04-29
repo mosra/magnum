@@ -619,7 +619,7 @@ void AbstractShaderProgramGLTest::uniformDoubleMatrix() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    shader.setUniform(shader.matrixUniform, Matrix4x4d::fromDiagonal({0.3, 0.7, 1.0f, 0.25}));
+    shader.setUniform(shader.matrixUniform, Matrix4x4d::fromDiagonal({0.3, 0.7, 1.0, 0.25}));
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
