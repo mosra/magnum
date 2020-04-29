@@ -90,7 +90,7 @@ namespace {
 /* AMD Windows glCreateQueries() works for everything except
    GL_TRANSFORM_FEEDBACK_[STREAM_]OVERFLOW, probably they just forgot to adapt
    it to this new GL 4.6 addition. Calling the non-DSA code path in that case
-   instead. */
+   instead. Similar to "mesa-dsa-createquery-except-pipeline-stats". */
 "amd-windows-dsa-createquery-except-xfb-overflow",
 #endif
 
@@ -108,6 +108,12 @@ namespace {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+/* Mesa glCreateQueries() works for everything except stuff from GL 4.6
+   ARB_pipeline_statistics_query, probably just forgotten. Calling the non-DSA
+   code path in that case instead. Similar to
+   "amd-windows-dsa-createquery-except-xfb-overflow". */
+"mesa-dsa-createquery-except-pipeline-stats",
+
 /* Forward-compatible GL contexts on Mesa still report line width range as
    [1, 7], but setting wide line width fails. According to the specs the max
    value on forward compatible contexts should be 1.0, so patching it. */

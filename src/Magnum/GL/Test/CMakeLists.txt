@@ -96,8 +96,12 @@ if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
 endif()
 
 if(NOT MAGNUM_TARGET_GLES)
+    corrade_add_test(GLPipelineStatisticsQueryTest PipelineStatisticsQueryTest.cpp LIBRARIES MagnumGL)
     corrade_add_test(GLRectangleTextureTest RectangleTextureTest.cpp LIBRARIES MagnumGL)
-    set_target_properties(GLRectangleTextureTest PROPERTIES FOLDER "Magnum/GL/Test")
+    set_target_properties(
+        GLPipelineStatisticsQueryTest
+        GLRectangleTextureTest
+        PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
 if(BUILD_GL_TESTS)
@@ -237,8 +241,12 @@ if(BUILD_GL_TESTS)
     endif()
 
     if(NOT MAGNUM_TARGET_GLES)
+        corrade_add_test(GLPipelineStatisticsQueryGLTest PipelineStatisticsQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLRectangleTextureGLTest RectangleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        set_target_properties(GLRectangleTextureGLTest PROPERTIES FOLDER "Magnum/GL/Test")
+        set_target_properties(
+            GLPipelineStatisticsQueryGLTest
+            GLRectangleTextureGLTest
+            PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(MAGNUM_BUILD_STATIC AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_WINDOWS_RT)

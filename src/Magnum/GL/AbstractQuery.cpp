@@ -71,6 +71,23 @@ void AbstractQuery::createImplementationDSAExceptXfbOverflow() {
     else
         createImplementationDSA();
 }
+
+void AbstractQuery::createImplementationDSAExceptPipelineStats() {
+    if(_target == GL_VERTICES_SUBMITTED ||
+       _target == GL_PRIMITIVES_SUBMITTED ||
+       _target == GL_VERTEX_SHADER_INVOCATIONS ||
+       _target == GL_TESS_CONTROL_SHADER_PATCHES ||
+       _target == GL_TESS_EVALUATION_SHADER_INVOCATIONS ||
+       _target == GL_GEOMETRY_SHADER_INVOCATIONS ||
+       _target == GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED ||
+       _target == GL_FRAGMENT_SHADER_INVOCATIONS ||
+       _target == GL_COMPUTE_SHADER_INVOCATIONS ||
+       _target == GL_CLIPPING_INPUT_PRIMITIVES ||
+       _target == GL_CLIPPING_OUTPUT_PRIMITIVES)
+        createImplementationDefault();
+    else
+        createImplementationDSA();
+}
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL

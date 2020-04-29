@@ -51,8 +51,7 @@ times are reported in nanoseconds.
 @requires_es_extension Extension @gl_extension{EXT,disjoint_timer_query}
 @requires_webgl_extension Extension @webgl_extension{EXT,disjoint_timer_query}
     on WebGL 1, @gl_extension{EXT,disjoint_timer_query_webgl2} on WebGL 2
-
-@see @ref PrimitiveQuery, @ref SampleQuery
+@see @ref PipelineStatisticsQuery, @ref PrimitiveQuery, @ref SampleQuery
 @todo timestamp with glGet + example usage
 @todo @gl_extension{EXT,disjoint_timer_query} --- GL_GPU_DISJOINT_EXT support? where?
 */

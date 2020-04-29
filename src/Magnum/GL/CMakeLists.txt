@@ -109,7 +109,9 @@ set(MagnumGL_PRIVATE_HEADERS
 # Desktop-only stuff
 if(NOT TARGET_GLES)
     list(APPEND MagnumGL_SRCS RectangleTexture.cpp)
-    list(APPEND MagnumGL_HEADERS RectangleTexture.h)
+    list(APPEND MagnumGL_HEADERS
+        PipelineStatisticsQuery.h
+        RectangleTexture.h)
 endif()
 
 # OpenGL ES 3.0 and WebGL 2.0 stuff

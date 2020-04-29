@@ -267,7 +267,7 @@ GLSL 4.60                                   | done
 @gl_extension{ARB,indirect_parameters}      | |
 @gl_extension{ARB,shader_draw_parameters}   | done (shading language only)
 @gl_extension{ARB,shader_group_vote}        | done (shading language only)
-@gl_extension{ARB,pipeline_statistics_query} | |
+@gl_extension{ARB,pipeline_statistics_query} | done
 @gl_extension{ARB,transform_feedback_overflow_query} | done
 @gl_extension{ARB,shader_atomic_counter_ops} | done (shading language only)
 @gl_extension{ARB,gl_spirv}                 | |

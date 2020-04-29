@@ -43,7 +43,10 @@ QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
             createImplementation = &AbstractQuery::createImplementationDSAExceptXfbOverflow;
         } else
         #endif
-        {
+        if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-dsa-createquery-except-pipeline-stats")) {
+            extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+            createImplementation = &AbstractQuery::createImplementationDSAExceptPipelineStats;
+        } else {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
             createImplementation = &AbstractQuery::createImplementationDSA;
         }

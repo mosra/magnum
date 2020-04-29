@@ -44,8 +44,8 @@ namespace Implementation { struct QueryState; }
 /**
 @brief Base class for queries
 
-See @ref PrimitiveQuery, @ref SampleQuery and @ref TimeQuery documentation for
-more information.
+See @ref PipelineStatisticsQuery, @ref PrimitiveQuery, @ref SampleQuery and
+@ref TimeQuery documentation for more information.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
@@ -191,6 +191,7 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL createImplementationDSA();
         void MAGNUM_GL_LOCAL createImplementationDSAExceptXfbOverflow();
+        void MAGNUM_GL_LOCAL createImplementationDSAExceptPipelineStats();
         #endif
 
         ObjectFlags _flags;

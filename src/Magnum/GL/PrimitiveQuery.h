@@ -44,7 +44,8 @@ transform feedback. Example usage:
 
 @snippet MagnumGL.cpp PrimitiveQuery-usage
 
-@see @ref SampleQuery, @ref TimeQuery, @ref TransformFeedback
+@see @ref PipelineStatisticsQuery, @ref SampleQuery, @ref TimeQuery,
+    @ref TransformFeedback
 @requires_gl30 Extension @gl_extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available in OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.

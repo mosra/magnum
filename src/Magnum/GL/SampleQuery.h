@@ -53,7 +53,7 @@ waiting for the result.
 
 @snippet MagnumGL.cpp SampleQuery-conditional-render
 
-@see @ref PrimitiveQuery, @ref TimeQuery
+@see @ref PipelineStatisticsQuery, @ref PrimitiveQuery, @ref TimeQuery
 @requires_gles30 Extension @gl_extension{EXT,occlusion_query_boolean} in
     OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
