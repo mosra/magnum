@@ -924,13 +924,17 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
 std::vector<std::string> Context::extensionStrings() const {
     std::vector<std::string> extensions;
 
+    /* If we have GL 3.0 / GLES 3.0 at least, ask the new way. Otherwise don't
+       even attempt to query GL_NUM_EXTENSIONS as that would cause a GL error
+       on GL 2.1. Happens with Mesa's zink that's just 2.1 currently (Apr 2020)
+       even though for other backends Mesa exposes this. */
     #ifndef MAGNUM_TARGET_GLES2
-    GLint extensionCount = 0;
-    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
     #ifndef MAGNUM_TARGET_GLES3
-    if(extensionCount || isVersionSupported(Version::GL300))
+    if(isVersionSupported(Version::GL300))
     #endif
     {
+        GLint extensionCount = 0;
+        glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
         extensions.reserve(extensionCount);
         for(GLint i = 0; i != extensionCount; ++i)
             extensions.emplace_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
