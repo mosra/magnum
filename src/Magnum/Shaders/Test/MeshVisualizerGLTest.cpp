@@ -1552,11 +1552,11 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    /* Release build has 1 pixel slightly off. Huh. AMD has additional
-       off-by-one errors compared to Intel. If
+    /* Release build has 1 pixel slightly off. Huh. AMD & llvmpipe has
+       additional off-by-one errors compared to Intel. If
        GL_NV_shader_noperspective_interpolation is not supported, the artifacts
        are bigger when wireframe is enabled. */
-    Float maxThreshold = 1.0f, meanThreshold = 0.026f;
+    Float maxThreshold = 10.7f, meanThreshold = 0.279f;
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         /* SwiftShader has a bit more rounding errors */
@@ -1740,7 +1740,7 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
     /* Slight rasterization differences on AMD. If
        GL_NV_shader_noperspective_interpolation is not supported, the artifacts
        are bigger. */
-    Float maxThreshold = 1.334f, meanThreshold = 0.008f;
+    Float maxThreshold = 1.334f, meanThreshold = 0.018f;
     #ifdef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         maxThreshold = 39.0f;

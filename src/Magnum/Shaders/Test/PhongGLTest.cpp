@@ -123,6 +123,7 @@ struct PhongGLTest: GL::OpenGLTester {
 
     -   Mesa Intel
     -   Mesa AMD
+    .   Mesa llvmpipe
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
     -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
@@ -307,8 +308,8 @@ constexpr struct {
         },
     {"diffuse + normal", "instanced-normal.tga", Phong::Flag::NormalTexture,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /* AMD has one off pixel */
-        94.0f, 0.132f,
+        /* AMD has one off pixel, llvmpipe more */
+        94.0f, 0.333f,
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage */
         94.0f, 0.132f,
@@ -952,8 +953,8 @@ void PhongGLTest::renderTexturedNormal() {
        okay. Due to the density of the normal map, SwiftShader has an overally
        consistent off-by-a-bit error. AMD macOS drivers have one pixel off
        due to a rounding error on the edge. Apple A8 has a slightly larger
-       overall difference. */
-    const Float maxThreshold = 191.0f, meanThreshold = 0.438f;
+       overall difference; llvmpipe is off also. */
+    const Float maxThreshold = 191.0f, meanThreshold = 0.918f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
@@ -1067,19 +1068,21 @@ void PhongGLTest::renderShininess() {
         #endif
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader),
-            "SwiftShader has a much larger ring for the owerflown shininess.");
+            "SwiftShader has a much larger ring for the overflown shininess.");
         #endif
         #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali),
-            "ARM Mali has a much larger ring for the owerflown shininess when it's exactly 0.");
+            "ARM Mali has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos,
-            "AMD Mesa drivers have a much larger ring for the owerflown shininess when it's exactly 0.");
+            "AMD Mesa drivers have a much larger ring for the overflown shininess when it's exactly 0.");
+        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("llvmpipe") != std::string::npos,
+            "Mesa llvmpipe drivers have a much larger ring for the overflown shininess.");
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos,
-            "AMD on macOS has a much larger ring for the owerflown shininess when it's exactly 0.");
+            "AMD on macOS has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
@@ -1202,7 +1205,7 @@ void PhongGLTest::renderAlpha() {
        That's okay, as we have only 8bit texture precision. SwiftShader has
        additionally a few minor rounding errors at the edges, Apple A8 a bit
        more. */
-    const Float maxThreshold = 172.667f, meanThreshold = 0.229f;
+    const Float maxThreshold = 172.667f, meanThreshold = 0.385f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 172.667f, meanThreshold = 4.736f;
@@ -1372,7 +1375,7 @@ void PhongGLTest::renderZeroLights() {
        pixels on the edges, caused by matrix multiplication being done in the
        shader and not on the CPU side. Apple A8 sprinkles a bunch of tiny
        differences here and there. */
-    const Float maxThreshold = 139.0f, meanThreshold = 0.140f;
+    const Float maxThreshold = 139.0f, meanThreshold = 0.421f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 139.0f, meanThreshold = 2.896f;

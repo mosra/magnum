@@ -88,6 +88,7 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
 
     -   Mesa Intel
     -   Mesa AMD
+    -   Mesa llvmpipe
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
@@ -305,12 +306,12 @@ void DistanceFieldVectorGLTest::renderDefaults2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 189.0f, 6.1f}));
+        (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
-       all channels. Apple A8 off-by-more. */
-    const Float maxThreshold = 4.0f, meanThreshold = 0.077f;
+       all channels. Apple A8 & llvmpipe off-by-more. */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.583f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -361,12 +362,12 @@ void DistanceFieldVectorGLTest::renderDefaults3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(_testDir, "VectorTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 189.0f, 6.1f}));
+        (DebugTools::CompareImageToFile{_manager, 201.0f, 6.1f}));
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
-       all channels. Apple A8 off-by-more. */
-    const Float maxThreshold = 4.0f, meanThreshold = 0.077f;
+       all channels. Apple A8 and llvmpipe off-by-more. */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.583f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -433,11 +434,11 @@ void DistanceFieldVectorGLTest::render2D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing, Apple A8 a bit
-       more. */
-    const Float maxThreshold = 6.0f, meanThreshold = 0.360f;
+       more, llvmpipe also */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.942f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 17.0f, meanThreshold = 2.386f;
+    const Float maxThreshold = 32.0f, meanThreshold = 2.386f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join({_testDir, "VectorTestFiles", data.file2D}),
@@ -502,11 +503,11 @@ void DistanceFieldVectorGLTest::render3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing plus a bunch of
-       different pixels on primitive edges, Apple A8 a bit more. */
-    const Float maxThreshold = 17.0f, meanThreshold = 0.204f;
+       different pixels on primitive edges, Apple A8 & llvmpipe a bit more. */
+    const Float maxThreshold = 32.0f, meanThreshold = 0.642f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 17.0f, meanThreshold = 1.613f;
+    const Float maxThreshold = 32.0f, meanThreshold = 1.613f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join({_testDir, "VectorTestFiles", data.file3D}),

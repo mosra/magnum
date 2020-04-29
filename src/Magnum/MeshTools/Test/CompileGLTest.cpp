@@ -500,8 +500,9 @@ template<class T> void CompileGLTest::twoDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured2D.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.75f, 0.0906f}));
+            /* SwiftShader has some minor off-by-one precision differences,
+               llvmpipe as well */
+            (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
     }
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -787,8 +788,9 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_COMPARE_WITH(
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
-            /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+            /* SwiftShader has some minor off-by-one precision differences,
+               llvmpipe as well */
+            (DebugTools::CompareImageToFile{_manager, 2.0f, 0.256f}));
     }
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -1023,8 +1025,9 @@ void CompileGLTest::packedAttributes() {
     CORRADE_COMPARE_WITH(
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured3D.tga"),
-        /* SwiftShader has some minor off-by-one precision differences */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
+        /* SwiftShader has some minor off-by-one precision differences,
+           llvmpipe more */
+        (DebugTools::CompareImageToFile{_manager, 2.0f, 0.259f}));
 
     #ifndef MAGNUM_TARGET_GLES2
     _framebuffer.clearColor(1, Vector4ui{27});

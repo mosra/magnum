@@ -88,6 +88,7 @@ struct VectorGLTest: GL::OpenGLTester {
 
     -   Mesa Intel
     -   Mesa AMD
+    -   Mesa llvmpipe
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
@@ -295,8 +296,8 @@ void VectorGLTest::renderDefaults2D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali a bit more of
-       them */
-    const Float maxThreshold = 1.0f, meanThreshold = 0.022f;
+       them, llvmpipe is off-by-two */
+    const Float maxThreshold = 2.0f, meanThreshold = 0.071f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.359f;
@@ -342,8 +343,8 @@ void VectorGLTest::renderDefaults3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali a bit more of
-       them */
-    const Float maxThreshold = 1.0f, meanThreshold = 0.022f;
+       them; llvmpipe is off-by-two */
+    const Float maxThreshold = 2.0f, meanThreshold = 0.071f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.359f;

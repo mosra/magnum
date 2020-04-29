@@ -124,6 +124,7 @@ struct FlatGLTest: GL::OpenGLTester {
 
     -   Mesa Intel
     -   Mesa AMD
+    -   Mesa llvmpipe
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3 (except instancing)
     -   WebGL 1 / 2 (on Mesa Intel) (except instancing)
@@ -687,8 +688,8 @@ void FlatGLTest::renderTextured2D() {
     if(data.flip) pixels = pixels.flipped<0>().flipped<1>();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has minor rounding errors, Apple A8 slightly more */
-    const Float maxThreshold = 2.334f, meanThreshold = 0.023f;
+    /* SwiftShader has minor rounding errors, Apple A8 & llvmpipe a bit more */
+    const Float maxThreshold = 2.334f, meanThreshold = 0.032f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.667f, meanThreshold = 3.254f;
@@ -982,8 +983,8 @@ void FlatGLTest::renderAlpha3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* Minor differences between opaque and diffuse, not sure why. SwiftShader
-       has 5 different pixels on the edges. */
-    const Float maxThreshold = 139.0f, meanThreshold = 0.280f;
+       has 5 different pixels on the edges, llvmpipe some off-by-one errors */
+    const Float maxThreshold = 139.0f, meanThreshold = 0.421f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 139.0f, meanThreshold = 4.587f;
