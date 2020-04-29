@@ -77,7 +77,7 @@ OpenGL function                         | Matching API
 @fn_gl{BindTexture}, \n @fn_gl{BindTextureUnit}, \n @fn_gl{BindTextures} | @ref GL::AbstractTexture::bind()
 @fn_gl{BindTransformFeedback}           | not needed, handled internally in @ref GL::TransformFeedback
 @fn_gl{BindVertexArray}                 | not needed, handled internally in @ref GL::Mesh
-@fn_gl{BindVertexBuffer}, \n `glVertexArrayVertexBuffer()`, \n @fn_gl{BindVertexBuffers}, \n `glVertexArrayVertexBuffers()` | |
+@fn_gl{BindVertexBuffer}, \n `glVertexArrayVertexBuffer()`, \n @fn_gl{BindVertexBuffers}, \n `glVertexArrayVertexBuffers()` | @ref GL::Mesh::addVertexBuffer()
 @fn_gl_extension{BlendBarrier,KHR,blend_equation_advanced} | @ref GL::Renderer::blendBarrier()
 @fn_gl{BlendColor}                      | @ref GL::Renderer::setBlendColor()
 @fn_gl{BlendEquation}, \n `glBlendEquationi()`, \n @fn_gl{BlendEquationSeparate}, \n `glBlendEquationSeparatei()` | @ref GL::Renderer::setBlendEquation()
@@ -407,11 +407,11 @@ OpenGL function                         | Matching API
 @fn_gl{ValidateProgramPipeline}         | |
 @fn_gl{VertexArrayElementBuffer}        | @ref GL::Mesh::setIndexBuffer()
 @fn_gl{VertexAttrib}                    | not supported (@ref opengl-unsupported "details")
-@fn_gl{VertexAttribBinding}, \n `glVertexArrayAttribBinding()` | |
+@fn_gl{VertexAttribBinding}, \n `glVertexArrayAttribBinding()` | @ref GL::Mesh::addVertexBuffer()
 @fn_gl{VertexAttribDivisor} | @ref GL::Mesh::addVertexBufferInstanced()
 @fn_gl{VertexAttribFormat}, \n `glVertexArrayAttribFormat()` | |
 @fn_gl{VertexAttribPointer} | @ref GL::Mesh::addVertexBuffer()
-@fn_gl{VertexBindingDivisor}, \n `glVertexArrayBindingDivisor()` | |
+@fn_gl{VertexBindingDivisor}, \n `glVertexArrayBindingDivisor()` | @ref GL::Mesh::addVertexBufferInstanced()
 @fn_gl{Viewport}                        | @ref GL::DefaultFramebuffer::setViewport(), \n @ref GL::Framebuffer::setViewport()
 @fn_gl{ViewportArray}                   | |
 @fn_gl{ViewportIndexed}                 | |

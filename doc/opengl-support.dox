@@ -250,7 +250,7 @@ GLSL 4.50                                   | done
 @gl_extension{ARB,conditional_render_inverted} | done
 @gl_extension{ARB,cull_distance}            | done
 @gl_extension{ARB,derivative_control}       | done (shading language only)
-@gl_extension{ARB,direct_state_access}      | done for implemented functionality (except VAOs)
+@gl_extension{ARB,direct_state_access}      | done for implemented functionality
 @gl_extension{ARB,get_texture_sub_image}    | done
 @gl_extension{ARB,shader_texture_image_samples} | done (shading language only)
 @gl_extension{ARB,texture_barrier}          | done
