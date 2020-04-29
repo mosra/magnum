@@ -205,7 +205,7 @@ template<> UnsignedLong MAGNUM_GL_EXPORT AbstractQuery::result<UnsignedLong>();
 template<> Long MAGNUM_GL_EXPORT AbstractQuery::result<Long>();
 #endif
 
-inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), _target(other._target) {
+inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._id), _target(other._target), _flags{other._flags} {
     other._id = 0;
 }
 
@@ -213,6 +213,7 @@ inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
     swap(_target, other._target);
+    swap(_flags, other._flags);
     return *this;
 }
 
