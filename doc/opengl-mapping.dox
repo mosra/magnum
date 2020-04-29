@@ -469,10 +469,10 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_3D_TEXTURE_SIZE}, \n @def_gl{MAX_ARRAY_TEXTURE_LAYERS}, \n @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}, \n @def_gl{MAX_RECTANGLE_TEXTURE_SIZE}, \n @def_gl{MAX_TEXTURE_SIZE} | @ref GL::Texture::maxSize(), \n @ref GL::TextureArray::maxSize(), \n @ref GL::CubeMapTexture::maxSize(), \n @ref GL::CubeMapTextureArray::maxSize(), \n @ref GL::RectangleTexture::maxSize(), \n @ref GL::BufferTexture::maxSize(), \n @ref GL::MultisampleTexture::maxSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE} | @ref GL::AbstractShaderProgram::maxAtomicCounterBufferSize()
 @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS} | @ref GL::Buffer::maxAtomicCounterBindings()
-@def_gl{MAX_CLIP_DISTANCES}             | |
+@def_gl{MAX_CLIP_DISTANCES}             | @ref GL::Renderer::maxClipDistances()
 @def_gl{MAX_COLOR_ATTACHMENTS}          | @ref GL::Framebuffer::maxColorAttachments()
 @def_gl{MAX_COLOR_TEXTURE_SAMPLES}, \n @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}, \n @def_gl{MAX_INTEGER_SAMPLES} | @ref GL::AbstractTexture::maxColorSamples(), \n @ref GL::AbstractTexture::maxDepthSamples(), \n @ref GL::AbstractTexture::maxIntegerSamples()
-@def_gl{MAX_COMBINED_CLIP_AND_CULL_DISTANCES} | |
+@def_gl{MAX_COMBINED_CLIP_AND_CULL_DISTANCES} | @ref GL::Renderer::maxCombinedClipAndCullDistances()
 @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES} | @ref GL::AbstractShaderProgram::maxCombinedShaderOutputResources()
 @def_gl_extension{MAX_COMPUTE_FIXED_GROUP_INVOCATIONS,ARB,compute_variable_group_size} | |
 @def_gl_extension{MAX_COMPUTE_FIXED_GROUP_SIZE,ARB,compute_variable_group_size} | |
@@ -482,7 +482,7 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}   | @ref GL::AbstractShaderProgram::maxComputeWorkGroupCount()
 @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS} | @ref GL::AbstractShaderProgram::maxComputeWorkGroupInvocations()
 @def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}    | @ref GL::AbstractShaderProgram::maxComputeWorkGroupSize()
-@def_gl{MAX_CULL_DISTANCES}             | |
+@def_gl{MAX_CULL_DISTANCES}             | @ref GL::Renderer::maxCullDistances()
 @def_gl{MAX_DEBUG_LOGGED_MESSAGES}      | @ref GL::DebugOutput::maxLoggedMessages()
 @def_gl{MAX_DEBUG_MESSAGE_LENGTH}       | @ref GL::DebugOutput::maxMessageLength()
 @def_gl{MAX_DEBUG_GROUP_STACK_DEPTH}    | @ref GL::DebugGroup::maxStackDepth()

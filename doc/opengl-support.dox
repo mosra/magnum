@@ -248,7 +248,7 @@ GLSL 4.50                                   | done
 @gl_extension{ARB,ES3_1_compatibility}      | done
 @gl_extension{ARB,clip_control}             | |
 @gl_extension{ARB,conditional_render_inverted} | done
-@gl_extension{ARB,cull_distance}            | |
+@gl_extension{ARB,cull_distance}            | done
 @gl_extension{ARB,derivative_control}       | done (shading language only)
 @gl_extension{ARB,direct_state_access}      | done for implemented functionality (except VAOs)
 @gl_extension{ARB,get_texture_sub_image}    | done
@@ -448,6 +448,7 @@ Extension                                   | Status
 @gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt} | done
 @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
 @gl_extension{APPLE,texture_format_BGRA8888} | done
+@gl_extension{APPLE,clip_distance}          | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
 @gl_extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
 @gl_extension{EXT,texture_filter_anisotropic} | done
@@ -470,6 +471,7 @@ Extension                                   | Status
 @gl_extension{EXT,sRGB_R8}                  | done
 @gl_extension{EXT,sRGB_RG8}                 | done
 @gl_extension{EXT,polygon_offset_clamp}     | |
+@gl_extension{EXT,clip_cull_distance}       | done
 @gl_extension{EXT,texture_compression_rgtc} | done
 @gl_extension{EXT,texture_compression_bptc} | done
 @gl_extension{EXT,texture_compression_s3tc_srgb} | done
@@ -546,6 +548,7 @@ Extension                                   | Status
 @webgl_extension{EXT,color_buffer_float}    | |
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
+@webgl_extension{EXT,clip_cull_distance}    | done
 @webgl_extension{EXT,draw_buffers_indexed}  | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OVR,multiview2}            | |

@@ -93,6 +93,12 @@ struct RendererState {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     GLint maxPatchVertexCount{};
     #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    GLint maxClipDistances{};
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    GLint maxCullDistances{}, maxCombinedClipAndCullDistances{};
+    #endif
 
     /* Bool parameter is ugly, but this is implementation detail of internal
        API so who cares */

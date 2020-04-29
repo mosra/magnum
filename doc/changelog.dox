@@ -93,6 +93,11 @@ See also:
     @gl_extension{ARB,tessellation_shader} / @gl_extension{EXT,tessellation_shader}
     support (see [mosra/magnum#164](https://github.com/mosra/magnum/issues/164))
 -   Implemented @ref GL::PipelineStatisticsQuery from GL 4.6
+-   Implemented @ref GL:Renderer::Feature::ClipDistance0 through
+    @ref GL:Renderer::Feature::ClipDistance7 and related limit queries as well
+    as exposing the @gl_extension{APPLE,clip_distance} /
+    @gl_extension{EXT,clip_cull_distance} ES and
+    @webgl_extension{EXT,clip_cull_distance} WebGL extensions
 -   Recognizing @gl_extension{AMD,shader_explicit_vertex_parameter} desktop
     and @gl_extension{NV,fragment_shader_barycentric} desktop / ES extensions.
     These add only shading language features.

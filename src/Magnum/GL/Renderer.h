@@ -50,7 +50,6 @@ namespace Implementation { struct RendererState; }
 @todo @gl_extension{ARB,viewport_array}
 @todo `GL_POINT_SIZE_GRANULARITY`, `GL_POINT_SIZE_RANGE` (?)
 @todo `GL_STEREO`, `GL_DOUBLEBUFFER` (?)
-@todo `GL_MAX_CLIP_DISTANCES`...
 */
 class MAGNUM_GL_EXPORT Renderer {
     friend Context;
@@ -103,6 +102,192 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @ref setBlendColor()
              */
             Blending = GL_BLEND,
+
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            /**
+             * Clip geometry against user-defined half-space 0. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 0.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance0 = GL_CLIP_DISTANCE0,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance0 = GL_CLIP_DISTANCE0_APPLE,
+            #else
+            ClipDistance0 = GL_CLIP_DISTANCE0_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 1. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 1.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance1 = GL_CLIP_DISTANCE1,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance1 = GL_CLIP_DISTANCE1_APPLE,
+            #else
+            ClipDistance1 = GL_CLIP_DISTANCE1_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 2. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 2.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance2 = GL_CLIP_DISTANCE2,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance2 = GL_CLIP_DISTANCE2_APPLE,
+            #else
+            ClipDistance2 = GL_CLIP_DISTANCE2_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 3. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 3.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance3 = GL_CLIP_DISTANCE3,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance3 = GL_CLIP_DISTANCE3_APPLE,
+            #else
+            ClipDistance3 = GL_CLIP_DISTANCE3_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 4. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 4.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance4 = GL_CLIP_DISTANCE4,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance4 = GL_CLIP_DISTANCE4_APPLE,
+            #else
+            ClipDistance4 = GL_CLIP_DISTANCE4_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 5. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 5.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance5 = GL_CLIP_DISTANCE5,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance5 = GL_CLIP_DISTANCE5_APPLE,
+            #else
+            ClipDistance5 = GL_CLIP_DISTANCE5_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 6. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 6.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance6 = GL_CLIP_DISTANCE6,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance6 = GL_CLIP_DISTANCE6_APPLE,
+            #else
+            ClipDistance6 = GL_CLIP_DISTANCE6_EXT,
+            #endif
+
+            /**
+             * Clip against user-defined half-space 7. This enables
+             * use of the @glsl gl_ClipDistance[] @ce /
+             * @glsl gl_CullDistance[] @ce GLSL builtin at index 7.
+             * @see @ref maxClipDistances(), @ref maxCullDistances(),
+             *      @ref maxCombinedClipAndCullDistances()
+             * @requires_gl30 Shader-defined clip distances are not available
+             *      in OpenGL 2.1.
+             * @requires_es_extension Extension
+             *      @gl_extension{APPLE,clip_distance} or
+             *      @gl_extension{EXT,clip_cull_distance}
+             * @requires_webgl_extension WebGL 2.0 and extension
+             *      @webgl_extension{EXT,clip_cull_distance}
+             * @m_since_latest
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            ClipDistance7 = GL_CLIP_DISTANCE7,
+            #elif defined(MAGNUM_TARGET_GLES2)
+            ClipDistance7 = GL_CLIP_DISTANCE7_APPLE,
+            #else
+            ClipDistance7 = GL_CLIP_DISTANCE7_EXT,
+            #endif
+            #endif
 
             #ifndef MAGNUM_TARGET_WEBGL
             /**
@@ -754,6 +939,55 @@ class MAGNUM_GL_EXPORT Renderer {
          *      in OpenGL ES.
          */
         static void setPatchDefaultOuterLevel(const Vector4& levels);
+        #endif
+
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /**
+         * @brief Max supported clip distance count
+         * @m_since_latest
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither OpenGL 3.0 nor
+         * @gl_extension{APPLE,clip_distance} /
+         * @gl_extension{EXT,clip_cull_distance} ES extension nor
+         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
+         * available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_CLIP_DISTANCES}
+         * @requires_webgl20 Not defined in WebGL 1.0 builds.
+         */
+        static UnsignedInt maxClipDistances();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Max supported cull distance count
+         * @m_since_latest
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
+         * OpenGL 4.5) nor @gl_extension{EXT,clip_cull_distance} ES /
+         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
+         * available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_CULL_DISTANCES}
+         * @requires_gles30 Not defined in OpenGL ES 2.0 builds.
+         * @requires_webgl20 Not defined in WebGL 1.0 builds.
+         */
+        static UnsignedInt maxCullDistances();
+
+        /**
+         * @brief Max supported combined clip and cull distance count
+         * @m_since_latest
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
+         * OpenGL 4.5) nor @gl_extension{EXT,clip_cull_distance} ES /
+         * @webgl_extension{EXT,clip_cull_distance} WebGL extension is
+         * available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_COMBINED_CLIP_AND_CULL_DISTANCES}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_webgl20 Not defined in WebGL 1.0 builds.
+         */
+        static UnsignedInt maxCombinedClipAndCullDistances();
         #endif
 
         /* Since 1.8.17, the original short-hand group closing doesn't work

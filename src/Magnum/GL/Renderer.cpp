@@ -197,6 +197,87 @@ void Renderer::setPatchDefaultOuterLevel(const Vector4& levels) {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+UnsignedInt Renderer::maxClipDistances() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        return 0;
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::APPLE::clip_distance>())
+        return 0;
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::clip_cull_distance>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current().state().renderer->maxClipDistances;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(
+            #ifndef MAGNUM_TARGET_GLES
+            GL_MAX_CLIP_DISTANCES
+            #elif defined(MAGNUM_TARGET_GLES2)
+            GL_MAX_CLIP_DISTANCES_APPLE
+            #else
+            GL_MAX_CLIP_DISTANCES_EXT
+            #endif
+            , &value);
+
+    return value;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+UnsignedInt Renderer::maxCullDistances() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::cull_distance>())
+        return 0;
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::clip_cull_distance>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current().state().renderer->maxCullDistances;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(
+            #ifndef MAGNUM_TARGET_GLES
+            GL_MAX_CULL_DISTANCES
+            #else
+            GL_MAX_CULL_DISTANCES_EXT
+            #endif
+            , &value);
+
+    return value;
+}
+
+UnsignedInt Renderer::maxCombinedClipAndCullDistances() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::cull_distance>())
+        return 0;
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::clip_cull_distance>())
+        return 0;
+    #endif
+
+    GLint& value = Context::current().state().renderer->maxCombinedClipAndCullDistances;
+
+    /* Get the value, if not already cached */
+    if(value == 0)
+        glGetIntegerv(
+            #ifndef MAGNUM_TARGET_GLES
+            GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES
+            #else
+            GL_MAX_COMBINED_CLIP_AND_CULL_DISTANCES_EXT
+            #endif
+            , &value);
+
+    return value;
+}
+#endif
+
 void Renderer::setScissor(const Range2Di& rectangle) {
     glScissor(rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }

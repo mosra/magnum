@@ -10,6 +10,7 @@ extension ANGLE_instanced_arrays                optional
 extension ANGLE_depth_texture                   optional
 extension APPLE_framebuffer_multisample         optional
 extension APPLE_texture_max_level               optional
+extension APPLE_clip_distance                   optional
 extension ARM_rgba8                             optional
 extension EXT_texture_type_2_10_10_10_REV       optional
 extension EXT_discard_framebuffer               optional

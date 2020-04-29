@@ -266,6 +266,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_compression_bptc),
     #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,clip_cull_distance),
     _extension(EXT,draw_buffers_indexed),
     #endif
     _extension(OES,texture_float_linear),
@@ -309,6 +310,7 @@ constexpr Extension ExtensionList[]{
     _extension(ANGLE,texture_compression_dxt3),
     _extension(ANGLE,texture_compression_dxt5),
     _extension(APPLE,texture_format_BGRA8888),
+    _extension(APPLE,clip_distance),
     _extension(ARM,shader_framebuffer_fetch),
     _extension(ARM,shader_framebuffer_fetch_depth_stencil),
     _extension(EXT,texture_filter_anisotropic),
@@ -334,6 +336,7 @@ constexpr Extension ExtensionList[]{
     #endif
     _extension(EXT,polygon_offset_clamp),
     #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,clip_cull_distance),
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_compression_bptc),
     #endif

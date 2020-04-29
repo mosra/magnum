@@ -296,7 +296,8 @@ namespace ANGLE {
     _extension(10,EXT,texture_compression_rgtc,     GLES200,    None) // #38
     _extension(11,EXT,texture_compression_bptc,     GLES200,    None) // #39
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(12,EXT,draw_buffers_indexed,         GLES300,    None) // #45
+    _extension(12,EXT,clip_cull_distance,           GLES300,    None) // #43
+    _extension(13,EXT,draw_buffers_indexed,         GLES300,    None) // #45
     #endif
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
@@ -359,12 +360,13 @@ namespace ANDROID {
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 11,APPLE,texture_max_level,         GLES200, GLES300) // #80
     #endif
+    _extension( 12,APPLE,clip_distance,             GLES200,    None) // #193
 } namespace ARM {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 12,ARM,rgba8,                       GLES200, GLES300) // #82
+    _extension( 13,ARM,rgba8,                       GLES200, GLES300) // #82
     #endif
-    _extension( 13,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
-    _extension( 14,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
+    _extension( 14,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
+    _extension( 15,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
 } namespace EXT {
     _extension( 19,EXT,texture_filter_anisotropic,  GLES200,    None) // #41
     #ifdef MAGNUM_TARGET_GLES2
@@ -437,12 +439,13 @@ namespace ANDROID {
     #endif
     _extension( 64,EXT,polygon_offset_clamp,        GLES200,    None) // #252
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 65,EXT,texture_compression_rgtc,    GLES300,    None) // #286
-    _extension( 66,EXT,texture_compression_bptc,    GLES300,    None) // #287
+    _extension( 65,EXT,clip_cull_distance,          GLES300,    None) // #257
+    _extension( 66,EXT,texture_compression_rgtc,    GLES300,    None) // #286
+    _extension( 67,EXT,texture_compression_bptc,    GLES300,    None) // #287
     #endif
-    _extension( 67,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    _extension( 68,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
 } namespace IMG {
-    _extension( 68,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
+    _extension( 69,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
 } namespace KHR {
     _extension( 70,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 71,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

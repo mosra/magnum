@@ -417,6 +417,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(GL::Mesh::maxElementsVertices())
     #endif
     _lvec(GL::Renderer::lineWidthRange())
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    _l(GL::Renderer::maxClipDistances())
+    #endif
     _l(GL::Renderbuffer::maxSize())
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     _l(GL::Renderbuffer::maxSamples())
@@ -458,6 +461,24 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::blend_func_extended)
 
         _l(GL::AbstractFramebuffer::maxDualSourceDrawBuffers())
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(c.isExtensionSupported<GL::Extensions::ARB::cull_distance>())
+    #else
+    if(c.isExtensionSupported<GL::Extensions::EXT::clip_cull_distance>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::cull_distance)
+        #else
+        _h(EXT::clip_cull_distance)
+        #endif
+
+        _l(GL::Renderer::maxCullDistances())
+        _l(GL::Renderer::maxCombinedClipAndCullDistances())
     }
     #endif
 
