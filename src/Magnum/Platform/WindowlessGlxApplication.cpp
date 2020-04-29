@@ -32,10 +32,47 @@
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
 
-/* Saner way to define the None Xlib macro (anyway, FUCK YOU XLIB) */
-namespace { enum { None = 0L }; }
+/* Saner way to define the insane Xlib macros (anyway, FUCK YOU XLIB) */
+namespace { enum { None = 0, Success = 0 }; }
 
 namespace Magnum { namespace Platform {
+
+namespace {
+
+/*
+    Mandatory reading -- I hate Xlib and so should you,
+        https://www.remlab.net/op/xlib.shtml
+
+    By default, Xlib just hard exits on an error, which is not what we want
+    when we need fallback context creation when core context creation fails. To
+    override that, we need to set up an error handler, but of course the
+    callback doesn't give us any user pointer, so we need to use a global to
+    save the state passed to it. Essential code to handle this taken from GLFW:
+    https://github.com/glfw/glfw/blob/e65de2941c056ee5833b4dab3db36b297b53aa14/src/x11_init.c#L889-L920
+*/
+Int xlibErrorCode;
+Display* xlibDisplay;
+struct XlibErrorHandler {
+    explicit XlibErrorHandler(Display* const display) {
+        xlibErrorCode = Success;
+        xlibDisplay = display;
+        XSetErrorHandler([](Display* const display, XErrorEvent* const event) {
+            if(xlibDisplay != display) /* Why this? */
+                return 0;
+
+            xlibErrorCode = event->error_code;
+            return 0;
+        });
+    }
+
+    ~XlibErrorHandler() {
+        /* Synchronize to make sure all commands are processed */
+        XSync(xlibDisplay, False);
+        XSetErrorHandler(nullptr);
+    }
+};
+
+}
 
 WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configuration& configuration, GLContext* const magnumContext) {
     _display = XOpenDisplay(nullptr);
@@ -94,18 +131,31 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         #endif
         0
     };
-    _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, contextAttributes);
+
+    {
+        XlibErrorHandler eh{_display};
+        _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, contextAttributes);
+    }
 
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1 if core context creation fails */
     if(!_context) {
-        Warning() << "Platform::WindowlessGlxContext: cannot create core context, falling back to compatibility context";
+        Warning w;
+        w << "Platform::WindowlessGlxContext: cannot create core context, falling back to compatibility context";
+        if(xlibErrorCode != Success) {
+            char buffer[256];
+            XGetErrorText(_display, xlibErrorCode, buffer, sizeof(buffer));
+            w << Debug::nospace << ":" << buffer;
+        }
 
         const GLint fallbackContextAttributes[] = {
             GLX_CONTEXT_FLAGS_ARB, GLint(flags),
             0
         };
-        _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
+        {
+            XlibErrorHandler eh{_display};
+            _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
+        }
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
        drivers on Linux. Instead of creating forward-compatible context with
@@ -142,7 +192,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
                 GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
                 0
             };
-            _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
+            {
+                XlibErrorHandler eh{_display};
+                _context = glXCreateContextAttribsARB(_display, configs[0], configuration.sharedContext(), True, fallbackContextAttributes);
+            }
         }
 
         /* Revert back the old context */
@@ -157,8 +210,15 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
 
     XFree(configs);
 
-    if(!_context)
-        Error() << "Platform::WindowlessGlxContext: cannot create context";
+    if(!_context) {
+        Error e;
+        e << "Platform::WindowlessGlxContext: cannot create context";
+        if(xlibErrorCode != Success) {
+            char buffer[256];
+            XGetErrorText(_display, xlibErrorCode, buffer, sizeof(buffer));
+            e << Debug::nospace << ":" << buffer;
+        }
+    }
 }
 
 WindowlessGlxContext::WindowlessGlxContext(WindowlessGlxContext&& other): _display{other._display}, _pbuffer{other._pbuffer}, _context{other._context} {

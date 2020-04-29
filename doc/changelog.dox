@@ -405,6 +405,9 @@ See also:
     framebuffer degrading to 16-bit colors on some platforms (see
     [mosra/magnum-integration#59](https://github.com/mosra/magnum-integration/issues/59))
 -   Added @ref Platform::BasicScreenedApplication::globalBeforeDrawEvent()
+-   @ref Platform::WindowlessGlxApplication now handles `GLXBadFBConfig` errors
+    gracefully, making the fallback compatibility context creation work even in
+    those cases. This makes it work with Mesa's Zink GL-over-Vulkan driver.
 
 @subsubsection changelog-latest-changes-trade Trade library
 
