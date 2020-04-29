@@ -23,6 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if defined(INSTANCED_OBJECT_ID) && !defined(GL_ES) && !defined(NEW_GLSL)
+#extension GL_EXT_gpu_shader4: require
+#endif
+
 #ifndef NEW_GLSL
 #define in attribute
 #define out varying

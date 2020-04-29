@@ -198,9 +198,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
          * Used only if @ref Flag::InstancedObjectId is set.
-         * @requires_gles30 Object ID output requires integer buffer
-         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
-         *      1.0.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
          */
         typedef typename Generic<dimensions>::ObjectId ObjectId;
         #endif
@@ -251,9 +251,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * single-component unsigned integral attachment. Writes the value
              * set in @ref setObjectId() there, see
              * @ref Shaders-Phong-object-id for more information.
-             * @requires_gles30 Object ID output requires integer buffer
-             *      attachments, which are not available in OpenGL ES 2.0 or
-             *      WebGL 1.0.
+             * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
+             *      1.0.
              * @m_since{2019,10}
              */
             ObjectIdOutput = Generic<dimensions>::ObjectIdOutput
@@ -305,9 +306,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
             /**
              * Enable object ID output. See @ref Shaders-Flat-object-id for
              * more information.
-             * @requires_gles30 Object ID output requires integer buffer
-             *      attachments, which are not available in OpenGL ES 2.0 or
-             *      WebGL 1.0.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
+             *      1.0.
              * @m_since{2019,10}
              */
             ObjectId = 1 << 4,
@@ -318,9 +320,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * the per-vertex ID and ID coming from @ref setObjectId().
              * Implicitly enables @ref Flag::ObjectId. See
              * @ref Shaders-Flat-object-id for more information.
-             * @requires_gles30 Object ID output requires integer buffer
-             *      attachments, which are not available in OpenGL ES 2.0 or
-             *      WebGL 1.0.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
+             *      1.0.
              * @m_since_latest
              */
             InstancedObjectId = (1 << 5)|ObjectId,
@@ -473,9 +476,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * @ref Shaders-Flat-object-id for more information. Default is
          * @cpp 0 @ce. If @ref Flag::InstancedObjectId is enabled as well, this
          * value is combined with ID coming from the @ref ObjectId attribute.
-         * @requires_gles30 Object ID output requires integer buffer
-         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
-         *      1.0.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
          */
         Flat<dimensions>& setObjectId(UnsignedInt id);
         #endif

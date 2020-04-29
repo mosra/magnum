@@ -247,9 +247,9 @@ template<UnsignedInt dimensions> struct Generic {
         /**
          * Object ID shader output. Expects a single-component unsigned
          * integral attachment.
-         * @requires_gles30 Object ID output requires integer buffer
-         *      attachments, which are not available in OpenGL ES 2.0 or
-         *      WebGL 1.0.
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
          */
         ObjectIdOutput = 1
         #endif
@@ -339,9 +339,9 @@ template<UnsignedInt dimensions> struct Generic {
      * This attribute conflicts with @ref Bitangent, if you want to use both
      * instanced object ID and bitangents, you need to reconstruct them from
      * @ref Tangent4 instead.
-     *
-     * @requires_gles30 Object ID output requires integer attributes, which are
-     *      not available in OpenGL ES 2.0 or WebGL 1.0.
+     * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+     * @requires_gles30 Object ID output requires integer support in shaders,
+     *      which is not available in OpenGL ES 2.0 or WebGL 1.0.
      */
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif

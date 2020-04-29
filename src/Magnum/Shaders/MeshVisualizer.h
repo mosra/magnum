@@ -145,10 +145,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
          * Used only if @ref Flag::InstancedObjectId is set.
-         * @requires_gles30 Object ID input requires integer attributes, which
-         *      are not available in OpenGL ES 2.0.
-         * @requires_webgl20 Object ID input requires integer attributes, which
-         *      are not available in WebGL 1.0.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
          */
         typedef Generic3D::ObjectId ObjectId;
         #endif
@@ -558,10 +557,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
          * Used only if @ref Flag::InstancedObjectId is set.
-         * @requires_gles30 Object ID input requires integer attributes, which
-         *      are not available in OpenGL ES 2.0.
-         * @requires_webgl20 Object ID input requires integer attributes, which
-         *      are not available in WebGL 1.0.
+         * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+         * @requires_gles30 Object ID output requires integer support in
+         *      shaders, which is not available in OpenGL ES 2.0 or WebGL 1.0.
          */
         typedef Generic3D::ObjectId ObjectId;
         #endif
@@ -609,8 +607,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * Visualize instanced object ID. You need to provide the
              * @ref ObjectId attribute in the mesh. Mutually exclusive with
              * @ref Flag::PrimitiveId.
-             * @requires_gles30 Object ID input requires integer attributes,
-             *      which are not available in OpenGL ES 2.0 or WebGL 1.0.
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Object ID output requires integer support in
+             *      shaders, which is not available in OpenGL ES 2.0 or WebGL
+             *      1.0.
              * @m_since_latest
              */
             InstancedObjectId = 1 << 2,
