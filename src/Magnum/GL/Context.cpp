@@ -333,6 +333,10 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_sRGB_RG8),
     #endif
     _extension(EXT,polygon_offset_clamp),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_compression_rgtc),
+    _extension(EXT,texture_compression_bptc),
+    #endif
     _extension(EXT,texture_compression_s3tc_srgb),
     _extension(IMG,texture_compression_pvrtc),
     _extension(KHR,texture_compression_astc_hdr),
