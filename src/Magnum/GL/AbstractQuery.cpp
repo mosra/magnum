@@ -49,7 +49,6 @@ AbstractQuery::~AbstractQuery() {
     #else
     glDeleteQueriesEXT(1, &_id);
     #endif
-    _flags |= ObjectFlag::Created;
 }
 
 void AbstractQuery::createImplementationDefault() {
@@ -63,6 +62,7 @@ void AbstractQuery::createImplementationDefault() {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractQuery::createImplementationDSA() {
     glCreateQueries(_target, 1, &_id);
+    _flags |= ObjectFlag::Created;
 }
 
 void AbstractQuery::createImplementationDSAExceptXfbOverflow() {
