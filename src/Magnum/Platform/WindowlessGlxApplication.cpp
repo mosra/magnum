@@ -85,9 +85,13 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         return;
     }
 
-    /* Choose config */
+    /* Choose a config that supports a pbuffer (by default it's GLX_WINDOW_BIT
+       which we don't need at all) */
     int configCount = 0;
-    constexpr static const int fbAttributes[] = { None };
+    constexpr static const int fbAttributes[] = {
+        GLX_DRAWABLE_TYPE, GLX_PBUFFER_BIT,
+        None
+    };
     GLXFBConfig* configs = glXChooseFBConfig(_display, DefaultScreen(_display), fbAttributes, &configCount);
     if(!configCount) {
         Error() << "Platform::WindowlessGlxContext: no supported framebuffer configuration found";
