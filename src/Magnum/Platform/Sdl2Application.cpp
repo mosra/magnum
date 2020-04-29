@@ -572,7 +572,9 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-        /** @todo or keep the fwcompat? */
+        /* Discard the ForwardCompatible flag for the fallback. Having it set
+           makes the fallback context creation fail on Mesa's Zink (which is
+           just 2.1) and I assume on others as well. */
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags) & int(~GLConfiguration::Flag::ForwardCompatible));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),

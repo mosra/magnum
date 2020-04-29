@@ -149,7 +149,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         }
 
         const GLint fallbackContextAttributes[] = {
-            GLX_CONTEXT_FLAGS_ARB, GLint(flags),
+            /* Discard the ForwardCompatible flag for the fallback. Having it
+               set makes the fallback context creation fail on Mesa's Zink
+               (which is just 2.1) and I assume on others as well. */
+            GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
             0
         };
         {
@@ -188,7 +191,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
             /* Destroy the core context and create a compatibility one */
             glXDestroyContext(_display, _context);
             const GLint fallbackContextAttributes[] = {
-                /** @todo keep the fwcompat? */
+                /* Discard the ForwardCompatible flag for the fallback.
+                   Compared to the above case of a 2.1 fallback it's not really
+                   needed here (AFAIK it works in both cases), but let's be
+                   consistent. */
                 GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
                 0
             };

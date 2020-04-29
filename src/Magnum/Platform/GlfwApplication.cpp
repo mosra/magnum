@@ -527,7 +527,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
-        /** @todo or keep the fwcompat? */
+        /* Discard the ForwardCompatible flag for the fallback. Having it set
+           makes the fallback context creation fail on Mesa's Zink (which is
+           just 2.1) and I assume on others as well. */
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
 
         _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
