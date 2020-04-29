@@ -1,3 +1,5 @@
+#extension GL_ARB_gpu_shader_fp64: require
+
 uniform double multiplier;
 uniform dvec4 color;
 uniform dvec4 additions[3];

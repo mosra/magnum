@@ -558,8 +558,8 @@ struct MyDoubleShader: AbstractShaderProgram {
 MyDoubleShader::MyDoubleShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
-    Shader vert(Version::GL400, Shader::Type::Vertex);
-    Shader frag(Version::GL400, Shader::Type::Fragment);
+    Shader vert(Version::GL320, Shader::Type::Vertex);
+    Shader frag(Version::GL320, Shader::Type::Fragment);
     vert.addSource(rs.get("MyDoubleShader.vert"));
     frag.addSource(rs.get("MyDoubleShader.frag"));
 
