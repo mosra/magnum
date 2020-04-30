@@ -961,10 +961,12 @@ void FrameProfilerTest::gl() {
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
     CORRADE_COMPARE(profiler.measurementCount(), data.measurementCount);
 
+    /* MSVC 2015 needs the {} */
     for(auto value: {GLFrameProfiler::Value::CpuDuration,
-                     GLFrameProfiler::Value::FrameTime})
+                     GLFrameProfiler::Value::FrameTime}) {
         if(data.values & value)
             CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
+    }
 
     profiler.beginFrame();
     Utility::System::sleep(1);
