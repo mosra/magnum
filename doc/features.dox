@@ -37,6 +37,7 @@ necessary to read through everything, pick only what you need.
 -   @subpage transformations --- @copybrief transformations
 -   @subpage animation --- @copybrief animation
 -   @subpage plugins --- @copybrief plugins
+-   @subpage blob --- @copybrief blob
 -   @subpage opengl-wrapping --- @copybrief opengl-wrapping
 -   @subpage shaders --- @copybrief shaders
 -   @subpage scenegraph --- @copybrief scenegraph

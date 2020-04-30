@@ -80,6 +80,8 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
         plugin = "Ac3dImporter";
     else if(Utility::String::endsWith(normalized, ".blend"))
         plugin = "BlenderImporter";
+    else if(Utility::String::endsWith(normalized, ".blob"))
+        plugin = "MagnumImporter";
     else if(Utility::String::endsWith(normalized, ".bvh"))
         plugin = "BvhImporter";
     else if(Utility::String::endsWith(normalized, ".csm"))

@@ -28,7 +28,6 @@ find_package(Corrade REQUIRED PluginManager)
 set(MagnumTrade_SRCS
     AbstractMaterialData.cpp
     ArrayAllocator.cpp
-    Data.cpp
     LightData.cpp
     MeshObjectData2D.cpp
     MeshObjectData3D.cpp
@@ -38,8 +37,10 @@ set(MagnumTrade_SRCS
 set(MagnumTrade_GracefulAssert_SRCS
     AbstractImageConverter.cpp
     AbstractImporter.cpp
+    AbstractSceneConverter.cpp
     AnimationData.cpp
     CameraData.cpp
+    Data.cpp
     ImageData.cpp
     MeshData.cpp
     ObjectData2D.cpp
@@ -50,6 +51,7 @@ set(MagnumTrade_HEADERS
     AbstractImporter.h
     AbstractImageConverter.h
     AbstractMaterialData.h
+    AbstractSceneConverter.h
     AnimationData.h
     ArrayAllocator.h
     CameraData.h

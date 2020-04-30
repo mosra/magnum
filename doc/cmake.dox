@@ -246,6 +246,8 @@ dependencies, you need to find the dependency and then link to it.
     plugin
 -   `AnyImageImporter` --- @ref Trade::AnyImageImporter "AnyImageImporter"
     plugin
+-   `AnySceneConverter` --- @ref Trade::AnySceneConverter "AnySceneConverter"
+    plugin
 -   `AnySceneImporter` --- @ref Trade::AnySceneImporter "AnySceneImporter"
     plugin
 -   `MagnumFont` --- @ref Text::MagnumFont "MagnumFont" plugin

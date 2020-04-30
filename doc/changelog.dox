@@ -72,6 +72,7 @@ See also:
 
 -   New @ref DebugTools::ColorMap namespace containing a few presets for
     gradient visualization
+-   New @ref DebugTools::FrameProfiler utility for CPU and GPU profiling
 
 @subsubsection changelog-latest-new-gl GL library
 
@@ -269,6 +270,11 @@ See also:
 -   New @ref magnum-sceneconverter "magnum-sceneconverter" tool, similar to
     @ref magnum-imageconverter "magnum-imageconverter" but suited for general
     scene formats
+-   New @ref Trade::AbstractSceneConverter plugin interface and an
+    @ref Trade::AnySceneConverter "AnySceneConverter" plugin
+-   Efficient and extensible memory-mappable serialization format for binary
+    data. See @ref blob for an introduction, see also
+    [mosra/magnum#427](https://github.com/mosra/magnum/pull/427).
 -   Ability to import image mip levels via an additional parameter in
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
@@ -630,6 +636,8 @@ See also:
     This also means it's no longer
     possible to override equality comparison epsilons at compile time, but that
     was a rarely (if ever) used feature.
+-   @cpp DebugTools::Profiler @ce is obsolete, replaced with a much more
+    flexible and extensible @ref DebugTools::FrameProfiler
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

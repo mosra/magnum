@@ -42,6 +42,7 @@ namespace Magnum { namespace Trade {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImageConverter;
 class AbstractImporter;
+class AbstractSceneConverter;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
@@ -61,6 +62,10 @@ class CameraData;
 
 enum class DataFlag: UnsignedByte;
 typedef Containers::EnumSet<DataFlag> DataFlags;
+struct DataChunkHeader;
+class DataChunk;
+enum class DataChunkSignature: UnsignedInt;
+enum class DataChunkType: UnsignedInt;
 
 template<UnsignedInt> class ImageData;
 typedef ImageData<1> ImageData1D;

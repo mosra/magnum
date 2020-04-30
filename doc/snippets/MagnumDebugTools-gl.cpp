@@ -37,6 +37,7 @@
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/SampleQuery.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Range.h"
@@ -46,6 +47,10 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
+#endif
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+#include "Magnum/DebugTools/FrameProfiler.h"
 #endif
 
 using namespace Magnum;
@@ -103,6 +108,33 @@ new DebugTools::ForceRenderer3D(manager, *object, {0.3f, 1.5f, -0.7f}, force,
 /* [ForceRenderer] */
 }
 
+#ifndef MAGNUM_TARGET_GLES
+{
+/* [FrameProfiler-setup-delayed] */
+GL::SampleQuery queries[3]{
+    GL::SampleQuery{GL::SampleQuery::Target::SamplesPassed},
+    GL::SampleQuery{GL::SampleQuery::Target::SamplesPassed},
+    GL::SampleQuery{GL::SampleQuery::Target::SamplesPassed}
+};
+DebugTools::FrameProfiler profiler{{
+    DebugTools::FrameProfiler::Measurement{"Samples",
+        DebugTools::FrameProfiler::Units::Count,
+        UnsignedInt(Containers::arraySize(queries)),
+        [](void* state, UnsignedInt current) {
+            static_cast<GL::SampleQuery*>(state)[current].begin();
+        },
+        [](void* state, UnsignedInt current) {
+            static_cast<GL::SampleQuery*>(state)[current].end();
+        },
+        [](void* state, UnsignedInt previous, UnsignedInt) {
+            return static_cast<GL::SampleQuery*>(state)[previous]
+                .result<UnsignedLong>();
+        }, queries}
+}, 50};
+/* [FrameProfiler-setup-delayed] */
+}
+#endif
+
 {
 SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
 /* [ObjectRenderer] */
@@ -116,6 +148,15 @@ manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
 new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 /* [ObjectRenderer] */
 }
+
+{
+/* [GLFrameProfiler-usage] */
+DebugTools::GLFrameProfiler profiler{
+    DebugTools::GLFrameProfiler::Value::FrameTime|
+    DebugTools::GLFrameProfiler::Value::GpuDuration, 50};
+/* [GLFrameProfiler-usage] */
+}
+
 {
 GL::Texture2D texture;
 Range2Di rect;

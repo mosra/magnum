@@ -25,9 +25,16 @@
 
 #include "Data.h"
 
+#include <cctype>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.hpp>
 
 namespace Magnum { namespace Trade {
+
+static_assert(sizeof(DataChunkHeader) == (sizeof(void*) == 4 ? 20 : 24),
+    "DataChunkHeader has unexpected size");
+static_assert(alignof(DataChunkHeader) == sizeof(std::size_t),
+    "DataChunkHeader has unexpected alignment");
 
 Debug& operator<<(Debug& debug, const DataFlag value) {
     debug << "Trade::DataFlag" << Debug::nospace;
@@ -48,6 +55,93 @@ Debug& operator<<(Debug& debug, const DataFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::DataFlags{}", {
         DataFlag::Owned,
         DataFlag::Mutable});
+}
+
+namespace {
+    Debug& printFourCC(Debug& debug, UnsignedInt value, const char* name) {
+        debug << name << Debug::nospace;
+
+        for(std::size_t i = 0; i != 4; ++i) {
+            if(i) debug << Debug::nospace << ",";
+
+            const int c = value & 255;
+            if(std::isprint(c)) {
+                const char data[] = {'\'', char(c), '\'', '\0'};
+                debug << data;
+            } else {
+                debug << reinterpret_cast<void*>(c);
+            }
+
+            value >>= 8;
+        }
+
+        return debug << Debug::nospace << ")";
+    }
+}
+
+Debug& operator<<(Debug& debug, const DataChunkType value) {
+    return printFourCC(debug, Containers::enumCastUnderlyingType(value), "Trade::DataChunkType(");
+}
+
+Debug& operator<<(Debug& debug, const DataChunkSignature value) {
+    return printFourCC(debug, Containers::enumCastUnderlyingType(value), "Trade::DataChunkSignature(");
+}
+
+namespace {
+    constexpr DataChunkHeader DataChunkHeaderPrefix{
+        128, {'\x0a'}, {'\x0d', '\x0a'}, DataChunkSignature::Current, 0, 0,
+        /* Type and size isn't checked when validating and gets overwritten
+           when serializing */
+        DataChunkType{}, 0
+    };
+
+    static_assert(DataChunkHeaderPrefix.version & 0x80,
+        "version needs the high bit set to prevent detection as a text file");
+}
+
+bool isDataChunk(Containers::ArrayView<const void> data) {
+    return data && data.size() >= sizeof(DataChunkHeader) &&
+        std::memcmp(data.data(), &DataChunkHeaderPrefix, 10) == 0 &&
+        reinterpret_cast<const DataChunkHeader*>(data.data())->size <= data.size();
+}
+
+const DataChunkHeader* dataChunkHeaderDeserialize(const Containers::ArrayView<const void> data) {
+    if(data.size() < sizeof(DataChunkHeader)) {
+        Error{} << "Trade::dataChunkHeaderDeserialize(): expected at least" << sizeof(DataChunkHeader) << "bytes for a header but got" << data.size();
+        return nullptr;
+    }
+
+    const auto& header = *reinterpret_cast<const DataChunkHeader*>(data.data());
+    if(header.version != DataChunkHeaderPrefix.version) {
+        Error{} << "Trade::dataChunkHeaderDeserialize(): expected version" << DataChunkHeaderPrefix.version << "but got" << header.version;
+        return nullptr;
+    }
+    if(header.signature != DataChunkSignature::Current) {
+        Error{} << "Trade::dataChunkHeaderDeserialize(): expected signature" << DataChunkSignature::Current << "but got" << header.signature;
+        return nullptr;
+    }
+    if(std::memcmp(data.data(), &DataChunkHeaderPrefix, 10) != 0) {
+        Error{} << "Trade::dataChunkHeaderDeserialize(): invalid header check bytes";
+        return nullptr;
+    }
+    if(header.size > data.size()) {
+        Error{} << "Trade::dataChunkHeaderDeserialize(): expected at least" << header.size << "bytes but got" << data.size();
+        return nullptr;
+    }
+
+    return reinterpret_cast<const DataChunkHeader*>(data.data());
+}
+
+std::size_t dataChunkHeaderSerializeInto(const Containers::ArrayView<char> out, const DataChunkType type, const UnsignedShort typeVersion) {
+    CORRADE_ASSERT(out.size() >= sizeof(DataChunkHeader),
+        "Trade::dataChunkHeaderSerializeInto(): data too small, expected at least" << sizeof(DataChunkHeader) << "bytes but got" << out.size(), {});
+
+    auto& header = *reinterpret_cast<DataChunkHeader*>(out.data());
+    header = DataChunkHeaderPrefix;
+    header.typeVersion = typeVersion;
+    header.type = type;
+    header.size = out.size();
+    return sizeof(DataChunkHeader);
 }
 
 namespace Implementation {

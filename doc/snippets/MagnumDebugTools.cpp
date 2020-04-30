@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <chrono>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -31,6 +32,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/DebugTools/FrameProfiler.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
@@ -101,5 +103,62 @@ CORRADE_COMPARE_WITH(actual.pixels<Color3ub>().flipped<0>(), expected,
 }
 };
 
-/* To prevent macOS ranlib complaining that there are no symbols */
-int main() {}
+struct MyApp {
+    void drawEvent();
+    void drawEventAgain();
+    void swapBuffers();
+    void redraw();
+
+    DebugTools::FrameProfiler _profiler;
+};
+
+/* [FrameProfiler-usage] */
+void MyApp::drawEvent() {
+    _profiler.beginFrame();
+
+    // actual drawing code …
+
+    _profiler.endFrame();
+
+    // possibly other code (such as UI) you don't want to have included in the
+    // measurements …
+
+    swapBuffers();
+    redraw();
+}
+/* [FrameProfiler-usage] */
+
+void MyApp::drawEventAgain() {
+/* [FrameProfiler-usage-console] */
+    _profiler.endFrame();
+    _profiler.printStatistics(10);
+
+    swapBuffers();
+    if(_profiler.isEnabled()) redraw();
+}
+/* [FrameProfiler-usage-console] */
+
+int main() {
+{
+/* [FrameProfiler-setup-immediate] */
+using std::chrono::high_resolution_clock;
+
+high_resolution_clock::time_point frameBeginTime;
+DebugTools::FrameProfiler profiler{{
+    DebugTools::FrameProfiler::Measurement{"CPU time",
+        DebugTools::FrameProfiler::Units::Nanoseconds,
+        [](void* state) {
+            *static_cast<high_resolution_clock::time_point*>(state)
+                = high_resolution_clock::now();
+        },
+        [](void* state) {
+            return UnsignedLong(
+                std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    *static_cast<high_resolution_clock::time_point*>(state)
+                    - high_resolution_clock::now()).count());
+        }, &frameBeginTime}
+}, 50};
+/* [FrameProfiler-setup-immediate] */
+}
+
+}

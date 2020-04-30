@@ -650,6 +650,8 @@ default.
     building of the @ref Trade library.
 -   `WITH_ANYIMAGEIMPORTER` --- Build the @ref Trade::AnyImageImporter "AnyImageImporter"
     plugin. Enables also building of the @ref Trade library.
+-   `WITH_ANYSCENECONVERTER` --- Build the @ref Trade::AnySceneConverter "AnySceneConverter"
+    plugin. Enables also building of the @ref Trade library.
 -   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
     plugin. Enables also building of the @ref Trade library.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
