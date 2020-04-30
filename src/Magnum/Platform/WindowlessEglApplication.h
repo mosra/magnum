@@ -132,6 +132,9 @@ class WindowlessEglContext {
         EGLContext glContext() { return _context; }
 
     private:
+        /* Stores whether the EGL context is shared or not */
+    	bool _sharedContext = false;
+    	
         EGLDisplay _display{};
         EGLContext _context{};
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)

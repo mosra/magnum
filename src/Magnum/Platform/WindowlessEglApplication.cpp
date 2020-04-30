@@ -83,6 +83,8 @@ bool extensionSupported(const char* const extensions, Containers::ArrayView<cons
 
 WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     #ifndef MAGNUM_TARGET_WEBGL
+    
+     
     /* If relevant extensions are supported, try to find some display using
        those APIs, as that works reliably also when running headless. This
        would ideally use EGL 1.5 APIs but since we still want to support
@@ -272,7 +274,9 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         contextFlags = EGL_NONE;
     }
     #endif
-
+    
+    if(configuration.sharedContext() != EGL_NO_CONTEXT) _sharedContext = true; 
+    
     if(!(_context = eglCreateContext(_display, config,
         #ifndef MAGNUM_TARGET_WEBGL
         configuration.sharedContext(),
@@ -309,7 +313,17 @@ WindowlessEglContext::~WindowlessEglContext() {
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(_surface) eglDestroySurface(_display, _surface);
     #endif
-    if(_display) eglTerminate(_display);
+    
+    /**
+     * From Khronos, `Multiple calls made to eglGetPlatformDisplayEXT with the same <platform> 
+     * and <native_display> will return the same EGLDisplay handle.` This makes a problem when 
+     * the context is shared with another one, because both shares the same EGLDisplay.
+     * To avoid errors when trying to make current the other context (EGL_NOT_INITIALIZED) 
+     * we don't terminate the shared display.
+     * It is then the user's responsaibility to first kill the shared EGL instance 
+     * (which won't terminate the display), and then main one, killing everything.
+     */
+    if(_sharedContext && _display) eglTerminate(_display);
 }
 
 WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext && other) {
