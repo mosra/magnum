@@ -276,16 +276,21 @@ class WindowlessEglContext::Configuration {
          * @m_since_latest
          *
          * When set, the created context will share a subset of OpenGL objects
-         * with @p context, instead of being independent. Many caveats and
+         * with @p context whose associated display is @p display, instead of being independent. 
+         * Many caveats and
          * limitations apply to shared OpenGL contexts, please consult the
          * OpenGL specification for details. Default is `EGL_NO_CONTEXT`, i.e.
          * no sharing.
+         *
+         * @note @p display must be provided to avoid errors on destruction, since 
+         * the display is shared among shared-context on EGL.
          * @see @ref WindowlessEglContext::glContext(),
          *      @ref WindowlessEglApplication::glContext()
          * @requires_gles Context sharing is not available in WebGL.
          */
-        Configuration& setSharedContext(EGLContext context) {
+        Configuration& setSharedContext(EGLContext context, EGLDisplay display) {
             _sharedContext = context;
+            _sharedDisplay = display;
             return *this;
         }
 
@@ -296,6 +301,14 @@ class WindowlessEglContext::Configuration {
          * @requires_gles Context sharing is not available in WebGL.
          */
         EGLContext sharedContext() const { return _sharedContext; }
+        
+        /**
+         * @brief Shared display
+         * @m_since_latest
+         *
+         * @requires_gles Context sharing is not available in WebGL.
+         */
+        EGLContext sharedDisplay() const { return _sharedDisplay; } 
         #endif
 
     private:
@@ -303,6 +316,7 @@ class WindowlessEglContext::Configuration {
         Flags _flags;
         UnsignedInt _device;
         EGLContext _sharedContext = EGL_NO_CONTEXT;
+        EGLDisplay _sharedDisplay = EGL_NO_DISPLAY;
         #endif
 };
 

@@ -84,6 +84,23 @@ bool extensionSupported(const char* const extensions, Containers::ArrayView<cons
 WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     #ifndef MAGNUM_TARGET_WEBGL
     
+	/**
+	 * The user provided a shared context and its associated display, so we don't query the display
+	 */
+   	if(configuration.sharedContext() != EGL_NO_CONTEXT &&
+   	  configuration.sharedDisplay() != EGL_NO_DISPLAY)
+   	{   	      		
+   		_display = configuration.sharedDisplay();
+   	    _sharedContext = true; 
+   	}
+   	/**
+     * The user provided only the shared context or display, or provided both but one of them is wrong
+     */
+    else if (configuration.sharedContext() == EGL_NO_CONTEXT && configuration.sharedDisplay() != EGL_NO_DISPLAY ||
+             configuration.sharedContext() != EGL_NO_CONTEXT && configuration.sharedDisplay() == EGL_NO_DISPLAY)
+   {
+     	Error{} << "Platform::WindowlessEglContext: Either context or display is not valid. Context is " << configuration.sharedContext() << " Display is " << configuration.sharedDisplay();  	    
+   }   
      
     /* If relevant extensions are supported, try to find some display using
        those APIs, as that works reliably also when running headless. This
@@ -152,7 +169,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         Containers::Array<EGLDeviceEXT> devices{configuration.device() + 1};
         CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
 
-        if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
+   	   if(!_sharedContext && !(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
             Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
             return;
         }
@@ -168,16 +185,19 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         }
         #endif
 
-        if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
+        if(!_sharedContext && !(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
             Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
             return;
         }
     }
 
-    if(!eglInitialize(_display, nullptr, nullptr)) {
-        Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
-        return;
-    }
+	/**
+	 * We must initialize the display if and only if we don't use a shared context 
+	 */
+	if(!_sharedContext && !eglInitialize(_display, nullptr, nullptr)) {
+      Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
+      return;
+   	}       
 
     const EGLenum api =
         #ifndef MAGNUM_TARGET_GLES
@@ -274,9 +294,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         contextFlags = EGL_NONE;
     }
     #endif
-    
-    if(configuration.sharedContext() != EGL_NO_CONTEXT) _sharedContext = true; 
-    
+      
     if(!(_context = eglCreateContext(_display, config,
         #ifndef MAGNUM_TARGET_WEBGL
         configuration.sharedContext(),
