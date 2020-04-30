@@ -701,4 +701,54 @@ MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Values
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/**
+@configurationvalue{Magnum::DebugTools::GLFrameProfiler::Value}
+@m_since_latest
+*/
+template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Value> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Writes enum value as a string
+     *
+     * If the value is invalid, returns an empty string.
+     */
+    static std::string toString(Magnum::DebugTools::GLFrameProfiler::Value value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as a string
+     *
+     * If the string is invalid, returns a zero (invalid) value.
+     */
+    static Magnum::DebugTools::GLFrameProfiler::Value fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+/**
+@configurationvalue{Magnum::DebugTools::GLFrameProfiler::Values}
+@m_since_latest
+*/
+template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Values> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Writes enum set value as a string
+     *
+     * Writes the enum set as a sequence of flag names separated by spaces. If
+     * the value is invalid, returns an empty string.
+     */
+    static std::string toString(Magnum::DebugTools::GLFrameProfiler::Values value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum set value as a string
+     *
+     * Assumes the string is a sequence of flag names separated by spaces. If
+     * the value is invalid, returns an empty set.
+     */
+    static Magnum::DebugTools::GLFrameProfiler::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
+
 #endif
