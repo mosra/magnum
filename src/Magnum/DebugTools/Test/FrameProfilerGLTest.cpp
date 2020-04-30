@@ -115,15 +115,17 @@ void FrameProfilerGLTest::test() {
     GLFrameProfiler profiler{data.values, 4};
     CORRADE_COMPARE(profiler.maxFrameCount(), 4);
 
+    /* MSVC 2015 needs the {} */
     for(auto value: {GLFrameProfiler::Value::CpuDuration,
                      GLFrameProfiler::Value::GpuDuration,
                      #ifndef MAGNUM_TARGET_GLES
                      GLFrameProfiler::Value::VertexFetchRatio,
                      GLFrameProfiler::Value::PrimitiveClipRatio
                      #endif
-                     })
+                     }) {
         if(data.values & value)
             CORRADE_VERIFY(!profiler.isMeasurementAvailable(value));
+    }
 
     profiler.beginFrame();
     shader.draw(mesh);
