@@ -83,98 +83,111 @@ bool extensionSupported(const char* const extensions, Containers::ArrayView<cons
 
 WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     #ifndef MAGNUM_TARGET_WEBGL
-    /* If relevant extensions are supported, try to find some display using
-       those APIs, as that works reliably also when running headless. This
-       would ideally use EGL 1.5 APIs but since we still want to support
-       systems which either have old EGL headers or old EGL implementation,
-       we'd need to have a code path for 1.4 *and* 1.5, plus do complicated
-       version parsing from a string. Not feeling like doing that today, no. */
-    const char* const extensions = eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
-    if(extensions &&
-        /* eglQueryDevicesEXT(). NVidia exposes only EGL_EXT_device_base, which
-           is an older version of EGL_EXT_device_enumeration before it got
-           split to that and EGL_EXT_device_query, so test for both. */
-        (extensionSupported(extensions, "EGL_EXT_device_enumeration") || extensionSupported(extensions, "EGL_EXT_device_base")) &&
-
-        /* eglGetPlatformDisplayEXT() */
-        extensionSupported(extensions, "EGL_EXT_platform_base") &&
-
-        /* EGL_PLATFORM_DEVICE_EXT (FFS, why it has to be scattered over a
-           thousand extensions?!). This is supported only since Mesa 19.2. */
-        extensionSupported(extensions, "EGL_EXT_platform_device")
-    ) {
-        /* When libEGL_nvidia.so is present on a system w/o a NV GPU,
-           eglQueryDevicesEXT() fails there with EGL_BAD_ALLOC, but that is
-           never propagated to the glvnd wrapper. Enable debug output if
-           --magnum-gpu-validation is enabled because otherwise it's fucking
-           hard to discover what's to blame (lost > 3 hours already). See class
-           docs for more info and a workaround. */
-        if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)) {
-            auto eglDebugMessageControl = reinterpret_cast<EGLint(*)(EGLDEBUGPROCKHR, const EGLAttrib*)>(eglGetProcAddress("eglDebugMessageControlKHR"));
-            const EGLAttrib debugAttribs[] = {
-                EGL_DEBUG_MSG_WARN_KHR, EGL_TRUE,
-                EGL_DEBUG_MSG_INFO_KHR, EGL_TRUE,
-                EGL_NONE
-            };
-            CORRADE_INTERNAL_ASSERT_OUTPUT(eglDebugMessageControl([](EGLenum, const char* const command, EGLint, EGLLabelKHR, EGLLabelKHR, const char* message) {
-                Debug{} << command << Debug::nospace << "():" << Utility::String::rtrim(message);
-            }, debugAttribs) == EGL_SUCCESS);
-        }
-
-        EGLint count;
-        auto eglQueryDevices = reinterpret_cast<EGLBoolean(*)(EGLint, EGLDeviceEXT*, EGLint*)>(eglGetProcAddress("eglQueryDevicesEXT"));
-        if(!eglQueryDevices(0, nullptr, &count)) {
-            Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot query EGL devices:" << Implementation::eglErrorString(eglGetError());
-            return;
-        }
-
-        if(!count) {
-            Error e;
-            e << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found, likely a driver issue";
-            if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
-                e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
-            return;
-        }
-
-        if(configuration.device() >= UnsignedInt(count)) {
-            Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but found only" << count;
-            return;
-        }
-
-        if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
-            Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
-        }
-
-        /* Assuming the same thing won't suddenly start failing when called the
-           second time */
-        Containers::Array<EGLDeviceEXT> devices{configuration.device() + 1};
-        CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
-
-        if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
-            Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
-            return;
-        }
+    /* The user provided a shared context, use the associated display
+       directly. We don't call eglInitialize() in this case either -- the
+       context we share with already did that on the provided display */
+    if(configuration.sharedContext() != EGL_NO_CONTEXT && configuration.sharedDisplay() != EGL_NO_DISPLAY) {
+        _display = configuration.sharedDisplay();
+        _sharedContext = true;
     } else
     #endif
-    /* Otherwise initialize the classic way. WebGL doesn't have any of the
-       above, so no need to compile that at all. */
+    /* Otherwise find the display and initialize EGL */
     {
         #ifndef MAGNUM_TARGET_WEBGL
-        if(configuration.device() != 0) {
-            Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but EGL_EXT_platform_device is not supported and there's just the default one";
-            return;
+        /* If relevant extensions are supported, try to find some display using
+           those APIs, as that works reliably also when running headless. This
+           would ideally use EGL 1.5 APIs but since we still want to support
+           systems which either have old EGL headers or old EGL implementation,
+           we'd need to have a code path for 1.4 *and* 1.5, plus do complicated
+           version parsing from a string. Not feeling like doing that today,
+           no. */
+        const char* const extensions = eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
+        if(extensions &&
+            /* eglQueryDevicesEXT(). NVidia exposes only EGL_EXT_device_base,
+               which is an older version of EGL_EXT_device_enumeration before
+               it got split to that and EGL_EXT_device_query, so test for both. */
+            (extensionSupported(extensions, "EGL_EXT_device_enumeration") || extensionSupported(extensions, "EGL_EXT_device_base")) &&
+
+            /* eglGetPlatformDisplayEXT() */
+            extensionSupported(extensions, "EGL_EXT_platform_base") &&
+
+            /* EGL_PLATFORM_DEVICE_EXT (FFS, why it has to be scattered over a
+               thousand extensions?!). This is supported only since Mesa 19.2. */
+            extensionSupported(extensions, "EGL_EXT_platform_device")
+        ) {
+            /* When libEGL_nvidia.so is present on a system w/o a NV GPU,
+               eglQueryDevicesEXT() fails there with EGL_BAD_ALLOC, but that is
+               never propagated to the glvnd wrapper. Enable debug output if
+               --magnum-gpu-validation is enabled because otherwise it's
+               fucking hard to discover what's to blame (lost > 3 hours
+               already). See class docs for more info and a workaround. */
+            if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)) {
+                auto eglDebugMessageControl = reinterpret_cast<EGLint(*)(EGLDEBUGPROCKHR, const EGLAttrib*)>(eglGetProcAddress("eglDebugMessageControlKHR"));
+                const EGLAttrib debugAttribs[] = {
+                    EGL_DEBUG_MSG_WARN_KHR, EGL_TRUE,
+                    EGL_DEBUG_MSG_INFO_KHR, EGL_TRUE,
+                    EGL_NONE
+                };
+                CORRADE_INTERNAL_ASSERT_OUTPUT(eglDebugMessageControl([](EGLenum, const char* const command, EGLint, EGLLabelKHR, EGLLabelKHR, const char* message) {
+                    Debug{} << command << Debug::nospace << "():" << Utility::String::rtrim(message);
+                }, debugAttribs) == EGL_SUCCESS);
+            }
+
+            EGLint count;
+            auto eglQueryDevices = reinterpret_cast<EGLBoolean(*)(EGLint, EGLDeviceEXT*, EGLint*)>(eglGetProcAddress("eglQueryDevicesEXT"));
+            if(!eglQueryDevices(0, nullptr, &count)) {
+                Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot query EGL devices:" << Implementation::eglErrorString(eglGetError());
+                return;
+            }
+
+            if(!count) {
+                Error e;
+                e << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found, likely a driver issue";
+                if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
+                    e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
+                return;
+            }
+
+            if(configuration.device() >= UnsignedInt(count)) {
+                Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but found only" << count;
+                return;
+            }
+
+            if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
+            }
+
+            /* Assuming the same thing won't suddenly start failing when called
+               the second time */
+            Containers::Array<EGLDeviceEXT> devices{configuration.device() + 1};
+            CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
+
+            if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
+                Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
+                return;
+            }
         }
+        /* Otherwise initialize the classic way. WebGL doesn't have any of the
+           above, so no need to compile that at all. */
         #endif
+        {
+            #ifndef MAGNUM_TARGET_WEBGL
+            if(configuration.device() != 0) {
+                Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but EGL_EXT_platform_device is not supported and there's just the default one";
+                return;
+            }
+            #endif
 
-        if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
-            Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
+            if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
+                Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
+                return;
+            }
+        }
+
+        if(!eglInitialize(_display, nullptr, nullptr)) {
+            Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
             return;
         }
-    }
-
-    if(!eglInitialize(_display, nullptr, nullptr)) {
-        Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
-        return;
     }
 
     const EGLenum api =
@@ -299,7 +312,15 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #endif
 }
 
-WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other): _display{other._display}, _context{other._context} {
+WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other):
+    #ifndef MAGNUM_TARGET_WEBGL
+    _sharedContext{other._sharedContext},
+    #endif
+    _display{other._display}, _context{other._context}
+{
+    #ifndef MAGNUM_TARGET_WEBGL
+    other._sharedContext = false;
+    #endif
     other._display = {};
     other._context = {};
 }
@@ -309,11 +330,23 @@ WindowlessEglContext::~WindowlessEglContext() {
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(_surface) eglDestroySurface(_display, _surface);
     #endif
-    if(_display) eglTerminate(_display);
+
+    /* Don't terminate EGL if we're a shared context as it would kill all
+       others as well. In case of a shared context it's expected that the
+       first instance of WindowlessEglContext in the shared chain is destroyed
+       last, calling eglTerminate() after all others are gone. */
+    if(
+        #ifndef MAGNUM_TARGET_WEBGL
+        !_sharedContext &&
+        #endif
+        _display) eglTerminate(_display);
 }
 
-WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext && other) {
+WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext&& other) {
     using std::swap;
+    #ifndef MAGNUM_TARGET_WEBGL
+    swap(other._sharedContext, _sharedContext);
+    #endif
     swap(other._display, _display);
     swap(other._context, _context);
     return *this;
@@ -389,6 +422,16 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
     _glContext = std::move(glContext);
     return true;
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+auto WindowlessEglContext::Configuration::setSharedContext(EGLDisplay display, EGLContext context) -> Configuration& {
+    CORRADE_ASSERT((context == EGL_NO_CONTEXT) == (display == EGL_NO_DISPLAY),
+        "Platform::WindowlessEglContext::Configuration::setSharedContext(): either both the context and the display have to be valid or both null", *this);
+    _sharedDisplay = display;
+    _sharedContext = context;
+    return *this;
+}
+#endif
 
 WindowlessEglApplication::~WindowlessEglApplication() = default;
 

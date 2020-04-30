@@ -132,6 +132,9 @@ class WindowlessEglContext {
         EGLContext glContext() { return _context; }
 
     private:
+        #ifndef MAGNUM_TARGET_WEBGL
+        bool _sharedContext = false;
+        #endif
         EGLDisplay _display{};
         EGLContext _context{};
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
@@ -259,7 +262,9 @@ class WindowlessEglContext::Configuration {
          * The device ID is expected to be smaller than the count of devices
          * reported by EGL. When using @ref WindowlessEglApplication, this is
          * also exposed as a `--magnum-device` command-line option and a
-         * `MAGNUM_DEVICE` environment variable.
+         * `MAGNUM_DEVICE` environment variable. If @ref setSharedContext() is
+         * set, this value is ignored and the device is picked to be the same
+         * as in the shared context instead.
          * @requires_gles Device selection is not available in WebGL.
          */
         Configuration& setDevice(UnsignedInt id) {
@@ -273,18 +278,25 @@ class WindowlessEglContext::Configuration {
          * @m_since_latest
          *
          * When set, the created context will share a subset of OpenGL objects
-         * with @p context, instead of being independent. Many caveats and
-         * limitations apply to shared OpenGL contexts, please consult the
-         * OpenGL specification for details. Default is `EGL_NO_CONTEXT`, i.e.
-         * no sharing.
+         * with @p context and its associated @p display, instead of being
+         * independent. Many caveats and limitations apply to shared OpenGL
+         * contexts, please consult the OpenGL specification for details.
+         * Default is `EGL_NO_CONTEXT`, i.e. no sharing. See
+         * @ref Platform-WindowlessEglApplication-shared-contexts for more
+         * information.
          * @see @ref WindowlessEglContext::glContext(),
          *      @ref WindowlessEglApplication::glContext()
          * @requires_gles Context sharing is not available in WebGL.
          */
-        Configuration& setSharedContext(EGLContext context) {
-            _sharedContext = context;
-            return *this;
-        }
+        Configuration& setSharedContext(EGLDisplay display, EGLContext context);
+
+        /**
+         * @brief Shared display
+         * @m_since_latest
+         *
+         * @requires_gles Context sharing is not available in WebGL.
+         */
+        EGLContext sharedDisplay() const { return _sharedDisplay; }
 
         /**
          * @brief Shared context
@@ -299,6 +311,7 @@ class WindowlessEglContext::Configuration {
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
         UnsignedInt _device;
+        EGLDisplay _sharedDisplay = EGL_NO_DISPLAY;
         EGLContext _sharedContext = EGL_NO_CONTEXT;
         #endif
 };
@@ -465,6 +478,21 @@ using the `__EGL_VENDOR_LIBRARY_FILENAMES` environment variable, for example:
 __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json ./my-application
 @endcode
 @endparblock
+
+@section Platform-WindowlessEglApplication-shared-contexts Shared EGL contexts
+
+Unlike with @ref WindowlessGlxApplication and @ref WindowlessWglApplication,
+you're expected to supply both the display and the context in
+@ref Configuration::setSharedContext(). This is done in order to ensure the
+same `EGLDisplay` is used for all shared contexts, especially when a
+non-default GPU device is selected via @ref Configuration::setDevice().
+
+Moreover, since `eglInitialize()` and `eglTerminate()` is expected to be called
+just once on a particular display, EGL initialization and termination is only
+done in the case of a non-shared @ref WindowlessEglApplication (or the first
+one created in a shared chain). Shared instances then reuse the already
+initialized `EGLDisplay` and expect that it's terminated only after all shared
+instances are gone.
 */
 class WindowlessEglApplication {
     public:
