@@ -84,6 +84,10 @@ bool extensionSupported(const char* const extensions, Containers::ArrayView<cons
 WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     #ifndef MAGNUM_TARGET_WEBGL
     
+    /** early check to avoid shared EGL context issues */
+    CORRADE_CONSTEXPR_ASSERT((configuration.sharedContext() == EGL_NO_CONTEXT) == (configuration.sharedDisplay() == EGL_NO_DISPLAY),
+	"Platform::WindowlessEglContext::Configuration::setSharedContext(): either both context have to be valid or both invalid.");
+	
 	/**
 	 * The user provided a shared context and its associated display, so we don't query the display
 	 */
@@ -93,14 +97,6 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
    		_display = configuration.sharedDisplay();
    	    _sharedContext = true; 
    	}
-   	/**
-     * The user provided only the shared context or display, or provided both but one of them is wrong
-     */
-    else if (configuration.sharedContext() == EGL_NO_CONTEXT && configuration.sharedDisplay() != EGL_NO_DISPLAY ||
-             configuration.sharedContext() != EGL_NO_CONTEXT && configuration.sharedDisplay() == EGL_NO_DISPLAY)
-   {
-     	Error{} << "Platform::WindowlessEglContext: Either context or display is not valid. Context is " << configuration.sharedContext() << " Display is " << configuration.sharedDisplay();  	    
-   }   
      
     /* If relevant extensions are supported, try to find some display using
        those APIs, as that works reliably also when running headless. This
@@ -109,7 +105,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
        we'd need to have a code path for 1.4 *and* 1.5, plus do complicated
        version parsing from a string. Not feeling like doing that today, no. */
     const char* const extensions = eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
-    if(extensions &&
+    if(!_sharedContext && extensions &&
         /* eglQueryDevicesEXT(). NVidia exposes only EGL_EXT_device_base, which
            is an older version of EGL_EXT_device_enumeration before it got
            split to that and EGL_EXT_device_query, so test for both. */
@@ -169,14 +165,15 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         Containers::Array<EGLDeviceEXT> devices{configuration.device() + 1};
         CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
 
-   	   if(!_sharedContext && !(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
+   	   if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
             Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
             return;
         }
-    } else
-    #endif
+    } 
+    else if (!_sharedContext)    
     /* Otherwise initialize the classic way. WebGL doesn't have any of the
        above, so no need to compile that at all. */
+    #endif
     {
         #ifndef MAGNUM_TARGET_WEBGL
         if(configuration.device() != 0) {
@@ -420,6 +417,14 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
 
     _glContext = std::move(glContext);
     return true;
+}
+
+WindowlessEglContext::Configuration& WindowlessEglContext::Configuration::setSharedContext(EGLDisplay display, EGLContext context) {
+	CORRADE_ASSERT((context == EGL_NO_CONTEXT) == (display == EGL_NO_DISPLAY),
+	"Platform::WindowlessEglContext::Configuration::setSharedContext(): either both context have to be valid or both invalid.", *this);
+     _sharedContext = context;
+     _sharedDisplay = display;
+     return *this;
 }
 
 WindowlessEglApplication::~WindowlessEglApplication() = default;

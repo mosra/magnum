@@ -288,12 +288,16 @@ class WindowlessEglContext::Configuration {
          *      @ref WindowlessEglApplication::glContext()
          * @requires_gles Context sharing is not available in WebGL.
          */
-        Configuration& setSharedContext(EGLContext context, EGLDisplay display) {
-            _sharedContext = context;
-            _sharedDisplay = display;
-            return *this;
-        }
+        Configuration& setSharedContext(EGLDisplay display, EGLContext context);
 
+        /**
+         * @brief Shared display
+         * @m_since_latest
+         *
+         * @requires_gles Context sharing is not available in WebGL.
+         */
+        EGLContext sharedDisplay() const { return _sharedDisplay; } 
+        
         /**
          * @brief Shared context
          * @m_since_latest
@@ -302,21 +306,15 @@ class WindowlessEglContext::Configuration {
          */
         EGLContext sharedContext() const { return _sharedContext; }
         
-        /**
-         * @brief Shared display
-         * @m_since_latest
-         *
-         * @requires_gles Context sharing is not available in WebGL.
-         */
-        EGLContext sharedDisplay() const { return _sharedDisplay; } 
+
         #endif
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
         UnsignedInt _device;
-        EGLContext _sharedContext = EGL_NO_CONTEXT;
         EGLDisplay _sharedDisplay = EGL_NO_DISPLAY;
+        EGLContext _sharedContext = EGL_NO_CONTEXT;
         #endif
 };
 
@@ -450,6 +448,17 @@ variable). Unfortunately EGL doesn't provide any reasonable way to enumerate or
 filter named devices, so the best you can do is checking reported device count
 printed by the `--magnum-log verbose` @ref GL-Context-command-line "command-line option",
 and then going from `0` up to figure out the desired device ID.
+
+@section Platform-WindowlessEglApplication-device-selection Shared context setup
+EGL shared context handling is not the same than GLX or WGL. On these, providing the context handle and a unique display context
+(deviceContext or  GLXDrawable on windows and linux respectively) created by the WindowlessEglApplication is sufficient to create, 
+manage, and destroy the shared OpenGL context. EGL behaves differently, and returns the same EGLDisplay when querying twice for a display.
+This does not make a problem for single context setup, but creating a shared context with the same EGLDisplay than the parent one can be 
+dangerous, especially if you accidentally destroy the Display whereas someone still needs it. To avoid this, WindowlessEglApplication is guarded
+and won't kill the EGLDisplay if you create a shared context.
+Moreover, you must provide the EGLDisplay as well since we can't be sure the EGLContext is current (so we can't query the current display) and 
+and eglMakeCurrent() must receive the current EGLDisplay.
+
 
 @m_class{m-block m-danger}
 
