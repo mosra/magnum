@@ -31,6 +31,7 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
+#include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/Functions.h"
 #ifdef MAGNUM_TARGET_GL
@@ -629,22 +630,24 @@ Double GLFrameProfiler::primitiveClipRatioMean() const {
 }
 #endif
 
+namespace {
+
+constexpr const char* GLFrameProfilerValueNames[] {
+    "FrameTime",
+    "CpuDuration",
+    "GpuDuration",
+    "VertexFetchRatio",
+    "PrimitiveClipRatio"
+};
+
+}
+
 Debug& operator<<(Debug& debug, const GLFrameProfiler::Value value) {
     debug << "DebugTools::GLFrameProfiler::Value" << Debug::nospace;
 
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case GLFrameProfiler::Value::v: return debug << "::" #v;
-        _c(FrameTime)
-        _c(CpuDuration)
-        _c(GpuDuration)
-        #ifndef MAGNUM_TARGET_GLES
-        _c(VertexFetchRatio)
-        _c(PrimitiveClipRatio)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
+    const UnsignedInt bit = Math::log2(UnsignedShort(value));
+    if(1 << bit == UnsignedShort(value))
+        return debug << "::" << Debug::nospace << GLFrameProfilerValueNames[bit];
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
 }
@@ -661,5 +664,52 @@ Debug& operator<<(Debug& debug, const GLFrameProfiler::Values value) {
         });
 }
 #endif
+
+}}
+
+namespace Corrade { namespace Utility {
+
+using namespace Magnum;
+
+std::string ConfigurationValue<DebugTools::GLFrameProfiler::Value>::toString(const DebugTools::GLFrameProfiler::Value value, ConfigurationValueFlags) {
+    const UnsignedInt bit = Math::log2(UnsignedShort(value));
+    if(1 << bit == UnsignedShort(value))
+        return DebugTools::GLFrameProfilerValueNames[bit];
+    return "";
+}
+
+DebugTools::GLFrameProfiler::Value ConfigurationValue<DebugTools::GLFrameProfiler::Value>::fromString(const std::string& value, ConfigurationValueFlags) {
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i)
+        if(DebugTools::GLFrameProfilerValueNames[i] == value)
+            return DebugTools::GLFrameProfiler::Value(1 << i);
+
+    return DebugTools::GLFrameProfiler::Value{};
+}
+
+std::string ConfigurationValue<DebugTools::GLFrameProfiler::Values>::toString(const DebugTools::GLFrameProfiler::Values value, ConfigurationValueFlags) {
+    std::string out;
+
+    for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i) {
+        const auto bit = DebugTools::GLFrameProfiler::Value(1 << i);
+        if(value & bit) {
+            if(!out.empty()) out += ' ';
+            out += DebugTools::GLFrameProfilerValueNames[i];
+        }
+    }
+
+    return out;
+}
+
+DebugTools::GLFrameProfiler::Values ConfigurationValue<DebugTools::GLFrameProfiler::Values>::fromString(const std::string& value, ConfigurationValueFlags) {
+    const std::vector<std::string> bits = Utility::String::splitWithoutEmptyParts(value);
+
+    DebugTools::GLFrameProfiler::Values values;
+    for(const std::string& bit: bits)
+        for(std::size_t i = 0; i != Containers::arraySize(DebugTools::GLFrameProfilerValueNames); ++i)
+            if(DebugTools::GLFrameProfilerValueNames[i] == bit)
+                values |= DebugTools::GLFrameProfiler::Value(1 << i);
+
+    return values;
+}
 
 }}
