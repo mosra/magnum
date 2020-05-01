@@ -36,6 +36,9 @@
 namespace Magnum { namespace Platform {
 
 WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& configuration, GLContext* const magnumContext) {
+    /** @todo device selection and skipping of eglInitialize()/Terminate() the
+        same way as with WindowlessEglContext */
+
     /* Register the window class (if not yet done) */
     WNDCLASSW wc;
     if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
