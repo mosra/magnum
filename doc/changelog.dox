@@ -421,6 +421,13 @@ See also:
 -   @ref Platform::WindowlessGlxApplication now handles `GLXBadFBConfig` errors
     gracefully, making the fallback compatibility context creation work even in
     those cases. This makes it work with Mesa's Zink GL-over-Vulkan driver.
+-   Following all other application implementations,
+    @ref Platform::WindowlessEglApplication now implements the
+    @cpp "no-forward-compatible-core-context" @ce workaround as well, giving
+    back latest OpenGL version on proprietary NVidia and AMD drivers instead of
+    OpenGL 3.0. The newly added fallback also makes the application work with
+    Mesa's Zink GL-over-Vulkan driver that has just GL 2.1. See also
+    @ref opengl-workarounds.
 
 @subsubsection changelog-latest-changes-trade Trade library
 

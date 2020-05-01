@@ -286,14 +286,78 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     }
     #endif
 
-    if(!(_context = eglCreateContext(_display, config,
+    _context = eglCreateContext(_display, config,
         #ifndef MAGNUM_TARGET_WEBGL
         configuration.sharedContext(),
         #else
         EGL_NO_CONTEXT,
         #endif
-        attributes)))
-    {
+        attributes);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Fall back to (forward compatible) GL 2.1 if core context creation fails */
+    if(!_context) {
+        Warning{} << "Platform::WindowlessEglContext: cannot create core context, falling back to compatibility context:" << Implementation::eglErrorString(eglGetError());
+
+        const EGLint fallbackAttributes[] = {
+            /* Discard the ForwardCompatible flag for the fallback. Having it
+               set makes the fallback context creation fail on Mesa's Zink
+               (which is just 2.1) and I assume on others as well. */
+            EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+            EGL_NONE
+        };
+        _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
+
+    /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
+       drivers on Linux. Instead of creating forward-compatible context with
+       highest available version, they force the version to the one specified,
+       which is completely useless behavior. */
+    } else {
+        /* We need to make the context current to read out vendor string, so
+           save the previous values so we can safely revert back without
+           messing up the state */
+        EGLSurface currentSurface = eglGetCurrentSurface(EGL_DRAW);
+        EGLSurface currentReadSurface = eglGetCurrentSurface(EGL_READ);
+        EGLContext currentContext = eglGetCurrentContext();
+        if(!eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, _context)) {
+            Error{} << "Platform::WindowlessEglContext: cannot make context current:" << Implementation::eglErrorString(eglGetError());
+            return;
+        }
+
+        /* The workaround check is the last so it doesn't appear in workaround
+           list on unrelated drivers */
+        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
+        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        /* If context creation fails *really bad*, glGetString() may actually
+           return nullptr. Check for that to avoid crashes deep inside
+           strncmp() */
+        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+        {
+            /* Destroy the core context and create a compatibility one */
+            eglDestroyContext(_display, _context);
+            const GLint fallbackAttributes[] = {
+                /* Discard the ForwardCompatible flag for the fallback.
+                   Compared to the above case of a 2.1 fallback it's not really
+                   needed here (AFAIK it works in both cases), but let's be
+                   consistent. */
+                EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                EGL_NONE
+            };
+            _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
+        }
+
+        /* Revert back the old context */
+        if(!eglMakeCurrent(_display, currentSurface, currentReadSurface, currentContext)) {
+            Error() << "Platform::WindowlessEglContext: cannot make the previous context current";
+            return;
+        }
+    }
+    #endif
+
+    if(!_context) {
         Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
         return;
     }
