@@ -39,11 +39,14 @@ using namespace std::chrono;
 
 namespace Magnum { namespace DebugTools {
 
+/* MSVC complains about deprecated Section here */
+CORRADE_IGNORE_DEPRECATED_PUSH
 Profiler::Section Profiler::addSection(const std::string& name) {
     CORRADE_ASSERT(!_enabled, "Profiler: cannot add section when profiling is enabled", 0);
     _sections.push_back(name);
     return _sections.size()-1;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 void Profiler::setMeasureDuration(std::size_t frames) {
     CORRADE_ASSERT(!_enabled, "Profiler: cannot set measure duration when profiling is enabled", );
@@ -61,6 +64,8 @@ void Profiler::disable() {
     _enabled = false;
 }
 
+/* MSVC complains about deprecated Section here */
+CORRADE_IGNORE_DEPRECATED_PUSH
 void Profiler::start(Section section) {
     if(!_enabled) return;
     CORRADE_ASSERT(section < _sections.size(), "Profiler: unknown section passed to start()", );
@@ -69,6 +74,7 @@ void Profiler::start(Section section) {
 
     _currentSection = section;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 void Profiler::stop() {
     if(!_enabled) return;
@@ -117,7 +123,10 @@ void Profiler::printStatistics() {
     std::vector<std::size_t> totalSorted(_sections.size());
     std::iota(totalSorted.begin(), totalSorted.end(), 0);
 
+    /* MSVC complains about deprecated _totalData here (WTF) */
+    CORRADE_IGNORE_DEPRECATED_PUSH
     std::sort(totalSorted.begin(), totalSorted.end(), [this](std::size_t i, std::size_t j){return _totalData[i] > _totalData[j];});
+    CORRADE_IGNORE_DEPRECATED_POP
 
     Debug() << "Statistics for last" << _measureDuration << "frames:";
     for(std::size_t i = 0; i != _sections.size(); ++i)

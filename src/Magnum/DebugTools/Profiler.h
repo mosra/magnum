@@ -126,9 +126,15 @@ class CORRADE_DEPRECATED("use FrameProfiler instead") MAGNUM_DEBUGTOOLS_EXPORT P
          *
          * @see @ref start()
          */
+        /* MSVC complains about deprecated Section here */
+        CORRADE_IGNORE_DEPRECATED_PUSH
         static const Section otherSection = 0;
+        CORRADE_IGNORE_DEPRECATED_POP
 
+        /* MSVC complains about deprecated Section here */
+        CORRADE_IGNORE_DEPRECATED_PUSH
         explicit Profiler(): _enabled(false), _measureDuration(60), _currentFrame(0), _frameCount(0), _sections{"Other"}, _currentSection(otherSection) {}
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Set measure duration
@@ -145,7 +151,10 @@ class CORRADE_DEPRECATED("use FrameProfiler instead") MAGNUM_DEBUGTOOLS_EXPORT P
          * @attention This function cannot be called if profiling is enabled.
          * @see @ref otherSection, @ref start(Section), @ref stop()
          */
+        /* MSVC complains about deprecated Section here */
+        CORRADE_IGNORE_DEPRECATED_PUSH
         Section addSection(const std::string& name);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Whether profiling is enabled
@@ -177,7 +186,10 @@ class CORRADE_DEPRECATED("use FrameProfiler instead") MAGNUM_DEBUGTOOLS_EXPORT P
          * section.
          * @see @ref otherSection, @ref start(Section)
          */
+        /* MSVC complains about deprecated Section here */
+        CORRADE_IGNORE_DEPRECATED_PUSH
         void start(Section section);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Start profiling of "other" section
@@ -185,7 +197,12 @@ class CORRADE_DEPRECATED("use FrameProfiler instead") MAGNUM_DEBUGTOOLS_EXPORT P
          * Same as calling @cpp start(DebugTools::Profiler::otherSection) @ce.
          * @note Does nothing if profiling is disabled.
          */
-        void start() { start(otherSection); }
+        void start() {
+            /* MSVC complains about deprecated Section here */
+            CORRADE_IGNORE_DEPRECATED_PUSH
+            start(otherSection);
+            CORRADE_IGNORE_DEPRECATED_POP
+        }
 
         /**
          * @brief Stop profiling
