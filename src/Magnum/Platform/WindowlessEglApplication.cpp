@@ -166,7 +166,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                 Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
                 return;
             }
-        }
+        } else
         /* Otherwise initialize the classic way. WebGL doesn't have any of the
            above, so no need to compile that at all. */
         #endif
