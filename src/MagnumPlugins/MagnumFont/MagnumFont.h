@@ -144,6 +144,12 @@ find_package(Magnum REQUIRED MagnumFont)
 target_link_libraries(your-app PRIVATE Magnum::MagnumFont)
 @endcode
 
+Because the plugin needs access to @ref Trade::AbstractImporter plugins, you
+need to instantiate a manager for them and register it with
+@ref Corrade::PluginManager::Manager::registerExternalManager():
+
+@snippet plugins.cpp MagnumFont-importer-register
+
 See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {

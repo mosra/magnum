@@ -87,6 +87,12 @@ find_package(Magnum REQUIRED MagnumFontConverter)
 target_link_libraries(your-app PRIVATE Magnum::MagnumFontConverter)
 @endcode
 
+Because the plugin needs access to @ref Trade::AbstractImageConverter plugins,
+you need to instantiate a manager for them and register it with
+@ref Corrade::PluginManager::Manager::registerExternalManager():
+
+@snippet plugins.cpp MagnumFontConverter-imageconverter-register
+
 See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::AbstractFontConverter {

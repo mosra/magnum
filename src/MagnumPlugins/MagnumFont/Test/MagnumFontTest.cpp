@@ -64,6 +64,7 @@ MagnumFontTest::MagnumFontTest() {
 
     /* Load the plugins directly from the build tree. Otherwise they're static
        and already loaded. */
+    _fontManager.registerExternalManager(_importerManager);
     #if defined(TGAIMPORTER_PLUGIN_FILENAME) && defined(MAGNUMFONT_PLUGIN_FILENAME)
     CORRADE_INTERNAL_ASSERT_OUTPUT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     CORRADE_INTERNAL_ASSERT_OUTPUT(_fontManager.load(MAGNUMFONT_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);

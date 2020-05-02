@@ -61,6 +61,7 @@ MagnumFontConverterTest::MagnumFontConverterTest() {
 
     /* Load the plugins directly from the build tree. Otherwise they are static
        and already loaded. */
+    _fontConverterManager.registerExternalManager(_imageConverterManager);
     #if defined(TGAIMAGECONVERTER_PLUGIN_FILENAME) && defined(MAGNUMFONTCONVERTER_PLUGIN_FILENAME)
     CORRADE_INTERNAL_ASSERT_OUTPUT(_imageConverterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     CORRADE_INTERNAL_ASSERT_OUTPUT(_fontConverterManager.load(MAGNUMFONTCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);

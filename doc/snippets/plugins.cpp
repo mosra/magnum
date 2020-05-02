@@ -2,6 +2,8 @@
 #include <Corrade/Utility/ConfigurationGroup.h>
 
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
 #ifdef __has_include
@@ -66,6 +68,22 @@ Containers::Pointer<Trade::AbstractImporter> importer =
     manager.instantiate("AssimpImporter");
 importer->configuration().group("postprocess")->setValue("PreTransformVertices", true);
 /* [configuration] */
+}
+
+{
+/* [MagnumFont-importer-register] */
+PluginManager::Manager<Trade::AbstractImporter> importerManager;
+PluginManager::Manager<Text::AbstractFont> fontManager;
+fontManager.registerExternalManager(importerManager);
+/* [MagnumFont-importer-register] */
+}
+
+{
+/* [MagnumFontConverter-imageconverter-register] */
+PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager;
+PluginManager::Manager<Text::AbstractFontConverter> fontConverterManager;
+fontConverterManager.registerExternalManager(imageConverterManager);
+/* [MagnumFontConverter-imageconverter-register] */
 }
 
 }
