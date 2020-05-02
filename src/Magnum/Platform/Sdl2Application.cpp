@@ -771,13 +771,18 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
 void Sdl2Application::redraw() { _flags |= Flag::Redraw; }
 
 Sdl2Application::~Sdl2Application() {
+    /* SDL_DestroyWindow(_window) crashes on windows when _window is nullptr
+       (it doesn't seem to crash on Linux). Because this seems to be yet
+       another pointless platform difference, to be safe do the same check with
+       all. */
+
     #ifdef MAGNUM_TARGET_GL
     _context.reset();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_GL_DeleteContext(_glContext);
+    if(_glContext) SDL_GL_DeleteContext(_glContext);
     #else
-    SDL_FreeSurface(_surface);
+    if(_surface) SDL_FreeSurface(_surface);
     #endif
     #endif
 
@@ -787,7 +792,7 @@ Sdl2Application::~Sdl2Application() {
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_DestroyWindow(_window);
+    if(_window) SDL_DestroyWindow(_window);
     #endif
     SDL_Quit();
 }
