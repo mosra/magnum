@@ -34,4 +34,8 @@ GL::Context* currentContextInALibrary() {
     return &GL::Context::current();
 }
 
+void* createProgramInALibrary() {
+    return reinterpret_cast<void*>(glCreateProgram);
+}
+
 }}}

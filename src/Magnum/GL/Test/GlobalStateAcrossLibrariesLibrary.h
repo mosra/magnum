@@ -38,6 +38,7 @@
 namespace Magnum { namespace GL { namespace Test {
 
 MAGNUM_GLOBALSTATEACROSSLIBRARIESLIBRARY_EXPORT GL::Context* currentContextInALibrary();
+MAGNUM_GLOBALSTATEACROSSLIBRARIESLIBRARY_EXPORT void* createProgramInALibrary();
 
 }}}
 

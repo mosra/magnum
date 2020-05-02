@@ -33,14 +33,16 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct GlobalStateAcrossLibrariesGLTest: OpenGLTester {
     explicit GlobalStateAcrossLibrariesGLTest();
 
-    void test();
+    void magnumContext();
+    void functionPointers();
 };
 
 GlobalStateAcrossLibrariesGLTest::GlobalStateAcrossLibrariesGLTest() {
-    addTests({&GlobalStateAcrossLibrariesGLTest::test});
+    addTests({&GlobalStateAcrossLibrariesGLTest::magnumContext,
+              &GlobalStateAcrossLibrariesGLTest::functionPointers});
 }
 
-void GlobalStateAcrossLibrariesGLTest::test() {
+void GlobalStateAcrossLibrariesGLTest::magnumContext() {
     #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
     CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
     #endif
@@ -52,6 +54,27 @@ void GlobalStateAcrossLibrariesGLTest::test() {
         CORRADE_EXPECT_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS not enabled.");
         #endif
         CORRADE_COMPARE(currentContextInALibrary(), &GL::Context::current());
+    }
+}
+
+void GlobalStateAcrossLibrariesGLTest::functionPointers() {
+    #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
+    CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
+    #endif
+
+    CORRADE_VERIFY(glCreateProgram);
+
+    {
+        #ifndef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
+        CORRADE_EXPECT_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS not enabled.");
+        #endif
+        /* Annotating the flextGL global with __attribute__((weak)) makes
+           static builds crash on startup due to a null function pointer call.
+           This is because even the GL 1.0 / 1.1 function pointers are accessed
+           through this struct and somehow the weak symbol makes the struct all
+           nulls. Not sure how to proceed. */
+        CORRADE_EXPECT_FAIL("Deduplication of global GL function pointers across shared libraries isn't implemented yet.");
+        CORRADE_COMPARE(createProgramInALibrary(), reinterpret_cast<void*>(glCreateProgram));
     }
 }
 
