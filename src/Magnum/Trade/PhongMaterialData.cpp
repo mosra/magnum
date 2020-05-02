@@ -31,21 +31,33 @@ namespace Magnum { namespace Trade {
 
 using namespace Math::Literals;
 
-PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt normalTexture, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _ambientColor{ambientColor}, _diffuseColor{diffuseColor}, _specularColor{specularColor}, _shininess{shininess} {
+PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const UnsignedInt ambientCoordinateSet, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const UnsignedInt diffuseCoordinateSet, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt specularCoordinateSet, const UnsignedInt normalTexture, const UnsignedInt normalCoordinateSet, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _ambientColor{ambientColor}, _diffuseColor{diffuseColor}, _specularColor{specularColor}, _shininess{shininess} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Trade::PhongMaterialData: texture transformation enabled but the material has no textures", );
+    CORRADE_ASSERT((flags & Flag::TextureCoordinateSets) || (ambientCoordinateSet == 0 && diffuseCoordinateSet == 0 && specularCoordinateSet == 0 && normalCoordinateSet == 0),
+        "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinateSets to be enabled", );
 
-    if(flags & Flag::AmbientTexture)
+    if(flags & Flag::AmbientTexture) {
         _ambientTexture = ambientTexture;
-    if(flags & Flag::DiffuseTexture)
+        _ambientCoordinateSet = ambientCoordinateSet;
+    }
+    if(flags & Flag::DiffuseTexture) {
         _diffuseTexture = diffuseTexture;
-    if(flags & Flag::SpecularTexture)
+        _diffuseCoordinateSet = diffuseCoordinateSet;
+    }
+    if(flags & Flag::SpecularTexture) {
         _specularTexture = specularTexture;
-    if(flags & Flag::NormalTexture)
+        _specularCoordinateSet = specularCoordinateSet;
+    }
+    if(flags & Flag::NormalTexture) {
         _normalTexture = normalTexture;
-    if(flags  & Flag::TextureTransformation)
+        _normalCoordinateSet = normalCoordinateSet;
+    }
+    if(flags & Flag::TextureTransformation)
         _textureMatrix = textureMatrix;
 }
+
+PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt normalTexture, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, ambientColor, ambientTexture, 0, diffuseColor, diffuseTexture, 0, specularColor, specularTexture, 0, normalTexture, 0, textureMatrix, alphaMode, alphaMask, shininess, importerState} {}
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, alphaMode, alphaMask, shininess, importerState} {}
@@ -69,6 +81,11 @@ UnsignedInt& PhongMaterialData::ambientTexture() {
 }
 #endif
 
+UnsignedInt PhongMaterialData::ambientCoordinateSet() const {
+    CORRADE_ASSERT(flags() & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientCoordinateSet(): the material doesn't have an ambient texture", {});
+    return _ambientCoordinateSet;
+}
+
 UnsignedInt PhongMaterialData::diffuseTexture() const {
     CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture", {});
     return _diffuseTexture;
@@ -80,6 +97,11 @@ UnsignedInt& PhongMaterialData::diffuseTexture() {
     return _diffuseTexture;
 }
 #endif
+
+UnsignedInt PhongMaterialData::diffuseCoordinateSet() const {
+    CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseCoordinateSet(): the material doesn't have a diffuse texture", {});
+    return _diffuseCoordinateSet;
+}
 
 UnsignedInt PhongMaterialData::specularTexture() const {
     CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", {});
@@ -93,9 +115,19 @@ UnsignedInt& PhongMaterialData::specularTexture() {
 }
 #endif
 
+UnsignedInt PhongMaterialData::specularCoordinateSet() const {
+    CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularCoordinateSet(): the material doesn't have a specular texture", {});
+    return _specularCoordinateSet;
+}
+
 UnsignedInt PhongMaterialData::normalTexture() const {
     CORRADE_ASSERT(flags() & Flag::NormalTexture, "Trade::PhongMaterialData::normalTexture(): the material doesn't have a normal texture", {});
     return _normalTexture;
+}
+
+UnsignedInt PhongMaterialData::normalCoordinateSet() const {
+    CORRADE_ASSERT(flags() & Flag::NormalTexture, "Trade::PhongMaterialData::normalCoordinateSet(): the material doesn't have a normal texture", {});
+    return _normalCoordinateSet;
 }
 
 Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
@@ -110,6 +142,7 @@ Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
         _c(SpecularTexture)
         _c(NormalTexture)
         _c(TextureTransformation)
+        _c(TextureCoordinateSets)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -124,7 +157,8 @@ Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
         PhongMaterialData::Flag::DiffuseTexture,
         PhongMaterialData::Flag::SpecularTexture,
         PhongMaterialData::Flag::NormalTexture,
-        PhongMaterialData::Flag::TextureTransformation});
+        PhongMaterialData::Flag::TextureTransformation,
+        PhongMaterialData::Flag::TextureCoordinateSets});
 }
 
 }}

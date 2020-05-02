@@ -43,13 +43,6 @@ namespace Magnum { namespace Trade {
 */
 class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:
-        /** @todo what is this for?! */
-        enum: UnsignedInt {
-            AmbientTextureID = 0,   /**< Ambient texture ID for mapping with texture coordinates */
-            DiffuseTextureID = 1,   /**< Diffuse texture ID for mapping with texture coordinates */
-            SpecularTextureID = 3   /**< Specular texture ID for mapping with texture coordinates */
-        };
-
         /**
          * @brief Material flag
          *
@@ -79,7 +72,13 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
              * The material has a texture coordinate transformation
              * @m_since_latest
              */
-            TextureTransformation = 1 << 5
+            TextureTransformation = 1 << 5,
+
+            /**
+             * The material uses non-default texture coordinate sets
+             * @m_since_latest
+             */
+            TextureCoordinateSets = 1 << 6
         };
 
         /**
@@ -123,6 +122,54 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @m_since_latest
          */
         explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, const Color4& diffuseColor, UnsignedInt diffuseTexture, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt normalTexture, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct with non-zero texture coordinate sets
+         * @param flags                 Material flags
+         * @param ambientColor          Ambient color. Use
+         *      @cpp 0x000000ff_rgbaf @ce for a default value for a
+         *      non-textured material and @cpp 0xffffffff_rgbaf @ce for a
+         *      default value for a textured material.
+         * @param ambientTexture        Ambient texture ID. Ignored if @p flags
+         *      doesn't have @ref Flag::AmbientTexture
+         * @param ambientCoordinateSet  Ambient texture coordinate set. Ignored if
+         *      @p flags doesn't have @ref Flag::AmbientTexture
+         * @param diffuseColor          Diffuse color. Use
+         *      @cpp 0xffffffff_rgbaf @ce for a default value for both a
+         *      non-textured and a textured material.
+         * @param diffuseTexture        Diffuse texture ID. Ignored if @p flags
+         *      doesn't have @ref Flag::DiffuseTexture
+         * @param diffuseCoordinateSet  Diffuse texture coordinate set. Ignored if
+         *      @p flags doesn't have @ref Flag::DiffuseTexture
+         * @param specularColor         Specular color. Use
+         *      @cpp 0xffffffff_rgbaf @ce for a default value for both a
+         *      non-textured and a textured material.
+         * @param specularTexture       Specular texture ID. Ignored if @p flags
+         *      doesn't have @ref Flag::SpecularTexture.
+         * @param specularCoordinateSet Specular texture coordinate set. Ignored if
+         *      @p flags doesn't have @ref Flag::SpecularTexture.
+         * @param normalTexture         Normal texture ID. Ignored if @p flags
+         *      doesn't have @ref Flag::NormalTexture.
+         * @param normalCoordinateSet   Normal texture coordinate set. Ignored if
+         *      @p flags doesn't have @ref Flag::NormalTexture.
+         * @param textureMatrix         Texture coordinate transformation. Ignored
+         *      if @p flags doesn't have @ref Flag::TextureTransformation.
+         * @param alphaMode             Alpha mode. Use
+         *      @ref MaterialAlphaMode::Opaque for a default value.
+         * @param alphaMask             Alpha mask value. Use @cpp 0.5f @ce for a
+         *      default value.
+         * @param shininess             Shininess. Use @cpp 80.0f @ce for a default
+         *      value.
+         * @param importerState         Importer-specific state
+         * @m_since_latest
+         *
+         * If any `*CoordinateSet` is non-zero, expects
+         * @ref Flag::TextureCoordinateSets to be enabled as well.
+         *
+         * If any `*CoordinateSet` is non-zero, expects
+         * @ref Flag::TextureCoordinateSets to be enabled as well.
+         */
+        explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, UnsignedInt ambientCoordinateSet, const Color4& diffuseColor, UnsignedInt diffuseTexture, UnsignedInt diffuseCoordinateSet, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt specularCoordinateSet, UnsignedInt normalTexture, UnsignedInt normalCoordinateSet, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -201,6 +248,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         #endif
 
         /**
+         * @brief Ambient texture coordinate set
+         * @m_since_latest
+         *
+         * Available only if the material has @ref Flag::AmbientTexture.
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt ambientCoordinateSet() const;
+
+        /**
          * @brief Diffuse color
          *
          * If the material has @ref Flag::DiffuseTexture, the color and texture
@@ -235,6 +291,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /* Not using CORRADE_DEPRECATED(), see why above */
         UnsignedInt& diffuseTexture();
         #endif
+
+        /**
+         * @brief Diffuse texture coordinate set
+         * @m_since_latest
+         *
+         * Available only if the material has @ref Flag::DiffuseTexture.
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt diffuseCoordinateSet() const;
 
         /**
          * @brief Specular color
@@ -273,6 +338,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         #endif
 
         /**
+         * @brief Specular texture coordinate set
+         * @m_since_latest
+         *
+         * Available only if the material has @ref Flag::SpecularTexture.
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt specularCoordinateSet() const;
+
+        /**
          * @brief Normal texture ID
          * @m_since_latest
          *
@@ -280,6 +354,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt normalTexture() const;
+
+        /**
+         * @brief Normal texture coordinate set
+         * @m_since_latest
+         *
+         * Available only if the material has @ref Flag::NormalTexture.
+         * @see @ref flags(), @ref AbstractImporter::texture()
+         */
+        UnsignedInt normalCoordinateSet() const;
 
         /**
          * @brief Texture coordinate transformation matrix
@@ -299,11 +382,15 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
            and thus better noticeable */
         Color4 _ambientColor;
         UnsignedInt _ambientTexture{~UnsignedInt{}};
+        UnsignedInt _ambientCoordinateSet;
         Color4 _diffuseColor;
         UnsignedInt _diffuseTexture{~UnsignedInt{}};
+        UnsignedInt _diffuseCoordinateSet;
         Color4 _specularColor;
         UnsignedInt _specularTexture{~UnsignedInt{}};
+        UnsignedInt _specularCoordinateSet;
         UnsignedInt _normalTexture{~UnsignedInt{}};
+        UnsignedInt _normalCoordinateSet;
         Matrix3 _textureMatrix;
         Float _shininess;
 };
