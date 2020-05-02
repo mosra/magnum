@@ -446,49 +446,6 @@ Installation to given prefix can be done from within QtCreator by adding a new
 
 @subsection building-features Enabling or disabling features
 
-The libraries are build as shared by default. If you are developing for a
-platform which doesn't support shared libraries or if you just want to link
-them statically, enable `BUILD_STATIC` to build the libraries as static.
-Building of static plugins is controlled with a separate `BUILD_PLUGINS_STATIC`
-variable. If you plan to use the static libraries and plugins with shared
-libraries later, enable also position-independent code with `BUILD_STATIC_PIC`.
-If you want to build with another compiler (e.g. Clang), pass
-`-DCMAKE_CXX_COMPILER=clang++` to CMake.
-
-Libraries and static plugins built in `Debug` configuration (e.g. with
-`CMAKE_BUILD_TYPE` set to `Debug`) have a `-d` suffix to make it possible to
-have both debug and release libraries installed alongside each other. *Dynamic*
-plugins in `Debug` configuration are installed to `magnum-d` subdirectory
-instead of `magnum`. Headers and other files are the same for both debug and
-release configurations. The library and plugin distinction is handled
-semi-automatically when using Magnum in depending projects, see @ref cmake for
-more information.
-
-Particular platforms have additional requirements when it comes to location of
-installed files. The following variables are supported:
-
--   `LIB_SUFFIX` --- Setting this variable to `64` can be used to tell CMake to
-    install to `lib64/` instead of `lib/`. In most cases this variable is
-    autodetected, so you don't need to set it yourself.
--   `MAGNUM_DEPLOY_PREFIX` --- Used on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-    to override location where web demos and utilities (such as @ref magnum-gl-info)
-    are installed, so you can have libraries installed to a system location and
-    utilities to your webserver, for example. Defaults to ``.``. If a relative
-    path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
--   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Used on @ref CORRADE_TARGET_ANDROID "Android"
-    to override location where platform-independent include files, CMake
-    scripts and other files are installed. CMake on Android by default searches
-    for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
-    based on target API and platform, but looks for headers in a central
-    location at <tt>&lt;ndk&gt;/sysroot/usr</tt>. Defaults to ``.``. If a
-    relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
-
-The library is constantly evolving and thus some APIs are deprecated and then
-later removed in favor of better ones. To preserve backwards compatibility,
-Magnum is by default built with all deprecated APIs included. However, to make
-your code more robust and future-proof, it's recommended to build the library
-with `BUILD_DEPRECATED` disabled.
-
 By default the engine is built for desktop OpenGL. Using the `TARGET_*` CMake
 options you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
@@ -516,30 +473,6 @@ available for desktop OpenGL only, see @ref requires-gl.
     libraries to not depend on the @ref Vk library, but  doesn't affect the
     @ref Vk library itself.
 
-By default the engine is built in a way that allows having multiple independent
-thread-local Magnum contents. This is inherited from the
-@ref CORRADE_BUILD_MULTITHREADED option --- if you are sure that you will never
-need such feature, disable it when building Corrade itself.
-
-Various plugin interfaces search for plugins in locations and order documented
-in @ref Corrade::PluginManager::implicitPluginSearchPaths(),
-@ref Trade::AbstractImporter::pluginSearchPaths() and equivalent functions in
-other plugin interfaces. In most cases the implicit behavior does the right
-thing, but if you need to override those, use the `MAGNUM_PLUGINS_DIR`,
-`MAGNUM_PLUGINS_DEBUG_DIR` and `MAGNUM_PLUGINS_RELEASE_DIR` CMake variables.
-Those are empty by default, which means no hardcoded path is used. Another
-option is supplying the plugin search path to the
-@ref Corrade::PluginManager::Manager constructor either using the same CMake
-variables (passed through to preprocessor, see @ref cmake) or via any other
-means. All builtin Magnum utilities such as @ref magnum-imageconverter also
-provide a way to override the plugin directory via the `--plugin-dir`
-command-line option.
-
-The features used can be conveniently detected in depending projects both in
-CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
-information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
-related info for the Corrade library.
-
 By default the engine is built with nearly everything except the @ref Audio
 and @ref Vk libraries, plugins, command-line utilities and application
 libraries (see below). Using the following `WITH_*` CMake options you can
@@ -564,12 +497,6 @@ specify which parts will be built and which not:
 -   `WITH_TRADE` --- Build the @ref Trade library.
 -   `WITH_VK` --- Build the @ref Vk library. Depends on Vulkan, not enabled by
     default.
-
-There are more involved component dependencies that are not described here (for
-example the @ref DebugTools has some functionality that gets built only when
-@ref SceneGraph is enabled, which then makes it dependent on @ref Shaders and
-other things), but the CMake buildsystem takes care of these and only the
-relevant toggleable options are shown in CMake GUI or `ccmake`.
 
 None of the @ref Platform "application libraries" is built by default (and *you
 need at least one*, unless you are handling platform integration yourself ---
@@ -693,11 +620,36 @@ There are also a few command-line utilities, also all disabled by default:
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats.
 
-Note that each [namespace](namespaces.html) documentation, all @ref Platform
-library documentation and the @ref GL::OpenGLTester class documentation contain
-more detailed information about dependencies, availability on particular
-platform and also guide how to enable given library for building and how to use
-it with CMake.
+Options controlling the build:
+
+-   `BUILD_STATIC` --- Build all libraries as static. Default is shared, except
+    on platforms such as @ref CORRADE_TARGET_ANDROID "Android" or
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" that don't support dynamic
+    linking.
+-   `BUILD_STATIC_PIC` --- Build static libraries with position-independent
+    code. Enabled by default when building static libraries, disable if you
+    don't need this feature. On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+    this option is always off.
+-   `BUILD_PLUGINS_STATIC` --- Build plugins as static. By default, plugins are
+    built as dynamic. Independent of the `BUILD_STATIC` option to allow having
+    static libraries with dynamic plugins and vice versa.
+-   `BUILD_DEPRECATED` --- Include deprecated APIs in the build. Enabled by
+    default to preserve backwards compatibility, disabling it forces you to
+    update your code whenever there's a breaking API change. It's however
+    recommended to have this option disabled when deploying a final application
+    as it can result in smaller binaries.
+-   Additional options are inherited from the @ref CORRADE_BUILD_MULTITHREADED
+    options specified when building Corrade.
+
+The features used can be conveniently detected in depending projects both in
+CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
+information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
+related info for the Corrade library. Note that each
+[namespace](namespaces.html) documentation, all @ref Platform library
+documentation and the @ref GL::OpenGLTester class documentation contain more
+detailed information about dependencies, availability on particular platform
+and also guide how to enable given library for building and how to use it with
+CMake.
 
 This list covers only the core Magnum features, see also features offered by
 @ref building-corrade-features "Corrade",
@@ -705,6 +657,48 @@ This list covers only the core Magnum features, see also features offered by
 @ref building-integration-features "Magnum Integration",
 @ref building-extras-features "Magnum Extras" and
 @ref building-examples-features "Magnum Examples".
+
+Libraries and static plugins built in `Debug` configuration (e.g. with
+`CMAKE_BUILD_TYPE` set to `Debug`) have a `-d` suffix to make it possible to
+have both debug and release libraries installed alongside each other. *Dynamic*
+plugins in `Debug` configuration are installed to `magnum-d` subdirectory
+instead of `magnum`. Headers and other files are the same for both debug and
+release configurations. The library and plugin distinction is handled
+semi-automatically when using Magnum in depending projects, see @ref cmake for
+more information.
+
+Particular platforms have additional requirements when it comes to location of
+installed files. The following variables are supported:
+
+-   `LIB_SUFFIX` --- Setting this variable to `64` can be used to tell CMake to
+    install to `lib64/` instead of `lib/`. In most cases this variable is
+    autodetected, so you don't need to set it yourself.
+-   `MAGNUM_DEPLOY_PREFIX` --- Used on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+    to override location where web demos and utilities (such as @ref magnum-gl-info)
+    are installed, so you can have libraries installed to a system location and
+    utilities to your webserver, for example. Defaults to ``.``. If a relative
+    path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
+-   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Used on @ref CORRADE_TARGET_ANDROID "Android"
+    to override location where platform-independent include files, CMake
+    scripts and other files are installed. CMake on Android by default searches
+    for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
+    based on target API and platform, but looks for headers in a central
+    location at <tt>&lt;ndk&gt;/sysroot/usr</tt>. Defaults to ``.``. If a
+    relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
+
+Various plugin interfaces search for plugins in locations and order documented
+in @ref Corrade::PluginManager::implicitPluginSearchPaths(),
+@ref Trade::AbstractImporter::pluginSearchPaths() and equivalent functions in
+other plugin interfaces. In most cases the implicit behavior does the right
+thing, but if you need to override those, use the `MAGNUM_PLUGINS_DIR`,
+`MAGNUM_PLUGINS_DEBUG_DIR` and `MAGNUM_PLUGINS_RELEASE_DIR` CMake variables.
+Those are empty by default, which means no hardcoded path is used. Another
+option is supplying the plugin search path to the
+@ref Corrade::PluginManager::Manager constructor either using the same CMake
+variables (passed through to preprocessor, see @ref cmake) or via any other
+means. All builtin Magnum utilities such as @ref magnum-imageconverter also
+provide a way to override the plugin directory via the `--plugin-dir`
+command-line option.
 
 @subsection building-tests Building and running tests
 
