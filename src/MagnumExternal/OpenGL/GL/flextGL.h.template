@@ -91,9 +91,6 @@ void flextGLInit(Magnum::GL::Context& context);
 #ifndef APIENTRY
 #define APIENTRY
 #endif
-#ifndef GLAPI
-#define GLAPI extern
-#endif
 
 /* GL version defines. Needs to be done to avoid conflicting definitions with
    other GL headers (such as qopengl.h in Qt, which has different definition
@@ -112,20 +109,37 @@ void flextGLInit(Magnum::GL::Context& context);
 
 @enums
 
-/* Function prototypes */
+/* Function prototypes. Put into a struct in order to handle thread-localness
+   and globals unique across shared libs, this also means way less symbols is
+   exported, saving on binary size. Contexts on NVidia 390 drivers don't have
+   correct statically linked GL 1.0 and 1.1 functions (such as glGetString())
+   and one has to retrieve them explicitly using eglGetProcAddress(), which is
+   why those functions aren't listed as direct prototypes. */
+struct FlextGL {
+    @for cat,funcs in functions:
+    @if funcs:
+
+    /* GL_@cat */
+
+    @for f in funcs:
+    @f.returntype\
+(APIENTRY *@f.name)(@f.param_type_list_string());
+    @end
+    @end
+    @end
+};
+
+extern FLEXTGL_EXPORT FlextGL flextGL;
 @for cat,funcs in functions:
 @if funcs:
 
 /* GL_@cat */
 
-    @for f in funcs:
-GLAPI FLEXTGL_EXPORT @f.returntype\
-(APIENTRY *flextgl@f.name)(@f.param_type_list_string());
-#define gl@f.name flextgl@f.name
-    @end
+@for f in funcs:
+#define gl@f.name flextGL.@f.name
 @end
 @end
-
+@end
 #endif
 
 #ifdef __cplusplus

@@ -38,7 +38,7 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_@category */
     @for f in funcs:
-    flextgl@f.name = reinterpret_cast<@f.returntype\
+    flextGL.@f.name = reinterpret_cast<@f.returntype\
 (APIENTRY*)(@f.param_type_list_string())>(loader.load("gl@f.name"));
     @end
     @end

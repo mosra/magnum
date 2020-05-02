@@ -105,22 +105,43 @@ void flextGLInit(Magnum::GL::Context& context);
 
 /* Function prototypes */
 @for cat,funcs in functions:
-@if funcs:
+@if funcs and cat in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
 
 /* GL_@cat */
 
-    @if cat in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
         @for f in funcs:
 GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
 (@f.param_type_list_string());
         @end
-    @else:
-        @for f in funcs:
-GLAPI FLEXTGL_EXPORT @f.returntype\
-(APIENTRY *flextgl@f.name)(@f.param_type_list_string());
-#define gl@f.name flextgl@f.name
-        @end
+@end
+@end
+
+/* Dynamically-loaded function prototypes put into a struct in order to handle
+   thread-localness and globals unique across shared libs, this also means way
+   less symbols is exported, saving on binary size. */
+struct FlextGL {
+    @for cat,funcs in functions:
+    @if funcs and cat not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+
+    /* GL_@cat */
+
+    @for f in funcs:
+    @f.returntype\
+(APIENTRY *@f.name)(@f.param_type_list_string());
     @end
+    @end
+    @end
+};
+
+extern FLEXTGL_EXPORT FlextGL flextGL;
+@for cat,funcs in functions:
+@if funcs and cat not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+
+/* GL_@cat */
+
+@for f in funcs:
+#define gl@f.name flextGL.@f.name
+@end
 @end
 @end
 

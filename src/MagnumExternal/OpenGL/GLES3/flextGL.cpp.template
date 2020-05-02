@@ -29,16 +29,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-@for category,funcs in functions:
-@if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
 
-/* GL_@category */
-@for f in funcs:
-FLEXTGL_EXPORT @f.returntype\
-(APIENTRY *flextgl@f.name)(@f.param_type_list_string()) = nullptr;
-@end
-@end
-@end
+FlextGL flextGL{};
 
 #ifdef __cplusplus
 }
