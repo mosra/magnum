@@ -70,6 +70,7 @@ corrade_add_test(MathStrictWeakOrderingTest StrictWeakOrderingTest.cpp LIBRARIES
 
 corrade_add_test(MathVectorBenchmark VectorBenchmark.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrixBenchmark MatrixBenchmark.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathFunctionsBenchmark FunctionsBenchmark.cpp LIBRARIES MagnumMathTestLib)
 
 set_property(TARGET
     MathVectorTest
@@ -134,4 +135,5 @@ set_target_properties(
 
     MathVectorBenchmark
     MathMatrixBenchmark
+    MathFunctionsBenchmark
     PROPERTIES FOLDER "Magnum/Math/Test")
