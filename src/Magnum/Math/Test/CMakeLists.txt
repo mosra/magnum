@@ -131,4 +131,7 @@ set_target_properties(
 
     MathConfigurationValueTest
     MathStrictWeakOrderingTest
+
+    MathVectorBenchmark
+    MathMatrixBenchmark
     PROPERTIES FOLDER "Magnum/Math/Test")
