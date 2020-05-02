@@ -56,7 +56,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void unknown();
 
-    void propagateFlags();
+    void verbose();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -98,7 +98,7 @@ AnySceneImporterTest::AnySceneImporterTest() {
 
     addTests({&AnySceneImporterTest::unknown,
 
-              &AnySceneImporterTest::propagateFlags});
+              &AnySceneImporterTest::verbose});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -181,8 +181,25 @@ void AnySceneImporterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine the format of mesh.wtf\n");
 }
 
-void AnySceneImporterTest::propagateFlags() {
-    CORRADE_SKIP("No plugin with verbose output available to test.");
+void AnySceneImporterTest::verbose() {
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    importer->setFlags(ImporterFlag::Verbose);
+
+    std::ostringstream out;
+    {
+        Debug redirectOutput{&out};
+        CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+        CORRADE_VERIFY(importer->mesh(0));
+    }
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnySceneImporter::openFile(): using ObjImporter\n");
+
+    /* We tested AnySceneImporter's verbose output, but can't actually test
+       the flag propagation in any way yet */
+    CORRADE_SKIP("No plugin with verbose output available to test flag propagation.");
 }
 
 }}}}

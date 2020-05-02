@@ -48,7 +48,7 @@ struct AnyImageImporterTest: TestSuite::Tester {
     void unknownSignature();
     void emptyData();
 
-    void propagateFlags();
+    void verbose();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
@@ -63,9 +63,10 @@ constexpr struct {
     const char* name;
     const char* filename;
     Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
+    const char* verboseFunctionName;
 } LoadData[]{
-    {"TGA", TGA_FILE, nullptr},
-    {"TGA data", TGA_FILE, fileCallback}
+    {"TGA", TGA_FILE, nullptr, "openFile"},
+    {"TGA data", TGA_FILE, fileCallback, "openData"}
 };
 
 constexpr struct {
@@ -105,7 +106,7 @@ AnyImageImporterTest::AnyImageImporterTest() {
               &AnyImageImporterTest::unknownSignature,
               &AnyImageImporterTest::emptyData});
 
-    addInstancedTests({&AnyImageImporterTest::propagateFlags},
+    addInstancedTests({&AnyImageImporterTest::verbose},
         Containers::arraySize(LoadData));
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -196,7 +197,7 @@ void AnyImageImporterTest::emptyData() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
 }
 
-void AnyImageImporterTest::propagateFlags() {
+void AnyImageImporterTest::verbose() {
     auto&& data = LoadData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -209,14 +210,16 @@ void AnyImageImporterTest::propagateFlags() {
     Containers::Array<char> storage;
     importer->setFileCallback(data.callback, storage);
 
-    CORRADE_VERIFY(importer->openFile(data.filename));
-
     std::ostringstream out;
     {
         Debug redirectOutput{&out};
+        CORRADE_VERIFY(importer->openFile(data.filename));
         CORRADE_VERIFY(importer->image2D(0));
     }
-    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::image2D(): converting from BGR to RGB\n");
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Trade::AnyImageImporter::{}(): using TgaImporter\n"
+        "Trade::TgaImporter::image2D(): converting from BGR to RGB\n",
+        data.verboseFunctionName));
 }
 
 }}}}

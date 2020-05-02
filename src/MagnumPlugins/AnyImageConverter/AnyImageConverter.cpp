@@ -26,6 +26,7 @@
 #include "AnyImageConverter.h"
 
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
@@ -80,6 +81,14 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
         Error{} << "Trade::AnyImageConverter::exportToFile(): cannot load the" << plugin << "plugin";
         return false;
+    }
+    if(flags() & ImageConverterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageConverter::exportToFile(): using" << plugin;
+        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
     /* Instantiate the plugin, propagate flags */

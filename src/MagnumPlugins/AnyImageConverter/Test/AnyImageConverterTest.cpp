@@ -47,7 +47,7 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void unknown();
 
-    void propagateFlags();
+    void verbose();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
@@ -83,7 +83,7 @@ AnyImageConverterTest::AnyImageConverterTest() {
 
     addTests({&AnyImageConverterTest::unknown,
 
-              &AnyImageConverterTest::propagateFlags});
+              &AnyImageConverterTest::verbose});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -154,7 +154,7 @@ void AnyImageConverterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine the format of image.xcf\n");
 }
 
-void AnyImageConverterTest::propagateFlags() {
+void AnyImageConverterTest::verbose() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
@@ -172,7 +172,9 @@ void AnyImageConverterTest::propagateFlags() {
         CORRADE_VERIFY(converter->exportToFile(Image, filename));
     }
     CORRADE_VERIFY(Utility::Directory::exists(filename));
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnyImageConverter::exportToFile(): using TgaImageConverter\n"
+        "Trade::TgaImageConverter::exportToData(): converting from RGB to BGR\n");
 }
 
 }}}}

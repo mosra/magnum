@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
@@ -112,6 +113,14 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         Error{} << "Trade::AnyImageImporter::openFile(): cannot determine the format of" << filename;
         return;
     }
+    if(flags() & ImporterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageImporter::openFile(): using" << plugin;
+        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
 
     /* Try to load the plugin */
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
@@ -191,6 +200,14 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
         Error{} << "Trade::AnyImageImporter::openData(): cannot load the" << plugin << "plugin";
         return;
+    }
+    if(flags() & ImporterFlag::Verbose) {
+        Debug d;
+        d << "Trade::AnyImageImporter::openData(): using" << plugin;
+        PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
     /* Instantiate the plugin, propagate flags */
