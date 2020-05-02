@@ -317,6 +317,8 @@ See also:
     executable location where possible and use hardcoded paths only if
     explicitly specified. See @ref Trade::AbstractImporter::pluginSearchPaths()
     for more information.
+-   Added an ability to disable unique globals across shared libraries using
+    @ref MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS on static builds that don't need it
 
 @subsubsection changelog-latest-changes-audio Audio library
 

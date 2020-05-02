@@ -41,7 +41,7 @@
 
 #include "Magnum/Audio/Extensions.h"
 
-#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS_RT)
 #include "Magnum/Implementation/WindowsWeakSymbol.h"
 #endif
 
@@ -119,7 +119,7 @@ std::vector<std::string> Context::deviceSpecifierStrings() {
     return list;
 }
 
-#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) || defined(CORRADE_TARGET_WINDOWS)
 /* (Of course) can't be in an unnamed namespace in order to export it below
    (except for Windows, where we do extern "C" so this doesn't matter) */
 namespace {
@@ -127,8 +127,9 @@ namespace {
 
 /* Unlike GL, this isn't thread-local. Would need to implement
    ALC_EXT_thread_local_context first */
-#if !defined(MAGNUM_BUILD_STATIC) || (defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS))
-#ifdef MAGNUM_BUILD_STATIC
+/* What the hell is going on here with the #ifdefs?! */
+#if !defined(MAGNUM_BUILD_STATIC) || !defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) || (defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS))
+#ifdef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
 /* On static builds that get linked to multiple shared libraries and then used
    in a single app we want to ensure there's just one global symbol. On Linux
    it's apparently enough to just export, macOS needs the weak attribute.
@@ -152,7 +153,7 @@ extern "C" {
 }
 #endif
 
-#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) || defined(CORRADE_TARGET_WINDOWS)
 }
 #endif
 
@@ -161,7 +162,7 @@ extern "C" {
    pick up the same symbol of the final exe independently of the DLL it was
    called from. To avoid #ifdef hell in code below, the currentContext is
    redefined to return a value from this uniqueness-ensuring function. */
-#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS_RT)
 namespace {
 
 Context*& windowsCurrentContext() {

@@ -42,9 +42,19 @@ GlobalStateAcrossLibrariesALTest::GlobalStateAcrossLibrariesALTest() {
 }
 
 void GlobalStateAcrossLibrariesALTest::test() {
+    #if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(MAGNUM_BUILD_STATIC)
+    CORRADE_VERIFY(!"MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS enabled but MAGNUM_BUILD_STATIC not");
+    #endif
+
     Context context;
     CORRADE_VERIFY(Context::hasCurrent());
-    CORRADE_COMPARE(currentContextInALibrary(), &context);
+
+    {
+        #ifndef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
+        CORRADE_EXPECT_FAIL("MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS not enabled.");
+        #endif
+        CORRADE_COMPARE(currentContextInALibrary(), &context);
+    }
 }
 
 }}}}

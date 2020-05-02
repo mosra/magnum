@@ -65,7 +65,7 @@
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 #endif
 
-#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS_RT)
 #include "Magnum/Implementation/WindowsWeakSymbol.h"
 #endif
 
@@ -500,7 +500,7 @@ Containers::ArrayView<const Extension> Extension::extensions(Version version) {
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) || defined(CORRADE_TARGET_WINDOWS)
 /* (Of course) can't be in an unnamed namespace in order to export it below
    (except for Windows, where we do extern "C" so this doesn't matter) */
 namespace {
@@ -509,7 +509,7 @@ namespace {
 #ifdef CORRADE_BUILD_MULTITHREADED
 CORRADE_THREAD_LOCAL
 #endif
-#if defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS)
+#if defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS)
 /* On static builds that get linked to multiple shared libraries and then used
    in a single app we want to ensure there's just one global symbol. On Linux
    it's apparently enough to just export, macOS needs the weak attribute.
@@ -523,7 +523,7 @@ CORRADE_VISIBILITY_EXPORT
 #endif
 Context* currentContext = nullptr;
 
-#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) || defined(CORRADE_TARGET_WINDOWS)
 }
 #endif
 
@@ -535,7 +535,7 @@ Context* currentContext = nullptr;
    pick up the same symbol of the final exe independently of the DLL it was
    called from. To avoid #ifdef hell in code below, the currentContext is
    redefined to return a value from this uniqueness-ensuring function. */
-#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS) && !defined(CORRADE_TARGET_WINDOWS_RT)
 /* Clang-CL complains that the function has a return type incompatible with C.
    I don't care, I only need an unmangled name to look up later at runtime. */
 #ifdef CORRADE_TARGET_CLANG_CL

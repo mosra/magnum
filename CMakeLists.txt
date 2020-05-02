@@ -186,6 +186,7 @@ else()
     set(ON_EXCEPT_EMSCRIPTEN ON)
 endif()
 option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ${ON_EXCEPT_EMSCRIPTEN})
+cmake_dependent_option(BUILD_STATIC_UNIQUE_GLOBALS "Build static libraries with globals unique across shared libraries" ${ON_EXCEPT_EMSCRIPTEN} "BUILD_STATIC" OFF)
 option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests" OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "BUILD_TESTS;TARGET_GL" OFF)
@@ -219,6 +220,9 @@ endif()
 
 if(BUILD_STATIC)
     set(MAGNUM_BUILD_STATIC 1)
+    if(BUILD_STATIC_UNIQUE_GLOBALS)
+        set(MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS 1)
+    endif()
 endif()
 
 # Check dependencies

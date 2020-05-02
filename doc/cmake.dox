@@ -308,6 +308,9 @@ are also available as preprocessor variables if including
     included
 -   `MAGNUM_BUILD_STATIC` --- Defined if compiled as static libraries. Default
     are shared libraries.
+-   `MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS` --- Defined if static libraries keep
+    their globals unique even across different shared libraries. Enabled by
+    default for static builds.
 -   `MAGNUM_TARGET_GL` --- Defined if compiled with OpenGL interoperability
     enabled
 -   `MAGNUM_TARGET_GLES` --- Defined if compiled for OpenGL ES

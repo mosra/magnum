@@ -66,6 +66,16 @@ Defined if built as static libraries. Default are shared libraries.
 #define MAGNUM_BUILD_STATIC
 #undef MAGNUM_BUILD_STATIC
 
+/**
+@brief Static library build with globals unique across shared libraries
+@m_since_latest
+
+Enabled by default in a static build.
+@see @ref building, @ref cmake
+*/
+#define MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
+#undef MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief Multi-threaded build
  * @m_deprecated_since{2019,10} Use @ref CORRADE_BUILD_MULTITHREADED instead.

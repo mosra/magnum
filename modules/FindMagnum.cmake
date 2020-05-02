@@ -126,6 +126,8 @@
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
 #   included
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
+#  MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS - Defined if static libraries keep the
+#   globals unique even across different shared libraries
 #  MAGNUM_TARGET_GL             - Defined if compiled with OpenGL interop
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
@@ -249,6 +251,7 @@ string(REGEX REPLACE "\n" ";" _magnumConfigure "${_magnumConfigure}")
 set(_magnumFlags
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_STATIC_UNIQUE_GLOBALS
     TARGET_GL
     TARGET_GLES
     TARGET_GLES2
