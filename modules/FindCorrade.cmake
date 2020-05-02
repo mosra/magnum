@@ -75,6 +75,9 @@
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries.
 #   Default are shared libraries.
+#  CORRADE_BUILD_STATIC_UNIQUE_GLOBALS - Defined if static libraries keep their
+#   globals unique even across different shared libraries. Enabled by default
+#   for static builds.
 #  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
 #   possible to safely use certain Corrade features simultaenously in multiple
 #   threads
@@ -97,7 +100,7 @@
 #   with a MSVC frontend)
 #  CORRADE_TARGET_MSVC          - Defined if compiling with MSVC or Clang with
 #   a MSVC frontend
-#  CORRADE_TARGET_MINGW`        - Defined if compiling under MinGW
+#  CORRADE_TARGET_MINGW         - Defined if compiling under MinGW
 #  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
 #   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
@@ -193,13 +196,19 @@
 #                     <metadata file>
 #                     <sources>...)
 #
-# The macro adds preprocessor directive ``CORRADE_DYNAMIC_PLUGIN``. Additional
-# libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
+# The macro adds a preprocessor directive ``CORRADE_DYNAMIC_PLUGIN`` when
+# compiling ``<sources>``. Additional libraries can be linked in via
+# :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
 # On DLL platforms, the plugin DLLs and metadata files are put into
-# ``<debug binary install dir>``/``<release binary install dir>`` and the
-# ``*.lib`` files into ``<debug library install dir>``/``<release library install dir>``.
-# On non-DLL platforms everything is put into ``<debug library install dir>``/
-# ``<release library install dir>``.
+# ``<debug binary install dir>`` / ``<release binary install dir>`` and the
+# ``*.lib`` files into ``<debug library install dir>`` /
+# ``<release library install dir>``. On non-DLL platforms everything is put
+# into ``<debug library install dir>`` / ``<release library install dir>``.
+#
+# If the plugin interface disables plugin metadata files, the
+# ``<metadata file>`` can be set to ``""``, in which case no metadata file is
+# copied anywhere. Otherwise the metadata file is copied and renamed to
+# ``<plugin name>``, retaining its original extension.
 #
 #  corrade_add_plugin(<plugin name>
 #                     <debug install dir>
@@ -224,14 +233,20 @@
 #                            <metadata file>
 #                            <sources>...)
 #
-# The macro adds preprocessor directive ``CORRADE_STATIC_PLUGIN``. Additional
-# libraries can be linked in via :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
+# The macro adds a preprocessor directive ``CORRADE_STATIC_PLUGIN`` when
+# compiling ``<sources>``. Additional libraries can be linked in via
+# :command:`target_link_libraries(plugin_name ...) <target_link_libraries>`.
 # The ``<binary install dir>`` is ignored and included just for compatibility
 # with the :command:`corrade_add_plugin` command, everything is installed into
 # ``<library install dir>``. Note that plugins built in debug configuration
 # (e.g. with :variable:`CMAKE_BUILD_TYPE` set to ``Debug``) have ``"-d"``
 # suffix to make it possible to have both debug and release plugins installed
 # alongside each other.
+#
+# If the plugin interface disables plugin metadata files, the
+# ``<metadata file>`` can be set to ``""``, in which case no metadata file is
+# used. Otherwise the metadata file is bundled and renamed to
+# ``<plugin name>``, retaining its original extension.
 #
 #  corrade_add_static_plugin(<plugin name>
 #                            <install dir>
@@ -307,6 +322,7 @@ set(_corradeFlags
     MSVC2019_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_STATIC_UNIQUE_GLOBALS
     BUILD_MULTITHREADED
     TARGET_UNIX
     TARGET_APPLE
