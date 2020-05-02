@@ -671,6 +671,7 @@ namespace Corrade { namespace Utility {
 
 using namespace Magnum;
 
+#ifdef MAGNUM_TARGET_GL
 std::string ConfigurationValue<DebugTools::GLFrameProfiler::Value>::toString(const DebugTools::GLFrameProfiler::Value value, ConfigurationValueFlags) {
     const UnsignedInt bit = Math::log2(UnsignedShort(value));
     if(1 << bit == UnsignedShort(value))
@@ -711,5 +712,6 @@ DebugTools::GLFrameProfiler::Values ConfigurationValue<DebugTools::GLFrameProfil
 
     return values;
 }
+#endif
 
 }}

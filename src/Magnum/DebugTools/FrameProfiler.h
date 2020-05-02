@@ -703,6 +703,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Values
 
 namespace Corrade { namespace Utility {
 
+#ifdef MAGNUM_TARGET_GL
 /**
 @configurationvalue{Magnum::DebugTools::GLFrameProfiler::Value}
 @m_since_latest
@@ -748,6 +749,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
      */
     static Magnum::DebugTools::GLFrameProfiler::Values fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
+#endif
 
 }}
 
