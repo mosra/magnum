@@ -175,7 +175,7 @@ constexpr struct {
     {"object ID", MeshVisualizer3D::Flag::InstancedObjectId},
     {"vertex ID", MeshVisualizer3D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
-    {"primitive ID", MeshVisualizer3D::Flag::InstancedObjectId},
+    {"primitive ID", MeshVisualizer3D::Flag::PrimitiveId},
     #endif
     {"primitive ID from vertex ID", MeshVisualizer3D::Flag::PrimitiveIdFromVertexId}
     #endif
