@@ -132,7 +132,7 @@ layout(location = OBJECT_ID_ATTRIBUTE_LOCATION)
 #endif
 in highp uint instanceObjectId;
 
-#if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+#ifdef NO_GEOMETRY_SHADER
 flat out highp uint interpolatedInstanceObjectId;
 #else
 flat out highp uint interpolatedVsInstanceObjectId;
@@ -140,7 +140,7 @@ flat out highp uint interpolatedVsInstanceObjectId;
 #endif
 
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
-#if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+#ifdef NO_GEOMETRY_SHADER
 flat out highp uint interpolatedPrimitiveId;
 #else
 flat out highp uint interpolatedVsPrimitiveId;
@@ -199,7 +199,7 @@ void main() {
     #endif
 
     #ifdef INSTANCED_OBJECT_ID
-    #if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+    #ifdef NO_GEOMETRY_SHADER
     interpolatedInstanceObjectId
     #else
     interpolatedVsInstanceObjectId
@@ -207,7 +207,7 @@ void main() {
         = instanceObjectId;
     #endif
     #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
-    #if defined(NO_GEOMETRY_SHADER) || (!defined(WIREFRAME_RENDERING) && !defined(TANGENT_DIRECTION) && !defined(BITANGENT_DIRECTION) && !defined(BITANGENT_FROM_TANGENT_DIRECTION) && !defined(NORMAL_DIRECTION))
+    #ifdef NO_GEOMETRY_SHADER
     interpolatedPrimitiveId
     #else
     interpolatedVsPrimitiveId

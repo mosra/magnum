@@ -111,7 +111,6 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
     frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
-        .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         .addSource(_flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
@@ -196,6 +195,11 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     const GL::Version version = setupShaders(vert, frag, rs);
 
     vert.addSource("#define TWO_DIMENSIONS\n")
+        /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
+           nothing actually needs it, as that makes checks much simpler in
+           the vertex shader code */
+        .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
+            "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
     frag.addSource(rs.get("generic.glsl"))
@@ -352,6 +356,14 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #endif
 
     vert.addSource("#define THREE_DIMENSIONS\n")
+        /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
+           nothing actually needs it, as that makes checks much simpler in
+           the vertex shader code */
+        .addSource((flags & Flag::NoGeometryShader) || !(flags & (Flag::Wireframe
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
+            #endif
+            )) ? "#define NO_GEOMETRY_SHADER\n" : "")
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         .addSource(flags & Flag::TangentDirection ? "#define TANGENT_DIRECTION\n" : "")
         .addSource(flags & Flag::BitangentFromTangentDirection ? "#define BITANGENT_FROM_TANGENT_DIRECTION\n" : "")
