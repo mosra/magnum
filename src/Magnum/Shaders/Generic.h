@@ -126,13 +126,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>6</td>
 <td colspan="3">
-* *Reserved* --- vertex weights
+@ref Weights
 </td>
 </tr>
 <tr>
 <td>7</td>
 <td colspan="3">
-* *Reserved* --- bone indices
+@ref JointIds
 </td>
 </tr>
 <tr>
@@ -150,13 +150,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>10</td>
 <td colspan="2">
-* *Reserved* --- 2nd vertex weights
+@ref SecondaryWeights
 </td>
 </tr>
 <tr>
 <td>11</td>
 <td colspan="2">
-* *Reserved* --- 2nd bone indices
+@ref SecondaryJointIds
 </td>
 </tr>
 <tr>
@@ -381,7 +381,21 @@ template<UnsignedInt dimensions> struct Generic {
      */
     typedef GL::Attribute<5, Vector3> Normal;
 
-    /* 6, 7 reserved for vertex weights / bone IDs */
+    /**
+     * @brief Skin weights
+     *
+     * @ref Magnum::Vector4 "Vector4", four weights of influence per @ref JointIndices.
+     * Corresponds to @ref Trade::MeshAttribute::Weights.
+     */
+    typedef GL::Attribute<6, Vector4> Weights;
+
+    /**
+     * @brief Joint IDs
+     *
+     * @ref Magnum::Vector4ui "Vector4ui", four joint indices that may affect the vertex.
+     * Corresponds to @ref Trade::MeshAttribute::JointIds.
+     */
+    typedef GL::Attribute<7, Vector4ui> JointIds;
 
     /**
      * @brief (Instanced) transformation matrix
@@ -478,6 +492,11 @@ struct BaseGeneric {
     #ifndef MAGNUM_TARGET_GLES2
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif
+    typedef GL::Attribute<6, Vector4> Weights;
+    typedef GL::Attribute<7, Vector4> JointIds;
+
+    typedef GL::Attribute<10, Vector4> SecondaryWeights;
+    typedef GL::Attribute<11, Vector4> SecondaryJointIds;
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
 
@@ -506,7 +525,6 @@ template<> struct Generic<3>: BaseGeneric {
     typedef GL::Attribute<3, Vector4> Tangent4;
     typedef GL::Attribute<4, Vector3> Bitangent; /* also ObjectId */
     typedef GL::Attribute<5, Vector3> Normal;
-    /* 6, 7 reserved for vertex weights / bone IDs */
 
     typedef GL::Attribute<8, Matrix4> TransformationMatrix;
     /* 9, 10, 11 occupied by TransformationMatrix */
