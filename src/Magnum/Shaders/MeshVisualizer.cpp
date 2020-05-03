@@ -54,6 +54,16 @@ namespace Implementation {
 
 MeshVisualizerBase::MeshVisualizerBase(FlagsBase flags): _flags{flags} {
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef CORRADE_NO_ASSERT
+    Int countMutuallyExclusive = 0;
+    if(flags & FlagBase::InstancedObjectId) ++countMutuallyExclusive;
+    if(flags & FlagBase::PrimitiveIdFromVertexId) ++countMutuallyExclusive;
+    #endif
+    CORRADE_ASSERT(countMutuallyExclusive <= 1,
+        "Shaders::MeshVisualizer: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
     if(_flags & FlagBase::Wireframe && !(_flags & FlagBase::NoGeometryShader)) {
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL320);
@@ -178,11 +188,6 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer2D: at least Flag::Wireframe has to be enabled", );
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::PrimitiveIdFromVertexId),
-        "Shaders::MeshVisualizer2D: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
     #endif
 
     Utility::Resource rs{"MagnumShaders"};
@@ -332,11 +337,6 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer3D: at least Flag::Wireframe has to be enabled", );
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(!(flags & Flag::InstancedObjectId) || !(flags & Flag::PrimitiveIdFromVertexId),
-        "Shaders::MeshVisualizer3D: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
     #endif
 
     Utility::Resource rs{"MagnumShaders"};

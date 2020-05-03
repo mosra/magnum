@@ -201,15 +201,15 @@ constexpr struct {
     {"no feature enabled",
         MeshVisualizer2D::Flag::NoGeometryShader, /* not a feature flag */
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        "at least one visualization feature has to be enabled"
+        "2D: at least one visualization feature has to be enabled"
         #else
-        "at least Flag::Wireframe has to be enabled"
+        "2D: at least Flag::Wireframe has to be enabled"
         #endif
         },
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
         MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
-        "Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
 
@@ -221,15 +221,15 @@ constexpr struct {
     {"no feature enabled",
         MeshVisualizer3D::Flag::NoGeometryShader, /* not a feature flag */
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        "at least one visualization feature has to be enabled"
+        "3D: at least one visualization feature has to be enabled"
         #else
-        "at least Flag::Wireframe has to be enabled"
+        "3D: at least Flag::Wireframe has to be enabled"
         #endif
         },
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
         MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
-        "Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
 
@@ -665,7 +665,7 @@ void MeshVisualizerGLTest::construct2DInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizer2D{data.flags};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer2D: {}\n", data.message));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer{}\n", data.message));
 }
 
 void MeshVisualizerGLTest::construct3DInvalid() {
@@ -679,7 +679,7 @@ void MeshVisualizerGLTest::construct3DInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshVisualizer3D{data.flags};
-    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer3D: {}\n", data.message));
+    CORRADE_COMPARE(out.str(), Utility::formatString("Shaders::MeshVisualizer{}\n", data.message));
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
