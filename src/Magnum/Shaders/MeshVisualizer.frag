@@ -44,7 +44,7 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
-#if (defined(WIREFRAME_RENDERING) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID) || defined(INSTANCED_OBJECT_ID)) && !defined(TBN_DIRECTION)
+#if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -124,11 +124,11 @@ in lowp vec3 barycentric;
 #endif
 #endif
 
-#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
-flat in highp uint interpolatedPrimitiveId;
-#endif
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedInstanceObjectId;
+#endif
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+flat in highp uint interpolatedPrimitiveId;
 #endif
 
 #ifdef TBN_DIRECTION

@@ -99,13 +99,13 @@ noperspective
 #endif
 out lowp vec3 dist;
 
-#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
-flat in highp uint interpolatedVsPrimitiveId[];
-flat out highp uint interpolatedPrimitiveId;
-#endif
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedVsInstanceObjectId[];
 flat out highp uint interpolatedInstanceObjectId;
+#endif
+#ifdef PRIMITIVE_ID_FROM_VERTEX_ID
+flat in highp uint interpolatedVsPrimitiveId[];
+flat out highp uint interpolatedPrimitiveId;
 #endif
 
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
@@ -167,6 +167,9 @@ void emitQuad(vec4 position, vec2 positionScreen, vec4 endpoint, vec2 endpointSc
 
 void main() {
     /* Passthrough for unchanged variables */
+    #ifdef INSTANCED_OBJECT_ID
+    interpolatedInstanceObjectId = interpolatedVsInstanceObjectId[0];
+    #endif
     #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
     interpolatedPrimitiveId = interpolatedVsPrimitiveId[0];
     #elif defined(PRIMITIVE_ID)
@@ -175,9 +178,6 @@ void main() {
        the GS emitting always just 3 vertices, but not anymore when it emits
        also the TBN direction. */
     gl_PrimitiveID = gl_PrimitiveIDIn;
-    #endif
-    #ifdef INSTANCED_OBJECT_ID
-    interpolatedInstanceObjectId = interpolatedVsInstanceObjectId[0];
     #endif
 
     /* Screen position of each vertex */
