@@ -368,6 +368,17 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+/* https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-memorybarrier
+   Sigh. Our glMemoryBarrier is actually flextGL.MemoryBarrier and then
+   windows.h comes around and sets things on fire. Unless I'm doing something
+   very wrong, windows.h should not be dragged into this file, so no #undef
+   should be necessary. */
+void Renderer::setMemoryBarrier(MemoryBarriers barriers) {
+    glMemoryBarrier(GLbitfield(barriers));
+}
+#endif
+
 #ifndef MAGNUM_TARGET_WEBGL
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     #ifndef MAGNUM_TARGET_GLES

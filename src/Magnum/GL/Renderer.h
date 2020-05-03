@@ -1930,9 +1930,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0 and older.
          * @requires_gles Shader load/store is not available in WebGL.
          */
-        static void setMemoryBarrier(MemoryBarriers barriers) {
-            glMemoryBarrier(GLbitfield(barriers));
-        }
+        static void setMemoryBarrier(MemoryBarriers barriers);
 
         /**
          * @brief Set memory barrier by region
