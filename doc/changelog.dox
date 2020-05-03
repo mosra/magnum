@@ -287,6 +287,9 @@ See also:
 -   @ref Trade::PhongMaterialData now supports both color and texture instead
     of just one or the other, can reference normal textures as well and
     specfify texture coordinate transform
+-   @ref Trade::PhongMaterialData now supports non-default texture coordinate
+    sets (see [mosra/magnum#278](https://github.com/mosra/magnum/pull/278),
+    [mosra/magnum#438](https://github.com/mosra/magnum/pull/438))
 -   Added @ref Trade::AbstractImporter::setFlags() and
     @ref Trade::AbstractImageConverter::setFlags() for configuring common
     plugin behavior such as output verbosity level; exposed also via a new

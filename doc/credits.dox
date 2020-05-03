@@ -139,10 +139,10 @@ Are the below lists missing your name or something's wrong?
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- Homebrew
     package for `magnum-bindings`
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
-    @ref Audio library enhancements, @ref Platform::GlfwApplication and
-    @ref Platform::EmscriptenApplication implementation, frustum and cone
-    culling, bug reports, Windows build improvements, documentation
-    improvements and tons of other stuff
+    @ref Audio and @ref Trade library enhancements,
+    @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication
+    implementation, frustum and cone culling, bug reports, Windows build
+    improvements, documentation improvements and tons of other stuff
 -   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
     --- Debian package, improvements to @ref Platform::GlfwApplication and
