@@ -126,13 +126,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>6</td>
 <td colspan="3">
-* *Reserved* --- vertex weights
+@ref Weights
 </td>
 </tr>
 <tr>
 <td>7</td>
 <td colspan="3">
-* *Reserved* --- bone indices
+@ref JointIndices
 </td>
 </tr>
 <tr>
@@ -150,13 +150,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>10</td>
 <td colspan="2">
-* *Reserved* --- 2nd vertex weights
+@ref Weights
 </td>
 </tr>
 <tr>
 <td>11</td>
 <td colspan="2">
-* *Reserved* --- 2nd bone indices
+@ref JointIndices
 </td>
 </tr>
 <tr>
@@ -358,7 +358,26 @@ template<UnsignedInt dimensions> struct Generic {
      */
     typedef GL::Attribute<5, Vector3> Normal;
 
-    /* 6, 7 reserved for vertex weights / bone IDs */
+    /**
+     * @brief Skin weights
+     *
+     * @ref Magnum::Vector4 "Vector4", four weights of influence per @ref JointIndices.
+     * Corresponds to @ref Trade::MeshAttribute::Weights.
+     */
+    // TODO: E.g. gltf supports importing multiple sets of 4 weights (WEIGHTS_0 [0;3], WEIGHTS_1 [4;7])
+    // I suppose these would require special shaders and it's fine to only support 4 for the GenericShaders
+    typedef GL::Attribute<6, Vector4> Weights;
+
+    /**
+     * @brief Joint indices
+     *
+     * @ref Magnum::Vector4 "Vector4", four weights of influence per @ref JointIndices.
+     * Corresponds to @ref Trade::MeshAttribute::Weights.
+     */
+    // TODO: E.g. gltf supports importing multiple sets of 4 indices (JOINTS_0 [0;3], JOINTS_1 [4;7])
+    // I suppose these would require special shaders and it's fine to only support 4 for the GenericShaders
+    // TODO: This is called "Joints" in gltf.
+    typedef GL::Attribute<7, Vector4> JointIndices;
 
     /**
      * @brief (Instanced) transformation matrix
