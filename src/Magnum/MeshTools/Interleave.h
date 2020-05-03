@@ -216,6 +216,16 @@ that the mesh is interleaved.
 MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData& data);
 
 /**
+@brief Mutable type-erased view on interleaved mesh data
+@m_since_latest
+
+Same as @ref interleavedData(), but returns a mutable view. Expects that the
+mesh is interleaved and vertex data is mutable.
+@see @ref isInterleaved(), @ref Trade::MeshData::vertexDataFlags()
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& data);
+
+/**
 @brief Create an interleaved mesh layout
 @m_since_latest
 

@@ -72,6 +72,16 @@ Containers::StridedArrayView2D<const char> interleavedData(const Trade::MeshData
     return *out;
 }
 
+Containers::StridedArrayView2D<char> interleavedMutableData(Trade::MeshData& data) {
+    Containers::StridedArrayView2D<const char> out = interleavedData(data);
+    CORRADE_ASSERT(data.vertexDataFlags() & Trade::DataFlag::Mutable,
+        "MeshTools::interleavedMutableData(): vertex data is not mutable", {});
+    return Containers::StridedArrayView2D<char>{
+        {nullptr, ~std::size_t{}}, /* to sidestep the range assertions */
+        const_cast<char*>(reinterpret_cast<const char*>(out.data())),
+        out.size(), out.stride()};
+}
+
 namespace Implementation {
 
 Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {

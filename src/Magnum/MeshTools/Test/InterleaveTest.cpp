@@ -66,6 +66,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleavedDataNoVertices();
     void interleavedDataNotInterleaved();
     void interleavedDataVertexDataWholeMemory();
+    void interleavedMutableDataNotMutable();
 
     void interleavedLayout();
     void interleavedLayoutExtra();
@@ -116,6 +117,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleavedDataNoVertices,
               &InterleaveTest::interleavedDataNotInterleaved,
               &InterleaveTest::interleavedDataVertexDataWholeMemory,
+              &InterleaveTest::interleavedMutableDataNotMutable,
 
               &InterleaveTest::interleavedLayout,
               &InterleaveTest::interleavedLayoutExtra,
@@ -398,6 +400,13 @@ void InterleaveTest::interleavedData() {
     CORRADE_COMPARE(interleaved.size()[1], 31);
     CORRADE_COMPARE(interleaved.stride()[0], 40);
     CORRADE_COMPARE(interleaved.stride()[1], 1);
+
+    Containers::StridedArrayView2D<char> interleavedMutable = MeshTools::interleavedMutableData(data);
+    CORRADE_COMPARE(interleavedMutable.data(), positions.data());
+    CORRADE_COMPARE(interleavedMutable.size()[0], 3);
+    CORRADE_COMPARE(interleavedMutable.size()[1], 31);
+    CORRADE_COMPARE(interleavedMutable.stride()[0], 40);
+    CORRADE_COMPARE(interleavedMutable.stride()[1], 1);
 }
 
 void InterleaveTest::interleavedDataNoAttributes() {
@@ -482,6 +491,21 @@ void InterleaveTest::interleavedDataVertexDataWholeMemory() {
     CORRADE_COMPARE(interleaved.size()[1], 28);
     CORRADE_COMPARE(interleaved.stride()[0], 40);
     CORRADE_COMPARE(interleaved.stride()[1], 1);
+}
+
+void InterleaveTest::interleavedMutableDataNotMutable() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char a[1];
+    Trade::MeshData data{MeshPrimitive::Lines, {}, a, {}, 15};
+    CORRADE_VERIFY(MeshTools::isInterleaved(data));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::interleavedMutableData(data);
+    CORRADE_COMPARE(out.str(), "MeshTools::interleavedMutableData(): vertex data is not mutable\n");
 }
 
 void InterleaveTest::interleavedLayout() {
