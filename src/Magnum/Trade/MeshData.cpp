@@ -777,6 +777,18 @@ Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) 
     return out;
 }
 
+Containers::Array<Vector4> MeshData::weightsAsArray(const UnsignedInt id) const {
+    Containers::Array<Vector4> out{_vertexCount};
+    weightsInto(out, id);
+    return out;
+}
+
+Containers::Array<Vector4us> MeshData::jointIndicesAsArray(const UnsignedInt id) const {
+    Containers::Array<Vector4us> out{_vertexCount};
+    jointIndicesInto(out, id);
+    return out;
+}
+
 Containers::Array<char> MeshData::releaseIndexData() {
     _indexCount = 0;
     Containers::Array<char> out = std::move(_indexData);
