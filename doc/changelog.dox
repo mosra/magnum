@@ -247,8 +247,8 @@ See also:
 
 -   New @ref Shaders::MeshVisualizer2D for 2D mesh visualization
 -   Tangent space visualization in @ref Shaders::MeshVisualizer3D
--   Object and primitive ID visualization in @ref Shaders::MeshVisualizer2D
-    and @ref Shaders::MeshVisualizer3D
+-   Object, vertex and primitive ID visualization in
+    @ref Shaders::MeshVisualizer2D and @ref Shaders::MeshVisualizer3D
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
 -   Ability to render Per-instance / per-vertex object ID in @ref Shaders::Flat

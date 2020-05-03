@@ -159,6 +159,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/defaults-primitiveid2D.tga
             MeshVisualizerTestFiles/defaults-primitiveid3D.tga
             MeshVisualizerTestFiles/defaults-tbn.tga
+            MeshVisualizerTestFiles/defaults-vertexid2D.tga
+            MeshVisualizerTestFiles/defaults-vertexid3D.tga
             MeshVisualizerTestFiles/defaults-wireframe2D.tga
             MeshVisualizerTestFiles/defaults-wireframe3D.tga
             MeshVisualizerTestFiles/objectid2D.tga
@@ -168,6 +170,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/primitiveid3D.tga
             MeshVisualizerTestFiles/tbn-wide.tga
             MeshVisualizerTestFiles/tbn.tga
+            MeshVisualizerTestFiles/vertexid2D.tga
+            MeshVisualizerTestFiles/vertexid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo-objectid2D.tga
@@ -175,6 +179,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe-perspective.tga
             MeshVisualizerTestFiles/wireframe-primitiveid-tn.tga
             MeshVisualizerTestFiles/wireframe-tn-smooth.tga
+            MeshVisualizerTestFiles/wireframe-vertexid2D.tga
+            MeshVisualizerTestFiles/wireframe-vertexid3D.tga
             MeshVisualizerTestFiles/wireframe-wide2D.tga
             MeshVisualizerTestFiles/wireframe-wide3D.tga
             MeshVisualizerTestFiles/wireframe2D.tga

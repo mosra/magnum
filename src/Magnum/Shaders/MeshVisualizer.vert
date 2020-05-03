@@ -62,6 +62,19 @@ uniform highp mat4 projectionMatrix
 #error
 #endif
 
+#ifdef VERTEX_ID
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 6)
+#endif
+uniform lowp vec2 colorMapOffsetScale
+    #ifndef GL_ES
+    = vec2(1.0/512.0, 1.0/256.0)
+    #endif
+    ;
+#define colorMapOffset colorMapOffsetScale.x
+#define colorMapScale colorMapOffsetScale.y
+#endif
+
 #if defined(TANGENT_DIRECTION) || defined(BITANGENT_FROM_TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 8)
@@ -139,6 +152,14 @@ flat out highp uint interpolatedVsInstanceObjectId;
 #endif
 #endif
 
+#ifdef VERTEX_ID
+#ifdef NO_GEOMETRY_SHADER
+out highp float interpolatedMappedVertexId;
+#else
+out highp float interpolatedVsMappedVertexId;
+#endif
+#endif
+
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
 #ifdef NO_GEOMETRY_SHADER
 flat out highp uint interpolatedPrimitiveId;
@@ -205,6 +226,14 @@ void main() {
     interpolatedVsInstanceObjectId
     #endif
         = instanceObjectId;
+    #endif
+    #ifdef VERTEX_ID
+    #ifdef NO_GEOMETRY_SHADER
+    interpolatedMappedVertexId
+    #else
+    interpolatedVsMappedVertexId
+    #endif
+        = colorMapOffset + float(gl_VertexID)*colorMapScale;
     #endif
     #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
     #ifdef NO_GEOMETRY_SHADER

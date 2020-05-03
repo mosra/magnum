@@ -44,7 +44,7 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
-#if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
+#if (defined(WIREFRAME_RENDERING) || defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)) && !defined(TBN_DIRECTION)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
@@ -95,12 +95,14 @@ uniform lowp float smoothness
     ;
 #endif
 
-#if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+#if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_TEXTURE_LAYER
 layout(binding = 4)
 #endif
 uniform lowp sampler2D colorMapTexture;
+#endif
 
+#if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
 #endif
@@ -127,6 +129,9 @@ in lowp vec3 barycentric;
 #ifdef INSTANCED_OBJECT_ID
 flat in highp uint interpolatedInstanceObjectId;
 #endif
+#ifdef VERTEX_ID
+in highp float interpolatedMappedVertexId;
+#endif
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
 flat in highp uint interpolatedPrimitiveId;
 #endif
@@ -144,21 +149,34 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
-    /* Map object/primitive ID to a color. Will be either combined with the
-       wireframe background color (if wireframe is enabled), ignored (if
+    /* Map object/vertex/primitive ID to a color. Will be either combined with
+       the wireframe background color (if wireframe is enabled), ignored (if
        rendering TBN direction) or used as-is if nothing else is enabled */
-    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
-    lowp vec4 faceColor = texture(colorMapTexture, vec2(colorMapOffset + float(
-        #ifdef INSTANCED_OBJECT_ID
-        interpolatedInstanceObjectId
-        #elif defined(PRIMITIVE_ID)
-        gl_PrimitiveID
-        #elif defined(PRIMITIVE_ID_FROM_VERTEX_ID)
-        interpolatedPrimitiveId
+    #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    lowp vec4 faceColor = texture(colorMapTexture, vec2(
+        /* Object/primitive IDs are constant across the whole primitive so we
+           do the offset/scale mapping here */
+        #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+        colorMapOffset + float(
+            #ifdef INSTANCED_OBJECT_ID
+            interpolatedInstanceObjectId
+            #elif defined(PRIMITIVE_ID)
+            gl_PrimitiveID
+            #elif defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+            interpolatedPrimitiveId
+            #else
+            #error mosra messed up
+            #endif
+        )*colorMapScale
+
+        /* Vertex ID changes, so the offset/scale mapping was done already in
+           a VS/GS and we just pass the interpolated result to a texture */
+        #elif defined(VERTEX_ID)
+        interpolatedMappedVertexId
         #else
-        #error mosra messed up
+        #error mosra messed up, again
         #endif
-    )*colorMapScale, 0.0));
+        , 0.0));
     #endif
 
     /* 1. For wireframe the line is on the triangle edges, thus dist = 0 at
@@ -195,7 +213,7 @@ void main() {
     #else
     fragmentColor = backgroundColor;
     #endif
-    #if defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    #if defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     fragmentColor *= faceColor;
     #endif
 
@@ -244,8 +262,8 @@ void main() {
     fragmentColor = mix(wireframeColor, fragmentColor, nearest);
     #endif
 
-    /* Object / Primitive ID visualization using a colormap */
-    #elif defined(INSTANCED_OBJECT_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
+    /* Object / Vertex / Primitive ID visualization using a colormap */
+    #elif defined(INSTANCED_OBJECT_ID) || defined(VERTEX_ID) || defined(PRIMITIVE_ID) || defined(PRIMITIVE_ID_FROM_VERTEX_ID)
     fragmentColor = color*faceColor;
 
     #else

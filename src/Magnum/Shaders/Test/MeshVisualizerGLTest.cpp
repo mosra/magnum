@@ -106,6 +106,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void renderDefaultsObjectId2D();
     void renderDefaultsObjectId3D();
+    void renderDefaultsVertexId2D();
+    void renderDefaultsVertexId3D();
     void renderDefaultsPrimitiveId2D();
     void renderDefaultsPrimitiveId3D();
     #endif
@@ -115,8 +117,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void renderWireframe2D();
     void renderWireframe3D();
     #ifndef MAGNUM_TARGET_GLES2
-    void renderObjectPrimitiveId2D();
-    void renderObjectPrimitiveId3D();
+    void renderObjectVertexPrimitiveId2D();
+    void renderObjectVertexPrimitiveId3D();
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void renderWireframe3DPerspective();
@@ -140,10 +142,11 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     -   Mesa Intel
     -   Mesa AMD
+    .   Mesa llvmpipe
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3 (except TBN visualization)
-    -   WebGL 1 / 2 (on Mesa Intel) (except primitive/object ID)
-    -   iPhone 6 w/ iOS 12.4 (except primitive/object ID)
+    -   WebGL 1 / 2 (on Mesa Intel) (except primitive/vertex/object ID)
+    -   iPhone 6 w/ iOS 12.4 (except primitive/vertex/object ID)
 */
 
 using namespace Math::Literals;
@@ -155,6 +158,7 @@ constexpr struct {
     {"wireframe w/o GS", MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizer2D::Flag::InstancedObjectId},
+    {"vertex ID", MeshVisualizer2D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizer2D::Flag::PrimitiveId},
     #endif
@@ -169,6 +173,7 @@ constexpr struct {
     {"wireframe w/o GS", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", MeshVisualizer3D::Flag::InstancedObjectId},
+    {"vertex ID", MeshVisualizer3D::Flag::VertexId},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID", MeshVisualizer3D::Flag::InstancedObjectId},
     #endif
@@ -188,8 +193,10 @@ constexpr struct {
     {"normal direction", MeshVisualizer3D::Flag::NormalDirection},
     {"tbn direction", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection|MeshVisualizer3D::Flag::NormalDirection},
     {"tbn direction with bitangent from tangent", MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentFromTangentDirection|MeshVisualizer3D::Flag::NormalDirection},
+    {"wireframe + vertex id", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::VertexId},
     {"wireframe + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection},
-    {"wireframe + object id + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection}
+    {"wireframe + object id + t/n direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::NormalDirection},
+    {"wireframe + vertex id + t/b direction", MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::TangentDirection|MeshVisualizer3D::Flag::BitangentDirection}
 };
 #endif
 
@@ -209,7 +216,10 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
         MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::PrimitiveIdFromVertexId,
-        ": Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
+    {"both object and vertex id",
+        MeshVisualizer2D::Flag::InstancedObjectId|MeshVisualizer2D::Flag::VertexId,
+        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
 
@@ -229,7 +239,10 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"both object and primitive id",
         MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
-        ": Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive"}
+        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"},
+    {"both vertex and primitive id",
+        MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::PrimitiveIdFromVertexId,
+        ": Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive"}
     #endif
 };
 
@@ -293,11 +306,15 @@ constexpr struct {
     MeshVisualizer3D::Flags flags3D;
     const char* file2D;
     const char* file3D;
-} ObjectPrimitiveIdData[] {
+} ObjectVertexPrimitiveIdData[] {
     {"object ID",
         MeshVisualizer2D::Flag::InstancedObjectId,
         MeshVisualizer3D::Flag::InstancedObjectId,
         "objectid2D.tga", "objectid3D.tga"},
+    {"vertex ID",
+        MeshVisualizer2D::Flag::VertexId,
+        MeshVisualizer3D::Flag::VertexId,
+        "vertexid2D.tga", "vertexid3D.tga"},
     #ifndef MAGNUM_TARGET_WEBGL
     {"primitive ID",
         MeshVisualizer2D::Flag::PrimitiveId,
@@ -317,7 +334,11 @@ constexpr struct {
         MeshVisualizer2D::Flag::NoGeometryShader,
         MeshVisualizer3D::Flag::InstancedObjectId|MeshVisualizer3D::Flag::Wireframe|
         MeshVisualizer3D::Flag::NoGeometryShader,
-        "wireframe-nogeo-objectid2D.tga", "wireframe-nogeo-objectid3D.tga"}
+        "wireframe-nogeo-objectid2D.tga", "wireframe-nogeo-objectid3D.tga"},
+    {"wireframe + vertex ID",
+        MeshVisualizer2D::Flag::VertexId|MeshVisualizer2D::Flag::Wireframe,
+        MeshVisualizer3D::Flag::VertexId|MeshVisualizer3D::Flag::Wireframe,
+        "wireframe-vertexid2D.tga", "wireframe-vertexid3D.tga"}
 };
 #endif
 
@@ -438,6 +459,8 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
     #ifndef MAGNUM_TARGET_GLES2
     addTests({
+        &MeshVisualizerGLTest::renderDefaultsVertexId2D,
+        &MeshVisualizerGLTest::renderDefaultsVertexId3D,
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId2D,
         &MeshVisualizerGLTest::renderDefaultsPrimitiveId3D,
         #ifndef MAGNUM_TARGET_WEBGL
@@ -459,9 +482,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
         &MeshVisualizerGLTest::renderTeardown);
 
     #ifndef MAGNUM_TARGET_GLES2
-    addInstancedTests({&MeshVisualizerGLTest::renderObjectPrimitiveId2D,
-                       &MeshVisualizerGLTest::renderObjectPrimitiveId3D},
-        Containers::arraySize(ObjectPrimitiveIdData),
+    addInstancedTests({&MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D,
+                       &MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D},
+        Containers::arraySize(ObjectVertexPrimitiveIdData),
         &MeshVisualizerGLTest::renderSetup,
         &MeshVisualizerGLTest::renderTeardown);
     #endif
@@ -778,7 +801,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled2D() {
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled\n");
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
@@ -813,7 +836,7 @@ void MeshVisualizerGLTest::setWireframeNotEnabled3D() {
 
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled\n");
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled\n");
     #else
     CORRADE_COMPARE(out.str(),
         "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled\n");
@@ -846,8 +869,8 @@ void MeshVisualizerGLTest::setColorMapNotEnabled2D() {
         .bindColorMapTexture(texture);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled\n"
-        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled\n");
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
 
 void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
@@ -864,8 +887,8 @@ void MeshVisualizerGLTest::setColorMapNotEnabled3D() {
         .bindColorMapTexture(texture);
 
     CORRADE_COMPARE(out.str(),
-        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled\n"
-        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled\n");
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled\n"
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled\n");
 }
 #endif
 
@@ -1133,6 +1156,61 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
         (DebugTools::CompareImageToFile{_manager, 150.67f, 0.165f}));
 }
 
+void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
+        .bindColorMapTexture(_colorMapTexture)
+        .draw(MeshTools::compile(Primitives::circle2DSolid(16)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.017f}));
+}
+
+void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(
+        #ifndef MAGNUM_TARGET_GLES
+        !GL::Context::current().isVersionSupported(GL::Version::GL300)
+        #else
+        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
+        #endif
+    ) CORRADE_SKIP("gl_VertexID not supported.");
+    #endif
+
+    MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
+        .bindColorMapTexture(_colorMapTexture)
+        .draw(MeshTools::compile(Primitives::icosphereSolid(0)));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-vertexid3D.tga"),
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.012f}));
+}
 void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
@@ -1461,8 +1539,8 @@ void MeshVisualizerGLTest::renderWireframe3D() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
-    auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
+void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
+    auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1519,14 +1597,22 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
         /* Shouldn't assert (nor warn) when wireframe is not enabled */
         .setViewportSize({80, 80})
         .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
-        /* Should cover the first half of the colormap, in reverse order; for
-           primitive ID the whole colormap due to the repeat wrapping */
-        .setColorMapTransformation(0.5f, -1.0f/16.0f)
         .bindColorMapTexture(_colorMapTexture);
 
     /* OTOH the wireframe color should stay at full channels, not mixed */
     if(data.flags3D & MeshVisualizer3D::Flag::Wireframe)
         shader.setWireframeColor(0xffffff_rgbf);
+
+    /* For vertex ID we don't want any repeat/wraparound as that causes
+       disruptions in the gradient and test failures. There's 17 vertices
+       also. */
+    if(data.flags2D & MeshVisualizer2D::Flag::VertexId)
+        shader.setColorMapTransformation(1.0f, -1.0f/17.0f);
+    /* For object/primitive ID there's no gradient so a wraparound is okay.
+       This should cover the first half of the colormap, in reverse order; for
+       primitive ID the whole colormap due to the repeat wrapping */
+    else
+        shader.setColorMapTransformation(0.5f, -1.0f/16.0f);
 
     shader.draw(circle);
 
@@ -1545,8 +1631,8 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId2D() {
         (DebugTools::CompareImageToFile{_manager, 4.0f, 0.141f}));
 }
 
-void MeshVisualizerGLTest::renderObjectPrimitiveId3D() {
-    auto&& data = ObjectPrimitiveIdData[testCaseInstanceId()];
+void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
+    auto&& data = ObjectVertexPrimitiveIdData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1605,14 +1691,21 @@ void MeshVisualizerGLTest::renderObjectPrimitiveId3D() {
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        /* Should cover the first half of the colormap, in reverse order; for
-           primitive ID the whole colormap due to the repeat wrapping */
-        .setColorMapTransformation(0.5f, -1.0f/40.0f)
         .bindColorMapTexture(_colorMapTexture);
 
     /* OTOH the wireframe color should stay at full channels, not mixed */
     if(data.flags2D & MeshVisualizer2D::Flag::Wireframe)
         shader.setWireframeColor(0xffffff_rgbf);
+
+    /* For vertex ID we don't want any repeat/wraparound as that causes
+       disruptions in the gradient and test failures. There's 42 vertices also. */
+    if(data.flags2D & MeshVisualizer2D::Flag::VertexId)
+        shader.setColorMapTransformation(1.0f, -1.0f/42.0f);
+    /* For object/primitive ID there's no gradient so a wraparound is okay.
+       This should cover the first half of the colormap, in reverse order; for
+       primitive ID the whole colormap due to the repeat wrapping */
+    else
+        shader.setColorMapTransformation(0.5f, -1.0f/40.0f);
 
     shader.draw(circle);
 

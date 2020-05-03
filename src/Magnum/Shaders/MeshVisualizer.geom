@@ -103,6 +103,10 @@ out lowp vec3 dist;
 flat in highp uint interpolatedVsInstanceObjectId[];
 flat out highp uint interpolatedInstanceObjectId;
 #endif
+#ifdef VERTEX_ID
+in highp float interpolatedVsMappedVertexId[];
+out highp float interpolatedMappedVertexId;
+#endif
 #ifdef PRIMITIVE_ID_FROM_VERTEX_ID
 flat in highp uint interpolatedVsPrimitiveId[];
 flat out highp uint interpolatedPrimitiveId;
@@ -180,7 +184,7 @@ void main() {
     gl_PrimitiveID = gl_PrimitiveIDIn;
     #endif
 
-    /* Screen position of each vertex */
+    /* Screen position of each vertex + TBN direction */
     vec2 p[3];
     #ifdef TANGENT_DIRECTION
     vec2 t[3];
@@ -216,13 +220,17 @@ void main() {
     const float area = abs(dot(vec2(-v[1].y, v[1].x), v[2]));
 
     /* If wireframe is enabled, add distance to opposite side to each vertex.
-       Otherwise make all distances the same to avoid any lines being drawn. */
+       Otherwise make all distances the same to avoid any lines being drawn.
+       Propagate also mapped vertex ID, since that changes per-vertex also. */
     for(int i = 0; i != 3; ++i) {
         dist = vec3(0.0, 0.0, 0.0);
         #ifdef WIREFRAME_RENDERING
         dist[i] = area/length(v[i]);
         #else
         dist = vec3(area/length(v[i]));
+        #endif
+        #ifdef VERTEX_ID
+        interpolatedMappedVertexId = interpolatedVsMappedVertexId[i];
         #endif
         #if defined(TANGENT_DIRECTION) || defined(BITANGENT_DIRECTION) || defined(NORMAL_DIRECTION)
         backgroundColor = color;

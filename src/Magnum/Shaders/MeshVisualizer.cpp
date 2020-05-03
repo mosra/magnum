@@ -57,10 +57,11 @@ MeshVisualizerBase::MeshVisualizerBase(FlagsBase flags): _flags{flags} {
     #ifndef CORRADE_NO_ASSERT
     Int countMutuallyExclusive = 0;
     if(flags & FlagBase::InstancedObjectId) ++countMutuallyExclusive;
+    if(flags & FlagBase::VertexId) ++countMutuallyExclusive;
     if(flags & FlagBase::PrimitiveIdFromVertexId) ++countMutuallyExclusive;
     #endif
     CORRADE_ASSERT(countMutuallyExclusive <= 1,
-        "Shaders::MeshVisualizer: Flag::InstancedObjectId and Flag::PrimitiveId are mutually exclusive", );
+        "Shaders::MeshVisualizer: Flag::InstancedObjectId, Flag::VertexId and Flag::PrimitiveId are mutually exclusive", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -113,6 +114,7 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
     vert.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
         .addSource(_flags >= FlagBase::PrimitiveIdFromVertexId ? "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" : "")
         #endif
         #ifdef MAGNUM_TARGET_WEBGL
@@ -126,6 +128,7 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
         .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+        .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
         .addSource(_flags & FlagBase::PrimitiveId ?
             (_flags >= FlagBase::PrimitiveIdFromVertexId ?
                 "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
@@ -138,8 +141,8 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
 
 MeshVisualizerBase& MeshVisualizerBase::setColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(_flags & (FlagBase::Wireframe|FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
-        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/primitive ID enabled", *this);
+    CORRADE_ASSERT(_flags & (FlagBase::Wireframe|FlagBase::InstancedObjectId|FlagBase::VertexId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe or object/vertex/primitive ID enabled", *this);
     #else
     CORRADE_ASSERT(_flags & FlagBase::Wireframe,
         "Shaders::MeshVisualizer::setColor(): the shader was not created with wireframe enabled", *this);
@@ -164,15 +167,15 @@ MeshVisualizerBase& MeshVisualizerBase::setWireframeWidth(const Float width) {
 
 #ifndef MAGNUM_TARGET_GLES2
 MeshVisualizerBase& MeshVisualizerBase::setColorMapTransformation(const Float offset, const Float scale) {
-    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
-        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/primitive ID enabled", *this);
+    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::VertexId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::setColorMapTransformation(): the shader was not created with object/vertex/primitive ID enabled", *this);
     setUniform(_colorMapOffsetScaleUniform, Vector2{offset, scale});
     return *this;
 }
 
 MeshVisualizerBase& MeshVisualizerBase::bindColorMapTexture(GL::Texture2D& texture) {
-    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::PrimitiveId),
-        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/primitive ID enabled", *this);
+    CORRADE_ASSERT(_flags & (FlagBase::InstancedObjectId|FlagBase::VertexId|FlagBase::PrimitiveId),
+        "Shaders::MeshVisualizer::bindColorMapTexture(): the shader was not created with object/vertex/primitive ID enabled", *this);
     texture.bind(ColorMapTextureUnit);
     return *this;
 }
@@ -182,7 +185,7 @@ MeshVisualizerBase& MeshVisualizerBase::bindColorMapTexture(GL::Texture2D& textu
 
 MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedShort(flags))} {
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer2D: at least one visualization feature has to be enabled", );
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
@@ -212,6 +215,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
         (*geom)
             .addSource("#define WIREFRAME_RENDERING\n#define MAX_VERTICES 3\n")
             .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+            .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
                 (_flags >= FlagBase::PrimitiveIdFromVertexId ?
                     "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
@@ -264,7 +268,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
         if(flags & (Flag::Wireframe
             #ifndef MAGNUM_TARGET_GLES2
-            |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+            |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
             #endif
         ))
             _colorUniform = uniformLocation("color");
@@ -276,7 +280,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
                 _viewportSizeUniform = uniformLocation("viewportSize");
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId)) {
+        if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
@@ -299,7 +303,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
         setSmoothness(2.0f);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId))
+    if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
         setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
     #endif
     #endif
@@ -329,7 +333,7 @@ MeshVisualizer2D& MeshVisualizer2D::setSmoothness(const Float smoothness) {
 
 MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisualizerBase{Implementation::MeshVisualizerBase::FlagBase(UnsignedShort(flags))} {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection|Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled", );
     CORRADE_ASSERT(!(flags & Flag::NoGeometryShader && flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)),
         "Shaders::MeshVisualizer3D: geometry shader has to be enabled when rendering TBN direction", );
@@ -394,6 +398,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
             .addSource(Utility::formatString("#define MAX_VERTICES {}\n", maxVertices))
             .addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
             .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
+            .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
             .addSource(_flags & FlagBase::PrimitiveId ?
                 (_flags >= FlagBase::PrimitiveIdFromVertexId ?
                     "#define PRIMITIVE_ID_FROM_VERTEX_ID\n" :
@@ -461,7 +466,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
         if(flags & (Flag::Wireframe
             #ifndef MAGNUM_TARGET_GLES2
-            |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+            |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
             #endif
         ))
             _colorUniform = uniformLocation("color");
@@ -479,7 +484,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
                 _viewportSizeUniform = uniformLocation("viewportSize");
         }
         #ifndef MAGNUM_TARGET_GLES2
-        if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId)) {
+        if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId)) {
             _colorMapOffsetScaleUniform = uniformLocation("colorMapOffsetScale");
             setUniform(uniformLocation("colorMapTexture"), ColorMapTextureUnit);
         }
@@ -516,7 +521,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
         setSmoothness(2.0f);
     }
     #ifndef MAGNUM_TARGET_GLES2
-    if(flags & (Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId))
+    if(flags & (Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId))
         setColorMapTransformation(1.0f/512.0f, 1.0f/256.0f);
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -602,6 +607,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flag value) {
         _c(Wireframe)
         #ifndef MAGNUM_TARGET_GLES2
         _c(InstancedObjectId)
+        _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
         #endif
@@ -630,6 +636,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flag value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(InstancedObjectId)
+        _c(VertexId)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(PrimitiveId)
         #endif
@@ -649,6 +656,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flags value) {
         MeshVisualizer2D::Flag::NoGeometryShader,
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizer2D::Flag::InstancedObjectId,
+        MeshVisualizer2D::Flag::VertexId,
         MeshVisualizer2D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL
         MeshVisualizer2D::Flag::PrimitiveId
@@ -670,6 +678,7 @@ Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flags value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizer3D::Flag::InstancedObjectId,
+        MeshVisualizer3D::Flag::VertexId,
         MeshVisualizer3D::Flag::PrimitiveIdFromVertexId, /* Superset of PrimitiveId */
         #ifndef MAGNUM_TARGET_WEBGL
         MeshVisualizer3D::Flag::PrimitiveId

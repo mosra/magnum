@@ -51,8 +51,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram
             NoGeometryShader = 1 << 1,
             #ifndef MAGNUM_TARGET_GLES2
             InstancedObjectId = 1 << 2,
-            PrimitiveId = 1 << 3,
-            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId
+            VertexId = 1 << 3,
+            PrimitiveId = 1 << 4,
+            PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId
             #endif
         };
         typedef Containers::EnumSet<FlagBase> FlagsBase;
@@ -189,16 +190,19 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
             /** @copydoc MeshVisualizer3D::Flag::InstancedObjectId */
             InstancedObjectId = 1 << 2,
 
+            /** @copydoc MeshVisualizer3D::Flag::VertexId */
+            VertexId = 1 << 3,
+
             #ifndef MAGNUM_TARGET_WEBGL
             /** @copydoc MeshVisualizer3D::Flag::PrimitiveId */
-            PrimitiveId = 1 << 3,
+            PrimitiveId = 1 << 4,
             #endif
 
             /** @copydoc MeshVisualizer3D::Flag::PrimitiveIdFromVertexId */
             #ifndef MAGNUM_TARGET_WEBGL
-            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId
+            PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId
             #else
-            PrimitiveIdFromVertexId = (1 << 4)|(1 << 3)
+            PrimitiveIdFromVertexId = (1 << 5)|(1 << 4)
             #endif
             #endif
         };
@@ -447,7 +451,7 @@ Rendering setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-tbn2
 
-@section Shaders-MeshVisualizer-object-id Object and primitive ID visualization
+@section Shaders-MeshVisualizer-object-id Object, vertex and primitive ID visualization
 
 If the mesh contains a per-vertex (or instanced) @ref ObjectId, it can be
 visualized by enabling @ref Flag::InstancedObjectId. For the actual
@@ -458,14 +462,19 @@ the @f$ [0, 1] @f$ texture range. Various colormap presets are in the
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-object-id
 
-If you enable @ref Flag::PrimitiveId instead, the shader will use the color map
-to visualize the order in which primitives are drawn. That's useful for example
-to see how well is the mesh optimized for a post-transform vertex cache. This
-by default relies on the @glsl gl_PrimitiveID @ce GLSL builtin; with
-@ref Flag::PrimitiveIdFromVertexId it's emulated using @glsl gl_VertexID @ce,
-expecting you to draw a non-indexed triangle mesh. You can use
-@ref MeshTools::duplicate() (and potentially @ref MeshTools::generateIndices())
-to conveniently convert the mesh to a non-indexed @ref MeshPrimitive::Triangles.
+If you enable @ref Flag::VertexId, the shader will use the color map to
+visualize how are vertices shared among primitives. That's useful for
+inspecting mesh connectivity --- primitives sharing vertices will have a smooth
+color map transition while duplicated vertices will cause a sharp edge. This
+relies on the @glsl gl_VertexID @ce GLSL builtin.
+
+The @ref Flag::PrimitiveId then visualizes the order in which primitives are
+drawn. That's useful for example to see to see how well is the mesh optimized
+for a post-transform vertex cache. This by default relies on the @glsl gl_PrimitiveID @ce GLSL builtin; with @ref Flag::PrimitiveIdFromVertexId it's
+emulated using @glsl gl_VertexID @ce, expecting you to draw a non-indexed
+triangle mesh. You can use @ref MeshTools::duplicate() (and potentially
+@ref MeshTools::generateIndices()) to conveniently convert the mesh to a
+non-indexed @ref MeshPrimitive::Triangles.
 
 @requires_gl32 The `gl_PrimitiveID` shader variable is not available on OpenGL
     3.1 and lower.
@@ -606,7 +615,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
             /**
              * Visualize instanced object ID. You need to provide the
              * @ref ObjectId attribute in the mesh. Mutually exclusive with
-             * @ref Flag::PrimitiveId.
+             * @ref Flag::VertexId and @ref Flag::PrimitiveId.
              * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0 or WebGL
@@ -615,10 +624,27 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              */
             InstancedObjectId = 1 << 2,
 
+            /**
+             * Visualize vertex ID (@cpp gl_VertexID @ce). Useful for
+             * visualizing mesh connectivity --- primitives sharing vertices
+             * will have a smooth color map transition while duplicated
+             * vertices will cause a sharp edge. Mutually exclusive with
+             * @ref Flag::InstancedObjectId and @ref Flag::PrimitiveId.
+             * @requires_gl30 The `gl_VertexID` shader variable is not
+             *      available on OpenGL 2.1.
+             * @requires_gles30 The `gl_VertexID` shader variable is not
+             *      available on OpenGL ES 2.0.
+             * @requires_webgl20 `gl_VertexID` is not available in WebGL 1.0.
+             * @m_since_latest
+             */
+            VertexId = 1 << 3,
+
             #ifndef MAGNUM_TARGET_WEBGL
             /**
-             * Visualize primitive ID (@cpp gl_PrimitiveID @ce). Mutually
-             * exclusive with @ref Flag::InstancedObjectId. See also
+             * Visualize primitive ID (@cpp gl_PrimitiveID @ce). Useful for
+             * visualizing how well is the mesh optimized for a post-transform
+             * vertex cache. Mutually exclusive with
+             * @ref Flag::InstancedObjectId and @ref Flag::VertexId. See also
              * @ref Flag::PrimitiveIdFromVertexId.
              * @requires_gl32 The `gl_PrimitiveID` shader variable is not
              *      available on OpenGL 3.1 and lower.
@@ -628,7 +654,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles `gl_PrimitiveID` is not available in WebGL.
              * @m_since_latest
              */
-            PrimitiveId = 1 << 3,
+            PrimitiveId = 1 << 4,
             #endif
 
             /**
@@ -646,9 +672,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @m_since_latest
              */
             #ifndef MAGNUM_TARGET_WEBGL
-            PrimitiveIdFromVertexId = (1 << 4)|PrimitiveId,
+            PrimitiveIdFromVertexId = (1 << 5)|PrimitiveId,
             #else
-            PrimitiveIdFromVertexId = (1 << 4)|(1 << 3),
+            PrimitiveIdFromVertexId = (1 << 5)|(1 << 4),
             #endif
             #endif
 
@@ -666,7 +692,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            TangentDirection = 1 << 5,
+            TangentDirection = 1 << 6,
 
             /**
              * Visualize bitangent direction with green lines pointing out of
@@ -683,7 +709,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            BitangentFromTangentDirection = 1 << 6,
+            BitangentFromTangentDirection = 1 << 7,
 
             /**
              * Visualize bitangent direction with green lines pointing out of
@@ -700,7 +726,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            BitangentDirection = 1 << 7,
+            BitangentDirection = 1 << 8,
 
             /**
              * Visualize normal direction with blue lines pointing out of
@@ -714,7 +740,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
              * @requires_gles Geometry shaders are not available in WebGL.
              * @m_since_latest
              */
-            NormalDirection = 1 << 8
+            NormalDirection = 1 << 9
             #endif
         };
 
