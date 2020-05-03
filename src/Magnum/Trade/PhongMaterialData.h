@@ -110,8 +110,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          *      doesn't have @ref Flag::SpecularTexture.
          * @param normalTexture     Normal texture ID. Ignored if @p flags
          *      doesn't have @ref Flag::NormalTexture.
-         * @param textureMatrix     Texture coordinate transformation. Ignored
-         *      if @p flags doesn't have @ref Flag::TextureTransformation.
+         * @param textureMatrix     Texture coordinate transformation
          * @param alphaMode         Alpha mode. Use
          *      @ref MaterialAlphaMode::Opaque for a default value.
          * @param alphaMask         Alpha mask value. Use @cpp 0.5f @ce for a
@@ -122,7 +121,8 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @m_since_latest
          *
          * All `*CoordinateSet` accessors are implicitly zero with this
-         * constructor.
+         * constructor. If @p textureMatrix is not default-constructed, expects
+         * @ref Flag::TextureTransformation to be enabled as well.
          */
         explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, const Color4& diffuseColor, UnsignedInt diffuseTexture, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt normalTexture, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
 
@@ -155,9 +155,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          *      doesn't have @ref Flag::NormalTexture.
          * @param normalCoordinateSet   Normal texture coordinate set. Ignored
          *      if @p flags doesn't have @ref Flag::NormalTexture.
-         * @param textureMatrix         Texture coordinate transformation.
-         *      Ignored if @p flags doesn't have
-         *      @ref Flag::TextureTransformation.
+         * @param textureMatrix         Texture coordinate transformation
          * @param alphaMode             Alpha mode. Use
          *      @ref MaterialAlphaMode::Opaque for a default value.
          * @param alphaMask             Alpha mask value. Use @cpp 0.5f @ce for
@@ -167,8 +165,10 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param importerState         Importer-specific state
          * @m_since_latest
          *
-         * If any `*CoordinateSet` is non-zero, expects
-         * @ref Flag::TextureCoordinateSets to be enabled as well.
+         * If @p textureMatrix is not default-constructed, expects
+         * @ref Flag::TextureTransformation to be enabled as well. If any
+         * `*CoordinateSet` is non-zero, expects @ref Flag::TextureCoordinateSets
+         * to be enabled as well.
          */
         explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, UnsignedInt ambientCoordinateSet, const Color4& diffuseColor, UnsignedInt diffuseTexture, UnsignedInt diffuseCoordinateSet, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt specularCoordinateSet, UnsignedInt normalTexture, UnsignedInt normalCoordinateSet, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
 

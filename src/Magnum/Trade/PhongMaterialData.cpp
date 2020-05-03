@@ -34,6 +34,8 @@ using namespace Math::Literals;
 PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientColor, const UnsignedInt ambientTexture, const UnsignedInt ambientCoordinateSet, const Color4& diffuseColor, const UnsignedInt diffuseTexture, const UnsignedInt diffuseCoordinateSet, const Color4& specularColor, const UnsignedInt specularTexture, const UnsignedInt specularCoordinateSet, const UnsignedInt normalTexture, const UnsignedInt normalCoordinateSet, const Matrix3& textureMatrix, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _ambientColor{ambientColor}, _diffuseColor{diffuseColor}, _specularColor{specularColor}, _shininess{shininess} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Trade::PhongMaterialData: texture transformation enabled but the material has no textures", );
+    CORRADE_ASSERT((flags & Flag::TextureTransformation) || textureMatrix == Matrix3{},
+        "PhongMaterialData::PhongMaterialData: non-default texture matrix requires Flag::TextureTransformation to be enabled", );
     CORRADE_ASSERT((flags & Flag::TextureCoordinateSets) || (ambientCoordinateSet == 0 && diffuseCoordinateSet == 0 && specularCoordinateSet == 0 && normalCoordinateSet == 0),
         "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinateSets to be enabled", );
 

@@ -40,6 +40,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructPhongTexturedTextureTransform();
         void constructPhongTexturedCoordinateSets();
         void constructPhongTextureTransformNoTextures();
+        void constructPhongNoTextureTransformationFlag();
         void constructPhongNoTextureCoordinateSetsFlag();
         void constructCopy();
         void constructMovePhong();
@@ -61,6 +62,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructPhongTexturedTextureTransform,
               &MaterialDataTest::constructPhongTexturedCoordinateSets,
               &MaterialDataTest::constructPhongTextureTransformNoTextures,
+              &MaterialDataTest::constructPhongNoTextureTransformationFlag,
               &MaterialDataTest::constructPhongNoTextureCoordinateSetsFlag,
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMovePhong,
@@ -202,6 +204,24 @@ void MaterialDataTest::constructPhongTextureTransformNoTextures() {
         {}, 0.5f, 80.0f};
     CORRADE_COMPARE(out.str(),
         "Trade::PhongMaterialData: texture transformation enabled but the material has no textures\n");
+}
+
+void MaterialDataTest::constructPhongNoTextureTransformationFlag() {
+    using namespace Math::Literals;
+
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    PhongMaterialData a{{},
+        {}, {},
+        {}, {},
+        {}, {}, {}, Matrix3::rotation(90.0_degf),
+        {}, 0.5f, 80.0f};
+    CORRADE_COMPARE(out.str(),
+        "PhongMaterialData::PhongMaterialData: non-default texture matrix requires Flag::TextureTransformation to be enabled\n");
 }
 
 void MaterialDataTest::constructPhongNoTextureCoordinateSetsFlag() {
