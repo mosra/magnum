@@ -120,6 +120,8 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          *      value.
          * @param importerState     Importer-specific state
          * @m_since_latest
+         *
+         * All `*CoordinateSet`s are implicitly set to @cpp 0 @ce.
          */
         explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, const Color4& diffuseColor, UnsignedInt diffuseTexture, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt normalTexture, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
 
