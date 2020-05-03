@@ -163,6 +163,9 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param importerState         Importer-specific state
          * @m_since_latest
          *
+         * If any `*CoordinateSet` is non-zero, expects 
+         * @ref Flag::TextureCoordinateSets to be enabled as well.
+         *
          * If any `*CoordinateSet` is non-zero, expects
          * @ref Flag::TextureCoordinateSets to be enabled as well.
          *
