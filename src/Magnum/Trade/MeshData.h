@@ -106,7 +106,7 @@ enum class MeshAttribute: UnsignedShort {
 
     /**
      * Normal. Type is usually @ref VertexFormat::Vector3, but can be also
-     * @ref VertexFormat::Vector3h. @ref VertexFormat::Vector3bNormalized or
+     * @ref VertexFormat::Vector3h, @ref VertexFormat::Vector3bNormalized or
      * @ref VertexFormat::Vector3sNormalized. Corresponds to
      * @ref Shaders::Generic::Normal.
      * @see @ref MeshData::normalsAsArray()
