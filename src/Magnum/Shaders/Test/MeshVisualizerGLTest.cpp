@@ -1558,10 +1558,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
     #else
-    if(!(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+    if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
         CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
     #endif
@@ -1650,10 +1650,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
     ) CORRADE_SKIP("gl_PrimitiveID not supported.");
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
     #else
-    if(!(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+    if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
         CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
     #endif
@@ -1716,10 +1716,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     /* Release build has 1 pixel slightly off. Huh. AMD & llvmpipe has
-       additional off-by-one errors compared to Intel. If
-       GL_NV_shader_noperspective_interpolation is not supported, the artifacts
-       are bigger when wireframe is enabled. */
-    Float maxThreshold = 10.7f, meanThreshold = 0.279f;
+       additional off-by-one errors compared to Intel, SwiftShader some errors
+       on the edges. If GL_NV_shader_noperspective_interpolation is not
+       supported, the artifacts are bigger when wireframe is enabled. */
+    Float maxThreshold = 138.4f, meanThreshold = 0.279f;
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>()) {
         /* SwiftShader has a bit more rounding errors */
