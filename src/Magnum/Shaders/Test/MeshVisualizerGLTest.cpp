@@ -1161,15 +1161,9 @@ void MeshVisualizerGLTest::renderDefaultsVertexId2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(
-        #ifndef MAGNUM_TARGET_GLES
-        !GL::Context::current().isVersionSupported(GL::Version::GL300)
-        #else
-        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
-        #endif
-    ) CORRADE_SKIP("gl_VertexID not supported.");
-    #endif
+    /* On SwiftShader gl_VertexID doesn't work in this case, skipping */
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
 
     MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
         .bindColorMapTexture(_colorMapTexture)
@@ -1189,15 +1183,9 @@ void MeshVisualizerGLTest::renderDefaultsVertexId3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(
-        #ifndef MAGNUM_TARGET_GLES
-        !GL::Context::current().isVersionSupported(GL::Version::GL300)
-        #else
-        !GL::Context::current().isVersionSupported(GL::Version::GLES300)
-        #endif
-    ) CORRADE_SKIP("gl_VertexID not supported.");
-    #endif
+    /* On SwiftShader gl_VertexID doesn't work in this case, skipping */
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
 
     MeshVisualizer2D{MeshVisualizer2D::Flag::VertexId}
         .bindColorMapTexture(_colorMapTexture)
@@ -1216,6 +1204,9 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    /* Interestingly in this case gl_VertexID in SwiftShader works (thus not
+       checking for MAGNUM_shader_vertex_id -- maybe it works only for
+       nonindexed triangle draws? */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(
         #ifndef MAGNUM_TARGET_GLES
@@ -1265,6 +1256,9 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    /* Interestingly in this case gl_VertexID in SwiftShader works (thus not
+       checking for MAGNUM_shader_vertex_id -- maybe it works only for
+       nonindexed triangle draws? */
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(
         #ifndef MAGNUM_TARGET_GLES
@@ -1548,6 +1542,11 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
     #endif
 
+    /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
+       works -- maybe it works only for nonindexed triangle draws? */
+    if(data.flags2D & MeshVisualizer2D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
+
     #ifndef MAGNUM_TARGET_WEBGL
     if(data.flags2D & MeshVisualizer2D::Flag::PrimitiveId && !(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId) &&
         #ifndef MAGNUM_TARGET_GLES
@@ -1639,6 +1638,11 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
     if((data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
         CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
     #endif
+
+    /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
+       works -- maybe it works only for nonindexed triangle draws? */
+    if(data.flags3D & MeshVisualizer3D::Flag::VertexId && !GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        CORRADE_SKIP("gl_VertexID not supported");
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(data.flags3D & MeshVisualizer3D::Flag::PrimitiveId && !(data.flags3D >= MeshVisualizer3D::Flag::PrimitiveIdFromVertexId) &&
