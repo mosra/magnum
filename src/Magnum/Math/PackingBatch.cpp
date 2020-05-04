@@ -281,7 +281,7 @@ static_assert(sizeof(HalfBaseTable) + sizeof(HalfShiftTable) == 1536,
 void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::unpackHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
+    CORRADE_ASSERT(src.isContiguous<1>() && dst.isContiguous<1>(),
         "Math::unpackHalfInto(): second view dimension is not contiguous", );
 
     /* Caching values to avoid inline function calls in debug builds */
@@ -306,7 +306,7 @@ void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<const Unsigned
 void packHalfInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst) {
     CORRADE_ASSERT(src.size() == dst.size(),
         "Math::packHalfInto(): wrong destination size, got" << dst.size() << "but expected" << src.size(), );
-    CORRADE_ASSERT(src.template isContiguous<1>() && dst.isContiguous<1>(),
+    CORRADE_ASSERT(src.isContiguous<1>() && dst.isContiguous<1>(),
         "Math::packHalfInto(): second view dimension is not contiguous", );
 
     /* Caching values to avoid inline function calls in debug builds */

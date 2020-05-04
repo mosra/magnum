@@ -466,6 +466,8 @@ See also:
     issues (see [mosra/magnum#421](https://github.com/mosra/magnum/issues/421))
 -   The library again compiles and tests cleanly with @ref CORRADE_NO_ASSERT
     enabled, and this setup is verified on the CI to avoid further regressions
+-   Worked around a regression in MSVC 2017 causing a compiler crash (see
+    [mosra/magnum#440](https://github.com/mosra/magnum/issues/440))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
