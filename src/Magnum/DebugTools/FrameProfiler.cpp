@@ -57,11 +57,11 @@ FrameProfiler::Measurement::Measurement(const std::string& name, const Units uni
 
 FrameProfiler::FrameProfiler() noexcept = default;
 
-FrameProfiler::FrameProfiler(Containers::Array<Measurement>&& measurements, std::size_t maxFrameCount) noexcept {
+FrameProfiler::FrameProfiler(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount) noexcept {
     setup(std::move(measurements), maxFrameCount);
 }
 
-FrameProfiler::FrameProfiler(const std::initializer_list<Measurement> measurements, const std::size_t maxFrameCount): FrameProfiler{Containers::array(measurements), maxFrameCount} {}
+FrameProfiler::FrameProfiler(const std::initializer_list<Measurement> measurements, const UnsignedInt maxFrameCount): FrameProfiler{Containers::array(measurements), maxFrameCount} {}
 
 FrameProfiler::FrameProfiler(FrameProfiler&& other) noexcept:
     _enabled{other._enabled},
@@ -105,7 +105,7 @@ FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
     return *this;
 }
 
-void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const std::size_t maxFrameCount) {
+void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const UnsignedInt maxFrameCount) {
     CORRADE_ASSERT(maxFrameCount >= 1, "DebugTools::FrameProfiler::setup(): max frame count can't be zero", );
 
     _maxFrameCount = maxFrameCount;
@@ -127,7 +127,7 @@ void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const s
     enable();
 }
 
-void FrameProfiler::setup(const std::initializer_list<Measurement> measurements, const std::size_t maxFrameCount) {
+void FrameProfiler::setup(const std::initializer_list<Measurement> measurements, const UnsignedInt maxFrameCount) {
     setup(Containers::array(measurements), maxFrameCount);
 }
 
@@ -171,7 +171,7 @@ void FrameProfiler::beginFrame() {
 }
 
 /* For delay = 1 returns _currentData */
-std::size_t FrameProfiler::delayedCurrentData(UnsignedInt delay) const {
+UnsignedInt FrameProfiler::delayedCurrentData(UnsignedInt delay) const {
     CORRADE_INTERNAL_ASSERT(delay >= 1);
 
     /* The delayed frame is current or before current */
@@ -253,25 +253,25 @@ void FrameProfiler::endFrame() {
     _currentData = (_currentData + 1) % _maxFrameCount;
 }
 
-std::string FrameProfiler::measurementName(const std::size_t id) const {
+std::string FrameProfiler::measurementName(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementName(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     return _measurements[id]._name;
 }
 
-FrameProfiler::Units FrameProfiler::measurementUnits(const std::size_t id) const {
+FrameProfiler::Units FrameProfiler::measurementUnits(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementUnits(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     return _measurements[id]._units;
 }
 
-UnsignedInt FrameProfiler::measurementDelay(const std::size_t id) const {
+UnsignedInt FrameProfiler::measurementDelay(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementDelay(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     return Math::max(_measurements[id]._delay, 1u);
 }
 
-bool FrameProfiler::isMeasurementAvailable(const std::size_t id) const {
+bool FrameProfiler::isMeasurementAvailable(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementDelay(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     return _measuredFrameCount >= Math::max(_measurements[id]._delay, 1u);
@@ -282,7 +282,7 @@ Double FrameProfiler::measurementDataInternal(const Measurement& measurement) co
         Math::min(_measuredFrameCount - Math::max(measurement._delay, 1u) + 1, _maxFrameCount);
 }
 
-Double FrameProfiler::measurementMean(const std::size_t id) const {
+Double FrameProfiler::measurementMean(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _measurements.size(),
         "DebugTools::FrameProfiler::measurementMean(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     CORRADE_ASSERT(_measuredFrameCount >= Math::max(_measurements[id]._delay, 1u), "DebugTools::FrameProfiler::measurementMean(): measurement data available after" << Math::max(_measurements[id]._delay, 1u) - _measuredFrameCount << "more frames", {});
@@ -391,13 +391,13 @@ std::string FrameProfiler::statistics() const {
     return out.str();
 }
 
-void FrameProfiler::printStatistics(const std::size_t frequency) const {
+void FrameProfiler::printStatistics(const UnsignedInt frequency) const {
     Debug::Flags flags;
     if(!Debug::isTty()) flags |= Debug::Flag::DisableColors;
     printStatistics(Debug{flags}, frequency);
 }
 
-void FrameProfiler::printStatistics(Debug& out, const std::size_t frequency) const {
+void FrameProfiler::printStatistics(Debug& out, const UnsignedInt frequency) const {
     if(!isEnabled() || _measuredFrameCount % frequency != 0) return;
 
     /* If on a TTY and we printed at least something already, scroll back up to
@@ -455,7 +455,7 @@ struct GLFrameProfiler::State {
 
 GLFrameProfiler::GLFrameProfiler(): _state{Containers::InPlaceInit} {}
 
-GLFrameProfiler::GLFrameProfiler(const Values values, const std::size_t maxFrameCount): GLFrameProfiler{}
+GLFrameProfiler::GLFrameProfiler(const Values values, const UnsignedInt maxFrameCount): GLFrameProfiler{}
 {
     setup(values, maxFrameCount);
 }
@@ -466,7 +466,7 @@ GLFrameProfiler& GLFrameProfiler::operator=(GLFrameProfiler&&) noexcept = defaul
 
 GLFrameProfiler::~GLFrameProfiler() = default;
 
-void GLFrameProfiler::setup(const Values values, const std::size_t maxFrameCount) {
+void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount) {
     UnsignedShort index = 0;
     Containers::Array<Measurement> measurements;
     if(values & Value::FrameTime) {

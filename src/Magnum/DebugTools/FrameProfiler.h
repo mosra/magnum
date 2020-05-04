@@ -178,10 +178,10 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * Equivalent to default-constructing an instance and calling
          * @ref setup() afterwards.
          */
-        explicit FrameProfiler(Containers::Array<Measurement>&& measurements, std::size_t maxFrameCount) noexcept;
+        explicit FrameProfiler(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount) noexcept;
 
         /** @overload */
-        explicit FrameProfiler(std::initializer_list<Measurement> measurements, std::size_t maxFrameCount);
+        explicit FrameProfiler(std::initializer_list<Measurement> measurements, UnsignedInt maxFrameCount);
 
         /** @brief Copying is not allowed */
         FrameProfiler(const FrameProfiler&) = delete;
@@ -205,10 +205,10 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * existing measurements with @p measurements and reset
          * @ref measuredFrameCount() back to @cpp 0 @ce.
          */
-        void setup(Containers::Array<Measurement>&& measurements, std::size_t maxFrameCount);
+        void setup(Containers::Array<Measurement>&& measurements, UnsignedInt maxFrameCount);
 
         /** @overload */
-        void setup(std::initializer_list<Measurement> measurements, std::size_t maxFrameCount);
+        void setup(std::initializer_list<Measurement> measurements, UnsignedInt maxFrameCount);
 
         /** @brief Whether the profiling is enabled */
         bool isEnabled() const { return _enabled; }
@@ -264,7 +264,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * calculated only from @ref measuredFrameCount(). Always at least
          * @cpp 1 @ce.
          */
-        std::size_t maxFrameCount() const { return _maxFrameCount; }
+        UnsignedInt maxFrameCount() const { return _maxFrameCount; }
 
         /**
          * @brief Count of measured frames
@@ -274,7 +274,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * average over last @ref maxFrameCount() frames only. Actual data
          * availability depends on @ref measurementDelay().
          */
-        std::size_t measuredFrameCount() const { return _measuredFrameCount; }
+        UnsignedInt measuredFrameCount() const { return _measuredFrameCount; }
 
         /**
          * @brief Measurement count
@@ -282,7 +282,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * Count of @ref Measurement instances passed to @ref setup(). If
          * @ref setup() was not called yet, returns @cpp 0 @ce.
          */
-        std::size_t measurementCount() const { return _measurements.size(); }
+        UnsignedInt measurementCount() const { return _measurements.size(); }
 
         /**
          * @brief Measurement name
@@ -291,7 +291,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * passed to @ref setup(). Expects that @p id is less than
          * @ref measurementCount().
          */
-        std::string measurementName(std::size_t id) const;
+        std::string measurementName(UnsignedInt id) const;
 
         /**
          * @brief Measurement units
@@ -300,7 +300,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * passed to @ref setup(). Expects that @p id is less than
          * @ref measurementCount().
          */
-        Units measurementUnits(std::size_t id) const;
+        Units measurementUnits(UnsignedInt id) const;
 
         /**
          * @brief Measurement delay
@@ -311,7 +311,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * measurement in the list passed to @ref setup(). Expects that @p id
          * is less than @ref measurementCount().
          */
-        UnsignedInt measurementDelay(std::size_t id) const;
+        UnsignedInt measurementDelay(UnsignedInt id) const;
 
         /**
          * @brief Whether given measurement is available
@@ -322,7 +322,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * passed to @ref setup(). Expects that @p id is less than
          * @ref measurementCount().
          */
-        bool isMeasurementAvailable(std::size_t id) const;
+        bool isMeasurementAvailable(UnsignedInt id) const;
 
         /**
          * @brief Measurement mean
@@ -337,7 +337,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * @ref measurementCount() and that the measurement is available.
          * @see @ref isMeasurementAvailable()
          */
-        Double measurementMean(std::size_t id) const;
+        Double measurementMean(UnsignedInt id) const;
 
         /**
          * @brief Overview of all measurements
@@ -359,27 +359,27 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
          * @see @ref isMeasurementAvailable(), @ref isEnabled()
          *      @ref Corrade::Utility::Debug::isTty()
          */
-        void printStatistics(std::size_t frequency) const;
+        void printStatistics(UnsignedInt frequency) const;
 
         /**
          * @brief Print an overview of all measurements to given output at given rate
          *
-         * Compared to @ref printStatistics(std::size_t) const prints to given
+         * Compared to @ref printStatistics(UnsignedInt) const prints to given
          * @p out (which can be also @ref Corrade::Utility::Warning or
          * @ref Corrade::Utility::Error) and uses it to decide whether the
          * output is a TTY and whether to print colors.
          * @see @ref Corrade::Utility::Debug::isTty(),
          *      @ref Corrade::Utility::Debug::Flag::DisableColors
          */
-        void printStatistics(Debug& out, std::size_t frequency) const;
+        void printStatistics(Debug& out, UnsignedInt frequency) const;
 
         /** @overload */
-        void printStatistics(Debug&& out, std::size_t frequency) const {
+        void printStatistics(Debug&& out, UnsignedInt frequency) const {
             printStatistics(out, frequency);
         }
 
     private:
-        std::size_t delayedCurrentData(UnsignedInt delay) const;
+        UnsignedInt delayedCurrentData(UnsignedInt delay) const;
         Double measurementDataInternal(const Measurement& measurement) const;
         void printStatisticsInternal(Debug& out) const;
 
@@ -389,7 +389,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
            asserts get disabled */
         bool _beginFrameCalled{};
         #endif
-        std::size_t _currentData{}, _maxFrameCount{1}, _measuredFrameCount{};
+        UnsignedInt _currentData{}, _maxFrameCount{1}, _measuredFrameCount{};
         Containers::Array<Measurement> _measurements;
         Containers::Array<UnsignedLong> _data;
 };
@@ -500,7 +500,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
         /**
          * @brief Measured value
          *
-         * @see @ref Values, @ref GLFrameProfiler(Values, std::size_t),
+         * @see @ref Values, @ref GLFrameProfiler(Values, UnsignedInt),
          *      @ref setup()
          */
         enum class Value: UnsignedShort {
@@ -560,7 +560,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
         /**
          * @brief Measured values
          *
-         * @see @ref GLFrameProfiler(Values, std::size_t), @ref setup()
+         * @see @ref GLFrameProfiler(Values, UnsignedInt), @ref setup()
          */
         typedef Containers::EnumSet<Value> Values;
 
@@ -577,7 +577,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
          * Equivalent to default-constructing an instance and calling
          * @ref setup() afterwards.
          */
-        explicit GLFrameProfiler(Values values, std::size_t maxFrameCount);
+        explicit GLFrameProfiler(Values values, UnsignedInt maxFrameCount);
 
         /** @brief Copying is not allowed */
         GLFrameProfiler(const GLFrameProfiler&) = delete;
@@ -603,13 +603,13 @@ class MAGNUM_DEBUGTOOLS_EXPORT GLFrameProfiler: public FrameProfiler {
          * existing measurements with @p measurements and reset
          * @ref measuredFrameCount() back to @cpp 0 @ce.
          */
-        void setup(Values values, std::size_t maxFrameCount);
+        void setup(Values values, UnsignedInt maxFrameCount);
 
         /**
          * @brief Measured values
          *
          * Corresponds to the @p values parameter passed to
-         * @ref GLFrameProfiler(Values, std::size_t) or @ref setup().
+         * @ref GLFrameProfiler(Values, UnsignedInt) or @ref setup().
          */
         Values values() const;
 
