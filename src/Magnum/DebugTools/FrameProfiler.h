@@ -380,7 +380,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
 
     private:
         UnsignedInt delayedCurrentData(UnsignedInt delay) const;
-        Double measurementDataInternal(const Measurement& measurement) const;
+        Double measurementMeanInternal(const Measurement& measurement) const;
         void printStatisticsInternal(Debug& out) const;
 
         bool _enabled = true;

@@ -277,7 +277,7 @@ bool FrameProfiler::isMeasurementAvailable(const UnsignedInt id) const {
     return _measuredFrameCount >= Math::max(_measurements[id]._delay, 1u);
 }
 
-Double FrameProfiler::measurementDataInternal(const Measurement& measurement) const {
+Double FrameProfiler::measurementMeanInternal(const Measurement& measurement) const {
     return Double(measurement._movingSum)/
         Math::min(_measuredFrameCount - Math::max(measurement._delay, 1u) + 1, _maxFrameCount);
 }
@@ -287,7 +287,7 @@ Double FrameProfiler::measurementMean(const UnsignedInt id) const {
         "DebugTools::FrameProfiler::measurementMean(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
     CORRADE_ASSERT(_measuredFrameCount >= Math::max(_measurements[id]._delay, 1u), "DebugTools::FrameProfiler::measurementMean(): measurement data available after" << Math::max(_measurements[id]._delay, 1u) - _measuredFrameCount << "more frames", {});
 
-    return measurementDataInternal(_measurements[id]);
+    return measurementMeanInternal(_measurements[id]);
 }
 
 namespace {
@@ -360,7 +360,7 @@ void FrameProfiler::printStatisticsInternal(Debug& out) const {
 
         /* Otherwise format the value */
         } else {
-            const Double mean = measurementDataInternal(measurement);
+            const Double mean = measurementMeanInternal(measurement);
             switch(measurement._units) {
                 case Units::Nanoseconds:
                     printTime(out, mean);

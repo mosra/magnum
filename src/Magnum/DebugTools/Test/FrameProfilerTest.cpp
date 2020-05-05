@@ -55,7 +55,7 @@ struct FrameProfilerTest: TestSuite::Tester {
     void delayTooLittleFrames();
     void startStopFrameUnexpected();
     void measurementOutOfBounds();
-    void dataNotAvailableYet();
+    void meanNotAvailableYet();
 
     void statistics();
 
@@ -127,7 +127,7 @@ FrameProfilerTest::FrameProfilerTest() {
               &FrameProfilerTest::delayTooLittleFrames,
               &FrameProfilerTest::startStopFrameUnexpected,
               &FrameProfilerTest::measurementOutOfBounds,
-              &FrameProfilerTest::dataNotAvailableYet,
+              &FrameProfilerTest::meanNotAvailableYet,
 
               &FrameProfilerTest::statistics});
 
@@ -800,7 +800,7 @@ void FrameProfilerTest::measurementOutOfBounds() {
         "DebugTools::FrameProfiler::measurementMean(): index 2 out of range for 2 measurements\n");
 }
 
-void FrameProfilerTest::dataNotAvailableYet() {
+void FrameProfilerTest::meanNotAvailableYet() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
