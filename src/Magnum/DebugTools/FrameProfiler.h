@@ -325,6 +325,18 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
         bool isMeasurementAvailable(UnsignedInt id) const;
 
         /**
+         * @brief Measurement data at given frame
+         *
+         * A @p frame value of @cpp 0 @ce is the oldest recorded frame and can
+         * go up to @ref measurementCount() lessened by @ref measurementDelay()
+         * or @ref maxFrameCount() minus one, whichever is smaller. Expects that
+         * @p id is less than @ref measurementCount() and at least
+         * one measurement is available.
+         * @see @ref isMeasurementAvailable()
+         */
+        UnsignedLong measurementData(UnsignedInt id, UnsignedInt frame) const;
+
+        /**
          * @brief Measurement mean
          *
          * Returns a moving average of @f$ n @f$ previous measurements out of

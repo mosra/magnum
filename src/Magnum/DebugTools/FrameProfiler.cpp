@@ -259,6 +259,20 @@ bool FrameProfiler::isMeasurementAvailable(const UnsignedInt id) const {
     return _measuredFrameCount >= Math::max(_measurements[id]._delay, 1u);
 }
 
+UnsignedLong FrameProfiler::measurementData(const UnsignedInt id, const UnsignedInt frame) const {
+    CORRADE_ASSERT(id < _measurements.size(),
+        "DebugTools::FrameProfiler::measurementData(): index" << id << "out of range for" << _measurements.size() << "measurements", {});
+    CORRADE_ASSERT(frame < _maxFrameCount,
+        "DebugTools::FrameProfiler::measurementData(): frame" << frame << "out of bounds for max" << _maxFrameCount << "frames", {});
+    CORRADE_ASSERT(_measuredFrameCount >= Math::max(_measurements[id]._delay, 1u) && frame <= _measuredFrameCount - Math::max(_measurements[id]._delay, 1u),
+        "DebugTools::FrameProfiler::measurementData(): frame" << frame << "of measurement" << id << "not available yet (delay" << Math::max(_measurements[id]._delay, 1u) << Debug::nospace << "," << _measuredFrameCount << "frames measured so far)", {});
+
+    /* We're returning data from the previous maxFrameCount. If the full range
+       is not available, cap that only to the count of actually measured frames
+       minus the delay. */
+    return _data[((_measuredFrameCount - Math::min(_maxFrameCount + Math::max(_measurements[id]._delay, 1u) - 1, _measuredFrameCount) + frame) % _maxFrameCount)*_measurements.size() + id];
+}
+
 Double FrameProfiler::measurementMeanInternal(const Measurement& measurement) const {
     return Double(measurement._movingSum)/
         Math::min(_measuredFrameCount - Math::max(measurement._delay, 1u) + 1, _maxFrameCount);

@@ -55,6 +55,8 @@ struct FrameProfilerTest: TestSuite::Tester {
     void delayTooLittleFrames();
     void startStopFrameUnexpected();
     void measurementOutOfBounds();
+    void frameOutOfBounds();
+    void dataNotAvailableYet();
     void meanNotAvailableYet();
 
     void statistics();
@@ -127,6 +129,8 @@ FrameProfilerTest::FrameProfilerTest() {
               &FrameProfilerTest::delayTooLittleFrames,
               &FrameProfilerTest::startStopFrameUnexpected,
               &FrameProfilerTest::measurementOutOfBounds,
+              &FrameProfilerTest::frameOutOfBounds,
+              &FrameProfilerTest::dataNotAvailableYet,
               &FrameProfilerTest::meanNotAvailableYet,
 
               &FrameProfilerTest::statistics});
@@ -310,6 +314,9 @@ void FrameProfilerTest::singleFrame() {
     CORRADE_VERIFY(profiler.isMeasurementAvailable(0));
     CORRADE_VERIFY(profiler.isMeasurementAvailable(1));
     CORRADE_VERIFY(profiler.isMeasurementAvailable(2));
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), 0.0);
     CORRADE_COMPARE(profiler.measurementMean(1), 0.0);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -319,6 +326,9 @@ void FrameProfilerTest::singleFrame() {
     CORRADE_COMPARE(time, 30);
     CORRADE_COMPARE(memory, 200);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 2);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 15);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 100);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), 15.0);
     CORRADE_COMPARE(profiler.measurementMean(1), 100.0);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -327,6 +337,9 @@ void FrameProfilerTest::singleFrame() {
     profiler.endFrame();
     CORRADE_COMPARE(time, 45);
     CORRADE_COMPARE(memory, 400);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 30);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 300);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), 30.0);
     CORRADE_COMPARE(profiler.measurementMean(1), 300.0);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -335,6 +348,9 @@ void FrameProfilerTest::singleFrame() {
     profiler.endFrame();
     CORRADE_COMPARE(time, 60);
     CORRADE_COMPARE(memory, 800);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 45);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 700);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), 45.0);
     CORRADE_COMPARE(profiler.measurementMean(1), 700.0);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -449,6 +465,9 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_VERIFY(profiler.isMeasurementAvailable(1));
     CORRADE_VERIFY(profiler.isMeasurementAvailable(2));
     CORRADE_COMPARE(profiler.measuredFrameCount(), 0 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), 0.0);
     CORRADE_COMPARE(profiler.measurementMean(1), 0.0);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -458,6 +477,12 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_COMPARE(state.time[1 % data.delay], 30);
     CORRADE_COMPARE(state.memory[1 % data.delay], 200);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 1 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(0, 1), 15);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(1, 1), 100);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 1), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), (15.0 + 0.0)/2);
     CORRADE_COMPARE(profiler.measurementMean(1), (100.0 + 0.0)/2);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -467,6 +492,15 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_COMPARE(state.time[2 % data.delay], 45);
     CORRADE_COMPARE(state.memory[2 % data.delay], 400);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 2 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(0, 1), 15);
+    CORRADE_COMPARE(profiler.measurementData(0, 2), 30);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 0);
+    CORRADE_COMPARE(profiler.measurementData(1, 1), 100);
+    CORRADE_COMPARE(profiler.measurementData(1, 2), 300);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 1), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 2), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), (30.0 + 15.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(1), (300.0 + 100.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -479,6 +513,15 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_COMPARE(state.time[3 % data.delay], 60);
     CORRADE_COMPARE(state.memory[3 % data.delay], 800);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 3 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 15);
+    CORRADE_COMPARE(profiler.measurementData(0, 1), 30);
+    CORRADE_COMPARE(profiler.measurementData(0, 2), 45);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 100);
+    CORRADE_COMPARE(profiler.measurementData(1, 1), 300);
+    CORRADE_COMPARE(profiler.measurementData(1, 2), 700);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 1), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 2), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), (45.0 + 30.0 + 15.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(1), (700.0 + 300.0 + 100.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -488,6 +531,15 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_COMPARE(state.time[4 % data.delay], 75);
     CORRADE_COMPARE(state.memory[4 % data.delay], 1600);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 4 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 30);
+    CORRADE_COMPARE(profiler.measurementData(0, 1), 45);
+    CORRADE_COMPARE(profiler.measurementData(0, 2), 60);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 300);
+    CORRADE_COMPARE(profiler.measurementData(1, 1), 700);
+    CORRADE_COMPARE(profiler.measurementData(1, 2), 1500);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 1), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 2), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), (60 + 45.0 + 30.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(1), (1500.0 + 700.0 + 300.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -497,6 +549,15 @@ void FrameProfilerTest::multipleFrames() {
     CORRADE_COMPARE(state.time[5 % data.delay], 90);
     CORRADE_COMPARE(state.memory[5 % data.delay], 3200);
     CORRADE_COMPARE(profiler.measuredFrameCount(), 5 + data.delay);
+    CORRADE_COMPARE(profiler.measurementData(0, 0), 45);
+    CORRADE_COMPARE(profiler.measurementData(0, 1), 60);
+    CORRADE_COMPARE(profiler.measurementData(0, 2), 75);
+    CORRADE_COMPARE(profiler.measurementData(1, 0), 700);
+    CORRADE_COMPARE(profiler.measurementData(1, 1), 1500);
+    CORRADE_COMPARE(profiler.measurementData(1, 2), 3100);
+    CORRADE_COMPARE(profiler.measurementData(2, 0), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 1), 100000);
+    CORRADE_COMPARE(profiler.measurementData(2, 2), 100000);
     CORRADE_COMPARE(profiler.measurementMean(0), (75.0 + 60.0 + 45.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(1), (3100.0 + 1500.0 + 700.0)/3);
     CORRADE_COMPARE(profiler.measurementMean(2), 100000.0);
@@ -792,12 +853,105 @@ void FrameProfilerTest::measurementOutOfBounds() {
     profiler.measurementName(2);
     profiler.measurementUnits(2);
     profiler.measurementDelay(2);
+    profiler.measurementData(2, 0);
     profiler.measurementMean(2);
     CORRADE_COMPARE(out.str(),
         "DebugTools::FrameProfiler::measurementName(): index 2 out of range for 2 measurements\n"
         "DebugTools::FrameProfiler::measurementUnits(): index 2 out of range for 2 measurements\n"
         "DebugTools::FrameProfiler::measurementDelay(): index 2 out of range for 2 measurements\n"
+        "DebugTools::FrameProfiler::measurementData(): index 2 out of range for 2 measurements\n"
         "DebugTools::FrameProfiler::measurementMean(): index 2 out of range for 2 measurements\n");
+}
+
+void FrameProfilerTest::frameOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    FrameProfiler profiler{{
+        FrameProfiler::Measurement{"", FrameProfiler::Units::Count,
+            [](void*) {},
+            [](void*) { return UnsignedLong{}; }, nullptr},
+    }, 3};
+
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    profiler.measurementData(0, 3);
+    CORRADE_COMPARE(out.str(),
+        "DebugTools::FrameProfiler::measurementData(): frame 3 out of bounds for max 3 frames\n");
+}
+
+void FrameProfilerTest::dataNotAvailableYet() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    FrameProfiler profiler{{
+        FrameProfiler::Measurement{"", FrameProfiler::Units::Count, 3,
+            [](void*, UnsignedInt) {},
+            [](void*, UnsignedInt) {},
+            [](void*, UnsignedInt, UnsignedInt) { return UnsignedLong{}; }, nullptr},
+    }, 5};
+
+    /* Empty state */
+    {
+        std::ostringstream out;
+        Error redirectError{&out};
+        profiler.measurementData(0, 0);
+        CORRADE_COMPARE(out.str(),
+            "DebugTools::FrameProfiler::measurementData(): frame 0 of measurement 0 not available yet (delay 3, 0 frames measured so far)\n");
+    }
+
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+
+    /* No wraparound yet */
+    {
+        profiler.measurementData(0, 0);
+        profiler.measurementData(0, 1);
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        profiler.measurementData(0, 2);
+        profiler.measurementData(0, 3);
+        profiler.measurementData(0, 4);
+        CORRADE_COMPARE(out.str(),
+            "DebugTools::FrameProfiler::measurementData(): frame 2 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n"
+            "DebugTools::FrameProfiler::measurementData(): frame 3 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n"
+            "DebugTools::FrameProfiler::measurementData(): frame 4 of measurement 0 not available yet (delay 3, 4 frames measured so far)\n");
+    }
+
+    profiler.beginFrame();
+    profiler.endFrame();
+    profiler.beginFrame();
+    profiler.endFrame();
+
+    /* Wraparound, one last measurement missing */
+    {
+        profiler.measurementData(0, 0);
+        profiler.measurementData(0, 1);
+        profiler.measurementData(0, 2);
+        profiler.measurementData(0, 3);
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        profiler.measurementData(0, 4);
+        CORRADE_COMPARE(out.str(),
+            "DebugTools::FrameProfiler::measurementData(): frame 4 of measurement 0 not available yet (delay 3, 6 frames measured so far)\n");
+    }
 }
 
 void FrameProfilerTest::meanNotAvailableYet() {
