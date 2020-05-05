@@ -389,7 +389,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler {
            asserts get disabled */
         bool _beginFrameCalled{};
         #endif
-        UnsignedInt _currentData{}, _maxFrameCount{1}, _measuredFrameCount{};
+        UnsignedInt _maxFrameCount{1}, _measuredFrameCount{};
         Containers::Array<Measurement> _measurements;
         Containers::Array<UnsignedLong> _data;
 };

@@ -68,7 +68,6 @@ FrameProfiler::FrameProfiler(FrameProfiler&& other) noexcept:
     #ifndef CORRADE_NO_ASSERT
     _beginFrameCalled{other._beginFrameCalled},
     #endif
-    _currentData{other._currentData},
     _maxFrameCount{other._maxFrameCount},
     _measuredFrameCount{other._measuredFrameCount},
     _measurements{std::move(other._measurements)},
@@ -86,7 +85,6 @@ FrameProfiler& FrameProfiler::operator=(FrameProfiler&& other) noexcept {
     #ifndef CORRADE_NO_ASSERT
     swap(_beginFrameCalled, other._beginFrameCalled);
     #endif
-    swap(_currentData, other._currentData);
     swap(_maxFrameCount, other._maxFrameCount);
     swap(_measuredFrameCount, other._measuredFrameCount);
     swap(_measurements, other._measurements);
@@ -136,7 +134,6 @@ void FrameProfiler::enable() {
     #ifndef CORRADE_NO_ASSERT
     _beginFrameCalled = false;
     #endif
-    _currentData = 0;
     _measuredFrameCount = 0;
     arrayResize(_data, 0);
 
@@ -170,18 +167,9 @@ void FrameProfiler::beginFrame() {
     }
 }
 
-/* For delay = 1 returns _currentData */
 UnsignedInt FrameProfiler::delayedCurrentData(UnsignedInt delay) const {
     CORRADE_INTERNAL_ASSERT(delay >= 1);
-
-    /* The delayed frame is current or before current */
-    if(_currentData >= delay - 1)
-        return _currentData - delay + 1;
-
-    /* If we have all data, wrap around. If we don't have all data yet, such
-       value doesn't exist and thus this will return an OOB index. If
-       everything is implemented correctly, it won't be accessed in any way. */
-    return _maxFrameCount + _currentData - delay + 1;
+    return (_measuredFrameCount - delay) % _maxFrameCount;
 }
 
 void FrameProfiler::endFrame() {
@@ -193,10 +181,8 @@ void FrameProfiler::endFrame() {
     #endif
 
     /* If we don't have all frames yet, enlarge the array */
-    if(++_measuredFrameCount <= _maxFrameCount) {
-        CORRADE_INTERNAL_ASSERT(_measurements.empty() || _currentData == _data.size()/_measurements.size());
+    if(++_measuredFrameCount <= _maxFrameCount)
         arrayAppend(_data, Containers::NoInit, _measurements.size());
-    }
 
     /* Wrap up measurements for this frame  */
     for(std::size_t i = 0; i != _measurements.size(); ++i) {
@@ -247,10 +233,6 @@ void FrameProfiler::endFrame() {
         if(_measuredFrameCount >= measurementDelay)
             _measurements[i]._movingSum += _data[delayedCurrentData(measurementDelay)*_measurements.size() + i];
     }
-
-    /* Advance & wraparound the index where data will be saved for the next
-       frame */
-    _currentData = (_currentData + 1) % _maxFrameCount;
 }
 
 std::string FrameProfiler::measurementName(const UnsignedInt id) const {
