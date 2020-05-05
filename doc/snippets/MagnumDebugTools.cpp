@@ -53,7 +53,7 @@ void foo() {
 {
 /* [CompareImageFile] */
 CORRADE_COMPARE_WITH("actual.png", "expected.png",
-    (DebugTools::CompareImageFile{15.5f, 5.0f}));
+    (DebugTools::CompareImageFile{1.5f, 0.01f}));
 /* [CompareImageFile] */
 }
 
@@ -62,7 +62,7 @@ CORRADE_COMPARE_WITH("actual.png", "expected.png",
 PluginManager::Manager<Trade::AbstractImporter> manager;
 
 CORRADE_COMPARE_WITH("actual.png", "expected.png",
-    (DebugTools::CompareImageFile{manager, 15.5f, 5.0f}));
+    (DebugTools::CompareImageFile{manager, 1.5f, 0.01f}));
 /* [CompareImageFile-manager] */
 }
 
@@ -74,7 +74,7 @@ if(manager.loadState("AnyImageImporter") == PluginManager::LoadState::NotFound |
     CORRADE_SKIP("AnyImageImporter/PngImporter not found, can't compare.");
 
 CORRADE_COMPARE_WITH("actual.png", "expected.png",
-    (DebugTools::CompareImageFile{manager, 15.5f, 5.0f}));
+    (DebugTools::CompareImageFile{manager, 1.5f, 0.01f}));
 /* [CompareImageFile-skip] */
 }
 
@@ -82,13 +82,13 @@ CORRADE_COMPARE_WITH("actual.png", "expected.png",
 /* [CompareImageToFile] */
 Image2D actual = doProcessing();
 CORRADE_COMPARE_WITH(actual, "expected.png",
-    (DebugTools::CompareImageToFile{15.5f, 5.0f}));
+    (DebugTools::CompareImageToFile{1.5f, 0.01f}));
 /* [CompareImageToFile] */
 
 /* [CompareFileToImage] */
 Image2D expected = loadExpectedImage();
 CORRADE_COMPARE_WITH("actual.png", expected,
-    (DebugTools::CompareFileToImage{15.5f, 5.0f}));
+    (DebugTools::CompareFileToImage{1.5f, 0.01f}));
 /* [CompareFileToImage] */
 }
 
@@ -97,7 +97,7 @@ Image2D actual = doProcessing();
 Image2D expected = loadExpectedImage();
 /* [CompareImage-pixels-flip] */
 CORRADE_COMPARE_WITH(actual.pixels<Color3ub>().flipped<0>(), expected,
-    (DebugTools::CompareImage{15.5f, 5.0f}));
+    (DebugTools::CompareImage{1.5f, 0.01f}));
 /* [CompareImage-pixels-flip] */
 }
 }
