@@ -364,20 +364,15 @@ template<UnsignedInt dimensions> struct Generic {
      * @ref Magnum::Vector4 "Vector4", four weights of influence per @ref JointIndices.
      * Corresponds to @ref Trade::MeshAttribute::Weights.
      */
-    // TODO: E.g. gltf supports importing multiple sets of 4 weights (WEIGHTS_0 [0;3], WEIGHTS_1 [4;7])
-    // I suppose these would require special shaders and it's fine to only support 4 for the GenericShaders
     typedef GL::Attribute<6, Vector4> Weights;
 
     /**
-     * @brief Joint indices
+     * @brief Joint IDs
      *
-     * @ref Magnum::Vector4 "Vector4", four weights of influence per @ref JointIndices.
-     * Corresponds to @ref Trade::MeshAttribute::Weights.
+     * @ref Magnum::Vector4ui "Vector4ui", four joint indices that may affect the vertex.
+     * Corresponds to @ref Trade::MeshAttribute::JointIds.
      */
-    // TODO: E.g. gltf supports importing multiple sets of 4 indices (JOINTS_0 [0;3], JOINTS_1 [4;7])
-    // I suppose these would require special shaders and it's fine to only support 4 for the GenericShaders
-    // TODO: This is called "Joints" in gltf.
-    typedef GL::Attribute<7, Vector4> JointIndices;
+    typedef GL::Attribute<7, Vector4ui> JointIds;
 
     /**
      * @brief (Instanced) transformation matrix
@@ -502,7 +497,8 @@ template<> struct Generic<3>: BaseGeneric {
     typedef GL::Attribute<3, Vector4> Tangent4;
     typedef GL::Attribute<4, Vector3> Bitangent; /* also ObjectId */
     typedef GL::Attribute<5, Vector3> Normal;
-    /* 6, 7 reserved for vertex weights / bone IDs */
+    typedef GL::Attribute<6, Vector4> Weights;
+    typedef GL::Attribute<7, Vector4> JointIds;
 
     typedef GL::Attribute<8, Matrix4> TransformationMatrix;
     /* 9, 10, 11 occupied by TransformationMatrix */
