@@ -2,16 +2,6 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program File
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" set GENERATOR=Visual Studio 15 2017
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
-rem Build ANGLE. The repo is now just a README redirecting to googlesource.
-rem I don't want to bother with this right now, so checking out last usable
-rem version from 2017. TODO: fix when I can be bothered
-git clone --depth 10 git://github.com/MSOpenTech/angle.git || exit /b
-cd angle || exit /b
-git checkout c61d0488abd9663e0d4d2450db7345baa2c0dfb6 || exit /b
-cd winrt\10\src || exit /b
-msbuild angle.sln /p:Configuration=Release || exit /b
-cd ..\..\..\.. || exit /b
-
 rem Build SDL
 appveyor DownloadFile https://www.libsdl.org/release/SDL2-2.0.4.zip || exit /b
 7z x SDL2-2.0.4.zip || exit /b
@@ -58,12 +48,6 @@ cmake .. ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DEGL_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libEGL.lib ^
-    -DEGL_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
-    -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
-    -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
     -DSDL2_LIBRARY_RELEASE=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/X64/Release/SDL-UWP/SDL2.lib ^
     -DSDL2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/SDL/include ^
     -DWITH_AUDIO=OFF ^

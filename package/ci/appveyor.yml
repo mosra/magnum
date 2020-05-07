@@ -124,6 +124,12 @@ install:
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
+# Angle for WinRT. Zip from https://github.com/mosra/magnum-ci/tree/angle and
+# self-hosted because GH Actions would make it too simple for people if you
+# could just download the artifacts directly, right? RIGHT?
+- IF "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\angle-4134-windows-uwp.zip appveyor DownloadFile https://ci.magnum.graphics/angle-4134-windows-uwp.zip
+- IF "%TARGET%" == "rt" 7z x angle-4134-windows-uwp.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER:~0,4%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
