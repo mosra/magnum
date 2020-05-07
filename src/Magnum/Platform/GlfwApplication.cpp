@@ -741,11 +741,14 @@ bool GlfwApplication::mainLoopIteration() {
     */
     if(glfwGetWindowUserPointer(_window) != this) setupCallbacks();
 
+    /* If redrawing, poll for events immediately after drawEvent() (which could
+       be setting the Redraw flag again, thus doing constant redraw). If not,
+       avoid spinning the CPU by waiting for the next input event. */
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
-    }
-    glfwPollEvents();
+        glfwPollEvents();
+    } else glfwWaitEvents();
 
     return !glfwWindowShouldClose(_window);
 }
