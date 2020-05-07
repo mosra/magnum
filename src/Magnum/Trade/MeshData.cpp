@@ -777,15 +777,67 @@ Containers::Array<UnsignedInt> MeshData::objectIdsAsArray(const UnsignedInt id) 
     return out;
 }
 
+void MeshData::weightsInto(const Containers::StridedArrayView1D<Vector4> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::Weights, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::weightsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::Weights) << "weights attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::weightsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::weightsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+    const Containers::StridedArrayView2D<Float> destination4f = Containers::arrayCast<2, Float>(destination);
+
+    if(attribute._format == VertexFormat::Vector4)
+        Utility::copy(Containers::arrayCast<const Vector4>(attributeData), destination);
+    else if(attribute._format == VertexFormat::Vector4h)
+        Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4ub)
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4b)
+        Math::castInto(Containers::arrayCast<2, const Byte>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4us)
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4s)
+        Math::castInto(Containers::arrayCast<2, const Short>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4ubNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4bNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4usNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
+    else if(attribute._format == VertexFormat::Vector4sNormalized)
+        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4), destination4f);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+
 Containers::Array<Vector4> MeshData::weightsAsArray(const UnsignedInt id) const {
     Containers::Array<Vector4> out{_vertexCount};
     weightsInto(out, id);
     return out;
 }
 
-Containers::Array<Vector4us> MeshData::jointIndicesAsArray(const UnsignedInt id) const {
-    Containers::Array<Vector4us> out{_vertexCount};
-    jointIndicesInto(out, id);
+void MeshData::jointIdsInto(const Containers::StridedArrayView1D<Vector4ui> destination, const UnsignedInt id) const {
+    const UnsignedInt attributeId = attributeFor(MeshAttribute::JointIds, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::jointIdsInto(): index" << id << "out of range for" << attributeCount(MeshAttribute::JointIds) << "joint IDs attributes", );
+    CORRADE_ASSERT(destination.size() == _vertexCount, "Trade::MeshData::jointIdsInto(): expected a view with" << _vertexCount << "elements but got" << destination.size(), );
+    const MeshAttributeData& attribute = _attributes[attributeId];
+    CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
+        "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
+    const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+
+    if(attribute._format == VertexFormat::Vector4ui)
+        Utility::copy(Containers::arrayCast<const Vector4ui>(attributeData), destination);
+    else if(attribute._format == VertexFormat::Vector4ub)
+        Utility::copy(Containers::arrayCast<const Vector4ub>(attributeData), destination);
+    else if(attribute._format == VertexFormat::Vector4us)
+        Utility::copy(Containers::arrayCast<const Vector4us>(attributeData), destination);
+    else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
+Containers::Array<Vector4ui> MeshData::jointIdsAsArray(const UnsignedInt id) const {
+    Containers::Array<Vector4ui> out{_vertexCount};
+    jointIdsInto(out, id);
     return out;
 }
 
@@ -823,6 +875,8 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
         _c(TextureCoordinates)
         _c(Color)
         _c(ObjectId)
+        _c(Weights)
+        _c(JointIds)
         #undef _c
         /* LCOV_EXCL_STOP */
 

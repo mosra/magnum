@@ -149,21 +149,23 @@ enum class MeshAttribute: UnsignedShort {
 
     /**
      * Weights. Type is usually @ref VertexFormat::Vector4, but can be also
-     * @ref VertexFormat::Vector4h, @ref VertexFormat::Vector4bNormalized or
-     * @ref VertexFormat::Vector4sNormalized. Corresponds to
-     * @ref Shaders::Generic::Weights.
+     * @ref VertexFormat::Vector4h, @ref VertexFormat::Vector4ub,
+     * @ref VertexFormat::Vector4b,  @ref VertexFormat::Vector4us,
+     * @ref VertexFormat::Vector4s, @ref VertexFormat::Vector4ubNormalized,
+     * @ref VertexFormat::Vector4bNormalized, @ref VertexFormat::Vector4usNormalized
+     * or @ref VertexFormat::Vector4sNormalized.
+     * Corresponds to * @ref Shaders::Generic::Weights.
      * @see @ref MeshData::weightsAsArray()
      */
     Weights,
 
     /**
-     * JointIndices. Type is usually @ref VertexFormat::Vector4ui, but can be also
-     * @ref VertexFormat::Vector4i, @ref VertexFormat::Vector4s, @ref VertexFormat::Vector4us,
-     * @ref VertexFormat::Vector4ub or @ref VertexFormat::Vector4b. Corresponds to
-     * @ref Shaders::Generic::JointIndices.
-     * @see @ref MeshData::jointIndicesAsArray()
+     * Joint IDs. Type is usually @ref VertexFormat::Vector4ui, but can be also
+     * @ref VertexFormat::Vector4us or @ref VertexFormat::Vector4ub.
+     * @ref Shaders::Generic::JointIds.
+     * @see @ref MeshData::jointIdsAsArray()
      */
-    JointIndices,
+    JointIds,
 
     /**
      * This and all higher values are for importer-specific attributes. Can be
@@ -632,7 +634,7 @@ The simplest usage is through the convenience functions @ref positions2DAsArray(
 @ref positions3DAsArray(), @ref tangentsAsArray(), @ref bitangentsAsArray(),
 @ref normalsAsArray(), @ref tangentsAsArray(), @ref textureCoordinates2DAsArray(),
 @ref colorsAsArray(), @ref objectIdsAsArray(), @ref weightsAsArray() and
-@ref jointIndicesAsArray(). Each of these takes an index (as there can be multiple
+@ref jointIdsAsArray(). Each of these takes an index (as there can be multiple
 sets of texture coordinates, for example) and you're expected to check for
 attribute presence first with either @ref hasAttribute() or
 @ref attributeCount(MeshAttribute) const:
@@ -1761,28 +1763,28 @@ class MAGNUM_TRADE_EXPORT MeshData {
         void weightsInto(Containers::StridedArrayView1D<Vector4> destination, UnsignedInt id = 0) const;
 
         /**
-         * @brief Weights as 4D unsigned short vectors
+         * @brief Joint IDs as 4D unsigned int vectors
          *
          * Convenience alternative to @ref attribute(MeshAttribute, UnsignedInt) const
-         * with @ref MeshAttribute::JointIndices as the first argument. Converts
+         * with @ref MeshAttribute::JointIds as the first argument. Converts
          * the joint indices array from an arbitrary underlying type and returns it
          * in a newly-allocated array. Expects that the vertex format is *not*
          * implementation-specific, in that case you can only access the
          * attribute via the typeless @ref attribute(MeshAttribute, UnsignedInt) const.
-         * @see @ref jointIndicesInto(), @ref attributeFormat(),
+         * @see @ref jointIdsInto(), @ref attributeFormat(),
          *      @ref isVertexFormatImplementationSpecific()
          */
-        Containers::Array<Vector4us> jointIndicesAsArray(UnsignedInt id = 0) const;
+        Containers::Array<Vector4ui> jointIdsAsArray(UnsignedInt id = 0) const;
 
         /**
-         * @brief Weights as 4D unsigned short vectors into a pre-allocated view
+         * @brief Joint IDs as 4D unsigned int vectors into a pre-allocated view
          *
-         * Like @ref jointIndicesAsArray(), but puts the result into
+         * Like @ref jointIdsAsArray(), but puts the result into
          * @p destination instead of allocating a new array. Expects that
          * @p destination is sized to contain exactly all data.
          * @see @ref vertexCount()
          */
-        void jointIndicesInto(Containers::StridedArrayView1D<Vector4us> destination, UnsignedInt id = 0) const;
+        void jointIdsInto(Containers::StridedArrayView1D<Vector4ui> destination, UnsignedInt id = 0) const;
 
         /**
          * @brief Release index data storage
