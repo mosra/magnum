@@ -146,6 +146,14 @@ struct MeshDataTest: TestSuite::Tester {
     template<class T> void objectIdsAsArray();
     void objectIdsIntoArrayInvalidSize();
 
+    template<class T> void weightsAsArray();
+    template<class T> void weightsAsArrayPackedUnsignedNormalized();
+    template<class T> void weightsAsArrayPackedSignedNormalized();
+    void weightsIntoArrayInvalidSize();
+
+    template<class T> void jointIdsAsArray();
+    void jointIdsIntoArrayInvalidSize();
+
     void implementationSpecificVertexFormat();
     void implementationSpecificVertexFormatWrongAccess();
     void implementationSpecificVertexFormatNotContained();
@@ -363,6 +371,17 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::objectIdsAsArray<UnsignedShort>,
               &MeshDataTest::objectIdsAsArray<UnsignedInt>,
               &MeshDataTest::objectIdsIntoArrayInvalidSize,
+
+              &MeshDataTest::weightsAsArray<Vector4>,
+              &MeshDataTest::weightsAsArray<Vector4h>,
+              &MeshDataTest::weightsAsArrayPackedUnsignedNormalized<Vector4ub>,
+              &MeshDataTest::weightsAsArrayPackedUnsignedNormalized<Vector4us>,
+              &MeshDataTest::weightsIntoArrayInvalidSize,
+
+              &MeshDataTest::jointIdsAsArray<Vector4ui>,
+              &MeshDataTest::jointIdsAsArray<Vector4us>,
+              &MeshDataTest::jointIdsAsArray<Vector4ub>,
+              &MeshDataTest::jointIdsIntoArrayInvalidSize,
 
               &MeshDataTest::implementationSpecificVertexFormat,
               &MeshDataTest::implementationSpecificVertexFormatWrongAccess,
@@ -1856,8 +1875,11 @@ _c(Vector3b)
 _c(Vector3us)
 _c(Vector3s)
 _c(Vector4)
+_c(Vector4ui)
 _c(Vector4h)
+_c(Vector4ub)
 _c(Vector4b)
+_c(Vector4us)
 _c(Vector4s)
 _c(Color3)
 _c(Color3h)
@@ -2498,6 +2520,90 @@ void MeshDataTest::objectIdsIntoArrayInvalidSize() {
     data.objectIdsInto(destination);
     CORRADE_COMPARE(out.str(),
         "Trade::MeshData::objectIdsInto(): expected a view with 3 elements but got 2\n");
+}
+
+template<class T> void MeshDataTest::weightsAsArray() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+    typedef typename T::Type U;
+
+    Containers::Array<char> vertexData{3*sizeof(T)};
+    auto weightsView = Containers::arrayCast<T>(vertexData);
+    /* Needs to be sufficiently representable to have the test work also for
+       half floats */
+    weightsView[0] = T::pad(Math::Vector4<U>{U(2.0f), U(1.0f), U(0.75f), U(3.0f)});
+    weightsView[1] = T::pad(Math::Vector4<U>{U(0.0f), U(-1.0f), U(1.25f), U(1.0f)});
+    weightsView[2] = T::pad(Math::Vector4<U>{U(-2.0f), U(3.0f), U(2.5f), U(2.5f)});
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Weights, weightsView}}};
+    CORRADE_COMPARE_AS(data.weightsAsArray(), Containers::arrayView<Vector4>({
+        {2.0f, 1.0f, 0.75f, 3.0f}, {0.0f, -1.0f, 1.25f, 1.0f}, {-2.0f, 3.0f, 2.5f, 2.5f},
+    }), TestSuite::Compare::Container);
+}
+
+template<class T> void MeshDataTest::weightsAsArrayPackedUnsignedNormalized() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+
+    Containers::Array<char> vertexData{2*sizeof(T)};
+    auto weightsView = Containers::arrayCast<T>(vertexData);
+    weightsView[0] = T::pad(Math::Vector4<typename T::Type>{Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(1.0f), Math::pack<typename T::Type>(0.8)});
+    weightsView[1] = T::pad(Math::Vector4<typename T::Type>{0, Math::pack<typename T::Type>(1.0f), 0, Math::pack<typename T::Type>(0.4f)});
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Weights,
+        /* Assuming the normalized enum is always after the non-normalized */
+        VertexFormat(UnsignedInt(Implementation::vertexFormatFor<T>()) + 1),
+        weightsView}}};
+    CORRADE_COMPARE_AS(data.weightsAsArray(), Containers::arrayView<Vector4>({
+        Vector4::pad(Math::Vector<T::Size, Float>::pad(Vector4{1.0f, 0.0f, 1.0f, 0.8})),
+        Vector4::pad(Math::Vector<T::Size, Float>::pad(Vector4{0.0f, 1.0f, 0.0f, 0.4f}))
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::weightsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Containers::Array<char> vertexData{3*sizeof(Vector4)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::Weights, Containers::arrayCast<Vector4>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Vector4 destination[2];
+    data.weightsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::weightsInto(): expected a view with 3 elements but got 2\n");
+}
+
+template<class T> void MeshDataTest::jointIdsAsArray() {
+    setTestCaseTemplateName(NameTraits<T>::name());
+    typedef typename T::Type U;
+
+    Containers::Array<char> vertexData{3*sizeof(T)};
+    auto joinIdsView = Containers::arrayCast<T>(vertexData);
+    joinIdsView[0] = {U(0), U(1), U(2), U(3)};
+    joinIdsView[1] = {U(4), U(5), U(6), U(7)};
+    joinIdsView[2] = {U(8), U(9), U(10), U(11)};
+
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::JointIds, joinIdsView}}};
+    CORRADE_COMPARE_AS(data.jointIdsAsArray(), Containers::arrayView<Vector4ui>({
+        {0, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11},
+    }), TestSuite::Compare::Container);
+}
+
+void MeshDataTest::jointIdsIntoArrayInvalidSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Containers::Array<char> vertexData{3*sizeof(Vector4ui)};
+    MeshData data{MeshPrimitive::Points, std::move(vertexData), {MeshAttributeData{MeshAttribute::JointIds, Containers::arrayCast<Vector4ui>(vertexData)}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Vector4ui destination[2];
+    data.jointIdsInto(destination);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MeshData::jointIdsInto(): expected a view with 3 elements but got 2\n");
 }
 
 /* MSVC 2015 doesn't like anonymous bitfields in inline structs, so putting the

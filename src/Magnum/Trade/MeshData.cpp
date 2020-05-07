@@ -791,25 +791,12 @@ void MeshData::weightsInto(const Containers::StridedArrayView1D<Vector4> destina
         Utility::copy(Containers::arrayCast<const Vector4>(attributeData), destination);
     else if(attribute._format == VertexFormat::Vector4h)
         Math::unpackHalfInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4ub)
-        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4b)
-        Math::castInto(Containers::arrayCast<2, const Byte>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4us)
-        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4s)
-        Math::castInto(Containers::arrayCast<2, const Short>(attributeData, 4), destination4f);
     else if(attribute._format == VertexFormat::Vector4ubNormalized)
         Math::unpackInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4bNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Byte>(attributeData, 4), destination4f);
     else if(attribute._format == VertexFormat::Vector4usNormalized)
         Math::unpackInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4f);
-    else if(attribute._format == VertexFormat::Vector4sNormalized)
-        Math::unpackInto(Containers::arrayCast<2, const Short>(attributeData, 4), destination4f);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
-
 
 Containers::Array<Vector4> MeshData::weightsAsArray(const UnsignedInt id) const {
     Containers::Array<Vector4> out{_vertexCount};
@@ -825,13 +812,14 @@ void MeshData::jointIdsInto(const Containers::StridedArrayView1D<Vector4ui> dest
     CORRADE_ASSERT(!isVertexFormatImplementationSpecific(attribute._format),
         "Trade::MeshData::jointIdsInto(): can't extract data out of an implementation-specific vertex format" << reinterpret_cast<void*>(vertexFormatUnwrap(attribute._format)), );
     const Containers::StridedArrayView1D<const void> attributeData = attributeDataViewInternal(attribute);
+    const Containers::StridedArrayView2D<UnsignedInt> destination4ui = Containers::arrayCast<2, UnsignedInt>(destination);
 
     if(attribute._format == VertexFormat::Vector4ui)
         Utility::copy(Containers::arrayCast<const Vector4ui>(attributeData), destination);
     else if(attribute._format == VertexFormat::Vector4ub)
-        Utility::copy(Containers::arrayCast<const Vector4ub>(attributeData), destination);
+        Math::castInto(Containers::arrayCast<2, const UnsignedByte>(attributeData, 4), destination4ui);
     else if(attribute._format == VertexFormat::Vector4us)
-        Utility::copy(Containers::arrayCast<const Vector4us>(attributeData), destination);
+        Math::castInto(Containers::arrayCast<2, const UnsignedShort>(attributeData, 4), destination4ui);
     else CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 

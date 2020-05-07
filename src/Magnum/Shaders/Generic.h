@@ -132,7 +132,7 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>7</td>
 <td colspan="3">
-@ref JointIndices
+@ref JointIds
 </td>
 </tr>
 <tr>
@@ -150,13 +150,13 @@ both bitangents and object ID for instancing, \n
 <tr>
 <td>10</td>
 <td colspan="2">
-@ref Weights
+@ref SecondaryWeights
 </td>
 </tr>
 <tr>
 <td>11</td>
 <td colspan="2">
-@ref JointIndices
+@ref SecondaryJointIds
 </td>
 </tr>
 <tr>
@@ -469,6 +469,11 @@ struct BaseGeneric {
     #ifndef MAGNUM_TARGET_GLES2
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif
+    typedef GL::Attribute<6, Vector4> Weights;
+    typedef GL::Attribute<7, Vector4> JointIds;
+
+    typedef GL::Attribute<10, Vector4> SecondaryWeights;
+    typedef GL::Attribute<11, Vector4> SecondaryJointIds;
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
 
@@ -497,8 +502,6 @@ template<> struct Generic<3>: BaseGeneric {
     typedef GL::Attribute<3, Vector4> Tangent4;
     typedef GL::Attribute<4, Vector3> Bitangent; /* also ObjectId */
     typedef GL::Attribute<5, Vector3> Normal;
-    typedef GL::Attribute<6, Vector4> Weights;
-    typedef GL::Attribute<7, Vector4> JointIds;
 
     typedef GL::Attribute<8, Matrix4> TransformationMatrix;
     /* 9, 10, 11 occupied by TransformationMatrix */

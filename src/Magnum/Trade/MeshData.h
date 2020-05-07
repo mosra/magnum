@@ -149,12 +149,9 @@ enum class MeshAttribute: UnsignedShort {
 
     /**
      * Weights. Type is usually @ref VertexFormat::Vector4, but can be also
-     * @ref VertexFormat::Vector4h, @ref VertexFormat::Vector4ub,
-     * @ref VertexFormat::Vector4b,  @ref VertexFormat::Vector4us,
-     * @ref VertexFormat::Vector4s, @ref VertexFormat::Vector4ubNormalized,
-     * @ref VertexFormat::Vector4bNormalized, @ref VertexFormat::Vector4usNormalized
-     * or @ref VertexFormat::Vector4sNormalized.
-     * Corresponds to * @ref Shaders::Generic::Weights.
+     * @ref VertexFormat::Vector4h, @ref VertexFormat::Vector4ubNormalized
+     * or @ref VertexFormat::Vector4usNormalized.
+     * Corresponds to @ref Shaders::Generic::Weights.
      * @see @ref MeshData::weightsAsArray()
      */
     Weights,
@@ -162,7 +159,7 @@ enum class MeshAttribute: UnsignedShort {
     /**
      * Joint IDs. Type is usually @ref VertexFormat::Vector4ui, but can be also
      * @ref VertexFormat::Vector4us or @ref VertexFormat::Vector4ub.
-     * @ref Shaders::Generic::JointIds.
+     * Corresponds to @ref Shaders::Generic::JointIds.
      * @see @ref MeshData::jointIdsAsArray()
      */
     JointIds,
@@ -2132,6 +2129,15 @@ namespace Implementation {
                 (format == VertexFormat::UnsignedInt ||
                  format == VertexFormat::UnsignedShort ||
                  format == VertexFormat::UnsignedByte)) ||
+            (name == MeshAttribute::Weights &&
+                (format == VertexFormat::Vector4 ||
+                 format == VertexFormat::Vector4h ||
+                 format == VertexFormat::Vector4ubNormalized ||
+                 format == VertexFormat::Vector4usNormalized)) ||
+            (name == MeshAttribute::JointIds &&
+                (format == VertexFormat::Vector4ui ||
+                 format == VertexFormat::Vector4ub ||
+                 format == VertexFormat::Vector4us)) ||
             /* Custom attributes can be anything */
             isMeshAttributeCustom(name);
     }
