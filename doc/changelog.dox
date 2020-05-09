@@ -734,6 +734,9 @@ See also:
     [mosra/magnum#394](https://github.com/mosra/magnum/pull/394),
     [mosra/magnum#418](https://github.com/mosra/magnum/pull/418),
     [mosra/magnum#424](https://github.com/mosra/magnum/pull/424))
+-   @ref Shaders::Generic now shows the recommended way how to propagate
+    generic attribute locations to custom shader code (see
+    [mosra/magnum#443](https://github.com/mosra/magnum/issues/443))
 
 @section changelog-2019-10 2019.10
 
