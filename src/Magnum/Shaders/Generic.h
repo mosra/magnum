@@ -222,11 +222,34 @@ guarantees of the above:
     exactly one set of texture coordinates (as the additional sets would need
     additional transformations as well).
 
-Note that while custom shaders don't have to follow the above, it's recommended
-to so. If the custom shader diverges from predefined locations of common
-attributes, meshes configured for the builtin shaders (for example with
+@section Shaders-Generic-custom Generic attributes and custom shaders
+
+Note that while custom shaders don't *have to* follow the above, it's
+recommended to so. If the custom shader diverges from predefined locations of
+common attributes, meshes configured for the builtin shaders (for example with
 @ref MeshTools::compile()) won't work with it and the mesh attribute
-configuration has to be done manually.
+configuration has to be done manually. It also becomes impossible to render a
+mesh configured for a custom shader with for example @ref MeshVisualizer.
+
+If you're using @ref GL::AbstractShaderProgram::bindAttributeLocation(), it's
+rather easy, as you can simply use the @ref GL::Attribute::Location of given
+attribute:
+
+@snippet MagnumShaders.cpp Generic-custom-bind
+
+For attribute location defined directly in shader code (which is the
+recommended way unless you need compatibility with WebGL 1.0 and OpenGL ES
+2.0), the attribute locations can be propagated using a preprocessor define.
+For example:
+
+@snippet MagnumShaders.cpp Generic-custom-preprocessor
+
+Then, the attribute definition in a shader will look like this:
+
+@code{.glsl}
+layout(location = POSITION_ATTRIBUTE_LOCATION) in vec3 position;
+layout(location = NORMAL_ATTRIBUTE_LOCATION) in vec3 normal;
+@endcode
 
 @see @ref shaders, @ref Generic2D, @ref Generic3D
 */

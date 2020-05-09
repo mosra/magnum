@@ -26,6 +26,7 @@
 #include <numeric>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
@@ -34,10 +35,12 @@
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/GL/Version.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -267,6 +270,30 @@ mesh.setInstanceCount(Containers::arraySize(instanceData))
         Shaders::Flat3D::TransformationMatrix{},
         Shaders::Flat3D::Color3{});
 /* [Flat-usage-instancing] */
+}
+
+{
+struct: GL::AbstractShaderProgram {
+void foo() {
+/* [Generic-custom-bind] */
+bindAttributeLocation(Shaders::Generic3D::Position::Location, "position");
+bindAttributeLocation(Shaders::Generic3D::Normal::Location, "normal");
+/* [Generic-custom-bind] */
+}
+} shader;
+}
+
+{
+GL::Shader vert{GL::Version::None, GL::Shader::Type::Vertex};
+/* [Generic-custom-preprocessor] */
+vert.addSource(Utility::formatString(
+    "#define POSITION_ATTRIBUTE_LOCATION {}\n"
+    "#define NORMAL_ATTRIBUTE_LOCATION {}\n",
+    Shaders::Generic3D::Position::Location,
+    Shaders::Generic3D::Normal::Location))
+    // …
+    .addFile("MyShader.vert");
+/* [Generic-custom-preprocessor] */
 }
 
 {
