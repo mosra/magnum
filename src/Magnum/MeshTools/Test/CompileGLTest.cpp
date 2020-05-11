@@ -76,7 +76,8 @@ enum class Flag {
     GeneratedSmoothNormals = 1 << 6,
     TextureCoordinates2D = 1 << 7,
     Colors = 1 << 8,
-    ObjectId = 1 << 9
+    ObjectId = 1 << 9,
+    Skinning = 1 << 10
 };
 
 typedef Containers::EnumSet<Flag> Flags;
@@ -152,7 +153,8 @@ constexpr struct {
     {"positions + colors", Flag::Colors},
     {"positions + texture coordinates", Flag::TextureCoordinates2D},
     {"positions + texture coordinates + colors", Flag::TextureCoordinates2D|Flag::Colors},
-    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed}
+    {"positions, object id, nonindexed", Flag::ObjectId|Flag::NonIndexed},
+    {"positions + skinning", Flag::Skinning},
 };
 
 constexpr struct {
@@ -888,6 +890,8 @@ struct PackedVertex {
     Vector2us textureCoordinates;
     Color4ub color;
     UnsignedShort objectId;
+    Vector4 weights;
+    Vector4us jointIds;
     UnsignedShort:16;
 };
 
@@ -913,43 +917,55 @@ void CompileGLTest::packedAttributes() {
     const PackedVertex vertexData[]{
         {Math::pack<Vector3s>(Vector3{-0.75f, -0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{-0.5f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 0.0f}), 0x00ff00_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{0.0f, 0.0f}), 0x00ff00_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.00f, -0.75f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.0f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 0.0f}), 0x808000_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{0.5f, 0.0f}), 0x808000_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.75f, -0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{ 0.5f, -0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 0.0f}), 0xff0000_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{1.0f, 0.0f}), 0xff0000_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
 
         {Math::pack<Vector3s>(Vector3{-0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{-0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.00f,  0.00f,  0.00f}),
          Math::pack<Vector3s>(Vector3{ 0.0f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 13562},
+         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 13562,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
 
         {Math::pack<Vector3s>(Vector3{-0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{-0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 26234},
+         Math::pack<Vector2us>(Vector2{0.0f, 0.5f}), 0x00ff80_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.00f,  0.00f,  0.00f}),
          Math::pack<Vector3s>(Vector3{ 0.0f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 26234},
+         Math::pack<Vector2us>(Vector2{0.5f, 0.5f}), 0x808080_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.75f,  0.00f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.5f,  0.0f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 26234},
+         Math::pack<Vector2us>(Vector2{1.0f, 0.5f}), 0xff0080_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
 
         {Math::pack<Vector3s>(Vector3{-0.75f,  0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{-0.5f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.0f, 1.0f}), 0x00ffff_rgb, 26234},
+         Math::pack<Vector2us>(Vector2{0.0f, 1.0f}), 0x00ffff_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.0f,   0.75f, -0.25f}),
          Math::pack<Vector3s>(Vector3{ 0.0f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{0.5f, 1.0f}), 0x8080ff_rgb, 26234},
+         Math::pack<Vector2us>(Vector2{0.5f, 1.0f}), 0x8080ff_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
         {Math::pack<Vector3s>(Vector3{ 0.75f,  0.75f, -0.35f}),
          Math::pack<Vector3s>(Vector3{ 0.5f,  0.5f, 1.0f}.normalized()),
-         Math::pack<Vector2us>(Vector2{1.0f, 1.0f}), 0xff00ff_rgb, 26234}
+         Math::pack<Vector2us>(Vector2{1.0f, 1.0f}), 0xff00ff_rgb, 26234,
+         Vector4{0.4f, 0.3f, 0.2f, 0.1f}, Vector4us{0, 1, 2, 3}},
     };
     static_assert(sizeof(PackedVertex) % 4 == 0,
         "the vertex is not 4-byte aligned and that's bad");
@@ -987,8 +1003,16 @@ void CompileGLTest::packedAttributes() {
             Trade::MeshAttributeData{
                 Trade::MeshAttribute::ObjectId,
                 Containers::stridedArrayView(vertexData, &vertexData[0].objectId,
-                    Containers::arraySize(vertexData), sizeof(PackedVertex))}
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
             #endif
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::Weights,
+                Containers::stridedArrayView(vertexData, &vertexData[0].weights,
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))},
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::JointIds,
+                Containers::stridedArrayView(vertexData, &vertexData[0].jointIds,
+                    Containers::arraySize(vertexData), sizeof(PackedVertex))}
     }};
 
     GL::Mesh mesh = compile(meshData);
@@ -1012,6 +1036,7 @@ void CompileGLTest::packedAttributes() {
         .setTransformationMatrix(transformation)
         .setNormalMatrix(transformation.normalMatrix())
         .setProjectionMatrix(projection)
+        .setJointMatrices({Matrix4{}, Matrix4{}, Matrix4{}, Matrix4{}})
         .draw(mesh);
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_WITH(
