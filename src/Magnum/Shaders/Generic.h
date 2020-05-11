@@ -470,10 +470,10 @@ struct BaseGeneric {
     typedef GL::Attribute<4, UnsignedInt> ObjectId;
     #endif
     typedef GL::Attribute<6, Vector4> Weights;
-    typedef GL::Attribute<7, Vector4> JointIds;
+    typedef GL::Attribute<7, Vector4ui> JointIds;
 
     typedef GL::Attribute<10, Vector4> SecondaryWeights;
-    typedef GL::Attribute<11, Vector4> SecondaryJointIds;
+    typedef GL::Attribute<11, Vector4ui> SecondaryJointIds;
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
 

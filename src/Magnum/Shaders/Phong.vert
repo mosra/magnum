@@ -80,6 +80,13 @@ layout(location = 10)
 uniform highp vec3 lightPositions[LIGHT_COUNT]; /* defaults to zero */
 #endif
 
+#ifdef SKINNING
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = JOINT_MATRICES_LOCATION)
+#endif
+uniform mat4 jointMatrices[JOINT_COUNT];
+#endif
+
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
@@ -115,6 +122,30 @@ layout(location = COLOR_ATTRIBUTE_LOCATION)
 in lowp vec4 vertexColor;
 
 out lowp vec4 interpolatedVertexColor;
+#endif
+
+#ifdef SKINNING
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 weights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump uvec4 jointIds;
+
+#if JOINTS_PER_VERTEX > 4
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_WEIGHTS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 secondaryWeights;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = SECONDARY_JOINTIDS_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec4 secondaryJointIds;
+#endif
 #endif
 
 #ifdef INSTANCED_OBJECT_ID
@@ -155,10 +186,24 @@ out highp vec3 cameraDirection;
 #endif
 
 void main() {
+    #ifdef SKINNING
+    mat4 skinMatrix;
+    int i = 0;
+    for(; i != JOINTS_PER_VERTEX && i != 4; ++i)
+        skinMatrix += weights[i]*jointMatrices[int(jointIds[i])];
+    #if JOINTS_PER_VERTEX > 4
+    for(i = 0; i != JOINTS_PER_VERTEX - 4 && i != 4; ++i)
+        skinMatrix += secondaryWeights[i]*jointMatrices[int(secondaryJointIds[i])];
+    #endif
+    #endif
+
     /* Transformed vertex position */
     highp vec4 transformedPosition4 = transformationMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedTransformationMatrix*
+        #endif
+        #ifdef SKINNING
+        skinMatrix*
         #endif
         position;
     highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
