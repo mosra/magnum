@@ -26,39 +26,44 @@
 
 find_package(Vulkan REQUIRED)
 
-set(MagnumVk_SRCS )
+set(MagnumVk_SRCS
+    Result.cpp)
+
 set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp)
+
 set(MagnumVk_HEADERS
     Enums.h
     Integration.h
+    Result.h
     Vk.h
     Vulkan.h
 
     visibility.h)
+
 set(MagnumVk_PRIVATE_HEADERS
     Implementation/compressedPixelFormatMapping.hpp
     Implementation/pixelFormatMapping.hpp
     Implementation/vertexFormatMapping.hpp)
 
 # Objects shared between main and test library
-# add_library(MagnumVkObjects OBJECT
-#     ${MagnumVk_SRCS}
-#     ${MagnumVk_HEADERS}
-#     ${MagnumVk_PRIVATE_HEADERS})
-# target_include_directories(MagnumVkObjects PUBLIC
-#     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-# if(NOT BUILD_STATIC)
-#     target_compile_definitions(MagnumVkObjects PRIVATE "MagnumVkObjects_EXPORTS" "FlextVk_EXPORTS")
-# endif()
-# if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-#     set_target_properties(MagnumVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-# endif()
-# set_target_properties(MagnumVkObjects PROPERTIES FOLDER "Magnum/Vk")
+add_library(MagnumVkObjects OBJECT
+    ${MagnumVk_SRCS}
+    ${MagnumVk_HEADERS}
+    ${MagnumVk_PRIVATE_HEADERS})
+target_include_directories(MagnumVkObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumVkObjects PRIVATE "MagnumVkObjects_EXPORTS" "FlextVk_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumVkObjects PROPERTIES FOLDER "Magnum/Vk")
 
 # Vk library
 add_library(MagnumVk ${SHARED_OR_STATIC}
-#     $<TARGET_OBJECTS:MagnumVkObjects>
+    $<TARGET_OBJECTS:MagnumVkObjects>
     $<TARGET_OBJECTS:MagnumFlextVkObjects>
     ${MagnumVk_GracefulAssert_SRCS})
 set_target_properties(MagnumVk PROPERTIES
@@ -86,7 +91,7 @@ install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumVkTestLib ${SHARED_OR_STATIC}
-#         $<TARGET_OBJECTS:MagnumVkObjects>
+        $<TARGET_OBJECTS:MagnumVkObjects>
         $<TARGET_OBJECTS:MagnumFlextVkObjects>
         ${MagnumVk_GracefulAssert_SRCS})
     set_target_properties(MagnumVkTestLib PROPERTIES

@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,18 +23,43 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Result.h"
 
-#include "Magnum/Magnum.h"
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-enum class Result: Int;
-#endif
+Debug& operator<<(Debug& debug, const Result value) {
+    debug << "Vk::Result" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::Result::value: return debug << "::" << Debug::nospace << #value;
+        _c(Success)
+        _c(NotReady)
+        _c(Timeout)
+        _c(EventSet)
+        _c(EventReset)
+        _c(Incomplete)
+        _c(ErrorOutOfHostMemory)
+        _c(ErrorOutOfDeviceMemory)
+        _c(ErrorInitializationFailed)
+        _c(ErrorDeviceLost)
+        _c(ErrorMemoryMapFailed)
+        _c(ErrorLayerNotPresent)
+        _c(ErrorExtensionNotPresent)
+        _c(ErrorFeatureNotPresent)
+        _c(ErrorIncompatibleDriver)
+        _c(ErrorTooManyObjects)
+        _c(ErrorFormatNotSupported)
+        _c(ErrorFragmentedPool)
+        _c(ErrorUnknown)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
 
 }}
-
-#endif
