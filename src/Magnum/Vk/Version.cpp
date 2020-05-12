@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,19 +23,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Version.h"
 
-#include "Magnum/Magnum.h"
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+Debug& operator<<(Debug& debug, const Version value) {
+    if(!(debug.immediateFlags() & Debug::Flag::Packed))
+        debug << "Vulkan";
+    debug << versionMajor(value) << Debug::nospace << "." << Debug::nospace << versionMinor(value);
+    if(const UnsignedInt patch = versionPatch(value))
+        debug << Debug::nospace << "." << Debug::nospace << patch;
+    return debug;
+}
 
 }}
-
-#endif
