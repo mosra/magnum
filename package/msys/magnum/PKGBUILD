@@ -63,6 +63,7 @@ build() {
             -DWITH_TGAIMAGECONVERTER=ON \
             -DWITH_TGAIMPORTER=ON \
             -DWITH_VK=ON \
+            -DWITH_VK_INFO=ON \
             -DWITH_WAVAUDIOIMPORTER=ON \
             -DWITH_WINDOWLESSWGLAPPLICATION=ON \
             "${extra_config[@]}" \

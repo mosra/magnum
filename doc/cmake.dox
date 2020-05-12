@@ -275,6 +275,7 @@ Lastly, a few utility executables are available:
 -   `shaderconverter` --- @ref magnum-shaderconverter "magnum-shaderconverter"
     executable
 -   `gl-info` --- @ref magnum-gl-info "magnum-gl-info" executable
+-   `vk-info` --- @ref magnum-vk-info "magnum-vk-info" executable
 -   `al-info` --- @ref magnum-al-info "magnum-al-info" executable
 
 Note that [each namespace](namespaces.html), all @ref Platform libraries and

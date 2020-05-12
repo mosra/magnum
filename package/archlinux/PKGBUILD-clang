@@ -56,6 +56,7 @@ build() {
         -DWITH_SCENECONVERTER=ON \
         -DWITH_SHADERCONVERTER=ON \
         -DWITH_GL_INFO=ON \
+        -DWITH_VK_INFO=ON \
         -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \

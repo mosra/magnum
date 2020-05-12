@@ -33,6 +33,7 @@ build() {
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_AUDIO=ON \
+        -DWITH_VK=ON \
         -DWITH_GLFWAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
@@ -60,6 +61,7 @@ build() {
         -DWITH_SHADERCONVERTER=ON \
         -DWITH_GL_INFO=ON \
         -DWITH_AL_INFO=ON \
+        -DWITH_VK_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
         -DBUILD_VK_TESTS=ON

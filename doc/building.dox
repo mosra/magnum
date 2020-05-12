@@ -608,6 +608,10 @@ There are also a few command-line utilities, also all disabled by default:
     executable, which provides information about the engine OpenGL
     capabilities. Requires `TARGET_GL` to be enabled; enables building of one
     of the windowless application libraries based on the target platform.
+-   `WITH_VK_INFO` --- Build the @ref magnum-vk-info "magnum-vk-info"
+    executable, which provides information about the engine Vulkan
+    capabilities. Requires `TARGET_VK` to be enabled; enables building of the
+    @ref Vk library.
 -   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
     executable, which provides information about the engine OpenAL
     capabilities.

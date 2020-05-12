@@ -50,6 +50,7 @@ build() {
         -DWITH_SCENECONVERTER=ON \
         -DWITH_SHADERCONVERTER=ON \
         -DWITH_GL_INFO=ON \
+        -DWITH_VK_INFO=ON \
         -DWITH_AL_INFO=ON \
         -G Ninja
     ninja

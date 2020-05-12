@@ -50,6 +50,7 @@ namespace Magnum {
 @section utilities-cli Command-line utilities
 
 -   @subpage magnum-gl-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-gl-info
+-   @subpage magnum-vk-info --- @copybrief magnum-vk-info
 -   @subpage magnum-al-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-al-info
 -   @subpage magnum-distancefieldconverter --- @copybrief magnum-distancefieldconverter
 -   @subpage magnum-fontconverter --- @copybrief magnum-fontconverter

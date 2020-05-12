@@ -77,6 +77,9 @@ option(WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
 # Magnum AL Info
 option(WITH_AL_INFO "Build magnum-al-info utility" OFF)
 
+# Magnum Vk Info
+option(WITH_VK_INFO "Build magnum-vk-info utility" OFF)
+
 # Plugins
 option(WITH_ANYIMAGEIMPORTER "Build AnyImageImporter plugin" OFF)
 option(WITH_ANYAUDIOIMPORTER "Build AnyAudioImporter plugin" OFF)
@@ -113,7 +116,7 @@ option(WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Vulkan, everywhere except Emscripten
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
-    option(WITH_VK "Build Vk library" OFF)
+    cmake_dependent_option(WITH_VK "Build Vk library" OFF "NOT WITH_VK_INFO" ON)
     cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
 endif()
 

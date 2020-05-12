@@ -927,6 +927,7 @@ INPUT                  = ../src/Magnum \
                          ../src/Magnum/Text/fontconverter.cpp \
                          ../src/Magnum/TextureTools/distancefieldconverter.cpp \
                          ../src/Magnum/Trade/imageconverter.cpp \
+                         ../src/Magnum/Vk/vk-info.cpp \
                          . \
                          ../../magnum-plugins/src/Magnum \
                          ../../magnum-plugins/src/MagnumPlugins \

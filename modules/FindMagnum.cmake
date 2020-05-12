@@ -98,6 +98,7 @@
 #  sceneconverterter            - magnum-sceneconverter executable
 #  shaderconverterter           - magnum-shaderconverter executable
 #  gl-info                      - magnum-gl-info executable
+#  vk-info                      - magnum-vk-info executable
 #  al-info                      - magnum-al-info executable
 #
 # Example usage with specifying additional components is::
@@ -372,6 +373,7 @@ set(_MAGNUM_IMPLICITLY_ENABLED_COMPONENTS
     GL Primitives)
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND _MAGNUM_LIBRARY_COMPONENTS Vk)
+    list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS vk-info)
 endif()
 if(NOT CORRADE_TARGET_ANDROID)
     list(APPEND _MAGNUM_LIBRARY_COMPONENTS Sdl2Application)
