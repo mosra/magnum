@@ -64,9 +64,10 @@ information.
 @section magnum-sceneconverter-usage Usage
 
 @code{.sh}
-magnum-sceneconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
-    [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--info] [-v|--verbose]
+magnum-sceneconverter [-h|--help] [--importer IMPORTER]
+    [--converter CONVERTER]... [--plugin-dir DIR]
+    [-i|--importer-options key=val,key2=val2,…]
+    [-c|--converter-options key=val,key2=val2,…]... [--info] [-v|--verbose]
     [--profile] [--] input output
 @endcode
 
@@ -77,13 +78,12 @@ Arguments:
 -   `-h`, `--help` --- display this help message and exit
 -   `--importer IMPORTER` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
--   `--converter CONVERTER` --- scene converter plugin (default:
-    @ref Trade::AnyImageConverter "AnySceneConverter")
+-   `--converter CONVERTER` --- scene converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
-    to pass to the converter
+    to pass to the converter(s)
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer plugins
 -   `--profile` --- measure import and conversion time
@@ -96,6 +96,32 @@ accept a comma-separated list of key/value pairs to set in the importer /
 converter plugin configuration. If the `=` character is omitted, it's
 equivalent to saying `key=true`; configuration subgroups are delimited with
 `/`.
+
+It's possible to specify the `--converter` option (and correspondingly also
+`-c` / `--converter-options`) multiple times in order to chain more converters
+together. All converters in the chain have to support the
+@ref Trade::SceneConverterFeature::ConvertMesh feature,
+the last converter either @ref Trade::SceneConverterFeature::ConvertMesh or
+@ref Trade::SceneConverterFeature::ConvertMeshToFile. If the last converter
+doesn't support conversion to a file,
+@ref Trade::AnySceneConverter "AnySceneConverter" is used to save its output;
+if no `--converter` is specified, @ref Trade::AnySceneConverter "AnySceneConverter"
+is used.
+
+@section magnum-sceneconverter-example Example usage
+
+Printing info about all meshes in a glTF file:
+
+@code{.sh}
+magnum-sceneconverter --info scene.gltf
+@endcode
+
+Converting an OBJ file to a PLY, using @ref Trade::StanfordSceneConverter "StanfordSceneConverter"
+picked by @ref Trade::AnySceneConverter "AnySceneConverter":
+
+@code{.sh}
+magnum-sceneconverter chair.obj chair.ply
+@endcode
 
 @see @ref magnum-imageconverter
 */
@@ -125,10 +151,10 @@ int main(int argc, char** argv) {
     args.addArgument("input").setHelp("input", "input file")
         .addArgument("output").setHelp("output", "output file")
         .addOption("importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
-        .addOption("converter", "AnySceneConverter").setHelp("converter", "scene converter plugin")
+        .addArrayOption("converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
-        .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
+        .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
@@ -148,7 +174,14 @@ images present in the file.
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
-key=true; configuration subgroups are delimited with /.)")
+key=true; configuration subgroups are delimited with /.
+
+It's possible to specify the --converter option (and correspondingly also
+-c / --converter-options) multiple times in order to chain more converters
+together. All converters in the chain have to support the ConvertMesh feature,
+the last converter either ConvertMesh or ConvertMeshToFile. If the last
+converter doesn't support conversion to a file, AnySceneConverter is used to
+save its output; if no --converter is specified, AnySceneConverter is used.)")
         .parse(argc, argv);
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
@@ -315,24 +348,59 @@ key=true; configuration subgroups are delimited with /.)")
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
-    Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
-    if(!converter) {
-        Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
-        return 2;
-    }
-
-    /* Set options, if passed */
-    if(args.isSet("verbose")) converter->setFlags(Trade::SceneConverterFlag::Verbose);
-    Trade::Implementation::setOptions(*converter, args.value("converter-options"));
 
     std::chrono::high_resolution_clock::duration conversionTime;
 
-    /* Save output file */
-    {
-        Duration d{conversionTime};
-        if(!converter->convertToFile(args.value("output"), *mesh)) {
-            Error{} << "Cannot save file" << args.value("output");
-            return 5;
+    /* Assume there's always one passed --converter option less, and the last
+       is implicitly AnySceneConverter. All converters except the last one are
+       expected to support ConvertMesh and the mesh is "piped" from one to the
+       other. If the last converter supports ConvertMeshToFile instead of
+       ConvertMesh, it's used instead of the last implicit AnySceneConverter. */
+    for(std::size_t i = 0, converterCount = args.arrayValueCount("converter"); i <= converterCount; ++i) {
+        const std::string converterName = i == converterCount ?
+            "AnySceneConverter" : args.arrayValue("converter", i);
+        Containers::Pointer<Trade::AbstractSceneConverter> converter = converterManager.loadAndInstantiate(converterName);
+        if(!converter) {
+            Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+            return 2;
+        }
+
+        /* Set options, if passed */
+        if(args.isSet("verbose")) converter->setFlags(Trade::SceneConverterFlag::Verbose);
+        if(i < args.arrayValueCount("converter-options"))
+            Trade::Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
+
+        /* This is the last --converter (or the implicit AnySceneConverter at
+           the end), output to a file and exit the loop */
+        if(i + 1 >= converterCount && (converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile)) {
+            if(converterCount > 1 && args.isSet("verbose"))
+                Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
+
+            Duration d{conversionTime};
+            if(!converter->convertToFile(args.value("output"), *mesh)) {
+                Error{} << "Cannot save file" << args.value("output");
+                return 5;
+            }
+
+            break;
+
+        /* This is not the last converter, expect that it's capable of
+           ConvertMesh */
+        } else {
+            CORRADE_INTERNAL_ASSERT(i < converterCount);
+            if(converterCount > 1 && args.isSet("verbose"))
+                Debug{} << "Processing (" << Debug::nospace << (i+1) << Debug::nospace << "/" << Debug::nospace << converterCount << Debug::nospace << ") with" << converterName << Debug::nospace << "...";
+
+            if(!(converter->features() & Trade::SceneConverterFeature::ConvertMesh)) {
+                Error{} << converterName << "doesn't support mesh conversion, only" << converter->features();
+                return 6;
+            }
+
+            Duration d{conversionTime};
+            if(!(mesh = converter->convert(*mesh))) {
+                Error{} << converterName << "cannot convert the mesh";
+                return 7;
+            }
         }
     }
 
