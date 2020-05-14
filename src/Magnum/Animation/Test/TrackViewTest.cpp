@@ -576,7 +576,7 @@ void TrackViewTest::constructCopyStorage() {
     CORRADE_COMPARE(bv.interpolator(), customLerp);
     CORRADE_COMPARE(bv.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(bv.after(), Extrapolation::DefaultConstructed);
-    CORRADE_COMPARE(a.duration(), (Range1D{1.0f, 5.0f}));
+    CORRADE_COMPARE(bv.duration(), (Range1D{1.0f, 5.0f}));
     CORRADE_COMPARE(bv.size(), 2);
     CORRADE_COMPARE(bv.keys().size(), 2);
     CORRADE_COMPARE(bv.values().size(), 2);
