@@ -67,8 +67,7 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedInt>,
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedByte>,
               &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedShort>,
-              &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedInt>,
-    });
+              &FlipNormalsTest::flipNormalsFaceWindingErased<UnsignedInt>});
 }
 
 void FlipNormalsTest::wrongIndexCount() {
@@ -80,7 +79,7 @@ void FlipNormalsTest::wrongIndexCount() {
     Error redirectError{&ss};
 
     UnsignedByte indices[2];
-    MeshTools::flipFaceWindingInPlace(Containers::stridedArrayView(indices));
+    flipFaceWindingInPlace(Containers::stridedArrayView(indices));
 
     CORRADE_COMPARE(ss.str(), "MeshTools::flipNormals(): index count is not divisible by 3!\n");
 }
@@ -89,7 +88,7 @@ template<class T> void FlipNormalsTest::flipFaceWinding() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     T indices[]{0, 1, 2, 3, 4, 5};
-    MeshTools::flipFaceWindingInPlace(indices);
+    flipFaceWindingInPlace(indices);
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
@@ -100,7 +99,7 @@ template<class T> void FlipNormalsTest::flipFaceWindingErased() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     T indices[]{0, 1, 2, 3, 4, 5};
-    MeshTools::flipFaceWindingInPlace(indices);
+    flipFaceWindingInPlace(indices);
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
@@ -137,7 +136,7 @@ void FlipNormalsTest::flipFaceWindingErasedWrongIndexSize() {
 
 void FlipNormalsTest::flipNormals() {
     Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
-    MeshTools::flipNormalsInPlace(normals);
+    flipNormalsInPlace(normals);
 
     CORRADE_COMPARE_AS(Containers::arrayView(normals),
         Containers::arrayView<Vector3>({
@@ -150,7 +149,7 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWinding() {
 
     T indices[]{0, 1, 2, 3, 4, 5};
     Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
-    MeshTools::flipNormalsInPlace(indices, normals);
+    flipNormalsInPlace(indices, normals);
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
@@ -166,7 +165,7 @@ template<class T> void FlipNormalsTest::flipNormalsFaceWindingErased() {
 
     T indices[]{0, 1, 2, 3, 4, 5};
     Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
-    MeshTools::flipNormalsInPlace(
+    flipNormalsInPlace(
         Containers::arrayCast<2, char>(Containers::stridedArrayView(indices)),
         normals);
 
