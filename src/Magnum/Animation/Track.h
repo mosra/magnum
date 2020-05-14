@@ -485,10 +485,23 @@ template<class K> class TrackViewStorage {
         /**
          * @brief Key data
          *
-         * @see @ref TrackView::values(), @ref TrackView::operator[]()
+         * @see @ref values(), @ref TrackView::operator[]()
          */
         Containers::StridedArrayView1D<K> keys() const {
             return _keys;
+        }
+
+        /**
+         * @brief Type-erased value data
+         * @m_since_latest
+         *
+         * Use @ref TrackView and @ref TrackView::values() to get a typed view,
+         * alternatively you can cast to a concrete type using
+         * @ref Corrade::Containers::arrayCast().
+         * @see @ref keys(), @ref TrackView::operator[]()
+         */
+        Containers::StridedArrayView1D<typename std::conditional<std::is_const<K>::value, const char, char>::type> values() const {
+            return _values;
         }
 
     private:

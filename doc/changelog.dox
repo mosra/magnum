@@ -64,6 +64,11 @@ See also:
     be used by various importers to provide access to mesh data that is not
     necessarily GPU-friendly.
 
+@subsubsection changelog-latest-new-animation Animation library
+
+-   Added a @ref Animation::TrackViewStorage::values() getter for type-erased
+    access to track values
+
 @subsubsection changelog-latest-new-audio Audio library
 
 -   Added a @ref Audio::Buffer::frequency() getter

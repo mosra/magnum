@@ -569,6 +569,10 @@ void TrackViewTest::constructCopyStorage() {
         Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
 
     const TrackViewStorage<Float> b = a;
+    CORRADE_COMPARE(b.keys().size(), 2);
+    CORRADE_COMPARE(b.values().size(), 2);
+    CORRADE_COMPARE(Containers::arrayCast<Float>(b.keys())[1], 5.0f);
+    CORRADE_COMPARE(Containers::arrayCast<Vector3>(b.values())[1], (Vector3{0.3f, 0.6f, 1.0f}));
 
     auto& bv = *static_cast<const TrackView<Float, Vector3>*>(&b);
 
