@@ -146,6 +146,17 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Contain
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<char>& data);
 
 /**
+@brief Remove duplicates from indexed data in-place on a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls one of the
+@ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+etc. overloads.
+*/
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<char>& data);
+
+/**
 @brief Remove duplicate floating-point vector data from given array in-place
 @param[in,out] data Data array, duplicate items will be cut away with order
     preserved
@@ -271,6 +282,27 @@ template<class IndexType, class Vector> std::size_t removeDuplicatesIndexedInPla
 
     CORRADE_INTERNAL_ASSERT(data.size() >= dataSize);
     return dataSize;
+}
+
+/**
+@brief Remove duplicates from indexed data in-place on a type-erased index array
+@m_since_latest
+
+Expects that the second dimension of @p indices is contiguous and represents
+the actual 1/2/4-byte index type. Based on its size then calls
+@ref removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<IndexType>&, const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
+with a concrete index type.
+*/
+template<class Vector> std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::removeDuplicatesIndexedInPlace(): second index view dimension is not contiguous", {});
+    if(indices.size()[1] == 4)
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedInt>(indices), data, epsilon);
+    else if(indices.size()[1] == 2)
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedShort>(indices), data, epsilon);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data, epsilon);
+    }
 }
 
 template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {

@@ -157,4 +157,16 @@ std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<
     return removeDuplicatesIndexedInPlaceImplementation(indices, data);
 }
 
+std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<char>& data) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::removeDuplicatesIndexedInPlace(): second index view dimension is not contiguous", {});
+    if(indices.size()[1] == 4)
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedInt>(indices), data);
+    else if(indices.size()[1] == 2)
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedShort>(indices), data);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
+        return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data);
+    }
+}
+
 }}
