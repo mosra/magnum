@@ -40,10 +40,14 @@ struct FlipNormalsTest: TestSuite::Tester {
     void wrongIndexCount();
     template<class T> void flipFaceWinding();
     template<class T> void flipFaceWindingErased();
+    void flipFaceWindingErasedNonContiguous();
+    void flipFaceWindingErasedWrongIndexSize();
     void flipNormals();
 
     template<class T> void flipNormalsFaceWinding();
     template<class T> void flipNormalsFaceWindingErased();
+    /* Delegates into type-erased flipFaceWinding(), so testing asserts again
+       isn't needed */
 };
 
 FlipNormalsTest::FlipNormalsTest() {
@@ -54,6 +58,8 @@ FlipNormalsTest::FlipNormalsTest() {
               &FlipNormalsTest::flipFaceWindingErased<UnsignedByte>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedShort>,
               &FlipNormalsTest::flipFaceWindingErased<UnsignedInt>,
+              &FlipNormalsTest::flipFaceWindingErasedNonContiguous,
+              &FlipNormalsTest::flipFaceWindingErasedWrongIndexSize,
               &FlipNormalsTest::flipNormals,
 
               &FlipNormalsTest::flipNormalsFaceWinding<UnsignedByte>,
@@ -99,6 +105,34 @@ template<class T> void FlipNormalsTest::flipFaceWindingErased() {
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
         TestSuite::Compare::Container);
+}
+
+void FlipNormalsTest::flipFaceWindingErasedNonContiguous() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char indices[6*4]{};
+
+    std::stringstream out;
+    Error redirectError{&out};
+    flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::flipFaceWindingInPlace(): second index view dimension is not contiguous\n");
+}
+
+void FlipNormalsTest::flipFaceWindingErasedWrongIndexSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    char indices[6*3]{};
+
+    std::stringstream out;
+    Error redirectError{&out};
+    flipFaceWindingInPlace(Containers::StridedArrayView2D<char>{indices, {6, 3}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::flipFaceWindingInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void FlipNormalsTest::flipNormals() {
