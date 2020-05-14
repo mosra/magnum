@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "RemoveDuplicates.h"
+
 #include <cstring>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
-
-#include "RemoveDuplicates.h"
 
 namespace Magnum { namespace MeshTools {
 
