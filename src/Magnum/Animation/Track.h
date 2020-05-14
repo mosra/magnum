@@ -696,7 +696,7 @@ template<class K, class V, class R
          * @see @ref keys(), @ref operator[]()
          */
         Containers::StridedArrayView1D<V> values() const {
-            return reinterpret_cast<const Containers::StridedArrayView1D<V>&>(TrackViewStorage<K>::_values);
+            return Containers::arrayCast<V>(TrackViewStorage<K>::_values);
         }
 
         /**
