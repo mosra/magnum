@@ -227,7 +227,7 @@ void CompressIndicesTest::compressErasedWrongIndexSize() {
 
     std::stringstream out;
     Error redirectError{&out};
-    compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 3}}.every(2));
+    compressIndices(Containers::StridedArrayView2D<const char>{indices, {6, 3}});
     CORRADE_COMPARE(out.str(),
         "MeshTools::compressIndices(): expected index type size 1, 2 or 4 but got 3\n");
 }
