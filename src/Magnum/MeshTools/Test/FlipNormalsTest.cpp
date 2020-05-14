@@ -99,7 +99,7 @@ template<class T> void FlipNormalsTest::flipFaceWindingErased() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     T indices[]{0, 1, 2, 3, 4, 5};
-    flipFaceWindingInPlace(indices);
+    flipFaceWindingInPlace(Containers::arrayCast<2, char>(Containers::stridedArrayView(indices)));
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({0, 2, 1, 3, 5, 4}),
