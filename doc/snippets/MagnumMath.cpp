@@ -1064,10 +1064,18 @@ static_cast<void>(c);
 }
 
 {
-/* [Range-construct-minmax] */
+/* [Range-construct-minmax2D] */
+Vector2 texcoords[50];
+Range2D bounds = Math::minmax(texcoords);
+/* [Range-construct-minmax2D] */
+static_cast<void>(bounds);
+}
+
+{
+/* [Range-construct-minmax3D] */
 Vector3 a, b, c;
-Range3D bounds{Math::minmax({a, b, c})};
-/* [Range-construct-minmax] */
+Range3D bounds = Math::minmax({a, b, c});
+/* [Range-construct-minmax3D] */
 static_cast<void>(bounds);
 }
 

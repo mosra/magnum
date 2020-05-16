@@ -548,6 +548,9 @@ See also:
     wireframe rendering artifacts
 -   @ref Math::angle() got fixed to not produce NaN results for vectors,
     complex numbers or quaternions very close to each other
+-   @ref Math::Range was made to be implicitly convertible from @ref std::pair
+    in 2018.10, but the @ref Math::Range2D and @ref Math::Range3D were only
+    explicitly, and even that only by an accident
 -   Fixed various cases where @ref GL::Context would call GL 3+ APIs on GL 2.1
     contexts, causing GL errors. This makes context creation completely
     error-free on Mesa's Zink GL-over-Vulkan driver.

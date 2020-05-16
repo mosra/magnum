@@ -283,15 +283,26 @@ void RangeTest::constructPair() {
     Vector2i b{30, 18};
     Vector2i c{20, 25};
 
-    Range1Di bounds1a{Math::minmax({a.x(), b.x(), c.x()})};
+    /* Conversion should be implicit, so not using {} */
+    Range1Di bounds1a = Math::minmax({a.x(), b.x(), c.x()});
     Range1Di bounds1c{10, 30};
     CORRADE_COMPARE(bounds1a, bounds1c);
 
-    Range2Di bounds2a{Math::minmax({a, b, c})};
-    Range2Di bounds2b{std::pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}}};
+    Range2Di bounds2a = Math::minmax({a, b, c});
+    Range2Di bounds2b = std::pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}};
     Range2Di bounds2c{{10, 18}, {30, 25}};
     CORRADE_COMPARE(bounds2a, bounds2c);
     CORRADE_COMPARE(bounds2b, bounds2c);
+
+    Vector3i a3{a, 122};
+    Vector3i b3{b, 122};
+    Vector3i c3{c, 123};
+
+    Range3Di bounds3a = Math::minmax({a3, b3, c3});
+    Range3Di bounds3b = std::pair<Math::Vector<3, Int>, Math::Vector<3, Int>>{{10, 18, 122}, {30, 25, 123}};
+    Range3Di bounds3c{{10, 18, 122}, {30, 25, 123}};
+    CORRADE_COMPARE(bounds3a, bounds3c);
+    CORRADE_COMPARE(bounds3b, bounds3c);
 }
 
 void RangeTest::constructConversion() {

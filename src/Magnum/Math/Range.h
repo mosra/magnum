@@ -122,9 +122,10 @@ template<UnsignedInt dimensions, class T> class Range {
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate bounds of a triangle:
          *
-         * @snippet MagnumMath.cpp Range-construct-minmax
+         * @snippet MagnumMath.cpp Range-construct-minmax3D
          *
-         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14 */
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         */
         /*implicit*/ Range(const std::pair<VectorType, VectorType>& minmax) noexcept:
             _min{minmax.first}, _max{minmax.second} {}
 
@@ -377,6 +378,25 @@ template<class T> class Range2D: public Range<2, T> {
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range2D(const Vector2<T>& min, const Vector2<T>& max) noexcept: Range<2, T>(min, max) {}
 
+        /**
+         * @brief Construct a range from a pair of minimal and maximal coordinates
+         * @m_since_latest
+         *
+         * Useful in combination with e.g. @ref minmax(), here for example to
+         * calculate texture bounds:
+         *
+         * @snippet MagnumMath.cpp Range-construct-minmax2D
+         *
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         */
+        /*implicit*/ Range2D(const std::pair<Vector2<T>, Vector2<T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        /*implicit*/ Range2D(const std::pair<Vector<2, T>, Vector<2, T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
+
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other) noexcept: Range<2, T>(other) {}
 
@@ -511,6 +531,25 @@ template<class T> class Range3D: public Range<3, T> {
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max) noexcept: Range<3, T>(min, max) {}
+
+        /**
+         * @brief Construct a range from a pair of minimal and maximal coordinates
+         * @m_since_latest
+         *
+         * Useful in combination with e.g. @ref minmax(), here for example to
+         * calculate bounds of a triangle:
+         *
+         * @snippet MagnumMath.cpp Range-construct-minmax3D
+         *
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14
+         */
+        /*implicit*/ Range3D(const std::pair<Vector3<T>, Vector3<T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        /*implicit*/ Range3D(const std::pair<Vector<3, T>, Vector<3, T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other) noexcept: Range<3, T>(other) {}
