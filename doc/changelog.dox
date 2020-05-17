@@ -476,6 +476,8 @@ See also:
 -   Worked around a regression in MSVC 2017 causing a compiler crash (see
     [mosra/magnum#440](https://github.com/mosra/magnum/issues/440))
 -   Linker fixes for MinGW Clang (see [mosra/magnum#417](https://github.com/mosra/magnum/pull/417))
+-   Properly installing plugin binaries in Gentoo packages (see
+    [mosra/magnum-plugins#85](https://github.com/mosra/magnum-plugins/issues/85))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
