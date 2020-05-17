@@ -1,8 +1,8 @@
-EAPI=5
+EAPI=7
 
 EGIT_REPO_URI="git://github.com/mosra/magnum.git"
 
-inherit cmake-utils git-r3
+inherit cmake git-r3
 
 DESCRIPTION="C++11/C++14 graphics middleware for games and data visualization"
 HOMEPAGE="https://magnum.graphics"
@@ -50,7 +50,13 @@ src_configure() {
 		-DWITH_GL_INFO=ON
 		-DWITH_AL_INFO=ON
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
+}
+
+src_install() {
+	cmake_src_install
+	mkdir "${ED}/usr/$(get_libdir)/magnum/"
+	cp -av "${BUILD_DIR}"/Gentoo/lib/magnum/* "${ED}/usr/$(get_libdir)/magnum/" || die
 }
 
 # kate: replace-tabs off;
