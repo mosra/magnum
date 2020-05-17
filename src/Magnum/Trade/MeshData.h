@@ -1164,7 +1164,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * returns count of elements in every @ref attribute() array.
          * @see @ref attributeCount(MeshAttribute) const
          */
-        UnsignedInt attributeCount() const { return _attributes.size(); }
+        UnsignedInt attributeCount() const { return UnsignedInt(_attributes.size()); }
 
         /**
          * @brief Raw attribute data
