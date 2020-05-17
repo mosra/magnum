@@ -35,6 +35,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
+#include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/Implementation/converterUtilities.h"
 
@@ -226,6 +227,7 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
 
         struct MeshInfo {
             UnsignedInt mesh, level;
+            UnsignedInt references;
             MeshPrimitive primitive;
             UnsignedInt indexCount, vertexCount;
             MeshIndexType indexType;
@@ -235,6 +237,17 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         };
 
         /* Parse everything first to avoid errors interleaved with output */
+
+        /* Scene properties. Currently just counting how much is each mesh
+           shared. */
+        Containers::Array<UnsignedInt> meshReferenceCount{importer->meshCount()};
+        for(UnsignedInt i = 0; i != importer->object3DCount(); ++i) {
+            Containers::Pointer<Trade::ObjectData3D> object = importer->object3D(i);
+            if(object && object->instanceType() == Trade::ObjectInstanceType3D::Mesh && std::size_t(object->instance()) < meshReferenceCount.size())
+                ++meshReferenceCount[object->instance()];
+        }
+
+        /* Mesh properties */
         bool error = false;
         Containers::Array<MeshInfo> meshInfos;
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
@@ -254,7 +267,10 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                 info.primitive = mesh->primitive();
                 info.vertexCount = mesh->vertexCount();
                 info.vertexDataSize = mesh->vertexData().size();
-                if(!j) info.name = importer->meshName(i);
+                if(!j) {
+                    info.name = importer->meshName(i);
+                    info.references = meshReferenceCount[i];
+                }
                 if(mesh->isIndexed()) {
                     info.indexCount = mesh->indexCount();
                     info.indexType = mesh->indexType();
@@ -286,7 +302,8 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         for(const MeshInfo& info: meshInfos) {
             Debug d;
             if(info.level == 0) {
-                d << "Mesh" << info.mesh << Debug::nospace << ":";
+                d << "Mesh" << info.mesh
+                    << Utility::formatString("(referenced by {} objects):", info.references);
                 if(!info.name.empty()) d << info.name;
                 d << Debug::newline;
             }
