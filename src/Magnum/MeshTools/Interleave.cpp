@@ -301,15 +301,9 @@ Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<T
 }
 
 Trade::MeshData interleave(const Trade::MeshData& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
-    Containers::ArrayView<const char> indexData;
-    Trade::MeshIndexData indices;
-    if(data.isIndexed()) {
-        indexData = data.indexData();
-        indices = Trade::MeshIndexData{data.indices()};
-    }
-
     return interleave(Trade::MeshData{data.primitive(),
-        {}, indexData, indices,
+        /* If data is not indexed, the reference will be also non-indexed */
+        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
         {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
         data.vertexCount()
     }, extra);

@@ -222,11 +222,11 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
 }
 
 Trade::MeshData generateIndices(const Trade::MeshData& data) {
-    CORRADE_ASSERT(!data.isIndexed(),
-        "MeshTools::generateIndices(): mesh data already indexed",
-        (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-
     return generateIndices(Trade::MeshData{data.primitive(),
+        /* Passing the indices through. If the mesh isn't indexed, this makes
+           the reference non-indexed also, if the mesh is indexed, it causes an
+           assert inside the delegated generateIndices(). */
+        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
         {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
         data.vertexCount()});
 }

@@ -265,7 +265,8 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
          *
          * Expects that @p data is contiguous and size of the second dimension
          * is either 1, 2 or 4, corresponding to one of the @ref MeshIndexType
-         * values.
+         * values. As a special case, if second dimension size is 0, the
+         * constructor is equivalent to @ref MeshIndexData(std::nullptr_t).
          */
         explicit MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept;
 
@@ -1093,8 +1094,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /**
          * @brief Mesh indices
          *
-         * The view is guaranteed to be contiguous and its second dimension
-         * represents the actual data type (its size is equal to type size).
+         * For an indexed mesh, the view is guaranteed to be contiguous and its
+         * second dimension represents the actual data type (its size is equal
+         * to type size, even in case there's zero indices). For a non-indexed
+         * mesh, the returned view has a zero size in both dimensions.
+         *
          * Use the templated overload below to get the indices in a concrete
          * type.
          * @see @ref Corrade::Containers::StridedArrayView::isContiguous()
@@ -2107,6 +2111,8 @@ template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute n
 template<class T> constexpr MeshAttributeData::MeshAttributeData(MeshAttribute name, const Containers::StridedArrayView2D<T>& data) noexcept: MeshAttributeData{name, Implementation::vertexFormatFor<typename std::remove_const<T>::type>(), UnsignedShort(data.size()[1]), Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, (CORRADE_CONSTEXPR_ASSERT(data.stride()[1] == sizeof(T), "Trade::MeshAttributeData: second view dimension is not contiguous"), nullptr)} {}
 
 template<class T> Containers::ArrayView<const T> MeshData::indices() const {
+    CORRADE_ASSERT(isIndexed(),
+        "Trade::MeshData::indices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<const char> data = indices();
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};
@@ -2117,6 +2123,8 @@ template<class T> Containers::ArrayView<const T> MeshData::indices() const {
 }
 
 template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
+    CORRADE_ASSERT(isIndexed(),
+        "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
     Containers::StridedArrayView2D<char> data = mutableIndices();
     #ifdef CORRADE_GRACEFUL_ASSERT /* Sigh. Brittle. Better idea? */
     if(!data.stride()[1]) return {};

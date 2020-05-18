@@ -46,6 +46,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexTypeErased();
     void constructIndexTypeErasedWrongSize();
     void constructIndex2D();
+    void constructIndex2DNotIndexed();
     void constructIndex2DWrongSize();
     void constructIndex2DNonContiguous();
     void constructIndexNullptr();
@@ -204,6 +205,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexTypeErased,
               &MeshDataTest::constructIndexTypeErasedWrongSize,
               &MeshDataTest::constructIndex2D,
+              &MeshDataTest::constructIndex2DNotIndexed,
               &MeshDataTest::constructIndex2DWrongSize,
               &MeshDataTest::constructIndex2DNonContiguous,
               &MeshDataTest::constructIndexNullptr,
@@ -514,6 +516,12 @@ void MeshDataTest::constructIndex2D() {
         CORRADE_COMPARE(indices.type(), MeshIndexType::UnsignedInt);
         CORRADE_COMPARE(indices.data().data(), indexData);
     }
+}
+
+void MeshDataTest::constructIndex2DNotIndexed() {
+    MeshIndexData indices{Containers::StridedArrayView2D<const char>{}};
+    CORRADE_COMPARE(indices.type(), MeshIndexType{});
+    CORRADE_COMPARE(indices.data().data(), nullptr);
 }
 
 void MeshDataTest::constructIndex2DWrongSize() {
@@ -1192,6 +1200,8 @@ void MeshDataTest::constructZeroIndices() {
     CORRADE_VERIFY(data.isIndexed());
     CORRADE_COMPARE(data.indexType(), MeshIndexType::UnsignedInt);
     CORRADE_COMPARE(data.indexCount(), 0);
+    CORRADE_COMPARE(data.indices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 4}));
+    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 4}));
     CORRADE_COMPARE(data.vertexCount(), 3);
 }
 
@@ -1249,10 +1259,18 @@ void MeshDataTest::constructIndexless() {
        default */
     CORRADE_COMPARE(data.vertexDataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(data.indexData(), nullptr);
     CORRADE_COMPARE(data.importerState(), &importerState);
 
+    /* Access to indexData() and typeless access to (mutable)indices() is
+       allowed, to allow creation of MeshData instances referencing other
+       MeshData without having to branch on isIndexed(). */
     CORRADE_VERIFY(!data.isIndexed());
+    CORRADE_COMPARE(data.indexData(), nullptr);
+    CORRADE_COMPARE(data.indices().data(), nullptr);
+    CORRADE_COMPARE(data.indices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 0}));
+    CORRADE_COMPARE(data.mutableIndices().data(), nullptr);
+    CORRADE_COMPARE(data.mutableIndices().size(), (Containers::StridedArrayView2D<std::size_t>::Size{0, 0}));
+
     CORRADE_COMPARE(data.vertexCount(), 3);
     CORRADE_COMPARE(data.attributeCount(), 1);
     CORRADE_COMPARE(data.attributeFormat(MeshAttribute::Position), VertexFormat::Vector2);
@@ -2777,8 +2795,8 @@ void MeshDataTest::indicesNotIndexed() {
     data.indexCount();
     data.indexType();
     data.indexOffset();
-    data.indices();
     data.indices<UnsignedInt>();
+    data.mutableIndices<UnsignedShort>();
     data.indicesAsArray();
     UnsignedInt a[1];
     data.indicesInto(a);
@@ -2787,7 +2805,7 @@ void MeshDataTest::indicesNotIndexed() {
         "Trade::MeshData::indexType(): the mesh is not indexed\n"
         "Trade::MeshData::indexOffset(): the mesh is not indexed\n"
         "Trade::MeshData::indices(): the mesh is not indexed\n"
-        "Trade::MeshData::indices(): the mesh is not indexed\n"
+        "Trade::MeshData::mutableIndices(): the mesh is not indexed\n"
         "Trade::MeshData::indicesAsArray(): the mesh is not indexed\n"
         "Trade::MeshData::indicesInto(): the mesh is not indexed\n");
 }

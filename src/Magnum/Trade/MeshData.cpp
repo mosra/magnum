@@ -42,6 +42,12 @@ MeshIndexData::MeshIndexData(const MeshIndexType type, const Containers::ArrayVi
 }
 
 MeshIndexData::MeshIndexData(const Containers::StridedArrayView2D<const char>& data) noexcept {
+    /* Second dimension being zero indicates a non-indexed mesh */
+    if(data.size()[1] == 0) {
+        _type = MeshIndexType{};
+        return;
+    }
+
     if(data.size()[1] == 4) _type = MeshIndexType::UnsignedInt;
     else if(data.size()[1] == 2) _type = MeshIndexType::UnsignedShort;
     else if(data.size()[1] == 1) _type = MeshIndexType::UnsignedByte;
@@ -230,8 +236,9 @@ std::size_t MeshData::indexOffset() const {
 }
 
 Containers::StridedArrayView2D<const char> MeshData::indices() const {
-    CORRADE_ASSERT(isIndexed(),
-        "Trade::MeshData::indices(): the mesh is not indexed", {});
+    /* For a non-indexed mesh returning zero size in both dimensions, indexed
+       mesh with zero indices sill has the second dimension non-zero */
+    if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about attribute type size */
     return {{_indices, _indexCount*indexTypeSize}, {_indexCount, indexTypeSize}};
@@ -240,8 +247,9 @@ Containers::StridedArrayView2D<const char> MeshData::indices() const {
 Containers::StridedArrayView2D<char> MeshData::mutableIndices() {
     CORRADE_ASSERT(_indexDataFlags & DataFlag::Mutable,
         "Trade::MeshData::mutableIndices(): index data not mutable", {});
-    CORRADE_ASSERT(isIndexed(),
-        "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
+    /* For a non-indexed mesh returning zero size in both dimensions, indexed
+       mesh with zero indices sill has the second dimension non-zero */
+    if(!isIndexed()) return {};
     const std::size_t indexTypeSize = meshIndexTypeSize(_indexType);
     /* Build a 2D view using information about index type size */
     Containers::StridedArrayView2D<const char> out{{_indices, _indexCount*indexTypeSize}, {_indexCount, indexTypeSize}};

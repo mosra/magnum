@@ -226,15 +226,9 @@ Trade::MeshData concatenate(Trade::MeshData&& first, std::initializer_list<Conta
 }
 
 Trade::MeshData concatenate(const Trade::MeshData& first, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> next) {
-    Containers::ArrayView<const char> indexData;
-    Trade::MeshIndexData indices;
-    if(first.isIndexed()) {
-        indexData = first.indexData();
-        indices = Trade::MeshIndexData{first.indices()};
-    }
-
     return concatenate(Trade::MeshData{first.primitive(),
-        {}, indexData, indices,
+        /* If data is not indexed, the reference will be also non-indexed */
+        {}, first.indexData(), Trade::MeshIndexData{first.indices()},
         {}, first.vertexData(), Trade::meshAttributeDataNonOwningArray(first.attributeData()),
         first.vertexCount(),
     }, next);

@@ -165,8 +165,6 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
 }
 
 Trade::MeshData compressIndices(const Trade::MeshData& data, MeshIndexType atLeast) {
-    CORRADE_ASSERT(data.isIndexed(), "MeshTools::compressIndices(): mesh data not indexed", (Trade::MeshData{MeshPrimitive::Triangles, 0}));
-
     return compressIndices(Trade::MeshData{data.primitive(),
         {}, data.indexData(), Trade::MeshIndexData{data.indices()},
         {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
