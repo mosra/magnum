@@ -41,6 +41,7 @@ struct CombineTest: TestSuite::Tester {
 
     void combineIndexedAttributes();
     void combineIndexedAttributesIndicesOnly();
+    void combineIndexedAttributesSingleMesh();
 
     void combineIndexedAttributesNoMeshes();
     void combineIndexedAttributesNotIndexed();
@@ -66,6 +67,7 @@ constexpr struct {
 CombineTest::CombineTest() {
     addTests({&CombineTest::combineIndexedAttributes,
               &CombineTest::combineIndexedAttributesIndicesOnly,
+              &CombineTest::combineIndexedAttributesSingleMesh,
 
               &CombineTest::combineIndexedAttributesNoMeshes,
               &CombineTest::combineIndexedAttributesNotIndexed,
@@ -148,6 +150,28 @@ void CombineTest::combineIndexedAttributesIndicesOnly() {
         TestSuite::Compare::Container);
     CORRADE_COMPARE(result.attributeCount(), 0);
     CORRADE_COMPARE(result.vertexCount(), 2);
+}
+
+void CombineTest::combineIndexedAttributesSingleMesh() {
+    const UnsignedInt indices[]{2, 1, 2, 0, 5, 7};
+    const Float data[]{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f};
+    Trade::MeshData a{MeshPrimitive::LineLoop,
+        {}, indices, Trade::MeshIndexData{indices},
+        {}, data, {Trade::MeshAttributeData{
+            Trade::meshAttributeCustom(22), Containers::arrayView(data)}}};
+
+    Trade::MeshData result = MeshTools::combineIndexedAttributes({a});
+    CORRADE_COMPARE(result.primitive(), MeshPrimitive::LineLoop);
+    CORRADE_VERIFY(result.isIndexed());
+    CORRADE_COMPARE(result.indexType(), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE_AS(result.indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({0, 1, 0, 2, 3, 4}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(result.attributeCount(), 1);
+    CORRADE_COMPARE(result.attributeFormat(0), VertexFormat::Float);
+    CORRADE_COMPARE_AS(result.attribute<Float>(0),
+        Containers::arrayView<Float>({2.0f, 1.0f, 0.0f, 5.0f, 7.0f}),
+        TestSuite::Compare::Container);
 }
 
 void CombineTest::combineIndexedAttributesNoMeshes() {

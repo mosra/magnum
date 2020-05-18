@@ -66,13 +66,17 @@ indexing both positions and normals:
 {0, 1, 2, 0, 3, 4, 5, 1, 6}     // unified indices
 @endcode
 
-The function preserves all vertex data including repeated or custom attributes.
-The resulting mesh is interleaved, with all attributes packed tightly together.
-If you need to add specific padding for alignment preservation, pass the result
-to @ref interleave() and specify the paddings between attributes manually.
-Similarly, for simplicity the resulting mesh has always
-@ref MeshIndexType::UnsignedInt --- use @ref compressIndices(const Trade::MeshData&, MeshIndexType)
+The function preserves all attribute data including repeated or custom
+attributes. The resulting mesh is interleaved, with all attributes packed
+tightly together. If you need to add specific padding for alignment
+preservation, pass the result to @ref interleave() and specify the paddings
+between attributes manually. Similarly, for simplicity the resulting mesh has
+always @ref MeshIndexType::UnsignedInt --- use @ref compressIndices(const Trade::MeshData&, MeshIndexType)
 if you want to have it compressed to a smaller type.
+
+Vertex data unreferenced by the index buffers are discarded. This means the
+function can be also called with just a single argument to compact a mesh with
+a sparse index buffer.
 
 Expects that @p data is non-empty and all data have the same primitive and
 index count. All inputs have to be indexed, although the particular
