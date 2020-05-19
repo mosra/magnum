@@ -116,7 +116,7 @@ Trade::MeshData icosphereSolid(const UnsignedInt subdivisions) {
 
         /** @todo i need arrayShrinkAndGiveUpMemoryIfItDoesntCauseRealloc() */
         Containers::arrayResize<Trade::ArrayAllocator>(vertexData,
-            MeshTools::removeDuplicatesIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(positions))*sizeof(Vertex));
+            MeshTools::removeDuplicatesFuzzyIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(positions))*sizeof(Vertex));
     }
 
     /* Build up the views again with correct size, fill the normals */

@@ -624,8 +624,9 @@ See also:
     @cpp MeshTools::removeDuplicates() @ce and @cpp MeshTools::subdivide() @ce
     operating on a @ref std::vector are deprecated, use the STL-free
     @ref MeshTools::compressIndices(), @ref MeshTools::duplicate(),
-    @ref MeshTools::removeDuplicatesInPlace() and @ref MeshTools::subdivide() /
-    @ref MeshTools::subdivideInPlace() overloads instead
+    @ref MeshTools::removeDuplicatesFuzzyInPlace() and
+    @ref MeshTools::subdivide() / @ref MeshTools::subdivideInPlace() overloads
+    instead
 -   @cpp Primitives::CapsuleTextureCoords @ce,
     @cpp Primitives::CircleTextureCoords @ce,
     @cpp Primitives::PlaneTextureCoords @ce,

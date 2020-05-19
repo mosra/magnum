@@ -278,7 +278,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace() {
         {1, 5}
     };
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = MeshTools::removeDuplicatesInPlace(Containers::stridedArrayView(data), 2);
+    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = MeshTools::removeDuplicatesFuzzyInPlace(Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(result.first),
         Containers::arrayView<UnsignedInt>({0, 0, 1, 1}),
         TestSuite::Compare::Container);
@@ -321,7 +321,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace
         {1, 5}
     };
 
-    std::size_t count = MeshTools::removeDuplicatesIndexedInPlace(
+    std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::stridedArrayView(indices),
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
@@ -342,10 +342,10 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
 
     UnsignedByte indices[1];
     Vector2i data[256]{};
-    MeshTools::removeDuplicatesIndexedInPlace(
+    MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::stridedArrayView(indices),
         Containers::stridedArrayView(data), 2);
-    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
+    CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices() {
@@ -356,7 +356,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices() {
         {1, 5}
     };
 
-    std::size_t count = MeshTools::removeDuplicatesIndexedInPlace(
+    std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView1D<UnsignedInt>{},
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(count),
@@ -365,7 +365,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices() {
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertices() {
-    CORRADE_COMPARE((MeshTools::removeDuplicatesIndexedInPlace<UnsignedInt, Vector2i>({}, {}, 2)), 0);
+    CORRADE_COMPARE((MeshTools::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt, Vector2i>({}, {}, 2)), 0);
 }
 
 template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased() {
@@ -380,7 +380,7 @@ template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace
         {1, 5}
     };
 
-    std::size_t count = MeshTools::removeDuplicatesIndexedInPlace(
+    std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::arrayCast<2, char>(Containers::arrayView(indices)),
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
@@ -401,11 +401,11 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguou
 
     std::stringstream out;
     Error redirectError{&out};
-    MeshTools::removeDuplicatesIndexedInPlace(
+    MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}},
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::removeDuplicatesIndexedInPlace(): second index view dimension is not contiguous\n");
+        "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): second index view dimension is not contiguous\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize() {
@@ -418,11 +418,11 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSi
 
     std::stringstream out;
     Error redirectError{&out};
-    MeshTools::removeDuplicatesIndexedInPlace(
+    MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 3}},
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE(out.str(),
-        "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
+        "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
 void RemoveDuplicatesTest::removeDuplicatesMeshData() {

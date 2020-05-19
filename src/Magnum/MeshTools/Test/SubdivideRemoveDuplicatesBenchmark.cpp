@@ -93,7 +93,7 @@ void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter() {
             MeshTools::subdivide(indices, positions, interpolator);
 
         /* Remove duplicates after */
-        arrayResize(positions, MeshTools::removeDuplicatesIndexedInPlace(
+        arrayResize(positions, MeshTools::removeDuplicatesFuzzyIndexedInPlace(
             stridedArrayView(indices), stridedArrayView(positions)));
     }
 }
@@ -120,7 +120,7 @@ void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween()
         /* Subdivide 5 times and remove duplicates during the operation */
         for(std::size_t i = 0; i != 5; ++i) {
             MeshTools::subdivide(indices, positions, interpolator);
-            arrayResize(positions, MeshTools::removeDuplicatesIndexedInPlace(
+            arrayResize(positions, MeshTools::removeDuplicatesFuzzyIndexedInPlace(
                 stridedArrayView(indices), stridedArrayView(positions)));
         }
     }
