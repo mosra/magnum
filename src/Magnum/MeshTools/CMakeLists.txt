@@ -123,6 +123,7 @@ if(WITH_SCENECONVERTER)
     add_executable(magnum-sceneconverter sceneconverter.cpp)
     target_link_libraries(magnum-sceneconverter PRIVATE
         Magnum
+        MagnumMeshTools
         MagnumTrade)
     set_target_properties(magnum-sceneconverter PROPERTIES FOLDER "Magnum/MeshTools")
 

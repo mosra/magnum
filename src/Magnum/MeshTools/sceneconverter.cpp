@@ -33,6 +33,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
@@ -66,7 +67,7 @@ information.
 
 @code{.sh}
 magnum-sceneconverter [-h|--help] [--importer IMPORTER]
-    [--converter CONVERTER]... [--plugin-dir DIR]
+    [--converter CONVERTER]... [--plugin-dir DIR] [--remove-duplicates]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--info] [-v|--verbose]
     [--profile] [--] input output
@@ -81,6 +82,8 @@ Arguments:
     @ref Trade::AnySceneImporter "AnySceneImporter")
 -   `--converter CONVERTER` --- scene converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `--remove-duplicates` --- remove duplicate vertices using
+    @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
@@ -154,6 +157,7 @@ int main(int argc, char** argv) {
         .addOption("importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
         .addArrayOption("converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
@@ -361,12 +365,23 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         }
     }
 
+    std::chrono::high_resolution_clock::duration conversionTime;
+
+    /* Remove duplicates, if requested */
+    if(args.isSet("remove-duplicates")) {
+        const UnsignedInt beforeVertexCount = mesh->vertexCount();
+        {
+            Duration d{conversionTime};
+            mesh = MeshTools::removeDuplicates(*std::move(mesh));
+        }
+        if(args.isSet("verbose"))
+            Debug{} << "Duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
+    }
+
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractSceneConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractSceneConverter::pluginSearchPaths()[0])};
-
-    std::chrono::high_resolution_clock::duration conversionTime;
 
     /* Assume there's always one passed --converter option less, and the last
        is implicitly AnySceneConverter. All converters except the last one are
