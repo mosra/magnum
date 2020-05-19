@@ -80,7 +80,7 @@ an index array pointing to original data locations.
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>& data);
 
 /**
-@brief Remove duplicate data from given array in-place
+@brief Remove duplicate data from given array in-place into given output index array
 @param[in,out] data     Data array, duplicate items will be cut away with order
     preserved
 @param[out]    indices  Where to put the resulting index array
@@ -107,7 +107,7 @@ returns an index array pointing to original data locations.
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicates(const Containers::StridedArrayView2D<const char>& data);
 
 /**
-@brief Remove duplicate data from given array
+@brief Remove duplicate data from given array into given output index array
 @param[in]  data    Data array
 @param[out] indices Where to put the resulting index array
 @return Count of unique items in the original @p data array
@@ -182,6 +182,21 @@ duplicates in each array separately and then combine the resulting index arrays
 back into a single one using @ref combineIndexedAttributes().
 */
 template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+
+/**
+@brief Remove duplicate data from given array using fuzzy comparison in-place into given output index array
+@param[in,out] data Data array, duplicate items will be cut away with order
+    preserved
+@param[out] indices Where to put the resulting index array
+@param[in] epsilon  Epsilon value, data closer than this distance will be
+    melt together
+@return Size of unique prefix in the cleaned up @p data array
+@m_since_latest
+
+Same as above, except that the index array is not allocated but put into
+@p indices instead. Expects that @p indices has the same size as @p data.
+*/
+template<class Vector> std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView1D<Vector>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -336,11 +351,19 @@ data.
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data);
 
-template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {
-    /* A trivial index array that'll be remapped and returned after */
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()};
+template<class Vector> std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView1D<Vector>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, typename Vector::Type epsilon) {
+    CORRADE_ASSERT(indices.size() == data.size(),
+        "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has" << indices.size() << "elements but expected" << data.size(), {});
+
+    /* A trivial index array that'll be remapped */
     std::iota(indices.begin(), indices.end(), 0);
     const std::size_t size = removeDuplicatesFuzzyIndexedInPlace(Containers::stridedArrayView(indices), data, epsilon);
+    return size;
+}
+
+template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()};
+    const std::size_t size = removeDuplicatesFuzzyInPlaceInto(data, indices, epsilon);
     return {std::move(indices), size};
 }
 
@@ -348,8 +371,7 @@ template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> re
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {
     /* A trivial index array that'll be remapped and returned after */
     std::vector<UnsignedInt> indices(data.size());
-    std::iota(indices.begin(), indices.end(), 0);
-    const std::size_t size = removeDuplicatesFuzzyIndexedInPlace(Containers::stridedArrayView(indices), Containers::stridedArrayView(data), epsilon);
+    const std::size_t size = removeDuplicatesFuzzyInPlaceInto(Containers::stridedArrayView(data), Containers::stridedArrayView(indices), epsilon);
     data.resize(size);
     return indices;
 }

@@ -49,6 +49,7 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesIndexedInPlaceErasedWrongIndexSize();
 
     void removeDuplicatesFuzzyInPlace();
+    void removeDuplicatesFuzzyInPlaceIntoWrongOutputSize();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void removeDuplicatesFuzzyStl();
     #endif
@@ -91,6 +92,7 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize,
 
               &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &RemoveDuplicatesTest::removeDuplicatesFuzzyStl,
               #endif
@@ -285,6 +287,21 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace() {
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
         Containers::arrayView<Vector2i>({{1, 0}, {0, 4}}),
         TestSuite::Compare::Container);
+}
+
+void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Vector2 data[8]{};
+    UnsignedInt output[7];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicatesFuzzyInPlaceInto(Containers::stridedArrayView(data), output);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
