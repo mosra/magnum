@@ -29,6 +29,10 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/Trade/MeshData.h"
+
 namespace Magnum { namespace MeshTools {
 
 struct ArrayEqual {
@@ -167,6 +171,69 @@ std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView2D<
         CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
         return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data);
     }
+}
+
+Trade::MeshData removeDuplicates(const Trade::MeshData& data) {
+    return removeDuplicates(Trade::MeshData{data.primitive(),
+        {}, data.indexData(), Trade::MeshIndexData{data.indices()},
+        {}, data.vertexData(), Trade::meshAttributeDataNonOwningArray(data.attributeData()),
+        data.vertexCount()});
+}
+
+Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
+    CORRADE_ASSERT(data.attributeCount(),
+        "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh",
+        (Trade::MeshData{MeshPrimitive::Points, 0}));
+
+    /* Turn the passed data into an interleaved owned mutable instance we can
+       operate on -- concatenate() alone only makes the data owned,
+       interleave() alone only makes the data interleaved (but those can stay
+       non-owned). There's a chance the original data are already like this, in
+       which case this will be just a passthrough. */
+    /** @todo concatenate() causes the resulting index type to be UnsignedInt
+        always, replace with owned() or some such when that's done */
+    Trade::MeshData ownedInterleaved = interleave(concatenate(std::move(data)));
+
+    const Containers::StridedArrayView2D<char> vertexData = MeshTools::interleavedMutableData(ownedInterleaved);
+
+    UnsignedInt uniqueVertexCount;
+    Containers::Array<char> indexData;
+    MeshIndexType indexType;
+    if(ownedInterleaved.isIndexed()) {
+        uniqueVertexCount = removeDuplicatesIndexedInPlace(ownedInterleaved.mutableIndices(), vertexData);
+        indexData = ownedInterleaved.releaseIndexData();
+        indexType = ownedInterleaved.indexType();
+    } else {
+        indexData = Containers::Array<char>{Containers::NoInit, ownedInterleaved.vertexCount()*sizeof(UnsignedInt)};
+        uniqueVertexCount = removeDuplicatesInPlaceInto(vertexData, Containers::arrayCast<UnsignedInt>(indexData));
+        indexType = MeshIndexType::UnsignedInt;
+    }
+
+    /* Allocate a new, shorter vertex data and copy the prefix */
+    /** @todo better idea? even if we would use growable arrays in duplicate()
+        or interleave() above, arrayResize() wouldn't release the excessive
+        memory in any way. This is basically equivalent to STL's
+        shrink_to_fit(), which also copies */
+    Containers::Array<char> uniqueVertexData{Containers::NoInit, uniqueVertexCount*vertexData.size()[1]};
+    Utility::copy(vertexData.prefix(uniqueVertexCount),
+        Containers::StridedArrayView2D<char>{uniqueVertexData, {uniqueVertexCount, vertexData.size()[1]}});
+
+    /* Route all attributes to the new vertex data */
+    Containers::Array<Trade::MeshAttributeData> attributeData{ownedInterleaved.attributeCount()};
+    for(UnsignedInt i = 0; i != ownedInterleaved.attributeCount(); ++i)
+        attributeData[i] = Trade::MeshAttributeData{ownedInterleaved.attributeName(i),
+            ownedInterleaved.attributeFormat(i),
+            ownedInterleaved.attributeArraySize(i),
+            Containers::StridedArrayView1D<void>{uniqueVertexData,
+                uniqueVertexData.data() + ownedInterleaved.attributeOffset(i),
+                uniqueVertexCount,
+                ownedInterleaved.attributeStride(i)}};
+
+    Trade::MeshIndexData indices{indexType, indexData};
+    return Trade::MeshData{ownedInterleaved.primitive(),
+        std::move(indexData), indices,
+        std::move(uniqueVertexData), std::move(attributeData),
+        uniqueVertexCount};
 }
 
 }}

@@ -40,6 +40,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/visibility.h"
+#include "Magnum/Trade/Trade.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -304,6 +305,36 @@ template<class Vector> std::size_t removeDuplicatesIndexedInPlace(const Containe
         return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data, epsilon);
     }
 }
+
+/**
+@brief Remove mesh data duplicates
+@m_since_latest
+
+Equivalent to calling @ref removeDuplicatesInPlace() (or
+@ref removeDuplicatesIndexedInPlace(), in case the mesh is indexed) on a
+mutable copy of every attribute and then putting the unique prefix and
+newly generated index buffer into a new @ref Trade::MeshData instance. If the
+mesh is indexed, the original index type is preserved, otherwise the mesh gets
+@ref MeshIndexType::UnsignedInt indices. The resulting mesh is always
+interleaved and owned, if the input is already interleaved attribute offsets
+and paddings are preserved.
+
+This function unconditionally copies and interleaves passed vertex and index
+data in order to operate on them in-place. If your data is interleaved and
+owned by the instance and you don't need the original data after the process,
+call @ref removeDuplicates(Trade::MeshData&&) instead to avoid the extra copy.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& data);
+
+/**
+@brief Remove mesh data duplicates
+@m_since_latest
+
+Same as @ref removeDuplicates(const Trade::MeshData&), except that it operates
+in-place on the passed instance, avoiding an extra copy of vertex and index
+data.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data);
 
 template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {
     /* A trivial index array that'll be remapped and returned after */

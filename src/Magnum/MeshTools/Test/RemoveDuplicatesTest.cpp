@@ -30,6 +30,7 @@
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -60,6 +61,17 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize();
 
     /* this is additionally regression-tested in PrimitivesIcosphereTest */
+
+    void removeDuplicatesMeshData();
+    void removeDuplicatesMeshDataAttributeless();
+};
+
+const struct {
+    const char* name;
+    bool indexed;
+} RemoveDuplicatesMeshDataData[] {
+    {"", false},
+    {"indexed", true}
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
@@ -93,6 +105,11 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedInt>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguous,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize});
+
+    addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshData},
+        Containers::arraySize(RemoveDuplicatesMeshDataData));
+
+    addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless});
 }
 
 void RemoveDuplicatesTest::removeDuplicates() {
@@ -406,6 +423,126 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSi
         Containers::stridedArrayView(data), 2);
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshData() {
+    auto&& data = RemoveDuplicatesMeshDataData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Deliberately not owned and not interleaved to verify that the function
+       will handle this */
+    struct Vertex {
+        Vector2 positions[10]{
+            {1.0f, 2.0f},
+            {3.0f, 4.0f},
+            {5.0f, 6.0f},
+            {7.0f, 8.0f},
+            {7.0f, 8.0f},
+            {7.0f, 8.0f},
+            {9.0f, 10.0f},
+            {3.0f, 4.0f},
+            {5.0f, 6.0f},
+            {5.0f, 6.0f}
+        };
+        Short data[10][2]{
+            {-15, 2},
+            {2, 32},
+            {24, 2},
+            {-15, 2},
+            {15, 2},
+            {2, 7541},
+            {24, 2},
+            {2, 32},
+            {24, 2},
+            {15, 2}
+        };
+    } vertexData[1];
+
+    const UnsignedShort indexData[]{1, 2, 5, 9, 7, 6, 4, 7, 5, 0, 3, 8, 3};
+
+    Containers::ArrayView<const void> indexView;
+    Trade::MeshIndexData indices;
+    if(data.indexed) {
+        indexView = indexData;
+        indices = Trade::MeshIndexData{indexData};
+    }
+
+    Trade::MeshData mesh{MeshPrimitive::Lines,
+        {}, indexView, indices,
+        {}, vertexData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(vertexData->positions)},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                VertexFormat::ShortNormalized, 2,
+                Containers::stridedArrayView(vertexData->data)},
+    }};
+
+    Trade::MeshData unique = MeshTools::removeDuplicates(mesh);
+    CORRADE_COMPARE(unique.primitive(), MeshPrimitive::Lines);
+
+    CORRADE_VERIFY(unique.isIndexed());
+    if(data.indexed) {
+        CORRADE_COMPARE(unique.indexCount(), mesh.indexCount());
+        {
+            CORRADE_EXPECT_FAIL("The function currently doesn't preserve the index type.");
+            CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedShort);
+        }
+        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({1, 2, 5, 7, 1, 6, 4, 1, 5, 0, 3, 2, 3}),
+            TestSuite::Compare::Container);
+    } else {
+        CORRADE_COMPARE(unique.indexCount(), mesh.vertexCount());
+        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({0, 1, 2, 3, 4, 5, 6, 1, 2, 7}),
+            TestSuite::Compare::Container);
+    }
+
+    CORRADE_COMPARE(unique.vertexCount(), 8);
+    CORRADE_COMPARE(unique.attributeCount(), 2);
+    CORRADE_COMPARE(unique.attributeName(0), Trade::MeshAttribute::Position);
+    CORRADE_COMPARE(unique.attributeFormat(0), VertexFormat::Vector2);
+    CORRADE_COMPARE_AS(unique.attribute<Vector2>(0),
+        Containers::arrayView<Vector2>({
+            {1.0f, 2.0f},
+            {3.0f, 4.0f},
+            {5.0f, 6.0f},
+            {7.0f, 8.0f},
+            {7.0f, 8.0f},
+            {7.0f, 8.0f},
+            {9.0f, 10.0f},
+            {5.0f, 6.0f}
+        }),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(unique.attributeName(1), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(unique.attributeFormat(1), VertexFormat::ShortNormalized);
+    CORRADE_COMPARE(unique.attributeArraySize(1), 2);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2s>(unique.attribute<Short[]>(1))),
+        Containers::arrayView<Vector2s>({
+            {-15, 2},
+            {2, 32},
+            {24, 2},
+            {-15, 2},
+            {15, 2},
+            {2, 7541},
+            {24, 2},
+            {15, 2}
+        }),
+        TestSuite::Compare::Container);
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, 10});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
 }
 
 }}}}
