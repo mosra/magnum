@@ -28,6 +28,7 @@
 #include <cstring>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -106,7 +107,8 @@ Trade::MeshData duplicate(const Trade::MeshData& data, const Containers::ArrayVi
                 "MeshTools::duplicate(): extra attribute" << i << "expected to have" << data.vertexCount() << "items but got" << extra[i].data().size(),
                 (Trade::MeshData{MeshPrimitive::Triangles, 0}));
             const Containers::StridedArrayView2D<const char> attributeData =
-                    Containers::arrayCast<2, const char>(extra[i].data(), vertexFormatSize(extra[i].format()));
+                Containers::arrayCast<2, const char>(extra[i].data(),
+                vertexFormatSize(extra[i].format())*Math::max(extra[i].arraySize(), UnsignedShort{1}));
             duplicateInto(data.indices(), attributeData, layout.mutableAttribute(attributeIndex));
         }
 

@@ -46,7 +46,7 @@ Trade::MeshData combineIndexedImplementation(const MeshPrimitive primitive, Cont
     for(std::size_t i = 0; i != data.size(); ++i) {
         attributeCount += data[i]->attributeCount();
         for(UnsignedInt j = 0; j != data[i]->attributeCount(); ++j)
-            vertexStride += vertexFormatSize(data[i]->attributeFormat(j));
+            vertexStride += vertexFormatSize(data[i]->attributeFormat(j))*Math::max(data[i]->attributeArraySize(j), UnsignedShort{1});
     }
 
     /* Make the combined index array unique */
@@ -74,15 +74,16 @@ Trade::MeshData combineIndexedImplementation(const MeshPrimitive primitive, Cont
                 {std::ptrdiff_t(indexStride), 1}};
 
             for(UnsignedInt i = 0; i != mesh.attributeCount(); ++i) {
-                const UnsignedInt attributeSize = vertexFormatSize(mesh.attributeFormat(i));
+                Containers::StridedArrayView2D<const char> src = mesh.attribute(i);
                 Containers::StridedArrayView2D<char> dst{vertexData,
                     vertexData.data() + vertexOffset,
-                    {vertexCount, attributeSize},
+                    {vertexCount, src.size()[1]},
                     {std::ptrdiff_t(vertexStride), 1}};
-                duplicateInto(indices, mesh.attribute(i), dst);
-                vertexOffset += attributeSize;
+                duplicateInto(indices, src, dst);
+                vertexOffset += src.size()[1];
                 attributeData[attributeOffset++] = Trade::MeshAttributeData{
-                    mesh.attributeName(i), mesh.attributeFormat(i), dst};
+                    mesh.attributeName(i), mesh.attributeFormat(i),
+                    mesh.attributeArraySize(i), dst};
             }
 
             indexOffset += indexSize;

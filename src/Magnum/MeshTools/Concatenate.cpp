@@ -72,7 +72,7 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
        absolute, referencing the vertex data array */
     for(Trade::MeshAttributeData& attribute: attributeData) {
         attribute = Trade::MeshAttributeData{
-            attribute.name(), attribute.format(),
+            attribute.name(), attribute.format(), attribute.arraySize(),
             Containers::StridedArrayView1D<void>{vertexData,
                 vertexData + attribute.offset(vertexData),
                 vertexCount, attribute.stride()}};
@@ -167,6 +167,9 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
                ~std::size_t{}, as that's where out.primitive() comes from */
             CORRADE_ASSERT(out.attributeFormat(dst) == mesh.attributeFormat(src),
                 assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i + meshIndexOffset << "attribute" << src,
+                (Trade::MeshData{MeshPrimitive{}, 0}));
+            CORRADE_ASSERT(out.attributeArraySize(dst) == mesh.attributeArraySize(src),
+                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i + meshIndexOffset << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             /* Copy the data to a slice of the output, mark the attribute as

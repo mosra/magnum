@@ -35,6 +35,13 @@ namespace Magnum { namespace MeshTools {
 
 namespace {
 
+inline std::size_t attributeSize(const Trade::MeshData& data, UnsignedInt i) {
+    return vertexFormatSize(data.attributeFormat(i))*Math::max(data.attributeArraySize(i), UnsignedShort{1});
+}
+
+inline std::size_t attributeSize(const Trade::MeshAttributeData& data) {
+    return vertexFormatSize(data.format())*Math::max(data.arraySize(), UnsignedShort{1});
+}
 Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedDataInternal(const Trade::MeshData& data) {
     /* There is no attributes, return a zero-sized view to indicate a success */
     if(!data.attributeCount())
@@ -42,13 +49,13 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
 
     const UnsignedInt stride = data.attributeStride(0);
     std::size_t minOffset = data.attributeOffset(0);
-    std::size_t maxOffset = minOffset + vertexFormatSize(data.attributeFormat(0));
+    std::size_t maxOffset = minOffset + attributeSize(data, 0);
     for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
         if(data.attributeStride(i) != stride) return Containers::NullOpt;
 
         const std::size_t offset = data.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
-        maxOffset = Math::max(maxOffset, offset + vertexFormatSize(data.attributeFormat(i)));
+        maxOffset = Math::max(maxOffset, offset + attributeSize(data, i));
     }
 
     /* The offsets can't fit into the stride, report failure */
@@ -104,7 +111,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
         stride = 0;
         minOffset = 0;
         for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i)
-            stride += vertexFormatSize(data.attributeFormat(i));
+            stride += attributeSize(data, i);
     }
 
     /* Add the extra attributes and explicit padding */
@@ -115,7 +122,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
                 "MeshTools::interleavedLayout(): negative padding" << extra[i].stride() << "in extra attribute" << i << "too large for stride" << stride, {});
             stride += extra[i].stride();
         } else {
-            stride += vertexFormatSize(extra[i].format());
+            stride += attributeSize(extra[i]);
             ++extraAttributeCount;
         }
     }
@@ -146,9 +153,9 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
         attributeData[i] = Trade::MeshAttributeData{
             attributeData[i].name(), attributeData[i].format(),
-            offset, 0, std::ptrdiff_t(stride)};
+            offset, 0, std::ptrdiff_t(stride), attributeData[i].arraySize()};
 
-        if(!interleaved) offset += vertexFormatSize(attributeData[i].format());
+        if(!interleaved) offset += attributeSize(attributeData[i]);
     }
 
     /* In case the original is already interleaved, set the offset for extra
@@ -168,9 +175,9 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
 
         attributeData[attributeIndex++] = Trade::MeshAttributeData{
             extra[i].name(), extra[i].format(),
-            offset, 0, std::ptrdiff_t(stride)};
+            offset, 0, std::ptrdiff_t(stride), extra[i].arraySize()};
 
-        offset += vertexFormatSize(extra[i].format());
+        offset += attributeSize(extra[i]);
     }
 
     return attributeData;
@@ -193,7 +200,7 @@ Trade::MeshData interleavedLayout(Trade::MeshData&& data, const UnsignedInt vert
        absolute, referencing the above-allocated data array */
     for(Trade::MeshAttributeData& attribute: attributeData) {
         attribute = Trade::MeshAttributeData{
-            attribute.name(), attribute.format(),
+            attribute.name(), attribute.format(), attribute.arraySize(),
             Containers::StridedArrayView1D<void>{vertexData,
                 vertexData + attribute.offset(vertexData),
                 vertexCount, attribute.stride()}};

@@ -190,7 +190,7 @@ Trade::MeshData generateIndices(Trade::MeshData&& data) {
     Containers::Array<Trade::MeshAttributeData> attributeData{data.attributeCount()};
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
         attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
-            data.attributeFormat(i),
+            data.attributeFormat(i), data.attributeArraySize(i),
             Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i), vertexCount, data.attributeStride(i)}};
     }
 
