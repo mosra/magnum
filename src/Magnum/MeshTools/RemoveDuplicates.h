@@ -232,7 +232,7 @@ template<class IndexType, class Vector> std::size_t removeDuplicatesFuzzyIndexed
 
     /* Make epsilon so large that std::size_t can index all vectors inside the
        bounds. */
-    epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/~std::size_t{}));
+    epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/static_cast<typename Vector::Type>(~std::size_t{})));
 
     /* Table containing original vector index for each discretized vector.
        Reserving more buckets than necessary (i.e. as if each vector was
