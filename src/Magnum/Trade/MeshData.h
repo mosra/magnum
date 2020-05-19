@@ -395,6 +395,9 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView2D<const char>& data) noexcept;
 
+        /** @overload */
+        explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, std::nullptr_t) noexcept: MeshAttributeData{name, format, arraySize, nullptr, nullptr} {}
+
         /**
          * @brief Constructor
          * @param name      Attribute name

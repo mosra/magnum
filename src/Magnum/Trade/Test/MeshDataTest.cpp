@@ -72,6 +72,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructArrayAttribute2DWrongSize();
     void constructArrayAttribute2DNonContiguous();
     void constructArrayAttributeTypeErased();
+    void constructArrayAttributeNullptr();
     void constructArrayAttributeOffsetOnly();
     void constructArrayAttributeNotAllowed();
 
@@ -231,6 +232,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructArrayAttribute2DWrongSize,
               &MeshDataTest::constructArrayAttribute2DNonContiguous,
               &MeshDataTest::constructArrayAttributeTypeErased,
+              &MeshDataTest::constructArrayAttributeNullptr,
               &MeshDataTest::constructArrayAttributeOffsetOnly,
               &MeshDataTest::constructArrayAttributeNotAllowed});
 
@@ -878,6 +880,15 @@ void MeshDataTest::constructArrayAttributeTypeErased() {
     CORRADE_VERIFY(data.data().data() == vertexData);
     CORRADE_COMPARE(data.data().size(), 3);
     CORRADE_COMPARE(data.data().stride(), sizeof(Vector2)*4);
+}
+
+void MeshDataTest::constructArrayAttributeNullptr() {
+    MeshAttributeData positions{meshAttributeCustom(35), VertexFormat::Vector2, 4, nullptr};
+    CORRADE_VERIFY(!positions.isOffsetOnly());
+    CORRADE_COMPARE(positions.arraySize(), 4);
+    CORRADE_COMPARE(positions.name(), meshAttributeCustom(35));
+    CORRADE_COMPARE(positions.format(), VertexFormat::Vector2);
+    CORRADE_VERIFY(!positions.data().data());
 }
 
 void MeshDataTest::constructArrayAttributeOffsetOnly() {
