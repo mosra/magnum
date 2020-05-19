@@ -255,12 +255,15 @@ template<class T> void CompressIndicesTest::compressMeshData() {
     setTestCaseTemplateName(Math::TypeTraits<T>::name());
 
     struct {
-        Vector2 positions[103];
+        Float data[103][2];
         Vector3 normals[103];
     } vertexData{};
-    vertexData.positions[100] = {1.3f, 0.3f};
-    vertexData.positions[101] = {0.87f, 1.1f};
-    vertexData.positions[102] = {1.0f, -0.5f};
+    vertexData.data[100][0] = 1.3f;
+    vertexData.data[100][1] = 0.3f;
+    vertexData.data[101][0] = 0.87f;
+    vertexData.data[101][1] = 1.1f;
+    vertexData.data[102][0] = 1.0f;
+    vertexData.data[102][1] = -0.5f;
     vertexData.normals[100] = Vector3::xAxis();
     vertexData.normals[101] = Vector3::yAxis();
     vertexData.normals[102] = Vector3::zAxis();
@@ -269,7 +272,9 @@ template<class T> void CompressIndicesTest::compressMeshData() {
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indices, Trade::MeshIndexData{indices},
         {}, Containers::arrayView(&vertexData, 1), {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(vertexData.positions)},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                /* Array attribute to verify it's correctly propagated */
+                VertexFormat::Float, 2, Containers::arrayView(vertexData.data)},
             Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData.normals)}
         }};
     CORRADE_COMPARE(data.vertexCount(), 103);
@@ -283,12 +288,19 @@ template<class T> void CompressIndicesTest::compressMeshData() {
         Containers::arrayView<UnsignedShort>({2, 1, 0, 1, 2}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(compressed.vertexCount(), 3);
+
+    CORRADE_COMPARE(compressed.attributeName(0), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(compressed.attributeFormat(0), VertexFormat::Float);
+    CORRADE_COMPARE(compressed.attributeArraySize(0), 2);
     CORRADE_COMPARE(compressed.attributeOffset(0), 100*sizeof(Vector2));
-    CORRADE_COMPARE(compressed.attributeOffset(1), 103*sizeof(Vector2) + 100*sizeof(Vector3));
-    CORRADE_COMPARE_AS(compressed.attribute<Vector2>(Trade::MeshAttribute::Position),
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2>(compressed.attribute<Float[]>(0))),
         Containers::arrayView<Vector2>({{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}}),
         TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(compressed.attribute<Vector3>(Trade::MeshAttribute::Normal),
+
+    CORRADE_COMPARE(compressed.attributeName(1), Trade::MeshAttribute::Normal);
+    CORRADE_COMPARE(compressed.attributeFormat(1), VertexFormat::Vector3);
+    CORRADE_COMPARE(compressed.attributeOffset(1), 103*sizeof(Vector2) + 100*sizeof(Vector3));
+    CORRADE_COMPARE_AS(compressed.attribute<Vector3>(1),
         Containers::arrayView<Vector3>({Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()}),
         TestSuite::Compare::Container);
 }

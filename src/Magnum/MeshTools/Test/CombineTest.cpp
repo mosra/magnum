@@ -88,7 +88,7 @@ void CombineTest::combineIndexedAttributes() {
     const UnsignedInt indicesA[]{2, 1, 2, 0};
     const Int dataA[]{2, 1, 0};
     const UnsignedByte indicesB[]{3, 4, 3, 2};
-    const Short dataB[]{4, 3, 2, 1, 0};
+    const Byte dataB[][2]{{4, 1}, {3, 2}, {2, 3}, {1, 4}, {0, 5}};
     const UnsignedShort indicesC[]{7, 6, 7, 5};
     const Float dataC[]{0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f};
     Trade::MeshData a{MeshPrimitive::LineLoop,
@@ -98,7 +98,9 @@ void CombineTest::combineIndexedAttributes() {
     Trade::MeshData b{MeshPrimitive::LineLoop,
         {}, indicesB, Trade::MeshIndexData{indicesB},
         {}, dataB, {Trade::MeshAttributeData{
-            Trade::meshAttributeCustom(17), Containers::arrayView(dataB)}}};
+            /* Array attribute to verify it's correctly propagated */
+            Trade::meshAttributeCustom(17), VertexFormat::Byte, 2,
+            Containers::arrayView(dataB)}}};
     Trade::MeshData c{MeshPrimitive::LineLoop,
         {}, indicesC, Trade::MeshIndexData{indicesC},
         {}, dataC, {Trade::MeshAttributeData{
@@ -119,9 +121,10 @@ void CombineTest::combineIndexedAttributes() {
         Containers::arrayView<Int>({0, 1, 2}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(result.attributeName(1), Trade::meshAttributeCustom(17));
-    CORRADE_COMPARE(result.attributeFormat(1), VertexFormat::Short);
-    CORRADE_COMPARE_AS(result.attribute<Short>(1),
-        Containers::arrayView<Short>({1, 0, 2}),
+    CORRADE_COMPARE(result.attributeFormat(1), VertexFormat::Byte);
+    CORRADE_COMPARE(result.attributeArraySize(1), 2);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2b>(result.attribute<Byte[]>(1))),
+        Containers::arrayView<Vector2b>({{1, 4}, {0, 5}, {2, 3}}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE(result.attributeName(2), Trade::meshAttributeCustom(22));
     CORRADE_COMPARE(result.attributeFormat(2), VertexFormat::Float);

@@ -389,13 +389,14 @@ void GenerateIndicesTest::generateIndicesMeshData() {
 
     const struct Vertex {
         Vector2 position;
+        Short data[2];
         Vector2 textureCoordinates;
     } vertexData[] {
-        {{1.5f, 0.3f}, {0.2f, 0.8f}},
-        {{2.5f, 1.3f}, {0.3f, 0.7f}},
-        {{3.5f, 2.3f}, {0.4f, 0.6f}},
-        {{4.5f, 3.3f}, {0.5f, 0.5f}},
-        {{5.5f, 4.3f}, {0.6f, 0.4f}}
+        {{1.5f, 0.3f}, {28, -15}, {0.2f, 0.8f}},
+        {{2.5f, 1.3f}, {29, -16}, {0.3f, 0.7f}},
+        {{3.5f, 2.3f}, {30, -17}, {0.4f, 0.6f}},
+        {{4.5f, 3.3f}, {40, -18}, {0.5f, 0.5f}},
+        {{5.5f, 4.3f}, {41, -19}, {0.6f, 0.4f}}
     };
 
     Trade::MeshData mesh{data.primitive,
@@ -403,6 +404,11 @@ void GenerateIndicesTest::generateIndicesMeshData() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
                 Containers::stridedArrayView(vertexData,
                     &vertexData[0].position, 5, sizeof(Vertex))},
+            /* Array attribute to verify it's correctly propagated */
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                VertexFormat::Short, 2,
+                Containers::stridedArrayView(vertexData,
+                    &vertexData[0].data, 5, sizeof(Vertex))},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
                 Containers::stridedArrayView(vertexData,
                     &vertexData[0].textureCoordinates, 5, sizeof(Vertex))}
@@ -414,11 +420,20 @@ void GenerateIndicesTest::generateIndicesMeshData() {
     CORRADE_COMPARE_AS(out.indices<UnsignedInt>(), data.indices,
         TestSuite::Compare::Container);
 
-    CORRADE_COMPARE(out.attributeCount(), 2);
+    CORRADE_COMPARE(out.attributeCount(), 3);
     CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::Position),
         Containers::arrayView<Vector2>({
             {1.5f, 0.3f}, {2.5f, 1.3f}, {3.5f, 2.3f}, {4.5f, 3.3f}, {5.5f, 4.3f}
         }), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE(out.attributeName(1), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(out.attributeFormat(1), VertexFormat::Short);
+    CORRADE_COMPARE(out.attributeArraySize(1), 2);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2s>(out.attribute<Short[]>(1))),
+        Containers::arrayView<Vector2s>({
+            {28, -15}, {29, -16}, {30, -17}, {40, -18}, {41, -19}
+        }), TestSuite::Compare::Container);
+
     CORRADE_COMPARE_AS(out.attribute<Vector2>(Trade::MeshAttribute::TextureCoordinates),
         Containers::arrayView<Vector2>({
             {0.2f, 0.8f}, {0.3f, 0.7f}, {0.4f, 0.6f}, {0.5f, 0.5f}, {0.6f, 0.4f}

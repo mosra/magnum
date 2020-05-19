@@ -279,16 +279,19 @@ template<class T> void DuplicateTest::duplicateMeshData() {
     T indices[]{0, 1, 2, 2, 1, 0};
     struct {
         Vector2 positions[3];
-        Vector3 normals[3];
+        Float extra[3][3];
     } vertexData{
         {{1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f}},
-        {Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()}
+        {{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}
     };
     Trade::MeshData data{MeshPrimitive::TriangleFan,
         {}, indices, Trade::MeshIndexData{indices},
         {}, Containers::arrayView(&vertexData, 1), {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position,    Containers::arrayView(vertexData.positions)},
-            Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData.normals)}
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(vertexData.positions)},
+            /* Array attribute to verify it's correctly propagated */
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+                VertexFormat::Float, 3, Containers::arrayView(vertexData.extra)}
         }};
 
     Trade::MeshData duplicated = MeshTools::duplicate(data);
@@ -302,7 +305,10 @@ template<class T> void DuplicateTest::duplicateMeshData() {
             {1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f},
             {1.0f, -0.5f}, {0.87f, 1.1f}, {1.3f, 0.3f}
         }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(duplicated.attribute<Vector3>(Trade::MeshAttribute::Normal),
+    CORRADE_COMPARE(duplicated.attributeName(1), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(duplicated.attributeFormat(1), VertexFormat::Float);
+    CORRADE_COMPARE(duplicated.attributeArraySize(1), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector3>(duplicated.attribute<Float[]>(1))),
         Containers::arrayView<Vector3>({
             Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
             Vector3::zAxis(), Vector3::yAxis(), Vector3::xAxis()
@@ -326,13 +332,16 @@ void DuplicateTest::duplicateMeshDataExtra() {
     Trade::MeshData data{MeshPrimitive::Lines,
         {}, indices, Trade::MeshIndexData{indices},
         {}, positions, {
-            Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::arrayView(positions)}
         }};
 
-    const Vector3 normals[]{Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis()};
+    const Float extra[][3]{{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}};
     Trade::MeshData duplicated = MeshTools::duplicate(data, {
         Trade::MeshAttributeData{4},
-        Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(normals)}
+        /* Array attribute to verify it's correctly propagated */
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Float, 3, Containers::arrayView(extra)}
     });
     CORRADE_VERIFY(MeshTools::isInterleaved(duplicated));
     CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);
@@ -344,7 +353,10 @@ void DuplicateTest::duplicateMeshDataExtra() {
             {1.3f, 0.3f}, {0.87f, 1.1f}, {1.0f, -0.5f},
             {1.0f, -0.5f}, {0.87f, 1.1f}, {1.3f, 0.3f}
         }), TestSuite::Compare::Container);
-    CORRADE_COMPARE_AS(duplicated.attribute<Vector3>(Trade::MeshAttribute::Normal),
+    CORRADE_COMPARE(duplicated.attributeName(1), Trade::meshAttributeCustom(42));
+    CORRADE_COMPARE(duplicated.attributeFormat(1), VertexFormat::Float);
+    CORRADE_COMPARE(duplicated.attributeArraySize(1), 3);
+    CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector3>(duplicated.attribute<Float[]>(1))),
         Containers::arrayView<Vector3>({
             Vector3::xAxis(), Vector3::yAxis(), Vector3::zAxis(),
             Vector3::zAxis(), Vector3::yAxis(), Vector3::xAxis()
