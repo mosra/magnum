@@ -48,7 +48,8 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesIndexedInPlaceErasedNonContiguous();
     void removeDuplicatesIndexedInPlaceErasedWrongIndexSize();
 
-    void removeDuplicatesFuzzyInPlace();
+    void removeDuplicatesFuzzyInPlaceOneDimension();
+    void removeDuplicatesFuzzyInPlaceMoreDimensions();
     void removeDuplicatesFuzzyInPlaceIntoWrongOutputSize();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void removeDuplicatesFuzzyStl();
@@ -91,7 +92,8 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedNonContiguous,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize,
 
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &RemoveDuplicatesTest::removeDuplicatesFuzzyStl,
@@ -269,7 +271,27 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize() 
         "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
-void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlace() {
+void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension() {
+    /* Numbers with distance <=1 should be merged. In the first iteration item
+       2 gets collapsed into item 1, in the second iteration item 3 gets
+       collapsed into item 1, reducing to 2 items in total. */
+    Math::Vector<1, Float> data[]{
+        1.0f, /* bucket 0 in 1st iteration, bucket 1 in 2nd */
+        2.9f, /* bucket 2 in 1st iteration, bucket 3 in 2nd */
+        0.0f, /* bucket 0 in 1st iteration, bucket 0 in 2nd */
+        3.4f  /* bucket 3 in 1st iteration, bucket 3 in 2nd */
+    };
+
+    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = MeshTools::removeDuplicatesFuzzyInPlace(Containers::stridedArrayView(data), 1.00001f);
+    CORRADE_COMPARE_AS(Containers::arrayView(result.first),
+        Containers::arrayView<UnsignedInt>({0, 1, 0, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
+        (Containers::arrayView<Math::Vector<1, Float>>({1.0f, 2.9f})),
+        TestSuite::Compare::Container);
+}
+
+void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions() {
     /* Numbers with distance 1 should be merged, numbers with distance 2 should
        be kept. Testing both even-odd and odd-even sequence to verify that
        half-epsilon translations are applied properly. */
