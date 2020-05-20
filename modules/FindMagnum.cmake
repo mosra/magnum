@@ -416,7 +416,7 @@ elseif(CORRADE_TARGET_WINDOWS)
     endif()
 endif()
 
-set(_MAGNUM_Primitives_DEPENDENCIES Trade)
+set(_MAGNUM_Primitives_DEPENDENCIES MeshTools Trade)
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)

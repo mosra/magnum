@@ -80,6 +80,7 @@ elseif(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumPrimitives PUBLIC
     Magnum
+    MagnumMeshTools
     MagnumTrade)
 
 install(TARGETS MagnumPrimitives

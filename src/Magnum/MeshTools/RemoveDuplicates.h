@@ -29,29 +29,20 @@
  * @brief Function @ref Magnum::MeshTools::removeDuplicatesInPlace(), @ref Magnum::MeshTools::removeDuplicatesIndexedInPlace()
  */
 
-#include <limits>
-#include <numeric>
-#include <unordered_map>
-#include <vector>
-#include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/ArrayViewStl.h>
-#include <Corrade/Utility/MurmurHash2.h>
+#include <utility>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Math/TypeTraits.h"
 #include "Magnum/MeshTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-namespace Magnum { namespace MeshTools {
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#include <Corrade/Containers/ArrayViewStl.h>
+#include <Corrade/Containers/StridedArrayView.h>
+#endif
 
-namespace Implementation {
-    template<std::size_t size> class VectorHash {
-        public:
-            std::size_t operator()(const Math::Vector<size, std::size_t>& data) const {
-                return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2()(reinterpret_cast<const char*>(&data), sizeof(data)).byteArray());
-            }
-    };
-}
+namespace Magnum { namespace MeshTools {
 
 /**
 @brief Remove duplicate data from given array in-place
@@ -175,13 +166,20 @@ bit-exact matching is sufficient use @ref removeDuplicatesInPlace(const Containe
 instead.
 
 If you want to remove duplicate data from an already indexed array, use
-@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<IndexType>&, const Containers::StridedArrayView1D<Vector>&, typename Vector::Type) instead.
+@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
+and friends instead.
 
 If you want to remove duplicates in multiple incidental arrays, first remove
 duplicates in each array separately and then combine the resulting index arrays
 back into a single one using @ref combineIndexedAttributes().
 */
-template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove duplicate data from given array using fuzzy comparison in-place into given output index array
@@ -196,7 +194,13 @@ template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> re
 Same as above, except that the index array is not allocated but put into
 @p indices instead. Expects that @p indices has the same size as @p data.
 */
-template<class Vector> std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView1D<Vector>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon());
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Float>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, Float epsilon = Math::TypeTraits<Float>::epsilon());
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Double>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
@@ -231,74 +235,41 @@ template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead
 @return Size of unique prefix in the cleaned up @p data array
 @m_since_latest
 
-Compared to @ref removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
+Compared to @ref removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>&, Float)
 this variant is more suited for data that is already indexed as it works on
 the existing index array instead of allocating a new one.
 */
-template<class IndexType, class Vector> std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<IndexType>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
-    /* Somehow ~IndexType{} doesn't work for < 4byte types, as the result is
-       int(-1) instead of the type I want */
-    CORRADE_ASSERT(data.size() <= IndexType(-1), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a" << sizeof(IndexType) << Debug::nospace << "-byte index type is too small for" << data.size() << "vertices", {});
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
-    /* Get bounds. When NaNs appear, those will get collapsed together when
-       you're lucky, or cause the whole data to disappear when you're not -- it
-       needs a much more specialized handling to be robust. */
-    std::pair<Vector, Vector> minmax = Math::minmax(data);
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
-    /* Make epsilon so large that std::size_t can index all vectors inside the
-       bounds. */
-    epsilon = Math::max(epsilon, typename Vector::Type((minmax.second-minmax.first).max()/static_cast<typename Vector::Type>(~std::size_t{})));
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
-    /* Table containing original vector index for each discretized vector.
-       Reserving more buckets than necessary (i.e. as if each vector was
-       unique). */
-    std::size_t dataSize = data.size();
-    std::unordered_map<Math::Vector<Vector::Size, std::size_t>, UnsignedInt, Implementation::VectorHash<Vector::Size>> table(dataSize);
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
-    /* Index array that'll be filled in each pass and then used for remapping
-       the `indices` */
-    Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
-    /* First go with original coordinates, then move them by epsilon/2 in each
-       direction. */
-    Vector moved;
-    for(std::size_t moving = 0; moving <= Vector::Size; ++moving) {
-        /* Go through all vectors */
-        for(std::size_t i = 0; i != dataSize; ++i) {
-            /* Try to insert new vertex into the table */
-            const Math::Vector<Vector::Size, std::size_t> v{(data[i] + moved - minmax.first)/epsilon};
-            const auto result = table.emplace(v, table.size());
-
-            /* Add the (either new or already existing) index into the array */
-            remapping[i] = result.first->second;
-
-            /* If this is a new combination, copy the data to new (earlier)
-               position in the array. Data in [table.size()-1, i) are already
-               present in the [0, table.size()-1) range from previous
-               iterations so we aren't overwriting anything. */
-            if(result.second && i != table.size() - 1)
-                data[table.size() - 1] = data[i];
-        }
-
-        /* Remap the resulting index array */
-        for(auto& i: indices) i = remapping[i];
-
-        /* Move vertex coordinates by epsilon/2 in the next direction. Do that
-           only if we're not in the last iteration, as that would be an OOB
-           access otherwise. */
-        if(moving != Vector::Size) {
-            moved = Vector();
-            moved[moving] = epsilon/2;
-        }
-
-        /* Reduce to an unique prefix; clear the table for the next pass */
-        dataSize = table.size();
-        table.clear();
-    }
-
-    CORRADE_INTERNAL_ASSERT(data.size() >= dataSize);
-    return dataSize;
-}
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove duplicates from indexed data using fuzzy comparison in-place on a type-erased index array
@@ -306,20 +277,16 @@ template<class IndexType, class Vector> std::size_t removeDuplicatesFuzzyIndexed
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls
-@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<IndexType>&, const Containers::StridedArrayView1D<Vector>&, typename Vector::Type)
-with a concrete index type.
+@ref removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView2D<Float>&, Float)
+or the other overloads.
 */
-template<class Vector> std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
-    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): second index view dimension is not contiguous", {});
-    if(indices.size()[1] == 4)
-        return removeDuplicatesFuzzyIndexedInPlace(Containers::arrayCast<1, UnsignedInt>(indices), data, epsilon);
-    else if(indices.size()[1] == 2)
-        return removeDuplicatesFuzzyIndexedInPlace(Containers::arrayCast<1, UnsignedShort>(indices), data, epsilon);
-    else {
-        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
-        return removeDuplicatesFuzzyIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data, epsilon);
-    }
-}
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove mesh data duplicates
@@ -351,27 +318,13 @@ data.
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data);
 
-template<class Vector> std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView1D<Vector>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, typename Vector::Type epsilon) {
-    CORRADE_ASSERT(indices.size() == data.size(),
-        "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has" << indices.size() << "elements but expected" << data.size(), {});
-
-    /* A trivial index array that'll be remapped */
-    std::iota(indices.begin(), indices.end(), 0);
-    const std::size_t size = removeDuplicatesFuzzyIndexedInPlace(Containers::stridedArrayView(indices), data, epsilon);
-    return size;
-}
-
-template<class Vector> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView1D<Vector>& data, typename Vector::Type epsilon) {
-    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()};
-    const std::size_t size = removeDuplicatesFuzzyInPlaceInto(data, indices, epsilon);
-    return {std::move(indices), size};
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {
     /* A trivial index array that'll be remapped and returned after */
     std::vector<UnsignedInt> indices(data.size());
-    const std::size_t size = removeDuplicatesFuzzyInPlaceInto(Containers::stridedArrayView(data), Containers::stridedArrayView(indices), epsilon);
+    const std::size_t size = removeDuplicatesFuzzyInPlaceInto(
+        Containers::arrayCast<2, typename Vector::Type>(Containers::stridedArrayView(data)),
+        Containers::stridedArrayView(indices), epsilon);
     data.resize(size);
     return indices;
 }

@@ -79,6 +79,7 @@ digraph "Magnum library dependency order" {
 
     MagnumOpenGLTester -> MagnumWindowlessApplication
 
+    MagnumPrimitives -> MagnumMeshTools
     MagnumPrimitives -> MagnumTrade
 
     MagnumSceneGraph -> Magnum

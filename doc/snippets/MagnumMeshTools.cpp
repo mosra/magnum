@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
+#include <vector>
+
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/CompressIndices.h"

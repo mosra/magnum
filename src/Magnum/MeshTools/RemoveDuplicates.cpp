@@ -26,9 +26,16 @@
 #include "RemoveDuplicates.h"
 
 #include <cstring>
+#include <limits>
+#include <numeric>
+#include <unordered_map>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/MurmurHash2.h>
 
+#include "Magnum/Math/FunctionsBatch.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/MeshTools/Concatenate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
@@ -171,6 +178,189 @@ std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView2D<
         CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
         return removeDuplicatesIndexedInPlace(Containers::arrayCast<1, UnsignedByte>(indices), data);
     }
+}
+
+namespace {
+
+template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPlaceImplementation(const Containers::StridedArrayView1D<IndexType>& indices, const Containers::StridedArrayView2D<T>& data, T epsilon) {
+    /* Compared to the discrete version, we don't require the second dimension
+       to be contiguous, as we calculate the hash from a discretized contiguous
+       copy */
+
+    /* Somehow ~IndexType{} doesn't work for < 4byte types, as the result is
+       int(-1) instead of the type I want */
+    CORRADE_ASSERT(data.size()[0] <= IndexType(-1),
+        "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a" << sizeof(IndexType) << Debug::nospace << "-byte index type is too small for" << data.size()[0] << "vertices", {});
+
+    /* Get bounds across all dimensions. When NaNs appear, those will get
+       collapsed together when you're lucky, or cause the whole data to
+       disappear when you're not -- it needs a much more specialized handling
+       to be robust. */
+    const std::size_t vectorSize = data.size()[1];
+    T range = T(0.0);
+    Containers::Array<T> offsets{Containers::NoInit, vectorSize};
+    {
+        /** @todo this isn't really cache-efficient, do differently */
+        std::size_t i = 0;
+        for(Containers::StridedArrayView1D<T> dimension: data.template transposed<0, 1>()) {
+            const Math::Range1D<T> minmax = Math::minmax(dimension);
+            range = Math::max(minmax.size(), range);
+            offsets[i++] = minmax.min();
+        }
+    }
+
+    /* Make epsilon so large that std::size_t can index all vectors inside the
+       bounds. */
+    epsilon = Math::max(epsilon, range/T(~std::size_t{}));
+
+    /* Table containing original vector index for each discretized vector.
+       Reserving more buckets than necessary (i.e. as if each vector was
+       unique). */
+    std::size_t dataSize = data.size()[0];
+    std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
+
+    /* Index array that'll be filled in each pass and then used for remapping
+       the `indices` */
+    Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
+
+    /* First go with original coordinates, then move them by epsilon/2 in each
+       dimension. */
+    T moveAmount = T(0.0);
+    Containers::Array<std::size_t> discretized{Containers::NoInit, vectorSize};
+    for(std::size_t moving = 0; moving <= vectorSize; ++moving) {
+        for(std::size_t i = 0; i != dataSize; ++i) {
+            /* Take the original vector and discretize it -- append the move
+               amount to given dimension, subtract the minmal offset and divide
+               by epsilon. */
+            const Containers::StridedArrayView1D<T> entry = data[i];
+            for(std::size_t vi = 0; vi != vectorSize; ++vi) {
+                T c = entry[vi];
+                /* In iteration `0` we're not moving in any dimension, in
+                   iteration `vectorSize` we're moving in `vectorSize - 1`
+                   dimension */
+                if(vi + 1 == moving) c += moveAmount;
+                discretized[vi] = (c - offsets[vi])/epsilon;
+            }
+
+            /* Try to insert new entry into the table. The inserted index
+               points into the new data array that has all duplicates removed.
+               This is a similar workflow to removeDuplicatesInPlaceInto() with
+               the only difference that we're remapping an existing index array
+               several times over instead of creating a new one */
+            const auto result = table.emplace(Containers::arrayCast<const char>(discretized), table.size());
+
+            /* Add the (either new or already existing) index into the array */
+            remapping[i] = result.first->second;
+
+            /* If this is a new combination, copy the data to new (earlier)
+               position in the array. Data in [table.size()-1, i) are already
+               present in the [0, table.size()-1) range from previous
+               iterations so we aren't overwriting anything. */
+            if(result.second && i != table.size() - 1)
+                Utility::copy(entry, data[table.size() - 1]);
+        }
+
+        /* Remap the resulting index array */
+        for(auto& i: indices) i = remapping[i];
+
+        /* Move vertex coordinates by epsilon/2 in the next dimension (which
+           is moving + 1 in the next loop iteration) */
+        moveAmount = epsilon/2;
+
+        /* Next time go only through the unique prefix; clear the table for the
+           next pass */
+        dataSize = table.size();
+        table.clear();
+    }
+
+    CORRADE_INTERNAL_ASSERT(data.size()[0] >= dataSize);
+    return dataSize;
+}
+
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+namespace {
+
+template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(const Containers::StridedArrayView2D<T>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, const T epsilon) {
+    CORRADE_ASSERT(indices.size() == data.size()[0],
+        "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has" << indices.size() << "elements but expected" << data.size()[0], {});
+
+    /* A trivial index array that'll be remapped */
+    std::iota(indices.begin(), indices.end(), 0);
+    const std::size_t size = removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::stridedArrayView(indices), data, epsilon);
+    return size;
+}
+
+template<class T> std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlaceImplementation(const Containers::StridedArrayView2D<T>& data, const T epsilon) {
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, data.size()[0]};
+    const std::size_t size = removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
+    return {std::move(indices), size};
+}
+
+}
+
+std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+    return removeDuplicatesFuzzyInPlaceImplementation(data, epsilon);
+}
+
+std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+    return removeDuplicatesFuzzyInPlaceImplementation(data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Float>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, const Float epsilon) {
+    return removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Double>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, const Double epsilon) {
+    return removeDuplicatesFuzzyInPlaceIntoImplementation(data, indices, epsilon);
+}
+
+namespace {
+
+template<class T> std::size_t removeDuplicatesFuzzyIndexedInPlaceImplementation(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<T>& data, const T epsilon) {
+    CORRADE_ASSERT(indices.isContiguous<1>(), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): second index view dimension is not contiguous", {});
+    if(indices.size()[1] == 4)
+        return removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::arrayCast<1, UnsignedInt>(indices), data, epsilon);
+    else if(indices.size()[1] == 2)
+        return removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::arrayCast<1, UnsignedShort>(indices), data, epsilon);
+    else {
+        CORRADE_ASSERT(indices.size()[1] == 1, "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): expected index type size 1, 2 or 4 but got" << indices.size()[1], {});
+        return removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::arrayCast<1, UnsignedByte>(indices), data, epsilon);
+    }
+}
+
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Float>& data, const Float epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
+}
+
+std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Double>& data, const Double epsilon) {
+    return removeDuplicatesFuzzyIndexedInPlaceImplementation(indices, data, epsilon);
 }
 
 Trade::MeshData removeDuplicates(const Trade::MeshData& data) {

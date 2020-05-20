@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -48,17 +49,18 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesIndexedInPlaceErasedNonContiguous();
     void removeDuplicatesIndexedInPlaceErasedWrongIndexSize();
 
-    void removeDuplicatesFuzzyInPlaceOneDimension();
-    void removeDuplicatesFuzzyInPlaceMoreDimensions();
+    template<class T> void removeDuplicatesFuzzyInPlaceOneDimension();
+    template<class T> void removeDuplicatesFuzzyInPlaceMoreDimensions();
+    template<class T> void removeDuplicatesFuzzyInPlaceInto();
     void removeDuplicatesFuzzyInPlaceIntoWrongOutputSize();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void removeDuplicatesFuzzyStl();
     #endif
-    template<class T> void removeDuplicatesFuzzyIndexedInPlace();
+    template<class IndexType, class T> void removeDuplicatesFuzzyIndexedInPlace();
     void removeDuplicatesFuzzyIndexedInPlaceSmallType();
     void removeDuplicatesFuzzyIndexedInPlaceEmptyIndices();
     void removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertices();
-    template<class T> void removeDuplicatesFuzzyIndexedInPlaceErased();
+    template<class IndexType, class T> void removeDuplicatesFuzzyIndexedInPlaceErased();
     void removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguous();
     void removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize();
 
@@ -92,21 +94,31 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedNonContiguous,
               &RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize,
 
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension<Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension<Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions<Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions<Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceInto<Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceInto<Double>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &RemoveDuplicatesTest::removeDuplicatesFuzzyStl,
               #endif
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedByte>,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedShort>,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedByte, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedByte, Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedShort, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedShort, Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt, Double>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertices,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedByte>,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedShort>,
-              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedInt>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedByte, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedByte, Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedShort, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedShort, Double>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedInt, Float>,
+              &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased<UnsignedInt, Double>,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguous,
               &RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSize});
 
@@ -271,43 +283,76 @@ void RemoveDuplicatesTest::removeDuplicatesIndexedInPlaceErasedWrongIndexSize() 
         "MeshTools::removeDuplicatesIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }
 
-void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension() {
+template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceOneDimension() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     /* Numbers with distance <=1 should be merged. In the first iteration item
        2 gets collapsed into item 1, in the second iteration item 3 gets
        collapsed into item 1, reducing to 2 items in total. */
-    Math::Vector<1, Float> data[]{
-        1.0f, /* bucket 0 in 1st iteration, bucket 1 in 2nd */
-        2.9f, /* bucket 2 in 1st iteration, bucket 3 in 2nd */
-        0.0f, /* bucket 0 in 1st iteration, bucket 0 in 2nd */
-        3.4f  /* bucket 3 in 1st iteration, bucket 3 in 2nd */
+    T data[]{
+        T(1.0), /* bucket 0 in 1st iteration, bucket 1 in 2nd */
+        T(2.9), /* bucket 2 in 1st iteration, bucket 3 in 2nd */
+        T(0.0), /* bucket 0 in 1st iteration, bucket 0 in 2nd */
+        T(3.4)  /* bucket 3 in 1st iteration, bucket 3 in 2nd */
     };
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = MeshTools::removeDuplicatesFuzzyInPlace(Containers::stridedArrayView(data), 1.00001f);
+    std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
+        MeshTools::removeDuplicatesFuzzyInPlace(
+            Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
+            T(1.00001));
     CORRADE_COMPARE_AS(Containers::arrayView(result.first),
         Containers::arrayView<UnsignedInt>({0, 1, 0, 1}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
-        (Containers::arrayView<Math::Vector<1, Float>>({1.0f, 2.9f})),
+        (Containers::arrayView<T>({T(1.0), T(2.9)})),
         TestSuite::Compare::Container);
 }
 
-void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions() {
+template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceMoreDimensions() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     /* Numbers with distance 1 should be merged, numbers with distance 2 should
        be kept. Testing both even-odd and odd-even sequence to verify that
        half-epsilon translations are applied properly. */
-    Vector2 data[]{
-        {1.0f, 0.0f},
-        {2.0f, 1.0f},
-        {0.0f, 4.0f},
-        {1.0f, 5.0f}
+    Math::Vector2<T> data[]{
+        {T(1.0), T(0.0)},
+        {T(2.0), T(1.0)},
+        {T(0.0), T(4.0)},
+        {T(1.0), T(5.0)}
     };
 
-    std::pair<Containers::Array<UnsignedInt>, std::size_t> result = MeshTools::removeDuplicatesFuzzyInPlace(Containers::stridedArrayView(data), 2.0f);
+    std::pair<Containers::Array<UnsignedInt>, std::size_t> result =
+        MeshTools::removeDuplicatesFuzzyInPlace(
+            Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
+            T(2.0));
     CORRADE_COMPARE_AS(Containers::arrayView(result.first),
         Containers::arrayView<UnsignedInt>({0, 0, 1, 1}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result.second),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 4.0f}}),
+        Containers::arrayView<Math::Vector2<T>>({{T(1.0), T(0.0)}, {T(0.0), T(4.0)}}),
+        TestSuite::Compare::Container);
+}
+
+template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceInto() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Same as above, but using the Into variant */
+    Math::Vector2<T> data[]{
+        {T(1.0), T(0.0)},
+        {T(2.0), T(1.0)},
+        {T(0.0), T(4.0)},
+        {T(1.0), T(5.0)}
+    };
+
+    Containers::Array<UnsignedInt> indices{Containers::NoInit, Containers::arraySize(data)};
+    std::size_t result = MeshTools::removeDuplicatesFuzzyInPlaceInto(
+            Containers::arrayCast<2, T>(Containers::stridedArrayView(data)),
+            indices, T(2.0));
+    CORRADE_COMPARE_AS(indices,
+        Containers::arrayView<UnsignedInt>({0, 0, 1, 1}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(result),
+        Containers::arrayView<Math::Vector2<T>>({{T(1.0), T(0.0)}, {T(0.0), T(4.0)}}),
         TestSuite::Compare::Container);
 }
 
@@ -321,7 +366,9 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyInPlaceIntoWrongOutputSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::removeDuplicatesFuzzyInPlaceInto(Containers::stridedArrayView(data), output);
+    MeshTools::removeDuplicatesFuzzyInPlaceInto(
+        Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)),
+        output);
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has 7 elements but expected 8\n");
 }
@@ -348,26 +395,28 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyStl() {
 }
 #endif
 
-template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace() {
-    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace() {
+    setTestCaseTemplateName(Utility::formatString("{}, {}",
+        Math::TypeTraits<IndexType>::name(),
+        Math::TypeTraits<T>::name()));
 
     /* Same as above, but with an explicit index buffer */
-    T indices[]{3, 2, 0, 1, 2, 3};
-    Vector2 data[]{
-        {1.0f, 0.0f},
-        {2.0f, 1.0f},
-        {0.0f, 4.0f},
-        {1.0f, 5.0f}
+    IndexType indices[]{3, 2, 0, 1, 2, 3};
+    Math::Vector2<T> data[]{
+        {T(1.0), T(0.0)},
+        {T(2.0), T(1.0)},
+        {T(0.0), T(4.0)},
+        {T(1.0), T(5.0)}
     };
 
     std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::stridedArrayView(indices),
-        Containers::stridedArrayView(data), 2);
+        Containers::arrayCast<2, T>(Containers::stridedArrayView(data)), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
-        Containers::arrayView<T>({1, 1, 0, 0, 1, 1}),
+        Containers::arrayView<IndexType>({1, 1, 0, 0, 1, 1}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(count),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 4.0f}}),
+        Containers::arrayView<Math::Vector2<T>>({{T(1.0), T(0.0)}, {T(0.0), T(4.0)}}),
         TestSuite::Compare::Container);
 }
 
@@ -383,7 +432,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceSmallType() {
     Vector2 data[256]{};
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::stridedArrayView(indices),
-        Containers::stridedArrayView(data));
+        Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
     CORRADE_COMPARE(out.str(), "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): a 1-byte index type is too small for 256 vertices\n");
 }
 
@@ -397,36 +446,40 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndices() {
 
     std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView1D<UnsignedInt>{},
-        Containers::stridedArrayView(data), 2.0f);
+        Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)), 2.0f);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(count),
         Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 4.0f}}),
         TestSuite::Compare::Container);
 }
 
 void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertices() {
-    CORRADE_COMPARE((MeshTools::removeDuplicatesFuzzyIndexedInPlace<UnsignedInt, Vector2>({}, {})), 0);
+    CORRADE_COMPARE((MeshTools::removeDuplicatesFuzzyIndexedInPlace(
+        Containers::StridedArrayView1D<UnsignedInt>{},
+        Containers::StridedArrayView2D<Float>{})), 0);
 }
 
-template<class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased() {
-    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased() {
+    setTestCaseTemplateName(Utility::formatString("{}, {}",
+        Math::TypeTraits<IndexType>::name(),
+        Math::TypeTraits<T>::name()));
 
     /* Same as above, but with an explicit index buffer */
-    T indices[]{3, 2, 0, 1, 2, 3};
-    Vector2 data[]{
-        {1.0f, 0.0f},
-        {2.0f, 1.0f},
-        {0.0f, 4.0f},
-        {1.0f, 5.0f}
+    IndexType indices[]{3, 2, 0, 1, 2, 3};
+    Math::Vector2<T> data[]{
+        {T(1.0), T(0.0)},
+        {T(2.0), T(1.0)},
+        {T(0.0), T(4.0)},
+        {T(1.0), T(5.0)}
     };
 
     std::size_t count = MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::arrayCast<2, char>(Containers::arrayView(indices)),
-        Containers::stridedArrayView(data), 2);
+        Containers::arrayCast<2, T>(Containers::stridedArrayView(data)), 2);
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
-        Containers::arrayView<T>({1, 1, 0, 0, 1, 1}),
+        Containers::arrayView<IndexType>({1, 1, 0, 0, 1, 1}),
         TestSuite::Compare::Container);
     CORRADE_COMPARE_AS(Containers::arrayView(data).prefix(count),
-        Containers::arrayView<Vector2>({{1.0f, 0.0f}, {0.0f, 4.0f}}),
+        Containers::arrayView<Math::Vector2<T>>({{T(1.0), T(0.0)}, {T(0.0), T(4.0)}}),
         TestSuite::Compare::Container);
 }
 
@@ -442,7 +495,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedNonContiguou
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 2}, {4, 2}},
-        Containers::stridedArrayView(data));
+        Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): second index view dimension is not contiguous\n");
 }
@@ -459,7 +512,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErasedWrongIndexSi
     Error redirectError{&out};
     MeshTools::removeDuplicatesFuzzyIndexedInPlace(
         Containers::StridedArrayView2D<char>{indices, {6, 3}},
-        Containers::stridedArrayView(data));
+        Containers::arrayCast<2, Float>(Containers::stridedArrayView(data)));
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicatesFuzzyIndexedInPlace(): expected index type size 1, 2 or 4 but got 3\n");
 }

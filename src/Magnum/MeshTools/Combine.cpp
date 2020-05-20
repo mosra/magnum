@@ -30,6 +30,7 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
