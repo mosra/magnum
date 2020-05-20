@@ -38,9 +38,11 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 struct RemoveDuplicatesTest: TestSuite::Tester {
     explicit RemoveDuplicatesTest();
 
+    /* These test also the InPlace variant */
     void removeDuplicates();
     void removeDuplicatesNonContiguous();
     void removeDuplicatesIntoWrongOutputSize();
+
     template<class T> void removeDuplicatesIndexedInPlace();
     void removeDuplicatesIndexedInPlaceSmallType();
     void removeDuplicatesIndexedInPlaceEmptyIndices();
