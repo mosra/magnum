@@ -283,15 +283,15 @@ template<class IndexType, class Vector> std::size_t removeDuplicatesFuzzyIndexed
         /* Remap the resulting index array */
         for(auto& i: indices) i = remapping[i];
 
-        /* Finished */
-        if(moving == Vector::Size) continue;
+        /* Move vertex coordinates by epsilon/2 in the next direction. Do that
+           only if we're not in the last iteration, as that would be an OOB
+           access otherwise. */
+        if(moving != Vector::Size) {
+            moved = Vector();
+            moved[moving] = epsilon/2;
+        }
 
-        /* Move vertex coordinates by epsilon/2 in the next direction */
-        moved = Vector();
-        moved[moving] = epsilon/2;
-
-        /* Next time go only through the unique prefix; clear the table for the
-           next pass */
+        /* Reduce to an unique prefix; clear the table for the next pass */
         dataSize = table.size();
         table.clear();
     }
