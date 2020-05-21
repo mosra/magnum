@@ -359,10 +359,10 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * @param arraySize Array size
          * @param data      Attribute data
          *
-         * Expects that @p data stride is large enough to fit @p type, @p type
-         * corresponds to @p name and @p arraySize is zero for builtin
-         * attributes. Passing @cpp 0 @ce to @p arraySize is equivalent to
-         * calling the above overload.
+         * Expects that @p data stride is large enough to fit all @p arraySize
+         * items of @p type, @p type corresponds to @p name and @p arraySize is
+         * zero for builtin attributes. Passing @cpp 0 @ce to @p arraySize is
+         * equivalent to calling the above overload.
          */
         explicit MeshAttributeData(MeshAttribute name, VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView1D<const void>& data) noexcept;
 
@@ -475,6 +475,11 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
          * Additionally, for even more flexibility, the @p vertexCount can be
          * overriden at @ref MeshData construction time, however all attributes
          * are still required to have the same vertex count to catch accidents.
+         *
+         * Note that due to the @cpp constexpr @ce nature of this constructor,
+         * no @p format / @p arraySize checks against @p stride can be done.
+         * You're encouraged to use the @ref MeshAttributeData(MeshAttribute, VertexFormat, const Containers::StridedArrayView1D<const void>&)
+         * constructor if you want additional safeguards.
          * @see @ref isOffsetOnly(), @ref arraySize(),
          *      @ref data(Containers::ArrayView<const void>) const
          */

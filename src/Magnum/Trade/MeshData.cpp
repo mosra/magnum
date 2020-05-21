@@ -26,6 +26,9 @@
 #include "MeshData.h"
 
 #include <Corrade/Utility/Algorithms.h>
+#ifndef CORRADE_NO_ASSERT
+#include <Corrade/Utility/Format.h>
+#endif
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/PackingBatch.h"
@@ -62,8 +65,8 @@ MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexForma
        because I feel that makes more sense than duplicating the full assert
        logic */
     /** @todo support zero / negative stride? would be hard to transfer to GL */
-    CORRADE_ASSERT(data.empty() || isVertexFormatImplementationSpecific(format) || std::ptrdiff_t(vertexFormatSize(format)) <= data.stride(),
-        "Trade::MeshAttributeData: expected stride to be positive and enough to fit" << format << Debug::nospace << ", got" << data.stride(), );
+    CORRADE_ASSERT(data.empty() || isVertexFormatImplementationSpecific(format) || std::ptrdiff_t(vertexFormatSize(format))*(arraySize ? arraySize : 1) <= data.stride(),
+        "Trade::MeshAttributeData: expected stride to be positive and enough to fit" << format << Debug::nospace << (arraySize ? Utility::format("[{}]", arraySize).data() : "") << Debug::nospace << ", got" << data.stride(), );
 }
 
 MeshAttributeData::MeshAttributeData(const MeshAttribute name, const VertexFormat format, UnsignedShort arraySize, const Containers::StridedArrayView2D<const char>& data) noexcept: MeshAttributeData{name, format, arraySize, Containers::StridedArrayView1D<const void>{{data.data(), ~std::size_t{}}, data.size()[0], data.stride()[0]}, nullptr} {

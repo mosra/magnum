@@ -750,6 +750,7 @@ void MeshDataTest::constructAttributeWrongStride() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
+    MeshAttributeData{meshAttributeCustom(1), VertexFormat::Float, 4, Containers::arrayCast<const Vector3>(positionData)};
     /* We need this one to be constexpr, which means there can't be a warning
        about stride not matching the size */
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, 0, 3*sizeof(Vector3), 1};
@@ -758,6 +759,7 @@ void MeshDataTest::constructAttributeWrongStride() {
     MeshAttributeData{65000};
     CORRADE_COMPARE(out.str(),
         "Trade::MeshAttributeData: expected stride to be positive and enough to fit VertexFormat::Vector3, got 1\n"
+        "Trade::MeshAttributeData: expected stride to be positive and enough to fit VertexFormat::Float[4], got 12\n"
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got -16\n"
         "Trade::MeshAttributeData: expected stride to be positive and at most 32k, got 65000\n"
         "Trade::MeshAttributeData: at most 32k padding supported, got 65000\n"
@@ -931,7 +933,7 @@ void MeshDataTest::constructArrayAttributeNotAllowed() {
     /* This is not */
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 3, Containers::arrayView(positionData)};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, 3, Containers::arrayView(positionData)};
     MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 3, Containers::arrayView(positionData)};
     MeshAttributeData{MeshAttribute::Position, positions2D};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 3, positions2Dchar};
