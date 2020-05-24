@@ -37,6 +37,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -452,6 +453,148 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
         std::move(indexData), indices,
         std::move(uniqueVertexData), std::move(attributeData),
         uniqueVertexCount};
+}
+
+Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float floatEpsilon, const Double doubleEpsilon) {
+    CORRADE_ASSERT(data.attributeCount(),
+        "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh",
+        (Trade::MeshData{MeshPrimitive::Points, 0}));
+
+    /* Turn the passed data into an owned mutable instance we can operate on.
+       There's a chance the original data are already like this, in which case
+       this will be just a passthrough. */
+    /** @todo concatenate() causes the resulting index type to be UnsignedInt
+        always, replace with owned() or some such when that's done */
+    Trade::MeshData owned = concatenate(std::move(data));
+
+    /* Allocate an interleaved index array for all attribs. If the mesh is
+       already indexed, use the existing index count and copy the original
+       index array there so the algorithm can operate directly on it. */
+    Containers::Array<UnsignedInt> combinedIndexStorage;
+    Containers::StridedArrayView2D<UnsignedInt> combinedIndices;
+
+    /* If the mesh is not indexed, allocate for vertex count and keep it
+       unitialized */
+    combinedIndexStorage = Containers::Array<UnsignedInt>{/*Containers::NoInit,*/
+        owned.vertexCount()*owned.attributeCount()};
+    combinedIndices = Containers::StridedArrayView2D<UnsignedInt>{
+        combinedIndexStorage,
+        {owned.vertexCount(), owned.attributeCount()}};
+
+    /* For each attribute decide if it needs to be fuzzy-deduplicated or not,
+       calculate the epsilon size and call the appropriate API */
+    const Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
+    for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
+        const VertexFormat format = owned.attributeFormat(i);
+        CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
+            "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in" << format,
+            (Trade::MeshData{MeshPrimitive::Points, 0}));
+
+        const Containers::StridedArrayView1D<UnsignedInt> outputIndices = perAttributeIndices[i];
+
+        /* Floats, with special attribute-dependent handling */
+        const VertexFormat componentFormat = vertexFormatComponentFormat(format);
+        if(componentFormat == VertexFormat::Float) {
+            const Containers::StridedArrayView2D<Float> attribute = Containers::arrayCast<2, Float>(owned.mutableAttribute(i));
+
+            /* Calculate scaled epsilon */
+            Float attributeEpsilon = 0.0f;
+            switch(owned.attributeName(i)) {
+                /* These are usually in [0, 1] (color can be HDR but we
+                   definitely don't want the epsilon to be higher there,
+                   texture coords can be higher and repeat but the same
+                   applies), use epsilon as-is */
+                case Trade::MeshAttribute::TextureCoordinates:
+                case Trade::MeshAttribute::Color:
+                    attributeEpsilon = floatEpsilon;
+                    break;
+
+                /* Those are all [-1, 1], scale the epsilon 2x */
+                case Trade::MeshAttribute::Normal:
+                case Trade::MeshAttribute::Tangent:
+                case Trade::MeshAttribute::Bitangent:
+                    attributeEpsilon = 2.0f*floatEpsilon;
+                    break;
+
+                /* These have unbounded range. Do nothing but enumerate all
+                   these here to silence warnings about unused enum values. */
+                case Trade::MeshAttribute::Position:
+                case Trade::MeshAttribute::Custom:
+                    break;
+
+                /* These shouldn't be floating point */
+                /* LCOV_EXCL_START */
+                case Trade::MeshAttribute::ObjectId:
+                    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+                /* LCOV_EXCL_STOP */
+            }
+
+            /* For unbounded and custom attributes scale the epsilon by data
+               range */
+            if(attributeEpsilon == 0.0f) {
+                Float range = 0.0f;
+                for(Containers::StridedArrayView1D<const Float> component: attribute.transposed<0, 1>())
+                    range = Math::max(Range1D{Math::minmax(component)}.size(), range);
+                attributeEpsilon = floatEpsilon*range;
+            }
+
+            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, outputIndices, attributeEpsilon);
+
+        /* Doubles. No builtin attributes support those at the moment, so
+           there's just the epsilon scaling based on attribute value range */
+        } else if(componentFormat == VertexFormat::Double) {
+            const Containers::StridedArrayView2D<Double> attribute = Containers::arrayCast<2, Double>(owned.mutableAttribute(i));
+
+            Double range = 0.0;
+            for(Containers::StridedArrayView1D<const Double> component: attribute.transposed<0, 1>())
+                range = Math::max(Range1Dd{Math::minmax(component)}.size(), range);
+
+            removeDuplicatesFuzzyInPlaceIntoImplementation(attribute, outputIndices, doubleEpsilon*range);
+
+        /* Other attributes (integer, packed, half floats). No fuzzy
+           comparison */
+        } else {
+            const Containers::StridedArrayView2D<char> attribute = owned.mutableAttribute(i);
+
+            removeDuplicatesInPlaceInto(attribute, outputIndices);
+        }
+    }
+
+    /* Make the combined index array unique */
+    Containers::Array<char> indexData;
+    UnsignedInt vertexCount;
+    MeshIndexType indexType;
+
+    if(!owned.isIndexed()) {
+        indexData = Containers::Array<char>{combinedIndices.size()[0]*sizeof(UnsignedInt)};
+        vertexCount = removeDuplicatesInPlaceInto(
+            Containers::arrayCast<2, char>(combinedIndices),
+            Containers::arrayCast<UnsignedInt>(indexData));
+        indexType = MeshIndexType::UnsignedInt;
+    } else {
+        vertexCount = removeDuplicatesIndexedInPlace(
+            owned.mutableIndices(),
+            Containers::arrayCast<2, char>(combinedIndices));
+        indexData = owned.releaseIndexData();
+        indexType = owned.indexType();
+    }
+
+    combinedIndices = combinedIndices.prefix(vertexCount);
+
+    Trade::MeshData layout = interleavedLayout(owned, vertexCount);
+    Trade::MeshIndexData indices{indexType, indexData};
+    Trade::MeshData out{layout.primitive(),
+        std::move(indexData), indices,
+        layout.releaseVertexData(), layout.releaseAttributeData(), vertexCount};
+
+    {
+        /* Duplicate the attributes according to the combined index buffer */
+        const Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
+        for(UnsignedInt i = 0; i != owned.attributeCount(); ++i)
+            duplicateInto(perAttributeIndices[i].prefix(vertexCount), owned.attribute(i), out.mutableAttribute(i));
+    }
+
+    return out;
 }
 
 }}

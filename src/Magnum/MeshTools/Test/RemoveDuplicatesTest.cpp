@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <random>
 #include <sstream>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -73,6 +74,11 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
     void removeDuplicatesMeshData();
     void removeDuplicatesMeshDataAttributeless();
 
+    void removeDuplicatesMeshDataFuzzy();
+    void removeDuplicatesMeshDataFuzzyDouble();
+    void removeDuplicatesMeshDataFuzzyAttributeless();
+    void removeDuplicatesMeshDataFuzzyImplementationSpecific();
+
     void soakTest();
     void soakTestFuzzy();
 
@@ -86,6 +92,66 @@ const struct {
 } RemoveDuplicatesMeshDataData[] {
     {"", false},
     {"indexed", true}
+};
+
+const struct {
+    const char* name;
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    Float offset, scale, epsilon;
+    UnsignedInt vertexCount;
+    bool indexed;
+} RemoveDuplicatesMeshDataFuzzyData[] {
+    {"position, normal", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
+    }), 0.0f, 1.0f, Math::TypeTraits<Float>::epsilon(), 7, false},
+    {"position, normal, epsilon 0", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
+        /* Only the bit-exact value gets removed */
+    }), 0.0f, 1.0f, 0.0f, 9, false},
+    {"position, normal, indexed", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
+    }), 0.0f, 1.0f, Math::TypeTraits<Float>::epsilon(), 7, true},
+    {"custom mat3x2, offset 100",Containers::array({
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Matrix3x2, 0, 10, 6*sizeof(Float)}
+    }), 100.0f, 1.0f, Math::TypeTraits<Float>::epsilon(), 7, false},
+    {"position + custom float[3], offset 100, scale 10, indexed",Containers::array({
+        Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
+            VertexFormat::Float, 0, 10, 6*sizeof(Float), 3},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
+    }), 100.0f, 10.0f, Math::TypeTraits<Float>::epsilon(), 7, true},
+    {"normal. bitangent, scale 2", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
+            VertexFormat::Vector3, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::Bitangent,
+            VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
+        /* Should still fit into the epsilon as the range is [-1, 1] */
+    }), 0.0f, 2.0f, Math::TypeTraits<Float>::epsilon(), 7, false},
+    {"color, texcoord, scale 10", Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector4, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, 4*sizeof(Float), 10, 6*sizeof(Float)}
+        /* Should not fit into the epsilon, only the bit-exact value gets
+           removed */
+    }), 0.0f, 10.0f, Math::TypeTraits<Float>::epsilon(), 9, true},
+    {"color, texcoord, scale 10, epsilon *10",Containers::array({
+        Trade::MeshAttributeData{Trade::MeshAttribute::Color,
+            VertexFormat::Vector4, 0, 10, 6*sizeof(Float)},
+        Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+            VertexFormat::Vector2, 4*sizeof(Float), 10, 6*sizeof(Float)}
+        /* Fit into the epsilon again */
+    }), 0.0f, 10.0f, 10.0f*Math::TypeTraits<Float>::epsilon(), 7, false}
 };
 
 RemoveDuplicatesTest::RemoveDuplicatesTest() {
@@ -136,6 +202,14 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
         Containers::arraySize(RemoveDuplicatesMeshDataData));
 
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless});
+
+    addInstancedTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy},
+        Containers::arraySize(RemoveDuplicatesMeshDataFuzzyData));
+
+    addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble,
+
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless,
+              &RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecific});
 
     addRepeatedTests({&RemoveDuplicatesTest::soakTest,
                       &RemoveDuplicatesTest::soakTestFuzzy}, 10);
@@ -651,6 +725,338 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, 10});
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
+    auto&& data = RemoveDuplicatesMeshDataFuzzyData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Deliberately not owned and not interleaved to verify that the function
+       will handle this */
+    struct Vertex {
+        Short ints[10][2]{
+            {15, 2},
+            {15, 2},
+            {15, 2},
+            {2365, -2},
+            {-2, 2365},
+            {-2, 2365},
+            {2365, -2},
+            {37, 0},
+            {37, 0},
+            {37, 0}
+        };
+        Math::Vector<6, Float> floats[10]{
+            {0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+            /* This one gets collapsed to the above */
+            {0.0f, 1.0f, 0.0f, 1.0f - Math::TypeTraits<Float>::epsilon()/4, 0.0f, 0.0f},
+            /* This one not */
+            {0.0f, 1.0f, 0.0f, 1.0f - Math::TypeTraits<Float>::epsilon()*4, 0.0f, 0.0f},
+            /* These are bit-equivalent, but not all get collapsed because the
+               ints are different */
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+             /* Same as above, only at a smaller scale */
+            {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+            {0.0f, 0.0f, 0.0f + Math::TypeTraits<Float>::epsilon()/2, 0.0f, 0.0f, 0.0f},
+            {0.0f, 0.0f, 0.0f + Math::TypeTraits<Float>::epsilon()*2, 0.0f, 0.0f, 0.0f},
+        };
+        UnsignedByte intsAgain[10]{
+            33,
+            33,
+            33,
+            15,
+            15,
+            15,
+            17,
+            223,
+            223,
+            223
+        };
+        UnsignedInt objectId[10]{ 15, 15, 15, 15, 15, 15, 15, 15, 15, 15 };
+    } vertexData[1];
+
+    const UnsignedShort indexData[]{1, 2, 5, 9, 7, 6, 4, 7, 5, 0, 3, 8, 3};
+
+    /* Scale and offset the floats */
+    for(Math::Vector<6, Float>& f: vertexData->floats)
+        f = f*data.scale + Math::Vector<6, Float>{data.offset};
+
+    /* Create a combined attribute list */
+    Containers::Array<Trade::MeshAttributeData> attributes;
+    arrayAppend(attributes, Trade::MeshAttributeData{
+        Trade::meshAttributeCustom(15), VertexFormat::Short, 0, 10, 4, 2});
+    for(const Trade::MeshAttributeData& a: data.attributes)
+        arrayAppend(attributes, Trade::MeshAttributeData{
+            a.name(), a.format(), offsetof(Vertex, floats) + a.offset({}), 10, a.stride(), a.arraySize()});
+    arrayAppend(attributes, Trade::MeshAttributeData{
+        Trade::meshAttributeCustom(16), VertexFormat::UnsignedByte, offsetof(Vertex, intsAgain), 10, 1});
+    arrayAppend(attributes, Trade::MeshAttributeData{
+        Trade::MeshAttribute::ObjectId, VertexFormat::UnsignedInt, offsetof(Vertex, objectId), 10, 4});
+
+    Containers::ArrayView<const void> indexView;
+    Trade::MeshIndexData indices;
+    if(data.indexed) {
+        indexView = indexData;
+        indices = Trade::MeshIndexData{indexData};
+    }
+
+    Trade::MeshData mesh{MeshPrimitive::Lines,
+        {}, indexView, indices,
+        {}, vertexData, std::move(attributes)};
+
+    Trade::MeshData unique = MeshTools::removeDuplicatesFuzzy(mesh,
+        data.epsilon);
+    CORRADE_COMPARE(unique.primitive(), MeshPrimitive::Lines);
+
+    CORRADE_VERIFY(unique.isIndexed());
+    if(data.indexed)
+        CORRADE_COMPARE(unique.indexCount(), mesh.indexCount());
+    else
+        CORRADE_COMPARE(unique.indexCount(), mesh.vertexCount());
+    CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+
+    CORRADE_COMPARE(unique.attributeCount(), 3 + data.attributes.size());
+
+    /* Verify that all attributes have expected metadata and are interleaved */
+    for(UnsignedInt i = 0; i != unique.attributeCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(unique.attributeStride(i), 4 + 6*sizeof(float) + 5);
+    }
+
+    CORRADE_COMPARE(unique.attributeFormat(0), VertexFormat::Short);
+    CORRADE_COMPARE(unique.attributeOffset(0), 0);
+    CORRADE_COMPARE(unique.attributeName(0), Trade::meshAttributeCustom(15));
+    CORRADE_COMPARE(unique.attributeArraySize(0), 2);
+
+    for(std::size_t i = 0; i != data.attributes.size(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(unique.attributeFormat(1 + i), data.attributes[i].format());
+        CORRADE_COMPARE(unique.attributeOffset(1 + i), 4 + data.attributes[i].offset({}));
+        CORRADE_COMPARE(unique.attributeName(1 + i), data.attributes[i].name());
+        CORRADE_COMPARE(unique.attributeArraySize(1 + i), data.attributes[i].arraySize());
+    }
+
+    CORRADE_COMPARE(unique.attributeFormat(1 + data.attributes.size()), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(unique.attributeOffset(1 + data.attributes.size()), 4 + 6*sizeof(Float));
+    CORRADE_COMPARE(unique.attributeName(1 + data.attributes.size()), Trade::meshAttributeCustom(16));
+
+    CORRADE_COMPARE(unique.attributeFormat(2 + data.attributes.size()), VertexFormat::UnsignedInt);
+    CORRADE_COMPARE(unique.attributeOffset(2 + data.attributes.size()), 5 + 6*sizeof(Float));
+    CORRADE_COMPARE(unique.attributeName(2 + data.attributes.size()), Trade::MeshAttribute::ObjectId);
+
+    /* The data differ depending on how much is actually removed */
+    if(data.vertexCount == 7) {
+        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({0, 1, 3, 6, 5, 4, 3, 5, 3, 0, 2, 5, 2}),
+            TestSuite::Compare::Container);
+        else CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({0, 0, 1, 2, 3, 3, 4, 5, 5, 6}),
+            TestSuite::Compare::Container);
+
+        /* Compare the integer data through the attribute API */
+        CORRADE_COMPARE_AS((Containers::arrayCast<1, const Vector2s>(unique.attribute<Short[]>(Trade::meshAttributeCustom(15)))),
+            Containers::arrayView<Vector2s>({
+                {15, 2},
+                {15, 2},
+                {2365, -2},
+                {-2, 2365},
+                {2365, -2},
+                {37, 0},
+                {37, 0}
+            }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(unique.attribute<UnsignedByte>(Trade::meshAttributeCustom(16)),
+            Containers::arrayView<UnsignedByte>({
+                33,
+                33,
+                15,
+                15,
+                17,
+                223,
+                223
+            }), TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(unique.attribute<UnsignedInt>(Trade::MeshAttribute::ObjectId),
+            Containers::arrayView<UnsignedInt>({
+                15, 15, 15, 15, 15, 15, 15
+            }), TestSuite::Compare::Container);
+
+        /* Compare the float/double data as a single block independently of the
+           attribute layout */
+        Math::Vector<6, Float> expectedFloats[]{
+            {0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f, 1.0f - Math::TypeTraits<Float>::epsilon()*4, 0.0f, 0.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
+            {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+            {0.0f, 0.0f, 0.0f + Math::TypeTraits<Float>::epsilon()*2, 0.0f, 0.0f, 0.0f},
+        };
+        for(Math::Vector<6, Float>& f: expectedFloats)
+            f = f*data.scale + Math::Vector<6, Float>{data.offset};
+        /** @todo i need some feature like "gimme just the top-level dimension" */
+        Containers::StridedArrayView1D<const char> floats{unique.vertexData(),
+            unique.vertexData() + unique.attributeOffset(1),
+            unique.vertexCount(), unique.attributeStride(1)};
+        CORRADE_COMPARE_AS((Containers::arrayCast<const Math::Vector<6, Float>>(floats)),
+            Containers::arrayView(expectedFloats),
+            TestSuite::Compare::Container);
+
+    } else if(data.vertexCount == 9) {
+        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({1, 2, 4, 8, 6, 5, 4, 6, 4, 0, 3, 7, 3}),
+            TestSuite::Compare::Container);
+        else CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+            Containers::arrayView<UnsignedInt>({0, 1, 2, 3, 4, 4, 5, 6, 7, 8}),
+            TestSuite::Compare::Container);
+
+        /* Not testing the rest, it's verified well enough in the other cases */
+    }
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble() {
+    /* Deliberately not owned and not interleaved to verify that the function
+       will handle this */
+    const struct Vertex {
+        /* Epsilon enlarged a lot to ensure the cell size isn't too small for
+           the grid size to fit into 32 bit std::size_t */
+        Math::Vector<3, Double> doubles[10]{
+            {110.0, 100.0, 100.0},
+            /* This one gets collapsed to the above */
+            {110.0 - 250000*Math::TypeTraits<Double>::epsilon()/2, 100.0, 100.0},
+            /* This one not */
+            {110.0 - 250000*Math::TypeTraits<Double>::epsilon()*2, 100.0, 100.0},
+            /* These are bit-equivalent, but not all get collapsed because the
+               ints are different */
+            {100.0, 100.0, 110.0},
+            {100.0, 100.0, 110.0},
+            {100.0, 100.0, 110.0},
+            {100.0, 100.0, 110.0},
+             /* Same as above, only at a smaller scale */
+            {100.0, 100.0, 100.0},
+            {100.0, 100.0, 100.0 + 250000*Math::TypeTraits<Double>::epsilon()/2},
+            {100.0, 100.0, 100.0 + 250000*Math::TypeTraits<Double>::epsilon()*2},
+        };
+        UnsignedByte objectId[10]{
+            33,
+            33,
+            33,
+            15,
+            16,
+            15,
+            17,
+            223,
+            223,
+            223
+        };
+    } vertexData[1];
+
+    Trade::MeshData mesh{MeshPrimitive::Points,
+        {}, vertexData, {
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(10),
+                VertexFormat::Double, 0, 10, 3*sizeof(Double)},
+            Trade::MeshAttributeData{Trade::meshAttributeCustom(11),
+                VertexFormat::Double, sizeof(Double), 10, 3*sizeof(Double), 2},
+            Trade::MeshAttributeData{
+                Trade::MeshAttribute::ObjectId, VertexFormat::UnsignedByte, offsetof(Vertex, objectId), 10, 1}
+        }};
+
+    Trade::MeshData unique = MeshTools::removeDuplicatesFuzzy(mesh,
+        Math::TypeTraits<Float>::epsilon(),
+        /* Epsilon enlarged a lot to ensure the cell size isn't too small for
+           the grid size to fit into 32 bit std::size_t */
+        25000*Math::TypeTraits<Double>::epsilon());
+    CORRADE_COMPARE(unique.primitive(), MeshPrimitive::Points);
+
+    CORRADE_VERIFY(unique.isIndexed());
+    CORRADE_COMPARE(unique.indexCount(), mesh.vertexCount());
+    CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+
+    CORRADE_COMPARE(unique.attributeCount(), 3);
+
+    /* Verify that all attributes have expected metadata and are interleaved */
+    for(UnsignedInt i = 0; i != unique.attributeCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_COMPARE(unique.attributeStride(i), 3*sizeof(Double) + 1);
+    }
+
+    CORRADE_COMPARE(unique.attributeFormat(0), VertexFormat::Double);
+    CORRADE_COMPARE(unique.attributeOffset(0), 0);
+    CORRADE_COMPARE(unique.attributeName(0), Trade::meshAttributeCustom(10));
+
+    CORRADE_COMPARE(unique.attributeFormat(1), VertexFormat::Double);
+    CORRADE_COMPARE(unique.attributeOffset(1), sizeof(Double));
+    CORRADE_COMPARE(unique.attributeName(1), Trade::meshAttributeCustom(11));
+    CORRADE_COMPARE(unique.attributeArraySize(1), 2);
+
+    CORRADE_COMPARE(unique.attributeFormat(2), VertexFormat::UnsignedByte);
+    CORRADE_COMPARE(unique.attributeOffset(2), 3*sizeof(Double));
+    CORRADE_COMPARE(unique.attributeName(2), Trade::MeshAttribute::ObjectId);
+
+    CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
+        Containers::arrayView<UnsignedInt>({0, 0, 1, 2, 3, 2, 4, 5, 5, 6}),
+        TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS(unique.attribute<UnsignedByte>(Trade::MeshAttribute::ObjectId),
+        Containers::arrayView<UnsignedByte>({
+            33,
+            33,
+            15,
+            16,
+            17,
+            223,
+            223
+        }), TestSuite::Compare::Container);
+
+    /* Compare the float/double data as a single block independently of the
+        attribute layout */
+    Math::Vector<3, Double> expectedFloats[]{
+        {110.0, 100.0, 100.0},
+        {110.0 - 250000*Math::TypeTraits<Double>::epsilon()*2, 100.0, 100.0},
+        {100.0, 100.0, 110.0},
+        {100.0, 100.0, 110.0},
+        {100.0, 100.0, 110.0},
+        {100.0, 100.0, 100.0},
+        {100.0, 100.0, 100.0 + 250000*Math::TypeTraits<Double>::epsilon()*2},
+    };
+    /** @todo i need some feature like "gimme just the top-level dimension" */
+    Containers::StridedArrayView1D<const char> floats{unique.vertexData(),
+        unique.vertexData() + unique.attributeOffset(0),
+        unique.vertexCount(), unique.attributeStride(0)};
+    CORRADE_COMPARE_AS((Containers::arrayCast<const Math::Vector<3, Double>>(floats)),
+        Containers::arrayView(expectedFloats),
+        TestSuite::Compare::Container);
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyAttributeless() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points, 10});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an attributeless mesh\n");
+}
+
+void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecific() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_EXPECT_FAIL("The function currently uses concatenate() to make data owned, which fails earlier with a different (and confusing) assert message.");
+    CORRADE_VERIFY(false);
+
+//     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
+//         nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+//             vertexFormatWrap(0x1234), nullptr}}});
+//     CORRADE_COMPARE(out.str(),
+//         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format 0x1234\n");
 }
 
 void RemoveDuplicatesTest::soakTest() {

@@ -318,6 +318,19 @@ data.
 */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data);
 
+/**
+@brief Remove mesh data duplicates with fuzzy comparison for floating-point attributes
+@m_since_latest
+
+Compared to @ref removeDuplicates(const Trade::MeshData&), calls
+@ref removeDuplicatesFuzzyInPlace() or @ref removeDuplicatesFuzzyIndexedInPlace()
+on floating-point attributes. For attributes with a known range (such as
+@ref Trade::MeshAttribute::Normal being always @f$ [-1, 1] @f$ in each
+direction) the @p floatEpsilon / @p doubleEpsilon is scaled appropriately,
+otherwise it's scaled to calculated value range.
+*/
+MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, Float floatEpsilon = Math::TypeTraits<Float>::epsilon(), Double doubleEpsilon = Math::TypeTraits<Double>::epsilon());
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vector>& data, typename Vector::Type epsilon) {
     /* A trivial index array that'll be remapped and returned after */
