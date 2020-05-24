@@ -97,7 +97,7 @@ Arguments:
 -   `--profile` --- measure import and conversion time
 
 If `--info` is given, the utility will print information about all meshes
-and images present in the file. **This option is currently mandatory.**
+and images present in the file.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
