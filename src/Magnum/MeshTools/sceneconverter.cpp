@@ -68,6 +68,7 @@ information.
 @code{.sh}
 magnum-sceneconverter [-h|--help] [--importer IMPORTER]
     [--converter CONVERTER]... [--plugin-dir DIR] [--remove-duplicates]
+    [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--info] [-v|--verbose]
     [--profile] [--] input output
@@ -84,6 +85,9 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--remove-duplicates` --- remove duplicate vertices using
     @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
+-   `--remove-duplicates-fuzzy EPSILON` --- remove duplicate vertices using
+    @ref MeshTools::removeDuplicatesFuzzy(const Trade::MeshData&, Float, Double)
+    after import
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
@@ -158,6 +162,7 @@ int main(int argc, char** argv) {
         .addArrayOption("converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
+        .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
@@ -376,6 +381,18 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         }
         if(args.isSet("verbose"))
             Debug{} << "Duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
+    }
+
+    /* Remove duplicates with fuzzy comparison, if requested */
+    /** @todo accept two values for float and double fuzzy comparison */
+    if(!args.value("remove-duplicates-fuzzy").empty()) {
+        const UnsignedInt beforeVertexCount = mesh->vertexCount();
+        {
+            Duration d{conversionTime};
+            mesh = MeshTools::removeDuplicatesFuzzy(*std::move(mesh), args.value<Float>("remove-duplicates-fuzzy"));
+        }
+        if(args.isSet("verbose"))
+            Debug{} << "Fuzzy duplicate removal:" << beforeVertexCount << "->" << mesh->vertexCount() << "vertices";
     }
 
     /* Load converter plugin */
