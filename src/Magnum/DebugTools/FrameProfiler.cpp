@@ -489,7 +489,8 @@ void GLFrameProfiler::setup(const Values values, const UnsignedInt maxFrameCount
                 static_cast<State*>(state)->cpuDurationStartFrame = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
             },
             [](void* state) {
-                return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - static_cast<State*>(state)->cpuDurationStartFrame;
+                /* libc++ 10 needs an explicit cast to UnsignedLong */
+                return UnsignedLong(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - static_cast<State*>(state)->cpuDurationStartFrame);
             }, _state.get());
         _state->cpuDurationIndex = index++;
     }
