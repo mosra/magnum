@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <algorithm>
+#include <random>
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -70,6 +72,9 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 
     void removeDuplicatesMeshData();
     void removeDuplicatesMeshDataAttributeless();
+
+    void soakTest();
+    void soakTestFuzzy();
 };
 
 const struct {
@@ -128,6 +133,9 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
         Containers::arraySize(RemoveDuplicatesMeshDataData));
 
     addTests({&RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless});
+
+    addRepeatedTests({&RemoveDuplicatesTest::soakTest,
+                      &RemoveDuplicatesTest::soakTestFuzzy}, 10);
 }
 
 void RemoveDuplicatesTest::removeDuplicates() {
@@ -637,6 +645,31 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataAttributeless() {
     MeshTools::removeDuplicates(Trade::MeshData{MeshPrimitive::Points, 10});
     CORRADE_COMPARE(out.str(),
         "MeshTools::removeDuplicates(): can't remove duplicates in an attributeless mesh\n");
+}
+
+void RemoveDuplicatesTest::soakTest() {
+    /* Array of 100 unique items with 10 duplicates each, randomly shuffled */
+    UnsignedInt data[1000];
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
+        data[i] = i / 10 + testCaseRepeatId()*909091;
+    std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
+
+    CORRADE_COMPARE(MeshTools::removeDuplicatesInPlace(
+        Containers::StridedArrayView2D<char>{
+            Containers::arrayCast<char>(Containers::arrayView(data)), {1000, 4}}
+        ).second, 100);
+}
+
+void RemoveDuplicatesTest::soakTestFuzzy() {
+    /* Array of 100 unique items with 10 duplicates each, randomly shuffled */
+    Float data[1000];
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
+        data[i] = Float(Int(i/10) + testCaseRepeatId()*909091);
+    std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
+
+    CORRADE_COMPARE(MeshTools::removeDuplicatesFuzzyInPlace(
+        Containers::arrayCast<2, Float>(Containers::arrayView(data))).second,
+        100);
 }
 
 }}}}
