@@ -43,16 +43,23 @@
 namespace Magnum { namespace MeshTools {
 
 struct ArrayEqual {
-    bool operator()(Containers::ArrayView<const char> a, Containers::ArrayView<const char> b) const {
-        CORRADE_INTERNAL_ASSERT(a.size() == b.size());
-        return std::memcmp(a, b, a.size()) == 0;
+    explicit ArrayEqual(std::size_t size): _size{size} {}
+
+    bool operator()(const void* a, const void* b) const {
+        return std::memcmp(a, b, _size) == 0;
     }
+
+    private: std::size_t _size;
 };
 
 struct ArrayHash {
-    std::size_t operator()(Containers::ArrayView<const char> a) const {
-        return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2{}(a, a.size()).byteArray());
+    explicit ArrayHash(std::size_t size): _size{size} {}
+
+    std::size_t operator()(const void* a) const {
+        return *reinterpret_cast<const std::size_t*>(Utility::MurmurHash2{}(static_cast<const char*>(a), _size).byteArray());
     }
+
+    private: std::size_t _size;
 };
 
 std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices) {
@@ -68,7 +75,10 @@ std::size_t removeDuplicatesInto(const Containers::StridedArrayView2D<const char
     /* Table containing index of first occurence for each unique entry.
        Reserving more buckets than necessary (i.e. as if each entry was
        unique). */
-    std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
+    std::unordered_map<const void*, UnsignedInt, ArrayHash, ArrayEqual> table{
+        dataSize,
+        ArrayHash{data.size()[1]},
+        ArrayEqual{data.size()[1]}};
 
     /* Go through all entries */
     for(std::size_t i = 0; i != dataSize; ++i) {
@@ -105,7 +115,10 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
     /* Table containing index of first occurence for each unique entry.
        Reserving more buckets than necessary (i.e. as if each entry was
        unique). */
-    std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
+    std::unordered_map<const void*, UnsignedInt, ArrayHash, ArrayEqual> table{
+        dataSize,
+        ArrayHash{data.size()[1]},
+        ArrayEqual{data.size()[1]}};
 
     /* Go through all entries and insert them into the table. Because the keys
        have runtime size, the table doesn't store a copy of the keys, only a
@@ -228,7 +241,10 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
        Reserving more buckets than necessary (i.e. as if each vector was
        unique). */
     std::size_t dataSize = data.size()[0];
-    std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
+    std::unordered_map<const void*, UnsignedInt, ArrayHash, ArrayEqual> table{
+        dataSize,
+        ArrayHash{data.size()[1]*sizeof(std::size_t)},
+        ArrayEqual{data.size()[1]*sizeof(std::size_t)}};
 
     /* Index array that'll be filled in each pass and then used for remapping
        the `indices`; discretized storage for all map keys. */
@@ -259,7 +275,7 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
                This is a similar workflow to removeDuplicatesInPlaceInto() with
                the only difference that we're remapping an existing index array
                several times over instead of creating a new one */
-            const auto result = table.emplace(Containers::arrayCast<const char>(discretizedEntry), table.size());
+            const auto result = table.emplace(discretizedEntry, table.size());
 
             /* Add the (either new or already existing) index into the array */
             remapping[i] = result.first->second;
