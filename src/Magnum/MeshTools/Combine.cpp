@@ -176,7 +176,8 @@ Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, const Trade::
     const UnsignedInt faceIndexSize = faceAttributes.isIndexed() ?
         meshIndexTypeSize(faceAttributes.indexType()) : 4;
     const UnsignedInt indexStride = meshIndexSize + faceIndexSize;
-    Containers::Array<char> combinedIndices{meshIndexCount*indexStride};
+    Containers::Array<char> combinedIndices{Containers::NoInit,
+        meshIndexCount*indexStride};
     Utility::copy(mesh.indices(),
         Containers::StridedArrayView2D<char>{combinedIndices, {meshIndexCount, meshIndexSize}, {std::ptrdiff_t(indexStride), 1}});
 
