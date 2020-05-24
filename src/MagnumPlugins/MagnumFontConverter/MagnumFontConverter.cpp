@@ -68,7 +68,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
     /* Get the glyphs and sort them for predictable output */
     std::vector<std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>> sortedGlyphs;
-    for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
+    for(const std::pair<const UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
         sortedGlyphs.emplace_back(glyph);
     std::sort(sortedGlyphs.begin(), sortedGlyphs.end(),
         [](const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& a,
@@ -88,7 +88,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 
     /* Inverse map from new glyph IDs to old ones */
     std::vector<UnsignedInt> inverseGlyphIdMap(glyphIdMap.size());
-    for(const std::pair<UnsignedInt, UnsignedInt>& map: glyphIdMap)
+    for(const std::pair<const UnsignedInt, UnsignedInt>& map: glyphIdMap)
         inverseGlyphIdMap[map.second] = map.first;
 
     /* Character->glyph map, map glyph IDs to new ones */
