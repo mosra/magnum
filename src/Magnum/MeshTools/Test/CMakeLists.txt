@@ -32,10 +32,9 @@ corrade_add_test(MeshToolsGenerateIndicesTest GenerateIndicesTest.cpp LIBRARIES 
 corrade_add_test(MeshToolsGenerateNormalsTest GenerateNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib MagnumPrimitives)
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum)
+corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
-corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumMeshTools MagnumPrimitives)
 
 # Graceful assert for testing
 set_property(TARGET
@@ -59,7 +58,6 @@ set_target_properties(
     MeshToolsSubdivideTest
     MeshToolsTipsifyTest
     MeshToolsTransformTest
-    MeshToolsSubdivideRemov___Benchmark
     PROPERTIES FOLDER "Magnum/MeshTools/Test")
 
 if(BUILD_DEPRECATED)

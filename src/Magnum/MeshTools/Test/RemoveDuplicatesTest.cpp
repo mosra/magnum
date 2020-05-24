@@ -31,7 +31,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -75,6 +75,9 @@ struct RemoveDuplicatesTest: TestSuite::Tester {
 
     void soakTest();
     void soakTestFuzzy();
+
+    void benchmark();
+    void benchmarkFuzzy();
 };
 
 const struct {
@@ -136,6 +139,9 @@ RemoveDuplicatesTest::RemoveDuplicatesTest() {
 
     addRepeatedTests({&RemoveDuplicatesTest::soakTest,
                       &RemoveDuplicatesTest::soakTestFuzzy}, 10);
+
+    addBenchmarks({&RemoveDuplicatesTest::benchmark,
+                   &RemoveDuplicatesTest::benchmarkFuzzy}, 10);
 }
 
 void RemoveDuplicatesTest::removeDuplicates() {
@@ -670,6 +676,40 @@ void RemoveDuplicatesTest::soakTestFuzzy() {
     CORRADE_COMPARE(MeshTools::removeDuplicatesFuzzyInPlace(
         Containers::arrayCast<2, Float>(Containers::arrayView(data))).second,
         100);
+}
+
+void RemoveDuplicatesTest::benchmark() {
+    /* Array of 100 unique items with 100 duplicates each, shuffled */
+    Vector3i data[10000];
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
+        data[i].x() = i/100;
+    std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
+
+    std::size_t count;
+    UnsignedInt indices[10000];
+    CORRADE_BENCHMARK(1)
+        count = MeshTools::removeDuplicatesInPlaceInto(
+            Containers::arrayCast<2, char>(Containers::arrayView(data)),
+            indices);
+
+    CORRADE_COMPARE(count, 100);
+}
+
+void RemoveDuplicatesTest::benchmarkFuzzy() {
+    /* Array of 100 unique items with 100 duplicates each, shuffled */
+    Vector3 data[10000];
+    for(std::size_t i = 0; i != Containers::arraySize(data); ++i)
+        data[i].x() = i/100;
+    std::shuffle(std::begin(data), std::end(data), std::minstd_rand{std::random_device{}()});
+
+    std::size_t count;
+    UnsignedInt indices[10000];
+    CORRADE_BENCHMARK(1)
+        count = MeshTools::removeDuplicatesFuzzyInPlaceInto(
+            Containers::arrayCast<2, Float>(Containers::arrayView(data)),
+            indices);
+
+    CORRADE_COMPARE(count, 100);
 }
 
 }}}}

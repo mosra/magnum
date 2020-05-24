@@ -24,13 +24,17 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Math/Vector.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Subdivide.h"
+#include "Magnum/Primitives/Icosphere.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
@@ -47,11 +51,17 @@ struct SubdivideTest: TestSuite::Tester {
     void subdivideInPlaceSmallIndexType();
 
     /* this is additionally regression-tested in PrimitivesIcosphereTest */
+
+    void benchmark();
 };
 
 typedef Math::Vector<1, Int> Vector1;
 
-inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
+inline Vector1 interpolator1(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
+
+Vector3 interpolator3(const Vector3& a, const Vector3& b) {
+    return (a+b).normalized();
+}
 
 SubdivideTest::SubdivideTest() {
     addTests({&SubdivideTest::subdivide,
@@ -64,12 +74,14 @@ SubdivideTest::SubdivideTest() {
               &SubdivideTest::subdivideInPlace<UnsignedInt>,
               &SubdivideTest::subdivideInPlaceWrongIndexCount,
               &SubdivideTest::subdivideInPlaceSmallIndexType});
+
+    addBenchmarks({&SubdivideTest::benchmark}, 4);
 }
 
 void SubdivideTest::subdivide() {
     auto positions = Containers::array<Vector1>({0, 2, 6, 8});
     auto indices = Containers::array<UnsignedInt>({0, 1, 2, 1, 2, 3});
-    MeshTools::subdivide(indices, positions, interpolator);
+    MeshTools::subdivide(indices, positions, interpolator1);
 
     CORRADE_COMPARE_AS(indices, Containers::arrayView<UnsignedInt>({
         4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3
@@ -84,7 +96,7 @@ void SubdivideTest::subdivideStl() {
     std::vector<Vector1> positions{0, 2, 6, 8};
     std::vector<UnsignedInt> indices{0, 1, 2, 1, 2, 3};
     CORRADE_IGNORE_DEPRECATED_PUSH
-    MeshTools::subdivide(indices, positions, interpolator);
+    MeshTools::subdivide(indices, positions, interpolator1);
     CORRADE_IGNORE_DEPRECATED_POP
 
     CORRADE_COMPARE_AS(indices,
@@ -106,7 +118,7 @@ void SubdivideTest::subdivideWrongIndexCount() {
 
     Containers::Array<Vector1> positions;
     Containers::Array<UnsignedInt> indices{2};
-    MeshTools::subdivide(indices, positions, interpolator);
+    MeshTools::subdivide(indices, positions, interpolator1);
     CORRADE_COMPARE(out.str(), "MeshTools::subdivide(): index count is not divisible by 3\n");
 }
 
@@ -116,7 +128,7 @@ template<class T> void SubdivideTest::subdivideInPlace() {
     T indices[6*4]{0, 1, 2, 1, 2, 3, /* and 18 more */};
     Vector1 positions[4 + 6]{0, 2, 6, 8, /* and 6 more */};
     MeshTools::subdivideInPlace(Containers::stridedArrayView(indices),
-        Containers::stridedArrayView(positions), interpolator);
+        Containers::stridedArrayView(positions), interpolator1);
 
     CORRADE_COMPARE_AS(Containers::arrayView(indices),
         Containers::arrayView<T>({4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}),
@@ -137,7 +149,7 @@ void SubdivideTest::subdivideInPlaceWrongIndexCount() {
     UnsignedInt indices[6*4 + 1]{0, 1, 2, 1, 2, 3, /* and 18+1 more */};
     Vector1 positions[]{0};
     MeshTools::subdivideInPlace(Containers::stridedArrayView(indices),
-        Containers::stridedArrayView(positions), interpolator);
+        Containers::stridedArrayView(positions), interpolator1);
     CORRADE_COMPARE(out.str(), "MeshTools::subdivideInPlace(): can't divide 25 indices to four parts with each having triangle faces\n");
 }
 
@@ -152,8 +164,26 @@ void SubdivideTest::subdivideInPlaceSmallIndexType() {
     UnsignedByte indices[6*4]{0, 1, 2, 1, 2, 3, /* and 18 more */};
     Vector1 positions[256]{};
     MeshTools::subdivideInPlace(Containers::stridedArrayView(indices),
-        Containers::stridedArrayView(positions), interpolator);
+        Containers::stridedArrayView(positions), interpolator1);
     CORRADE_COMPARE(out.str(), "MeshTools::subdivideInPlace(): a 1-byte index type is too small for 256 vertices\n");
+}
+
+void SubdivideTest::benchmark() {
+    Trade::MeshData icosphere = Primitives::icosphereSolid(0);
+
+    CORRADE_BENCHMARK(3) {
+        Containers::Array<UnsignedInt> indices;
+        arrayResize(indices, Containers::NoInit, icosphere.indexCount());
+        Utility::copy(icosphere.indices<UnsignedInt>(), indices);
+
+        Containers::Array<Vector3> positions;
+        arrayResize(positions, Containers::NoInit, icosphere.vertexCount());
+        Utility::copy(icosphere.attribute<Vector3>(Trade::MeshAttribute::Position), positions);
+
+        /* Subdivide 5 times */
+        for(std::size_t i = 0; i != 5; ++i)
+            MeshTools::subdivide(indices, positions, interpolator3);
+    }
 }
 
 }}}}
