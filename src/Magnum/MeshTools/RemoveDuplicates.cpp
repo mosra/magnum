@@ -107,23 +107,34 @@ std::size_t removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<cha
        unique). */
     std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
 
-    /* Go through all entries */
+    /* Go through all entries and insert them into the table. Because the keys
+       have runtime size, the table doesn't store a copy of the keys, only a
+       reference. The reference is to the original data that we mutate
+       in-place, so extra care needs to be taken to prevent already-inserted
+       keys from getting modified. */
     for(std::size_t i = 0; i != dataSize; ++i) {
-        /* Try to insert new entry into the table. The inserted index points
-           into the new data array that has all duplicates removed. */
-        const Containers::ArrayView<const char> entry = data[i].asContiguous();
-        const auto result = table.emplace(entry, table.size());
+        /* First copy the key data to a potentially final no-longer-mutable
+           place (except if the source and target location is the same). Data
+           in [table.size()-1, i) is already present in the [0, table.size()-1)
+           range from previous iterations so we aren't overwriting anything. If
+           insertion succeeds, this location will not be touched ever again; if
+           it fails the location isn't used as a key anywhere and so it can be
+           reused next time for a different key.
+
+           Alternatively we could first call find() and only then conditionally
+           do a copy() and emplace(), but that means the hash & search would be
+           performed twice, which is never faster than a plain memory copy. */
+        const Containers::ArrayView<char> dst = data[table.size()].asContiguous();
+        if(i != table.size())
+            Utility::copy(data[i].asContiguous(), dst);
+
+        /* Insert the new entry into the table. If it succeeds, dst is
+           guaranteed to not change anymore. */
+        const auto result = table.emplace(dst, table.size());
 
         /* Put the (either new or already existing) index into the output index
            array */
         indices[i] = result.first->second;
-
-        /* If this is a new combination, copy the data to new (earlier)
-           position in the array. Data in [table.size()-1, i) are already
-           present in the [0, table.size()-1) range from previous iterations so
-           we aren't overwriting anything. */
-        if(result.second && i != table.size() - 1)
-            Utility::copy(entry, data[table.size() - 1].asContiguous());
     }
 
     CORRADE_INTERNAL_ASSERT(dataSize >= table.size());
@@ -220,26 +231,27 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
     std::unordered_map<Containers::ArrayView<const char>, UnsignedInt, ArrayHash, ArrayEqual> table{dataSize};
 
     /* Index array that'll be filled in each pass and then used for remapping
-       the `indices` */
+       the `indices`; discretized storage for all map keys. */
     Containers::Array<UnsignedInt> remapping{Containers::NoInit, dataSize};
+    Containers::Array<std::size_t> discretized{Containers::NoInit, dataSize*vectorSize};
 
     /* First go with original coordinates, then move them by epsilon/2 in each
        dimension. */
     T moveAmount = T(0.0);
-    Containers::Array<std::size_t> discretized{Containers::NoInit, vectorSize};
     for(std::size_t moving = 0; moving <= vectorSize; ++moving) {
         for(std::size_t i = 0; i != dataSize; ++i) {
             /* Take the original vector and discretize it -- append the move
                amount to given dimension, subtract the minmal offset and divide
                by epsilon. */
             const Containers::StridedArrayView1D<T> entry = data[i];
+            const Containers::ArrayView<std::size_t> discretizedEntry = discretized.slice(i*vectorSize, (i + 1)*vectorSize);
             for(std::size_t vi = 0; vi != vectorSize; ++vi) {
                 T c = entry[vi];
                 /* In iteration `0` we're not moving in any dimension, in
                    iteration `vectorSize` we're moving in `vectorSize - 1`
                    dimension */
                 if(vi + 1 == moving) c += moveAmount;
-                discretized[vi] = (c - offsets[vi])/epsilon;
+                discretizedEntry[vi] = (c - offsets[vi])/epsilon;
             }
 
             /* Try to insert new entry into the table. The inserted index
@@ -247,7 +259,7 @@ template<class IndexType, class T> std::size_t removeDuplicatesFuzzyIndexedInPla
                This is a similar workflow to removeDuplicatesInPlaceInto() with
                the only difference that we're remapping an existing index array
                several times over instead of creating a new one */
-            const auto result = table.emplace(Containers::arrayCast<const char>(discretized), table.size());
+            const auto result = table.emplace(Containers::arrayCast<const char>(discretizedEntry), table.size());
 
             /* Add the (either new or already existing) index into the array */
             remapping[i] = result.first->second;
