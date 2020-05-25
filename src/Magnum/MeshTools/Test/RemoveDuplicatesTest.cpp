@@ -113,7 +113,15 @@ const struct {
         Trade::MeshAttributeData{Trade::MeshAttribute::Normal,
             VertexFormat::Vector3, 3*sizeof(Float), 10, 6*sizeof(Float)}
         /* Only the bit-exact value gets removed */
-    }), 0.0f, 1.0f, 0.0f, 9, false},
+    }), 0.0f, 1.0f,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        0.0f
+        #else
+        /* Otherwise I get RuntimeError: float unrepresentable in integer range
+           on Travis (1.38.44) but not locally (1.38.38) */
+        Math::TypeTraits<Float>::epsilon()/10
+        #endif
+        , 9, false},
     {"position, normal, indexed", Containers::array({
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector3, 0, 10, 6*sizeof(Float)},
