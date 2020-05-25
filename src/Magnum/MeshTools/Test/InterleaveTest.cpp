@@ -60,6 +60,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void isInterleavedUnordered();
     void isInterleavedAttributeAcrossStride();
     void isInterleavedVertexDataWholeMemory();
+    void isInterleavedImplementationSpecificVertexFormat();
 
     void interleavedData();
     void interleavedDataArrayAttributes();
@@ -68,6 +69,7 @@ struct InterleaveTest: Corrade::TestSuite::Tester {
     void interleavedDataNotInterleaved();
     void interleavedDataVertexDataWholeMemory();
     void interleavedMutableDataNotMutable();
+    void interleavedDataImplementationSpecificVertexFormat();
 
     void interleavedLayout();
     void interleavedLayoutExtra();
@@ -112,6 +114,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::isInterleavedUnordered,
               &InterleaveTest::isInterleavedAttributeAcrossStride,
               &InterleaveTest::isInterleavedVertexDataWholeMemory,
+              &InterleaveTest::isInterleavedImplementationSpecificVertexFormat,
 
               &InterleaveTest::interleavedData,
               &InterleaveTest::interleavedDataArrayAttributes,
@@ -120,6 +123,7 @@ InterleaveTest::InterleaveTest() {
               &InterleaveTest::interleavedDataNotInterleaved,
               &InterleaveTest::interleavedDataVertexDataWholeMemory,
               &InterleaveTest::interleavedMutableDataNotMutable,
+              &InterleaveTest::interleavedDataImplementationSpecificVertexFormat,
 
               &InterleaveTest::interleavedLayout,
               &InterleaveTest::interleavedLayoutExtra,
@@ -383,6 +387,63 @@ void InterleaveTest::isInterleavedVertexDataWholeMemory() {
     CORRADE_VERIFY(MeshTools::isInterleaved(data));
 }
 
+void InterleaveTest::isInterleavedImplementationSpecificVertexFormat() {
+    /* Interleaved; fits into one byte at the end of stride */
+    {
+        Containers::Array<char> vertexData{100 + 3*9};
+        Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+            Containers::StridedArrayView1D<Vector2>{vertexData,
+                reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 9}};
+        Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+            vertexFormatWrap(0x1234),
+            Containers::StridedArrayView1D<char>{vertexData,
+                vertexData.data() + 100 + 8, 3, 9}};
+
+        /* The result should be independent on the order of calculations */
+        Trade::MeshData data{MeshPrimitive::Triangles, {}, vertexData,
+            {positions, normals}};
+        Trade::MeshData dataDifferentOrder{MeshPrimitive::Triangles, {}, vertexData,
+            {normals, positions}};
+        CORRADE_VERIFY(MeshTools::isInterleaved(data));
+        CORRADE_VERIFY(MeshTools::isInterleaved(dataDifferentOrder));
+    }
+
+    /* Doesn't have even one byte of space in the stride, invalid */
+    {
+        Containers::Array<char> vertexData{100 + 3*8};
+        Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+            Containers::StridedArrayView1D<Vector2>{vertexData,
+                reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 8}};
+        Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+            vertexFormatWrap(0x1234),
+            Containers::StridedArrayView1D<char>{vertexData,
+                vertexData.data() + 100 + 8, 3, 8}};
+
+        Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {positions, normals}};
+        CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+    }
+
+    /* A non-interleaved (or not?) attribute with a implementation-specific
+       format after interleaved ones is also invalid */
+    {
+        Containers::Array<char> vertexData{100 + 3*20 + 3};
+        Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+            Containers::StridedArrayView1D<Vector2>{vertexData,
+                reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 20}};
+        Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+            Containers::StridedArrayView1D<Vector3>{vertexData,
+                reinterpret_cast<Vector3*>(vertexData.data() + 100 + 8), 3, 20}};
+        Trade::MeshAttributeData extra{Trade::meshAttributeCustom(1234),
+            vertexFormatWrap(0x1234),
+            Containers::StridedArrayView1D<char>{vertexData,
+                vertexData.data() + 100 + 3*20, 3, 1}};
+
+        Trade::MeshData data{MeshPrimitive::Triangles, {}, vertexData,
+            {positions, normals, extra}};
+        CORRADE_VERIFY(!MeshTools::isInterleaved(data));
+    }
+}
+
 void InterleaveTest::interleavedData() {
     Containers::Array<char> vertexData{100 + 3*40};
     Containers::StridedArrayView1D<Vector3> normals{vertexData,
@@ -541,6 +602,43 @@ void InterleaveTest::interleavedMutableDataNotMutable() {
     Error redirectError{&out};
     MeshTools::interleavedMutableData(data);
     CORRADE_COMPARE(out.str(), "MeshTools::interleavedMutableData(): vertex data is not mutable\n");
+}
+
+void InterleaveTest::interleavedDataImplementationSpecificVertexFormat() {
+    Containers::Array<char> vertexData{100 + 3*50};
+    Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
+        Containers::StridedArrayView1D<Vector2>{vertexData,
+            reinterpret_cast<Vector2*>(vertexData.data() + 100), 3, 50}};
+    Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
+        vertexFormatWrap(0x1234),
+        Containers::StridedArrayView1D<char>{vertexData,
+            vertexData.data() + 100 + 8, 3, 50}};
+
+    {
+        Trade::MeshData data{MeshPrimitive::Triangles, {}, vertexData,
+            {positions, normals}};
+        CORRADE_VERIFY(MeshTools::isInterleaved(data));
+        Containers::StridedArrayView2D<const char> interleaved = MeshTools::interleavedData(data);
+        CORRADE_COMPARE(interleaved.data(), positions.data().data());
+        CORRADE_COMPARE(interleaved.size()[0], 3);
+        /* The implementation-specific format is conservatively assumed to
+           occupy the whole stride (even if may be is excessive) */
+        CORRADE_COMPARE(interleaved.size()[1], 50);
+        CORRADE_COMPARE(interleaved.stride()[0], 50);
+        CORRADE_COMPARE(interleaved.stride()[1], 1);
+
+    /* The result should be the same independent on the order of attributes */
+    } {
+        Trade::MeshData data{MeshPrimitive::Triangles, {}, vertexData,
+            {normals, positions}};
+        CORRADE_VERIFY(MeshTools::isInterleaved(data));
+        Containers::StridedArrayView2D<const char> interleaved = MeshTools::interleavedData(data);
+        CORRADE_COMPARE(interleaved.data(), positions.data().data());
+        CORRADE_COMPARE(interleaved.size()[0], 3);
+        CORRADE_COMPARE(interleaved.size()[1], 50);
+        CORRADE_COMPARE(interleaved.stride()[0], 50);
+        CORRADE_COMPARE(interleaved.stride()[1], 1);
+    }
 }
 
 void InterleaveTest::interleavedLayout() {

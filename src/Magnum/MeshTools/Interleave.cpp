@@ -50,13 +50,31 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
     const UnsignedInt stride = data.attributeStride(0);
     std::size_t minOffset = ~std::size_t{};
     std::size_t maxOffset = 0;
+    bool hasImplementationSpecificVertexFormat = false;
     for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
         if(data.attributeStride(i) != stride) return Containers::NullOpt;
 
         const std::size_t offset = data.attributeOffset(i);
         minOffset = Math::min(minOffset, offset);
-        maxOffset = Math::max(maxOffset, offset + attributeSize(data, i));
+
+        /* If the attribute has implementation-specific format, remember that
+           for later and optimistically use size of 1 byte for calculations */
+        std::size_t size;
+        if(isVertexFormatImplementationSpecific(data.attributeFormat(i))) {
+            hasImplementationSpecificVertexFormat = true;
+            size = 1;
+        } else size = attributeSize(data, i);
+
+        maxOffset = Math::max(maxOffset, offset + size);
     }
+
+    /* If there's an attribute with implementation-specific format,
+       conservatively use the whole stride for it. This should work for
+       majority of cases except when the stride has a padding at the end and
+       the padding isn't included in the vertexData array for the last vertex,
+       but that'd probably blow up in many other cases (and drivers) as well. */
+    if(hasImplementationSpecificVertexFormat)
+        maxOffset = Math::max(maxOffset, minOffset + stride);
 
     /* The offsets can't fit into the stride, report failure */
     if(maxOffset - minOffset > stride) return Containers::NullOpt;
@@ -110,6 +128,9 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
     } else {
         stride = 0;
         minOffset = 0;
+        /** @todo explitily assert on impl-specific vertex formats here --
+            however it should work when the original is already interleaved and
+            nothing in extras is impl-specific */
         for(UnsignedInt i = 0, max = data.attributeCount(); i != max; ++i)
             stride += attributeSize(data, i);
     }
@@ -122,6 +143,7 @@ Containers::Array<Trade::MeshAttributeData> interleavedLayout(Trade::MeshData&& 
                 "MeshTools::interleavedLayout(): negative padding" << extra[i].stride() << "in extra attribute" << i << "too large for stride" << stride, {});
             stride += extra[i].stride();
         } else {
+            /** @todo explitily assert on impl-specific vertex formats here */
             stride += attributeSize(extra[i]);
             ++extraAttributeCount;
         }
