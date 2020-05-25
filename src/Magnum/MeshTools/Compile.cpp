@@ -116,11 +116,13 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
 
             /* To avoid the compiler warning that we didn't handle an enum
                value. For these a runtime warning is printed below. */
+            /* LCOV_EXCL_START */
             #ifdef MAGNUM_TARGET_GLES2
             case Trade::MeshAttribute::ObjectId:
             #endif
             case Trade::MeshAttribute::Custom:
-                break; /* LCOV_EXCL_LINE */
+                break;
+             /* LCOV_EXCL_STOP */
         }
 
         if(!attribute) {
