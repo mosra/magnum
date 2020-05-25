@@ -48,8 +48,8 @@ Containers::Optional<Containers::StridedArrayView2D<const char>> interleavedData
         return Containers::StridedArrayView2D<const char>{data.vertexData(), {data.vertexCount(), 0}};
 
     const UnsignedInt stride = data.attributeStride(0);
-    std::size_t minOffset = data.attributeOffset(0);
-    std::size_t maxOffset = minOffset + attributeSize(data, 0);
+    std::size_t minOffset = ~std::size_t{};
+    std::size_t maxOffset = 0;
     for(UnsignedInt i = 0; i != data.attributeCount(); ++i) {
         if(data.attributeStride(i) != stride) return Containers::NullOpt;
 
