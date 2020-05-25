@@ -950,7 +950,9 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyDouble() {
             223,
             223
         };
-    } vertexData[1];
+    /* Old Clang complains that "error: default initialization of struct"
+       without the {} */
+    } vertexData[1]{};
 
     Trade::MeshData mesh{MeshPrimitive::Points,
         {}, vertexData, {
