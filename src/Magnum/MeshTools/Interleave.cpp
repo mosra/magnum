@@ -248,13 +248,6 @@ Trade::MeshData interleavedLayout(const Trade::MeshData& data, const UnsignedInt
 }
 
 Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<const Trade::MeshAttributeData> extra) {
-    /* If there are no attributes and no index buffer, bail -- the vertex count
-       is the only property we can transfer. If this wouldn't be done, the
-       return at the end would assert as vertex count is only passed implicitly
-       via attributes (which there are none). */
-    if(!data.attributeCount() && extra.empty() && !data.isIndexed())
-        return Trade::MeshData{data.primitive(), data.vertexCount()};
-
     /* Transfer the indices unchanged, in case the mesh is indexed */
     Containers::Array<char> indexData;
     Trade::MeshIndexData indices;
@@ -272,6 +265,7 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
     }
 
     const bool interleaved = isInterleaved(data);
+    const UnsignedInt vertexCount = data.vertexCount();
 
     /* If the mesh is already interleaved and we don't have anything extra,
        steal that data as well */
@@ -284,7 +278,7 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
     /* Otherwise do it the hard way */
     } else {
         /* Calculate the layout */
-        Trade::MeshData layout = interleavedLayout(data, data.vertexCount(), extra);
+        Trade::MeshData layout = interleavedLayout(data, vertexCount, extra);
 
         /* Copy existing attributes to new locations */
         for(UnsignedInt i = 0; i != data.attributeCount(); ++i)
@@ -305,8 +299,8 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
             /* Copy the attribute in, if it is non-empty, otherwise keep the
                memory uninitialized */
             if(extra[i].data()) {
-                CORRADE_ASSERT(extra[i].data().size() == data.vertexCount(),
-                    "MeshTools::interleave(): extra attribute" << i << "expected to have" << data.vertexCount() << "items but got" << extra[i].data().size(),
+                CORRADE_ASSERT(extra[i].data().size() == vertexCount,
+                    "MeshTools::interleave(): extra attribute" << i << "expected to have" << vertexCount << "items but got" << extra[i].data().size(),
                     (Trade::MeshData{MeshPrimitive::Triangles, 0}));
                 const Containers::StridedArrayView2D<const char> attribute =
                     Containers::arrayCast<2, const char>(extra[i].data(), vertexFormatSize(extra[i].format()));
@@ -322,7 +316,7 @@ Trade::MeshData interleave(Trade::MeshData&& data, const Containers::ArrayView<c
     }
 
     return Trade::MeshData{data.primitive(), std::move(indexData), indices,
-        std::move(vertexData), std::move(attributeData)};
+        std::move(vertexData), std::move(attributeData), vertexCount};
 }
 
 Trade::MeshData interleave(Trade::MeshData&& data, const std::initializer_list<Trade::MeshAttributeData> extra) {
