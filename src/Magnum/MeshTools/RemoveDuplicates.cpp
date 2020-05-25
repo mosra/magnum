@@ -338,8 +338,12 @@ template<class T> std::size_t removeDuplicatesFuzzyInPlaceIntoImplementation(con
     CORRADE_ASSERT(indices.size() == data.size()[0],
         "MeshTools::removeDuplicatesFuzzyInPlaceInto(): output index array has" << indices.size() << "elements but expected" << data.size()[0], {});
 
-    /* A trivial index array that'll be remapped */
-    std::iota(indices.begin(), indices.end(), 0);
+    /* A trivial index array that'll be remapped. Would use std::iota() here
+       but on MSVC 2015 debug build it excepts StridedArrayIterator to have a
+       member named iterator_category. Fuck that, using a loop instead. */
+    UnsignedInt i = 0;
+    for(UnsignedInt& index: indices) index = i++;
+
     const std::size_t size = removeDuplicatesFuzzyIndexedInPlaceImplementation(Containers::stridedArrayView(indices), data, epsilon);
     return size;
 }
