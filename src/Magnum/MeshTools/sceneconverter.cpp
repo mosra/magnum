@@ -93,7 +93,7 @@ Arguments:
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
 -   `--info` --- print info about the input file and exit
--   `-v`, `--verbose` --- verbose output from importer plugins
+-   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
 If `--info` is given, the utility will print information about all meshes
