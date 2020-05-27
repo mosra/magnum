@@ -417,6 +417,10 @@ elseif(CORRADE_TARGET_WINDOWS)
 endif()
 
 set(_MAGNUM_Primitives_DEPENDENCIES MeshTools Trade)
+if(MAGNUM_TARGET_GL)
+    # GL not required by Primitives themselves, but transitively by MeshTools
+    list(APPEND _MAGNUM_Primitives_DEPENDENCIES GL)
+endif()
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
