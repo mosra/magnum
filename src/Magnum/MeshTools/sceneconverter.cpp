@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <set>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -83,6 +84,8 @@ Arguments:
     @ref Trade::AnySceneImporter "AnySceneImporter")
 -   `--converter CONVERTER` --- scene converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `--only-attributes "i j …"` --- include only attributes of given IDs in the
+    output
 -   `--remove-duplicates` --- remove duplicate vertices using
     @ref MeshTools::removeDuplicates(const Trade::MeshData&) after import
 -   `--remove-duplicates-fuzzy EPSILON` --- remove duplicate vertices using
@@ -161,6 +164,7 @@ int main(int argc, char** argv) {
         .addOption("importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
         .addArrayOption("converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
+        .addOption("only-attributes").setHelp("only-attributes", "include only attributes of given IDs in the output", "\"i j …\"")
         .addBooleanOption("remove-duplicates").setHelp("remove-duplicates", "remove duplicate vertices in the mesh after import")
         .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
@@ -371,6 +375,26 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
     }
 
     std::chrono::high_resolution_clock::duration conversionTime;
+
+    /* Filter attributes, if requested */
+    if(!args.value("only-attributes").empty()) {
+        std::set<UnsignedInt> only;
+        for(const std::string& i: Utility::String::split(args.value("only-attributes"), ' '))
+            only.insert(std::stoi(i));
+
+        Containers::Array<Trade::MeshAttributeData> attributes;
+        for(UnsignedInt i = 0; i != mesh->attributeCount(); ++i) {
+            if(only.find(i) != only.end())
+                arrayAppend(attributes, mesh->attributeData(i));
+        }
+
+        const Trade::MeshIndexData indices{mesh->indices()};
+        const UnsignedInt vertexCount = mesh->vertexCount();
+        mesh = Trade::MeshData{mesh->primitive(),
+            mesh->releaseIndexData(), indices,
+            mesh->releaseVertexData(), std::move(attributes),
+            vertexCount};
+    }
 
     /* Remove duplicates, if requested */
     if(args.isSet("remove-duplicates")) {
