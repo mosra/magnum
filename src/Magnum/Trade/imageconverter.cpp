@@ -66,8 +66,8 @@ information.
 @code{.sh}
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
     [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…] [--info] [-v|--verbose] [--]
-    input output
+    [-c|--converter-options key=val,key2=val2,…] [--image IMAGE]
+    [--level LEVEL][--info] [-v|--verbose] [--] input output
 @endcode
 
 Arguments:
@@ -84,6 +84,8 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
+-   `--image IMAGE` --- image to import (default: `0`)
+-   `--level LEVEL` --- image level to import (default: 0)
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 
@@ -146,6 +148,8 @@ int main(int argc, char** argv) {
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
+        .addOption("image", "0").setHelp("image", "image to import")
+        .addOption("level", "0").setHelp("level", "image level to import")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
@@ -258,8 +262,8 @@ key=true; configuration subgroups are delimited with /.)")
             return error ? 1 : 0;
         }
 
-        /* Open input file and the first image */
-        if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
+        /* Open input file and the desired image */
+        if(!importer->openFile(args.value("input")) || !(image = importer->image2D(args.value<UnsignedInt>("image"), args.value<UnsignedInt>("level")))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
         }

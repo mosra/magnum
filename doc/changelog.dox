@@ -452,6 +452,8 @@ See also:
     plugin if you specify `--importer raw:&lt;format&gt;`; and save raw
     imported data instead of going through a converter plugin if you specify
     `--converter raw`
+-   @ref magnum-imageconverter "magnum-imageconverter" can be told to load a
+    particular image and level using the `--image` and `--level` options
 -   New convenience @ref Trade::AnimationTrackData constructor taking a
     templated @ref Animation::TrackView type, autodetecting value and result
     @ref Trade::AnimationTrackType out of it
