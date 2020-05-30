@@ -109,7 +109,23 @@ prioritize a particular plugin implementation.
 </tr>
 <tr>
 <td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
-<td class="m-text-center m-warning">@ref Trade-DevIlImageImporter-behavior-animated-gifs "some"</td>
+<td class="m-text-center m-danger">@ref Trade-DevIlImageImporter-behavior-animated-gifs "severe"</td>
+<td class="m-text-center m-warning">external</td>
+<td class="m-text-center m-warning">LGPLv2.1</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
+<th rowspan="2">ICO<br/>(`*.ico`, `*.cur`)</th>
+<td rowspan="2">`IcoImporter`</td>
+<td>@ref Trade::IcoImporter "IcoImporter"</td>
+<td class="m-text-center m-warning">@ref Trade-IcoImporter-behavior "some"</td>
+<td class="m-text-center">@m_span{m-text m-dim} none @m_endspan </td>
+<td class="m-text-center"></td>
+</tr>
+<tr>
+<td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
+<td class="m-text-center m-danger">@ref Trade-DevIlImageImporter-behavior-ico "severe"</td>
 <td class="m-text-center m-warning">external</td>
 <td class="m-text-center m-warning">LGPLv2.1</td>
 </tr>
