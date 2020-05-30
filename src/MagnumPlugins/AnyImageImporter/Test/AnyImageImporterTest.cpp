@@ -85,6 +85,7 @@ constexpr struct {
     {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
     {"HDR", "rgb.hdr", nullptr, "HdrImporter"},
     {"HDR data", "rgb.hdr", fileCallback, "HdrImporter"},
+    {"ICO", "pngs.ico", nullptr, "IcoImporter"},
     {"DDS", "rgba_dxt1.dds", nullptr, "DdsImporter"},
     {"DDS data", "rgba_dxt1.dds", fileCallback, "DdsImporter"},
     {"BMP", "image.bmp", nullptr, "BmpImporter"},

@@ -459,6 +459,8 @@ See also:
     @ref Trade::AnimationTrackType out of it
 -   New convenience @ref Trade::AnimationData constructors taking an
     @ref std::initializer_list of @ref Trade::AnimationTrackData
+-   Recognizing `*.ico` and `*.cur` files in
+    @ref Trade::AnyImageImporter "AnyImageImporter"
 
 @subsection changelog-latest-buildsystem Build system
 

@@ -67,6 +67,8 @@ tries to open the file with it. Supported formats:
     plugin that provides `OpenExrImporter`
 -   Radiance HDR (`*.hdr` or data with corresponding signature), loaded with
     any plugin that provides `HdrImporter`
+-   Windows icon/cursor (`*.ico`, `*.cur`), loaded with @ref IcoImporter or any
+    other plugin that provides it
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg` or data with corresponding signature),
     loaded with @ref JpegImporter or any other plugin that provides it
 -   JPEG 2000 (`*.jp2`), loaded with any plugin that provides

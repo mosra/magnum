@@ -53,6 +53,7 @@ corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
     FILES
         gray.jpg
         image.exr
+        pngs.ico
         rgb.basis
         rgb.hdr
         rgb.png

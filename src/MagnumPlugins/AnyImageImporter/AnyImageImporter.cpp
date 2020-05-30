@@ -72,6 +72,9 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "GifImporter";
     else if(Utility::String::endsWith(normalized, ".hdr"))
         plugin = "HdrImporter";
+    else if(Utility::String::endsWith(normalized, ".ico") ||
+            Utility::String::endsWith(normalized, ".cur"))
+        plugin = "IcoImporter";
     else if(Utility::String::endsWith(normalized, ".jpg") ||
             Utility::String::endsWith(normalized, ".jpeg") ||
             Utility::String::endsWith(normalized, ".jpe"))
