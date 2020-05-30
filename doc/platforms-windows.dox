@@ -147,7 +147,8 @@ endif()
 
 Note that this doesn't have any effect on the *window* icon --- there it has to
 be specified at runtime, for example via
-@ref Platform::Sdl2Application::setWindowIcon().
+@ref Platform::Sdl2Application::setWindowIcon(). See also the
+@ref Trade::IcoImporter "IcoImporter" plugin for importing icon files.
 
 @section platform-windows-terminal-colors Colored terminal output
 
