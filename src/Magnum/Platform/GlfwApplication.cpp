@@ -727,10 +727,7 @@ bool GlfwApplication::mainLoopIteration() {
             the call goes into the base class no-op viewportEvent()), but when
             calling create() / tryCreate() from user constructor, this might
             lead to crashes as things touched by viewportEvent() might not be
-            initialized yet. To fix this, we ignore the first ever viewport
-            event. This behavior was not observed on Linux or macOS (and thus
-            ignoring the first viewport event there may be harmful), so keeping
-            this Windows-only.
+            initialized yet.
         2.  On macOS, GLFW might sometimes (hard to reproduce) trigger a draw
             event when creating the window. That's even worse than on Windows
             because this leads to pure virtual drawEvent() getting called and
