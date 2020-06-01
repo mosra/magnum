@@ -71,8 +71,8 @@ magnum-sceneconverter [-h|--help] [--importer IMPORTER]
     [--converter CONVERTER]... [--plugin-dir DIR] [--remove-duplicates]
     [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
-    [-c|--converter-options key=val,key2=val2,…]... [--info] [-v|--verbose]
-    [--profile] [--] input output
+    [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
+    [--level LEVEL][--info] [-v|--verbose] [--profile] [--] input output
 @endcode
 
 Arguments:
@@ -95,6 +95,8 @@ Arguments:
     pass to the importer
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
+-   `--mesh MESH` --- mesh to import (default: `0`)
+-   `--level LEVEL` --- mesh level to import (default: `0`)
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
@@ -169,6 +171,8 @@ int main(int argc, char** argv) {
         .addOption("remove-duplicates-fuzzy").setHelp("remove-duplicates-fuzzy", "remove duplicate vertices with fuzzy comparison in the mesh after import", "EPSILON")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
+        .addOption("mesh", "0").setHelp("mesh", "mesh to import")
+        .addOption("level", "0").setHelp("level", "mesh level to import")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
@@ -372,8 +376,8 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
     Containers::Optional<Trade::MeshData> mesh;
     {
         Duration d{importTime};
-        if(!importer->meshCount() || !(mesh = importer->mesh(0))) {
-            Error{} << "Cannot import mesh 0";
+        if(!importer->meshCount() || !(mesh = importer->mesh(args.value<UnsignedInt>("mesh"), args.value<UnsignedInt>("level")))) {
+            Error{} << "Cannot import the mesh";
             return 4;
         }
     }
