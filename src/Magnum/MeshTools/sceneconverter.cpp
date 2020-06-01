@@ -315,8 +315,12 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         for(const MeshInfo& info: meshInfos) {
             Debug d;
             if(info.level == 0) {
-                d << "Mesh" << info.mesh
-                    << Utility::formatString("(referenced by {} objects):", info.references);
+                d << "Mesh" << info.mesh;
+                /* Print reference count only if there actually is a scene,
+                   otherwise this information is useless */
+                if(importer->object3DCount())
+                    d << Utility::formatString("(referenced by {} objects)", info.references);
+                d << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
                 d << Debug::newline;
             }
