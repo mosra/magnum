@@ -263,9 +263,14 @@ key=true; configuration subgroups are delimited with /.)")
         }
 
         /* Open input file and the desired image */
-        if(!importer->openFile(args.value("input")) || !(image = importer->image2D(args.value<UnsignedInt>("image"), args.value<UnsignedInt>("level")))) {
+        if(!importer->openFile(args.value("input"))) {
             Error() << "Cannot open file" << args.value("input");
             return 3;
+        }
+
+         if(!(image = importer->image2D(args.value<UnsignedInt>("image"), args.value<UnsignedInt>("level")))) {
+            Error() << "Cannot import the image";
+            return 4;
         }
     }
 
@@ -304,6 +309,6 @@ key=true; configuration subgroups are delimited with /.)")
     /* Save output file */
     if(!converter->exportToFile(*image, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
-        return 4;
+        return 5;
     }
 }
