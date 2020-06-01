@@ -103,6 +103,13 @@ package() {
     cd "$_rootdir/build"
     DESTDIR="$pkgdir/" ninja install
 
+    # Prevent the release version from overwriting the debug binary
+    for i in al-info gl-info distancefieldconverter fontconverter imageconverter sceneconverter; do
+        mv $pkgdir/usr/bin/magnum-${i}{,d}
+    done
+
     cd "$_rootdir/build-release"
     DESTDIR="$pkgdir/" ninja install/strip
 }
+
+# kate: hl bash
