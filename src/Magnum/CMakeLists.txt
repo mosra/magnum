@@ -23,8 +23,32 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Generate configure header
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
+# Generate version header. If Git is found and this is a Git working copy,
+# extract values from there, otherwise use just MAGNUM_VERSION_YEAR/MONTH that
+# are set in project root CMakeLists.
+find_package(Git)
+if(Git_FOUND)
+    # Match only tags starting with `v`, always use the long format so we have
+    # a commit hash also on a tagged version
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --match "v*" --long
+        OUTPUT_VARIABLE MAGNUM_VERSION_STRING
+        RESULT_VARIABLE _MAGNUM_VERSION_RESULT
+        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(MAGNUM_VERSION_STRING MATCHES "^v([0-9][0-9][0-9][0-9])\\.0?([0-9][0-9])-([0-9]+)-g([a-f0-9]+)$")
+        set(MAGNUM_VERSION_YEAR ${CMAKE_MATCH_1})
+        set(MAGNUM_VERSION_MONTH ${CMAKE_MATCH_2})
+        set(MAGNUM_VERSION_COMMIT ${CMAKE_MATCH_3})
+        set(MAGNUM_VERSION_HASH ${CMAKE_MATCH_4})
+    elseif(_MAGNUM_VERSION_RESULT EQUAL 0)
+        message(WARNING "Can't match Git version from ${MAGNUM_VERSION_STRING}")
+    endif()
+endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
@@ -148,7 +172,10 @@ install(TARGETS Magnum
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+    ${CMAKE_CURRENT_BINARY_DIR}/version.h
+    DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Animation)
 add_subdirectory(Math)

@@ -905,8 +905,9 @@ inverse.
         properly
 8.  Convert all occurences of <tt>\@m_since_latest</tt> to
     <tt>\@m_since{20XY,ab}</tt>
-9.  Bump `MAGNUM_LIBRARY_VERSION` and `MAGNUM_LIBRARY_SOVERSION` in all
-    projects, if needed --- ensure all projects have the exact same version
+9.  Bump `MAGNUM*_LIBRARY_VERSION`, `MAGNUM*_LIBRARY_SOVERSION`
+    `MAGNUM*_VERSION_YEAR` and `MAGNUM*_VERSION_MONTH` in all projects. Ensure
+    all projects have the exact same version.
 10. Rebuild all projects with the new shared library version numbers, verify
     all tools and examples still behave properly
 11. Build and upload public docs (see @ref developers-documentation), verify

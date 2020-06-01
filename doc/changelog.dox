@@ -330,6 +330,12 @@ See also:
     for more information.
 -   Added an ability to disable unique globals across shared libraries using
     @ref MAGNUM_BUILD_STATIC_UNIQUE_GLOBALS on static builds that don't need it
+-   Library version is now exposed through `MAGNUM_VERSION_YEAR`,
+    `MAGNUM_VERSION_MONTH`, `MAGNUM_VERSION_COMMIT`, `MAGNUM_VERSION_HASH`
+    and `MAGNUM_VERSION_STRING` preprocessor defines in a new
+    `Magnum/version.h` header. This header is not included by any other header
+    to avoid trigerring a full rebuild when Git commit changes. If Git is not
+    found, only the first two defines are present.
 
 @subsubsection changelog-latest-changes-audio Audio library
 
