@@ -85,7 +85,7 @@ Arguments:
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
 -   `--image IMAGE` --- image to import (default: `0`)
--   `--level LEVEL` --- image level to import (default: 0)
+-   `--level LEVEL` --- image level to import (default: `0`)
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 
