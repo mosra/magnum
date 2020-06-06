@@ -309,6 +309,7 @@ Extension                                   | Status
 Extension                                   | Status
 ------------------------------------------- | ------
 @gl_extension{AMD,transform_feedback3_lines_triangles} | done (nothing to do)
+@gl_extension{AMD,sample_positions}         | |
 @gl_extension{AMD,vertex_shader_layer}      | done (shading language only)
 @gl_extension{AMD,shader_trinary_minmax}    | done (shading language only)
 @gl_extension{AMD,shader_explicit_vertex_parameter} | done (shading language only)
@@ -323,6 +324,7 @@ Extension                                   | Status
 @gl_extension{EXT,debug_marker}             | done
 @gl_extension{EXT,sRGB_R8}                  | done
 @gl_extension{GREMEDY,string_marker}        | done
+@gl_extension{NV,sample_locations}          | |
 @gl_extension{NV,fragment_shader_barycentric} | done (shading language only)
 @gl_extension{OVR,multiview}                | |
 @gl_extension{OVR,multiview2}               | |
@@ -487,6 +489,7 @@ Extension                                   | Status
 @gl_extension{NV,read_depth_stencil}        | done
 @gl_extension{NV,texture_border_clamp}      | done
 @gl_extension{NV,shader_noperspective_interpolation} | done (shading language only)
+@gl_extension{NV,sample_locations}          | |
 @gl_extension{NV,polygon_mode}              | done
 @gl_extension{OES,depth32}                  | done
 @gl_extension{OES,mapbuffer}                | done

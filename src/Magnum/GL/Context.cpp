@@ -78,6 +78,7 @@ namespace {
 #ifndef MAGNUM_TARGET_GLES
 constexpr Extension ExtensionList[]{
     _extension(AMD,transform_feedback3_lines_triangles),
+    _extension(AMD,sample_positions),
     _extension(AMD,vertex_shader_layer),
     _extension(AMD,shader_trinary_minmax),
     _extension(AMD,shader_explicit_vertex_parameter),
@@ -108,6 +109,7 @@ constexpr Extension ExtensionList[]{
     _extension(KHR,blend_equation_advanced),
     _extension(KHR,blend_equation_advanced_coherent),
     _extension(KHR,texture_compression_astc_sliced_3d),
+    _extension(NV,sample_locations),
     _extension(NV,fragment_shader_barycentric),
     _extension(OVR,multiview),
     _extension(OVR,multiview2)};
@@ -355,6 +357,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(NV,shader_noperspective_interpolation),
     #endif
+    _extension(NV,sample_locations),
     _extension(NV,polygon_mode),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(NV,fragment_shader_barycentric),

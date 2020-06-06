@@ -102,6 +102,7 @@ extension NV_read_depth                         optional
 extension NV_read_stencil                       optional
 extension NV_read_depth_stencil                 optional
 extension NV_texture_border_clamp               optional
+extension NV_sample_locations                   optional
 extension NV_polygon_mode                       optional
 extension OES_depth32                           optional
 extension OES_mapbuffer                         optional

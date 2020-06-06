@@ -1628,6 +1628,17 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_TEXTURE_BORDER_COLOR_NV 0x1004
 #define GL_CLAMP_TO_BORDER_NV 0x812D
 
+/* GL_NV_sample_locations */
+
+#define GL_SAMPLE_LOCATION_SUBPIXEL_BITS_NV 0x933D
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_WIDTH_NV 0x933E
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_HEIGHT_NV 0x933F
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_TABLE_SIZE_NV 0x9340
+#define GL_SAMPLE_LOCATION_NV 0x8E50
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_NV 0x9341
+#define GL_FRAMEBUFFER_PROGRAMMABLE_SAMPLE_LOCATIONS_NV 0x9342
+#define GL_FRAMEBUFFER_SAMPLE_LOCATION_PIXEL_GRID_NV 0x9343
+
 /* GL_NV_polygon_mode */
 
 #define GL_POLYGON_MODE_NV 0x0B40
@@ -2207,6 +2218,12 @@ struct FlextGL {
 
     void(APIENTRY *PolygonModeNV)(GLenum, GLenum);
 
+    /* GL_NV_sample_locations */
+
+    void(APIENTRY *FramebufferSampleLocationsfvNV)(GLenum, GLuint, GLsizei, const GLfloat *);
+    void(APIENTRY *NamedFramebufferSampleLocationsfvNV)(GLuint, GLuint, GLsizei, const GLfloat *);
+    void(APIENTRY *ResolveDepthValuesNV)(void);
+
     /* GL_OES_mapbuffer */
 
     void(APIENTRY *GetBufferPointervOES)(GLenum, GLenum, void **);
@@ -2512,6 +2529,12 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_NV_polygon_mode */
 
 #define glPolygonModeNV flextGL.PolygonModeNV
+
+/* GL_NV_sample_locations */
+
+#define glFramebufferSampleLocationsfvNV flextGL.FramebufferSampleLocationsfvNV
+#define glNamedFramebufferSampleLocationsfvNV flextGL.NamedFramebufferSampleLocationsfvNV
+#define glResolveDepthValuesNV flextGL.ResolveDepthValuesNV
 
 /* GL_OES_mapbuffer */
 

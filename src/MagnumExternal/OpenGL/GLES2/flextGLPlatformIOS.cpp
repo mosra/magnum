@@ -138,6 +138,9 @@
 #undef glVertexAttribDivisorNV
 #undef glPolygonModeNV
 #undef glReadBufferNV
+#undef glFramebufferSampleLocationsfvNV
+#undef glNamedFramebufferSampleLocationsfvNV
+#undef glResolveDepthValuesNV
 #undef glGetBufferPointervOES
 #undef glMapBufferOES
 #undef glUnmapBufferOES
@@ -390,6 +393,13 @@ void flextGLInit(Magnum::GL::Context&) {
     /* GL_NV_read_buffer */
     #if GL_NV_read_buffer
     flextGL.ReadBufferNV = reinterpret_cast<void(APIENTRY*)(GLenum)>(glReadBufferNV);
+    #endif
+
+    /* GL_NV_sample_locations */
+    #if GL_NV_sample_locations
+    flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(glFramebufferSampleLocationsfvNV);
+    flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(glNamedFramebufferSampleLocationsfvNV);
+    flextGL.ResolveDepthValuesNV = reinterpret_cast<void(APIENTRY*)(void)>(glResolveDepthValuesNV);
     #endif
 
     /* GL_OES_mapbuffer */

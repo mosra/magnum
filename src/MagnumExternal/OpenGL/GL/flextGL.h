@@ -1612,6 +1612,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT 0x8C4E
 #define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 
+/* GL_AMD_sample_positions */
+
+#define GL_SUBSAMPLE_DISTANCE_AMD 0x883F
+
 /* GL_ARB_robustness */
 
 #define GL_NO_ERROR 0
@@ -1766,6 +1770,17 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
 
+/* GL_NV_sample_locations */
+
+#define GL_SAMPLE_LOCATION_SUBPIXEL_BITS_NV 0x933D
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_WIDTH_NV 0x933E
+#define GL_SAMPLE_LOCATION_PIXEL_GRID_HEIGHT_NV 0x933F
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_TABLE_SIZE_NV 0x9340
+#define GL_SAMPLE_LOCATION_NV 0x8E50
+#define GL_PROGRAMMABLE_SAMPLE_LOCATION_NV 0x9341
+#define GL_FRAMEBUFFER_PROGRAMMABLE_SAMPLE_LOCATIONS_NV 0x9342
+#define GL_FRAMEBUFFER_SAMPLE_LOCATION_PIXEL_GRID_NV 0x9343
+
 /* GL_OVR_multiview */
 
 #define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR 0x9630
@@ -1780,6 +1795,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
    and one has to retrieve them explicitly using eglGetProcAddress(), which is
    why those functions aren't listed as direct prototypes. */
 struct FlextGL {
+
+    /* GL_AMD_sample_positions */
+
+    void(APIENTRY *SetMultisamplefvAMD)(GLenum, GLuint, const GLfloat *);
 
     /* GL_ARB_ES3_2_compatibility */
 
@@ -1853,6 +1872,12 @@ struct FlextGL {
     /* GL_KHR_blend_equation_advanced */
 
     void(APIENTRY *BlendBarrierKHR)(void);
+
+    /* GL_NV_sample_locations */
+
+    void(APIENTRY *FramebufferSampleLocationsfvNV)(GLenum, GLuint, GLsizei, const GLfloat *);
+    void(APIENTRY *NamedFramebufferSampleLocationsfvNV)(GLuint, GLuint, GLsizei, const GLfloat *);
+    void(APIENTRY *ResolveDepthValuesNV)(void);
 
     /* GL_OVR_multiview */
 
@@ -2575,6 +2600,10 @@ struct FlextGL {
 
 extern FLEXTGL_EXPORT FlextGL flextGL;
 
+/* GL_AMD_sample_positions */
+
+#define glSetMultisamplefvAMD flextGL.SetMultisamplefvAMD
+
 /* GL_ARB_ES3_2_compatibility */
 
 #define glPrimitiveBoundingBoxARB flextGL.PrimitiveBoundingBoxARB
@@ -2647,6 +2676,12 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 /* GL_KHR_blend_equation_advanced */
 
 #define glBlendBarrierKHR flextGL.BlendBarrierKHR
+
+/* GL_NV_sample_locations */
+
+#define glFramebufferSampleLocationsfvNV flextGL.FramebufferSampleLocationsfvNV
+#define glNamedFramebufferSampleLocationsfvNV flextGL.NamedFramebufferSampleLocationsfvNV
+#define glResolveDepthValuesNV flextGL.ResolveDepthValuesNV
 
 /* GL_OVR_multiview */
 

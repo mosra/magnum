@@ -9,6 +9,7 @@ version 4.6 core
 extension EXT_texture_sRGB                      optional
 
 extension AMD_transform_feedback3_lines_triangles optional
+extension AMD_sample_positions                  optional
 extension AMD_vertex_shader_layer               optional
 extension AMD_shader_trinary_minmax             optional
 extension AMD_shader_explicit_vertex_parameter  optional
@@ -39,6 +40,7 @@ extension KHR_texture_compression_astc_ldr      optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
 # extension KHR_texture_compression_astc_sliced_3d optional
+extension NV_sample_locations                   optional
 extension NV_fragment_shader_barycentric        optional
 extension OVR_multiview                         optional
 extension OVR_multiview2                        optional

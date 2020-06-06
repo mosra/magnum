@@ -157,6 +157,9 @@ extern void APIENTRY glTexSubImage2D(GLenum, GLint, GLint, GLint, GLsizei, GLsiz
 
 FlextGL flextGL{
 
+    /* GL_AMD_sample_positions */
+    nullptr,
+
     /* GL_ARB_ES3_2_compatibility */
     nullptr,
 
@@ -217,6 +220,11 @@ FlextGL flextGL{
     nullptr,
 
     /* GL_KHR_blend_equation_advanced */
+    nullptr,
+
+    /* GL_NV_sample_locations */
+    nullptr,
+    nullptr,
     nullptr,
 
     /* GL_OVR_multiview */

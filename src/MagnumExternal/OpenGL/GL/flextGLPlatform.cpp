@@ -118,6 +118,9 @@ void flextGLInit(Magnum::GL::Context& context) {
     static_cast<void>(context);
     #endif
 
+    /* GL_AMD_sample_positions */
+    flextGL.SetMultisamplefvAMD = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, const GLfloat *)>(loader.load("glSetMultisamplefvAMD"));
+
     /* GL_ARB_ES3_2_compatibility */
     flextGL.PrimitiveBoundingBoxARB = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat)>(loader.load("glPrimitiveBoundingBoxARB"));
 
@@ -179,6 +182,11 @@ void flextGLInit(Magnum::GL::Context& context) {
 
     /* GL_KHR_blend_equation_advanced */
     flextGL.BlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
+
+    /* GL_NV_sample_locations */
+    flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(loader.load("glFramebufferSampleLocationsfvNV"));
+    flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(loader.load("glNamedFramebufferSampleLocationsfvNV"));
+    flextGL.ResolveDepthValuesNV = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glResolveDepthValuesNV"));
 
     /* GL_OVR_multiview */
     flextGL.FramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glFramebufferTextureMultiviewOVR"));

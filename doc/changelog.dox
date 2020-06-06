@@ -87,7 +87,9 @@ See also:
         @gl_extension{OVR,multiview2} extensions and the WebGL
         @webgl_extension{OVR,multiview2} extension. See also
         [mosra/magnum#385](https://github.com/mosra/magnum/issues/385).
-    -   @gl_extension{ARB,sample_locations} desktop extension
+    -   @gl_extension{ARB,sample_locations} and
+        @gl_extension{AMD,sample_positions} desktop extensions;
+        @gl_extension{NV,sample_locations} desktop and ES extension
 -   Implemented @gl_extension{EXT,draw_buffers2},
     @gl_extension{ARB,draw_buffers_blend} desktop extensions,
     @gl_extension{EXT,draw_buffers_indexed} ES extension and

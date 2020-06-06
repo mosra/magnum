@@ -90,9 +90,10 @@ namespace Extensions {
 #ifndef MAGNUM_TARGET_GLES
 namespace AMD {
     _extension(  0,AMD,transform_feedback3_lines_triangles, GL210, None) // #397
-    _extension(  1,AMD,vertex_shader_layer,             GL210,  None) // #417
-    _extension(  2,AMD,shader_trinary_minmax,           GL210,  None) // #428
-    _extension(  3,AMD,shader_explicit_vertex_parameter, GL210, None) // #485
+    _extension(  1,AMD,sample_positions,                GL210,  None) // #405
+    _extension(  2,AMD,vertex_shader_layer,             GL210,  None) // #417
+    _extension(  3,AMD,shader_trinary_minmax,           GL210,  None) // #428
+    _extension(  4,AMD,shader_explicit_vertex_parameter, GL210, None) // #485
 } namespace ARB {
     _extension( 10,ARB,texture_rectangle,               GL210, GL310) // #38
     _extension( 11,ARB,color_buffer_float,              GL210, GL300) // #39
@@ -259,7 +260,8 @@ namespace AMD {
     _extension(176,NV,depth_buffer_float,               GL210, GL300) // #334
     _extension(177,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
-    _extension(178,NV,fragment_shader_barycentric,      GL450,  None) // #526
+    _extension(178,NV,sample_locations,                 GL210,  None) // #472
+    _extension(179,NV,fragment_shader_barycentric,      GL450,  None) // #526
 } namespace OVR {
     _extension(185,OVR,multiview,                       GL300,  None) // #478
     _extension(186,OVR,multiview2,                      GL300,  None) // #479
@@ -480,9 +482,10 @@ namespace ANDROID {
     #ifndef MAGNUM_TARGET_GLES2
     _extension( 95,NV,shader_noperspective_interpolation, GLES300, None) // #201
     #endif
-    _extension( 96,NV,polygon_mode,                 GLES200,    None) // #238
+    _extension( 96,NV,sample_locations,             GLES200,    None) // #235
+    _extension( 97,NV,polygon_mode,                 GLES200,    None) // #238
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 97,NV,fragment_shader_barycentric,  GLES320,    None) // #316
+    _extension( 98,NV,fragment_shader_barycentric,  GLES320,    None) // #316
     #endif
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
