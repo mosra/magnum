@@ -54,7 +54,8 @@ ALIASES                = \
     "webgl_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
     "fn_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vk\1.html\">vk\1()</a>" \
     "type_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\1.html\">Vk\1</a>" \
-    "def_vk{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\2.html\">VK_\1</a>" \
+    "val_vk{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\2.html\">VK_\1</a>" \
+    "def_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1.html\">VK_\1</a>" \
     "requires_vk_extension=@xrefitem requires-vk-extension \"Requires Vulkan extension\" \"Functionality requiring specific Vulkan extension\"" \
     "vk_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1_\2.html\">\1_\2</a>" \
     "fn_al{1}=@m_class{m-doc-external} <a href=\"https://github.com/kcat/openal-soft/wiki/Programmer's-Guide#al\1\">al\1()</a>" \
@@ -87,7 +88,8 @@ ALIASES                = \
     "def_gl_extension_keyword{3}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"GL_\1_\2\" />@endxmlonly @def_gl_extension{\1,\2,\3}" \
     "fn_vk_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"vk\1()\" />@endxmlonly @fn_vk{\1}" \
     "type_vk_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"Vk\1\" />@endxmlonly @type_vk{\1}" \
-    "def_vk_keyword{2}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"VK_\1\" />@endxmlonly @def_vk{\1,\2}" \
+    "val_vk_keyword{2}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"VK_\1\" />@endxmlonly @val_vk{\1,\2}" \
+    "def_vk_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"VK_\1\" />@endxmlonly @def_vk{\1}" \
     "fn_al_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"al\1()\" />@endxmlonly @fn_al{\1}" \
     "fn_alc_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"alc\1()\" />@endxmlonly @fn_alc{\1}" \
     "def_al_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"AL_\1\" />@endxmlonly @def_al{\1}" \

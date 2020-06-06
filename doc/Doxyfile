@@ -301,7 +301,8 @@ ALIASES                = \
     "webgl_extension{2}=<a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
     "fn_vk{1}=<a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vk\1.html\">vk\1()</a>" \
     "type_vk{1}=<a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\1.html\">Vk\1</a>" \
-    "def_vk{2}=<a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\2.html\">VK_\1</a>" \
+    "val_vk{2}=<a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\2.html\">VK_\1</a>" \
+    "def_vk{1}=<a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1.html\">VK_\1</a>" \
     "requires_vk_extension=@xrefitem requires-vk-extension \"Requires Vulkan extension\" \"Functionality requiring specific Vulkan extension\"" \
     "vk_extension{2}= <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1_\2.html\">\1_\2</a>" \
     "fn_al{1}=`al\1()`" \
@@ -334,7 +335,8 @@ ALIASES                = \
     "def_gl_extension_keyword{3}=@def_gl_extension{\1,\2,\3}" \
     "fn_vk_keyword{1}=@fn_vk{\1}" \
     "type_vk_keyword{2}=@type_vk{\1,\2}" \
-    "def_vk_keyword{2}=@def_vk{\1,\2}" \
+    "val_vk_keyword{2}=@val_vk{\1,\2}" \
+    "def_vk_keyword{1}=@def_vk{\1}" \
     "fn_al_keyword{1}=@fn_al{\1}" \
     "fn_alc_keyword{1}=@fn_alc{\1}" \
     "def_al_keyword{1}=@def_al{\1}" \

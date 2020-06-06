@@ -52,7 +52,8 @@ static void setSeamless(bool enabled) {
 /**
 -   @fn_vk{CreateInstance}
 -   @type_vk{InstanceCreateInfo}
--   @def_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+-   @val_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+-   @def_vk{VERSION_MINOR}
 */
 /* [fn_vk] */
 

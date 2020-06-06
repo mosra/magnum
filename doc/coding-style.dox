@@ -193,7 +193,8 @@ specification, with function name as link text:
 @fn_gl_extension{LabelObject,EXT,debug_label}
 </blockquote>
 
-For Vulkan, the commands are @c \@fn_vk, @c \@type_vk and @c \@def_vk. Example:
+For Vulkan, the commands are @c \@fn_vk, @c \@type_vk, @c \@val_vk and
+@c \@def_vk. Example:
 
 @snippet coding-style.h fn_vk
 
@@ -202,7 +203,8 @@ Produces:
 <blockquote>
 -   @fn_vk{CreateInstance}
 -   @type_vk{InstanceCreateInfo}
--   @def_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+-   @val_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+-   @def_vk{VERSION_MINOR}
 </blockquote>
 
 For OpenAL, the commands are @c \@fn_al, @c \@fn_alc, @c \@def_al and

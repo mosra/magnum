@@ -200,7 +200,7 @@ MAGNUM_VK_EXPORT VkFilter vkFilter(Magnum::SamplerFilter filter);
 @brief Convert generic sampler mipomap mode to Vulkan sampler mipmap mode
 
 Vulkan doesn't support the @ref SamplerMipmap::Base value directly, instead
-@def_vk{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} is used and you have to
+@val_vk{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} is used and you have to
 configure the sampler to use just a single mipmap level.
 @see @ref vkFilter(), @ref vkSamplerAddressMode()
 */

@@ -55,7 +55,7 @@ enum class SamplerFilter: UnsignedInt {
      * Nearest neighbor filtering.
      *
      * Corresponds to @ref GL::SamplerFilter::Nearest /
-     * @def_vk_keyword{FILTER_NEAREST,Filter}.
+     * @val_vk_keyword{FILTER_NEAREST,Filter}.
      */
     Nearest = 0,
 
@@ -63,7 +63,7 @@ enum class SamplerFilter: UnsignedInt {
      * Linear interpolation filtering.
      *
      * Corresponds to @ref GL::SamplerFilter::Linear /
-     * @def_vk_keyword{FILTER_LINEAR,Filter}.
+     * @val_vk_keyword{FILTER_LINEAR,Filter}.
      */
     Linear
 };
@@ -90,7 +90,7 @@ enum class SamplerMipmap: UnsignedInt {
      *
      * Corresponds to @ref GL::SamplerMipmap::Base. On Vulkan, the
      * corresponding mode is
-     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} and you
+     * @val_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} and you
      * have to configure the sampler to use just a single mipmap level.
      */
     Base = 0,
@@ -99,7 +99,7 @@ enum class SamplerMipmap: UnsignedInt {
      * Select nearest mip level.
      *
      * Corresponds to @ref GL::SamplerMipmap::Nearest /
-     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode}.
+     * @val_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode}.
      */
     Nearest,
 
@@ -107,7 +107,7 @@ enum class SamplerMipmap: UnsignedInt {
      * Linear interpolation of nearest mip levels.
      *
      * Corresponds to @ref GL::SamplerMipmap::Linear /
-     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_LINEAR,SamplerMipmapMode}.
+     * @val_vk_keyword{SAMPLER_MIPMAP_MODE_LINEAR,SamplerMipmapMode}.
      */
     Linear
 };
@@ -135,7 +135,7 @@ enum class SamplerWrapping: UnsignedInt {
      * Repeat texture.
      *
      * Corresponds to @ref GL::SamplerWrapping::Repeat /
-     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_REPEAT,SamplerAddressMode}.
+     * @val_vk_keyword{SAMPLER_ADDRESS_MODE_REPEAT,SamplerAddressMode}.
      */
     Repeat = 0,
 
@@ -143,7 +143,7 @@ enum class SamplerWrapping: UnsignedInt {
      * Repeat mirrored texture.
      *
      * Corresponds to @ref GL::SamplerWrapping::MirroredRepeat /
-     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,SamplerAddressMode}.
+     * @val_vk_keyword{SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,SamplerAddressMode}.
      */
     MirroredRepeat,
 
@@ -152,7 +152,7 @@ enum class SamplerWrapping: UnsignedInt {
      * first / last column / row in given direction.
      *
      * Corresponds to @ref GL::SamplerWrapping::ClampToEdge /
-     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,SamplerAddressMode}.
+     * @val_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,SamplerAddressMode}.
      */
     ClampToEdge,
 
@@ -161,7 +161,7 @@ enum class SamplerWrapping: UnsignedInt {
      * to border color.
      *
      * Corresponds to @ref GL::SamplerWrapping::ClampToBorder /
-     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,SamplerAddressMode}.
+     * @val_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,SamplerAddressMode}.
      */
     ClampToBorder,
 
