@@ -214,138 +214,162 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     args.parse(arguments.argc, arguments.argv);
     #endif
 
-    Debug() << "";
-    Debug() << "  +---------------------------------------------------------+";
-    Debug() << "  |   Information about Magnum engine OpenGL capabilities   |";
-    Debug() << "  +---------------------------------------------------------+";
-    Debug() << "";
+    Debug{} << "";
+    Debug{} << "  +---------------------------------------------------------+";
+    Debug{} << "  |   Information about Magnum engine OpenGL capabilities   |";
+    Debug{} << "  +---------------------------------------------------------+";
+    Debug{} << "";
 
     #ifdef MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN
-    Debug() << "Used application: Platform::WindowlessEglApplication";
+    Debug{} << "Used application: Platform::WindowlessEglApplication";
     #elif defined(MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessIosApplication";
+    Debug{} << "Used application: Platform::WindowlessIosApplication";
     #elif defined(MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessCglApplication";
+    Debug{} << "Used application: Platform::WindowlessCglApplication";
     #elif defined(MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessGlxApplication";
+    Debug{} << "Used application: Platform::WindowlessGlxApplication";
     #elif defined(MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessWglApplication";
+    Debug{} << "Used application: Platform::WindowlessWglApplication";
     #elif defined(MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessWindowsEglApplication";
+    Debug{} << "Used application: Platform::WindowlessWindowsEglApplication";
     #else
     #error no windowless application available on this platform
     #endif
-    Debug() << "Compilation flags:";
+    Debug{} << "Compilation flags:";
     #ifdef CORRADE_BUILD_DEPRECATED
-    Debug() << "    CORRADE_BUILD_DEPRECATED";
+    Debug{} << "    CORRADE_BUILD_DEPRECATED";
     #endif
     #ifdef CORRADE_BUILD_STATIC
-    Debug() << "    CORRADE_BUILD_STATIC";
+    Debug{} << "    CORRADE_BUILD_STATIC";
     #endif
     #ifdef CORRADE_BUILD_MULTITHREADED
-    Debug() << "    CORRADE_BUILD_MULTITHREADED";
+    Debug{} << "    CORRADE_BUILD_MULTITHREADED";
     #endif
     #ifdef CORRADE_TARGET_UNIX
-    Debug() << "    CORRADE_TARGET_UNIX";
+    Debug{} << "    CORRADE_TARGET_UNIX";
     #endif
     #ifdef CORRADE_TARGET_APPLE
-    Debug() << "    CORRADE_TARGET_APPLE";
+    Debug{} << "    CORRADE_TARGET_APPLE";
     #endif
     #ifdef CORRADE_TARGET_IOS
-    Debug() << "    CORRADE_TARGET_IOS";
+    Debug{} << "    CORRADE_TARGET_IOS";
     #endif
     #ifdef CORRADE_TARGET_WINDOWS
-    Debug() << "    CORRADE_TARGET_WINDOWS";
+    Debug{} << "    CORRADE_TARGET_WINDOWS";
     #endif
     #ifdef CORRADE_TARGET_WINDOWS_RT
-    Debug() << "    CORRADE_TARGET_WINDOWS_RT";
+    Debug{} << "    CORRADE_TARGET_WINDOWS_RT";
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    Debug() << "    CORRADE_TARGET_EMSCRIPTEN (" << Debug::nospace
+    Debug{} << "    CORRADE_TARGET_EMSCRIPTEN (" << Debug::nospace
         << __EMSCRIPTEN_major__ << Debug::nospace << "." << Debug::nospace
         << __EMSCRIPTEN_minor__ << Debug::nospace << "." << Debug::nospace
         << __EMSCRIPTEN_tiny__ << Debug::nospace << ")";
     #endif
     #ifdef CORRADE_TARGET_ANDROID
-    Debug() << "    CORRADE_TARGET_ANDROID";
+    Debug{} << "    CORRADE_TARGET_ANDROID";
     #endif
     #ifdef CORRADE_TARGET_X86
-    Debug() << "    CORRADE_TARGET_X86";
+    Debug{} << "    CORRADE_TARGET_X86";
     #endif
     #ifdef CORRADE_TARGET_ARM
-    Debug() << "    CORRADE_TARGET_ARM";
+    Debug{} << "    CORRADE_TARGET_ARM";
     #endif
     #ifdef CORRADE_TARGET_POWERPC
-    Debug() << "    CORRADE_TARGET_POWERPC";
+    Debug{} << "    CORRADE_TARGET_POWERPC";
+    #endif
+    #ifdef CORRADE_TARGET_BIG_ENDIAN
+    Debug{} << "    CORRADE_TARGET_BIG_ENDIAN";
+    #endif
+    #ifdef CORRADE_TARGET_GCC
+    Debug{} << "    CORRADE_TARGET_GCC";
+    #endif
+    #ifdef CORRADE_TARGET_CLANG
+    Debug{} << "    CORRADE_TARGET_CLANG";
+    #endif
+    #ifdef CORRADE_TARGET_APPLE_CLANG
+    Debug{} << "    CORRADE_TARGET_APPLE_CLANG";
+    #endif
+    #ifdef CORRADE_TARGET_CLANG_CL
+    Debug{} << "    CORRADE_TARGET_CLANG_CL";
+    #endif
+    #ifdef CORRADE_TARGET_MSVC
+    Debug{} << "    CORRADE_TARGET_MSVC";
+    #endif
+    #ifdef CORRADE_TARGET_MINGW
+    Debug{} << "    CORRADE_TARGET_MINGW";
     #endif
     #ifdef CORRADE_TARGET_LIBCXX
-    Debug() << "    CORRADE_TARGET_LIBCXX";
-    #endif
-    #ifdef CORRADE_TARGET_DINKUMWARE
-    Debug() << "    CORRADE_TARGET_DINKUMWARE";
+    Debug{} << "    CORRADE_TARGET_LIBCXX";
     #endif
     #ifdef CORRADE_TARGET_LIBSTDCXX
-    Debug() << "    CORRADE_TARGET_LIBSTDCXX";
+    Debug{} << "    CORRADE_TARGET_LIBSTDCXX";
+    #endif
+    #ifdef CORRADE_TARGET_DINKUMWARE
+    Debug{} << "    CORRADE_TARGET_DINKUMWARE";
+    #endif
+    #ifdef CORRADE_TARGET_SSE2
+    Debug{} << "    CORRADE_TARGET_SSE2";
     #endif
     #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
-    Debug() << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
+    Debug{} << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
     #endif
     #ifdef CORRADE_TESTSUITE_TARGET_XCTEST
-    Debug() << "    CORRADE_TESTSUITE_TARGET_XCTEST";
+    Debug{} << "    CORRADE_TESTSUITE_TARGET_XCTEST";
     #endif
     #ifdef CORRADE_UTILITY_USE_ANSI_COLORS
-    Debug() << "    CORRADE_UTILITY_USE_ANSI_COLORS";
+    Debug{} << "    CORRADE_UTILITY_USE_ANSI_COLORS";
     #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
-    Debug() << "    MAGNUM_BUILD_DEPRECATED";
+    Debug{} << "    MAGNUM_BUILD_DEPRECATED";
     #endif
     #ifdef MAGNUM_BUILD_STATIC
-    Debug() << "    MAGNUM_BUILD_STATIC";
+    Debug{} << "    MAGNUM_BUILD_STATIC";
     #endif
     #ifdef MAGNUM_TARGET_GLES
-    Debug() << "    MAGNUM_TARGET_GLES";
+    Debug{} << "    MAGNUM_TARGET_GLES";
     #endif
     #ifdef MAGNUM_TARGET_GLES2
-    Debug() << "    MAGNUM_TARGET_GLES2";
+    Debug{} << "    MAGNUM_TARGET_GLES2";
     #endif
     #ifdef MAGNUM_TARGET_DESKTOP_GLES
-    Debug() << "    MAGNUM_TARGET_DESKTOP_GLES";
+    Debug{} << "    MAGNUM_TARGET_DESKTOP_GLES";
     #endif
     #ifdef MAGNUM_TARGET_WEBGL
-    Debug() << "    MAGNUM_TARGET_WEBGL";
+    Debug{} << "    MAGNUM_TARGET_WEBGL";
     #endif
     #ifdef MAGNUM_TARGET_HEADLESS
-    Debug() << "    MAGNUM_TARGET_HEADLESS";
+    Debug{} << "    MAGNUM_TARGET_HEADLESS";
     #endif
-    Debug() << "";
+    Debug{} << "";
 
     /* Create context here, so the context creation info is displayed at proper
        place */
     createContext();
     GL::Context& c = GL::Context::current();
 
-    Debug() << "";
+    Debug{} << "";
 
     #ifndef MAGNUM_TARGET_GLES
-    Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
+    Debug{} << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    Debug() << "Context flags:" << c.flags();
+    Debug{} << "Context flags:" << c.flags();
     #endif
-    Debug() << "Detected driver:" << c.detectedDriver();
+    Debug{} << "Detected driver:" << c.detectedDriver();
 
-    Debug() << "Supported GLSL versions:";
-    Debug() << "   " << Utility::String::joinWithoutEmptyParts(c.shadingLanguageVersionStrings(), ", ");
+    Debug{} << "Supported GLSL versions:";
+    Debug{} << "   " << Utility::String::joinWithoutEmptyParts(c.shadingLanguageVersionStrings(), ", ");
 
     if(args.isSet("extension-strings")) {
-        Debug() << "Extension strings:" << Debug::newline
+        Debug{} << "Extension strings:" << Debug::newline
             << c.extensionStrings();
         return;
     }
 
     if(args.isSet("short")) return;
 
-    Debug() << "";
+    Debug{} << "";
 
     /* Get first future (not supported) version */
     std::vector<GL::Version> versions{
@@ -379,8 +403,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Display supported OpenGL extensions from unsupported versions */
     for(std::size_t i = future; i != versions.size(); ++i) {
         if(versions[i] != GL::Version::None)
-            Debug() << versions[i] << "extension support:";
-        else Debug() << "Vendor extension support:";
+            Debug{} << versions[i] << "extension support:";
+        else Debug{} << "Vendor extension support:";
 
         for(const auto& extension: GL::Extension::extensions(versions[i])) {
             std::string extensionName = extension.string();
@@ -396,17 +420,17 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
                 d << "   n/a";
         }
 
-        Debug() << "";
+        Debug{} << "";
     }
 
     if(!args.isSet("limits")) return;
 
     /* Limits and implementation-defined values */
-    #define _h(val) Debug() << "\n " << GL::Extensions::val::string() + std::string(":");
-    #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
-    #define _lvec(val) Debug() << "   " << #val << (sizeof(#val) > 42 ? "\n" + std::string(46, ' ') : std::string(42 - sizeof(#val), ' ')) << val;
+    #define _h(val) Debug{} << "\n " << GL::Extensions::val::string() << Debug::nospace << ":";
+    #define _l(val) Debug{} << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
+    #define _lvec(val) Debug{} << "   " << #val << (sizeof(#val) > 42 ? "\n" + std::string(46, ' ') : std::string(42 - sizeof(#val), ' ')) << val;
 
-    Debug() << "Limits and implementation-defined values:";
+    Debug{} << "Limits and implementation-defined values:";
     _lvec(GL::AbstractFramebuffer::maxViewportSize())
     _l(GL::AbstractFramebuffer::maxDrawBuffers())
     _l(GL::Framebuffer::maxColorAttachments())
