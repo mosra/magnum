@@ -121,7 +121,8 @@ Are the below lists missing your name or something's wrong?
 -   **Émile Grégoire** ([\@emgre](https://github.com/emgre)) --- documentation
     updates, algorithm bugfixes
 -   **Erik Wijmans** ([\@erikwijmans](https://github.com/erikwijmans)) ---
-    NVidia-specific workarounds for headless EGL contexts
+    NVidia-specific workarounds for headless EGL contexts, CUDA device
+    selection in @ref Platform::WindowlessEglApplication
 -   **Florian Goujeon** ([\@fgoujeon](https://github.com/fgoujeon)) --- iOS
     fixes in the @ref Shaders library
 -   **Gerhard de Clercq** --- Windows RT (Store/Phone) port

@@ -219,6 +219,8 @@ See also:
     @ref Platform::WindowlessWglApplication and
     @ref Platform::WindowlessWindowsEglApplication (see [mosra/magnum#433](https://github.com/mosra/magnum/pull/433)
     and [mosra/magnum#437](https://github.com/mosra/magnum/pull/437))
+-   CUDA device selection in @ref Platform::WindowlessEglApplication (see
+    [mosra/magnum#449](https://github.com/mosra/magnum/pull/449))
 -   Added @ref Platform::GlfwApplication::Configuration::WindowFlag::Borderless
 -   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::FullscreenDesktop,
     @ref Platform::Sdl2Application::Configuration::WindowFlag::AlwaysOnTop "AlwaysOnTop",
