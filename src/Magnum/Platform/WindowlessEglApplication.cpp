@@ -201,14 +201,17 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
 
             /* Otherwise just a normal EGL device */
             } else {
+                /* Print the log *before* calling eglQueryDevices() again, as
+                   the `count` gets overwritten by it */
+                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                    Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
+                }
+
+                selectedDevice = configuration.device();
                 devices = Containers::Array<EGLDeviceEXT>{configuration.device() + 1};
                 /* Assuming the same thing won't suddenly start failing when
                    called the second time */
                 CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
-                selectedDevice = configuration.device();
-                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
-                    Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << selectedDevice;
-                }
             }
 
             if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[selectedDevice], nullptr))) {
