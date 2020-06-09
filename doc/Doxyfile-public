@@ -3,10 +3,10 @@
 ## Patches for the public docs. Hiding internal stuff, using a different
 ## stylesheet and relocating Corrade links to the public Corrade docs.
 
-OUTPUT_DIRECTORY       = build/doc-public/
-GENERATE_TAGFILE       = build/doc-public/magnum.tag
-TAGFILES               = ../corrade/build/doc-public/corrade.tag=https://doc.magnum.graphics/corrade/ \
-                         ../corrade/doc/stl.tag=http://en.cppreference.com/w/
+OUTPUT_DIRECTORY       = ../build/doc-public/
+GENERATE_TAGFILE       = ../build/doc-public/magnum.tag
+TAGFILES               = ../../corrade/build/doc-public/corrade.tag=https://doc.magnum.graphics/corrade/ \
+                         ../../corrade/doc/stl.tag=http://en.cppreference.com/w/
 
 ## No need to expose TODO list or bug list in public docs. Aliases copied from
 ## Doxyfile-mcss, with @todoc changed to be just an alias to @todo so it also
