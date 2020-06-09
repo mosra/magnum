@@ -162,44 +162,49 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             UnsignedInt selectedDevice;
             Containers::Array<EGLDeviceEXT> devices;
 
-            if (configuration.cudaDevice() != (~UnsignedInt{})) {
-                if (!(extensionSupported(extensions, "EGL_EXT_device_query") || extensionSupported(extensions, "EGL_EXT_device_base"))) {
+            /* Look for CUDA devices */
+            if(configuration.cudaDevice() != ~UnsignedInt{}) {
+                if(!(extensionSupported(extensions, "EGL_EXT_device_query") || extensionSupported(extensions, "EGL_EXT_device_base"))) {
                     Error e;
-                    e << "Platform::WindowlessEglApplication: CUDA device selection requires 'EGL_EXT_device_query' or 'EGL_EXT_device_base' extension, likely a driver issue";
-                    if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
-                        e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
+                    e << "Platform::WindowlessEglApplication: CUDA device selection requires EGL_EXT_device_query or EGL_EXT_device_base extensions";
                     return;
                 }
+
                 devices = Containers::Array<EGLDeviceEXT>{MaxEGLDevices};
+                /* Assuming the same thing won't suddenly start failing when
+                   called the second time */
                 CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(devices.size(), devices, &count));
+
                 auto eglQueryDeviceAttribEXT = reinterpret_cast<EGLBoolean (*)(EGLDeviceEXT, EGLint, EGLAttrib*)>(eglGetProcAddress("eglQueryDeviceAttribEXT"));
                 auto eglQueryDeviceStringEXT = reinterpret_cast<const char* (*)(EGLDeviceEXT, EGLint)>(eglGetProcAddress("eglQueryDeviceStringEXT"));
-                
-                for (selectedDevice = 0; selectedDevice < UnsignedInt(count); ++selectedDevice) {
+
+                /* Go through the EGL devices and find one that has the desired
+                   CUDA device number */
+                for(selectedDevice = 0; selectedDevice < UnsignedInt(count); ++selectedDevice) {
                     if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog))
                         Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
+
                     EGLAttrib cudaDeviceNumber;
-                    if ((eglQueryDeviceAttribEXT(devices[selectedDevice], EGL_CUDA_DEVICE_NV, &cudaDeviceNumber) == EGL_TRUE) && (cudaDeviceNumber == configuration.cudaDevice())) {
+                    if(eglQueryDeviceAttribEXT(devices[selectedDevice], EGL_CUDA_DEVICE_NV, &cudaDeviceNumber) && cudaDeviceNumber == configuration.cudaDevice())
                         break;
-                    }
                 }
 
-                if (selectedDevice == UnsignedInt(count)) {
+                /* None found */
+                if(selectedDevice == UnsignedInt(count)) {
                     Error e;
-                    e << "Platform::WindowlessEglApplication::tryCreateContext(): Unable to find EGL device for CUDA device" << configuration.cudaDevice();
-                    if (!magnumContext || !(magnumContext->internalFlags() &
-                                    GL::Context::InternalFlag::GpuValidation))
-                        e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
+                    e << "Platform::WindowlessEglApplication::tryCreateContext(): unable to find EGL device for CUDA device" << configuration.cudaDevice();
                     return;
                 }
 
                 if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing EGL device" << selectedDevice << "for CUDA device" << configuration.cudaDevice();
                 }
+
+            /* Otherwise just a normal EGL device */
             } else {
                 devices = Containers::Array<EGLDeviceEXT>{configuration.device() + 1};
-                /* Assuming the same thing won't suddenly start failing when called the
-                   second time */
+                /* Assuming the same thing won't suddenly start failing when
+                   called the second time */
                 CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
                 selectedDevice = configuration.device();
                 if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
@@ -497,7 +502,7 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, N
     #ifndef MAGNUM_TARGET_WEBGL
     args.addOption("device", "").setHelp("device", "GPU device to use", "N")
         .setFromEnvironment("device")
-        .addOption("cuda-device", "").setHelp("cuda-device", "CUDA device to use.  Supersedes --magnum-device.", "N")
+        .addOption("cuda-device", "").setHelp("cuda-device", "CUDA device to use. Takes precedence over --magnum-device.", "N")
         .setFromEnvironment("cuda-device");
     #endif
     _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});

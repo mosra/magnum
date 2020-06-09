@@ -266,6 +266,9 @@ class WindowlessEglContext::Configuration {
          * set, this value is ignored and the device is picked to be the same
          * as in the shared context instead.
          *
+         * By default it's set to @cpp 0 @ce, taking the first found EGL
+         * device.
+         * @see @ref setCudaDevice()
          * @requires_gles Device selection is not available in WebGL.
          */
         Configuration& setDevice(UnsignedInt id) {
@@ -280,20 +283,20 @@ class WindowlessEglContext::Configuration {
          */
         UnsignedInt cudaDevice() const { return _cudaDevice; }
 
-
         /**
          * @brief Set the CUDA device ID to use
          * @return Reference to self (for method chaining)
          *
-         * The device ID is expected to be smaller than the count of devices
-         * reported by EGL. When using @ref WindowlessEglApplication, this is
-         * also exposed as a `--magnum-cuda-device` command-line option and a
-         * `MAGNUM_CUDA_DEVICE` environment variable. If @ref setSharedContext() is
-         * set, this value is ignored and the device is picked to be the same
-         * as in the shared context instead.
+         * If a device with given CUDA ID is not found, context creation fails.
+         * When using @ref WindowlessEglApplication, this is also exposed as a
+         * `--magnum-cuda-device` command-line option and a
+         * `MAGNUM_CUDA_DEVICE` environment variable. If @ref setSharedContext()
+         * is set, this value is ignored and the device is picked to be the
+         * same as in the shared context instead.
          *
-         * Takes precedence over the device ID set with @ref setDevice().
-         *
+         * If a CUDA device is set, it takes precedence over the device ID set
+         * with @ref setDevice(). By default it's set to @cpp 0xffffffffu @ce,
+         * indicating that @ref setDevice() is used instead.
          * @requires_gles Device selection is not available in WebGL.
          */
         Configuration& setCudaDevice(UnsignedInt id) {
@@ -340,7 +343,7 @@ class WindowlessEglContext::Configuration {
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
         UnsignedInt _device;
-        // Assumes that you can't have 2^32 - 1 GPUs
+        /* Assumes that you can't have 2^32 - 1 GPUs */
         UnsignedInt _cudaDevice = ~UnsignedInt{};
         EGLDisplay _sharedDisplay = EGL_NO_DISPLAY;
         EGLContext _sharedContext = EGL_NO_CONTEXT;
@@ -478,11 +481,12 @@ filter named devices, so the best you can do is checking reported device count
 printed by the `--magnum-log verbose` @ref GL-Context-command-line "command-line option",
 and then going from `0` up to figure out the desired device ID.
 
-On systems with modern NVIDIA GPU(s)/CUDA, the device ID can also be interpreted as a CUDA device ID
-(allowing for EGL and CUDA to both target the same physical device for a given ID).  This can be
-enabled via the `--magnum-cuda-device` command-line option (and the `MAGNUM_CUDA_DEVICE` environment variable).
-If either of these are present, they take precedence over `--magnum-device`.  This can also be specified
-via @ref Configuration::setCudaDevice.
+On systems with NVIDIA GPUs and CUDA, it's possible to directly select a
+particular CUDA device, allowing for EGL and CUDA to both target the same
+physical device for a given ID. This can be chosen via the
+`--magnum-cuda-device` command-line option (and the `MAGNUM_CUDA_DEVICE`
+environment variable), which then takes precedence over `--magnum-device`. The
+same can be also specified via via @ref Configuration::setCudaDevice().
 
 @m_class{m-block m-danger}
 
