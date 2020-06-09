@@ -73,8 +73,6 @@ namespace Magnum { namespace Platform {
 #ifndef MAGNUM_TARGET_WEBGL
 namespace {
 
-static constexpr UnsignedInt MaxEGLDevices = 128;
-
 bool extensionSupported(const char* const extensions, Containers::ArrayView<const char> extension) {
     CORRADE_INTERNAL_ASSERT(extensions);
     const char* pos = std::strstr(extensions, extension);
@@ -170,7 +168,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     return;
                 }
 
-                devices = Containers::Array<EGLDeviceEXT>{MaxEGLDevices};
+                devices = Containers::Array<EGLDeviceEXT>{std::size_t(count)};
                 /* Assuming the same thing won't suddenly start failing when
                    called the second time */
                 CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(devices.size(), devices, &count));
