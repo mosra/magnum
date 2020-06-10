@@ -110,13 +110,21 @@ install(TARGETS MagnumAudio
 install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Audio)
 
 # Copy the OpenAL DLL next to the place where all executables are stored to
-# help people running the apps. TODO: update if we ever have a debug DLL
-if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND OPENAL_DLL_RELEASE)
+# help people running the apps.
+if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (OPENAL_DLL_DEBUG OR OPENAL_DLL_RELEASE))
     # Not exactly sure why, but in the OpenAL Soft binary distribution it's
     # named soft_oal.dll and needs to be renamed to OpenAL32.dll to work
-    # correctly
-    add_custom_command(TARGET MagnumAudio POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+    # correctly. Not the case with OpenAL Soft built by hand.
+    if(OPENAL_DLL_DEBUG AND OPENAL_DLL_RELEASE)
+        add_custom_command(TARGET MagnumAudio POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${OPENAL_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${OPENAL_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+    elseif(OPENAL_DLL_DEBUG)
+        add_custom_command(TARGET MagnumAudio POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+    else()
+        add_custom_command(TARGET MagnumAudio POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+    endif()
 endif()
 
 # Magnum Audio target alias for superprojects

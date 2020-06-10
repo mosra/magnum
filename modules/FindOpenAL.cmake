@@ -11,8 +11,8 @@
 #
 #  OPENAL_LIBRARY       - OpenAL library
 #  OPENAL_DLL_RELEASE   - OpenAL release DLL on Windows, if found. Note that
-#   (at least in case of the binary OpenAL Soft distribution) it's named
-#   soft_oal.dll and you need to rename it to OpenAL32.dll to make it work.
+#   in case of the binary OpenAL Soft distribution it's named soft_oal.dll and
+#   you need to rename it to OpenAL32.dll to make it work.
 #  OPENAL_INCLUDE_DIR   - Include dir
 #
 
@@ -69,6 +69,17 @@ if(TARGET OpenAL OR TARGET OpenAL::OpenAL)
         # that ourselves.
         get_target_property(_OPENAL_SOURCE_DIR OpenAL SOURCE_DIR)
         set_target_properties(OpenAL::OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_OPENAL_SOURCE_DIR}/include/AL)
+
+    # For the imported target get the DLL location
+    else()
+        if(CORRADE_TARGET_WINDOWS)
+            get_target_property(OPENAL_DLL_DEBUG OpenAL::OpenAL   IMPORTED_LOCATION_DEBUG)
+            get_target_property(OPENAL_DLL_RELEASE OpenAL::OpenAL IMPORTED_LOCATION_RELEASE)
+            # Release not found, fall back to RelWithDebInfo
+            if(NOT OPENAL_DLL_RELEASE)
+                get_target_property(OPENAL_DLL_RELEASE OpenAL::OpenAL IMPORTED_LOCATION_RELWITHDEBINFO)
+            endif()
+        endif()
     endif()
 
     # Just to make FPHSA print some meaningful location, nothing else.
@@ -80,11 +91,6 @@ if(TARGET OpenAL OR TARGET OpenAL::OpenAL)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args("OpenAL" DEFAULT_MSG
         _OPENAL_INTERFACE_INCLUDE_DIRECTORIES)
-
-    if(CORRADE_TARGET_WINDOWS)
-        # TODO: investigate if OpenAL Soft has IMPORTED_LOCATION_ / IMPLIB like
-        #   GLFW does so we can provide OPENAL_DLL
-    endif()
 
     return()
 endif()
