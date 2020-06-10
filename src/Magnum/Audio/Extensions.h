@@ -59,13 +59,18 @@ find_package(Magnum REQUIRED Audio)
 target_link_libraries(your-app PRIVATE Magnum::Audio)
 @endcode
 
-Additionally, if you're using Magnum as a CMake subproject, do the following
-* *before* calling @cmake find_package() @ce to ensure it's enabled, as the
-library is not built by default. Using OpenAL itself as a CMake subproject
-isn't isn't tested at the moment, so you need to provide it as a system
-dependency and point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+Additionally, if you're using Magnum as a CMake subproject, bundle the
+[openal-soft repository](https://github.com/kcat/openal-soft) and do the
+following *before* calling @cmake find_package() @ce to ensure it's enabled, as
+the library is not built by default. If you want to use system-installed
+OpenAL, omit the first part and point `CMAKE_PREFIX_PATH` to its installation
+dir if necessary.
 
 @code{.cmake}
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) # needed if building dynamic libraries
+set(LIBTYPE STATIC) # omit or set to SHARED if you want a shared OpenAL library
+add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
+
 set(WITH_AUDIO ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode

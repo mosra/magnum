@@ -2,12 +2,8 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2019" call "C:/Program File
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvarsall.bat" %PLATFORM% || exit /b
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" %PLATFORM% || exit /b
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
-if "%PLATFORM%" == "" set PATH=%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%PATH%
-rem for SOME FREAKING REASON vcvarsall.bat in MSVC2015 sets %PLATFORM% to
-rem X64 while I expect it to be x64. With a 32-bit build it fortunately stays
-rem empty. Not a problem on 2017 or 2019. So doing a case-insensitive compare
-rem here to make things work properly.
-if /I "%PLATFORM%" == "x64" set PATH=%APPVEYOR_BUILD_FOLDER%/openal/bin/Win64;%PATH%
+rem OpenAL DLL is renamed & copied to magnum's bin dir automatically by the
+rem buildsystem, no need to do that here anymore
 
 rem need to explicitly specify a 64-bit target, otherwise CMake+Ninja can't
 rem figure that out -- https://gitlab.kitware.com/cmake/cmake/issues/16259

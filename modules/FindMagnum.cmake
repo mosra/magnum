@@ -817,9 +817,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL Audio)
             find_package(OpenAL)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_INCLUDE_DIRECTORIES ${OPENAL_INCLUDE_DIR})
-            set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${OPENAL_LIBRARY} Corrade::PluginManager)
+                INTERFACE_LINK_LIBRARIES Corrade::PluginManager OpenAL::OpenAL)
 
         # No special setup for DebugTools library
 

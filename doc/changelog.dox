@@ -494,6 +494,16 @@ See also:
 -   Properly installing plugin binaries in Gentoo packages (see
     [mosra/magnum-plugins#85](https://github.com/mosra/magnum-plugins/issues/85))
 -   Warning fixes for MSVC (see [mosra/magnum#445](https://github.com/mosra/magnum/pull/445))
+-   `FindOpenAL.cmake` was rewritten from scratch to support linking against
+    statically built OpenAL Soft (through its CMake config file) as well as
+    OpenAL Soft added as a CMake subproject. Moreover, when using Magnum as a
+    CMake subproject, the @ref Audio library now copies the OpenAL DLL to
+    `CMAKE_RUNTIME_OUTPUT_DIRECTORY` (if set) as a post-build step. The DLL
+    location, if found, is also available through an `OPENAL_DLL_RELEASE`
+    variable for use by 3rd party code. See also
+    [mosra/magnum#402](https://github.com/mosra/magnum/issues/402) and
+    [mosra/magnum#412](https://github.com/mosra/magnum/issues/412) for more
+    information.
 
 @subsection changelog-latest-bugfixes Bug fixes
 

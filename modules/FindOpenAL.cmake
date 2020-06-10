@@ -1,145 +1,160 @@
 #.rst:
-# FindOpenAL
-# ----------
+# Find OpenAL
+# -----------
 #
+# Finds the OpenAL library. This module defines:
 #
+#  OpenAL_FOUND         - True if the OpenAL library is found
+#  OpenAL::OpenAL       - OpenAL imported target
 #
-# Locate OpenAL This module defines OPENAL_LIBRARY OPENAL_FOUND, if
-# false, do not try to link to OpenAL OPENAL_INCLUDE_DIR, where to find
-# the headers
+# Additionally these variables are defined for internal usage:
 #
-# $OPENALDIR is an environment variable that would correspond to the
-# ./configure --prefix=$OPENALDIR used in building OpenAL.
+#  OPENAL_LIBRARY       - OpenAL library
+#  OPENAL_DLL_RELEASE   - OpenAL release DLL on Windows, if found. Note that
+#   (at least in case of the binary OpenAL Soft distribution) it's named
+#   soft_oal.dll and you need to rename it to OpenAL32.dll to make it work.
+#  OPENAL_INCLUDE_DIR   - Include dir
 #
-# Created by Eric Wing.  This was influenced by the FindSDL.cmake
-# module.
 
-#=============================================================================
-# CMake - Cross Platform Makefile Generator
-# Copyright 2000-2016 Kitware, Inc.
-# Copyright 2000-2011 Insight Software Consortium
-# All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions
-# are met:
+#   This file is part of Magnum.
 #
-# * Redistributions of source code must retain the above copyright
-#   notice, this list of conditions and the following disclaimer.
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+#               2020 Vladimír Vondruš <mosra@centrum.cz>
 #
-# * Redistributions in binary form must reproduce the above copyright
-#   notice, this list of conditions and the following disclaimer in the
-#   documentation and/or other materials provided with the distribution.
+#   Permission is hereby granted, free of charge, to any person obtaining a
+#   copy of this software and associated documentation files (the "Software"),
+#   to deal in the Software without restriction, including without limitation
+#   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+#   and/or sell copies of the Software, and to permit persons to whom the
+#   Software is furnished to do so, subject to the following conditions:
 #
-# * Neither the names of Kitware, Inc., the Insight Software Consortium,
-#   nor the names of their contributors may be used to endorse or promote
-#   products derived from this software without specific prior written
-#   permission.
+#   The above copyright notice and this permission notice shall be included
+#   in all copies or substantial portions of the Software.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#=============================================================================
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+#   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+#   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#   DEALINGS IN THE SOFTWARE.
+#
 
-# This makes the presumption that you are include al.h like
-# #include "al.h"
-# and not
-# #include <AL/al.h>
-# The reason for this is that the latter is not entirely portable.
-# Windows/Creative Labs does not by default put their headers in AL/ and
-# OS X uses the convention <OpenAL/al.h>.
-#
-# For Windows, Creative Labs seems to have added a registry key for their
-# OpenAL 1.1 installer. I have added that key to the list of search paths,
-# however, the key looks like it could be a little fragile depending on
-# if they decide to change the 1.00.0000 number for bug fix releases.
-# Also, they seem to have laid down groundwork for multiple library platforms
-# which puts the library in an extra subdirectory. Currently there is only
-# Win32 and I have hardcoded that here. This may need to be adjusted as
-# platforms are introduced.
-# The OpenAL 1.0 installer doesn't seem to have a useful key I can use.
-# I do not know if the Nvidia OpenAL SDK has a registry key.
-#
-# For OS X, remember that OpenAL was added by Apple in 10.4 (Tiger).
-# To support the framework, I originally wrote special framework detection
-# code in this module which I have now removed with CMake's introduction
-# of native support for frameworks.
-# In addition, OpenAL is open source, and it is possible to compile on Panther.
-# Furthermore, due to bugs in the initial OpenAL release, and the
-# transition to OpenAL 1.1, it is common to need to override the built-in
-# framework.
-# Per my request, CMake should search for frameworks first in
-# the following order:
-# ~/Library/Frameworks/OpenAL.framework/Headers
-# /Library/Frameworks/OpenAL.framework/Headers
-# /System/Library/Frameworks/OpenAL.framework/Headers
-#
-# On OS X, this will prefer the Framework version (if found) over others.
-# People will have to manually change the cache values of
-# OPENAL_LIBRARY to override this selection or set the CMake environment
-# CMAKE_INCLUDE_PATH to modify the search paths.
-
-# This version is modified for Magnum and was forked from
-# https://github.com/Kitware/CMake/blob/v3.6.1/Modules/FindOpenAL.cmake
-# The file was modified to add a new path suffix for finding OpenAL for
-# Emscripten on macOS. Additionally, in case of Emscripten, there's no library
-# to find but instead one says -lopenal (and if MINIMAL_RUNTIME is not
-# specified, this is implicit).
-
-find_path(OPENAL_INCLUDE_DIR al.h
-  HINTS
-    ENV OPENALDIR
-  # The AL was added in order to make the module working for Emscripten on macOS.
-  # Not sure why include/AL wasn't enough.
-  PATH_SUFFIXES include/AL include/OpenAL include AL
-  PATHS
-  ~/Library/Frameworks
-  /Library/Frameworks
-  /sw # Fink
-  /opt/local # DarwinPorts
-  /opt/csw # Blastwave
-  /opt
-  [HKEY_LOCAL_MACHINE\\SOFTWARE\\Creative\ Labs\\OpenAL\ 1.1\ Software\ Development\ Kit\\1.00.0000;InstallDir]
-)
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(_OpenAL_ARCH_DIR libs/Win64)
-else()
-  set(_OpenAL_ARCH_DIR libs/Win32)
+# OpenAL Soft installs cmake package config files which handles dependencies in
+# case OpenAL Soft is built statically. Try to find first, quietly, so it
+# doesn't print loud messages when it's not found, since that's okay. If the
+# OpenAL target already exists, it means we're using it through a CMake
+# subproject -- don't attempt to find the package in that case.
+if(NOT TARGET OpenAL)
+    find_package(OpenAL CONFIG QUIET)
 endif()
 
+# If either an OpenAL Soft config file was found or we have a subproject, point
+# OpenAL::OpenAL to that and exit -- nothing else to do here.
+if(TARGET OpenAL OR TARGET OpenAL::OpenAL)
+    # OpenAL Soft config file already defines this one, so this is just for
+    # the subproject case.
+    if(NOT TARGET OpenAL::OpenAL)
+        # Aliases of (global) targets are only supported in CMake 3.11, so we
+        # work around it by this. This is easier than fetching all possible
+        # properties (which are impossible to track of) and then attempting to
+        # rebuild them into a new target.
+        add_library(OpenAL::OpenAL INTERFACE IMPORTED)
+        set_target_properties(OpenAL::OpenAL PROPERTIES INTERFACE_LINK_LIBRARIES OpenAL)
+
+        # The OpenAL target doesn't define any usable
+        # INTERFACE_INCLUDE_DIRECTORIES for some reason (apparently the
+        # $<BUILD_INTERFACE:> in there doesn't work or whatever), so let's do
+        # that ourselves.
+        get_target_property(_OPENAL_SOURCE_DIR OpenAL SOURCE_DIR)
+        set_target_properties(OpenAL::OpenAL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${_OPENAL_SOURCE_DIR}/include/AL)
+    endif()
+
+    # Just to make FPHSA print some meaningful location, nothing else.
+    # Fortunately because of the INTERFACE_INCLUDE_DIRECTORIES workaround above
+    # we can have the same handling both in case of an imported target and a
+    # CMake subproject.
+    get_target_property(_OPENAL_INTERFACE_INCLUDE_DIRECTORIES OpenAL::OpenAL INTERFACE_INCLUDE_DIRECTORIES)
+
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args("OpenAL" DEFAULT_MSG
+        _OPENAL_INTERFACE_INCLUDE_DIRECTORIES)
+
+    if(CORRADE_TARGET_WINDOWS)
+        # TODO: investigate if OpenAL Soft has IMPORTED_LOCATION_ / IMPLIB like
+        #   GLFW does so we can provide OPENAL_DLL
+    endif()
+
+    return()
+endif()
+
+# Under Emscripten, OpenAL is linked implicitly. With MINIMAL_RUNTIME you need
+# to specify -lopenal. Simply set the library name to that.
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(OPENAL_LIBRARY openal CACHE STRING "Path to a library." FORCE)
 else()
-  find_library(OPENAL_LIBRARY
-    NAMES OpenAL al openal OpenAL32
-    HINTS
-      ENV OPENALDIR
-    PATH_SUFFIXES lib64 lib libs64 libs ${_OpenAL_ARCH_DIR}
-    PATHS
-    ~/Library/Frameworks
-    /Library/Frameworks
-    /sw
-    /opt/local
-    /opt/csw
-    /opt
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\Creative\ Labs\\OpenAL\ 1.1\ Software\ Development\ Kit\\1.00.0000;InstallDir]
-  )
+    # OpenAL Soft Windows binary distribution puts the library into a subdir,
+    # the legacy one from Creative uses the same. OpenAL Soft puts DLLs into
+    # bin/Win{32,64}/soft_oal.dll
+    if(WIN32)
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(_OPENAL_LIBRARY_PATH_SUFFIX libs/Win64)
+            set(_OPENAL_DLL_PATH_SUFFIX bin/Win64)
+        elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+            set(_OPENAL_LIBRARY_PATH_SUFFIX libs/Win32)
+            set(_OPENAL_DLL_PATH_SUFFIX bin/Win32)
+        endif()
+    endif()
+
+    find_library(OPENAL_LIBRARY
+        # Names same as in CMake's vanilla FindOpenAL
+        NAMES OpenAL al openal OpenAL32
+        # For binary OpenAL Soft distribution on Windows
+        PATH_SUFFIXES ${_OPENAL_LIBRARY_PATH_SUFFIX}
+        # The other PATHS from CMake's vanilla FindOpenAL seem to be a legacy
+        # cruft, skipping those. The Windows registry used by the vanilla
+        # FindOpenAL doesn't seem to be set anymore either.
+        )
 endif()
 
-unset(_OpenAL_ARCH_DIR)
+# Include dir
+find_path(OPENAL_INCLUDE_DIR NAMES al.h
+    # AL/ used by OpenAL Soft, OpenAL/ used by the macOS framework. The legacy
+    # Creative SDK puts al.h directly into include/, ffs.
+    PATH_SUFFIXES AL OpenAL
+    # As above, skipping the obsolete PATHS and registry in vanilla FindOpenAL
+    )
 
-# handle the QUIETLY and REQUIRED arguments and set OPENAL_FOUND to TRUE if
-# all listed variables are TRUE
+# OpenAL DLL on Windows
+if(CORRADE_TARGET_WINDOWS)
+    # TODO: debug?
+    find_file(OPENAL_DLL_RELEASE
+        NAMES soft_oal.dll
+        PATH_SUFFIXES ${_OPENAL_DLL_PATH_SUFFIX})
+endif()
+
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(OpenAL DEFAULT_MSG OPENAL_LIBRARY OPENAL_INCLUDE_DIR)
+find_package_handle_standard_args(OpenAL DEFAULT_MSG
+    OPENAL_LIBRARY
+    OPENAL_INCLUDE_DIR)
+
+if(NOT TARGET OpenAL::OpenAL)
+    # Work around BUGGY framework support on macOS. Do this also in case of
+    # Emscripten, since there we don't have a location either.
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if((APPLE AND ${OPENAL_LIBRARY} MATCHES "\\.framework$") OR CORRADE_TARGET_EMSCRIPTEN)
+        add_library(OpenAL::OpenAL INTERFACE IMPORTED)
+        set_property(TARGET OpenAL::OpenAL APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${OPENAL_LIBRARY})
+    else()
+        add_library(OpenAL::OpenAL UNKNOWN IMPORTED)
+        set_property(TARGET OpenAL::OpenAL PROPERTY
+            IMPORTED_LOCATION ${OPENAL_LIBRARY})
+    endif()
+
+    set_target_properties(OpenAL::OpenAL PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES ${OPENAL_INCLUDE_DIR})
+endif()
 
 mark_as_advanced(OPENAL_LIBRARY OPENAL_INCLUDE_DIR)

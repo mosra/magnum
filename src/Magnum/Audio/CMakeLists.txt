@@ -71,7 +71,7 @@ add_library(MagnumAudioObjects OBJECT
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
 target_include_directories(MagnumAudioObjects PUBLIC
-    ${OPENAL_INCLUDE_DIR}
+    $<TARGET_PROPERTY:OpenAL::OpenAL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
@@ -95,9 +95,12 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumAudio Magnum Corrade::PluginManager ${OPENAL_LIBRARY})
+target_link_libraries(MagnumAudio PUBLIC
+    Magnum
+    Corrade::PluginManager
+    OpenAL::OpenAL)
 if(WITH_SCENEGRAPH)
-    target_link_libraries(MagnumAudio MagnumSceneGraph)
+    target_link_libraries(MagnumAudio PUBLIC MagnumSceneGraph)
 endif()
 
 install(TARGETS MagnumAudio
@@ -106,12 +109,22 @@ install(TARGETS MagnumAudio
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Audio)
 
+# Copy the OpenAL DLL next to the place where all executables are stored to
+# help people running the apps. TODO: update if we ever have a debug DLL
+if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND OPENAL_DLL_RELEASE)
+    # Not exactly sure why, but in the OpenAL Soft binary distribution it's
+    # named soft_oal.dll and needs to be renamed to OpenAL32.dll to work
+    # correctly
+    add_custom_command(TARGET MagnumAudio POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+endif()
+
 # Magnum Audio target alias for superprojects
 add_library(Magnum::Audio ALIAS MagnumAudio)
 
 if(WITH_AL_INFO)
     add_executable(magnum-al-info al-info.cpp)
-    target_link_libraries(magnum-al-info MagnumAudio)
+    target_link_libraries(magnum-al-info PRIVATE MagnumAudio)
     set_target_properties(magnum-al-info PROPERTIES FOLDER "Magnum/Audio")
 
     if(NOT MAGNUM_TARGET_EMSCRIPTEN)
@@ -162,12 +175,12 @@ if(BUILD_TESTS)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-    target_link_libraries(MagnumAudioTestLib
+    target_link_libraries(MagnumAudioTestLib PUBLIC
         Magnum
         Corrade::PluginManager
-        ${OPENAL_LIBRARY})
+        OpenAL::OpenAL)
     if(WITH_SCENEGRAPH)
-        target_link_libraries(MagnumAudioTestLib MagnumSceneGraph)
+        target_link_libraries(MagnumAudioTestLib PUBLIC MagnumSceneGraph)
     endif()
 
     add_subdirectory(Test)

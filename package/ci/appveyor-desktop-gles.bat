@@ -1,6 +1,8 @@
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2019" call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 || exit /b
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 || exit /b
-set PATH=%APPVEYOR_BUILD_FOLDER%/openal/bin/Win64;%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
+set PATH=%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
+rem OpenAL DLL is renamed & copied to magnum's bin dir automatically by the
+rem buildsystem, no need to do that here anymore
 
 rem Build Corrade
 git clone --depth 1 git://github.com/mosra/corrade.git || exit /b

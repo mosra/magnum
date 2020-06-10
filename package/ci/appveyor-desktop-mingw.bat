@@ -1,6 +1,8 @@
 rem Workaround for CMake not wanting sh.exe on PATH for MinGW. AARGH.
 set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-set PATH=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%APPVEYOR_BUILD_FOLDER%/openal/bin/Win64;%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
+set PATH=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin;%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
+rem OpenAL DLL is renamed & copied to magnum's bin dir automatically by the
+rem buildsystem, no need to do that here anymore
 
 rem Build Corrade
 git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
