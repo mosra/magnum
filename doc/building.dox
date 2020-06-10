@@ -748,28 +748,18 @@ ctest -R GLTest # run only tests requiring OpenGL context
 
 @section building-doc Building documentation
 
-The documentation (which you are currently reading) is written in
-[Doxygen](http://doxygen.org) and additionally uses **LaTeX** for math
-formulas. Documentation using the stock HTML theme can be build by running
-
-@code{.sh}
-doxygen
-@endcode
-
-in the root directory (i.e. where `Doxyfile` is). The resulting HTML
-documentation will be in the `build/doc/` directory. You might need to create
-the `build/` directory if it doesn't exist yet. If Corrade with generated
-documentation is placed in the `corrade` directory next to `magnum`, the
-documentation will be crosslinked with Corrade's one. If related projects
-(`magnum-plugins`, `magnum-extras`, `magnum-integration` and `magnum-examples`,
-see below) are places along these, their documentation will be also included in
-generated output.
-
-The documentation can be also generated using the
-[m.css Doxygen theme](http://mcss.mosra.cz/doxygen/). Use `Doxyfile-mcss` for a
-local build, the `Doxyfile-public` is meant for the publicly available
+The documentation is generated using [Doxygen](http://doxygen.org) with the
+[m.css Doxygen theme](https://mcss.mosra.cz/documentation/doxygen/) and
+additionally uses **LaTeX** for math formulas. Use `doc/conf.py` for a local
+build, the `doc/conf-public.py` is meant for the publicly available
 documentation at https://doc.magnum.graphics/magnum/. The resulting
 documentation will be either in `build/doc-mcss/` or `build/doc-public/`.
+
+If Corrade with generated documentation is placed in the `corrade` directory
+next to `magnum`, the documentation will be crosslinked with Corrade's one. If
+related projects (`magnum-plugins`, `magnum-extras`, `magnum-integration` and
+`magnum-examples`, see below) are placed along these, their documentation will
+be also included in the generated output.
 
 @section building-windows-angle Building for ANGLE on Windows
 
