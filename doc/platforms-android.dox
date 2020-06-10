@@ -38,10 +38,10 @@ namespace Magnum {
 The following guide explains how to build Android projects using minimal
 command-line tools, without Android Studio involved.
 
-At the very least you need to have Android SDK and Android NDK installed.
-Running console utilities and tests on the device don't need much more, in case
-you want to develop actual applications, you need also the SDK and a platform +
-SDK platform build tools for version of your choice.
+At the very least you need to have Android SDK and Android NDK installed, the guide assumes NDK r19 and newer. Running console utilities and tests on the
+device don't need much more, in case you want to develop actual applications,
+you need also the SDK and a platform + SDK platform build tools for version of
+your choice.
 
 For APK building it's possible to use either an experimental support in CMake
 or the official way with Gradle. Gradle is able to download all the
@@ -55,30 +55,36 @@ for a cleaner setup.
     -   [android-ndk](https://aur.archlinux.org/packages/android-ndk/)
     -   [android-sdk-build-tools](https://aur.archlinux.org/packages/android-sdk-build-tools/)
     -   [android-sdk-platform-tools](https://aur.archlinux.org/packages/android-sdk-platform-tools/)
-    -   [android-platform-22](https://aur.archlinux.org/packages/android-platform-22/)
+    -   [android-platform-24](https://aur.archlinux.org/packages/android-platform-24/)
     -   [android-sdk-cmake](https://aur.archlinux.org/packages/android-sdk-cmake/)
 
 Gradle requires Android SDK version of CMake, which is currently at version
-3.6. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
+3.10. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
 instead. On the other hand, while it's possible to use the CMake from Android
-SDK to build Magnum itself, the following guide is written with CMake 3.7 and
-newer in mind, which has Android support built-in. In older versions you'd need
-to supply a toolchain file instead and the configuration values are different.
+SDK to build Magnum itself, the following guide is written with CMake 3.16 and
+newer in mind, which has Android NDK r19+ support built-in. In older versions
+you'd need to supply a toolchain file instead and the configuration values are
+different.
 
 @section platforms-android-console Building and running console applications
 
 Android allows to run arbitrary console utilities and tests via ADB. Assuming
 you have Magnum installed in the NDK path as described in @ref building-cross-android,
-build your project simply as this (adapt version numbers and ABIs as needed):
+build your project as below. The `CMAKE_FIND_ROOT_PATH` is unfortunately needed
+for CMake to correctly find Android libraries, otherwise it falls back to
+looking in native system locations. Adapt paths to your system, Android ABI and
+version and NDK location as needed:
+
+@m_class{m-console-wrap}
 
 @code{.sh}
 mkdir build-android-arm64 && cd build-android-arm64
 cmake .. \
     -DCMAKE_SYSTEM_NAME=Android \
-    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_SYSTEM_VERSION=24 \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_FIND_ROOT_PATH="/opt/android-ndk/platforms/android-24/arch-arm64;/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
     -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 @endcode
@@ -87,10 +93,11 @@ After that you can use ADB to upload your executable to the device and run it
 there. The global temporary directory is `/data/local/tmp` and while the parent
 directories often don't have permissions, it's possible to @cb{.sh} cd @ce into
 it and create arbitrary files there. Assuming you built an executable in
-`build-android-arm64/src/my-application`, the workflow would be like this:
+`build-android-arm64/Release/bin/my-application`, the workflow would be like
+this:
 
 @code{.sh}
-adb push build-android-arm64/src/my-application /data/local/tmp
+adb push build-android-arm64/Release/bin/my-application /data/local/tmp
 adb shell /data/local/tmp/my-application
 @endcode
 
@@ -404,17 +411,19 @@ After that, you can add the additional ABIs to the `abiFilters` list in your
 For example, building Magnum for 32-bit and 64-bit ARM with SDK version 24
 could look like this:
 
+@m_class{m-console-wrap}
+
 @code{.sh}
 mkdir build-android-arm && cd build-android-arm
 cmake .. \
     -DCMAKE_SYSTEM_NAME=Android \
     -DCMAKE_SYSTEM_VERSION=24 \
     -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
-    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm/usr \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/sysroot/usr
+    -DCMAKE_FIND_ROOT_PATH="<ndk>platforms/android-24/arch-arm;<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr
 cmake --build . --target install
 
 cd ..
@@ -424,11 +433,11 @@ cmake .. \
     -DCMAKE_SYSTEM_NAME=Android \
     -DCMAKE_SYSTEM_VERSION=24 \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm64/usr \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/sysroot/usr
+    -DCMAKE_FIND_ROOT_PATH="<ndk>platforms/android-24/arch-arm64;<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr
 cmake --build . --target install
 @endcode
 
@@ -502,7 +511,7 @@ $ adb logcat *:S magnum
 
 According to the [official documentation](https://developer.android.com/studio/projects/add-native-code.html#vanilla_cmake),
 it's possible to use system CMake installation without needing to install
-Android SDK version of CMake 3.6. Simply update the
+Android SDK version of CMake 3.10. Simply update the
 @cb{.gradle} externalNativeBuild @ce in your `build.gradle` file to specify
 CMake version that you have installed in your system, for example:
 
@@ -513,15 +522,13 @@ android {
         cmake {
             path 'CMakeLists.txt'
             ...
-            version '3.10.2'
+            version '3.17'
         }
     }
 }
 @endcode
 
-However, be aware that this is an experimental feature and may be broken. At
-the time of writing (March 2018), it didn't work for me with NDK r16b, Android
-buid plugin 3.0.1 and CMake 3.10.
+However, be aware that this is an experimental feature and may be broken.
 
 @section platforms-android-gradlew Using gradlew wrappers instead of a system installation
 
@@ -743,19 +750,52 @@ gradle build
 
 @section platforms-android-troubleshooting Troubleshooting
 
-@subsection platforms-android-cmake-too-old CMake is too old
+@subsection platforms-android-cmake-too-old CMake or NDK is too old
 
 While the minimal CMake version that's required for building Magnum for Android
-is 3.7, you might want to grab at least CMake 3.9.2, as it
-[fixes an issue with the Clang toolchain](https://gitlab.kitware.com/cmake/cmake/issues/17253).
+is 3.7, NDK r19 and newer need at least CMake 3.16 to work. For older NDKs you
+might want to grab at least CMake 3.9.2, as it [fixes an issue with the Clang toolchain](https://gitlab.kitware.com/cmake/cmake/issues/17253).
 
-@subsection platforms-android-ndk-too-new NDK is too new
+With NDK r18 and older you'll need to additionally supply
+`-DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang`, on the other hand the
+`-DCMAKE_FIND_ROOT_PATH` isn't needed --- CMake is able to figure out the paths
+on its own in that case.
 
-Last NDK version that's known to be reliably working with CMake is r17, newer
-versions suffer from various issues due to changes introduced in NDK internals.
-No work has been done yet on Magnum side to counter / work around those issues,
-optimistically waiting on CMake devs to figure it out instead. See
-[mosra/magnum#310](https://github.com/mosra/magnum/issues/310) for details.
+@subsection platforms-android-compiler-fails-at-life Compiler suddenly fails at life
+
+If you're suddenly greeted with an overwhelming amount of strange errors coming
+from standard library C++ headers including things like
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:319:9: error: no member named 'isnormal' in the global namespace
+using ::isnormal;
+      ~~^
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:320:9: error: no member named 'isgreater' in the global namespace
+using ::isgreater;
+      ~~^
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:321:9: error: no member named 'isgreaterequal' in the global namespace
+using ::isgreaterequal;
+      ~~^
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:322:9: error: no member named 'isless' in the global namespace
+using ::isless;
+      ~~^
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:323:9: error: no member named 'islessequal' in the global namespace
+using ::islessequal;
+      ~~^
+/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/../sysroot/usr/include/c++/v1/cmath:324:9: error: no member named 'islessgreater' in the global namespace
+using ::islessgreater;
+      ~~^
+@endcode
+
+@m_class{m-noindent}
+
+it might be due to `&lt;ndk&gt;/sysroot/usr/include` being present in your
+include path. For some reason the NDK has two copies of system includes, one in
+`&lt;ndk&gt;/toolchains/llvm/prebuilt/&lt;host&gt;/sysroot/usr` and one here,
+and the one in `&lt;ndk&gt;/sysroot` causes the above errors. Find the
+offending include dir and point it to the other location to fix the error.
 
 @subsection platforms-android-troubleshooting-windows-nsight CMake complaining about some NVIDIA Nsight Tegra Visual Studio Edition on Windows
 

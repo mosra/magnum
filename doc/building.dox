@@ -690,8 +690,9 @@ installed files. The following variables are supported:
     scripts and other files are installed. CMake on Android by default searches
     for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
     based on target API and platform, but looks for headers in a central
-    location at <tt>&lt;ndk&gt;/sysroot/usr</tt>. Defaults to ``.``. If a
-    relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
+    location at <tt>&lt;ndk&gt;/toolchains/llvm/prebuilt/&lt;host&gt;/sysroot/usr</tt>.
+    Defaults to ``.``. If a relative path is used, it's relative to
+    `CMAKE_INSTALL_PREFIX`.
 
 Various plugin interfaces search for plugins in locations and order documented
 in @ref Corrade::PluginManager::implicitPluginSearchPaths(),
@@ -1027,15 +1028,13 @@ to make it available to depending projects.
 
 You will need [Android NDK](https://developer.android.com/ndk/) installed and
 configured and @ref building-corrade-cross-android "Corrade built for Android".
-At least CMake 3.7 is required, as it has Android support built-in. The
-supported toolchain is now Clang with libc++, GCC is not supported anymore.
+The guide assumes NDK r19+ with unified Clang toolchain, which in turn requires
+at least CMake 3.16.
 
 Create a build directory and run `cmake` and the build command in it. Set
 `CMAKE_SYSTEM_NAME` to `Android` to enable the crosscompilation,
-`CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION` and `CMAKE_ANDROID_STL_TYPE` to use Clang
-with libc++, `CMAKE_SYSTEM_VERSION` to minimal API version level you wish to
-use and `CMAKE_ANDROID_ARCH_ABI` to target platform ABI. Check the
-[CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
+`CMAKE_ANDROID_STL_TYPE` to use libc++, `CMAKE_SYSTEM_VERSION` to minimal API version level you wish to use and `CMAKE_ANDROID_ARCH_ABI` to target platform
+ABI. Check the [CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
 for further information. You can omit specifying `CORRADE_RC_EXECUTABLE` if
 @ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
 through `PATH`.
@@ -1044,26 +1043,31 @@ If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
 Android platform sysroot, the package will get found automatically when
 compiling depending projects. Gradle and other Android buildsystems expect
 platform-independent includes and other files to be stored in a central
-location, you can set `MAGNUM_INCLUDE_INSTALL_PREFIX` to `/usr` subdirectory of
-the global NDK sysroot. Another option is to explicitly set `CMAKE_PREFIX_PATH`
-to the install location in depending projects.
+location, you can point `MAGNUM_INCLUDE_INSTALL_PREFIX` there to install the
+includes separately. Another option is to explicitly set `CMAKE_PREFIX_PATH`
+to the install location in depending projects. Unfortunately, CMake needs extra
+help with `CMAKE_FIND_ROOT_PATH` to correctly find Android libraries, otherwise
+it falls back to looking in native system locations. Adapt them to your
+system, Android ABI and version and NDK location as needed.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
-built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
+built for OpenGL ES 2.0 by default, switch to 3.0 by disabling `TARGET_GLES2`.
+
+@m_class{m-console-wrap}
 
 @code{.sh}
 mkdir build-android-arm64 && cd build-android-arm64
 cmake .. \
     -DCMAKE_SYSTEM_NAME=Android \
-    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_SYSTEM_VERSION=24 \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
-    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm/usr \
+    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-24/arch-arm/usr \
+    -DCMAKE_FIND_ROOT_PATH="/opt/android-ndk/platforms/android-24/arch-arm64;/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
     -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
-    -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/sysroot/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
     -DTARGET_GLES2=OFF \
     -DWITH_ANDROIDAPPLICATION=ON
 cmake --build .
