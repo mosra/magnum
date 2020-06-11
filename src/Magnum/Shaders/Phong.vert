@@ -190,10 +190,10 @@ void main() {
     mat4 skinMatrix;
     int i = 0;
     for(; i != JOINTS_PER_VERTEX && i != 4; ++i)
-        skinMatrix += weights[i]*jointMatrices[int(jointIds[i])];
+        skinMatrix += weights[i]*jointMatrices[jointIds[i]];
     #if JOINTS_PER_VERTEX > 4
     for(i = 0; i != JOINTS_PER_VERTEX - 4 && i != 4; ++i)
-        skinMatrix += secondaryWeights[i]*jointMatrices[int(secondaryJointIds[i])];
+        skinMatrix += secondaryWeights[i]*jointMatrices[secondaryJointIds[i]];
     #endif
     #endif
 
