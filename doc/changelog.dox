@@ -504,6 +504,9 @@ See also:
     [mosra/magnum#402](https://github.com/mosra/magnum/issues/402) and
     [mosra/magnum#412](https://github.com/mosra/magnum/issues/412) for more
     information.
+-   Updated Android building and troubleshooting guide to make it work with NDK
+    r19+ and CMake 3.16+. See also [mosra/corrade#84](https://github.com/mosra/corrade/issues/84)
+    and [mosra/magnum#310](https://github.com/mosra/magnum/issues/310).
 
 @subsection changelog-latest-bugfixes Bug fixes
 
