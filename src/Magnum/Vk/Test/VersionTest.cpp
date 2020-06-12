@@ -37,6 +37,7 @@ struct VersionTest: TestSuite::Tester {
     explicit VersionTest();
 
     void packing();
+    void packingMagnumVersion();
     void comparison();
 
     void debug();
@@ -44,6 +45,7 @@ struct VersionTest: TestSuite::Tester {
 
 VersionTest::VersionTest() {
     addTests({&VersionTest::packing,
+              &VersionTest::packingMagnumVersion,
               &VersionTest::comparison,
 
               &VersionTest::debug});
@@ -68,6 +70,16 @@ void VersionTest::packing() {
     #ifdef CORRADE_TARGET_GCC
     #pragma GCC diagnostic pop
     #endif
+}
+
+void VersionTest::packingMagnumVersion() {
+    Version a = version(2019, 10, 1506);
+    {
+        CORRADE_EXPECT_FAIL("Vulkan version encoding can't fit full years.");
+        CORRADE_COMPARE(versionMajor(a), 2019);
+    }
+    CORRADE_COMPARE(versionMinor(a), 10);
+    CORRADE_COMPARE(versionPatch(a), 1506);
 }
 
 void VersionTest::comparison() {
