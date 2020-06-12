@@ -128,7 +128,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr explicit RectangularMatrix(ZeroInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
         /** @brief Construct without initializing the contents */
-        explicit RectangularMatrix(NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit} {}
+        explicit RectangularMatrix(Magnum::NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, Magnum::NoInit} {}
 
         /** @brief Construct from column vectors */
         template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
@@ -579,7 +579,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
     #endif
     scalar, const RectangularMatrix<cols, rows, T>& matrix)
 {
-    RectangularMatrix<cols, rows, T> out{NoInit};
+    RectangularMatrix<cols, rows, T> out{Magnum::NoInit};
 
     for(std::size_t i = 0; i != cols; ++i)
         out[i] = scalar/matrix[i];
@@ -764,7 +764,7 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t size>
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<rows, cols, T> RectangularMatrix<cols, rows, T>::transposed() const {
-    RectangularMatrix<rows, cols, T> out{NoInit};
+    RectangularMatrix<rows, cols, T> out{Magnum::NoInit};
 
     /* Using ._data[] instead of [] to avoid function call indirection
        on debug builds (saves a lot, yet doesn't obfuscate too much) */

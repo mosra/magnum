@@ -245,7 +245,7 @@ template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, const Vector<size, T>& min) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::min(value[i], min[i]);
     return out;
@@ -253,7 +253,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, T min) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::min(value[i], min);
     return out;
@@ -272,7 +272,7 @@ template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type
 
 /** @overload */
 template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, const Vector<size, T>& max) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::max(value[i], max[i]);
     return out;
@@ -280,7 +280,7 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& v
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size, T>& value, T max) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::max(value[i], max);
     return out;
@@ -323,7 +323,7 @@ template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<size, T>& value, const Vector<size, T>& min, const Vector<size, T>& max) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::clamp(value[i], min[i], max[i]);
     return out;
@@ -331,7 +331,7 @@ template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<si
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::clamp(value[i], min, max);
     return out;
@@ -350,7 +350,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type si
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> sign(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::sign(a[i]);
     return out;
@@ -363,7 +363,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type ab
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> abs(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::abs(a[i]);
     return out;
@@ -376,7 +376,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fl
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> floor(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::floor(a[i]);
     return out;
@@ -389,7 +389,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type ro
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> round(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::round(a[i]);
     return out;
@@ -402,7 +402,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type ce
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::ceil(a[i]);
     return out;
@@ -450,7 +450,7 @@ component-wise selection from either @p a or @p b based on values in @p t.
 @m_keyword{mix(),GLSL mix(),}
 */
 template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BoolVector<size>& t) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = t[i] ? b[i] : a[i];
     return out;
@@ -599,7 +599,7 @@ template<UnsignedInt exponent, class T> constexpr typename std::enable_if<IsScal
 
 /** @overload */
 template<UnsignedInt exponent, std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::pow<exponent>(base[i]);
     return out;
@@ -619,7 +619,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type po
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base, T exponent) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::pow(base[i], exponent);
     return out;
@@ -638,7 +638,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sq
 
 /** @overload */
 template<std::size_t size, class T> inline Vector<size, T> sqrt(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
+    Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::sqrt(a[i]);
     return out;

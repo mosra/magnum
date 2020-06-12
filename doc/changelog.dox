@@ -693,6 +693,9 @@ See also:
     was a rarely (if ever) used feature.
 -   @cpp DebugTools::Profiler @ce is obsolete, replaced with a much more
     flexible and extensible @ref DebugTools::FrameProfiler
+-   @cpp Math::NoInitT @ce and @cpp Math::NoInit @ce constructor tags are
+    deprecated in favor of @ref NoInitT and @ref NoInit directly in the
+    @ref Magnum namespace
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -462,8 +462,8 @@ template<class T> class Color3: public Vector3<T> {
          */
         constexpr explicit Color3(ZeroInitT) noexcept: Vector3<T>{ZeroInit} {}
 
-        /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color3(NoInitT) noexcept: Vector3<T>{NoInit} {}
+        /** @copydoc Vector::Vector(Magnum::NoInitT) */
+        explicit Color3(Magnum::NoInitT) noexcept: Vector3<T>{Magnum::NoInit} {}
 
         /**
          * @brief Gray constructor
@@ -875,7 +875,7 @@ class Color4: public Vector4<T> {
         constexpr explicit Color4(ZeroInitT) noexcept: Vector4<T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color4(NoInitT) noexcept: Vector4<T>{NoInit} {}
+        explicit Color4(Magnum::NoInitT) noexcept: Vector4<T>{Magnum::NoInit} {}
 
         /**
          * @copydoc Color3::Color3(T)
@@ -1087,7 +1087,7 @@ template<class T> struct ColorHsv {
     constexpr explicit ColorHsv(ZeroInitT) noexcept: hue{}, saturation{}, value{} {}
 
     /** @brief Construct without initializing the contents */
-    explicit ColorHsv(NoInitT) noexcept: hue{NoInit} /* and the others not */ {}
+    explicit ColorHsv(Magnum::NoInitT) noexcept: hue{Magnum::NoInit} /* and the others not */ {}
 
     /** @brief Constructor */
     constexpr /*implicit*/ ColorHsv(Deg<T> hue, T saturation, T value) noexcept: hue{hue}, saturation{saturation}, value{value} {}

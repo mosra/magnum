@@ -112,7 +112,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         constexpr explicit Bezier(ZeroInitT) noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
 
         /** @brief Construct Bézier without initializing the contents */
-        explicit Bezier(NoInitT) noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, NoInit} {}
+        explicit Bezier(Magnum::NoInitT) noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, Magnum::NoInit} {}
 
         /** @brief Construct Bézier curve with given array of control points */
         template<typename... U> constexpr /*implicit*/ Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {

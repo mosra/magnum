@@ -60,9 +60,9 @@ template<class T> void SvdTest::test() {
         Vector8<T>{T{ 7}, T{ 8}, T{  3}, T{ 4}, T{ 4}, T{-1}, T{ 1}, T{ 2}}};
     const Vector5<T> expected(std::sqrt(T{1248}), T{0}, T{20}, std::sqrt(T{384}), T{0});
 
-    Matrix5x8<T> u{NoInit};
-    Vector5<T> w{NoInit};
-    Matrix5<T> v{NoInit};
+    Matrix5x8<T> u{Magnum::NoInit};
+    Vector5<T> w{Magnum::NoInit};
+    Matrix5<T> v{Magnum::NoInit};
     std::tie(u, w, v) = Algorithms::svd(a);
 
     /* Test composition */
@@ -103,9 +103,9 @@ void SvdTest::decomposeRotationShear() {
 
     Matrix4 a = Matrix4::scaling({1.5f, 2.0f, 1.0f})*Matrix4::rotationZ(35.0_degf);
 
-    Matrix3x3 u{NoInit};
-    Vector3 w{NoInit};
-    Matrix3x3 v{NoInit};
+    Matrix3x3 u{Magnum::NoInit};
+    Vector3 w{Magnum::NoInit};
+    Matrix3x3 v{Magnum::NoInit};
     std::tie(u, w, v) = Algorithms::svd(a.rotationScaling());
 
     CORRADE_COMPARE(u*Matrix3x3::fromDiagonal(w)*v.transposed(), a.rotationScaling());

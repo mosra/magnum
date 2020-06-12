@@ -186,7 +186,7 @@ void MatrixTest::constructNoInit() {
                 Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                 Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                 Vector4(7.9f, -1.0f, 8.0f, -1.5f)};
-    new(&a) Matrix4x4{NoInit};
+    new(&a) Matrix4x4{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -197,10 +197,10 @@ void MatrixTest::constructNoInit() {
                                      Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, Magnum::NoInitT>::value));
 
         /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix4x4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Matrix4x4>::value));
 }
 
 void MatrixTest::constructOneValue() {

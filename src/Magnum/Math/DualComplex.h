@@ -126,7 +126,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr explicit DualComplex(ZeroInitT) noexcept: Dual<Complex<T>>{Complex<T>{ZeroInit}, Complex<T>{ZeroInit}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualComplex(NoInitT) noexcept: Dual<Complex<T>>{NoInit} {}
+        explicit DualComplex(Magnum::NoInitT) noexcept: Dual<Complex<T>>{Magnum::NoInit} {}
 
         /**
          * @brief Construct dual complex number from real and dual part

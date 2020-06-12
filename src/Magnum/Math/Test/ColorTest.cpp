@@ -331,8 +331,8 @@ void ColorTest::constructDefault() {
 void ColorTest::constructNoInit() {
     Color3 a{1.0f, 0.5f, 0.75f};
     Color4 b{1.0f, 0.5f, 0.75f, 0.5f};
-    new(&a) Color3{NoInit};
-    new(&b) Color4{NoInit};
+    new(&a) Color3{Magnum::NoInit};
+    new(&b) Color4{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -341,12 +341,12 @@ void ColorTest::constructNoInit() {
         CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Magnum::NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Color3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Color4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Color4>::value));
 }
 
 void ColorTest::constructOneValue() {
@@ -508,7 +508,7 @@ void ColorTest::constructHsvDefault() {
 
 void ColorTest::constructHsvNoInit() {
     ColorHsv a{135.0_degf, 0.5f, 0.9f};
-    new(&a) ColorHsv{NoInit};
+    new(&a) ColorHsv{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -516,10 +516,10 @@ void ColorTest::constructHsvNoInit() {
         CORRADE_COMPARE(a, (ColorHsv{135.0_degf, 0.5f, 0.9f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ColorHsv>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, ColorHsv>::value));
 }
 
 void ColorTest::constructHsvConversion() {

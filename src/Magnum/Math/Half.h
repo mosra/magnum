@@ -102,7 +102,7 @@ class Half {
         explicit Half(Double value) noexcept: _data{packHalf(Float(value))} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Half(NoInitT) noexcept {}
+        explicit Half(Magnum::NoInitT) noexcept {}
 
         /**
          * @brief Equality comparison

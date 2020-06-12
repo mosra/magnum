@@ -26,20 +26,26 @@
 */
 
 /** @file
- * @brief Tag type @ref Magnum::Math::NoInitT, @ref Magnum::Math::ZeroInitT, @ref Magnum::Math::IdentityInitT, tag @ref Magnum::Math::NoInit, @ref Magnum::Math::ZeroInit, @ref Magnum::Math::IdentityInit
+ * @brief Tag type @ref Magnum::Math::ZeroInitT, @ref Magnum::Math::IdentityInitT, tag @ref Magnum::Math::ZeroInit, @ref Magnum::Math::IdentityInit
  */
 
 #include <Corrade/Containers/Tags.h>
 
+#include "Magnum/Tags.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Math {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief No initialization tag type
-
-Used to distinguish construction with no initialization at all.
-@see @ref NoInit
+@m_deprecated_since_latest Use @ref Magnum::NoInitT instead.
 */
-typedef Corrade::Containers::NoInitT NoInitT;
+typedef CORRADE_DEPRECATED("use Magnum::NoInitT instead") Magnum::NoInitT NoInitT;
+#endif
 
 /**
 @brief Zero initialization tag type
@@ -69,16 +75,14 @@ struct IdentityInitT {
     #endif
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief No initialization tag
-
-Use for construction with no initialization at all.
+@m_deprecated_since_latest Use @ref Magnum::NoInit instead.
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
+/** @todo when removing, clean up all Magnum::NoInit in Math to be NoInit again */
 /* Explicit constructor to avoid ambiguous calls when using {} */
-constexpr NoInitT NoInit{};
-#else
-using Corrade::Containers::NoInit;
+constexpr CORRADE_DEPRECATED("use Magnum::NoInit instead") Magnum::NoInitT NoInit{Magnum::NoInitT::Init{}};
 #endif
 
 /**

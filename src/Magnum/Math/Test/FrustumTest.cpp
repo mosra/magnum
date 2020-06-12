@@ -189,7 +189,7 @@ void FrustumTest::constructNoInit() {
         {-7.0f,  8.0f, -9.0f, 0.5f},
         { 7.0f,  8.0f,  9.0f, 0.6f}};
 
-    new(&a) Frustum{NoInit};
+    new(&a) Frustum{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -205,7 +205,7 @@ void FrustumTest::constructNoInit() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Magnum::NoInitT>::value));
 }
 
 void FrustumTest::constructConversion() {

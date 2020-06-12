@@ -136,7 +136,7 @@ void BoolVectorTest::constructDefault() {
 
 void BoolVectorTest::constructNoInit() {
     BoolVector19 a{0xa5, 0x5f, 0x07};
-    new(&a) BoolVector19{NoInit};
+    new(&a) BoolVector19{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -144,10 +144,10 @@ void BoolVectorTest::constructNoInit() {
         CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BoolVector19>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, BoolVector19>::value));
 }
 
 void BoolVectorTest::constructOneValue() {

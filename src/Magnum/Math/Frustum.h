@@ -85,7 +85,7 @@ template<class T> class Frustum {
         constexpr explicit Frustum(IdentityInitT) noexcept;
 
         /** @brief Construct a frustum without initializing the contents */
-        explicit Frustum(NoInitT) noexcept: _data{Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}} {}
+        explicit Frustum(Magnum::NoInitT) noexcept: _data{Vector4<T>{Magnum::NoInit}, Vector4<T>{Magnum::NoInit}, Vector4<T>{Magnum::NoInit}, Vector4<T>{Magnum::NoInit}, Vector4<T>{Magnum::NoInit}, Vector4<T>{Magnum::NoInit}} {}
 
         /**
          * @brief Construct a frustum from plane equations

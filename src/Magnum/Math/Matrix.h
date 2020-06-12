@@ -85,8 +85,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
         constexpr explicit Matrix(ZeroInitT) noexcept: RectangularMatrix<size, size, T>{ZeroInit} {}
 
-        /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
-        constexpr explicit Matrix(NoInitT) noexcept: RectangularMatrix<size, size, T>{NoInit} {}
+        /** @copydoc RectangularMatrix::RectangularMatrix(Magnum::NoInitT) */
+        constexpr explicit Matrix(Magnum::NoInitT) noexcept: RectangularMatrix<size, size, T>{Magnum::NoInit} {}
 
         /** @brief Construct from column vectors */
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
@@ -475,7 +475,7 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
 }
 
 template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
-    Matrix<size-1, T> out{NoInit};
+    Matrix<size-1, T> out{Magnum::NoInit};
 
     /* Using ._data[] instead of [] to avoid function call indirection on debug
        builds (saves a lot, yet doesn't obfuscate too much) */
@@ -493,7 +493,7 @@ template<std::size_t size, class T> T Matrix<size, T>::cofactor(std::size_t col,
 }
 
 template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::comatrix() const {
-    Matrix<size, T> out{NoInit};
+    Matrix<size, T> out{Magnum::NoInit};
 
     /* Using ._data[] instead of [] to avoid function call indirection on debug
        builds (saves a lot, yet doesn't obfuscate too much) */
@@ -505,7 +505,7 @@ template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::comatrix() 
 }
 
 template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::adjugate() const {
-    Matrix<size, T> out{NoInit};
+    Matrix<size, T> out{Magnum::NoInit};
 
     /* Same as comatrix(), except using cofactor(row, col) instead of
        cofactor(col, row). Could also be just comatrix().transpose() but since

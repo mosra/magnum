@@ -266,7 +266,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr explicit DualQuaternion(ZeroInitT) noexcept: Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualQuaternion(NoInitT) noexcept: Dual<Quaternion<T>>{NoInit} {}
+        explicit DualQuaternion(Magnum::NoInitT) noexcept: Dual<Quaternion<T>>{Magnum::NoInit} {}
 
         /**
          * @brief Construct dual quaternion from real and dual part

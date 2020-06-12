@@ -542,7 +542,7 @@ void HalfTest::constructData() {
 
 void HalfTest::constructNoInit() {
     Half a{3.5f};
-    new(&a) Half{NoInit};
+    new(&a) Half{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -550,10 +550,10 @@ void HalfTest::constructNoInit() {
         CORRADE_COMPARE(a, Half{3.5f});
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Half, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Half>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Half>::value));
 }
 
 void HalfTest::constructCopy() {

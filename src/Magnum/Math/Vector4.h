@@ -73,11 +73,11 @@ template<class T> class Vector4: public Vector<4, T> {
            fire! FFS. */
         constexpr explicit Vector4(ZeroInitT) noexcept: Vector<4, T>{ZeroInit} {}
 
-        /** @copydoc Magnum::Math::Vector::Vector(NoInitT) */
+        /** @copydoc Magnum::Math::Vector::Vector(Magnum::NoInitT) */
         /* For some freaking reason doxygen 1.8.17 needs a fully qualified name
            here but GUESS WHAT! Not in the other Vector2/3 classes! Dumpster
            fire! FFS. */
-        explicit Vector4(NoInitT) noexcept: Vector<4, T>{NoInit} {}
+        explicit Vector4(Magnum::NoInitT) noexcept: Vector<4, T>{Magnum::NoInit} {}
 
         /** @copydoc Magnum::Math::Vector::Vector(T) */
         /* For some freaking reason doxygen 1.8.17 needs a fully qualified name

@@ -179,8 +179,8 @@ void AngleTest::constructDefault() {
 void AngleTest::constructNoInit() {
     Deg a{25.0f};
     Rad b{3.14f};
-    new(&a) Deg{NoInit};
-    new(&b) Rad{NoInit};
+    new(&a) Deg{Magnum::NoInit};
+    new(&b) Rad{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
         /* The warning is reported for both debug and release build */
@@ -197,12 +197,12 @@ void AngleTest::constructNoInit() {
         #endif
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Magnum::NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Deg>::value));
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Rad>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Deg>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Rad>::value));
 }
 
 void AngleTest::constructConversion() {

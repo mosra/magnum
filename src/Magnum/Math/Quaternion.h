@@ -318,7 +318,7 @@ template<class T> class Quaternion {
         constexpr explicit Quaternion(ZeroInitT) noexcept: _vector{ZeroInit}, _scalar{T{0}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Quaternion(NoInitT) noexcept: _vector{NoInit} {}
+        explicit Quaternion(Magnum::NoInitT) noexcept: _vector{Magnum::NoInit} {}
 
         /**
          * @brief Construct from a vector and a scalar
@@ -783,7 +783,7 @@ template<class T> Vector3<Rad<T>> Quaternion<T>::toEuler() const {
     CORRADE_ASSERT(isNormalized(),
         "Math::Quaternion::toEuler():" << *this << "is not normalized", {});
 
-    Vector3<Rad<T>> euler{NoInit};
+    Vector3<Rad<T>> euler{Magnum::NoInit};
 
     Matrix3x3<T> rotMatrix = toMatrix();
 

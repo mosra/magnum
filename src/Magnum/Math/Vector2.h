@@ -112,7 +112,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr explicit Vector2(ZeroInitT) noexcept: Vector<2, T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Vector2(NoInitT) noexcept: Vector<2, T>{NoInit} {}
+        explicit Vector2(Magnum::NoInitT) noexcept: Vector<2, T>{Magnum::NoInit} {}
 
         /** @copydoc Vector::Vector(T) */
         constexpr explicit Vector2(T value) noexcept: Vector<2, T>(value) {}

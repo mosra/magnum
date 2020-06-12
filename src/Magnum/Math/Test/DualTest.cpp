@@ -147,8 +147,8 @@ void DualTest::constructZero() {
 void DualTest::constructNoInit() {
     Dual a{2.0f, -7.5f};
     Math::Dual<Math::Quaternion<Float>> b{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}};
-    new(&a) Dual{NoInit};
-    new(&b) Math::Dual<Math::Quaternion<Float>>{NoInit};
+    new(&a) Dual{Magnum::NoInit};
+    new(&b) Math::Dual<Math::Quaternion<Float>>{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -157,12 +157,12 @@ void DualTest::constructNoInit() {
         CORRADE_COMPARE(b, (Math::Dual<Math::Quaternion<Float>>{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Magnum::NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Dual>::value));
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Math::Dual<Math::Quaternion<Float>>>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Dual>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Math::Dual<Math::Quaternion<Float>>>::value));
 }
 
 void DualTest::constructConversion() {

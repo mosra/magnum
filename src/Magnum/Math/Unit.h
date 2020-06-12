@@ -57,7 +57,7 @@ template<template<class> class Derived, class T> class Unit {
         constexpr explicit Unit(ZeroInitT) noexcept: _value(T(0)) {}
 
         /** @brief Construct without initializing the contents */
-        explicit Unit(NoInitT) noexcept {}
+        explicit Unit(Magnum::NoInitT) noexcept {}
 
         /** @brief Explicit conversion from a unitless type */
         constexpr explicit Unit(T value) noexcept: _value(value) {}

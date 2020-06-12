@@ -601,7 +601,7 @@ Quaternion q1;
 Quaternion q2{Math::IdentityInit};
 
 /* Avoid unnecessary initialization if is overwritten anyway */
-Matrix4 projection{Math::NoInit};
+Matrix4 projection{NoInit};
 if(orthographic)
     projection = Matrix4::orthographicProjection({4.0f, 3.0f}, 0.1f, 100.0f);
 else

@@ -2061,7 +2061,7 @@ Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::compressedBlockSize(const
 }
 
 Vector2i AbstractTexture::DataHelper<2>::compressedBlockSize(const GLenum target, const TextureFormat format) {
-    Vector2i value{Math::NoInit};
+    Vector2i value{NoInit};
     glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_WIDTH, 1, &value.x());
     glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT, 1, &value.y());
     return value;

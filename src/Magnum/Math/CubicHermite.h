@@ -126,7 +126,7 @@ template<class T> class CubicHermite {
         template<class U = T, class = typename std::enable_if<std::is_constructible<U, IdentityInitT>::value>::type> constexpr explicit CubicHermite(IdentityInitT) noexcept: _inTangent{ZeroInit}, _point{IdentityInit}, _outTangent{ZeroInit} {}
 
         /** @brief Construct cubic Hermite spline point without initializing its contents */
-        explicit CubicHermite(NoInitT) noexcept: CubicHermite{NoInit, typename std::conditional<std::is_constructible<T, NoInitT>::value, NoInitT*, void*>::type{}} {}
+        explicit CubicHermite(Magnum::NoInitT) noexcept: CubicHermite{Magnum::NoInit, typename std::conditional<std::is_constructible<T, Magnum::NoInitT>::value, Magnum::NoInitT*, void*>::type{}} {}
 
         /**
          * @brief Construct cubic Hermite spline point with given control points
@@ -187,8 +187,8 @@ template<class T> class CubicHermite {
 
         /* Called from CubicHermite(NoInit), either using the NoInit
            constructor (if available) or not doing anything */
-        explicit CubicHermite(NoInitT, NoInitT*) noexcept: _inTangent{NoInit}, _point{NoInit}, _outTangent{NoInit} {}
-        explicit CubicHermite(NoInitT, void*) noexcept {}
+        explicit CubicHermite(Magnum::NoInitT, Magnum::NoInitT*) noexcept: _inTangent{Magnum::NoInit}, _point{Magnum::NoInit}, _outTangent{Magnum::NoInit} {}
+        explicit CubicHermite(Magnum::NoInitT, void*) noexcept {}
 
         T _inTangent;
         T _point;

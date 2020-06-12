@@ -243,9 +243,9 @@ void RangeTest::constructNoInit() {
     Range2Di b{{3, 5}, {23, 78}};
     Range3Di c{{3, 5, -7}, {23, 78, 2}};
 
-    new(&a) Range1Di{NoInit};
-    new(&b) Range2Di{NoInit};
-    new(&c) Range3Di{NoInit};
+    new(&a) Range1Di{Magnum::NoInit};
+    new(&b) Range2Di{Magnum::NoInit};
+    new(&c) Range3Di{Magnum::NoInit};
 
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
@@ -256,14 +256,14 @@ void RangeTest::constructNoInit() {
         CORRADE_COMPARE(c, (Range3Di{{3, 5, -7}, {23, 78, 2}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, Magnum::NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, Magnum::NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range1Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range2Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range3Di>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range1Di>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range2Di>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range3Di>::value));
 }
 
 void RangeTest::constructFromSize() {

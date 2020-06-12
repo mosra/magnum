@@ -145,7 +145,7 @@ template<class T> class Complex {
         constexpr explicit Complex(ZeroInitT) noexcept: _real{}, _imaginary{} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Complex(NoInitT) noexcept {}
+        explicit Complex(Magnum::NoInitT) noexcept {}
 
         /**
          * @brief Construct a complex number from real and imaginary part

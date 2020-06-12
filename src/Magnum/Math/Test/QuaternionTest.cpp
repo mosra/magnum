@@ -247,7 +247,7 @@ void QuaternionTest::constructZero() {
 
 void QuaternionTest::constructNoInit() {
     Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
-    new(&a) Quaternion{NoInit};
+    new(&a) Quaternion{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -255,10 +255,10 @@ void QuaternionTest::constructNoInit() {
         CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Quaternion>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Quaternion>::value));
 }
 
 void QuaternionTest::constructFromVector() {

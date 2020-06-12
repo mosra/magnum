@@ -197,7 +197,7 @@ template<std::size_t size, class T> class Vector {
         constexpr explicit Vector(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct a vector without initializing the contents */
-        explicit Vector(NoInitT) noexcept {}
+        explicit Vector(Magnum::NoInitT) noexcept {}
 
         /** @brief Construct a vector from components */
         #ifdef DOXYGEN_GENERATING_OUTPUT

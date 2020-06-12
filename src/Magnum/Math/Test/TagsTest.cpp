@@ -39,7 +39,6 @@ TagsTest::TagsTest() {
 }
 
 void TagsTest::noDefaultConstructor() {
-    CORRADE_VERIFY(!std::is_default_constructible<NoInitT>::value);
     CORRADE_VERIFY(!std::is_default_constructible<ZeroInitT>::value);
     CORRADE_VERIFY(!std::is_default_constructible<IdentityInitT>::value);
 }

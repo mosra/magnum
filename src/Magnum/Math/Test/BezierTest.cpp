@@ -139,7 +139,7 @@ void BezierTest::constructDefault() {
 
 void BezierTest::constructNoInit() {
     QuadraticBezier2D a{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
-    new(&a) QuadraticBezier2D{NoInit};
+    new(&a) QuadraticBezier2D{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -147,10 +147,10 @@ void BezierTest::constructNoInit() {
         CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, QuadraticBezier2D>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, QuadraticBezier2D>::value));
 }
 
 void BezierTest::constructConversion() {

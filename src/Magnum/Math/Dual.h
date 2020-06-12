@@ -81,8 +81,8 @@ template<class T> class Dual {
         explicit Dual(NoInitT) noexcept;
         #else
         /* MSVC 2015 can't handle {} instead of ::value */
-        template<class U = T, class = typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value>::type> explicit Dual(NoInitT) noexcept {}
-        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>::value>::type> explicit Dual(NoInitT) noexcept: _real{NoInit}, _dual{NoInit} {}
+        template<class U = T, class = typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value>::type> explicit Dual(Magnum::NoInitT) noexcept {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, Magnum::NoInitT>::value>::type> explicit Dual(Magnum::NoInitT) noexcept: _real{Magnum::NoInit}, _dual{Magnum::NoInit} {}
         #endif
 
         /**

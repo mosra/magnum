@@ -112,7 +112,7 @@ template<class T> class Deg: public Unit<Deg, T> {
         constexpr explicit Deg(ZeroInitT) noexcept: Unit<Math::Deg, T>{ZeroInit} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Deg(NoInitT) noexcept: Unit<Math::Deg, T>{NoInit} {}
+        explicit Deg(Magnum::NoInitT) noexcept: Unit<Math::Deg, T>{Magnum::NoInit} {}
 
         /** @brief Explicit constructor from unitless type */
         constexpr explicit Deg(T value) noexcept: Unit<Math::Deg, T>(value) {}
@@ -181,7 +181,7 @@ template<class T> class Rad: public Unit<Rad, T> {
         constexpr explicit Rad(ZeroInitT) noexcept: Unit<Math::Rad, T>{ZeroInit} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Rad(NoInitT) noexcept: Unit<Math::Rad, T>{NoInit} {}
+        explicit Rad(Magnum::NoInitT) noexcept: Unit<Math::Rad, T>{Magnum::NoInit} {}
 
         /** @brief Construct from unitless type */
         constexpr explicit Rad(T value) noexcept: Unit<Math::Rad, T>(value) {}

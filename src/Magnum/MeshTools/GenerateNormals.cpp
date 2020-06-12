@@ -147,7 +147,7 @@ template<class T> inline void generateSmoothNormalsIntoImplementation(const Cont
     /* Precalculate cross product and interior angles of each face --- the loop
        below would otherwise calculate it for every vertex, which is at least
        3x as much work */
-    Containers::Array<std::pair<Vector3, Math::Vector3<Rad>>> crossAngles{Math::NoInit, indices.size()/3};
+    Containers::Array<std::pair<Vector3, Math::Vector3<Rad>>> crossAngles{NoInit, indices.size()/3};
     for(std::size_t i = 0; i != crossAngles.size(); ++i) {
         const Vector3 v0 = positions[indices[i*3 + 0]];
         const Vector3 v1 = positions[indices[i*3 + 1]];

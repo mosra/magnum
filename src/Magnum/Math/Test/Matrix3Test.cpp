@@ -207,7 +207,7 @@ void Matrix3Test::constructNoInit() {
     Matrix3 a{{3.0f,  5.0f, 8.0f},
               {4.5f,  4.0f, 7.0f},
               {7.9f, -1.0f, 8.0f}};
-    new(&a) Matrix3{NoInit};
+    new(&a) Matrix3{Magnum::NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -217,10 +217,10 @@ void Matrix3Test::constructNoInit() {
                                    {7.9f, -1.0f, 8.0f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Magnum::NoInitT>::value));
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Matrix3>::value));
 }
 
 void Matrix3Test::constructOneValue() {

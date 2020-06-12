@@ -112,7 +112,7 @@ template<std::size_t size> class BoolVector {
         constexpr explicit BoolVector(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct without initializing the contents */
-        explicit BoolVector(NoInitT) noexcept {}
+        explicit BoolVector(Magnum::NoInitT) noexcept {}
 
         /**
          * @brief Construct a boolean vector from segment values
@@ -389,7 +389,7 @@ template<std::size_t size> inline bool BoolVector<size>::none() const {
 }
 
 template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~() const {
-    BoolVector<size> out{NoInit};
+    BoolVector<size> out{Magnum::NoInit};
 
     for(std::size_t i = 0; i != DataSize; ++i)
         out._data[i] = ~_data[i];

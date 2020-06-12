@@ -26,18 +26,29 @@
 */
 
 /** @file
- * @brief Tag type @ref Magnum::NoCreateT, tag @ref Magnum::NoCreate
+ * @brief Tag type @ref Magnum::NoInitT, @ref Magnum::NoCreateT, tag @ref Magnum::NoInit, @ref Magnum::NoCreate
  */
 
-#include "Corrade/configure.h"
+#include <Corrade/Containers/Tags.h>
+
 #include "Magnum/configure.h"
 
 namespace Magnum {
 
 /**
+@brief No initialization tag type
+@m_since_latest
+
+Used to distinguish construction with no initialization at all.
+@see @ref NoInit
+*/
+typedef Corrade::Containers::NoInitT NoInitT;
+
+/**
 @brief No creation tag type
 
-Used to distinguish construction without creating the underlying OpenGL object.
+Used to distinguish construction without creating the underlying OpenGL /
+Vulkan / ... object.
 @see @ref NoCreate
 */
 /* Explicit constructor to avoid ambiguous calls when using {} */
@@ -49,13 +60,26 @@ struct NoCreateT {
 };
 
 /**
+@brief No initialization tag
+@m_since_latest
+
+Use for construction with no initialization at all.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/* Explicit constructor to avoid ambiguous calls when using {} */
+constexpr NoInitT NoInit{};
+#else
+using Corrade::Containers::NoInit;
+#endif
+
+/**
 @brief No creation tag
 
-Use for construction without creating the underlying OpenGL object. Note that
-calling anything on objects created this way is not defined (and not checked or
-guarded in any way) and may result in crashes. If you want delayed object
-creation with safety checks (however with some extra memory overhead), wrap
-the objects in an @ref Corrade::Containers::Optional.
+Use for construction without creating the underlying OpenGL / Vulkan / ...
+object. Note that calling anything on objects created this way is not defined
+(and not checked or guarded in any way) and may result in crashes. If you want
+delayed object creation with safety checks (however with some extra memory
+overhead), wrap the objects in an @ref Corrade::Containers::Optional.
 */
 constexpr NoCreateT NoCreate{NoCreateT::Init{}};
 
