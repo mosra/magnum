@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
+#ifndef Magnum_Vk_Handle_h
+#define Magnum_Vk_Handle_h
 /*
     This file is part of Magnum.
 
@@ -26,25 +26,47 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
+ * @brief Enum @ref Magnum::Vk::HandleFlag, enum set @ref Magnum::Vk::HandleFlags
+ * @m_since_latest
  */
 
+#include <Corrade/Containers/EnumSet.h>
+
 #include "Magnum/Magnum.h"
+#include "Magnum/Vk/visibility.h"
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
+/**
+@brief Handle wrapping flag
+@m_since_latest
 
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+@see @ref HandleFlags
+*/
+enum class HandleFlag: UnsignedByte {
+    /** Destroy the handle on destruction. */
+    DestroyOnDestruction = 1 << 0
+};
+
+/**
+@brief Handle wrapping flags
+@m_since_latest
+*/
+typedef Containers::EnumSet<HandleFlag> HandleFlags;
+
+CORRADE_ENUMSET_OPERATORS(HandleFlags)
+
+/**
+@debugoperatorenum{HandleFlag}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, HandleFlag value);
+
+/**
+@debugoperatorenum{HandleFlags}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, HandleFlags value);
 
 }}
 

@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,27 +23,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Magnum.h"
+#include "Magnum/Vk/Handle.h"
 
-namespace Magnum { namespace Vk {
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
+struct HandleTest: TestSuite::Tester {
+    explicit HandleTest();
 
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+    void debugHandleFlag();
+    void debugHandleFlags();
+};
 
-}}
+HandleTest::HandleTest() {
+    addTests({&HandleTest::debugHandleFlag,
+              &HandleTest::debugHandleFlags});
+}
 
-#endif
+void HandleTest::debugHandleFlag() {
+    std::ostringstream out;
+    Debug{&out} << HandleFlag::DestroyOnDestruction << HandleFlag(0xf0);
+    CORRADE_COMPARE(out.str(), "Vk::HandleFlag::DestroyOnDestruction Vk::HandleFlag(0xf0)\n");
+}
+
+void HandleTest::debugHandleFlags() {
+    std::ostringstream out;
+    Debug{&out} << (HandleFlag::DestroyOnDestruction|HandleFlag(0xf0)) << HandleFlags{};
+    CORRADE_COMPARE(out.str(), "Vk::HandleFlag::DestroyOnDestruction|Vk::HandleFlag(0xf0) Vk::HandleFlags{}\n");
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Vk::Test::HandleTest)

@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,27 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Handle.h"
 
-#include "Magnum/Magnum.h"
+#include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
+Debug& operator<<(Debug& debug, const HandleFlag value) {
+    debug << "Vk::HandleFlag" << Debug::nospace;
 
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::HandleFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(DestroyOnDestruction)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const HandleFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::HandleFlags{}", {
+        HandleFlag::DestroyOnDestruction});
+}
 
 }}
-
-#endif
