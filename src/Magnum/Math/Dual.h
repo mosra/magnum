@@ -72,7 +72,7 @@ template<class T> class Dual {
         constexpr explicit Dual(ZeroInitT) noexcept;
         #else
         /* MSVC 2015 can't handle {} instead of ::value */
-        template<class U = T, class = typename std::enable_if<std::is_pod<U>::value>::type> constexpr explicit Dual(ZeroInitT) noexcept: _real{}, _dual{} {}
+        template<class U = T, class = typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value>::type> constexpr explicit Dual(ZeroInitT) noexcept: _real{}, _dual{} {}
         template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, ZeroInitT>::value>::type> constexpr explicit Dual(ZeroInitT) noexcept: _real{ZeroInit}, _dual{ZeroInit} {}
         #endif
 
@@ -81,7 +81,7 @@ template<class T> class Dual {
         explicit Dual(NoInitT) noexcept;
         #else
         /* MSVC 2015 can't handle {} instead of ::value */
-        template<class U = T, class = typename std::enable_if<std::is_pod<U>::value>::type> explicit Dual(NoInitT) noexcept {}
+        template<class U = T, class = typename std::enable_if<std::is_standard_layout<U>::value && std::is_trivial<U>::value>::type> explicit Dual(NoInitT) noexcept {}
         template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>::value>::type> explicit Dual(NoInitT) noexcept: _real{NoInit}, _dual{NoInit} {}
         #endif
 
