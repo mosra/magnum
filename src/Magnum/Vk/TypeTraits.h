@@ -38,8 +38,20 @@ namespace Implementation {
     /* Put into a separate header so APIs that need it don't need to pull in
        the whole Extensions.h. Tested in ExtensionsTest also. */
     /** @todo filter out GL/AL extensions also */
-    CORRADE_HAS_TYPE(IsInstanceExtension, decltype(T::InstanceIndex));
-    CORRADE_HAS_TYPE(IsExtension, decltype(T::Index));
+
+    template<class...> class IsInstanceExtension;
+    CORRADE_HAS_TYPE(IsInstanceExtension<U>, decltype(T::InstanceIndex));
+    template<class T, class U, class ...Args> class IsInstanceExtension<T, U, Args...> {
+        /** @todo C++17: use &&... instead of all this */
+        public: enum: bool { value = IsInstanceExtension<T>::value && IsInstanceExtension<U, Args...>::value };
+    };
+
+    template<class...> class IsExtension;
+    CORRADE_HAS_TYPE(IsExtension<U>, decltype(T::Index));
+    template<class T, class U, class ...Args> class IsExtension<T, U, Args...> {
+        /** @todo C++17: use &&... instead of all this */
+        public: enum: bool { value = IsExtension<T>::value && IsExtension<U, Args...>::value };
+    };
 }
 
 }}
