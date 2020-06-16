@@ -33,6 +33,7 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-24/arch-arm64/usr \
         -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr \
+        -DWITH_VK=ON \
         -DWITH_ANYAUDIOIMPORTER=OFF \
         -DWITH_ANYIMAGECONVERTER=ON \
         -DWITH_ANYIMAGEIMPORTER=ON \
@@ -47,6 +48,7 @@ build() {
         -DWITH_EGLCONTEXT=ON \
         -DWITH_WINDOWLESSEGLAPPLICATION=ON \
         -DWITH_GL_INFO=ON \
+        -DWITH_VK_INFO=ON \
         -DTARGET_GLES2=OFF \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
