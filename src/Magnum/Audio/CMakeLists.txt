@@ -116,15 +116,14 @@ if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (OPENAL_DLL_DEB
     # named soft_oal.dll and needs to be renamed to OpenAL32.dll to work
     # correctly. Not the case with OpenAL Soft built by hand.
     if(OPENAL_DLL_DEBUG AND OPENAL_DLL_RELEASE)
-        add_custom_command(TARGET MagnumAudio POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${OPENAL_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${OPENAL_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+        set(openal_dll_input $<$<CONFIG:Debug>:${OPENAL_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${OPENAL_DLL_RELEASE}>)
     elseif(OPENAL_DLL_DEBUG)
-        add_custom_command(TARGET MagnumAudio POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+        set(openal_dll_input ${OPENAL_DLL_DEBUG})
     else()
-        add_custom_command(TARGET MagnumAudio POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENAL_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
+        set(openal_dll_input ${OPENAL_DLL_RELEASE})
     endif()
+    add_custom_command(TARGET MagnumAudio POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${openal_dll_input} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/OpenAL32.dll)
 endif()
 
 # Magnum Audio target alias for superprojects

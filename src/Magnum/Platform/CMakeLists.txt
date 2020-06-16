@@ -272,15 +272,18 @@ if(WITH_GLFWAPPLICATION)
     # help people running the apps
     if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (GLFW_DLL_DEBUG OR GLFW_DLL_RELEASE))
         if(GLFW_DLL_DEBUG AND GLFW_DLL_RELEASE)
-            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${GLFW_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${GLFW_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(glfw_dll_input $<$<CONFIG:Debug>:${GLFW_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${GLFW_DLL_RELEASE}>)
         elseif(GLFW_DLL_DEBUG)
-            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLFW_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(glfw_dll_input ${GLFW_DLL_DEBUG})
         else()
-            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLFW_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(glfw_dll_input ${GLFW_DLL_RELEASE})
         endif()
+        add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
+            # The directory might not always exist before (e.g. if creating a
+            # static build) and copy_if_different would just name the file
+            # `bin` instead of creating such directory
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${glfw_dll_input} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     endif()
 
     # Magnum GlfwApplication target alias for superprojects
@@ -342,15 +345,18 @@ if(WITH_SDL2APPLICATION)
     # help people running the apps
     if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (SDL2_DLL_DEBUG OR SDL2_DLL_RELEASE))
         if(SDL2_DLL_DEBUG AND SDL2_DLL_RELEASE)
-            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${SDL2_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>,${SDL2_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(sdl2_dll_input $<$<CONFIG:Debug>:${SDL2_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>,${SDL2_DLL_RELEASE}>)
         elseif(SDL2_DLL_DEBUG)
-            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(sdl2_dll_input ${SDL2_DLL_DEBUG})
         else()
-            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+            set(sdl2_dll_input ${SDL2_DLL_RELEASE})
         endif()
+        add_custom_command(TARGET MagnumSdl2Application POST_BUILD
+            # The directory might not always exist before (e.g. if creating a
+            # static build) and copy_if_different would just name the file
+            # `bin` instead of creating such directory
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${sdl2_dll_input} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     endif()
 
     # Magnum Sdl2Application target alias for superprojects
