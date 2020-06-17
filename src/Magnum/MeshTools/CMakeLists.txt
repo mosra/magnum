@@ -37,6 +37,7 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     GenerateIndices.cpp
     GenerateNormals.cpp
     Interleave.cpp
+    Reference.cpp
     RemoveDuplicates.cpp)
 
 set(MagnumMeshTools_HEADERS
@@ -48,6 +49,7 @@ set(MagnumMeshTools_HEADERS
     GenerateIndices.h
     GenerateNormals.h
     Interleave.h
+    Reference.h
     RemoveDuplicates.h
     Subdivide.h
     Tipsify.h
