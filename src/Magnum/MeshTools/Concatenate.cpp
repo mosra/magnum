@@ -33,10 +33,10 @@ namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
 
-std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(const Trade::MeshData& first, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> next) {
-    UnsignedInt indexCount = first.isIndexed() ? first.indexCount() : 0;
-    UnsignedInt vertexCount = first.vertexCount();
-    for(const Trade::MeshData& mesh: next) {
+std::pair<UnsignedInt, UnsignedInt> concatenateIndexVertexCount(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
+    UnsignedInt indexCount = 0;
+    UnsignedInt vertexCount = 0;
+    for(const Trade::MeshData& mesh: meshes) {
         /* If the mesh is indexed, add to index count. If this is the first
            indexed mesh, all previous meshes will have a trivial index buffer
            generated for all their vertices */
@@ -62,10 +62,9 @@ struct MeshAttributeHash: std::hash<typename std::underlying_type<Trade::MeshAtt
     }
 };
 
-Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Trade::MeshData& first, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> next, const char* const assertPrefix, const std::size_t meshIndexOffset) {
+Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedInt vertexCount, Containers::Array<char>&& vertexData, Containers::Array<Trade::MeshAttributeData>&& attributeData, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes, const char* const assertPrefix) {
     #ifdef CORRADE_NO_ASSERT
     static_cast<void>(assertPrefix);
-    static_cast<void>(meshIndexOffset);
     #endif
 
     /* Convert the attributes from offset-only and zero vertex count to
@@ -83,17 +82,17 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     /** @todo delegate to `indexTriangleStrip()` (`duplicate*()`?) etc when
         those are done */
     CORRADE_ASSERT(
-        first.primitive() != MeshPrimitive::LineStrip &&
-        first.primitive() != MeshPrimitive::LineLoop &&
-        first.primitive() != MeshPrimitive::TriangleStrip &&
-        first.primitive() != MeshPrimitive::TriangleFan,
-        assertPrefix << first.primitive() << "is not supported, turn it into a plain indexed mesh first",
+        meshes.front()->primitive() != MeshPrimitive::LineStrip &&
+        meshes.front()->primitive() != MeshPrimitive::LineLoop &&
+        meshes.front()->primitive() != MeshPrimitive::TriangleStrip &&
+        meshes.front()->primitive() != MeshPrimitive::TriangleFan,
+        assertPrefix << meshes.front()->primitive() << "is not supported, turn it into a plain indexed mesh first",
         (Trade::MeshData{MeshPrimitive{}, 0}));
 
     /* Populate the resulting instance with what we have. It'll be used below
        for convenient access to vertex / index data */
     auto indices = Containers::arrayCast<UnsignedInt>(indexData);
-    Trade::MeshData out{first.primitive(),
+    Trade::MeshData out{meshes.front()->primitive(),
         /* If the index array is empty, we're creating a non-indexed mesh (not
            an indexed mesh with zero indices) */
         std::move(indexData), indices.empty() ?
@@ -107,19 +106,16 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
     for(UnsignedInt i = 0; i != out.attributeCount(); ++i)
         attributeMap.emplace(out.attributeName(i), std::make_pair(i, false));
 
-    /* Go through all meshes and put all attributes and index arrays together.
-       The first mesh might get separately and thus can't be a part of the
-       view, so abuse the *defined* unsigned integer overflow to add it to the
-       loop. This probably breaks all coding guidelines on earth tho. */
+    /* Go through all meshes and put all attributes and index arrays together. */
     std::size_t indexOffset = 0;
     std::size_t vertexOffset = 0;
-    for(std::size_t i = ~std::size_t{}; i != next.size(); ++i) {
-        const Trade::MeshData& mesh = i == ~std::size_t{} ? first : next[i].get();
+    for(std::size_t i = 0; i != meshes.size(); ++i) {
+        const Trade::MeshData& mesh = meshes[i];
 
         /* This won't fire for i == ~std::size_t{}, as that's where
            out.primitive() comes from */
         CORRADE_ASSERT(mesh.primitive() == out.primitive(),
-            assertPrefix << "expected" << out.primitive() << "but got" << mesh.primitive() << "in mesh" << i + meshIndexOffset,
+            assertPrefix << "expected" << out.primitive() << "but got" << mesh.primitive() << "in mesh" << i,
             (Trade::MeshData{MeshPrimitive{}, 0}));
 
         /* If the mesh is indexed, copy the indices over, expanded to 32bit */
@@ -167,10 +163,10 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
             /* Check format compatibility. This won't fire for i ==
                ~std::size_t{}, as that's where out.primitive() comes from */
             CORRADE_ASSERT(out.attributeFormat(dst) == mesh.attributeFormat(src),
-                assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i + meshIndexOffset << "attribute" << src,
+                assertPrefix << "expected" << out.attributeFormat(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeFormat(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
             CORRADE_ASSERT(out.attributeArraySize(dst) == mesh.attributeArraySize(src),
-                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i + meshIndexOffset << "attribute" << src,
+                assertPrefix << "expected array size" << out.attributeArraySize(dst) << "for attribute" << dst << "(" << Debug::nospace << out.attributeName(dst) << Debug::nospace << ") but got" << mesh.attributeArraySize(src) << "in mesh" << i << "attribute" << src,
                 (Trade::MeshData{MeshPrimitive{}, 0}));
 
             /* Copy the data to a slice of the output, mark the attribute as
@@ -189,16 +185,10 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
 
 }
 
-Trade::MeshData concatenate(Trade::MeshData&& first, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> next) {
-    /* If there's just a single non-empty mesh and its data is owned, pass it
-       through, as it passes the guarantee that the returned data is always
-       owned. If it's empty, it doesn't matter that we drag it through the rest
-       as there will be no heavy allocation / copy made (and that also makes
-       tests easier to write). */
-    if(first.indexDataFlags() & Trade::DataFlag::Owned &&
-       first.vertexDataFlags() & Trade::DataFlag::Owned &&
-       first.attributeCount() && first.vertexCount() && next.empty())
-        return std::move(first);
+Trade::MeshData concatenate(const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> meshes) {
+    CORRADE_ASSERT(!meshes.empty(),
+        "MeshTools::concatenate(): expected at least one mesh",
+        (Trade::MeshData{MeshPrimitive::Points, 0}));
 
     /* Calculate final attribute stride and offsets. Make a non-owning copy of
        the attribute data to avoid interleavedLayout() stealing the original
@@ -206,40 +196,27 @@ Trade::MeshData concatenate(Trade::MeshData&& first, const Containers::ArrayView
        no attributes in the original array, pass just vertex count ---
        otherwise MeshData will assert on that to avoid it getting lost. */
     Containers::Array<Trade::MeshAttributeData> attributeData;
-    if(first.attributeCount())
-        attributeData = Implementation::interleavedLayout(Trade::MeshData{first.primitive(),
-            {}, first.vertexData(),
-            Trade::meshAttributeDataNonOwningArray(first.attributeData())}, {});
+    if(meshes.front()->attributeCount())
+        attributeData = Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
+            {}, meshes.front()->vertexData(),
+            Trade::meshAttributeDataNonOwningArray(meshes.front()->attributeData())}, {});
     else attributeData =
-        Implementation::interleavedLayout(Trade::MeshData{first.primitive(),
-            first.vertexCount()}, {});
+        Implementation::interleavedLayout(Trade::MeshData{meshes.front()->primitive(),
+            meshes.front()->vertexCount()}, {});
 
     /* Calculate total index/vertex count and allocate the target memory.
        Index data are allocated with NoInit as the whole array will be written,
        however vertex data might have holes and thus it's zero-initialized. */
-    const std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(first, next);
+    const std::pair<UnsignedInt, UnsignedInt> indexVertexCount = Implementation::concatenateIndexVertexCount(meshes);
     Containers::Array<char> indexData{Containers::NoInit,
         indexVertexCount.first*sizeof(UnsignedInt)};
     Containers::Array<char> vertexData{Containers::ValueInit,
         attributeData.empty() ? 0 : (attributeData[0].stride()*indexVertexCount.second)};
-    return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), first, next, "MeshTools::concatenate():", 0);
+    return Implementation::concatenate(std::move(indexData), indexVertexCount.second, std::move(vertexData), std::move(attributeData), meshes, "MeshTools::concatenate():");
 }
 
-Trade::MeshData concatenate(Trade::MeshData&& first, std::initializer_list<Containers::Reference<const Trade::MeshData>> next) {
-    return concatenate(std::move(first), Containers::arrayView(next));
-}
-
-Trade::MeshData concatenate(const Trade::MeshData& first, const Containers::ArrayView<const Containers::Reference<const Trade::MeshData>> next) {
-    return concatenate(Trade::MeshData{first.primitive(),
-        /* If data is not indexed, the reference will be also non-indexed */
-        {}, first.indexData(), Trade::MeshIndexData{first.indices()},
-        {}, first.vertexData(), Trade::meshAttributeDataNonOwningArray(first.attributeData()),
-        first.vertexCount(),
-    }, next);
-}
-
-Trade::MeshData concatenate(const Trade::MeshData& first, std::initializer_list<Containers::Reference<const Trade::MeshData>> next) {
-    return concatenate(first, Containers::arrayView(next));
+Trade::MeshData concatenate(std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes) {
+    return concatenate(Containers::arrayView(meshes));
 }
 
 }}

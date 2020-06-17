@@ -80,15 +80,6 @@ std::pair<Containers::Array<char>, MeshIndexType> result =
 /* [compressIndices-offset] */
 }
 
-{
-/* [concatenate-make-mutable] */
-/* Flip triangles on a cube primitive so it's counterclockwise from the inside
-   in order to render a cube map */
-Trade::MeshData mesh = MeshTools::concatenate(Primitives::cubeSolid());
-MeshTools::flipFaceWindingInPlace(mesh.mutableIndices());
-/* [concatenate-make-mutable] */
-}
-
 #ifdef MAGNUM_BUILD_DEPRECATED
 {
 CORRADE_IGNORE_DEPRECATED_PUSH

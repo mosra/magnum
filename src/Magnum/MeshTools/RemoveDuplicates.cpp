@@ -36,7 +36,7 @@
 
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/MeshTools/Concatenate.h"
+#include "Magnum/MeshTools/Reference.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
@@ -409,13 +409,11 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
         (Trade::MeshData{MeshPrimitive::Points, 0}));
 
     /* Turn the passed data into an interleaved owned mutable instance we can
-       operate on -- concatenate() alone only makes the data owned,
-       interleave() alone only makes the data interleaved (but those can stay
-       non-owned). There's a chance the original data are already like this, in
-       which case this will be just a passthrough. */
-    /** @todo concatenate() causes the resulting index type to be UnsignedInt
-        always, replace with owned() or some such when that's done */
-    Trade::MeshData ownedInterleaved = interleave(concatenate(std::move(data)));
+       operate on -- owned() alone only makes the data owned, interleave()
+       alone only makes the data interleaved (but those can stay non-owned).
+       There's a chance the original data are already like this, in which case
+       this will be just a passthrough. */
+    Trade::MeshData ownedInterleaved = owned(interleave(std::move(data)));
 
     const Containers::StridedArrayView2D<char> vertexData = MeshTools::interleavedMutableData(ownedInterleaved);
 
@@ -467,9 +465,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
     /* Turn the passed data into an owned mutable instance we can operate on.
        There's a chance the original data are already like this, in which case
        this will be just a passthrough. */
-    /** @todo concatenate() causes the resulting index type to be UnsignedInt
-        always, replace with owned() or some such when that's done */
-    Trade::MeshData owned = concatenate(std::move(data));
+    Trade::MeshData owned = MeshTools::owned(std::move(data));
 
     /* Allocate an interleaved index array for all attribs. If the mesh is
        already indexed, use the existing index count and copy the original
@@ -491,7 +487,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
         const VertexFormat format = owned.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
-            "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in" << format,
+            "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format" << reinterpret_cast<void*>(vertexFormatUnwrap(format)),
             (Trade::MeshData{MeshPrimitive::Points, 0}));
 
         const Containers::StridedArrayView1D<UnsignedInt> outputIndices = perAttributeIndices[i];

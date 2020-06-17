@@ -41,7 +41,7 @@ struct ConcatenateTest: TestSuite::Tester {
     void concatenateNoAttributes();
     void concatenateNoAttributesNotIndexed();
     void concatenateOne();
-    void concatenateOneRvalue();
+    void concatenateNone();
     void concatenateInto();
     void concatenateIntoNoIndexArray();
     void concatenateIntoNonOwnedAttributeArray();
@@ -59,7 +59,7 @@ ConcatenateTest::ConcatenateTest() {
               &ConcatenateTest::concatenateNoAttributes,
               &ConcatenateTest::concatenateNoAttributesNotIndexed,
               &ConcatenateTest::concatenateOne,
-              &ConcatenateTest::concatenateOneRvalue,
+              &ConcatenateTest::concatenateNone,
               &ConcatenateTest::concatenateInto,
               &ConcatenateTest::concatenateIntoNoIndexArray,
               &ConcatenateTest::concatenateIntoNonOwnedAttributeArray,
@@ -165,7 +165,7 @@ void ConcatenateTest::concatenate() {
                 &vertexDataC[0].texcoords3, 3, sizeof(VertexDataC))},
     }};
 
-    Trade::MeshData dst = MeshTools::concatenate(a, {b, c});
+    Trade::MeshData dst = MeshTools::concatenate({a, b, c});
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 4);
     CORRADE_COMPARE_AS(dst.attribute<Vector3>(Trade::MeshAttribute::Position),
@@ -244,7 +244,7 @@ void ConcatenateTest::concatenateNotIndexed() {
             Containers::arrayView(positionB)}
     }};
 
-    Trade::MeshData dst = MeshTools::concatenate(a, {b, b});
+    Trade::MeshData dst = MeshTools::concatenate({a, b, b});
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 1);
     CORRADE_COMPARE_AS(dst.attribute<Vector3>(Trade::MeshAttribute::Position),
@@ -272,7 +272,7 @@ void ConcatenateTest::concatenateNoAttributes() {
     const UnsignedByte indicesC[]{1, 0, 1, 0};
     Trade::MeshData c{MeshPrimitive::Points, {}, indicesC, Trade::MeshIndexData{indicesC}, 2};
 
-    Trade::MeshData dst = MeshTools::concatenate(a, {b, c});
+    Trade::MeshData dst = MeshTools::concatenate({a, b, c});
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 0);
     CORRADE_COMPARE(dst.vertexCount(), 10);
@@ -292,7 +292,7 @@ void ConcatenateTest::concatenateNoAttributesNotIndexed() {
     Trade::MeshData b{MeshPrimitive::Points, 6};
     Trade::MeshData c{MeshPrimitive::Points, 2};
 
-    Trade::MeshData dst = MeshTools::concatenate(a, {b, c});
+    Trade::MeshData dst = MeshTools::concatenate({a, b, c});
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 0);
     CORRADE_COMPARE(dst.vertexCount(), 11);
@@ -330,7 +330,9 @@ void ConcatenateTest::concatenateOne() {
                 Containers::arrayView(vertexData[0].position)},
         }};
 
-    Trade::MeshData dst = MeshTools::concatenate(a);
+    /* This is a rather pointless use case, but could happen in generic code
+       that filters the input meshes and ends up with just one */
+    Trade::MeshData dst = MeshTools::concatenate({a});
     CORRADE_COMPARE(dst.primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(dst.attributeCount(), 3);
     CORRADE_COMPARE_AS(dst.attribute<Vector3>(Trade::MeshAttribute::Position),
@@ -362,26 +364,15 @@ void ConcatenateTest::concatenateOne() {
     CORRADE_COMPARE(dst.vertexDataFlags(), Trade::DataFlag::Owned|Trade::DataFlag::Mutable);
 }
 
-void ConcatenateTest::concatenateOneRvalue() {
-    Containers::Array<char> vertexData{sizeof(Vector2)*4};
-    auto positions = Containers::arrayCast<Vector2>(vertexData);
-    Containers::Array<char> indexData{sizeof(UnsignedInt)*6};
-    auto indices = Containers::arrayCast<UnsignedInt>(indexData);
-    Trade::MeshAttributeData attributeData[]{
-        Trade::MeshAttributeData{Trade::MeshAttribute::Position, positions}
-    };
+void ConcatenateTest::concatenateNone() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
-    /* The result should be just a pass-through, as both index and vertex data
-       are already owned */
-    Trade::MeshData dst = MeshTools::concatenate(Trade::MeshData{
-        MeshPrimitive::Triangles,
-        std::move(indexData), Trade::MeshIndexData{indices},
-        std::move(vertexData), Trade::meshAttributeDataNonOwningArray(attributeData)},
-        /* Explicitly pass an empty init list to ensure this overload is
-           covered as well */
-        std::initializer_list<Containers::Reference<const Trade::MeshData>>{});
-    CORRADE_COMPARE(dst.indexData().data(), static_cast<void*>(indices.data()));
-    CORRADE_COMPARE(dst.vertexData().data(), static_cast<void*>(positions.data()));
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::concatenate({});
+    CORRADE_COMPARE(out.str(), "MeshTools::concatenate(): expected at least one mesh\n");
 }
 
 void ConcatenateTest::concatenateInto() {
@@ -561,7 +552,7 @@ void ConcatenateTest::concatenateUnsupportedPrimitive() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::concatenate(a);
+    MeshTools::concatenate({a});
     MeshTools::concatenateInto(a, {a});
     CORRADE_COMPARE(out.str(),
         "MeshTools::concatenate(): MeshPrimitive::TriangleStrip is not supported, turn it into a plain indexed mesh first\n"
@@ -579,10 +570,10 @@ void ConcatenateTest::concatenateInconsistentPrimitive() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::concatenate(a, {a, b});
+    MeshTools::concatenate({a, a, b});
     MeshTools::concatenateInto(a, {a, b});
     CORRADE_COMPARE(out.str(),
-        "MeshTools::concatenate(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 1\n"
+        "MeshTools::concatenate(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 2\n"
         "MeshTools::concatenateInto(): expected MeshPrimitive::Triangles but got MeshPrimitive::Lines in mesh 1\n");
 }
 
@@ -609,10 +600,10 @@ void ConcatenateTest::concatenateInconsistentAttributeType() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::concatenate(a, {a, a, a, b});
+    MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenateInto(a, {a, a, a, b});
     CORRADE_COMPARE(out.str(),
-        "MeshTools::concatenate(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 3 attribute 1\n"
+        "MeshTools::concatenate(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected VertexFormat::Vector3ubNormalized for attribute 2 (Trade::MeshAttribute::Color) but got VertexFormat::Vector3usNormalized in mesh 3 attribute 1\n");
 }
 
@@ -639,10 +630,10 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshTools::concatenate(a, {a, a, a, b});
+    MeshTools::concatenate({a, a, a, a, b});
     MeshTools::concatenateInto(a, {a, a, a, b});
     CORRADE_COMPARE(out.str(),
-        "MeshTools::concatenate(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 3 attribute 1\n"
+        "MeshTools::concatenate(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 4 attribute 1\n"
         "MeshTools::concatenateInto(): expected array size 5 for attribute 2 (Trade::MeshAttribute::Custom(42)) but got 4 in mesh 3 attribute 1\n");
 }
 

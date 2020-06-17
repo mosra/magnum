@@ -673,13 +673,9 @@ void RemoveDuplicatesTest::removeDuplicatesMeshData() {
     CORRADE_VERIFY(unique.isIndexed());
     if(data.indexed) {
         CORRADE_COMPARE(unique.indexCount(), mesh.indexCount());
-        {
-            CORRADE_EXPECT_FAIL("The function currently doesn't preserve the index type.");
-            CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedShort);
-        }
-        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
-        CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
-            Containers::arrayView<UnsignedInt>({1, 2, 5, 7, 1, 6, 4, 1, 5, 0, 3, 2, 3}),
+        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedShort);
+        CORRADE_COMPARE_AS(unique.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({1, 2, 5, 7, 1, 6, 4, 1, 5, 0, 3, 2, 3}),
             TestSuite::Compare::Container);
     } else {
         CORRADE_COMPARE(unique.indexCount(), mesh.vertexCount());
@@ -820,11 +816,13 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
     CORRADE_COMPARE(unique.primitive(), MeshPrimitive::Lines);
 
     CORRADE_VERIFY(unique.isIndexed());
-    if(data.indexed)
+    if(data.indexed) {
         CORRADE_COMPARE(unique.indexCount(), mesh.indexCount());
-    else
+        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedShort);
+    } else {
         CORRADE_COMPARE(unique.indexCount(), mesh.vertexCount());
-    CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+        CORRADE_COMPARE(unique.indexType(), MeshIndexType::UnsignedInt);
+    }
 
     CORRADE_COMPARE(unique.attributeCount(), 3 + data.attributes.size());
 
@@ -857,8 +855,8 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
 
     /* The data differ depending on how much is actually removed */
     if(data.vertexCount == 7) {
-        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
-            Containers::arrayView<UnsignedInt>({0, 1, 3, 6, 5, 4, 3, 5, 3, 0, 2, 5, 2}),
+        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({0, 1, 3, 6, 5, 4, 3, 5, 3, 0, 2, 5, 2}),
             TestSuite::Compare::Container);
         else CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
             Containers::arrayView<UnsignedInt>({0, 0, 1, 2, 3, 3, 4, 5, 5, 6}),
@@ -912,8 +910,8 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzy() {
             TestSuite::Compare::Container);
 
     } else if(data.vertexCount == 9) {
-        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
-            Containers::arrayView<UnsignedInt>({1, 2, 4, 8, 6, 5, 4, 6, 4, 0, 3, 7, 3}),
+        if(data.indexed) CORRADE_COMPARE_AS(unique.indices<UnsignedShort>(),
+            Containers::arrayView<UnsignedShort>({1, 2, 4, 8, 6, 5, 4, 6, 4, 0, 3, 7, 3}),
             TestSuite::Compare::Container);
         else CORRADE_COMPARE_AS(unique.indices<UnsignedInt>(),
             Containers::arrayView<UnsignedInt>({0, 1, 2, 3, 4, 4, 5, 6, 7, 8}),
@@ -1059,14 +1057,11 @@ void RemoveDuplicatesTest::removeDuplicatesMeshDataFuzzyImplementationSpecific()
     std::ostringstream out;
     Error redirectError{&out};
 
-    CORRADE_EXPECT_FAIL("The function currently uses concatenate() to make data owned, which fails earlier with a different (and confusing) assert message.");
-    CORRADE_VERIFY(false);
-
-//     MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
-//         nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
-//             vertexFormatWrap(0x1234), nullptr}}});
-//     CORRADE_COMPARE(out.str(),
-//         "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format 0x1234\n");
+    MeshTools::removeDuplicatesFuzzy(Trade::MeshData{MeshPrimitive::Points,
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            vertexFormatWrap(0x1234), nullptr}}});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::removeDuplicatesFuzzy(): can't remove duplicates in an implementation-specific format 0x1234\n");
 }
 
 void RemoveDuplicatesTest::soakTest() {
