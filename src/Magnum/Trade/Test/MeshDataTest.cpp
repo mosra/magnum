@@ -750,7 +750,7 @@ void MeshDataTest::constructAttributeWrongStride() {
     std::ostringstream out;
     Error redirectError{&out};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, Containers::arrayCast<const char>(positionData)};
-    MeshAttributeData{meshAttributeCustom(1), VertexFormat::Float, 4, Containers::arrayCast<const Vector3>(positionData)};
+    MeshAttributeData{meshAttributeCustom(1), VertexFormat::Float, Containers::arrayCast<const Vector3>(positionData), 4};
     /* We need this one to be constexpr, which means there can't be a warning
        about stride not matching the size */
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, 0, 3*sizeof(Vector3), 1};
@@ -831,7 +831,7 @@ void MeshDataTest::constructArrayAttributeNonContiguous() {
 
 void MeshDataTest::constructArrayAttribute2D() {
     char vertexData[3*4*sizeof(Vector2)];
-    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, 4, Containers::StridedArrayView2D<char>{vertexData, {3, 4*sizeof(Vector2)}}};
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, Containers::StridedArrayView2D<char>{vertexData, {3, 4*sizeof(Vector2)}}, 4};
     CORRADE_VERIFY(!data.isOffsetOnly());
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
@@ -850,9 +850,9 @@ void MeshDataTest::constructArrayAttribute2DWrongSize() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, 3,
+    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2,
         Containers::StridedArrayView2D<char>{vertexData,
-            {3, 4*sizeof(Vector2)}}};
+            {3, 4*sizeof(Vector2)}}, 3};
     CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension size 32 doesn't match VertexFormat::Vector2 and array size 3\n");
 }
 
@@ -865,16 +865,16 @@ void MeshDataTest::constructArrayAttribute2DNonContiguous() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, 2,
+    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2,
         Containers::StridedArrayView2D<char>{vertexData,
-            {3, sizeof(Vector2)*4}}.every({1, 2})};
+            {3, sizeof(Vector2)*4}}.every({1, 2}), 2};
     CORRADE_COMPARE(out.str(), "Trade::MeshAttributeData: second view dimension is not contiguous\n");
 }
 
 void MeshDataTest::constructArrayAttributeTypeErased() {
     Vector2 vertexData[3*4];
     Containers::StridedArrayView1D<Vector2> attribute{vertexData, 3, 4*sizeof(Vector2)};
-    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, 4, attribute};
+    MeshAttributeData data{meshAttributeCustom(35), VertexFormat::Vector2, attribute, 4};
     CORRADE_VERIFY(!data.isOffsetOnly());
     CORRADE_COMPARE(data.name(), meshAttributeCustom(35));
     CORRADE_COMPARE(data.format(), VertexFormat::Vector2);
@@ -885,7 +885,7 @@ void MeshDataTest::constructArrayAttributeTypeErased() {
 }
 
 void MeshDataTest::constructArrayAttributeNullptr() {
-    MeshAttributeData positions{meshAttributeCustom(35), VertexFormat::Vector2, 4, nullptr};
+    MeshAttributeData positions{meshAttributeCustom(35), VertexFormat::Vector2, nullptr, 4};
     CORRADE_VERIFY(!positions.isOffsetOnly());
     CORRADE_COMPARE(positions.arraySize(), 4);
     CORRADE_COMPARE(positions.name(), meshAttributeCustom(35));
@@ -923,20 +923,20 @@ void MeshDataTest::constructArrayAttributeNotAllowed() {
     auto positions2Dchar = Containers::arrayCast<2, const char>(positions2D);
 
     /* This is all fine */
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, positions};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, positions, 0};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 0};
-    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 0, positions};
+    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), positions, 0};
     MeshAttributeData{meshAttributeCustom(35), positions2D};
-    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, 3, positions2Dchar};
+    MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{meshAttributeCustom(35), VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
 
     /* This is not */
     std::ostringstream out;
     Error redirectError{&out};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, 3, Containers::arrayView(positionData)};
-    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 3, Containers::arrayView(positionData)};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2b, Containers::arrayView(positionData), 3};
+    MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), Containers::arrayView(positionData), 3};
     MeshAttributeData{MeshAttribute::Position, positions2D};
-    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 3, positions2Dchar};
+    MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, positions2Dchar, 3};
     MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector2, 0, 3, 6*sizeof(Vector2), 3};
     MeshAttributeData{meshAttributeCustom(35), vertexFormatWrap(0xdead), 0, 3, 6*sizeof(Vector2), 3};
     CORRADE_COMPARE(out.str(),

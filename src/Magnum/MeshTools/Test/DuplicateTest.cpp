@@ -291,7 +291,7 @@ template<class T> void DuplicateTest::duplicateMeshData() {
                 Containers::arrayView(vertexData.positions)},
             /* Array attribute to verify it's correctly propagated */
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Float, 3, Containers::arrayView(vertexData.extra)}
+                VertexFormat::Float, Containers::arrayView(vertexData.extra), 3}
         }};
 
     Trade::MeshData duplicated = MeshTools::duplicate(data);
@@ -341,7 +341,7 @@ void DuplicateTest::duplicateMeshDataExtra() {
         Trade::MeshAttributeData{4},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Float, 3, Containers::arrayView(extra)}
+            VertexFormat::Float, Containers::arrayView(extra), 3}
     });
     CORRADE_VERIFY(MeshTools::isInterleaved(duplicated));
     CORRADE_COMPARE(duplicated.primitive(), MeshPrimitive::Lines);

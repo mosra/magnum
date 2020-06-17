@@ -83,8 +83,8 @@ Trade::MeshData combineIndexedImplementation(const MeshPrimitive primitive, Cont
                 duplicateInto(indices, src, dst);
                 vertexOffset += src.size()[1];
                 attributeData[attributeOffset++] = Trade::MeshAttributeData{
-                    mesh.attributeName(i), mesh.attributeFormat(i),
-                    mesh.attributeArraySize(i), dst};
+                    mesh.attributeName(i), mesh.attributeFormat(i), dst,
+                    mesh.attributeArraySize(i)};
             }
 
             indexOffset += indexSize;

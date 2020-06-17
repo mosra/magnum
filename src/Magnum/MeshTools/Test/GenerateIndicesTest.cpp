@@ -406,9 +406,9 @@ void GenerateIndicesTest::generateIndicesMeshData() {
                     &vertexData[0].position, 5, sizeof(Vertex))},
             /* Array attribute to verify it's correctly propagated */
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Short, 2,
+                VertexFormat::Short,
                 Containers::stridedArrayView(vertexData,
-                    &vertexData[0].data, 5, sizeof(Vertex))},
+                    &vertexData[0].data, 5, sizeof(Vertex)), 2},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
                 Containers::stridedArrayView(vertexData,
                     &vertexData[0].textureCoordinates, 5, sizeof(Vertex))}

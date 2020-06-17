@@ -446,11 +446,11 @@ Trade::MeshData removeDuplicates(Trade::MeshData&& data) {
     for(UnsignedInt i = 0; i != ownedInterleaved.attributeCount(); ++i)
         attributeData[i] = Trade::MeshAttributeData{ownedInterleaved.attributeName(i),
             ownedInterleaved.attributeFormat(i),
-            ownedInterleaved.attributeArraySize(i),
             Containers::StridedArrayView1D<void>{uniqueVertexData,
                 uniqueVertexData.data() + ownedInterleaved.attributeOffset(i),
                 uniqueVertexCount,
-                ownedInterleaved.attributeStride(i)}};
+                ownedInterleaved.attributeStride(i)},
+            ownedInterleaved.attributeArraySize(i)};
 
     Trade::MeshIndexData indices{indexType, indexData};
     return Trade::MeshData{ownedInterleaved.primitive(),

@@ -155,8 +155,9 @@ Trade::MeshData compressIndices(Trade::MeshData&& data, MeshIndexType atLeast) {
     for(UnsignedInt i = 0, max = attributeData.size(); i != max; ++i) {
         const UnsignedInt stride = data.attributeStride(i);
         attributeData[i] = Trade::MeshAttributeData{data.attributeName(i),
-            data.attributeFormat(i), data.attributeArraySize(i),
-            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i) + offset*stride, newVertexCount, stride}};
+            data.attributeFormat(i),
+            Containers::StridedArrayView1D<const void>{vertexData, vertexData.data() + data.attributeOffset(i) + offset*stride, newVertexCount, stride},
+            data.attributeArraySize(i)};
     }
 
     Trade::MeshIndexData indices{result.second, result.first};

@@ -102,9 +102,9 @@ void ConcatenateTest::concatenate() {
                 &vertexDataA[0].position, 2, sizeof(VertexDataA))},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short, 2,
+            VertexFormat::Short,
             Containers::stridedArrayView(vertexDataA,
-                &vertexDataA[0].data, 2, sizeof(VertexDataA))}
+                &vertexDataA[0].data, 2, sizeof(VertexDataA)), 2}
     }};
 
     /* Second is indexed, has only one texture coordinate of the two, an extra
@@ -128,9 +128,9 @@ void ConcatenateTest::concatenate() {
                     &vertexDataB[0].color, 4, sizeof(VertexDataB))},
             /* Array attribute to verify it's correctly propagated */
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::Short, 2,
+                VertexFormat::Short,
                 Containers::stridedArrayView(vertexDataB,
-                    &vertexDataB[0].data, 4, sizeof(VertexDataB))},
+                    &vertexDataB[0].data, 4, sizeof(VertexDataB)), 2},
             Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
                 Containers::stridedArrayView(vertexDataB,
                     &vertexDataB[0].texcoords1, 4, sizeof(VertexDataB))}
@@ -628,13 +628,13 @@ void ConcatenateTest::concatenateInconsistentAttributeArraySize() {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::ByteNormalized, 5, nullptr}
+            VertexFormat::ByteNormalized, nullptr, 5}
     }};
     Trade::MeshData b{MeshPrimitive::Lines, nullptr, {
         Trade::MeshAttributeData{Trade::MeshAttribute::Position,
             VertexFormat::Vector3, nullptr},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::ByteNormalized, 4, nullptr}
+            VertexFormat::ByteNormalized, nullptr, 4}
     }};
 
     std::ostringstream out;

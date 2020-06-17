@@ -663,8 +663,8 @@ void RemoveDuplicatesTest::removeDuplicatesMeshData() {
             Trade::MeshAttributeData{Trade::MeshAttribute::Position,
                 Containers::arrayView(vertexData->positions)},
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-                VertexFormat::ShortNormalized, 2,
-                Containers::stridedArrayView(vertexData->data)},
+                VertexFormat::ShortNormalized,
+                Containers::stridedArrayView(vertexData->data), 2},
     }};
 
     Trade::MeshData unique = MeshTools::removeDuplicates(mesh);

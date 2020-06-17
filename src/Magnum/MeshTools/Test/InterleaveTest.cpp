@@ -484,9 +484,9 @@ void InterleaveTest::interleavedDataArrayAttributes() {
 
     Trade::MeshData data{MeshPrimitive::Triangles, std::move(vertexData), {
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Float, 3, normals},
+            VertexFormat::Float, normals, 3},
         Trade::MeshAttributeData{Trade::meshAttributeCustom(43),
-            VertexFormat::Float, 2, positions}
+            VertexFormat::Float, positions, 2}
     }};
 
     CORRADE_VERIFY(MeshTools::isInterleaved(data));
@@ -652,7 +652,7 @@ void InterleaveTest::interleavedLayout() {
             Containers::arrayCast<Vector3>(vertexData.slice(3*8, 3*20))},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
-            VertexFormat::Short, 2, Containers::StridedArrayView2D<char>{vertexData.suffix(3*20), {3, 4}}}
+            VertexFormat::Short, Containers::StridedArrayView2D<char>{vertexData.suffix(3*20), {3, 4}}, 2}
     };
 
     Trade::MeshIndexData indices{Containers::arrayCast<UnsignedShort>(indexData)};
@@ -702,7 +702,7 @@ void InterleaveTest::interleavedLayoutExtra() {
         Trade::MeshAttributeData{1},
         /* Array attribute to verify it's correctly propagated */
         Trade::MeshAttributeData{Trade::meshAttributeCustom(15),
-            VertexFormat::UnsignedByte, 6, nullptr},
+            VertexFormat::UnsignedByte, nullptr, 6},
         Trade::MeshAttributeData{1},
         Trade::MeshAttributeData{Trade::MeshAttribute::Color,
             VertexFormat::Vector3, nullptr},

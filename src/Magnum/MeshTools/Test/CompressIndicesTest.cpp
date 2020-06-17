@@ -274,7 +274,7 @@ template<class T> void CompressIndicesTest::compressMeshData() {
         {}, Containers::arrayView(&vertexData, 1), {
             Trade::MeshAttributeData{Trade::meshAttributeCustom(42),
                 /* Array attribute to verify it's correctly propagated */
-                VertexFormat::Float, 2, Containers::arrayView(vertexData.data)},
+                VertexFormat::Float, Containers::arrayView(vertexData.data), 2},
             Trade::MeshAttributeData{Trade::MeshAttribute::Normal, Containers::arrayView(vertexData.normals)}
         }};
     CORRADE_COMPARE(data.vertexCount(), 103);

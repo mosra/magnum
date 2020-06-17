@@ -72,10 +72,11 @@ Trade::MeshData concatenate(Containers::Array<char>&& indexData, const UnsignedI
        absolute, referencing the vertex data array */
     for(Trade::MeshAttributeData& attribute: attributeData) {
         attribute = Trade::MeshAttributeData{
-            attribute.name(), attribute.format(), attribute.arraySize(),
+            attribute.name(), attribute.format(),
             Containers::StridedArrayView1D<void>{vertexData,
                 vertexData + attribute.offset(vertexData),
-                vertexCount, attribute.stride()}};
+                vertexCount, attribute.stride()},
+            attribute.arraySize()};
     }
 
     /* Only list primitives are supported currently */

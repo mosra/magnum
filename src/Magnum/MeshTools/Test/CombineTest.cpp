@@ -98,9 +98,9 @@ void CombineTest::combineIndexedAttributes() {
     Trade::MeshData b{MeshPrimitive::LineLoop,
         {}, indicesB, Trade::MeshIndexData{indicesB},
         {}, dataB, {Trade::MeshAttributeData{
+            Trade::meshAttributeCustom(17), VertexFormat::Byte,
             /* Array attribute to verify it's correctly propagated */
-            Trade::meshAttributeCustom(17), VertexFormat::Byte, 2,
-            Containers::arrayView(dataB)}}};
+            Containers::arrayView(dataB), 2}}};
     Trade::MeshData c{MeshPrimitive::LineLoop,
         {}, indicesC, Trade::MeshIndexData{indicesC},
         {}, dataC, {Trade::MeshAttributeData{
