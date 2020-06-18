@@ -73,23 +73,25 @@ void ContextTest::extensions() {
 
     std::set<std::string> unique;
 
-    /* Check that all extension indices are unique and are listed just once */
+    /* Check that all extension indices are unique, are listed just once etc. */
     for(const Extension& e: Extension::extensions()) {
+        CORRADE_ITERATION(e.string());
+
+        /** @todo convert to CORRADE_ERROR() when that's done */
+
         if(e.index() >= Implementation::ExtensionCount) {
-            Error{} << "Index" << e.index() << "used by" << e.string()
-                    << "larger than" << Implementation::ExtensionCount;
+            Error{} << "Index" << e.index() << "larger than" << Implementation::ExtensionCount;
             CORRADE_VERIFY(false);
         }
 
         if(used[e.index()]) {
-            Error{} << "Index" << e.index() << "used by both"
-                    << used[e.index()] << "and" << e.string();
+            Error{} << "Index" << e.index() << "already used by" << used[e.index()];
             CORRADE_VERIFY(false);
         }
 
         used[e.index()] = e.string();
         if(!unique.insert(e.string()).second) {
-            Error{} << "Extension" << e.string() << "listed more than once";
+            Error{} << "Extension listed more than once";
             CORRADE_VERIFY(false);
         }
     }
