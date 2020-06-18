@@ -25,12 +25,9 @@
 
 #include "Context.h"
 
-#ifndef MAGNUM_TARGET_GLES
-#include <algorithm> /* std::find in isCoreProfileImplementationNV() */
-#endif
+#include <algorithm>
 #include <iostream> /* for initialization log redirection */
 #include <string>
-#include <unordered_map>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -71,9 +68,9 @@
 
 namespace Magnum { namespace GL {
 
-/* When adding a new list, Extension::extensions() needs to be adapted. Binary
-   search is performed on the extensions, thus they have to be sorted
-   alphabetically. */
+/* When adding a new list, Extension::extensions() and Context::Context() needs
+   to be adapted. Binary search is performed on the extensions, thus they have
+   to be sorted alphabetically. */
 namespace {
 
 #define _extension(vendor, extension)                           \
@@ -260,49 +257,53 @@ constexpr Extension ExtensionList460[]{
     _extension(KHR,no_error)};
 #elif defined(MAGNUM_TARGET_WEBGL)
 constexpr Extension ExtensionList[]{
-    _extension(EXT,texture_filter_anisotropic),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,clip_cull_distance),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,color_buffer_float),
+    #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension(EXT,disjoint_timer_query),
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(EXT,color_buffer_float),
     _extension(EXT,disjoint_timer_query_webgl2),
     #endif
-    _extension(EXT,texture_compression_rgtc),
-    _extension(EXT,texture_compression_bptc),
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(EXT,clip_cull_distance),
     _extension(EXT,draw_buffers_indexed),
     #endif
+    _extension(EXT,texture_compression_bptc),
+    _extension(EXT,texture_compression_rgtc),
+    _extension(EXT,texture_filter_anisotropic),
     _extension(OES,texture_float_linear),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OVR,multiview2),
     #endif
-    _extension(WEBGL,compressed_texture_s3tc),
-    _extension(WEBGL,compressed_texture_pvrtc),
     _extension(WEBGL,compressed_texture_astc),
+    _extension(WEBGL,compressed_texture_pvrtc),
+    _extension(WEBGL,compressed_texture_s3tc),
     _extension(WEBGL,compressed_texture_s3tc_srgb)};
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
     _extension(ANGLE,instanced_arrays),
+    _extension(EXT,blend_minmax),
     _extension(EXT,color_buffer_half_float),
     _extension(EXT,sRGB),
-    _extension(EXT,blend_minmax),
     _extension(EXT,shader_texture_lod),
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     _extension(MAGNUM,shader_vertex_id),
     #endif
     #ifdef MAGNUM_TARGET_GLES2
+    _extension(OES,element_index_uint),
+    _extension(OES,fbo_render_mipmap),
+    _extension(OES,standard_derivatives),
     _extension(OES,texture_float),
     _extension(OES,texture_half_float),
-    _extension(OES,standard_derivatives),
-    _extension(OES,vertex_array_object),
-    _extension(OES,element_index_uint),
     _extension(OES,texture_half_float_linear),
-    _extension(OES,fbo_render_mipmap),
-    _extension(WEBGL,depth_texture),
+    _extension(OES,vertex_array_object),
     _extension(WEBGL,color_buffer_float),
+    _extension(WEBGL,depth_texture),
     _extension(WEBGL,draw_buffers)
     #endif
 };
@@ -314,152 +315,182 @@ constexpr Extension ExtensionList[]{
     _extension(ANGLE,texture_compression_dxt1),
     _extension(ANGLE,texture_compression_dxt3),
     _extension(ANGLE,texture_compression_dxt5),
-    _extension(APPLE,texture_format_BGRA8888),
     _extension(APPLE,clip_distance),
+    _extension(APPLE,texture_format_BGRA8888),
     _extension(ARM,shader_framebuffer_fetch),
     _extension(ARM,shader_framebuffer_fetch_depth_stencil),
-    _extension(EXT,texture_filter_anisotropic),
-    _extension(EXT,texture_compression_dxt1),
-    _extension(EXT,texture_format_BGRA8888),
-    _extension(EXT,read_format_bgra),
-    _extension(EXT,multi_draw_arrays),
-    _extension(EXT,debug_label),
-    _extension(EXT,debug_marker),
-    _extension(EXT,separate_shader_objects),
-    _extension(EXT,multisampled_render_to_texture),
-    _extension(EXT,robustness),
-    _extension(EXT,shader_framebuffer_fetch),
-    _extension(EXT,disjoint_timer_query),
-    _extension(EXT,texture_sRGB_decode),
-    _extension(EXT,sRGB_write_control),
-    _extension(EXT,texture_compression_s3tc),
-    _extension(EXT,pvrtc_sRGB),
-    #ifndef MAGNUM_TARGET_GLES2
-    _extension(EXT,shader_integer_mix),
-    _extension(EXT,texture_sRGB_R8),
-    _extension(EXT,texture_sRGB_RG8),
-    #endif
-    _extension(EXT,polygon_offset_clamp),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,clip_cull_distance),
-    _extension(EXT,texture_compression_rgtc),
+    #endif
+    _extension(EXT,debug_label),
+    _extension(EXT,debug_marker),
+    _extension(EXT,disjoint_timer_query),
+    _extension(EXT,multi_draw_arrays),
+    _extension(EXT,multisampled_render_to_texture),
+    _extension(EXT,polygon_offset_clamp),
+    _extension(EXT,pvrtc_sRGB),
+    _extension(EXT,read_format_bgra),
+    _extension(EXT,robustness),
+    _extension(EXT,sRGB_write_control),
+    _extension(EXT,separate_shader_objects),
+    _extension(EXT,shader_framebuffer_fetch),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,shader_integer_mix),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,texture_compression_bptc),
     #endif
+    _extension(EXT,texture_compression_dxt1),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_compression_rgtc),
+    #endif
+    _extension(EXT,texture_compression_s3tc),
     _extension(EXT,texture_compression_s3tc_srgb),
+    _extension(EXT,texture_filter_anisotropic),
+    _extension(EXT,texture_format_BGRA8888),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_sRGB_R8),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_sRGB_RG8),
+    #endif
+    _extension(EXT,texture_sRGB_decode),
     _extension(IMG,texture_compression_pvrtc),
-    _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,blend_equation_advanced_coherent),
     _extension(KHR,context_flush_control),
     _extension(KHR,no_error),
+    _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,texture_compression_astc_sliced_3d),
-    _extension(NV,read_buffer_front),
-    _extension(NV,read_depth),
-    _extension(NV,read_stencil),
-    _extension(NV,read_depth_stencil),
-    _extension(NV,texture_border_clamp),
-    #ifndef MAGNUM_TARGET_GLES2
-    _extension(NV,shader_noperspective_interpolation),
-    #endif
-    _extension(NV,sample_locations),
-    _extension(NV,polygon_mode),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(NV,fragment_shader_barycentric),
     #endif
+    _extension(NV,polygon_mode),
+    _extension(NV,read_buffer_front),
+    _extension(NV,read_depth),
+    _extension(NV,read_depth_stencil),
+    _extension(NV,read_stencil),
+    _extension(NV,sample_locations),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(NV,shader_noperspective_interpolation),
+    #endif
+    _extension(NV,texture_border_clamp),
     _extension(OES,depth32),
     _extension(OES,mapbuffer),
     _extension(OES,stencil1),
     _extension(OES,stencil4),
-    _extension(OES,texture_float_linear),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OES,texture_compression_astc),
+    #endif
+    _extension(OES,texture_float_linear),
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(OVR,multiview),
-    _extension(OVR,multiview2)
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(OVR,multiview2),
     #endif
     };
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
+    _extension(ANGLE,depth_texture),
     _extension(ANGLE,framebuffer_blit),
     _extension(ANGLE,framebuffer_multisample),
     _extension(ANGLE,instanced_arrays),
-    _extension(ANGLE,depth_texture),
     _extension(APPLE,framebuffer_multisample),
     _extension(APPLE,texture_max_level),
     _extension(ARM,rgba8),
-    _extension(EXT,texture_type_2_10_10_10_REV),
-    _extension(EXT,discard_framebuffer),
     _extension(EXT,blend_minmax),
-    _extension(EXT,shader_texture_lod),
-    _extension(EXT,unpack_subimage),
+    _extension(EXT,discard_framebuffer),
+    _extension(EXT,draw_buffers),
+    _extension(EXT,draw_instanced),
+    _extension(EXT,instanced_arrays),
+    _extension(EXT,map_buffer_range),
     _extension(EXT,occlusion_query_boolean),
+    _extension(EXT,sRGB),
+    _extension(EXT,shader_texture_lod),
     _extension(EXT,shadow_samplers),
     _extension(EXT,texture_rg),
-    _extension(EXT,sRGB),
     _extension(EXT,texture_storage),
-    _extension(EXT,map_buffer_range),
-    _extension(EXT,draw_buffers),
-    _extension(EXT,instanced_arrays),
-    _extension(EXT,draw_instanced),
+    _extension(EXT,texture_type_2_10_10_10_REV),
+    _extension(EXT,unpack_subimage),
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     _extension(MAGNUM,shader_vertex_id),
     #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension(NV,draw_buffers),
-    _extension(NV,fbo_color_attachments),
-    _extension(NV,read_buffer),
-    _extension(NV,pack_subimage),
     _extension(NV,draw_instanced),
+    _extension(NV,fbo_color_attachments),
     _extension(NV,framebuffer_blit),
     _extension(NV,framebuffer_multisample),
     _extension(NV,instanced_arrays),
+    _extension(NV,pack_subimage),
+    _extension(NV,read_buffer),
     _extension(NV,shadow_samplers_array),
     _extension(NV,shadow_samplers_cube),
     _extension(OES,depth24),
+    _extension(OES,depth_texture),
     _extension(OES,element_index_uint),
     _extension(OES,fbo_render_mipmap),
-    _extension(OES,rgb8_rgba8),
-    _extension(OES,texture_3D),
-    _extension(OES,texture_half_float_linear),
-    _extension(OES,texture_half_float),
-    _extension(OES,texture_float),
-    _extension(OES,texture_npot),
-    _extension(OES,vertex_half_float),
     _extension(OES,packed_depth_stencil),
-    _extension(OES,depth_texture),
-    _extension(OES,standard_derivatives),
-    _extension(OES,vertex_array_object),
     _extension(OES,required_internalformat),
-    _extension(OES,surfaceless_context)
+    _extension(OES,rgb8_rgba8),
+    _extension(OES,standard_derivatives),
+    _extension(OES,surfaceless_context),
+    _extension(OES,texture_3D),
+    _extension(OES,texture_float),
+    _extension(OES,texture_half_float),
+    _extension(OES,texture_half_float_linear),
+    _extension(OES,texture_npot),
+    _extension(OES,vertex_array_object),
+    _extension(OES,vertex_half_float),
     #endif
     };
 constexpr Extension ExtensionListES320[]{
-    _extension(EXT,color_buffer_half_float),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,color_buffer_float),
+    #endif
+    _extension(EXT,color_buffer_half_float),
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,copy_image),
     #endif
     _extension(EXT,draw_buffers_indexed),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,geometry_shader),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,gpu_shader5),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,primitive_bounding_box),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,shader_io_blocks),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,tessellation_shader),
     #endif
     _extension(EXT,texture_border_clamp),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,texture_buffer),
-    _extension(EXT,texture_cube_map_array),
-    _extension(EXT,primitive_bounding_box),
     #endif
-    _extension(KHR,texture_compression_astc_ldr),
-    _extension(KHR,debug),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_cube_map_array),
+    #endif
     _extension(KHR,blend_equation_advanced),
-    _extension(KHR,robustness),
+    _extension(KHR,debug),
     _extension(KHR,robust_buffer_access_behavior),
+    _extension(KHR,robustness),
+    _extension(KHR,texture_compression_astc_ldr),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OES,sample_shading),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(OES,sample_variables),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(OES,shader_image_atomic),
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(OES,shader_multisample_interpolation),
     #endif
     _extension(OES,texture_stencil8),
@@ -756,55 +787,51 @@ bool Context::tryCreate() {
         glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
     #endif
 
-    std::vector<Version> versions{
+    constexpr struct {
+        Version version;
+        Containers::ArrayView<const Extension> extensions;
+    } versions[]{
         #ifndef MAGNUM_TARGET_GLES
-        Version::GL300,
-        Version::GL310,
-        Version::GL320,
-        Version::GL330,
-        Version::GL400,
-        Version::GL410,
-        Version::GL420,
-        Version::GL430,
-        Version::GL440,
-        Version::GL450,
-        Version::GL460,
+        {Version::GL300, Containers::arrayView(ExtensionList300)},
+        {Version::GL310, Containers::arrayView(ExtensionList310)},
+        {Version::GL320, Containers::arrayView(ExtensionList320)},
+        {Version::GL330, Containers::arrayView(ExtensionList330)},
+        {Version::GL400, Containers::arrayView(ExtensionList400)},
+        {Version::GL410, Containers::arrayView(ExtensionList410)},
+        {Version::GL420, Containers::arrayView(ExtensionList420)},
+        {Version::GL430, Containers::arrayView(ExtensionList430)},
+        {Version::GL440, Containers::arrayView(ExtensionList440)},
+        {Version::GL450, Containers::arrayView(ExtensionList450)},
+        {Version::GL460, Containers::arrayView(ExtensionList460)},
         #else
-        Version::GLES200,
-        Version::GLES300,
+        {Version::GLES300, Containers::arrayView(ExtensionListES300)},
         #ifndef MAGNUM_TARGET_WEBGL
-        Version::GLES310,
-        Version::GLES320,
+        /* No extensions in ES 3.1 */
+        {Version::GLES320, Containers::arrayView(ExtensionListES320)},
         #endif
         #endif
-        Version::None
+        {Version::None, Containers::arrayView(ExtensionList)}
     };
 
     /* Get first future (not supported) version */
     std::size_t future = 0;
-    while(versions[future] != Version::None && isVersionSupported(versions[future]))
+    while(versions[future].version != Version::None && isVersionSupported(versions[future].version))
         ++future;
 
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
-        for(const Extension& extension: Extension::extensions(versions[i]))
+        for(const Extension& extension: versions[i].extensions)
             _extensionStatus.set(extension.index(), true);
-
-    /* List of extensions from future versions (extensions from current and
-       previous versions should be supported automatically, so we don't need
-       to check for them) */
-    std::unordered_map<std::string, Extension> futureExtensions;
-    for(std::size_t i = future; i != versions.size(); ++i)
-        for(const Extension& extension: Extension::extensions(versions[i]))
-            futureExtensions.emplace(extension.string(), extension);
 
     /* Check for presence of future and vendor extensions */
     const std::vector<std::string> extensions = extensionStrings();
     for(const std::string& extension: extensions) {
-        const auto found = futureExtensions.find(extension);
-        if(found != futureExtensions.end()) {
-            _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second.index(), true);
+        for(std::size_t i = future; i != Containers::arraySize(versions); ++i)  {
+            const auto found = std::lower_bound(versions[i].extensions.begin(), versions[i].extensions.end(), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
+            if(found != versions[i].extensions.end() && found->string() == extension) {
+                _supportedExtensions.push_back(*found);
+                _extensionStatus.set(found->index(), true);
+            }
         }
     }
 
@@ -812,8 +839,8 @@ bool Context::tryCreate() {
     for(auto& i: _extensionRequiredVersion) i = Version::None;
 
     /* Initialize required versions from extension info */
-    for(const auto version: versions)
-        for(const Extension& extension: Extension::extensions(version))
+    for(const auto& version: versions)
+        for(const Extension& extension: version.extensions)
             _extensionRequiredVersion[extension.index()] = extension.requiredVersion();
 
     /* Setup driver workarounds (increase required version for particular
@@ -836,27 +863,24 @@ bool Context::tryCreate() {
     if(!_disabledExtensions.empty()) {
         bool headerPrinted = false;
 
-        /* Put remaining extensions into the hashmap for faster lookup */
-        std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
-        for(std::size_t i = 0; i != future; ++i)
-            for(const Extension& extension: Extension::extensions(versions[i]))
-                allExtensions.emplace(extension.string(), extension);
-
         /* Disable extensions that are known and supported and print a message
            for each */
         for(auto&& extension: _disabledExtensions) {
-            auto found = allExtensions.find(extension);
-            /* No error message here because some of the extensions could be
-               from Vulkan or OpenAL. That also means we print the header only
-               when we actually have something to say */
-            if(found == allExtensions.end()) continue;
+            for(const auto& version: versions)  {
+                const auto found = std::lower_bound(version.extensions.begin(), version.extensions.end(), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
+                /* No error message here because some of the extensions could
+                   be from Vulkan or OpenAL. That also means we print the
+                   header only when we actually have something to say */
+                if(found == version.extensions.end() || found->string() != extension)
+                    continue;
 
-            _extensionRequiredVersion[found->second.index()] = Version::None;
-            if(!headerPrinted) {
-                Debug{output} << "Disabling extensions:";
-                headerPrinted = true;
+                _extensionRequiredVersion[found->index()] = Version::None;
+                if(!headerPrinted) {
+                    Debug{output} << "Disabling extensions:";
+                    headerPrinted = true;
+                }
+                Debug{output} << "   " << extension;
             }
-            Debug{output} << "   " << extension;
         }
     }
 
