@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cstring>
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -35,8 +36,9 @@
 namespace Magnum { namespace GL {
 
 namespace {
-    /* Search the code for the following strings to see where they are implemented. */
-    std::vector<std::string> KnownWorkarounds{
+
+/* Search the code for the following strings to see where they are implemented. */
+const char* KnownWorkarounds[]{
 /* [workarounds] */
 #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
@@ -368,7 +370,8 @@ namespace {
 "firefox-fake-disjoint-timer-query-webgl2",
 #endif
 /* [workarounds] */
-    };
+};
+
 }
 
 namespace Implementation {
@@ -471,7 +474,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
 void Context::disableDriverWorkaround(const std::string& workaround) {
     /* Ignore unknown workarounds */
-    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) {
+    if(std::find(std::begin(KnownWorkarounds), std::end(KnownWorkarounds), workaround) == std::end(KnownWorkarounds)) {
         Warning() << "Unknown workaround" << workaround;
         return;
     }
@@ -479,7 +482,9 @@ void Context::disableDriverWorkaround(const std::string& workaround) {
 }
 
 bool Context::isDriverWorkaroundDisabled(const char* workaround) {
-    CORRADE_INTERNAL_ASSERT(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) != KnownWorkarounds.end());
+    CORRADE_INTERNAL_ASSERT(std::find_if(std::begin(KnownWorkarounds), std::end(KnownWorkarounds), [&](const char* a) {
+        return std::strcmp(a, workaround) == 0;
+    }) != std::end(KnownWorkarounds));
 
     /* If the workaround was already asked for or disabled, return its state,
        otherwise add it to the list as used one */
