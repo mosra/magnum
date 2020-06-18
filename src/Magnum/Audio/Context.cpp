@@ -49,17 +49,19 @@ namespace Magnum { namespace Audio {
 
 namespace {
 
+/* Binary search is performed on the extensions, thus they have to be sorted
+   alphabetically. */
 constexpr Extension ExtensionList[]{
     #define _extension(prefix, vendor, extension) {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::string()}
-    _extension(AL,EXT,FLOAT32),
-    _extension(AL,EXT,DOUBLE),
-    _extension(AL,EXT,ALAW),
-    _extension(AL,EXT,MULAW),
-    _extension(AL,EXT,MCFORMATS),
-    _extension(AL,SOFT,loop_points),
     _extension(ALC,EXT,ENUMERATION),
     _extension(ALC,SOFTX,HRTF),
-    _extension(ALC,SOFT,HRTF)
+    _extension(ALC,SOFT,HRTF),
+    _extension(AL,EXT,ALAW),
+    _extension(AL,EXT,DOUBLE),
+    _extension(AL,EXT,FLOAT32),
+    _extension(AL,EXT,MCFORMATS),
+    _extension(AL,EXT,MULAW),
+    _extension(AL,SOFT,loop_points),
     #undef _entension
 };
 

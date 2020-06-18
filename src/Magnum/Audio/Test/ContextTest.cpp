@@ -74,10 +74,16 @@ void ContextTest::extensions() {
     std::set<std::string> unique;
 
     /* Check that all extension indices are unique, are listed just once etc. */
+    std::string previous;
     for(const Extension& e: Extension::extensions()) {
         CORRADE_ITERATION(e.string());
 
         /** @todo convert to CORRADE_ERROR() when that's done */
+
+        if(!previous.empty() && previous >= e.string()) {
+            Error{} << "Extension not sorted after" << previous;
+            CORRADE_VERIFY(false);
+        }
 
         if(e.index() >= Implementation::ExtensionCount) {
             Error{} << "Index" << e.index() << "larger than" << Implementation::ExtensionCount;
@@ -94,6 +100,8 @@ void ContextTest::extensions() {
             Error{} << "Extension listed more than once";
             CORRADE_VERIFY(false);
         }
+
+        previous = e.string();
     }
 
     CORRADE_VERIFY(true);

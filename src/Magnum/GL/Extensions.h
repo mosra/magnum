@@ -255,6 +255,8 @@ namespace AMD {
     _extension(167,KHR,blend_equation_advanced_coherent, GL210, None) // #174
     _extension(168,KHR,no_error,                        GL210, GL460) // #175
     _extension(169,KHR,texture_compression_astc_sliced_3d, GL210, None) // #189
+} namespace MAGNUM {
+    _extension(170,MAGNUM,shader_vertex_id,             GL300, GL300)
 } namespace NV {
     _extension(175,NV,primitive_restart,                GL210, GL310) // #285
     _extension(176,NV,depth_buffer_float,               GL210, GL300) // #334
@@ -265,8 +267,6 @@ namespace AMD {
 } namespace OVR {
     _extension(185,OVR,multiview,                       GL300,  None) // #478
     _extension(186,OVR,multiview2,                      GL300,  None) // #479
-} namespace MAGNUM {
-    _extension(187,MAGNUM,shader_vertex_id,             GL300, GL300)
 }
 #elif defined(MAGNUM_TARGET_WEBGL)
 namespace ANGLE {

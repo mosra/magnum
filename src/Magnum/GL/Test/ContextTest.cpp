@@ -125,11 +125,17 @@ void ContextTest::extensions() {
         #endif
         Version::None})
     {
+        std::string previous;
         for(const Extension& e: Extension::extensions(version)) {
             CORRADE_ITERATION(version);
             CORRADE_ITERATION(e.string());
 
             /** @todo convert to CORRADE_ERROR() when that's done */
+
+            if(!previous.empty() && previous >= e.string()) {
+                Error{} << "Extension not sorted after" << previous;
+                CORRADE_VERIFY(false);
+            }
 
             if(e.index() >= GL::Implementation::ExtensionCount) {
                 Error{} << "Index" << e.index() << "larger than" << GL::Implementation::ExtensionCount;
@@ -173,6 +179,8 @@ void ContextTest::extensions() {
                 CORRADE_VERIFY(false);
             }
             #endif
+
+            previous = e.string();
         }
     }
 

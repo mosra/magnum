@@ -71,92 +71,95 @@
 
 namespace Magnum { namespace GL {
 
+/* When adding a new list, Extension::extensions() needs to be adapted. Binary
+   search is performed on the extensions, thus they have to be sorted
+   alphabetically. */
 namespace {
 
 #define _extension(vendor, extension)                           \
     {Extensions::vendor::extension::Index, Extensions::vendor::extension::requiredVersion(), Extensions::vendor::extension::coreVersion(), Extensions::vendor::extension::string()}
 #ifndef MAGNUM_TARGET_GLES
 constexpr Extension ExtensionList[]{
-    _extension(AMD,transform_feedback3_lines_triangles),
     _extension(AMD,sample_positions),
-    _extension(AMD,vertex_shader_layer),
-    _extension(AMD,shader_trinary_minmax),
     _extension(AMD,shader_explicit_vertex_parameter),
-    _extension(ARB,robustness),
-    _extension(ARB,robustness_isolation),
-    _extension(ARB,robustness_application_isolation),
-    _extension(ARB,robustness_share_group_isolation),
+    _extension(AMD,shader_trinary_minmax),
+    _extension(AMD,transform_feedback3_lines_triangles),
+    _extension(AMD,vertex_shader_layer),
+    _extension(ARB,ES3_2_compatibility),
     _extension(ARB,bindless_texture),
     _extension(ARB,compute_variable_group_size),
-    _extension(ARB,seamless_cubemap_per_texture),
-    _extension(ARB,sparse_texture),
-    _extension(ARB,sparse_buffer),
-    _extension(ARB,ES3_2_compatibility),
+    _extension(ARB,robustness),
+    _extension(ARB,robustness_application_isolation),
+    _extension(ARB,robustness_isolation),
+    _extension(ARB,robustness_share_group_isolation),
     _extension(ARB,sample_locations),
+    _extension(ARB,seamless_cubemap_per_texture),
+    _extension(ARB,sparse_buffer),
+    _extension(ARB,sparse_texture),
     _extension(ATI,texture_mirror_once),
-    _extension(EXT,texture_filter_anisotropic),
-    _extension(EXT,texture_compression_s3tc),
-    _extension(EXT,texture_mirror_clamp),
-    _extension(EXT,texture_compression_dxt1),
-    _extension(EXT,texture_sRGB_decode),
-    _extension(EXT,shader_integer_mix),
     _extension(EXT,debug_label),
     _extension(EXT,debug_marker),
+    _extension(EXT,shader_integer_mix),
+    _extension(EXT,texture_compression_dxt1),
+    _extension(EXT,texture_compression_s3tc),
+    _extension(EXT,texture_filter_anisotropic),
+    _extension(EXT,texture_mirror_clamp),
     _extension(EXT,texture_sRGB_R8),
+    _extension(EXT,texture_sRGB_decode),
     _extension(GREMEDY,string_marker),
-    _extension(KHR,texture_compression_astc_ldr),
-    _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,blend_equation_advanced),
     _extension(KHR,blend_equation_advanced_coherent),
+    _extension(KHR,texture_compression_astc_hdr),
+    _extension(KHR,texture_compression_astc_ldr),
     _extension(KHR,texture_compression_astc_sliced_3d),
-    _extension(NV,sample_locations),
     _extension(NV,fragment_shader_barycentric),
+    _extension(NV,sample_locations),
     _extension(OVR,multiview),
     _extension(OVR,multiview2)};
 constexpr Extension ExtensionList300[]{
-    _extension(ARB,map_buffer_range),
     _extension(ARB,color_buffer_float),
-    _extension(ARB,half_float_pixel),
-    _extension(ARB,texture_float),
     _extension(ARB,depth_buffer_float),
-    _extension(ARB,texture_rg),
-    _extension(ARB,vertex_array_object),
     _extension(ARB,framebuffer_object),
     _extension(ARB,framebuffer_sRGB),
+    _extension(ARB,half_float_pixel),
     _extension(ARB,half_float_vertex),
+    _extension(ARB,map_buffer_range),
+    _extension(ARB,texture_float),
+    _extension(ARB,texture_rg),
+    _extension(ARB,vertex_array_object),
+    _extension(EXT,draw_buffers2),
     _extension(EXT,gpu_shader4),
     _extension(EXT,packed_float),
     _extension(EXT,texture_array),
     _extension(EXT,texture_compression_rgtc),
-    _extension(EXT,texture_shared_exponent),
-    _extension(EXT,draw_buffers2),
     _extension(EXT,texture_integer),
+    _extension(EXT,texture_shared_exponent),
     _extension(EXT,transform_feedback),
     _extension(MAGNUM,shader_vertex_id),
-    _extension(NV,depth_buffer_float),
-    _extension(NV,conditional_render)};
+    _extension(NV,conditional_render),
+    _extension(NV,depth_buffer_float)};
 constexpr Extension ExtensionList310[]{
-    _extension(ARB,texture_rectangle),
+    _extension(ARB,copy_buffer),
     _extension(ARB,draw_instanced),
     _extension(ARB,texture_buffer_object),
+    _extension(ARB,texture_rectangle),
     _extension(ARB,uniform_buffer_object),
-    _extension(ARB,copy_buffer),
     _extension(EXT,texture_snorm),
     _extension(NV,primitive_restart)};
 constexpr Extension ExtensionList320[]{
-    _extension(ARB,geometry_shader4),
     _extension(ARB,depth_clamp),
     _extension(ARB,draw_elements_base_vertex),
     _extension(ARB,fragment_coord_conventions),
+    _extension(ARB,geometry_shader4),
     _extension(ARB,provoking_vertex),
     _extension(ARB,seamless_cube_map),
     _extension(ARB,sync),
     _extension(ARB,texture_multisample),
     _extension(ARB,vertex_array_bgra)};
 constexpr Extension ExtensionList330[]{
-    _extension(ARB,instanced_arrays),
     _extension(ARB,blend_func_extended),
     _extension(ARB,explicit_attrib_location),
+    _extension(ARB,instanced_arrays),
     _extension(ARB,occlusion_query2),
     _extension(ARB,sampler_objects),
     _extension(ARB,shader_bit_encoding),
@@ -166,16 +169,16 @@ constexpr Extension ExtensionList330[]{
     _extension(ARB,vertex_type_2_10_10_10_rev)};
 constexpr Extension ExtensionList400[]{
     _extension(ARB,draw_buffers_blend),
-    _extension(ARB,sample_shading),
-    _extension(ARB,texture_cube_map_array),
-    _extension(ARB,texture_gather),
-    _extension(ARB,texture_query_lod),
     _extension(ARB,draw_indirect),
     _extension(ARB,gpu_shader5),
     _extension(ARB,gpu_shader_fp64),
+    _extension(ARB,sample_shading),
     _extension(ARB,shader_subroutine),
     _extension(ARB,tessellation_shader),
     _extension(ARB,texture_buffer_object_rgb32),
+    _extension(ARB,texture_cube_map_array),
+    _extension(ARB,texture_gather),
+    _extension(ARB,texture_query_lod),
     _extension(ARB,transform_feedback2),
     _extension(ARB,transform_feedback3)};
 constexpr Extension ExtensionList410[]{
@@ -186,22 +189,22 @@ constexpr Extension ExtensionList410[]{
     _extension(ARB,vertex_attrib_64bit),
     _extension(ARB,viewport_array)};
 constexpr Extension ExtensionList420[]{
-    _extension(ARB,texture_compression_bptc),
     _extension(ARB,base_instance),
-    _extension(ARB,shading_language_420pack),
-    _extension(ARB,transform_feedback_instanced),
     _extension(ARB,compressed_texture_pixel_storage),
     _extension(ARB,conservative_depth),
     _extension(ARB,internalformat_query),
     _extension(ARB,map_buffer_alignment),
     _extension(ARB,shader_atomic_counters),
     _extension(ARB,shader_image_load_store),
+    _extension(ARB,shading_language_420pack),
     /* Mentioned in GLSL 4.20 specs as newly added */
     _extension(ARB,shading_language_packing),
-    _extension(ARB,texture_storage)};
+    _extension(ARB,texture_compression_bptc),
+    _extension(ARB,texture_storage),
+    _extension(ARB,transform_feedback_instanced)};
 constexpr Extension ExtensionList430[]{
-    _extension(ARB,arrays_of_arrays),
     _extension(ARB,ES3_compatibility),
+    _extension(ARB,arrays_of_arrays),
     _extension(ARB,clear_buffer_object),
     _extension(ARB,compute_shader),
     _extension(ARB,copy_image),
@@ -244,16 +247,16 @@ constexpr Extension ExtensionList450[]{
     _extension(KHR,context_flush_control),
     _extension(KHR,robustness)};
 constexpr Extension ExtensionList460[]{
+    _extension(ARB,gl_spirv),
     _extension(ARB,indirect_parameters),
+    _extension(ARB,pipeline_statistics_query),
+    _extension(ARB,polygon_offset_clamp),
+    _extension(ARB,shader_atomic_counter_ops),
     _extension(ARB,shader_draw_parameters),
     _extension(ARB,shader_group_vote),
-    _extension(ARB,pipeline_statistics_query),
-    _extension(ARB,transform_feedback_overflow_query),
-    _extension(ARB,shader_atomic_counter_ops),
-    _extension(ARB,gl_spirv),
-    _extension(ARB,polygon_offset_clamp),
     _extension(ARB,spirv_extensions),
     _extension(ARB,texture_filter_anisotropic),
+    _extension(ARB,transform_feedback_overflow_query),
     _extension(KHR,no_error)};
 #elif defined(MAGNUM_TARGET_WEBGL)
 constexpr Extension ExtensionList[]{
