@@ -46,7 +46,10 @@
 # doesn't print loud messages when it's not found, since that's okay. If the
 # OpenAL target already exists, it means we're using it through a CMake
 # subproject -- don't attempt to find the package in that case.
-if(NOT TARGET OpenAL)
+#
+# In case of Emscripten we don't want any of this -- the library name and
+# includes are implicit.
+if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET OpenAL)
     find_package(OpenAL CONFIG QUIET)
 endif()
 
