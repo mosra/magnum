@@ -340,6 +340,10 @@ See also:
     `Magnum/version.h` header. This header is not included by any other header
     to avoid trigerring a full rebuild when Git commit changes. If Git is not
     found, only the first two defines are present.
+-   @ref Shaders::MeshVisualizer3D::Flag::Wireframe now implicitly enables
+    @ref Shaders::MeshVisualizer3D::Flag::NoGeometryShader also on WebGL in
+    addition to ES2, since this platform doesn't have a possibility to have
+    geometry shaders either. Same is done for @ref Shaders::MeshVisualizer2D.
 
 @subsubsection changelog-latest-changes-audio Audio library
 

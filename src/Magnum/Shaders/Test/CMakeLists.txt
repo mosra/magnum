@@ -174,6 +174,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/vertexid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo3D.tga
+            MeshVisualizerTestFiles/wireframe-objectid2D.tga
+            MeshVisualizerTestFiles/wireframe-objectid3D.tga
             MeshVisualizerTestFiles/wireframe-nogeo-objectid2D.tga
             MeshVisualizerTestFiles/wireframe-nogeo-objectid3D.tga
             MeshVisualizerTestFiles/wireframe-perspective.tga

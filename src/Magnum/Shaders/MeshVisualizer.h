@@ -43,11 +43,10 @@ namespace Implementation {
 class MAGNUM_SHADERS_EXPORT MeshVisualizerBase: public GL::AbstractShaderProgram {
     protected:
         enum class FlagBase: UnsignedShort {
-            #ifndef MAGNUM_TARGET_GLES2
+            /* Unlike the public Wireframe flag, this one doesn't include
+               NoGeometryShader on ES2 as that would make the checks too
+               complex */
             Wireframe = 1 << 0,
-            #else
-            Wireframe = (1 << 0) | (1 << 1),
-            #endif
             NoGeometryShader = 1 << 1,
             #ifndef MAGNUM_TARGET_GLES2
             InstancedObjectId = 1 << 2,
@@ -169,10 +168,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
          */
         enum class Flag: UnsignedShort {
             /**
-             * Visualize wireframe. On OpenGL ES 2.0 this also enables
-             * @ref Flag::NoGeometryShader.
+             * Visualize wireframe. On OpenGL ES 2.0 and WebGL this also
+             * enables @ref Flag::NoGeometryShader.
              */
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             Wireframe = 1 << 0,
             #else
             Wireframe = (1 << 0) | (1 << 1),
@@ -181,8 +180,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer2D: public Implementation::MeshVisuali
             /**
              * Don't use a geometry shader for wireframe visualization. If
              * enabled, you might need to provide also the @ref VertexIndex
-             * attribute in the mesh. In OpenGL ES 2.0 enabled alongside
-             * @ref Flag::Wireframe.
+             * attribute in the mesh. On OpenGL ES 2.0 and WebGL enabled
+             * alongside @ref Flag::Wireframe.
              */
             NoGeometryShader = 1 << 1,
 
@@ -589,10 +588,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          */
         enum class Flag: UnsignedShort {
             /**
-             * Visualize wireframe. On OpenGL ES 2.0 this also enables
-             * @ref Flag::NoGeometryShader.
+             * Visualize wireframe. On OpenGL ES 2.0 and WebGL this also
+             * enables @ref Flag::NoGeometryShader.
              */
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             Wireframe = 1 << 0,
             #else
             Wireframe = (1 << 0) | (1 << 1),
@@ -601,8 +600,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
             /**
              * Don't use a geometry shader for wireframe visualization. If
              * enabled, you might need to provide also the @ref VertexIndex
-             * attribute in the mesh. In OpenGL ES 2.0 enabled alongside
-             * @ref Flag::Wireframe.
+             * attribute in the mesh. On OpenGL ES 2.0 and WebGL enabled
+             * alongside @ref Flag::Wireframe.
              *
              * Mutually exclusive with @ref Flag::TangentDirection,
              * @ref Flag::BitangentFromTangentDirection,

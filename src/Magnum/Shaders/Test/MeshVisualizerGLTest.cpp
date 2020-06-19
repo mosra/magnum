@@ -207,7 +207,7 @@ constexpr struct {
 } ConstructInvalidData2D[] {
     {"no feature enabled",
         MeshVisualizer2D::Flag::NoGeometryShader, /* not a feature flag */
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         "2D: at least one visualization feature has to be enabled"
         #else
         "2D: at least Flag::Wireframe has to be enabled"
@@ -230,7 +230,7 @@ constexpr struct {
 } ConstructInvalidData3D[] {
     {"no feature enabled",
         MeshVisualizer3D::Flag::NoGeometryShader, /* not a feature flag */
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         "3D: at least one visualization feature has to be enabled"
         #else
         "3D: at least Flag::Wireframe has to be enabled"
@@ -1583,8 +1583,11 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
     if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId)
         circleData = MeshTools::generateIndices(circleData);
     if(data.flags2D >= MeshVisualizer2D::Flag::PrimitiveIdFromVertexId ||
-       data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader)
+       data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) {
+        if(circleData.primitive() != MeshPrimitive::Triangles)
+            circleData = MeshTools::generateIndices(circleData);
         circleData = MeshTools::duplicate(circleData);
+    }
 
     GL::Mesh circle = MeshTools::compile(circleData);
 

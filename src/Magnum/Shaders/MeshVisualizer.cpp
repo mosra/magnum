@@ -125,7 +125,6 @@ GL::Version MeshVisualizerBase::setupShaders(GL::Shader& vert, GL::Shader& frag,
         #endif
         ;
     frag.addSource(_flags & FlagBase::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
-        .addSource(_flags & FlagBase::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(_flags & FlagBase::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         .addSource(_flags & FlagBase::VertexId ? "#define VERTEX_ID\n" : "")
@@ -200,12 +199,18 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     vert.addSource("#define TWO_DIMENSIONS\n")
         /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
            nothing actually needs it, as that makes checks much simpler in
-           the vertex shader code */
+           the shader code */
         .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
             "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
-    frag.addSource(rs.get("generic.glsl"))
+    frag
+        /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
+           nothing actually needs it, as that makes checks much simpler in
+           the shader code */
+        .addSource((flags & Flag::NoGeometryShader) || !(flags & Flag::Wireframe) ?
+            "#define NO_GEOMETRY_SHADER\n" : "")
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -292,7 +297,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
     setTransformationProjectionMatrix({});
     if(flags & (Flag::Wireframe
         #ifndef MAGNUM_TARGET_GLES2
-        |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+        |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
         #endif
     ))
         setColor(Color3(1.0f));
@@ -340,7 +345,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     CORRADE_ASSERT(!(flags & Flag::BitangentDirection && flags & Flag::BitangentFromTangentDirection),
         "Shaders::MeshVisualizer3D: Flag::BitangentDirection and Flag::BitangentFromTangentDirection are mutually exclusive", );
     #elif !defined(MAGNUM_TARGET_GLES2)
-    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
+    CORRADE_ASSERT(flags & ((Flag::Wireframe|Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId) & ~Flag::NoGeometryShader),
         "Shaders::MeshVisualizer3D: at least one visualization feature has to be enabled", );
     #else
     CORRADE_ASSERT(flags & (Flag::Wireframe & ~Flag::NoGeometryShader),
@@ -377,6 +382,14 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.vert"));
     frag
+        /* Pass NO_GEOMETRY_SHADER not only when NoGeometryShader but also when
+           nothing actually needs it, as that makes checks much simpler in
+           the vertex shader code */
+        .addSource((flags & Flag::NoGeometryShader) || !(flags & (Flag::Wireframe
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            |Flag::TangentDirection|Flag::BitangentDirection|Flag::BitangentFromTangentDirection|Flag::NormalDirection
+            #endif
+            )) ? "#define NO_GEOMETRY_SHADER\n" : "")
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         .addSource(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection) ? "#define TBN_DIRECTION\n" : "")
         #endif
@@ -504,7 +517,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     setProjectionMatrix({});
     if(flags & (Flag::Wireframe
         #ifndef MAGNUM_TARGET_GLES2
-        |Flag::InstancedObjectId|Flag::PrimitiveIdFromVertexId
+        |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
         #endif
     ))
         setColor(Color3(1.0f));
@@ -652,7 +665,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flag value) {
 Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizer2D::Flags{}", {
         MeshVisualizer2D::Flag::Wireframe,
-        /* Wireframe contains this on ES2 so it's not reported there */
+        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
+           there */
         MeshVisualizer2D::Flag::NoGeometryShader,
         #ifndef MAGNUM_TARGET_GLES2
         MeshVisualizer2D::Flag::InstancedObjectId,
@@ -668,7 +682,8 @@ Debug& operator<<(Debug& debug, const MeshVisualizer2D::Flags value) {
 Debug& operator<<(Debug& debug, const MeshVisualizer3D::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizer3D::Flags{}", {
         MeshVisualizer3D::Flag::Wireframe,
-        /* Wireframe contains this on ES2 so it's not reported there */
+        /* Wireframe contains this on ES2 and WebGL 1 so it's not reported
+           there */
         MeshVisualizer3D::Flag::NoGeometryShader,
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         MeshVisualizer3D::Flag::TangentDirection,

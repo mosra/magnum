@@ -124,7 +124,7 @@ void MeshVisualizerTest::debugFlags2D() {
     std::ostringstream out;
 
     Debug{&out} << (MeshVisualizer2D::Flag::Wireframe|MeshVisualizer2D::Flag::NoGeometryShader) << MeshVisualizer2D::Flags{};
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer2D::Flag::Wireframe|Shaders::MeshVisualizer2D::Flag::NoGeometryShader Shaders::MeshVisualizer2D::Flags{}\n");
     #else
     CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer2D::Flag::Wireframe Shaders::MeshVisualizer2D::Flags{}\n");
@@ -135,7 +135,7 @@ void MeshVisualizerTest::debugFlags3D() {
     std::ostringstream out;
 
     Debug{&out} << (MeshVisualizer3D::Flag::Wireframe|MeshVisualizer3D::Flag::NoGeometryShader) << MeshVisualizer3D::Flags{};
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer3D::Flag::Wireframe|Shaders::MeshVisualizer3D::Flag::NoGeometryShader Shaders::MeshVisualizer3D::Flags{}\n");
     #else
     CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer3D::Flag::Wireframe Shaders::MeshVisualizer3D::Flags{}\n");
