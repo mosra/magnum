@@ -760,6 +760,9 @@ running CTest, e.g.:
 ctest -R GLTest # run only tests requiring OpenGL context
 @endcode
 
+Tests requiring Vulkan to work are also disabled by default, enable them with
+`BUILD_VK_TESTS`.
+
 @section building-doc Building documentation
 
 The documentation is generated using [Doxygen](http://doxygen.org) with the

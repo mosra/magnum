@@ -51,6 +51,7 @@ build() {
         -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
+        -DBUILD_VK_TESTS=ON \
         -G Ninja
     ninja
 
@@ -91,6 +92,7 @@ build() {
         -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
+        -DBUILD_VK_TESTS=ON \
         -G Ninja
     ninja
 }

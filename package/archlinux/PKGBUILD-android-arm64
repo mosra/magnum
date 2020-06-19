@@ -49,7 +49,8 @@ build() {
         -DWITH_GL_INFO=ON \
         -DTARGET_GLES2=OFF \
         -DBUILD_TESTS=ON \
-        -DBUILD_GL_TESTS=ON
+        -DBUILD_GL_TESTS=ON \
+        -DBUILD_VK_TESTS=ON
     ninja
 }
 
