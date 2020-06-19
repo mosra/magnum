@@ -1,0 +1,299 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum { namespace Vk {
+
+/** @page vulkan-mapping Command mapping
+@brief List of Vulkan commands corresponding to particular Magnum API.
+
+@tableofcontents
+@m_footernavigation
+
+Legend:
+
+-   @m_class{m-label m-flat m-success} **X.Y** --- given feature is new in
+    Vulkan version X.Y
+-   @m_class{m-label m-flat m-success} **ABC, X.Y** --- given feature is
+    exposed though an ABC extension and then promoted to Vulkan version X.Y;
+    both the extension and the core entrypoints are available
+-   @m_class{m-label m-flat m-warning} **ABC** --- given feature is
+    exposed though an ABC extension
+-   @m_class{m-label m-danger} **deprecated** --- given feature is deprecated
+    in newer versions of Vulkan and replaced by different functionality
+
+@section vulkan-mapping-functions Functions
+
+@subsection vulkan-mapping-functions-a A
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{AllocateCommandBuffers}, \n @fn_vk{FreeCommandBuffers} | |
+@fn_vk{AllocateDescriptorSets}, \n @fn_vk{FreeDescriptorSets} | |
+@fn_vk{AllocateMemory}, \n @fn_vk{FreeMemory} | |
+
+@subsection vulkan-mapping-functions-b B
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | |
+@fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-functions-c C
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{CmdBeginQuery}, \n @fn_vk{CmdEndQuery} | |
+@fn_vk{CmdBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdEndebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{CmdBindDescriptorSets}           | |
+@fn_vk{CmdBindIndexBuffer}              | |
+@fn_vk{CmdBindPipeline}                 | |
+@fn_vk{CmdBindVertexBuffers}            | |
+@fn_vk{CmdBlitImage}                    | |
+@fn_vk{CmdClearAttachments}             | |
+@fn_vk{CmdClearColorImage}              | |
+@fn_vk{CmdClearDepthStencilImage}       | |
+@fn_vk{CmdCopyBuffer}                   | |
+@fn_vk{CmdCopyBufferToImage}            | |
+@fn_vk{CmdCopyImage}                    | |
+@fn_vk{CmdCopyImageToBuffer}            | |
+@fn_vk{CmdCopyQueryPoolResults}         | |
+@fn_vk{CmdDebugMarkerBeginEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdDebugMarkerEndEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdDebugMarkerInsertEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdDispatch}                     | |
+@fn_vk{CmdDispatchBase} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{CmdDispatchIndirect}             | |
+@fn_vk{CmdDraw}                         | |
+@fn_vk{CmdDrawIndexed}                  | |
+@fn_vk{CmdDrawIndexedIndirect}          | |
+@fn_vk{CmdDrawIndexedIndirectCount} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{CmdDrawIndirect}                 | |
+@fn_vk{CmdDrawIndirectCount} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{CmdExecuteCommands}              | |
+@fn_vk{CmdFillBuffer}                   | |
+@fn_vk{CmdInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{CmdPipelineBarrier}              | |
+@fn_vk{CmdPushConstants}                | |
+@fn_vk{CmdResetEvent}                   | |
+@fn_vk{CmdResetQueryPool}               | |
+@fn_vk{CmdResolveImage}                 | |
+@fn_vk{CmdSetBlendConstants}            | |
+@fn_vk{CmdSetDepthBias}                 | |
+@fn_vk{CmdSetDeviceMask} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{CmdSetDepthBounds}               | |
+@fn_vk{CmdSetEvent}                     | |
+@fn_vk{CmdSetLineWidth}                 | |
+@fn_vk{CmdSetScissor}                   | |
+@fn_vk{CmdSetStencilCompareMask}        | |
+@fn_vk{CmdSetStencilReference}          | |
+@fn_vk{CmdSetStencilWriteMask}          | |
+@fn_vk{CmdSetViewport}                  | |
+@fn_vk{CmdUpdateBuffer}                 | |
+@fn_vk{CmdWaitEvents}                   | |
+@fn_vk{CmdWriteTimestamp}               | |
+@fn_vk{CreateBuffer}, \n @fn_vk{DestroyBuffer} | |
+@fn_vk{CreateBufferView}, \n @fn_vk{DestroyBufferView} | |
+@fn_vk{CreateCommandPool}, \n @fn_vk{DestroyCommandPool} | |
+@fn_vk{CreateComputePipelines}, \n @fn_vk{DestroyComputePipelines} | |
+@fn_vk{CreateDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | |
+@fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | |
+@fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | |
+@fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
+@fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | |
+@fn_vk{CreateFramebuffer}, \n @fn_vk{DestroyFramebuffer} | |
+@fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | |
+@fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | |
+@fn_vk{CreateInstance}, \n @fn_vk{DestroyInstance} | |
+@fn_vk{CreatePipeline}, \n @fn_vk{DestroyPipeline} | |
+@fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
+@fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | |
+@fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
+@fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | |
+@fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
+@fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{CreateSemaphore}, \n @fn_vk{DestroySemaphore} | |
+@fn_vk{CreateShaderModule}, \n @fn_vk{DestroyShaderModule} | |
+
+@subsection vulkan-mapping-functions-d D
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{DeviceWaitIdle}                  | |
+@fn_vk{DebugMarkerSetObjectNameEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{DebugMarkerSetObjectTagEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{DebugReportMessageEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+
+@subsection vulkan-mapping-functions-e E
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{EnumerateDeviceLayerProperties} @m_class{m-label m-danger} **deprecated in 1.0.13** | not exposed, [spec commit](https://github.com/KhronosGroup/Vulkan-Docs/commit/2656f459333b3a1dc63619a9ebd83490eea22e93)
+@fn_vk{EnumerateDeviceExtensionProperties} | |
+@fn_vk{EnumerateInstanceExtensionProperties} | |
+@fn_vk{EnumerateInstanceLayerProperties} | |
+@fn_vk{EnumerateInstanceVersion} @m_class{m-label m-flat m-success} **1.1** | |
+@fn_vk{EnumeratePhysicalDevices}        | |
+@fn_vk{EnumeratePhysicalDeviceGroups} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-functions-f F
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{FlushMappedMemoryRanges}         | |
+
+@subsection vulkan-mapping-functions-g G
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{GetBufferDeviceAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{GetBufferOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{GetDeviceMemoryOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{GetBufferMemoryRequirements}, \n @fn_vk{GetBufferMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetDescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetDeviceGroupPeerMemoryFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetDeviceMemoryCommitment}       | |
+@fn_vk{GetDeviceProcAddr}               | |
+@fn_vk{GetDeviceQueue}, \n @fn_vk{GetDeviceQueue2} @m_class{m-label m-flat m-success} **1.1** | |
+@fn_vk{GetEventStatus}                  | |
+@fn_vk{GetFenceStatus}                  | |
+@fn_vk{GetImageMemoryRequirements}, \n @fn_vk{GetImageMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetImageSparseMemoryRequirements}, \n @fn_vk{GetImageSparseMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetImageSubresourceLayout}       | |
+@fn_vk{GetInstanceProcAddr}             | |
+@fn_vk{GetPhysicalDeviceExternalBufferProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceExternalFenceProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceExternalSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceFeatures}, \n @fn_vk{GetPhysicalDeviceFeatures2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceFormatProperties}, \n @fn_vk{GetPhysicalDeviceFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceMemoryProperties}, \n @fn_vk{GetPhysicalDeviceMemoryProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceProperties}, \n @fn_vk{GetPhysicalDeviceProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceQueueFamilyProperties}, \n @fn_vk{GetPhysicalDeviceQueueFamilyProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceSparseImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceSparseImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPipelineCacheData}            | |
+@fn_vk{GetQueryPoolResults}             | |
+@fn_vk{GetRenderAreaGranularity}        | |
+@fn_vk{GetSemaphoreCounterValue} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+
+@subsection vulkan-mapping-functions-i I
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{InvalidateMappedMemoryRanges}    | |
+
+@subsection vulkan-mapping-functions-m M
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{MapMemory}, \n @fn_vk{UnmapMemory} | |
+@fn_vk{MergePipelineCaches}             | |
+
+@subsection vulkan-mapping-functions-q Q
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{QueueBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{QueueEndDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{QueueBindSparse}                 | |
+@fn_vk{QueueInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{QueueSubmit}                     | |
+@fn_vk{QueueWaitIdle}                   | |
+
+@subsection vulkan-mapping-functions-r R
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{ResetCommandBuffer}              | |
+@fn_vk{ResetCommandPool}                | |
+@fn_vk{ResetDescriptorPool}             | |
+@fn_vk{ResetFences}                     | |
+@fn_vk{ResetQueryPool} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+
+@subsection vulkan-mapping-functions-s S
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{SetDebugUtilsObjectNameEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{SetDebugUtilsObjectTagEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{SetEvent}, \n @fn_vk{ResetEvent} | |
+@fn_vk{SignalSemaphore} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{WaitSemaphores} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{SubmitDebugUtilsMessageEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+
+@subsection vulkan-mapping-functions-t T
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{TrimCommandPool} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-functions-u U
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{UpdateDescriptorSets}            | |
+@fn_vk{UpdateDescriptorSetWithTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-functions-w W
+
+@m_class{m-fullwidth}
+
+Vulkan function                         | Matching API
+--------------------------------------- | ------------
+@fn_vk{WaitForFences}                   | |
+
+*/
+
+}}

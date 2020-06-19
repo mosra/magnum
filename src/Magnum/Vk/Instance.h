@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
+#ifndef Magnum_Vk_Instance_h
+#define Magnum_Vk_Instance_h
 /*
     This file is part of Magnum.
 
@@ -26,20 +26,17 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
+ * @brief Nothing, haha
+ * @m_since_latest
  */
 
-#include "Magnum/Magnum.h"
+#include <cstddef>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class InstanceExtension;
-
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+namespace Implementation {
+    enum: std::size_t { InstanceExtensionCount = 16 };
+}
 
 }}
 

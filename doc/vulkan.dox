@@ -28,7 +28,48 @@ namespace Magnum {
 /** @page vulkan Vuulkan
 @brief State of Vulkan support, version and extension requirements.
 
-<em>Nothing to see here yet, sorry.</em>
+The following table maps Vulkan function names to Magnum API, useful for
+developers with existing Vulkan background. Note that, as reverse mapping, each
+function documentation also contains list of Vulkan functions used. You can
+also use the search functionality to find out which Vulkan API corresponds to
+which Magnum function, class or enum value. Just enter name of an Vulkan
+function, define or GLSL name into the search box.
+
+-   @subpage vulkan-mapping
+
+State of implementation of particular Vulkan versions and extensions is in the
+following table.
+
+-   @subpage vulkan-support
+
+@section vulkan-required-extensions Version and extension requirements
+
+The engine can work on unextended Vulkan 1.0, but some specific functionality
+has greater requirements. Following are lists of features requiring specific
+Vulkan version. In most cases it is also specified which extension is required,
+so if a particular driver supports the required extension, it doesn't need to
+have required Vulkan version too (e.g. @vk_extension{KHR,sampler_mirror_clamp_to_edge}
+is usually supported everywhere, even if the drivers don't have Vulkan 1.2).
+
+-   @subpage requires-vk11
+-   @subpage requires-vk12
+-   @subpage requires-vk-extension
+
 */
+
+/** @page requires-vk11 Functionality requiring Vulkan 1.1
+ * @m_footernavigation
+ * @m_since_latest
+ */
+
+/** @page requires-vk12 Functionality requiring Vulkan 1.2
+ * @m_footernavigation
+ * @m_since_latest
+ */
+
+/** @page requires-vk-extension Functionality requiring specific Vulkan extension
+ * @m_footernavigation
+ * @m_since_latest
+ */
 
 }

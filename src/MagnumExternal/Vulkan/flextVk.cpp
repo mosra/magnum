@@ -33,6 +33,12 @@ FlextVkInstance flextVkInstance{};
 FlextVkDevice flextVkDevice{};
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
+    data->CreateDebugReportCallbackEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkInstance, const VkDebugReportCallbackCreateInfoEXT*, const VkAllocationCallbacks*, VkDebugReportCallbackEXT*)>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
+    data->DebugReportMessageEXT = reinterpret_cast<void(VKAPI_PTR*)(VkInstance, VkDebugReportFlagsEXT, VkDebugReportObjectTypeEXT, uint64_t, size_t, int32_t, const char*, const char*)>(vkGetInstanceProcAddr(instance, "vkDebugReportMessageEXT"));
+    data->DestroyDebugReportCallbackEXT = reinterpret_cast<void(VKAPI_PTR*)(VkInstance, VkDebugReportCallbackEXT, const VkAllocationCallbacks*)>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
+    data->CreateDebugUtilsMessengerEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkInstance, const VkDebugUtilsMessengerCreateInfoEXT*, const VkAllocationCallbacks*, VkDebugUtilsMessengerEXT*)>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+    data->DestroyDebugUtilsMessengerEXT = reinterpret_cast<void(VKAPI_PTR*)(VkInstance, VkDebugUtilsMessengerEXT, const VkAllocationCallbacks*)>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+    data->SubmitDebugUtilsMessageEXT = reinterpret_cast<void(VKAPI_PTR*)(VkInstance, VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT*)>(vkGetInstanceProcAddr(instance, "vkSubmitDebugUtilsMessageEXT"));
     data->EnumeratePhysicalDeviceGroupsKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkInstance, uint32_t*, VkPhysicalDeviceGroupProperties*)>(vkGetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceGroupsKHR"));
     data->GetPhysicalDeviceExternalFencePropertiesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkPhysicalDevice, const VkPhysicalDeviceExternalFenceInfo*, VkExternalFenceProperties*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalFencePropertiesKHR"));
     data->GetPhysicalDeviceExternalBufferPropertiesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkPhysicalDevice, const VkPhysicalDeviceExternalBufferInfo*, VkExternalBufferProperties*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalBufferPropertiesKHR"));
@@ -47,7 +53,6 @@ void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
     data->CreateDevice = reinterpret_cast<VkResult(VKAPI_PTR*)(VkPhysicalDevice, const VkDeviceCreateInfo*, const VkAllocationCallbacks*, VkDevice*)>(vkGetInstanceProcAddr(instance, "vkCreateDevice"));
     data->DestroyInstance = reinterpret_cast<void(VKAPI_PTR*)(VkInstance, const VkAllocationCallbacks*)>(vkGetInstanceProcAddr(instance, "vkDestroyInstance"));
     data->EnumerateDeviceExtensionProperties = reinterpret_cast<VkResult(VKAPI_PTR*)(VkPhysicalDevice, const char*, uint32_t*, VkExtensionProperties*)>(vkGetInstanceProcAddr(instance, "vkEnumerateDeviceExtensionProperties"));
-    data->EnumerateDeviceLayerProperties = reinterpret_cast<VkResult(VKAPI_PTR*)(VkPhysicalDevice, uint32_t*, VkLayerProperties*)>(vkGetInstanceProcAddr(instance, "vkEnumerateDeviceLayerProperties"));
     data->EnumeratePhysicalDevices = reinterpret_cast<VkResult(VKAPI_PTR*)(VkInstance, uint32_t*, VkPhysicalDevice*)>(vkGetInstanceProcAddr(instance, "vkEnumeratePhysicalDevices"));
     data->GetDeviceProcAddr = reinterpret_cast<PFN_vkVoidFunction(VKAPI_PTR*)(VkDevice, const char*)>(vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr"));
     data->GetPhysicalDeviceFeatures = reinterpret_cast<void(VKAPI_PTR*)(VkPhysicalDevice, VkPhysicalDeviceFeatures*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures"));
@@ -71,14 +76,37 @@ void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
 }
 
 void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*)) {
+    data->CmdDebugMarkerBeginEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkDebugMarkerMarkerInfoEXT*)>(getDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT"));
+    data->CmdDebugMarkerEndEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer)>(getDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT"));
+    data->CmdDebugMarkerInsertEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkDebugMarkerMarkerInfoEXT*)>(getDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT"));
+    data->DebugMarkerSetObjectNameEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDebugMarkerObjectNameInfoEXT*)>(getDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT"));
+    data->DebugMarkerSetObjectTagEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDebugMarkerObjectTagInfoEXT*)>(getDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT"));
+    data->CmdBeginDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkDebugUtilsLabelEXT*)>(getDeviceProcAddr(device, "vkCmdBeginDebugUtilsLabelEXT"));
+    data->CmdEndDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer)>(getDeviceProcAddr(device, "vkCmdEndDebugUtilsLabelEXT"));
+    data->CmdInsertDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkDebugUtilsLabelEXT*)>(getDeviceProcAddr(device, "vkCmdInsertDebugUtilsLabelEXT"));
+    data->QueueBeginDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkQueue, const VkDebugUtilsLabelEXT*)>(getDeviceProcAddr(device, "vkQueueBeginDebugUtilsLabelEXT"));
+    data->QueueEndDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkQueue)>(getDeviceProcAddr(device, "vkQueueEndDebugUtilsLabelEXT"));
+    data->QueueInsertDebugUtilsLabelEXT = reinterpret_cast<void(VKAPI_PTR*)(VkQueue, const VkDebugUtilsLabelEXT*)>(getDeviceProcAddr(device, "vkQueueInsertDebugUtilsLabelEXT"));
+    data->SetDebugUtilsObjectNameEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDebugUtilsObjectNameInfoEXT*)>(getDeviceProcAddr(device, "vkSetDebugUtilsObjectNameEXT"));
+    data->SetDebugUtilsObjectTagEXT = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDebugUtilsObjectTagInfoEXT*)>(getDeviceProcAddr(device, "vkSetDebugUtilsObjectTagEXT"));
+    data->ResetQueryPoolEXT = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkQueryPool, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkResetQueryPoolEXT"));
     data->BindBufferMemory2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, uint32_t, const VkBindBufferMemoryInfo*)>(getDeviceProcAddr(device, "vkBindBufferMemory2KHR"));
     data->BindImageMemory2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, uint32_t, const VkBindImageMemoryInfo*)>(getDeviceProcAddr(device, "vkBindImageMemory2KHR"));
+    data->GetBufferDeviceAddressKHR = reinterpret_cast<VkDeviceAddress(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferDeviceAddressKHR"));
+    data->GetBufferOpaqueCaptureAddressKHR = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferOpaqueCaptureAddressKHR"));
+    data->GetDeviceMemoryOpaqueCaptureAddressKHR = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkDeviceMemoryOpaqueCaptureAddressInfo*)>(getDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddressKHR"));
+    data->CmdBeginRenderPass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkRenderPassBeginInfo*, const VkSubpassBeginInfo*)>(getDeviceProcAddr(device, "vkCmdBeginRenderPass2KHR"));
+    data->CmdEndRenderPass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdEndRenderPass2KHR"));
+    data->CmdNextSubpass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassBeginInfo*, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdNextSubpass2KHR"));
+    data->CreateRenderPass2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkRenderPassCreateInfo2*, const VkAllocationCallbacks*, VkRenderPass*)>(getDeviceProcAddr(device, "vkCreateRenderPass2KHR"));
     data->CreateDescriptorUpdateTemplateKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDescriptorUpdateTemplateCreateInfo*, const VkAllocationCallbacks*, VkDescriptorUpdateTemplate*)>(getDeviceProcAddr(device, "vkCreateDescriptorUpdateTemplateKHR"));
     data->DestroyDescriptorUpdateTemplateKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorUpdateTemplate, const VkAllocationCallbacks*)>(getDeviceProcAddr(device, "vkDestroyDescriptorUpdateTemplateKHR"));
     data->UpdateDescriptorSetWithTemplateKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorSet, VkDescriptorUpdateTemplate, const void*)>(getDeviceProcAddr(device, "vkUpdateDescriptorSetWithTemplateKHR"));
     data->CmdDispatchBaseKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDispatchBaseKHR"));
     data->CmdSetDeviceMaskKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, uint32_t)>(getDeviceProcAddr(device, "vkCmdSetDeviceMaskKHR"));
     data->GetDeviceGroupPeerMemoryFeaturesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, uint32_t, uint32_t, uint32_t, VkPeerMemoryFeatureFlags*)>(getDeviceProcAddr(device, "vkGetDeviceGroupPeerMemoryFeaturesKHR"));
+    data->CmdDrawIndexedIndirectCountKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, VkBuffer, VkDeviceSize, VkBuffer, VkDeviceSize, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDrawIndexedIndirectCountKHR"));
+    data->CmdDrawIndirectCountKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, VkBuffer, VkDeviceSize, VkBuffer, VkDeviceSize, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDrawIndirectCountKHR"));
     data->GetBufferMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkBufferMemoryRequirementsInfo2*, VkMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetBufferMemoryRequirements2KHR"));
     data->GetImageMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkImageMemoryRequirementsInfo2*, VkMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetImageMemoryRequirements2KHR"));
     data->GetImageSparseMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkImageSparseMemoryRequirementsInfo2*, uint32_t*, VkSparseImageMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements2KHR"));
@@ -86,6 +114,9 @@ void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(
     data->GetDescriptorSetLayoutSupportKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkDescriptorSetLayoutCreateInfo*, VkDescriptorSetLayoutSupport*)>(getDeviceProcAddr(device, "vkGetDescriptorSetLayoutSupportKHR"));
     data->CreateSamplerYcbcrConversionKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSamplerYcbcrConversionCreateInfo*, const VkAllocationCallbacks*, VkSamplerYcbcrConversion*)>(getDeviceProcAddr(device, "vkCreateSamplerYcbcrConversionKHR"));
     data->DestroySamplerYcbcrConversionKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkSamplerYcbcrConversion, const VkAllocationCallbacks*)>(getDeviceProcAddr(device, "vkDestroySamplerYcbcrConversionKHR"));
+    data->GetSemaphoreCounterValueKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, VkSemaphore, uint64_t*)>(getDeviceProcAddr(device, "vkGetSemaphoreCounterValueKHR"));
+    data->SignalSemaphoreKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSemaphoreSignalInfo*)>(getDeviceProcAddr(device, "vkSignalSemaphoreKHR"));
+    data->WaitSemaphoresKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSemaphoreWaitInfo*, uint64_t)>(getDeviceProcAddr(device, "vkWaitSemaphoresKHR"));
     data->AllocateCommandBuffers = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkCommandBufferAllocateInfo*, VkCommandBuffer*)>(getDeviceProcAddr(device, "vkAllocateCommandBuffers"));
     data->AllocateDescriptorSets = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDescriptorSetAllocateInfo*, VkDescriptorSet*)>(getDeviceProcAddr(device, "vkAllocateDescriptorSets"));
     data->AllocateMemory = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkMemoryAllocateInfo*, const VkAllocationCallbacks*, VkDeviceMemory*)>(getDeviceProcAddr(device, "vkAllocateMemory"));

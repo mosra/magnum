@@ -1,32 +1,72 @@
 version 1.2 vulkan
 
-extension KHR_16bit_storage optional
-extension KHR_bind_memory2 optional
-extension KHR_dedicated_allocation optional
-extension KHR_descriptor_update_template optional
-extension KHR_device_group optional
-extension KHR_device_group_creation optional
-extension KHR_external_memory optional
-extension KHR_external_memory_capabilities optional
-extension KHR_external_semaphore optional
-extension KHR_external_semaphore_capabilities optional
-extension KHR_external_fence optional
-extension KHR_external_fence_capabilities optional
-extension KHR_get_memory_requirements2 optional
-extension KHR_get_physical_device_properties2 optional
-extension KHR_maintenance1 optional
-extension KHR_maintenance2 optional
-extension KHR_maintenance3 optional
-extension KHR_multiview optional
-extension KHR_relaxed_block_layout optional
-extension KHR_sampler_ycbcr_conversion optional
-extension KHR_shader_draw_parameters optional
-extension KHR_storage_buffer_storage_class optional
-extension KHR_variable_pointers optional
+# For core extensions, only ones that introduce suffixed function pointers are
+# enabled, as structures, types and enums are already present.
+# TODO: extend flextGL to include only function pointers from these
 
-extension EXT_texture_compression_astc_hdr optional
-extension EXT_index_type_uint8 optional
+# Instance extensions
+extension KHR_get_physical_device_properties2   optional
+extension KHR_device_group_creation             optional
+extension KHR_external_memory_capabilities      optional
+extension KHR_external_semaphore_capabilities   optional
+extension KHR_external_fence_capabilities       optional
 
-extension IMG_format_pvrtc optional
+# Device extensions
+#extension EXT_sampler_filter_minmax             optional
+#extension EXT_descriptor_indexing               optional
+#extension EXT_shader_viewport_index_layer       optional
+#extension EXT_scalar_block_layout               optional
+#extension EXT_separate_stencil_usage            optional
+extension EXT_host_query_reset                  optional
+#extension KHR_sampler_mirror_clamp_to_edge      optional
+#extension KHR_multiview                         optional
+extension KHR_device_group                      optional
+#extension KHR_shader_draw_parameters            optional
+extension KHR_maintenance1                      optional
+#extension KHR_external_semaphore                optional
+#extension KHR_shader_float16_int8               optional
+#extension KHR_16bit_storage                     optional
+extension KHR_descriptor_update_template        optional
+#extension KHR_external_memory                   optional
+#extension KHR_imageless_framebuffer             optional
+extension KHR_create_renderpass2                optional
+#extension KHR_external_fence                    optional
+#extension KHR_maintenance2                      optional
+#extension KHR_variable_pointers                 optional
+#extension KHR_dedicated_allocation              optional
+#extension KHR_storage_buffer_storage_class      optional
+#extension KHR_relaxed_block_layout              optional
+extension KHR_get_memory_requirements2          optional
+#extension KHR_image_format_list                 optional
+extension KHR_sampler_ycbcr_conversion          optional
+extension KHR_bind_memory2                      optional
+extension KHR_maintenance3                      optional
+extension KHR_draw_indirect_count               optional
+#extension KHR_shader_subgroup_extended_types    optional
+#extension KHR_8bit_storage                      optional
+#extension KHR_shader_atomic_int64               optional
+#extension KHR_driver_properties                 optional
+#extension KHR_shader_float_controls             optional
+#extension KHR_depth_stencil_resolve             optional
+extension KHR_timeline_semaphore                optional
+#extension KHR_vulkan_memory_model               optional
+#extension KHR_spirv_1_4                         optional
+#extension KHR_separate_depth_stencil_layouts    optional
+#extension KHR_uniform_buffer_standard_layout    optional
+extension KHR_buffer_device_address             optional
+
+# Non-core / vendor extensions
+extension EXT_debug_report                      optional
+extension EXT_debug_marker                      optional
+extension EXT_debug_utils                       optional
+extension EXT_validation_features               optional
+extension EXT_texture_compression_astc_hdr      optional
+extension EXT_index_type_uint8                  optional
+extension IMG_format_pvrtc                      optional
+
+begin functions blacklist
+    # Deprecated since 1.0.13, not used
+    EnumerateDeviceLayerProperties
+end functions blacklist
 
 # kate: hl python

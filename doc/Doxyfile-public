@@ -56,6 +56,8 @@ ALIASES                = \
     "type_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\1.html\">Vk\1</a>" \
     "val_vk{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/Vk\2.html\">VK_\1</a>" \
     "def_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1.html\">VK_\1</a>" \
+    "requires_vk11=@xrefitem requires-vk11 \"Requires Vulkan 1.1\" \"Functionality requiring Vulkan 1.1\"" \
+    "requires_vk12=@xrefitem requires-vk12 \"Requires Vulkan 1.2\" \"Functionality requiring Vulkan 1.2\"" \
     "requires_vk_extension=@xrefitem requires-vk-extension \"Requires Vulkan extension\" \"Functionality requiring specific Vulkan extension\"" \
     "vk_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_\1_\2.html\">\1_\2</a>" \
     "fn_al{1}=@m_class{m-doc-external} <a href=\"https://github.com/kcat/openal-soft/wiki/Programmer's-Guide#al\1\">al\1()</a>" \

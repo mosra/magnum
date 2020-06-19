@@ -1,0 +1,128 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                2020 Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page vulkan-support Support state
+@brief List of (un)supported Vulkan features and extensions.
+@m_since_latest
+
+@tableofcontents
+@m_footernavigation
+
+@section vulkan-support-state Vulkan implementation state
+
+The extension implementation is considered complete if all its defined types,
+functions and enum values are exposed through the API.
+
+All extensions from the below lists are available in the @ref Vk::Extensions
+namespace. Extensions marked with @m_class{m-label m-info} **instance** are
+instance extensions, unmarked ones are device extensions. Extensions marked
+with @m_class{m-label m-danger} **deprecated** are superseded by other
+extensions, but still included for compatibility with drivers that don't
+provide support for the replacement extensions.
+
+@subsection vulkan-support-10 Vulkan 1.0
+
+TBD
+
+@subsection vulkan-support-11 Vulkan 1.1
+
+@m_class{m-fullwidth}
+
+Extension                                           | Status
+--------------------------------------------------- | ------
+@vk_extension{KHR,multiview}                        | |
+@vk_extension{KHR,get_physical_device_properties2} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,device_group}                     | |
+@vk_extension{KHR,shader_draw_parameters}           | |
+@vk_extension{KHR,maintenance1}                     | |
+@vk_extension{KHR,device_group_creation} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,external_memory_capabilities} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,external_memory}                  | |
+@vk_extension{KHR,external_semaphore_capabilities} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,external_semaphore}               | |
+@vk_extension{KHR,16bit_storage}                    | |
+@vk_extension{KHR,descriptor_update_template}       | |
+@vk_extension{KHR,external_fence_capabilities} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,external_fence}                   | |
+@vk_extension{KHR,maintenance2}                     | |
+@vk_extension{KHR,variable_pointers}                | |
+@vk_extension{KHR,dedicated_allocation}             | |
+@vk_extension{KHR,storage_buffer_storage_class}     | |
+@vk_extension{KHR,relaxed_block_layout}             | |
+@vk_extension{KHR,get_memory_requirements2}         | |
+@vk_extension{KHR,sampler_ycbcr_conversion}         | |
+@vk_extension{KHR,bind_memory2}                     | |
+@vk_extension{KHR,maintenance3}                     | |
+
+@subsection vulkan-support-12 Vulkan 1.2
+
+@m_class{m-fullwidth}
+
+Extension                                           | Status
+--------------------------------------------------- | ------
+@vk_extension{KHR,sampler_mirror_clamp_to_edge}     | |
+@vk_extension{KHR,shader_float16_int8}              | |
+@vk_extension{KHR,imageless_framebuffer}            | |
+@vk_extension{KHR,create_renderpass2}               | |
+@vk_extension{EXT,sampler_filter_minmax}            | |
+@vk_extension{KHR,image_format_list}                | |
+@vk_extension{EXT,descriptor_indexing}              | |
+@vk_extension{EXT,shader_viewport_index_layer}      | |
+@vk_extension{KHR,draw_indirect_count}              | |
+@vk_extension{KHR,shader_subgroup_extended_types}   | |
+@vk_extension{KHR,8bit_storage}                     | |
+@vk_extension{KHR,shader_atomic_int64}              | |
+@vk_extension{KHR,driver_properties}                | |
+@vk_extension{KHR,shader_float_controls}            | |
+@vk_extension{KHR,depth_stencil_resolve}            | |
+@vk_extension{KHR,timeline_semaphore}               | |
+@vk_extension{KHR,vulkan_memory_model}              | |
+@vk_extension{KHR,spirv_1_4}                        | |
+@vk_extension{EXT,scalar_block_layout}              | |
+@vk_extension{KHR,separate_depth_stencil_layouts}   | |
+@vk_extension{EXT,separate_stencil_usage}           | |
+@vk_extension{KHR,uniform_buffer_standard_layout}   | |
+@vk_extension{KHR,buffer_device_address}            | |
+@vk_extension{EXT,host_query_reset}                 | |
+
+@section vulkan-support-extensions-vendor Vendor Vulkan extensions
+
+@m_class{m-fullwidth}
+
+Extension                                           | Status
+--------------------------------------------------- | ------
+@vk_extension{EXT,debug_report} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-info} **instance** | |
+@vk_extension{EXT,debug_marker} @m_class{m-label m-danger} **deprecated** | |
+@vk_extension{EXT,texture_compression_astc_hdr}     | |
+@vk_extension{EXT,debug_utils} @m_class{m-label m-info} **instance** | |
+@vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
+@vk_extension{EXT,index_type_uint8}                 | |
+@vk_extension{IMG,format_pvrtc}                     | |
+
+*/
+
+}

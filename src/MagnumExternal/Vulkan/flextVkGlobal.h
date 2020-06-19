@@ -36,7 +36,31 @@ extern "C" {
 /* Per-instance function pointers */
 extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 
+/* VK_EXT_debug_marker */
+
+
+/* VK_EXT_debug_report */
+
+#define vkCreateDebugReportCallbackEXT flextVkInstance.CreateDebugReportCallbackEXT
+#define vkDebugReportMessageEXT flextVkInstance.DebugReportMessageEXT
+#define vkDestroyDebugReportCallbackEXT flextVkInstance.DestroyDebugReportCallbackEXT
+
+/* VK_EXT_debug_utils */
+
+#define vkCreateDebugUtilsMessengerEXT flextVkInstance.CreateDebugUtilsMessengerEXT
+#define vkDestroyDebugUtilsMessengerEXT flextVkInstance.DestroyDebugUtilsMessengerEXT
+#define vkSubmitDebugUtilsMessageEXT flextVkInstance.SubmitDebugUtilsMessageEXT
+
+/* VK_EXT_host_query_reset */
+
+
 /* VK_KHR_bind_memory2 */
+
+
+/* VK_KHR_buffer_device_address */
+
+
+/* VK_KHR_create_renderpass2 */
 
 
 /* VK_KHR_descriptor_update_template */
@@ -48,6 +72,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 /* VK_KHR_device_group_creation */
 
 #define vkEnumeratePhysicalDeviceGroupsKHR flextVkInstance.EnumeratePhysicalDeviceGroupsKHR
+
+/* VK_KHR_draw_indirect_count */
+
 
 /* VK_KHR_external_fence_capabilities */
 
@@ -83,12 +110,14 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 /* VK_KHR_sampler_ycbcr_conversion */
 
 
+/* VK_KHR_timeline_semaphore */
+
+
 /* VK_VERSION_1_0 */
 
 #define vkCreateDevice flextVkInstance.CreateDevice
 #define vkDestroyInstance flextVkInstance.DestroyInstance
 #define vkEnumerateDeviceExtensionProperties flextVkInstance.EnumerateDeviceExtensionProperties
-#define vkEnumerateDeviceLayerProperties flextVkInstance.EnumerateDeviceLayerProperties
 #define vkEnumeratePhysicalDevices flextVkInstance.EnumeratePhysicalDevices
 #define vkGetDeviceProcAddr flextVkInstance.GetDeviceProcAddr
 #define vkGetPhysicalDeviceFeatures flextVkInstance.GetPhysicalDeviceFeatures
@@ -119,10 +148,49 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 /* Per-device function pointers */
 extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
+/* VK_EXT_debug_marker */
+
+#define vkCmdDebugMarkerBeginEXT flextVkDevice.CmdDebugMarkerBeginEXT
+#define vkCmdDebugMarkerEndEXT flextVkDevice.CmdDebugMarkerEndEXT
+#define vkCmdDebugMarkerInsertEXT flextVkDevice.CmdDebugMarkerInsertEXT
+#define vkDebugMarkerSetObjectNameEXT flextVkDevice.DebugMarkerSetObjectNameEXT
+#define vkDebugMarkerSetObjectTagEXT flextVkDevice.DebugMarkerSetObjectTagEXT
+
+/* VK_EXT_debug_report */
+
+
+/* VK_EXT_debug_utils */
+
+#define vkCmdBeginDebugUtilsLabelEXT flextVkDevice.CmdBeginDebugUtilsLabelEXT
+#define vkCmdEndDebugUtilsLabelEXT flextVkDevice.CmdEndDebugUtilsLabelEXT
+#define vkCmdInsertDebugUtilsLabelEXT flextVkDevice.CmdInsertDebugUtilsLabelEXT
+#define vkQueueBeginDebugUtilsLabelEXT flextVkDevice.QueueBeginDebugUtilsLabelEXT
+#define vkQueueEndDebugUtilsLabelEXT flextVkDevice.QueueEndDebugUtilsLabelEXT
+#define vkQueueInsertDebugUtilsLabelEXT flextVkDevice.QueueInsertDebugUtilsLabelEXT
+#define vkSetDebugUtilsObjectNameEXT flextVkDevice.SetDebugUtilsObjectNameEXT
+#define vkSetDebugUtilsObjectTagEXT flextVkDevice.SetDebugUtilsObjectTagEXT
+
+/* VK_EXT_host_query_reset */
+
+#define vkResetQueryPoolEXT flextVkDevice.ResetQueryPoolEXT
+
 /* VK_KHR_bind_memory2 */
 
 #define vkBindBufferMemory2KHR flextVkDevice.BindBufferMemory2KHR
 #define vkBindImageMemory2KHR flextVkDevice.BindImageMemory2KHR
+
+/* VK_KHR_buffer_device_address */
+
+#define vkGetBufferDeviceAddressKHR flextVkDevice.GetBufferDeviceAddressKHR
+#define vkGetBufferOpaqueCaptureAddressKHR flextVkDevice.GetBufferOpaqueCaptureAddressKHR
+#define vkGetDeviceMemoryOpaqueCaptureAddressKHR flextVkDevice.GetDeviceMemoryOpaqueCaptureAddressKHR
+
+/* VK_KHR_create_renderpass2 */
+
+#define vkCmdBeginRenderPass2KHR flextVkDevice.CmdBeginRenderPass2KHR
+#define vkCmdEndRenderPass2KHR flextVkDevice.CmdEndRenderPass2KHR
+#define vkCmdNextSubpass2KHR flextVkDevice.CmdNextSubpass2KHR
+#define vkCreateRenderPass2KHR flextVkDevice.CreateRenderPass2KHR
 
 /* VK_KHR_descriptor_update_template */
 
@@ -138,6 +206,11 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
 /* VK_KHR_device_group_creation */
 
+
+/* VK_KHR_draw_indirect_count */
+
+#define vkCmdDrawIndexedIndirectCountKHR flextVkDevice.CmdDrawIndexedIndirectCountKHR
+#define vkCmdDrawIndirectCountKHR flextVkDevice.CmdDrawIndirectCountKHR
 
 /* VK_KHR_external_fence_capabilities */
 
@@ -169,6 +242,12 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
 #define vkCreateSamplerYcbcrConversionKHR flextVkDevice.CreateSamplerYcbcrConversionKHR
 #define vkDestroySamplerYcbcrConversionKHR flextVkDevice.DestroySamplerYcbcrConversionKHR
+
+/* VK_KHR_timeline_semaphore */
+
+#define vkGetSemaphoreCounterValueKHR flextVkDevice.GetSemaphoreCounterValueKHR
+#define vkSignalSemaphoreKHR flextVkDevice.SignalSemaphoreKHR
+#define vkWaitSemaphoresKHR flextVkDevice.WaitSemaphoresKHR
 
 /* VK_VERSION_1_0 */
 

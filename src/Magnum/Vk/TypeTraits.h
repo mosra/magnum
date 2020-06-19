@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
+#ifndef Magnum_Vk_TypeTraits_h
+#define Magnum_Vk_TypeTraits_h
 /*
     This file is part of Magnum.
 
@@ -26,20 +26,21 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
+ * @brief Vulkan type traits
+ * @m_since_latest
  */
 
-#include "Magnum/Magnum.h"
+#include <Corrade/Utility/TypeTraits.h>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class InstanceExtension;
-
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+namespace Implementation {
+    /* Put into a separate header so APIs that need it don't need to pull in
+       the whole Extensions.h. Tested in ExtensionsTest also. */
+    /** @todo filter out GL/AL extensions also */
+    CORRADE_HAS_TYPE(IsInstanceExtension, decltype(T::InstanceIndex));
+    CORRADE_HAS_TYPE(IsExtension, decltype(T::Index));
+}
 
 }}
 
