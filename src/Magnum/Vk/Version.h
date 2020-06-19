@@ -131,6 +131,20 @@ as @cb{.shell-session} <major>.<minor> @ce if patch is zero.
 */
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Version value);
 
+/**
+@brief Enumerate instance version
+@m_since_latest
+
+Note that the @fn_vk{EnumerateInstanceVersion} function isn't available in
+Vulkan 1.0 and thus is fetched at runtime via @fn_vk{GetInstanceProcAddr}
+called in a static constructor. On Vulkan 1.0 always returns
+@ref Version::Vk10, in newer versions the returned version number contains also
+patch information.
+@see @ref versionMajor(), @ref versionMinor(), @ref versionPatch(),
+    @fn_vk_keyword{EnumerateInstanceVersion}
+*/
+MAGNUM_VK_EXPORT Version enumerateInstanceVersion();
+
 }}
 
 #endif

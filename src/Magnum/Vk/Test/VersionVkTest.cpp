@@ -23,29 +23,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Version.h"
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
-#include <Corrade/Utility/Debug.h>
+#include "Magnum/Vk/Version.h"
 
-#include "Magnum/Vk/Result.h"
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
-namespace Magnum { namespace Vk {
+struct VersionVkTest: TestSuite::Tester {
+    explicit VersionVkTest();
 
-Debug& operator<<(Debug& debug, const Version value) {
-    if(!(debug.immediateFlags() & Debug::Flag::Packed))
-        debug << "Vulkan";
-    debug << versionMajor(value) << Debug::nospace << "." << Debug::nospace << versionMinor(value);
-    if(const UnsignedInt patch = versionPatch(value))
-        debug << Debug::nospace << "." << Debug::nospace << patch;
-    return debug;
+    void enumerate();
+};
+
+VersionVkTest::VersionVkTest() {
+    addTests({&VersionVkTest::enumerate});
 }
 
-Version enumerateInstanceVersion() {
-    if(!vkEnumerateInstanceVersion) return Version::Vk10;
-
-    UnsignedInt version;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEnumerateInstanceVersion(&version));
-    return Version(version);
+void VersionVkTest::enumerate() {
+    Version version = enumerateInstanceVersion();
+    Debug{} << "Available version:" << version;
+    CORRADE_COMPARE_AS(version, Version::Vk10, TestSuite::Compare::GreaterOrEqual);
 }
 
-}}
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Vk::Test::VersionVkTest)

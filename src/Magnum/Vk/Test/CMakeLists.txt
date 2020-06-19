@@ -29,3 +29,7 @@ corrade_add_test(VkExtensionsTest ExtensionsTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
+
+if(BUILD_VK_TESTS)
+    corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
+endif()

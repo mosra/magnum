@@ -168,7 +168,7 @@ Vulkan function                         | Matching API
 @fn_vk{EnumerateDeviceExtensionProperties} | |
 @fn_vk{EnumerateInstanceExtensionProperties} | |
 @fn_vk{EnumerateInstanceLayerProperties} | |
-@fn_vk{EnumerateInstanceVersion} @m_class{m-label m-flat m-success} **1.1** | |
+@fn_vk{EnumerateInstanceVersion} @m_class{m-label m-flat m-success} **1.1** | @ref enumerateInstanceVersion()
 @fn_vk{EnumeratePhysicalDevices}        | |
 @fn_vk{EnumeratePhysicalDeviceGroups} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 
