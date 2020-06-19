@@ -107,7 +107,9 @@ VKAPI_ATTR @f.returntype VKAPI_CALL vk@f.name\
 @end
 
 /* Global function pointers. These are not present in all Vulkan versions, so
-   they need to be loaded at runtime. */
+   they need to be loaded at runtime. To avoid race conditions when calling
+   an init function manually, the function pointer is fetched in a static
+   constructor. */
 @for cat,funcs in functions:
 @if funcs:
 @for f in funcs:
@@ -119,9 +121,6 @@ extern FLEXTVK_EXPORT @f.returntype\
 @end
 @end
 @end
-
-/* Global function pointer initialization */
-void FLEXTVK_EXPORT flextVkInit();
 
 /* Per-instance function pointers */
 struct FlextVkInstance {

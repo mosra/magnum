@@ -3994,12 +3994,11 @@ VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateInstanceLayerProperties(uint32_t*, VkL
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInstance, const char*);
 
 /* Global function pointers. These are not present in all Vulkan versions, so
-   they need to be loaded at runtime. */
+   they need to be loaded at runtime. To avoid race conditions when calling
+   an init function manually, the function pointer is fetched in a static
+   constructor. */
 extern FLEXTVK_EXPORT VkResult(VKAPI_PTR *flextvkEnumerateInstanceVersion)(uint32_t*);
 #define vkEnumerateInstanceVersion flextvkEnumerateInstanceVersion
-
-/* Global function pointer initialization */
-void FLEXTVK_EXPORT flextVkInit();
 
 /* Per-instance function pointers */
 struct FlextVkInstance {

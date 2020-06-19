@@ -32,7 +32,8 @@
 @for f in funcs:
 @if f.name in ['EnumerateInstanceVersion']:
 @f.returntype\
-(VKAPI_PTR *flextvk@f.name)(@f.param_type_list_string()) = nullptr;
+(VKAPI_PTR *flextvk@f.name)(@f.param_type_list_string()) = reinterpret_cast<@f.returntype\
+(VKAPI_PTR*)(@f.param_type_list_string())>(vkGetInstanceProcAddr(nullptr, "vk@f.name"));
 @end
 @end
 @end
@@ -41,19 +42,6 @@
 FlextVkInstance flextVkInstance{};
 
 FlextVkDevice flextVkDevice{};
-
-void flextVkInit() {
-    @for category,funcs in functions:
-    @if funcs:
-    @for f in funcs:
-    @if f.name in ['EnumerateInstanceVersion']:
-    flextvk@f.name = reinterpret_cast<@f.returntype\
-(VKAPI_PTR*)(@f.param_type_list_string())>(vkGetInstanceProcAddr(nullptr, "vk@f.name"));
-    @end
-    @end
-    @end
-    @end
-}
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
     @for category,funcs in functions:
