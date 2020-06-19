@@ -207,6 +207,42 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         typedef Generic3D::Color4 Color4;
 
+        /**
+         * @brief Joint ids
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
+         * Used only if @ref Flag::Skinning is set.
+         */
+        typedef Generic3D::JointIds JointIds;
+
+        /**
+         * @brief Weights
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
+         * Used only if @ref Flag::Skinning is set.
+         */
+        typedef Generic3D::Weights Weights;
+
+        /**
+         * @brief Secondary joint ids
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4ui.
+         * Used only if @ref Flag::Skinning is set and @cpp jointCount > 4 @ce.
+         */
+        typedef Generic3D::SecondaryJointIds SecondaryJointIds;
+
+        /**
+         * @brief Secondary weights
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Vector4.
+         * Used only if @ref Flag::Skinning is set and @cpp jointCount > 4 @ce.
+         */
+        typedef Generic3D::Weights SecondaryWeights;
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief (Instanced) object ID
@@ -416,7 +452,14 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      in WebGL 1.0.
              * @m_since_latest
              */
-            InstancedTextureOffset = (1 << 10)|TextureTransformation
+            InstancedTextureOffset = (1 << 10)|TextureTransformation,
+
+            /**
+             * Skinning.
+             * @TODO docs
+             * @m_since_latest
+             */
+            Skinning = 1 << 11
         };
 
         /**
@@ -428,10 +471,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief Constructor
-         * @param flags         Flags
-         * @param lightCount    Count of light sources
+         * @param flags           Flags
+         * @param lightCount      Count of light sources
+         * @param jointCount      Count of joints for skinning (see @ref Flag::Skinning)
+         * @param jointsPerVertex Max count of joints that may influence a vertex
+         *      default @cpp 4 @ce (see @ref Flag::Skinning)
          */
-        explicit Phong(Flags flags = {}, UnsignedInt lightCount = 1);
+        explicit Phong(Flags flags = {}, UnsignedInt lightCount = 1, UnsignedInt jointCount = 0, UnsignedInt jointsPerVertex = 4);
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -464,6 +510,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /** @brief Light count */
         UnsignedInt lightCount() const { return _lightCount; }
+
+        /** @brief Joint count */
+        UnsignedInt jointCount() const { return _jointCount; }
+
+        /** @brief Joints per vertex */
+        UnsignedInt jointsPerVertex() const { return _jointsPerVertex; }
 
         /**
          * @brief Set ambient color
@@ -719,6 +771,28 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             return setLightColors({&color, 1});
         }
 
+        /**
+         * @brief Set joint matrices
+         * @return Reference to self (for method chaining)
+         *
+         * Initial values are identity transformations. Expects that the size
+         * of the @p matrices array is the same as @ref jointCount().
+         * @see @ref setJointMatrix(UnsignedInt, const Matrix4&)
+         */
+        Phong& setJointMatrices(const Containers::ArrayView<const Matrix4> matrices);
+
+        /** @overload */
+        Phong& setJointMatrices(std::initializer_list<Matrix4> matrices);
+
+        /**
+         * @brief Set joint matrix for given joint
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setJointMatrices() updates just a single joint matrix.
+         * Expects that @p id is less than @ref joinCount().
+         */
+        Phong& setJointMatrix(UnsignedInt id, const Matrix4& matrix);
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -730,6 +804,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         Flags _flags;
         UnsignedInt _lightCount;
+        UnsignedInt _jointCount;
+        UnsignedInt _jointsPerVertex;
         Int _transformationMatrixUniform{0},
             _projectionMatrixUniform{1},
             _normalMatrixUniform{2},
@@ -744,6 +820,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             #endif
         Int _lightPositionsUniform{10},
             _lightColorsUniform; /* 10 + lightCount, set in the constructor */
+        Int _jointMatricesUniform; /* 10 + 2*lightCount, set in the constructor */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */

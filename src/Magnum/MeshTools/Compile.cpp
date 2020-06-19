@@ -79,6 +79,8 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
             continue;
         }
 
+        UnsignedInt jointIdsAttributesCount = 0;
+        UnsignedInt weightsAttributesCount = 0;
         switch(meshData.attributeName(i)) {
             case Trade::MeshAttribute::Position:
                 /* Pick 3D position always, the format will properly reduce it
@@ -113,6 +115,28 @@ GL::Mesh compileInternal(const Trade::MeshData& meshData, GL::Buffer&& indices, 
                 attribute.emplace(Shaders::Generic3D::ObjectId{}, format);
                 break;
             #endif
+            case Trade::MeshAttribute::Weights:
+                if(weightsAttributesCount == 0) {
+                    attribute.emplace(Shaders::Generic3D::Weights{}, format);
+                } else if(weightsAttributesCount == 1) {
+                    attribute.emplace(Shaders::Generic3D::SecondaryWeights{}, format);
+                } else {
+                    Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i)
+                        << weightsAttributesCount << ", more than two are unsupported";
+                }
+                ++weightsAttributesCount;
+                break;
+            case Trade::MeshAttribute::JointIds:
+                if(jointIdsAttributesCount == 0) {
+                    attribute.emplace(Shaders::Generic3D::JointIds{}, format);
+                } else if(jointIdsAttributesCount == 1) {
+                    attribute.emplace(Shaders::Generic3D::SecondaryJointIds{}, format);
+                } else {
+                    Warning{} << "MeshTools::compile(): ignoring" << meshData.attributeName(i)
+                        << jointIdsAttributesCount << ", more than two are unsupported";
+                }
+                ++jointIdsAttributesCount;
+                break;
 
             /* To avoid the compiler warning that we didn't handle an enum
                value. For these a runtime warning is printed below. */

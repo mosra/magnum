@@ -54,9 +54,13 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)} {
+Phong::Phong(const Flags flags, const UnsignedInt lightCount, const UnsignedInt jointCount, const UnsignedInt jointsPerVertex): _flags{flags}, _lightCount{lightCount}, _jointCount{jointCount}, _jointsPerVertex{jointsPerVertex}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _jointMatricesUniform{_lightPositionsUniform + 2*Int(lightCount)} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Shaders::Phong: texture transformation enabled but the shader is not textured", );
+    CORRADE_ASSERT(!(flags & Flag::Skinning) || (jointCount != 0),
+        "Shaders::Phong: skinning enabled, but jointCount is zero", );
+    CORRADE_ASSERT(!(flags & Flag::Skinning) || (jointsPerVertex > 0 && jointsPerVertex <= 8),
+        "Shaders::Phong: skinning enabled, but jointsPerVertex is not in [1;8]", );
 
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
@@ -120,7 +124,12 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         #endif
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
-            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightPositionsUniform + lightCount));
+            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightColorsUniform))
+        .addSource(flags & Flag::Skinning ? "#define SKINNING\n" : "")
+        .addSource(Utility::formatString(
+            "#define JOINT_COUNT {}\n"
+            "#define JOINTS_PER_VERTEX {}\n"
+            "#define JOINT_MATRICES_LOCATION {}\n", jointCount, jointsPerVertex, _jointMatricesUniform));
     #ifndef MAGNUM_TARGET_GLES
     if(lightCount) frag.addSource(std::move(lightInitializer));
     #endif
@@ -159,6 +168,15 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         if(flags >= Flag::InstancedTextureOffset)
             bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
         #endif
+        if(flags & Flag::Skinning) {
+            bindAttributeLocation(Weights::Location, "weights");
+            bindAttributeLocation(JointIds::Location, "jointIds");
+
+            if(jointCount > 4) {
+                bindAttributeLocation(SecondaryWeights::Location, "secondaryWeights");
+                bindAttributeLocation(SecondaryJointIds::Location, "secondaryJointIds");
+            }
+        }
     }
     #endif
 
@@ -185,6 +203,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
         #endif
+        if(flags & Flag::Skinning)
+            _jointMatricesUniform = uniformLocation("jointMatrices");
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -351,6 +371,26 @@ Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
         "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
     return *this;
+}
+
+Phong& Phong::setJointMatrices(const Containers::ArrayView<const Matrix4> matrices) {
+    CORRADE_ASSERT(_jointCount == matrices.size(),
+        "Shaders::Phong::setJointMatrices(): expected" << _jointCount << "items but got" << matrices.size(), *this);
+    if(_jointCount) setUniform(_jointMatricesUniform, matrices);
+    return *this;
+}
+
+Phong& Phong::setJointMatrix(UnsignedInt id, const Matrix4& matrix) {
+    CORRADE_ASSERT(id < _jointCount,
+        "Shaders::Phong::setJointMatrix(): joint ID" << id << "is out of bounds for" << _jointCount << "joints", *this);
+    setUniform(_jointMatricesUniform + id, matrix);
+    return *this;
+}
+
+/* It's light, but can't be in the header because MSVC needs to know the size
+   of Matrix4 for the initializer list use */
+Phong& Phong::setJointMatrices(std::initializer_list<Matrix4> matrices) {
+    return setJointMatrices({matrices.begin(), matrices.size()});
 }
 
 Debug& operator<<(Debug& debug, const Phong::Flag value) {
