@@ -33,12 +33,14 @@ set(MagnumVk_SRCS
 
 set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp
+    ExtensionProperties.cpp
     LayerProperties.cpp)
 
 set(MagnumVk_HEADERS
     Device.h
     Enums.h
     Extensions.h
+    ExtensionProperties.h
     Instance.h
     Integration.h
     LayerProperties.h

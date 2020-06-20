@@ -166,7 +166,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{EnumerateDeviceLayerProperties} @m_class{m-label m-danger} **deprecated in 1.0.13** | not exposed, [spec commit](https://github.com/KhronosGroup/Vulkan-Docs/commit/2656f459333b3a1dc63619a9ebd83490eea22e93)
 @fn_vk{EnumerateDeviceExtensionProperties} | |
-@fn_vk{EnumerateInstanceExtensionProperties} | |
+@fn_vk{EnumerateInstanceExtensionProperties} | @ref enumerateInstanceExtensionProperties()
 @fn_vk{EnumerateInstanceLayerProperties} | @ref enumerateLayerProperties()
 @fn_vk{EnumerateInstanceVersion} @m_class{m-label m-flat m-success} **1.1** | @ref enumerateInstanceVersion()
 @fn_vk{EnumeratePhysicalDevices}        | |

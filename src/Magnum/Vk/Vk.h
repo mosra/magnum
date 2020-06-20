@@ -35,7 +35,9 @@ namespace Magnum { namespace Vk {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class Extension;
+class ExtensionProperties;
 class InstanceExtension;
+class InstanceExtensionProperties;
 class LayerProperties;
 
 enum class Result: Int;
