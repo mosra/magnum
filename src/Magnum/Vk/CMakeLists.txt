@@ -29,8 +29,12 @@ find_package(Vulkan REQUIRED)
 set(MagnumVk_SRCS
     Extensions.cpp
     Handle.cpp
+    Instance.cpp
     Result.cpp
-    Version.cpp)
+    Version.cpp
+
+    Implementation/Arguments.cpp
+    Implementation/InstanceState.cpp)
 
 set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp
@@ -55,6 +59,9 @@ set(MagnumVk_HEADERS
     visibility.h)
 
 set(MagnumVk_PRIVATE_HEADERS
+    Implementation/Arguments.h
+    Implementation/InstanceState.h
+
     Implementation/compressedPixelFormatMapping.hpp
     Implementation/pixelFormatMapping.hpp
     Implementation/vertexFormatMapping.hpp)

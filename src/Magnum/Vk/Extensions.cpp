@@ -31,9 +31,9 @@ namespace Magnum { namespace Vk {
 
 namespace {
 
-/* When adding a new list, InstanceExtension::extensions() needs to be adapted.
-   Binary search is performed on the extensions, thus they have to be sorted
-   alphabetically. */
+/* When adding a new list, InstanceExtension::extensions() and
+   Instance::initialize() needs to be adapted. Binary search is performed on
+   the extensions, thus they have to be sorted alphabetically. */
 constexpr InstanceExtension InstanceExtensions[] {
     Extensions::EXT::debug_report{},
     Extensions::EXT::debug_utils{},

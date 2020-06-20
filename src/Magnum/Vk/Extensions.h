@@ -50,7 +50,8 @@ Each struct has the same public methods as the @ref InstanceExtension /
 @ref Extension class (@ref Extension::requiredVersion() "requiredVersion()",
 @ref Extension::coreVersion() "coreVersion()" and @ref Extension::string() "string()"),
 but these structs are better suited for compile-time decisions rather than
-@ref Extension instances.
+@ref Extension instances. See @ref Instance::isExtensionEnabled() for example
+usage.
 
 This library is built if `WITH_VK` is enabled when building Magnum. To use this
 library with CMake, you need to request the `Vk` component of the `Magnum`

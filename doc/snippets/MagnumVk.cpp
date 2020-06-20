@@ -23,13 +23,48 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/ArrayView.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Integration.h"
+#include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 using namespace Magnum;
 
 int main() {
+{
+Vk::Instance instance;
+/* [Instance-isExtensionEnabled] */
+if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
+    // use the fancy debugging APIs
+} else if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_report>()) {
+    // use the non-fancy and deprecated debugging APIs
+} else {
+    // well, tough luck
+}
+/* [Instance-isExtensionEnabled] */
+}
+
+{
+/* Header included again inside a function, but it's fine as the guards will
+   make it empty */
+/* [Instance-global-function-pointers] */
+#include <MagnumExternal/Vulkan/flextVkGlobal.h>
+
+// …
+
+Vk::Instance instance;
+instance.populateGlobalFunctionPointers();
+
+VkPhysicalDeviceGroupProperties properties[10];
+UnsignedInt count = Containers::arraySize(properties);
+vkEnumeratePhysicalDeviceGroupsKHR(instance, &count, properties);
+/* [Instance-global-function-pointers] */
+}
+
 {
 /* [Integration] */
 VkOffset2D a{64, 32};

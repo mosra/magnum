@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
+#ifndef Magnum_Vk_Implementation_Arguments_h
+#define Magnum_Vk_Implementation_Arguments_h
 /*
     This file is part of Magnum.
 
@@ -25,29 +25,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include <Corrade/Utility/Utility.h>
 
 #include "Magnum/Magnum.h"
 
-namespace Magnum { namespace Vk {
+namespace Magnum { namespace Vk { namespace Implementation {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
+/* Used by both InstanceCreateInfo and DeviceCreateInfo, each takes a subset
+   of the arguments */
+Utility::Arguments arguments();
 
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
-
-}}
+}}}
 
 #endif

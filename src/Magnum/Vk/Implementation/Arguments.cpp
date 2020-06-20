@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,29 +23,27 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Arguments.h"
 
-#include "Magnum/Magnum.h"
+#include <Corrade/Utility/Arguments.h>
 
-namespace Magnum { namespace Vk {
+namespace Magnum { namespace Vk { namespace Implementation {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
+Utility::Arguments arguments() {
+    Utility::Arguments args{"magnum"};
+    args.addOption("disable-layers").setHelp("disable-layers", "Vulkan layers to disable", "LIST")
+        .addOption("disable-extensions").setHelp("disable-extensions", "Vulkan extensions to disable", "LIST")
+        .addOption("enable-layers").setHelp("enable-layers", "Vulkan layers to enable in addition to the defaults and what the application requests", "LIST")
+        .addOption("enable-instance-extensions").setHelp("enable-instance-extensions", "Vulkan instance extensions to enable in addition to the defaults and what the application requests", "LIST")
+        .addOption("vulkan-version").setHelp("vulkan-version", "force Vulkan version", "X.Y")
+        .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .setFromEnvironment("disable-layers")
+        .setFromEnvironment("disable-extensions")
+        .setFromEnvironment("enable-layers")
+        .setFromEnvironment("enable-instance-extensions")
+        .setFromEnvironment("vulkan-version")
+        .setFromEnvironment("log");
+    return args;
+}
 
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
-
-}}
-
-#endif
+}}}

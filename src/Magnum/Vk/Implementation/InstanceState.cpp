@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,29 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "InstanceState.h"
 
-#include "Magnum/Magnum.h"
+namespace Magnum { namespace Vk { namespace Implementation {
 
-namespace Magnum { namespace Vk {
+InstanceState::InstanceState(Instance&, Int argc, const char** argv): argc{argc}, argv{argv} {}
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
-
-}}
-
-#endif
+}}}
