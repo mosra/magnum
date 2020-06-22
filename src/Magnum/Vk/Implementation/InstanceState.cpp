@@ -25,8 +25,20 @@
 
 #include "InstanceState.h"
 
+#include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/DeviceProperties.h"
+
 namespace Magnum { namespace Vk { namespace Implementation {
 
-InstanceState::InstanceState(Instance&, Int argc, const char** argv): argc{argc}, argv{argv} {}
+InstanceState::InstanceState(Instance& instance, Int argc, const char** argv): argc{argc}, argv{argv} {
+    if(instance.isVersionSupported(Version::Vk11)) {
+        getPhysicalDevicePropertiesImplementation = &DeviceProperties::getPropertiesImplementation11;
+    } else if(instance.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        getPhysicalDevicePropertiesImplementation = &DeviceProperties::getPropertiesImplementationKHR;
+    } else {
+        getPhysicalDevicePropertiesImplementation = DeviceProperties::getPropertiesImplementationDefault;
+    }
+}
 
 }}}

@@ -34,6 +34,8 @@
 namespace Magnum { namespace Vk {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+class DeviceProperties;
+enum class DeviceType: Int;
 class Extension;
 class ExtensionProperties;
 enum class HandleFlag: UnsignedByte;

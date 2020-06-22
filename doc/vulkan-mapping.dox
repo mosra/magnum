@@ -169,7 +169,7 @@ Vulkan function                         | Matching API
 @fn_vk{EnumerateInstanceExtensionProperties} | @ref enumerateInstanceExtensionProperties()
 @fn_vk{EnumerateInstanceLayerProperties} | @ref enumerateLayerProperties()
 @fn_vk{EnumerateInstanceVersion} @m_class{m-label m-flat m-success} **1.1** | @ref enumerateInstanceVersion()
-@fn_vk{EnumeratePhysicalDevices}        | |
+@fn_vk{EnumeratePhysicalDevices}        | @ref enumerateDevices()
 @fn_vk{EnumeratePhysicalDeviceGroups} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 
 @subsection vulkan-mapping-functions-f F
@@ -208,7 +208,7 @@ Vulkan function                         | Matching API
 @fn_vk{GetPhysicalDeviceFormatProperties}, \n @fn_vk{GetPhysicalDeviceFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceMemoryProperties}, \n @fn_vk{GetPhysicalDeviceMemoryProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@fn_vk{GetPhysicalDeviceProperties}, \n @fn_vk{GetPhysicalDeviceProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceProperties}, \n @fn_vk{GetPhysicalDeviceProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
 @fn_vk{GetPhysicalDeviceQueueFamilyProperties}, \n @fn_vk{GetPhysicalDeviceQueueFamilyProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceSparseImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceSparseImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPipelineCacheData}            | |
