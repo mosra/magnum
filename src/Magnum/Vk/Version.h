@@ -147,4 +147,24 @@ MAGNUM_VK_EXPORT Version enumerateInstanceVersion();
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/**
+@configurationvalue{Magnum::Vk::Version}
+@m_since_latest
+
+Parses a value in the form of `<major>.<minor>`, returns
+@ref Magnum::Vk::Version::None on error. Saving a value to string is not
+implemented.
+*/
+template<> struct ConfigurationValue<Magnum::Vk::Version> {
+    ConfigurationValue() = delete;
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    MAGNUM_VK_EXPORT static Magnum::Vk::Version fromString(const Containers::StringView& stringValue, ConfigurationValueFlags);
+    #endif
+};
+
+}}
+
 #endif

@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
@@ -41,6 +42,8 @@ struct VersionTest: TestSuite::Tester {
     void comparison();
 
     void debug();
+
+    void configuration();
 };
 
 VersionTest::VersionTest() {
@@ -48,7 +51,9 @@ VersionTest::VersionTest() {
               &VersionTest::packingMagnumVersion,
               &VersionTest::comparison,
 
-              &VersionTest::debug});
+              &VersionTest::debug,
+
+              &VersionTest::configuration});
 }
 
 void VersionTest::packing() {
@@ -126,6 +131,37 @@ void VersionTest::debug() {
         /* packed should omit "Vulkan" */
         << Debug::packed << version(20, 6);
     CORRADE_COMPARE(out.str(), "Vulkan 1.2 Vulkan 1.5.789 Vulkan 1023.1023.4095 20.6\n");
+}
+
+void VersionTest::configuration() {
+    Utility::Configuration c;
+
+    /* The ideal thing */
+    c.setValue("version", "1.1");
+    CORRADE_COMPARE(c.value<Version>("version"), Version::Vk11);
+
+    /* Errors */
+    c.setValue("version", "");
+    CORRADE_COMPARE(c.value<Version>("version"), Version::None);
+    c.setValue("version", "1");
+    CORRADE_COMPARE(c.value<Version>("version"), Version::None);
+    c.setValue("version", "1.");
+    CORRADE_COMPARE(c.value<Version>("version"), Version::None);
+    c.setValue("version", ".1");
+    CORRADE_COMPARE(c.value<Version>("version"), Version::None);
+
+    /* Leading spaces */
+    c.setValue("version", "   12.  5");
+    CORRADE_COMPARE(c.value<Version>("version"), version(12, 5));
+
+    /* Trailing spaces */
+    {
+        CORRADE_EXPECT_FAIL("Parsing of trailing spaces not implemented yet.");
+        c.setValue("version", "12  .5");
+        CORRADE_COMPARE(c.value<Version>("version"), version(12, 5));
+        c.setValue("version", "12.5  ");
+        CORRADE_COMPARE(c.value<Version>("version"), version(12, 5));
+    }
 }
 
 }}}}

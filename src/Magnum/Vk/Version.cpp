@@ -25,6 +25,8 @@
 
 #include "Version.h"
 
+#include <cstdlib>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Vk/Result.h"
@@ -46,6 +48,29 @@ Version enumerateInstanceVersion() {
     UnsignedInt version;
     MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEnumerateInstanceVersion(&version));
     return Version(version);
+}
+
+}}
+
+namespace Corrade { namespace Utility {
+
+using namespace Magnum;
+
+Vk::Version ConfigurationValue<Vk::Version>::fromString(const Containers::StringView& stringValue, ConfigurationValueFlags) {
+    /** @todo trim the string first, once Utility::String::trim() works for
+        views */
+    CORRADE_INTERNAL_ASSERT(stringValue.flags() & Containers::StringViewFlag::NullTerminated);
+
+    char* end;
+    const UnsignedInt major = std::strtoull(stringValue.data(), &end, 10);
+    if(end == stringValue.begin() || end == stringValue.end() || *end != '.' || end + 1 == stringValue.end())
+        return Vk::Version::None;
+
+    const UnsignedInt minor = std::strtoull(end + 1, &end, 10);
+    if(end != stringValue.end())
+        return Vk::Version::None;
+
+    return Vk::version(major, minor);
 }
 
 }}
