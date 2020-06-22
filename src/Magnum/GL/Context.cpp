@@ -985,8 +985,7 @@ std::vector<std::string> Context::extensionStrings() const {
     {
         /* Don't crash when glGetString() returns nullptr (i.e. don't trust the
            old implementations) */
-        const char* e = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-        if(e) extensions = Utility::String::splitWithoutEmptyParts(e, ' ');
+        extensions = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS))), ' ');
     }
     #endif
 

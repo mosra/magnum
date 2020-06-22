@@ -333,15 +333,11 @@ std::vector<std::string> Context::extensionStrings() const {
     std::vector<std::string> extensions;
 
     /* Don't crash when alGetString() returns nullptr */
-    const char* alExts = reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS));
-    if(alExts) extensions = Utility::String::splitWithoutEmptyParts(alExts, ' ');
+    extensions = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS))), ' ');
 
-    /* Add ALC extensions aswell */
-    const char* alcExts = reinterpret_cast<const char*>(alcGetString(_device, ALC_EXTENSIONS));
-    if(alcExts) {
-        auto splitAlcExts = Utility::String::splitWithoutEmptyParts(alcExts, ' ');
-        extensions.insert(extensions.end(), splitAlcExts.begin(), splitAlcExts.end());
-    }
+    /* Add ALC extensions as well */
+    auto splitAlcExts = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(alcGetString(_device, ALC_EXTENSIONS))), ' ');
+    extensions.insert(extensions.end(), splitAlcExts.begin(), splitAlcExts.end());
 
     return extensions;
 }
