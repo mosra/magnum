@@ -26,12 +26,14 @@
 #include "Instance.h"
 
 #include <algorithm>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
@@ -55,7 +57,7 @@ struct InstanceCreateInfo::State {
     const char** argv;
 };
 
-InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, const LayerProperties* const layerProperties, const InstanceExtensionProperties* const extensionProperties, const Flags flags): _info{}, _applicationInfo{} {
+InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, const LayerProperties* const layerProperties, const InstanceExtensionProperties* extensionProperties, const Flags flags): _info{}, _applicationInfo{} {
     Utility::Arguments args = Implementation::arguments();
     args.parse(argc, argv);
 
@@ -68,8 +70,7 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
     }
 
     _info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    /** @todo filter out magnum-specific flags once there are any */
-    _info.flags = VkInstanceCreateFlags(flags);
+    _info.flags = VkInstanceCreateFlags(flags & ~Flag::NoImplicitExtensions);
     _info.pApplicationInfo = &_applicationInfo;
     _applicationInfo.pEngineName = "Magnum";
     /** @todo magnum version? 2020 can't fit into Vulkan's version
@@ -120,7 +121,23 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
 
     /** @todo use this (enabling debug layers etc.) */
     static_cast<void>(layerProperties);
-    static_cast<void>(extensionProperties);
+
+    /* Enable implicit extensions unless that's forbidden */
+    /** @todo move this somewhere else as this will grow significantly? */
+    if(!(flags & Flag::NoImplicitExtensions)) {
+        if(!_state) _state.emplace();
+
+        /* Fetch searchable extension properties if not already */
+        Containers::Optional<InstanceExtensionProperties> extensionPropertiesStorage;
+        if(!extensionProperties) {
+            extensionPropertiesStorage = enumerateInstanceExtensionProperties();
+            extensionProperties = &*extensionPropertiesStorage;
+        }
+
+        /* Only if we don't have Vulkan 1.1, on which this is core */
+        if(_state->version < Version::Vk11 && extensionProperties->isSupported<Extensions::KHR::get_physical_device_properties2>())
+            addEnabledExtensions<Extensions::KHR::get_physical_device_properties2>();
+    }
 }
 
 InstanceCreateInfo::InstanceCreateInfo(NoInitT) noexcept {}

@@ -63,7 +63,22 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * Wraps @type_vk_keyword{InstanceCreateFlagBits}.
          * @see @ref Flags, @ref InstanceCreateInfo(Int, const char**, const LayerProperties*, const InstanceExtensionProperties*, Flags)
          */
-        enum class Flag: UnsignedInt {};
+        enum class Flag: UnsignedInt {
+            /* Any magnum-specific flags added here have to be filtered out
+               when passing them to _info.flags in the constructor. Using the
+               highest bits in a hope to prevent conflicts with Vulkan instance
+               flags added in the future. */
+
+            /**
+             * Don't implicitly enable any extensions.
+             *
+             * By default, the engine enables various extensions such as
+             * @vk_extension{KHR,get_physical_device_properties2} to provide a
+             * broader functionality. If you want to have a complete control
+             * over what gets enabled, set this flag.
+             */
+            NoImplicitExtensions = 1u << 31
+        };
 
         /**
          * @brief Instance creation flags

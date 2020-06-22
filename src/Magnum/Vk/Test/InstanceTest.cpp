@@ -49,7 +49,8 @@ InstanceTest::InstanceTest() {
 }
 
 void InstanceTest::createInfoConstructNoInit() {
-    InstanceCreateInfo info;
+    InstanceCreateInfo info{NoInit};
+
     info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&info) InstanceCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
