@@ -969,7 +969,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         #endif
 
         /**
-         * @brief Buffer size
+         * @brief Buffer size in bytes
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the buffer is bound to hinted target before the
