@@ -834,6 +834,11 @@ void Matrix4Test::uniformScalingPartNotUniform() {
 
 namespace {
 
+/* FFS. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=60491 */
+#ifdef minor
+#undef minor
+#endif
+
 /* From https://github.com/graphitemaster/normals_revisited#sample-code */
 float minor(const float* m, int r0, int r1, int r2, int c0, int c1, int c2) {
   return m[4*r0+c0] * (m[4*r1+c1] * m[4*r2+c2] - m[4*r2+c1] * m[4*r1+c2]) -
