@@ -93,7 +93,7 @@ webserver, e.g.  `/srv/http/emscripten`).
 @code{.sh}
 mkdir build-emscripten && cd build-emscripten
 cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+    -DCMAKE_TOOLCHAIN_FILE=path/to/toolchains/generic/Emscripten-wasm.cmake \
     -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
     -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
 cmake --build .

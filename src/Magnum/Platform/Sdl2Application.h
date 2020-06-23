@@ -160,7 +160,7 @@ you have all the dependencies.
 @code{.sh}
 mkdir build-ios && cd build-ios
 cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=path/to/toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
     -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
     -DCMAKE_PREFIX_PATH=~/ios-libs \
