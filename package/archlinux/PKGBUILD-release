@@ -92,11 +92,15 @@ build() {
 }
 
 check() {
-    cd "$_rootdir/build"
-    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
-
-    cd "$_rootdir/build-release"
-    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
+    for i in build build-release; do
+        cd "$_rootdir/$i"
+        CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+        MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
+    done
 }
 
 package() {
