@@ -109,11 +109,11 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         }
         if(flags >= Flag::InstancedObjectId)
             bindAttributeLocation(ObjectId::Location, "instanceObjectId");
+        #endif
         if(flags & Flag::InstancedTransformation)
             bindAttributeLocation(TransformationMatrix::Location, "instancedTransformationMatrix");
         if(flags >= Flag::InstancedTextureOffset)
             bindAttributeLocation(TextureOffset::Location, "instancedTextureOffset");
-        #endif
     }
     #endif
 
