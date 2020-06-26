@@ -342,8 +342,8 @@ to bundle the files explicitly. One possibility is via
 @ref Corrade::Utility::Resource (basically the same way as you probably already
 bundle shader code etc., as shown in the @ref examples-textured-triangle
 example). In this case the file is compiled directly into the `*.wasm` binary,
-which is the most optimal way, but accessing the files needs extra effort
-compared to a desktop application. Another possibility is via the
+which is the most optimal way, but it means you need to port your code away
+from the usual filesystem APIs. Another possibility is via the
 @cmake emscripten_embed_file() @ce CMake macro, which is implicitly available
 when you build for Emscripten, coming from the [UseEmscripten.cmake](https://github.com/mosra/toolchains/blob/master/modules/UseEmscripten.cmake)
 module:

@@ -143,8 +143,8 @@ using CMake.
 Compared to @ref getting-started-setup-subproject "Option A", you don't need to
 clone the subprojects and modify the `CMakeLists.txt` file, however you'll need
 to set `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to a
-non-standard location (i.e., anything else than `/usr` or `/usr/local`, and
-always on Windows).
+non-standard location (i.e., anything else than `/usr` or `/usr/local` on Unix
+systems, and outside of the standard prefix if using MinGW on Windows).
 
 @section getting-started-review 2. Review project structure
 

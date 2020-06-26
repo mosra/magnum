@@ -57,8 +57,8 @@ for more information about half floats.
 The class provides explicit conversion from and to @ref Magnum::Float "Float",
 equality comparison with correct treatment of NaN values, promotion and
 negation operator, an @link Literals::operator""_h() operator""_h() @endlink
-literal and an @ref operator<<(Debug&, Half) debug operator. Internally the class uses
-@ref packHalf() and @ref unpackHalf(). Example usage:
+literal and an @ref operator<<(Debug&, Half) debug operator. Internally the
+class uses @ref packHalf() and @ref unpackHalf(). Example usage:
 
 @snippet MagnumMath.cpp Half-usage
 
