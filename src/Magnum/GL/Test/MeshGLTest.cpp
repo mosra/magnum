@@ -939,7 +939,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
 
     const Vector4d data[] = {
         {}, {0.0, -0.9, 1.0, 1.25},
-        Math::unpack<Vector4d>(Math::Vector4<UnsignedShort>(315, 65201, 2576, 12))
+        Math::unpack<Vector4d>(Vector4us{315, 65201, 2576, 12})
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -961,10 +961,10 @@ void MeshGLTest::addVertexBufferVectorNd() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     const auto value = Checker(DoubleShader("dvec4", "vec4", "vec4(value)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Vector4us>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Math::Vector4<UnsignedShort>(315, 65201, 2576, 12));
+    CORRADE_COMPARE(value, (Vector4us{315, 65201, 2576, 12}));
 }
 #endif
 
@@ -1027,7 +1027,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     const Matrix3x3d data[] = {
         {},
         Matrix3x3d::fromDiagonal({0.0, -0.9, 1.0}),
-        Matrix3x3d::fromDiagonal(Math::unpack<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x3d::fromDiagonal(Math::unpack<Vector3d>(Vector3us{315, 65201, 2576}))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1050,7 +1050,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
 
     const auto value = Checker(DoubleShader("dmat3", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Vector4us>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1058,13 +1058,13 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
         /* Used to be a problem on Intel Windows drivers 23, not a problem on
            26 anymore */
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted on AMD and NVidia drivers.");
-        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
+        CORRADE_COMPARE(value.xyz(), (Vector3us{315, 65201, 2576}));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
     if(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia))
-        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 0));
+        CORRADE_COMPARE(value.xyz(), (Vector3us{315, 65201, 0}));
 }
 #endif
 
@@ -1111,7 +1111,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     const Matrix3x4d data[] = {
         {},
         Matrix3x4d::fromDiagonal({0.0, -0.9, 1.0}),
-        Matrix3x4d::fromDiagonal(Math::unpack<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x4d::fromDiagonal(Math::unpack<Vector3d>(Vector3us{315, 65201, 2576}))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1134,7 +1134,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
 
     const auto value = Checker(DoubleShader("dmat3x4", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Vector4us>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1142,13 +1142,13 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
         /* Used to be a problem on Intel Windows drivers 23, not a problem on
            26 anymore */
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted on AMD and NVidia drivers.");
-        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
+        CORRADE_COMPARE(value.xyz(), (Vector3us{315, 65201, 2576}));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
     if(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia))
-        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 0));
+        CORRADE_COMPARE(value.xyz(), (Vector3us{315, 65201, 0}));
 }
 #endif
 

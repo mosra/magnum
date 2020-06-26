@@ -716,7 +716,7 @@ if(!(b < a - epsilon || a + epsilon < b)) {
 
 {
 /* [Color3-fromSrgb] */
-Math::Vector3<UnsignedByte> srgb;
+Vector3ub srgb;
 auto rgb = Color3::fromSrgb(srgb);
 /* [Color3-fromSrgb] */
 static_cast<void>(rgb);
@@ -744,7 +744,7 @@ static_cast<void>(bFromSrgb);
 {
 /* [Color3-toSrgb] */
 Color3 color;
-Math::Vector3<UnsignedByte> srgb = color.toSrgb<UnsignedByte>();
+Vector3ub srgb = color.toSrgb<UnsignedByte>();
 /* [Color3-toSrgb] */
 static_cast<void>(srgb);
 }
@@ -761,7 +761,7 @@ static_cast<void>(bSrgb);
 
 {
 /* [Color4-fromSrgbAlpha] */
-Math::Vector4<UnsignedByte> srgbAlpha;
+Vector4ub srgbAlpha;
 auto rgba = Color4::fromSrgbAlpha(srgbAlpha);
 /* [Color4-fromSrgbAlpha] */
 static_cast<void>(rgba);
@@ -789,7 +789,7 @@ static_cast<void>(bFromSrgb);
 {
 /* [Color4-toSrgbAlpha] */
 Color4 color;
-Math::Vector4<UnsignedByte> srgbAlpha = color.toSrgbAlpha<UnsignedByte>();
+Vector4ub srgbAlpha = color.toSrgbAlpha<UnsignedByte>();
 /* [Color4-toSrgbAlpha] */
 static_cast<void>(srgbAlpha);
 }
@@ -830,7 +830,7 @@ static_cast<void>(a);
 {
 /* [_srgb] */
 using namespace Math::Literals;
-Math::Vector3<UnsignedByte> a = 0x33b27f_srgb; // {0x33, 0xb2, 0x7f}
+Vector3ub a = 0x33b27f_srgb;    // {0x33, 0xb2, 0x7f}
 /* [_srgb] */
 static_cast<void>(a);
 }
@@ -846,7 +846,7 @@ static_cast<void>(a);
 {
 /* [_srgba] */
 using namespace Math::Literals;
-Math::Vector4<UnsignedByte> a = 0x33b27fcc_srgba; // {0x33, 0xb2, 0x7f, 0xcc}
+Vector4ub a = 0x33b27fcc_srgba; // {0x33, 0xb2, 0x7f, 0xcc}
 /* [_srgba] */
 static_cast<void>(a);
 }
@@ -960,10 +960,10 @@ Debug{} << UnsignedShort(a);    // Prints 25675
 
 {
 /* [Half-usage-vector] */
-Math::Vector3<Half> a{3.14159_h, -1.4142_h, 1.618_h};
-Vector3 b{a};                                // converts to 32-bit floats
-Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}
-Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
+Vector3h a{3.14159_h, -1.4142_h, 1.618_h};
+Vector3 b{a};                   // converts to 32-bit floats
+Debug{} << a;                   // prints {3.14159, -1.4142, 1.618}
+Debug{} << Vector3us{a};        // prints {16968, 48552, 15993}
 /* [Half-usage-vector] */
 }
 
