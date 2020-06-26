@@ -313,8 +313,11 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             }
         }
 
+        /* In case the images have all just a single level and no names, write
+           them in a compact way without listing levels. */
+        bool compactImages = false;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos =
-            Trade::Implementation::imageInfo(*importer, error);
+            Trade::Implementation::imageInfo(*importer, error, compactImages);
 
         for(const MeshInfo& info: meshInfos) {
             Debug d;
@@ -356,9 +359,9 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             if(info.level == 0) {
                 d << "Image" << info.image << Debug::nospace << ":";
                 if(!info.name.empty()) d << info.name;
-                d << Debug::newline;
+                if(compactImages) d << Debug::newline;
             }
-            d << "  Level" << info.level << Debug::nospace << ":";
+            if(compactImages) d << "  Level" << info.level << Debug::nospace << ":";
             if(info.compressed) d << info.compressedFormat;
             else d << info.format;
             if(info.size.z()) d << info.size;

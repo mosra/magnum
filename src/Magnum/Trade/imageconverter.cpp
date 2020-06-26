@@ -239,19 +239,21 @@ key=true; configuration subgroups are delimited with /.)")
                 return 0;
             }
 
-            /* Parse everything first to avoid errors interleaved with output */
-            bool error = false;
+            /* Parse everything first to avoid errors interleaved with output.
+               In case the images have all just a single level and no names,
+               write them in a compact way without listing levels. */
+            bool error = false, compact = true;
             Containers::Array<Trade::Implementation::ImageInfo> infos =
-                Trade::Implementation::imageInfo(*importer, error);
+                Trade::Implementation::imageInfo(*importer, error, compact);
 
             for(const Trade::Implementation::ImageInfo& info: infos) {
                 Debug d;
                 if(info.level == 0) {
                     d << "Image" << info.image << Debug::nospace << ":";
                     if(!info.name.empty()) d << info.name;
-                    d << Debug::newline;
+                    if(!compact) d << Debug::newline;
                 }
-                d << "  Level" << info.level << Debug::nospace << ":";
+                if(!compact) d << "  Level" << info.level << Debug::nospace << ":";
                 if(info.compressed) d << info.compressedFormat;
                 else d << info.format;
                 if(info.size.z()) d << info.size;

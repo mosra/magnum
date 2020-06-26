@@ -86,11 +86,14 @@ struct ImageInfo {
     std::string name;
 };
 
-Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error) {
+Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error, bool& compact) {
     Containers::Array<ImageInfo> infos;
-
     for(UnsignedInt i = 0; i != importer.image1DCount(); ++i) {
-        for(UnsignedInt j = 0;j != importer.image1DLevelCount(i); ++j) {
+        const std::string name = importer.image1DName(i);
+        const UnsignedInt levelCount = importer.image1DLevelCount(i);
+        if(!name.empty() || levelCount != 1) compact = false;
+
+        for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData1D> image = importer.image1D(i, j);
             if(!image) {
                 error = true;
@@ -107,7 +110,11 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error) 
         }
     }
     for(UnsignedInt i = 0; i != importer.image2DCount(); ++i) {
-        for(UnsignedInt j = 0;j != importer.image2DLevelCount(i); ++j) {
+        const std::string name = importer.image2DName(i);
+        const UnsignedInt levelCount = importer.image2DLevelCount(i);
+        if(!name.empty() || levelCount != 1) compact = false;
+
+        for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData2D> image = importer.image2D(i, j);
             if(!image) {
                 error = true;
@@ -120,11 +127,15 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error) 
                 image->isCompressed() ?
                     image->compressedFormat() : CompressedPixelFormat{},
                 Vector3i::pad(image->size()),
-                j ? "" : importer.image2DName(i));
+                j ? "" : name);
         }
     }
     for(UnsignedInt i = 0; i != importer.image3DCount(); ++i) {
-        for(UnsignedInt j = 0;j != importer.image3DLevelCount(i); ++j) {
+        const std::string name = importer.image3DName(i);
+        const UnsignedInt levelCount = importer.image3DLevelCount(i);
+        if(!name.empty() || levelCount != 1) compact = false;
+
+        for(UnsignedInt j = 0; j != levelCount; ++j) {
             Containers::Optional<Trade::ImageData3D> image = importer.image3D(i, j);
             if(!image) {
                 error = true;
@@ -137,7 +148,7 @@ Containers::Array<ImageInfo> imageInfo(AbstractImporter& importer, bool& error) 
                 image->isCompressed() ?
                     image->compressedFormat() : CompressedPixelFormat{},
                 image->size(),
-                j ? "" : importer.image2DName(i));
+                j ? "" : name);
         }
     }
 
