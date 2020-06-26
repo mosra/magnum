@@ -136,6 +136,17 @@ picked by @ref Trade::AnySceneConverter "AnySceneConverter":
 magnum-sceneconverter chair.obj chair.ply
 @endcode
 
+Processing an OBJ file with @ref Trade::MeshOptimizerSceneConverter "MeshOptimizerSceneConverter",
+setting @ref Trade-MeshOptimizerSceneConverter-configuration "plugin-specific configuration options"
+to reduce the index count to half, saving as a PLY, with verbose output showing
+the processing stats:
+
+@m_class{m-console-wrap}
+
+@code{.sh}
+magnum-sceneconverter chair.obj --converter MeshOptimizerSceneConverter -c simplify=true,simplifyTargetIndexCountThreshold=0.5 chair.ply -v
+@endcode
+
 @see @ref magnum-imageconverter
 */
 
