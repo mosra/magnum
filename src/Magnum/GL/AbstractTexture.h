@@ -551,6 +551,9 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #ifdef CORRADE_TARGET_WINDOWS
         void MAGNUM_GL_LOCAL bindImplementationDSAIntelWindows(GLint textureUnit);
         #endif
+        #ifdef CORRADE_TARGET_APPLE
+        void MAGNUM_GL_LOCAL bindImplementationAppleBufferTextureWorkaround(GLint textureUnit);
+        #endif
         #endif
 
         void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);

@@ -553,12 +553,19 @@ bool Buffer::unmapImplementationDSA() {
 #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
 /* See apple-buffer-texture-detach-on-data-modify for the gory details. */
 void Buffer::textureWorkaroundAppleBefore() {
-    /* Apple "fortunately" supports just 16 texture units, so this doesn't take
-       too long. */
+    /* My Mac Mini reports 80 texture units, which means this thing can have a
+       pretty significant overhead. Skipping the whole thing if no buffer
+       texture is known to be bound. */
     Implementation::TextureState& textureState = *Context::current().state().texture;
+    if(textureState.bufferTextureBound.none()) return;
     for(GLint textureUnit = 0; textureUnit != GLint(textureState.bindings.size()); ++textureUnit) {
-        std::pair<GLenum, GLuint>& binding = textureState.bindings[textureUnit];
-        if(binding.first != GL_TEXTURE_BUFFER) continue;
+        /* Checking just
+            textureState.bindings[textureUnit].first != GL_TEXTURE_BUFFER
+           isn't enough, as for GL allows to bind different texture types under
+           the same texture unit. Magnum's state tracker ignores that (as it
+           would mean having to maintain a state cache of 128 units times 12
+           targets) and so this state is tracked separately. */
+        if(!textureState.bufferTextureBound[textureUnit]) continue;
 
         /* Activate given texture unit if not already active, update state
            tracker */
@@ -569,7 +576,8 @@ void Buffer::textureWorkaroundAppleBefore() {
         glBindTexture(GL_TEXTURE_BUFFER, 0);
         /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload
            of operator=) */
-        binding = std::pair<GLenum, GLuint>{};
+        textureState.bindings[textureUnit] = std::pair<GLenum, GLuint>{};
+        textureState.bufferTextureBound.set(textureUnit, false);
     }
 }
 

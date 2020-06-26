@@ -46,6 +46,10 @@
 #endif
 #endif
 
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
+#include "Magnum/Math/BoolVector.h"
+#endif
+
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct TextureState {
@@ -153,6 +157,9 @@ struct TextureState {
     #endif
 
     Containers::Array<std::pair<GLenum, GLuint>> bindings;
+    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    Math::BoolVector<80> bufferTextureBound;
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Texture object ID, level, layered, layer, access */
     Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;

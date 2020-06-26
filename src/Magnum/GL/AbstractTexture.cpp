@@ -371,6 +371,14 @@ void AbstractTexture::bindImplementationDSAIntelWindows(const GLint textureUnit)
     else bindImplementationDSA(textureUnit);
 }
 #endif
+
+#ifdef CORRADE_TARGET_APPLE
+void AbstractTexture::bindImplementationAppleBufferTextureWorkaround(const GLint textureUnit) {
+    bindImplementationDefault(textureUnit);
+    if(_target == GL_TEXTURE_BUFFER)
+        Context::current().state().texture->bufferTextureBound.set(textureUnit, true);
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -526,13 +534,14 @@ void AbstractTexture::bindInternal() {
     if(textureState.currentTextureUnit != internalTextureUnit)
         glActiveTexture(GL_TEXTURE0 + (textureState.currentTextureUnit = internalTextureUnit));
 
-    /* Bind the texture to internal unit if not already, update state tracker */
+    /* If already bound in given texture unit, nothing to do */
     if(textureState.bindings[internalTextureUnit].second == _id) return;
-    textureState.bindings[internalTextureUnit] = {_target, _id};
 
-    /* Binding the texture finally creates it */
-    _flags |= ObjectFlag::Created;
-    glBindTexture(_target, _id);
+    /* Update state tracker, bind the texture to the unit. Not directly calling
+       glBindTexture() here because we may need to include various
+       platform-specific workarounds (Apple, Intel Windpws) */
+    textureState.bindings[internalTextureUnit] = {_target, _id};
+    (this->*textureState.bindImplementation)(internalTextureUnit);
 }
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
