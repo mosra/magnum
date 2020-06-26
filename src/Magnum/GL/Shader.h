@@ -46,6 +46,21 @@ namespace Implementation { struct ShaderState; }
 
 See @ref AbstractShaderProgram for usage information.
 
+@section GL-Shader-errors Compilation error reporting
+
+To help localize shader compilation errors, each @ref addSource() /
+@ref addFile() call precedes the source with a @glsl #line n 1 @ce directive,
+where `n` is the source number. Drivers then use the source number to print
+error location, usually in a form `<file>(<line>):` or `<file>:<line>:`.
+
+@attention Especially the latter form may often get confused with the usual
+    `<line>:<column>:` used by C compilers --- be aware of the difference.
+    Unfortunately GLSL only allows specifying a file *number*, not a name.
+
+Source number `0` is a @glsl #version @ce directive added in the constructor
+(unless @ref Version::None is specified). which means the first added source
+has a number `1`.
+
 @section GL-Shader-performance-optimizations Performance optimizations
 
 Shader limits and implementation-defined values (such as @ref maxUniformComponents())
@@ -602,11 +617,9 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @param source    String with shader source
          * @return Reference to self (for method chaining)
          *
-         * Adds given source to source list, preceeded with @glsl #line @ce
-         * directive marking first line of the source as `n(1)` where `n` is
-         * number of the added source. The source number `0` is
-         * @glsl #version @ce directive added in the constructor, if any. If
-         * passed string is empty, the function does nothing.
+         * Adds given source to source list, preceded with a
+         * @glsl #line n 1 @ce directive for improved
+         * @ref GL-Shader-errors "compilation error reporting".
          * @see @ref addFile()
          */
         Shader& addSource(std::string source);
