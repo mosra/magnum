@@ -280,8 +280,8 @@ checked by the implementation:
 -   The @ref doSetFileCallback() function is called only if
     @ref ImporterFeature::FileCallback is supported and there is no file
     opened.
--   All `do*()` implementations working on an opened file are called only if
-    there is any file opened.
+-   All `do*()` implementations working on an opened file as well as
+    @ref doImporterState() are called only if there is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 -   For @ref doMesh() and `doImage*()` and @p level parameter being nonzero,
@@ -1280,6 +1280,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * for currently opened document through this function. See
          * documentation of a particular plugin for more information about
          * returned type and contents. Returns @cpp nullptr @ce by default.
+         * Expects that a file is opened.
          * @see @ref AbstractMaterialData::importerState(),
          *      @ref AnimationData::importerState(), @ref CameraData::importerState(),
          *      @ref ImageData::importerState(), @ref LightData::importerState(),

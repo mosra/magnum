@@ -1297,6 +1297,8 @@ void AbstractImporterTest::thingNoFile() {
     importer.image3D(42);
     importer.image3D("foo");
 
+    importer.importerState();
+
     CORRADE_COMPARE(out.str(),
         "Trade::AbstractImporter::defaultScene(): no file opened\n"
         "Trade::AbstractImporter::scene(): no file opened\n"
@@ -1325,7 +1327,9 @@ void AbstractImporterTest::thingNoFile() {
         "Trade::AbstractImporter::image2D(): no file opened\n"
         "Trade::AbstractImporter::image2D(): no file opened\n"
         "Trade::AbstractImporter::image3D(): no file opened\n"
-        "Trade::AbstractImporter::image3D(): no file opened\n");
+        "Trade::AbstractImporter::image3D(): no file opened\n"
+
+        "Trade::AbstractImporter::importerState(): no file opened\n");
 }
 
 void AbstractImporterTest::defaultScene() {
