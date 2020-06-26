@@ -36,13 +36,17 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@section changelog-latest Changes since 2019.10
+@anchor changelog-latest
+
+@section changelog-2020-06 2020.06
+
+Released 2020-06-27, tagged as
+[v2020.06](https://github.com/mosra/magnum/releases/tag/v2020.06).
+
+@subsection changelog-2020-06-new New features
 
 -   Clang-CL is now a supported compiler on Windows. See also
     @ref platforms-windows-clang-cl.
-
-@subsection changelog-latest-new New features
-
 -   New @ref Vector2h, @ref Vector3h, @ref Vector4h, @ref Vector2ub,
     @ref Vector3ub, @ref Vector4ub, @ref Vector2b, @ref Vector3b,
     @ref Vector4b, @ref Vector2us, @ref Vector3us, @ref Vector4us,
@@ -64,22 +68,22 @@ See also:
     be used by various importers to provide access to mesh data that is not
     necessarily GPU-friendly.
 
-@subsubsection changelog-latest-new-animation Animation library
+@subsubsection changelog-2020-06-new-animation Animation library
 
 -   Added a @ref Animation::TrackViewStorage::values() getter for type-erased
     access to track values
 
-@subsubsection changelog-latest-new-audio Audio library
+@subsubsection changelog-2020-06-new-audio Audio library
 
 -   Added a @ref Audio::Buffer::frequency() getter
 
-@subsubsection changelog-latest-new-debugtools DebugTools library
+@subsubsection changelog-2020-06-new-debugtools DebugTools library
 
 -   New @ref DebugTools::ColorMap namespace containing a few presets for
     gradient visualization
 -   New @ref DebugTools::FrameProfiler utility for CPU and GPU profiling
 
-@subsubsection changelog-latest-new-gl GL library
+@subsubsection changelog-2020-06-new-gl GL library
 
 -   Exposed new entry points. Note that no wrapper API in the @ref GL namespace
     is provided for the extensions listed below, at the moment:
@@ -130,7 +134,7 @@ See also:
 -   Added a @ref GL::Shader::Shader(NoCreateT) constructor for consistency with
     other OpenGL wrapper objects
 
-@subsubsection changelog-latest-new-math Math library
+@subsubsection changelog-2020-06-new-math Math library
 
 -   New @ref Magnum/Math/PackingBatch.h header with batch
     @ref Math::packInto(), @ref Math::unpackInto(),
@@ -147,7 +151,7 @@ See also:
 -   Added @ref Math::reflect() and @ref Math::refract() (see
     [mosra/magnum#420](https://github.com/mosra/magnum/pull/420))
 
-@subsubsection changelog-latest-new-meshtools MeshTools library
+@subsubsection changelog-2020-06-new-meshtools MeshTools library
 
 -   Added @ref MeshTools::compile(const Trade::MeshData&) operating on the new
     @ref Trade::MeshData API
@@ -181,7 +185,7 @@ See also:
     @ref MeshPrimitive::Triangles, as well as @ref MeshTools::generateIndices()
     operating directly on a @ref Trade::MeshData
 
-@subsubsection changelog-latest-new-platform Platform libraries
+@subsubsection changelog-2020-06-new-platform Platform libraries
 
 -   Cursor management using @ref Platform::Sdl2Application::setCursor(),
     @ref Platform::GlfwApplication::setCursor() and
@@ -234,7 +238,7 @@ See also:
     @ref Platform::Sdl2Application::GLConfiguration; same done for
     @ref Platform::GlfwApplication as well
 
-@subsubsection changelog-latest-new-primitives Primitives library
+@subsubsection changelog-2020-06-new-primitives Primitives library
 
 -   @ref Primitives::capsule3DSolid(), @ref Primitives::circle3DSolid(),
     @ref Primitives::coneSolid(), @ref Primitives::cylinderSolid(),
@@ -242,7 +246,7 @@ See also:
     @ref Primitives::uvSphereSolid() can now have tangents as well
 -   Added @ref Primitives::icosphereWireframe()
 
-@subsubsection changelog-latest-new-scenegraph SceneGraph library
+@subsubsection changelog-2020-06-new-scenegraph SceneGraph library
 
 -   All 2D transformation implementations that support rotation now have a
     @ref SceneGraph::AbstractBasicTranslationRotation2D::rotate(const Math::Complex<T>&) "rotate()"
@@ -253,7 +257,7 @@ See also:
     and @ref SceneGraph::AbstractBasicTranslationRotation3D::rotateLocal(const Math::Quaternion<T>&) "rotateLocal()"
     overloads taking a @ref Math::Quaternion
 
-@subsubsection changelog-latest-new-shaders Shaders library
+@subsubsection changelog-2020-06-new-shaders Shaders library
 
 -   New @ref Shaders::MeshVisualizer2D for 2D mesh visualization
 -   Tangent space visualization in @ref Shaders::MeshVisualizer3D
@@ -271,7 +275,7 @@ See also:
     @ref Shaders::Generic::TextureOffset for instancing
 -   Instancing in @ref Shaders::Flat and @ref Shaders::Phong
 
-@subsubsection changelog-latest-new-trade Trade library
+@subsubsection changelog-2020-06-new-trade Trade library
 
 -   A new, redesigned @ref Trade::MeshData class that allows much more flexible
     access to vertex/index data without unnecessary allocations and data
@@ -311,13 +315,13 @@ See also:
     option for printing detailed info about a particular file
 -   RLE compression support in @ref Trade::TgaImporter "TgaImporter"
 
-@subsubsection changelog-latest-new-vk Vk library
+@subsubsection changelog-2020-06-new-vk Vk library
 
 -   Updated Vulkan headers for version 1.2
 -   Conversion of @ref VertexFormat values to the @type_vk{Format} enum using
     @ref Vk::vkFormat(Magnum::VertexFormat)
 
-@subsection changelog-latest-changes Changes and improvements
+@subsection changelog-2020-06-changes Changes and improvements
 
 -   The @ref MeshPrimitive type can now store implementation-specific primitive
     types similarly to @ref PixelFormat and the new @ref VertexFormat.
@@ -345,13 +349,13 @@ See also:
     addition to ES2, since this platform doesn't have a possibility to have
     geometry shaders either. Same is done for @ref Shaders::MeshVisualizer2D.
 
-@subsubsection changelog-latest-changes-audio Audio library
+@subsubsection changelog-2020-06-changes-audio Audio library
 
 -   @ref Audio::WavImporter "WavAudioImporter" now supports also Big-Endian
     `RIFX` files and was fixed to work on Big-Endian platforms (see
     [mosra/corrade#87](https://github.com/mosra/corrade/issues/87))
 
-@subsubsection changelog-latest-changes-gl GL library
+@subsubsection changelog-2020-06-changes-gl GL library
 
 -   Added @ref GL::AbstractTexture::bind(),
     @ref GL::AbstractTexture::bindImages() and
@@ -375,7 +379,7 @@ See also:
     useful, affecting most shaders from the @ref Shaders library. See also
     @ref opengl-workarounds.
 
-@subsubsection changelog-latest-changes-math Math library
+@subsubsection changelog-2020-06-changes-math Math library
 
 -   Functions in @ref Magnum/Math/FunctionsBatch.h now accept any type that's
     convertible to a @ref Corrade::Containers::StridedArrayView without having
@@ -388,7 +392,7 @@ See also:
     @ref Math::Frustum::front() etc. accessors, returning references (see
     [mosra/magnum#425](https://github.com/mosra/magnum/pull/425))
 
-@subsubsection changelog-latest-changes-meshtools MeshTools library
+@subsubsection changelog-2020-06-changes-meshtools MeshTools library
 
 -   Added @ref MeshTools::compressIndices() that takes a
     @ref Corrade::Containers::StridedArrayView instead of a @ref std::vector
@@ -414,7 +418,7 @@ See also:
     @ref MeshTools::generateSmoothNormalsInto() variants taking type-erased
     index arrays
 
-@subsubsection changelog-latest-changes-platform Platform libraries
+@subsubsection changelog-2020-06-changes-platform Platform libraries
 
 -   @ref Platform::GlfwApplication now gracefully handles monitor sizes of zero
     when calculating DPI scaling (see [mosra/magnum#388](https://github.com/mosra/magnum/pull/388))
@@ -456,7 +460,7 @@ See also:
     Mesa's Zink GL-over-Vulkan driver that has just GL 2.1. See also
     @ref opengl-workarounds.
 
-@subsubsection changelog-latest-changes-trade Trade library
+@subsubsection changelog-2020-06-changes-trade Trade library
 
 -   For better usability, the @ref magnum-imageconverter "magnum-imageconverter"
     utility now prints available importer/converter plugins when loading a
@@ -476,7 +480,7 @@ See also:
 -   Recognizing `*.ico` and `*.cur` files in
     @ref Trade::AnyImageImporter "AnyImageImporter"
 
-@subsection changelog-latest-buildsystem Build system
+@subsection changelog-2020-06-buildsystem Build system
 
 -   Fixed a bad interaction between @ref Magnum/Platform/AbstractXApplication.h
     and @ref Magnum/Platform/GlfwApplication.h (see [mosra/magnum#389](https://github.com/mosra/magnum/pull/389))
@@ -512,7 +516,7 @@ See also:
     r19+ and CMake 3.16+. See also [mosra/corrade#84](https://github.com/mosra/corrade/issues/84)
     and [mosra/magnum#310](https://github.com/mosra/magnum/issues/310).
 
-@subsection changelog-latest-bugfixes Bug fixes
+@subsection changelog-2020-06-bugfixes Bug fixes
 
 -   The variadic versions of @ref GL::Mesh::addVertexBuffer() and
     @ref GL::Mesh::addVertexBufferInstanced() were sometimes errorneously
@@ -590,7 +594,7 @@ See also:
     contexts, causing GL errors. This makes context creation completely
     error-free on Mesa's Zink GL-over-Vulkan driver.
 
-@subsection changelog-latest-deprecated Deprecated APIs
+@subsection changelog-2020-06-deprecated Deprecated APIs
 
 -   @cpp GL::Mesh::draw() @ce and @cpp GL::MeshView::draw() @ce are deprecated
     in favor of @ref GL::AbstractShaderProgram::draw() and
@@ -701,7 +705,7 @@ See also:
     deprecated in favor of @ref NoInitT and @ref NoInit directly in the
     @ref Magnum namespace
 
-@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+@subsection changelog-2020-06-compatibility Potential compatibility breakages, removed APIs
 
 -   @ref Animation::TrackView "TrackView" in the still-experimental
     @ref Animation library was changed to allow mutable access to the keys &
@@ -774,7 +778,7 @@ See also:
     follows a similar change done for @ref PixelFormat and
     @ref CompressedPixelFormat in 2019.10.
 
-@subsection changelog-latest-documentation Documentation
+@subsection changelog-2020-06-documentation Documentation
 
 -   Various fixes, improvements and clarifications (see
     [mosra/magnum#390](https://github.com/mosra/magnum/pull/390),
