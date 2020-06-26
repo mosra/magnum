@@ -46,7 +46,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Features supported by an importer
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref ImporterFeatures, @ref AbstractImporter::features()
 */
@@ -71,7 +71,7 @@ enum class ImporterFeature: UnsignedByte {
 
 /**
 @brief Set of features supported by an importer
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImporter::features()
 */
@@ -94,7 +94,7 @@ typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallb
 
 /**
 @brief Importer flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref ImporterFlags, @ref AbstractImporter::setFlags()
 */
@@ -111,7 +111,7 @@ enum class ImporterFlag: UnsignedByte {
 
 /**
 @brief Importer flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImporter::setFlags()
 */
@@ -121,13 +121,13 @@ CORRADE_ENUMSET_OPERATORS(ImporterFlags)
 
 /**
 @debugoperatorenum{ImporterFlag}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlag value);
 
 /**
 @debugoperatorenum{ImporterFlags}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlags value);
 
@@ -313,12 +313,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief ImporterFeature
-         * @m_deprecated_since_latest Use @ref ImporterFeature instead.
+         * @m_deprecated_since{2020,06} Use @ref ImporterFeature instead.
          */
         typedef CORRADE_DEPRECATED("use ImporterFeature instead") ImporterFeature Feature;
 
         /** @brief @copybrief ImporterFeatures
-         * @m_deprecated_since_latest Use @ref ImporterFeatures instead.
+         * @m_deprecated_since{2020,06} Use @ref ImporterFeatures instead.
          */
         typedef CORRADE_DEPRECATED("use ImporterFeature instead") ImporterFeatures Features;
         #endif
@@ -363,13 +363,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Importer flags
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         ImporterFlags flags() const { return _flags; }
 
         /**
          * @brief Set importer flags
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * It's expected that this function is called *before* a file is
          * opened. Some flags can be set only if the importer supports
@@ -570,7 +570,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Scene for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref sceneForName() and
          * @ref scene(UnsignedInt). If @ref sceneForName() returns @cpp -1 @ce,
@@ -617,7 +617,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Animation for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref animationForName() and
          * @ref animation(UnsignedInt). If @ref animationForName() returns
@@ -664,7 +664,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Light for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref lightForName() and
          * @ref light(UnsignedInt). If @ref lightForName() returns @cpp -1 @ce,
@@ -711,7 +711,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Camera for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref cameraForName() and
          * @ref camera(UnsignedInt). If @ref cameraForName() returns
@@ -758,7 +758,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Two-dimensional object for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref object2DForName() and
          * @ref object2D(UnsignedInt). If @ref object2DForName() returns
@@ -805,7 +805,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Three-dimensional object for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref object3DForName() and
          * @ref object3D(UnsignedInt). If @ref object3DForName() returns
@@ -817,7 +817,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Mesh count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that a file is opened.
          * @see @ref meshLevelCount()
@@ -827,7 +827,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Mesh level count
          * @param id        Mesh ID, from range [0, @ref meshCount()).
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Always returns at least one level, import failures are deferred to
          * @ref mesh(). Expects that a file is opened.
@@ -836,7 +836,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Mesh ID for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
@@ -847,7 +847,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Mesh name
          * @param id        Mesh ID, from range [0, @ref meshCount()).
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that a file is opened.
          * @see @ref meshForName()
@@ -858,7 +858,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Mesh
          * @param id        Mesh ID, from range [0, @ref meshCount()).
          * @param level     Mesh level, from range [0, @ref meshLevelCount())
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
          * The @p level parameter allows access to additional data and is
@@ -873,7 +873,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Mesh for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref meshForName() and
          * @ref mesh(UnsignedInt, UnsignedInt). If @ref meshForName() returns
@@ -885,7 +885,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Mesh attribute for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * If the name is not recognized, returns a zero (invalid)
          * @ref MeshAttribute, otherwise returns a custom mesh attribute. Note
@@ -898,7 +898,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief String name for given custom mesh attribute
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Given a custom @p name returned by @ref mesh() in a @ref MeshData,
          * returns a string identifier. If a string representation is not
@@ -916,7 +916,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional mesh count
          *
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref meshCount() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshCount() instead.
          */
         CORRADE_DEPRECATED("use meshCount() instead") UnsignedInt mesh2DCount() const;
 
@@ -925,7 +925,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
-         * @m_deprecated_since_latest Use @ref meshForName() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshForName() instead.
          * @see @ref mesh2DName()
          */
         CORRADE_DEPRECATED("use meshForName() instead") Int mesh2DForName(const std::string& name);
@@ -935,7 +935,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref meshName() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshName() instead.
          * @see @ref mesh2DForName()
          */
         CORRADE_DEPRECATED("use meshName() instead") std::string mesh2DName(UnsignedInt id);
@@ -946,7 +946,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref mesh() instead.
+         * @m_deprecated_since{2020,06} Use @ref mesh() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         CORRADE_DEPRECATED("use mesh() instead") Containers::Optional<MeshData2D> mesh2D(UnsignedInt id);
@@ -956,7 +956,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional mesh count
          *
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref meshCount() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshCount() instead.
          */
         CORRADE_DEPRECATED("use meshCount() instead") UnsignedInt mesh3DCount() const;
 
@@ -965,7 +965,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
-         * @m_deprecated_since_latest Use @ref meshForName() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshForName() instead.
          * @see @ref mesh3DName()
          */
         CORRADE_DEPRECATED("use meshForName() instead") Int mesh3DForName(const std::string& name);
@@ -975,7 +975,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref meshName() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshName() instead.
          * @see @ref mesh3DForName()
          */
         CORRADE_DEPRECATED("use meshName() instead") std::string mesh3DName(UnsignedInt id);
@@ -986,7 +986,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
-         * @m_deprecated_since_latest Use @ref meshName() instead.
+         * @m_deprecated_since{2020,06} Use @ref meshName() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         CORRADE_DEPRECATED("use mesh() instead") Containers::Optional<MeshData3D> mesh3D(UnsignedInt id);
@@ -1030,7 +1030,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Material for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref materialForName() and
          * @ref material(UnsignedInt). If @ref materialForName() returns
@@ -1077,7 +1077,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Texture for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref textureForName() and
          * @ref texture(UnsignedInt). If @ref textureForName() returns
@@ -1098,7 +1098,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief One-dimensional image mip level count
          * @param id        Image ID, from range [0, @ref image1DCount())
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Always returns at least one level, import failures are deferred to
          * @ref image1D(). Expects that a file is opened.
@@ -1136,7 +1136,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief One-dimensional image for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref image1DForName() and
          * @ref image1D(UnsignedInt, UnsignedInt). If @ref image1DForName()
@@ -1158,7 +1158,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Two-dimensional image mip level count
          * @param id        Image ID, from range [0, @ref image2DCount()).
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Always returns at least one level, import failures are deferred to
          * @ref image2D(). Expects that a file is opened.
@@ -1196,7 +1196,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Two-dimensional image for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref image2DForName() and
          * @ref image2D(UnsignedInt, UnsignedInt). If @ref image2DForName()
@@ -1218,7 +1218,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Three-dimensional image mip level count
          * @param id        Image ID, from range [0, @ref image3DCount())
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Always returns at least one level, import failures are deferred to
          * @ref image3D(). Expects that a file is opened.
@@ -1256,7 +1256,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Three-dimensional image for given name
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * A convenience API combining @ref image3DForName() and
          * @ref image3D(UnsignedInt, UnsignedInt). If @ref image3DForName()
@@ -1503,7 +1503,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref meshCount()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp 0 @ce.
          */
@@ -1511,7 +1511,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref meshLevelCount()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp 1 @ce. Similarly to all other
          * `*Count()` functions, this function isn't expected to fail --- if an
@@ -1525,7 +1525,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref meshForName()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp -1 @ce.
          */
@@ -1533,7 +1533,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref meshName()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns an empty string.
          */
@@ -1541,13 +1541,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref mesh()
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         virtual Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level);
 
         /**
          * @brief Implementation for @ref meshAttributeForName()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns an invalid (zero) value.
          */
@@ -1555,7 +1555,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref meshAttributeName()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Receives the custom ID extracted via @ref meshAttributeCustom(MeshAttribute).
          * Default implementation returns an empty string.
@@ -1570,7 +1570,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importers in existence known to implement 2D mesh import, so unlike
          * @ref doMesh3DCount() this function doesn't delegate to
          * @ref doMeshCount().
-         * @m_deprecated_since_latest Implement @ref doMeshCount() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshCount() instead.
          */
         /* MSVC warns when overriding such methods and there's no way to
            suppress that warning, making the RT build (which treats deprecation
@@ -1588,7 +1588,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importers in existence known to implement 2D mesh import, so unlike
          * @ref doMesh3DForName() this function doesn't delegate to
          * @ref doMeshForName().
-         * @m_deprecated_since_latest Implement @ref doMeshForName() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshForName() instead.
          */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
         CORRADE_DEPRECATED("implement doMeshForName() instead")
@@ -1602,7 +1602,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * importers in existence known to implement 2D mesh import, so unlike
          * @ref doMesh3DName() this function doesn't delegate to
          * @ref doMeshName().
-         * @m_deprecated_since_latest Implement @ref doMeshName() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshName() instead.
          */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
         CORRADE_DEPRECATED("implement doMeshName() instead")
@@ -1615,7 +1615,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * There weren't any importers in existence known to implement 2D mesh
          * import, so unlike @ref doMesh3D() this function doesn't
          * delegate to @ref doMesh().
-         * @m_deprecated_since_latest Implement @ref doMesh() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMesh() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
@@ -1629,7 +1629,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @ref doMeshCount() for backwards
          * compatibility.
-         * @m_deprecated_since_latest Implement @ref doMeshCount() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshCount() instead.
          */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
         CORRADE_DEPRECATED("implement doMeshCount() instead")
@@ -1641,7 +1641,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @ref doMeshForName() for backwards
          * compatibility.
-         * @m_deprecated_since_latest Implement @ref doMeshForName() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshForName() instead.
          */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
         CORRADE_DEPRECATED("implement doMeshForName() instead")
@@ -1653,7 +1653,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @ref doMeshName() for backwards
          * compatibility.
-         * @m_deprecated_since_latest Implement @ref doMeshName() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMeshName() instead.
          */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
         CORRADE_DEPRECATED("implement doMeshName() instead")
@@ -1665,7 +1665,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Default implementation returns @ref doMesh() converted to
          * @cpp MeshData3D @ce for backwards compatibility.
-         * @m_deprecated_since_latest Implement @ref doMesh() instead.
+         * @m_deprecated_since{2020,06} Implement @ref doMesh() instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
         #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
@@ -1732,7 +1732,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image1DLevelCount()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp 1 @ce. See
          * @ref doImage2DLevelCount() for expected implementation behavior.
@@ -1765,7 +1765,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image2DLevelCount()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp 1 @ce. Similarly to all other
          * `*Count()` functions, this function isn't expected to fail --- if an
@@ -1806,7 +1806,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /**
          * @brief Implementation for @ref image3DLevelCount()
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default implementation returns @cpp 1 @ce. See
          * @ref doImage2DLevelCount() for expected implementation behavior.

@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Enum @ref Magnum::Trade::DataFlag, enum set @ref Magnum::Trade::DataFlags
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -39,7 +39,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Data flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref DataFlags, @ref AnimationData::dataFlags(),
     @ref ImageData::dataFlags(), @ref MeshData::indexDataFlags(),
@@ -64,13 +64,13 @@ enum class DataFlag: UnsignedByte {
 
 /**
 @debugoperatorenum{DataFlag}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
 
 /**
 @brief Data flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AnimationData::dataFlags(), @ref ImageData::dataFlags(),
     @ref MeshData::indexDataFlags(), @ref MeshData::vertexDataFlags()
@@ -81,7 +81,7 @@ CORRADE_ENUMSET_OPERATORS(DataFlags)
 
 /**
 @debugoperatorenum{DataFlags}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlags value);
 

@@ -141,7 +141,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
          * @brief Rotate the object using a complex number
          * @param complex       Normalized complex number
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the complex number is normalized.
          * @see @ref rotate(Math::Rad<T>),
@@ -151,7 +151,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
 
         /**
          * @brief Rotate the object using a complex number as a local transformation
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Similar to the above, except that the transformation is applied
          * before all others.

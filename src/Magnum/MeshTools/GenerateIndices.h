@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Function @ref Magnum::MeshTools::primitiveCount(), @ref Magnum::MeshTools::generateLineStripIndices(), @ref Magnum::MeshTools::generateLineStripIndicesInto(), @ref Magnum::MeshTools::generateLineLoopIndices(), @ref Magnum::MeshTools::generateLineLoopIndicesInto(), @ref Magnum::MeshTools::generateTriangleStripIndices(), @ref Magnum::MeshTools::generateTriangleStripIndicesInto(), @ref Magnum::MeshTools::generateTriangleFanIndices(), @ref Magnum::MeshTools::generateTriangleFanIndicesInto(), @ref Magnum::MeshTools::generateIndices()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include "Magnum/Magnum.h"
@@ -38,7 +38,7 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Actual primitive count for given primitive type and element count
-@m_since_latest
+@m_since{2020,06}
 
 Returns how many primitives is generated for given @p primitive and
 @p elementCount, for example for @ref MeshPrimitive::Triangles returns
@@ -50,7 +50,7 @@ MAGNUM_MESHTOOLS_EXPORT UnsignedInt primitiveCount(MeshPrimitive primitive, Unsi
 
 /**
 @brief Create index buffer for a line strip primitive
-@m_since_latest
+@m_since{2020,06}
 
 Can be used to convert a @ref MeshPrimitive::LineStrip mesh to
 @ref MeshPrimitive::Lines. The @p vertexCount is expected to be at least
@@ -63,7 +63,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineStripIndices(
 
 /**
 @brief Create index buffer for a line strip primitive into an existing array
-@m_since_latest
+@m_since{2020,06}
 
 A variant of @ref generateLineStripIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be at
@@ -74,7 +74,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineStripIndicesInto(UnsignedInt vertexCoun
 
 /**
 @brief Create index buffer for a line loop primitive
-@m_since_latest
+@m_since{2020,06}
 
 Can be used to convert a @ref MeshPrimitive::LineLoop mesh to
 @ref MeshPrimitive::Lines. The @p vertexCount is expected to be at least
@@ -87,7 +87,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateLineLoopIndices(U
 
 /**
 @brief Create index buffer for a line loop primitive into an existing array
-@m_since_latest
+@m_since{2020,06}
 
 A variant of @ref generateLineLoopIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be at
@@ -98,7 +98,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateLineLoopIndicesInto(UnsignedInt vertexCount
 
 /**
 @brief Create index buffer for a triangle strip primitive
-@m_since_latest
+@m_since{2020,06}
 
 Can be used to convert a @ref MeshPrimitive::TriangleStrip mesh to
 @ref MeshPrimitive::Triangles. The @p vertexCount is expected to be at least
@@ -111,7 +111,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleStripIndi
 
 /**
 @brief Create index buffer for a triangle strip primitive into an existing array
-@m_since_latest
+@m_since{2020,06}
 
 A variant of @ref generateTriangleStripIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be at
@@ -122,7 +122,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateTriangleStripIndicesInto(UnsignedInt vertex
 
 /**
 @brief Create index buffer for a triangle fan primitive
-@m_since_latest
+@m_since{2020,06}
 
 Can be used to convert a @ref MeshPrimitive::TriangleFan mesh to
 @ref MeshPrimitive::Triangles. The @p vertexCount is expected to be at least
@@ -135,7 +135,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateTriangleFanIndice
 
 /**
 @brief Create index buffer for a triangle fan primitive into an existing array
-@m_since_latest
+@m_since{2020,06}
 
 A variant of @ref generateTriangleFanIndicesInto() that fills existing memory
 instead of allocating a new array. The @p vertexCount is expected to be at
@@ -146,7 +146,7 @@ MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(UnsignedInt vertexCo
 
 /**
 @brief Convert a mesh to plain indexed lines or triangles
-@m_since_latest
+@m_since{2020,06}
 
 Expects that @p mesh is not indexed and is one of
 @ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
@@ -164,7 +164,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData generateIndices(const Trade::MeshData& m
 
 /**
 @brief Convert a mesh to plain indexed lines or triangles
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref generateIndices(const Trade::MeshData&) this function can
 transfer ownership of @p data vertex buffer (in case it is owned) to the

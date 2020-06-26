@@ -568,7 +568,7 @@ class EmscriptenApplication {
     public:
         /**
          * @brief Cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Value names in this enum don't necessarily match the CSS names in
          * order to be compatible with @ref Sdl2Application and
@@ -757,7 +757,7 @@ class EmscriptenApplication {
 
         /**
          * @brief Set cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default is @ref Cursor::Arrow.
          */
@@ -765,7 +765,7 @@ class EmscriptenApplication {
 
         /**
          * @brief Get current cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         Cursor cursor();
 
@@ -1705,7 +1705,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
 
             /**
              * Semicolon (`;`)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             Semicolon,
 

@@ -46,14 +46,14 @@ namespace Magnum { namespace Primitives {
 enum class GridFlag: UnsignedByte {
     /**
      * Generate texture coordinates with origin in the bottom left corner
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     TextureCoordinates = 1 << 0,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * Generate texture coordinates with origin in the bottom left corner
-     * @m_deprecated_since_latest Use @ref GridFlag::TextureCoordinates
+     * @m_deprecated_since{2020,06} Use @ref GridFlag::TextureCoordinates
      *      instead.
      */
     GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
@@ -68,7 +68,7 @@ enum class GridFlag: UnsignedByte {
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * Generate normals in positive Z direction.
-     * @m_deprecated_since_latest Use @ref GridFlag::Normals instead.
+     * @m_deprecated_since{2020,06} Use @ref GridFlag::Normals instead.
      */
     GenerateNormals CORRADE_DEPRECATED_ENUM("use Normals instead") = Normals,
     #endif
@@ -77,7 +77,7 @@ enum class GridFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 2
 };

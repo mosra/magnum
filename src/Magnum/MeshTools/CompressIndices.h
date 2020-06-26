@@ -50,7 +50,7 @@ namespace Magnum { namespace MeshTools {
 @param atLeast  Smallest allowed type
 @param offset   Offset to subtract from each index
 @return Compressed index array and corresponding type
-@m_since_latest
+@m_since{2020,06}
 
 This function compresses @p indices to the smallest possible size. For example
 when your indices have the maximum vertex index 463, it's wasteful to store
@@ -80,19 +80,19 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>& indices, MeshIndexType atLeast = MeshIndexType::UnsignedShort, Long offset = 0);
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
 with @p atLeast set to @ref MeshIndexType::UnsignedShort.
@@ -101,7 +101,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedShort>&, MeshIndexType, Long)
 with @p atLeast set to @ref MeshIndexType::UnsignedShort.
@@ -110,7 +110,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedByte>&, MeshIndexType, Long)
 with @p atLeast set to @ref MeshIndexType::UnsignedShort.
@@ -119,7 +119,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @brief Compress a type-erased index array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
@@ -130,7 +130,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref compressIndices(const Containers::StridedArrayView2D<const char>&, MeshIndexType, Long)
 with @p atLeast set to @ref MeshIndexType::UnsignedShort.
@@ -139,7 +139,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<char>, MeshIndexType> compre
 
 /**
 @brief Compress mesh data indices
-@m_since_latest
+@m_since{2020,06}
 
 Does the same as @ref compressIndices(const Containers::StridedArrayView2D<const char>&, MeshIndexType, Long),
 but together with adjusting vertex attribute offsets in the passed
@@ -151,7 +151,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(const Trade::MeshData& d
 
 /**
 @brief Compress mesh data indices
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref compressIndices(const Trade::MeshData&, MeshIndexType) this
 function can transfer ownership of @p data vertex buffer (in case it is
@@ -166,7 +166,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData compressIndices(Trade::MeshData&& data, 
 @brief Compress vertex indices
 @param indices  Index array
 @return Index range, type and compressed index array
-@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
+@m_deprecated_since{2020,06} Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
     instead. The index range isn't returned anymore, use @ref Math::minmax(const Containers::StridedArrayView1D<const T>&)
     to get it if needed.
 
@@ -183,7 +183,7 @@ CORRADE_DEPRECATED("use compressIndices(const Containers::StridedArrayView1D<con
 
 /**
 @brief Compress vertex indices as given type
-@m_deprecated_since_latest Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
+@m_deprecated_since{2020,06} Use @ref compressIndices(const Containers::StridedArrayView1D<const UnsignedInt>&, MeshIndexType, Long)
     instead.
 
 The type can be either @ref Magnum::UnsignedByte "UnsignedByte",

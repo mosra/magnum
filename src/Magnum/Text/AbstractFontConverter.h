@@ -51,7 +51,7 @@ namespace Magnum { namespace Text {
 
 /**
 @brief Features supported by a font converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref FontConverterFeatures, @ref AbstractFontConverter::features()
 */
@@ -105,7 +105,7 @@ enum class FontConverterFeature: UnsignedByte {
 
 /**
 @brief Features supported by a font converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractFontConverter::features()
 */
@@ -159,12 +159,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief FontConverterFeature
-         * @m_deprecated_since_latest Use @ref FontConverterFeature instead.
+         * @m_deprecated_since{2020,06} Use @ref FontConverterFeature instead.
          */
         typedef CORRADE_DEPRECATED("use FontConverterFeature instead") FontConverterFeature Feature;
 
         /** @brief @copybrief FontConverterFeatures
-         * @m_deprecated_since_latest Use @ref FontConverterFeatures instead.
+         * @m_deprecated_since{2020,06} Use @ref FontConverterFeatures instead.
          */
         typedef CORRADE_DEPRECATED("use FontConverterFeatures instead") FontConverterFeatures Features;
         #endif

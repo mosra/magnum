@@ -39,7 +39,7 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief Plane flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref PlaneFlags, @ref planeSolid()
 */
@@ -51,14 +51,14 @@ enum class PlaneFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 1
 };
 
 /**
 @brief Plane flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref planeSolid()
 */
@@ -69,7 +69,7 @@ CORRADE_ENUMSET_OPERATORS(PlaneFlags)
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Whether to generate plane texture coordinates
-@m_deprecated_since_latest Use @ref PlaneFlags instead.
+@m_deprecated_since{2020,06} Use @ref PlaneFlags instead.
 */
 enum class CORRADE_DEPRECATED_ENUM("use PlaneFlags instead") PlaneTextureCoords: UnsignedByte {
     DontGenerate,       /**< Don't generate texture coordinates */
@@ -82,7 +82,7 @@ enum class CORRADE_DEPRECATED_ENUM("use PlaneFlags instead") PlaneTextureCoords:
 /**
 @brief Solid 3D plane
 @param flags        Flags
-@m_since_latest
+@m_since{2020,06}
 
 2x2 square on the XY plane, centered at origin. Non-indexed
 @ref MeshPrimitive::TriangleStrip with @ref VertexFormat::Vector3 positions,
@@ -106,7 +106,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData planeSolid();
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief planeSolid(PlaneFlags)
-@m_deprecated_since_latest Use @ref planeSolid(PlaneFlags) instead.
+@m_deprecated_since{2020,06} Use @ref planeSolid(PlaneFlags) instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH
 MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use planeSolid(PlaneFlags) instead") Trade::MeshData planeSolid(PlaneTextureCoords textureCoords);

@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Functions @ref Magnum::Math::packInto(), @ref Magnum::Math::unpackInto(), @ref Magnum::Math::packHalfInto(), @ref Magnum::Math::unpackHalfInto(), @ref Magnum::Math::castInto()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/Containers/Containers.h>
@@ -48,7 +48,7 @@ vectors or scalars.
 @brief Unpack unsigned integral values into a floating-point representation
 @param[in]  src     Source integral values
 @param[out] dst     Destination floating-point values
-@m_since_latest
+@m_since{2020,06}
 
 Converts integral values from full range of given *unsigned* integral type to
 floating-point values in range @f$ [0, 1] @f$. Second dimension is meant to
@@ -62,7 +62,7 @@ MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<cons
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
@@ -70,7 +70,7 @@ MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<cons
 @brief Unpack signed integral values into a floating-point representation
 @param[in]  src     Source integral values
 @param[out] dst     Destination floating-point values
-@m_since_latest
+@m_since{2020,06}
 
 Converts integral values from full range of given *signed* integral type to
 floating-point values in range @f$ [-1, 1] @f$. Second dimension is meant to
@@ -84,7 +84,7 @@ MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<cons
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
@@ -92,7 +92,7 @@ MAGNUM_EXPORT void unpackInto(const Corrade::Containers::StridedArrayView2D<cons
 @brief Pack floating-point values into an integer representation
 @param[in]  src     Source floating-point values
 @param[out] dst     Destination integral values
-@m_since_latest
+@m_since{2020,06}
 
 Converts floating-point value in range @f$ [0, 1] @f$ to full range of
 given *unsigned* integral type or range @f$ [-1, 1] @f$ to full range of
@@ -111,19 +111,19 @@ MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
 
@@ -131,7 +131,7 @@ MAGNUM_EXPORT void packInto(const Corrade::Containers::StridedArrayView2D<const 
 @brief Pack 32-bit float values into 16-bit half-float representation
 @param[in]  src     Source 32-bit float values
 @param[out] dst     Destination 16-bit half-float values
-@m_since_latest
+@m_since{2020,06}
 
 See [Wikipedia](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
 for more information about half floats. Unlike @ref packHalf() this function is
@@ -150,7 +150,7 @@ MAGNUM_EXPORT void packHalfInto(const Corrade::Containers::StridedArrayView2D<co
 @brief Unpack a range of 16-bit half-float values into 32-bit float representation
 @param[in]  src     Source floating-point values
 @param[out] dst     Destination integral values
-@m_since_latest
+@m_since{2020,06}
 
 See [Wikipedia](https://en.wikipedia.org/wiki/Half-precision_floating-point_format)
 for more information about half floats. Unlike @ref unpackHalf() this function
@@ -169,7 +169,7 @@ MAGNUM_EXPORT void unpackHalfInto(const Corrade::Containers::StridedArrayView2D<
 @brief Cast integer values into a floating-point representation
 @param[in]  src     Source integral values
 @param[out] dst     Destination floating-point values
-@m_since_latest
+@m_since{2020,06}
 
 Unlike @ref packInto(), this function performs only an equivalent of
 @cpp Float(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0f @ce.
@@ -187,31 +187,31 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst);
 
@@ -219,7 +219,7 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 @brief Cast floating-point values into an integer representation
 @param[in]  src     Source floating-point values
 @param[out] dst     Destination integral values
-@m_since_latest
+@m_since{2020,06}
 
 Unlike @ref packInto(), this function performs only an equivalent of
 @cpp Float(a) @ce over the range, so e.g. @cpp 135 @ce becomes @cpp 135.0f @ce.
@@ -237,31 +237,31 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
 
@@ -269,7 +269,7 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 @brief Cast integer values into a differently sized type
 @param[in]  src     Source values
 @param[out] dst     Destination values
-@m_since_latest
+@m_since{2020,06}
 
 Second dimension is meant to contain vector/matrix components, or have a size
 of 1 for scalars. Expects that @p src and @p dst have the same size and that
@@ -284,43 +284,43 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedInt>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Int>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedInt>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 

@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Function @ref Magnum::MeshTools::reference(), @ref Magnum::MeshTools::owned()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include "Magnum/MeshTools/visibility.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Create an immutable reference on a @ref Trade::MeshData
-@m_since_latest
+@m_since{2020,06}
 
 The returned instance has empty @ref Trade::MeshData::indexDataFlags() and
 @ref Trade::MeshData::vertexDataFlags() and references attribute data from the
@@ -49,7 +49,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData reference(const Trade::MeshData& data);
 
 /**
 @brief Create a mutable reference on a @ref Trade::MeshData
-@m_since_latest
+@m_since{2020,06}
 
 The returned instance has @ref Trade::MeshData::indexDataFlags() and
 @ref Trade::MeshData::vertexDataFlags() set to @ref Trade::DataFlag::Mutable.
@@ -61,7 +61,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData mutableReference(Trade::MeshData& data);
 
 /**
 @brief Create an owned @ref Trade::MeshData
-@m_since_latest
+@m_since{2020,06}
 
 The returned instance owns its index, vertex and attribute data --- both
 @ref Trade::MeshData::indexDataFlags() and
@@ -76,7 +76,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData owned(const Trade::MeshData& data);
 
 /**
 @brief Create an owned @ref Trade::MeshData, if not already
-@m_since_latest
+@m_since{2020,06}
 
 The returned instance owns its index, vertex and attribute data --- both
 @ref Trade::MeshData::indexDataFlags() and

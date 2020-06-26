@@ -295,7 +295,7 @@ template<class Application> class BasicScreenedApplication:
 
         /**
          * @brief Before draw event
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Called *before* all screens' @ref BasicScreen::drawEvent() "drawEvent()".
          * Unlike @ref globalDrawEvent() doesn't need to be implemented.

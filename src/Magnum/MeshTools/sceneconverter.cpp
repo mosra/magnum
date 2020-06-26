@@ -45,7 +45,7 @@ namespace Magnum {
 
 /** @page magnum-sceneconverter Scene conversion utility
 @brief Converts scenes of different formats
-@m_since_latest
+@m_since{2020,06}
 
 @m_footernavigation
 @m_keywords{magnum-sceneconverter sceneconverter}

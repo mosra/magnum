@@ -322,7 +322,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief Vertex tangent with a bitangent sign
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::Vector4 "Vector4", defined only in 3D. The last component
      * is a sign value (@cpp -1.0f @ce or @cpp +1.0f @ce) defining handedness
@@ -338,7 +338,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief Vertex bitangent
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::Vector3 "Vector3", defined only in 3D. For better storage
      * efficiency, the bitangent can be also reconstructed from the normal and
@@ -354,7 +354,7 @@ template<UnsignedInt dimensions> struct Generic {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * @brief (Instanced) object ID
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::UnsignedInt "UnsignedInt". Corresponds to
      * @ref Trade::MeshAttribute::ObjectId.
@@ -385,7 +385,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief (Instanced) transformation matrix
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::Matrix3 "Matrix3" in 2D and @ref Magnum::Matrix4 "Matrix4"
      * in 3D. Currently doesn't have a corresponding @ref Trade::MeshAttribute.
@@ -402,7 +402,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief (Instanced) normal matrix
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::Matrix3 "Matrix3x3", defined only in 3D. Currently doesn't
      * have a corresponding @ref Trade::MeshAttribute.
@@ -419,7 +419,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief (Instanced) texture offset
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * @ref Magnum::Vector2 "Vector2". Currently doesn't have a corresponding
      * @ref Trade::MeshAttribute.

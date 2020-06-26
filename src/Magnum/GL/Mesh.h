@@ -138,7 +138,7 @@ enum class MeshPrimitive: GLenum {
 
 /**
 @brief Check availability of a generic mesh primitive
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp false @ce if OpenGL doesn't support such primitive, @cpp true @ce
 otherwise. Moreover, returns @cpp true @ce also for all formats that are
@@ -956,14 +956,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw the mesh
-         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         * @m_deprecated_since{2020,06} Use @ref AbstractShaderProgram::draw()
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") Mesh& draw(AbstractShaderProgram& shader);
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         * @m_deprecated_since{2020,06} Use @ref AbstractShaderProgram::draw()
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") Mesh& draw(AbstractShaderProgram&& shader);
@@ -971,14 +971,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw the mesh with vertices coming out of transform feedback
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") Mesh& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") Mesh& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0);

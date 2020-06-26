@@ -28,7 +28,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Function @ref Magnum::MeshTools::combineIndexArrays(), @ref Magnum::MeshTools::combineIndexedArrays()
- * @m_deprecated_since_latest Use @ref Magnum/MeshTools/Combine.h and
+ * @m_deprecated_since{2020,06} Use @ref Magnum/MeshTools/Combine.h and
  *      @ref Magnum::MeshTools::combineIndexedAttributes() instead.
  */
 #endif
@@ -56,7 +56,7 @@ namespace Magnum { namespace MeshTools {
 @param[in,out] arrays   Index arrays to combine. These arrays are updated
     in-place to contain unique combinations of the original indices.
 @return Resulting combined index array
-@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
+@m_deprecated_since{2020,06} Use @ref combineIndexedAttributes() instead.
 
 Creates new combined index array and updates the original ones with translation
 to new ones. For example, when you have position and normal array, each indexed
@@ -98,13 +98,13 @@ CORRADE_DEPRECATED("use combineIndexedAttributes() instead") MAGNUM_MESHTOOLS_EX
 
 /**
 @overload
-@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
+@m_deprecated_since{2020,06} Use @ref combineIndexedAttributes() instead.
 */
 CORRADE_DEPRECATED("use combineIndexedAttributes() instead") MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
 
 /**
 @brief Combine interleaved index arrays
-@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
+@m_deprecated_since{2020,06} Use @ref combineIndexedAttributes() instead.
 
 Unlike above, this function takes one interleaved array instead of separate
 index arrays. Continuing with the above example, you would call this function
@@ -157,7 +157,7 @@ template<class T, class ...U> inline void writeCombinedArrays(UnsignedInt stride
 @brief Combine indexed arrays
 @param[in,out] indexedArrays Index and attribute arrays
 @return Array with resulting indices
-@m_deprecated_since_latest Use @ref combineIndexedAttributes() instead.
+@m_deprecated_since{2020,06} Use @ref combineIndexedAttributes() instead.
 
 Creates new combined index array and reorders original attribute arrays so they
 can be indexed with the new single index array.

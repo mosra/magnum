@@ -136,7 +136,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
          * @brief Rotate the object using a complex number
          * @param complex       Normalized complex number
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Same as calling @ref transform() with @p complex. Expects that the
          * complex number is normalized.
@@ -149,7 +149,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
 
         /**
          * @brief Rotate the object using a complex number as a local transformation
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Similar to the above, except that the transformation is applied
          * before all others.

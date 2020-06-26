@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Trade::AbstractSceneConverter, enum @ref Magnum::Trade::SceneConverterFeature, enum set @ref Magnum::Trade::SceneConverterFeatures
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
@@ -40,7 +40,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Features supported by a scene converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref SceneConverterFeatures, @ref AbstractSceneConverter::features()
 */
@@ -73,7 +73,7 @@ enum class SceneConverterFeature: UnsignedByte {
 
 /**
 @brief Features supported by a scene converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractSceneConverter::features()
 */
@@ -89,7 +89,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFeatures value
 
 /**
 @brief Scene converter flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref SceneConverterFlags, @ref AbstractSceneConverter::setFlags()
 */
@@ -106,7 +106,7 @@ enum class SceneConverterFlag: UnsignedByte {
 
 /**
 @brief Scene converter flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImporter::setFlags()
 */
@@ -116,19 +116,19 @@ CORRADE_ENUMSET_OPERATORS(SceneConverterFlags)
 
 /**
 @debugoperatorenum{SceneConverterFlag}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlag value);
 
 /**
 @debugoperatorenum{SceneConverterFlags}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFlags value);
 
 /**
 @brief Base for scene converter plugins
-@m_since_latest
+@m_since{2020,06}
 
 Provides functionality for converting meshes and other scene data between
 various formats or performing optimizations and other operations on them. See

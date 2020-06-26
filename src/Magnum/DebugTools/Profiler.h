@@ -28,7 +28,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::DebugTools::Profiler
- * @m_deprecated_since_latest Obsolete, use
+ * @m_deprecated_since{2020,06} Obsolete, use
  *      @ref Magnum/DebugTools/FrameProfiler.h and the
  *      @ref Magnum::DebugTools::FrameProfiler class instead.
  */
@@ -54,7 +54,7 @@ namespace Magnum { namespace DebugTools {
 
 /**
 @brief Profiler
-@m_deprecated_since_latest Obsolete, use @ref FrameProfiler instead.
+@m_deprecated_since{2020,06} Obsolete, use @ref FrameProfiler instead.
 
 Measures time passed during specified sections of each frame. It's meant to be
 used in rendering and event loops (e.g. @ref Platform::Sdl2Application::drawEvent()),

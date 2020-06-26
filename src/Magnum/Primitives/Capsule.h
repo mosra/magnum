@@ -59,7 +59,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData capsule2DWireframe(UnsignedInt hemisphe
 
 /**
 @brief Capsule flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref CapsuleFlags, @ref capsule3DSolid()
 */
@@ -70,14 +70,14 @@ enum class CapsuleFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 1
 };
 
 /**
 @brief Capsule flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref capsule3DSolid()
 */
@@ -95,7 +95,7 @@ CORRADE_ENUMSET_OPERATORS(CapsuleFlags)
     @cpp 3 @ce.
 @param halfLength       Half the length of cylinder part
 @param flags            Flags
-@m_since_latest
+@m_since{2020,06}
 
 Cylinder of radius @cpp 1.0f @ce along the Y axis, centered at origin, with
 hemispheres instead of caps. @ref MeshPrimitive::Triangles with
@@ -118,7 +118,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData capsule3DSolid(UnsignedInt hemisphereRi
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Whether to generate capsule texture coordinates
-@m_deprecated_since_latest Use @ref CapsuleFlags instead.
+@m_deprecated_since{2020,06} Use @ref CapsuleFlags instead.
 */
 enum class CORRADE_DEPRECATED_ENUM("use CapsuleFlags instead") CapsuleTextureCoords: UnsignedByte {
     DontGenerate,   /**< Don't generate texture coordinates */
@@ -127,7 +127,7 @@ enum class CORRADE_DEPRECATED_ENUM("use CapsuleFlags instead") CapsuleTextureCoo
 
 /**
 @brief @copybrief capsule3DSolid(UnsignedInt, UnsignedInt, UnsignedInt, Float, CapsuleFlags)
-@m_deprecated_since_latest Use @ref capsule3DSolid(UnsignedInt, UnsignedInt, UnsignedInt, Float, CapsuleFlags)
+@m_deprecated_since{2020,06} Use @ref capsule3DSolid(UnsignedInt, UnsignedInt, UnsignedInt, Float, CapsuleFlags)
     instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH

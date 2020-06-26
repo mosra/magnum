@@ -51,7 +51,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * @brief Rotate the object using a quaternion
          * @param quaternion    Normalized quaternion
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the quaternion is normalized.
          * @see @ref rotate(Math::Rad<T>, const Math::Vector3<T>&),
@@ -65,7 +65,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
 
         /**
          * @brief Rotate the object using a quaternion as a local transformation
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -208,13 +208,13 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
     private:
         /**
          * @brief Polymorphic implementation for @ref rotate(const Math::Quaternion<T>&)
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         virtual void doRotate(const Math::Quaternion<T>&) = 0;
 
         /**
          * @brief Polymorphic implementation for @ref rotateLocal(const Math::Quaternion<T>&)
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         virtual void doRotateLocal(const Math::Quaternion<T>&) = 0;
 

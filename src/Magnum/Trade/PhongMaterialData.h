@@ -65,19 +65,19 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
             /**
              * The material has a normal texture
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             NormalTexture = 1 << 4,
 
             /**
              * The material has a texture coordinate transformation
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             TextureTransformation = 1 << 5,
 
             /**
              * The material uses non-default texture coordinate sets
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             TextureCoordinateSets = 1 << 6
         };
@@ -119,7 +119,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param shininess         Shininess. Use @cpp 80.0f @ce for a default
          *      value.
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * All `*CoordinateSet` accessors are implicitly zero with this
          * constructor. If @p textureMatrix is not default-constructed, expects
@@ -164,7 +164,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param shininess             Shininess. Use @cpp 80.0f @ce for a
          *      default value.
          * @param importerState         Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * If @p textureMatrix is not default-constructed, expects
          * @ref Flag::TextureTransformation to be enabled as well. If any
@@ -176,7 +176,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
-         * @m_deprecated_since_latest Use @ref PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*)
+         * @m_deprecated_since{2020,06} Use @ref PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*)
          *      instead.
          */
         explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
@@ -221,7 +221,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead.
          */
         /* Not marked with CORRADE_DEPRECATED() because the compiler picks this
@@ -242,7 +242,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead of modifying the instance afterwards.
          */
         /* Not using CORRADE_DEPRECATED(), see why above */
@@ -251,7 +251,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Ambient texture coordinate set
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Available only if the material has @ref Flag::AmbientTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
@@ -269,7 +269,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead of modifying the instance afterwards.
          */
         /* Not using CORRADE_DEPRECATED(), see why above */
@@ -287,7 +287,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead of modifying the instance afterwards.
          */
         /* Not using CORRADE_DEPRECATED(), see why above */
@@ -296,7 +296,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Diffuse texture coordinate set
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Available only if the material has @ref Flag::DiffuseTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
@@ -314,7 +314,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead of modifying the instance afterwards.
          */
         /* Not using CORRADE_DEPRECATED(), see why above */
@@ -332,7 +332,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @m_deprecated_since_latest Use the constructor to populate all
+         * @m_deprecated_since{2020,06} Use the constructor to populate all
          *      values instead of modifying the instance afterwards.
          */
         /* Not using CORRADE_DEPRECATED(), see why above */
@@ -341,7 +341,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Specular texture coordinate set
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Available only if the material has @ref Flag::SpecularTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
@@ -350,7 +350,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Normal texture ID
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Available only if the material has @ref Flag::NormalTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
@@ -359,7 +359,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Normal texture coordinate set
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Available only if the material has @ref Flag::NormalTexture.
          * @see @ref flags(), @ref AbstractImporter::texture()
@@ -368,7 +368,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Texture coordinate transformation matrix
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * If the material doesn't have @ref Flag::TextureTransformation,
          * returns an identity matrix.

@@ -42,7 +42,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Precision when testing floats for equality
-@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+@m_deprecated_since{2020,06} Use @ref Magnum::Math::TypeTraits::epsilon()
     instead.
 
 They have "at least" 6 significant digits of precision, taking one digit less
@@ -55,7 +55,7 @@ for more headroom.
 
 /**
 @brief Precision when testing doubles for equality
-@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+@m_deprecated_since{2020,06} Use @ref Magnum::Math::TypeTraits::epsilon()
     instead.
 
 They have "at least" 15 significant digits of precision, taking one digit less
@@ -69,7 +69,7 @@ for more headroom.
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Precision when testing long doubles for equality
-@m_deprecated_since_latest Use @ref Magnum::Math::TypeTraits::epsilon()
+@m_deprecated_since{2020,06} Use @ref Magnum::Math::TypeTraits::epsilon()
     instead.
 
 They have "at least" 18 significant digits of precision, taking one digit less

@@ -680,7 +680,7 @@ class Sdl2Application {
         /**
          * @brief Set window size
          * @param size    The size, in screen coordinates
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * To make the sizing work independently of the display DPI, @p size is
          * internally multiplied with @ref dpiScaling() before getting applied.
@@ -772,7 +772,7 @@ class Sdl2Application {
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
         /**
          * @brief Set window icon
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The @p image is expected to be with origin at bottom left (which is
          * the default for imported images) and in one of
@@ -935,7 +935,7 @@ class Sdl2Application {
     public:
         /**
          * @brief Cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref setCursor()
          */
@@ -967,7 +967,7 @@ class Sdl2Application {
 
         /**
          * @brief Set cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Default is @ref Cursor::Arrow.
          */
@@ -975,7 +975,7 @@ class Sdl2Application {
 
         /**
          * @brief Get current cursor type
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         Cursor cursor();
 
@@ -994,7 +994,7 @@ class Sdl2Application {
         /**
          * @brief Whether mouse is locked
          *
-         * @m_deprecated_since_latest Use @ref cursor() together with
+         * @m_deprecated_since{2020,06} Use @ref cursor() together with
          *      @ref Cursor::HiddenLocked instead.
          */
         CORRADE_DEPRECATED("use cursor() together with Cursor::HiddenLocked instead") bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
@@ -1002,7 +1002,7 @@ class Sdl2Application {
         /**
          * @brief Enable or disable mouse locking
          *
-         * @m_deprecated_since_latest Use @ref setCursor() together with
+         * @m_deprecated_since{2020,06} Use @ref setCursor() together with
          *      @ref Cursor::HiddenLocked instead.
          */
         CORRADE_DEPRECATED("use setCursor() together with Cursor::HiddenLocked instead") void setMouseLocked(bool enabled);
@@ -1536,7 +1536,7 @@ class Sdl2Application::Configuration {
 
             /**
              * Fullscreen window at the current desktop resolution
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
@@ -1599,7 +1599,7 @@ class Sdl2Application::Configuration {
             #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * Always on top
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Available since SDL 2.0.5, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
@@ -1609,7 +1609,7 @@ class Sdl2Application::Configuration {
 
             /**
              * Don't add the window to taskbar
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Available since SDL 2.0.5, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
@@ -1619,7 +1619,7 @@ class Sdl2Application::Configuration {
 
             /**
              * Window should be treated as a utility window
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Available since SDL 2.0.5, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
@@ -1629,7 +1629,7 @@ class Sdl2Application::Configuration {
 
             /**
              * Window should be treated as a tooltip
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Available since SDL 2.0.5, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
@@ -1639,7 +1639,7 @@ class Sdl2Application::Configuration {
 
             /**
              * Window should be treated as a popup menu
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * @note Available since SDL 2.0.5, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". According to
@@ -1869,7 +1869,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Add window flags
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
@@ -1883,7 +1883,7 @@ class Sdl2Application::Configuration {
         /**
          * @brief Clear window flags
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
          * existing instead of replacing them. Useful for removing default
@@ -2274,7 +2274,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 
             /**
              * Quote (<tt>'</tt>)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             Quote = SDLK_QUOTE,
 
@@ -2289,25 +2289,25 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 
             /**
              * Left bracket (`[`)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             LeftBracket = SDLK_LEFTBRACKET,
 
             /**
              * Right bracket (`]`)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             RightBracket = SDLK_RIGHTBRACKET,
 
             /**
              * Backslash (`\`)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             Backslash = SDLK_BACKSLASH,
 
             /**
              * Backquote (<tt>`</tt>)
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             Backquote = SDLK_BACKQUOTE,
 

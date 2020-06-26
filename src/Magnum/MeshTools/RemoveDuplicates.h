@@ -50,7 +50,7 @@ namespace Magnum { namespace MeshTools {
     preserved
 @return The resulting index array and size of unique prefix in the cleaned up
     @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Removes duplicate data from given array by comparing the second dimension of
 each item, the second dimension is expected to be contiguous. A plain bit-exact
@@ -76,7 +76,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> r
     preserved
 @param[out]    indices  Where to put the resulting index array
 @return Size of unique prefix in the cleaned up @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Same as above, except that the index array is not allocated but put into
 @p indices instead. Expects that @p indices has the same size as @p data.
@@ -89,7 +89,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInPlaceInto(const Containers
 @param[in] data     Data array
 @return The resulting index array and count of unique items in the original
     @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
 this function doesn't modify the input data array in any way but instead
@@ -102,7 +102,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> r
 @param[in]  data    Data array
 @param[out] indices Where to put the resulting index array
 @return Count of unique items in the original @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref removeDuplicatesInPlaceInto(const Containers::StridedArrayView2D<char>&, const Containers::StridedArrayView1D<UnsignedInt>&)
 this function doesn't modify the input data array in any way but instead
@@ -117,7 +117,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesInto(const Containers::Strid
 @param[in,out] data     Data array, duplicate items will be cut away with order
     preserved
 @return Size of unique prefix in the cleaned up @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref removeDuplicatesInPlace(const Containers::StridedArrayView2D<char>&)
 this variant is more suited for data that is already indexed as it works on
@@ -127,19 +127,19 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Contain
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<char>& data);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<char>& data);
 
 /**
 @brief Remove duplicates from indexed data in-place on a type-erased index array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
@@ -156,7 +156,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesIndexedInPlace(const Contain
     melt together
 @return Size of unique prefix in the cleaned up @p data array and the resulting
     index array
-@m_since_latest
+@m_since{2020,06}
 
 Removes duplicate data from the array by collapsing them into buckets of size
 @p epsilon. First vector in given bucket is used, other ones are thrown away,
@@ -177,7 +177,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> r
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
@@ -189,7 +189,7 @@ MAGNUM_MESHTOOLS_EXPORT std::pair<Containers::Array<UnsignedInt>, std::size_t> r
 @param[in] epsilon  Epsilon value, data closer than this distance will be
     melt together
 @return Size of unique prefix in the cleaned up @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Same as above, except that the index array is not allocated but put into
 @p indices instead. Expects that @p indices has the same size as @p data.
@@ -198,7 +198,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Conta
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Containers::StridedArrayView2D<Double>& data, const Containers::StridedArrayView1D<UnsignedInt>& indices, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
@@ -210,7 +210,7 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyInPlaceInto(const Conta
 @param[in] epsilon  Epsilon value, vertices closer than this distance will be
     melt together
 @return Resulting index array
-@m_deprecated_since_latest Use @ref removeDuplicatesFuzzyInPlace() instead.
+@m_deprecated_since{2020,06} Use @ref removeDuplicatesFuzzyInPlace() instead.
 
 Similar to the above, except that it's operating on a @ref std::vector, which
 gets shrunk as a result (instead of the prefix size being returned). This
@@ -233,7 +233,7 @@ template<class Vector> CORRADE_DEPRECATED("use removeDuplicatesInPlace() instead
 @param[in] epsilon      Epsilon value, vertices closer than this distance will
     be melt together
 @return Size of unique prefix in the cleaned up @p data array
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref removeDuplicatesFuzzyInPlace(const Containers::StridedArrayView2D<Float>&, Float)
 this variant is more suited for data that is already indexed as it works on
@@ -243,37 +243,37 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Co
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Float>& data, Float epsilon = Math::TypeTraits<Float>::epsilon());
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove duplicates from indexed data using fuzzy comparison in-place on a type-erased index array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls
@@ -284,13 +284,13 @@ MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Co
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT std::size_t removeDuplicatesFuzzyIndexedInPlace(const Containers::StridedArrayView2D<char>& indices, const Containers::StridedArrayView2D<Double>& data, Double epsilon = Math::TypeTraits<Double>::epsilon());
 
 /**
 @brief Remove mesh data duplicates
-@m_since_latest
+@m_since{2020,06}
 
 Equivalent to calling @ref removeDuplicatesInPlace() (or
 @ref removeDuplicatesIndexedInPlace(), in case the mesh is indexed) on a
@@ -310,7 +310,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(const Trade::MeshData& 
 
 /**
 @brief Remove mesh data duplicates
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref removeDuplicates(const Trade::MeshData&), except that it operates
 in-place on the passed instance, avoiding an extra copy of vertex and index
@@ -320,7 +320,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData removeDuplicates(Trade::MeshData&& data)
 
 /**
 @brief Remove mesh data duplicates with fuzzy comparison for floating-point attributes
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref removeDuplicates(const Trade::MeshData&), calls
 @ref removeDuplicatesFuzzyInPlace() or @ref removeDuplicatesFuzzyIndexedInPlace()

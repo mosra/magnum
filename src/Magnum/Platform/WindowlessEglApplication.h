@@ -123,7 +123,7 @@ class WindowlessEglContext {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call EGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the
@@ -308,7 +308,7 @@ class WindowlessEglContext::Configuration {
         /**
          * @brief Create a shared context
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * When set, the created context will share a subset of OpenGL objects
          * with @p context and its associated @p display, instead of being
@@ -325,7 +325,7 @@ class WindowlessEglContext::Configuration {
 
         /**
          * @brief Shared display
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @requires_gles Context sharing is not available in WebGL.
          */
@@ -333,7 +333,7 @@ class WindowlessEglContext::Configuration {
 
         /**
          * @brief Shared context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @requires_gles Context sharing is not available in WebGL.
          */
@@ -606,7 +606,7 @@ class WindowlessEglApplication {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call EGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the

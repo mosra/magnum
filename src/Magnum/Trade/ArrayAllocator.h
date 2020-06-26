@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Trade::ArrayAllocator
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/Containers/GrowableArray.h>
@@ -39,7 +39,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Growable array allocator to be used in importer plugins
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref Corrade::Containers::ArrayMallocAllocator ensures that the
 @ref Array deleter function pointer is defined in the @ref Trade library and

@@ -135,7 +135,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -164,7 +164,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -216,7 +216,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -227,7 +227,7 @@ template<UnsignedInt dimensions> class ImageData {
         explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
 
         /** @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Equivalent to the above for @p format already wrapped with
          * @ref pixelFormatWrap().
@@ -258,7 +258,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -290,7 +290,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              view on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -318,7 +318,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -347,7 +347,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -378,7 +378,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -413,7 +413,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Data flags
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         DataFlags dataFlags() const { return _dataFlags; }
 
@@ -567,7 +567,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Mutable image data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Like @ref data(), but returns a non-const view. Expects that the
          * image is mutable.
@@ -613,7 +613,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Mutable view on pixel data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Like @ref pixels() const, but returns a non-const view. Expects that
          * the image is mutable.

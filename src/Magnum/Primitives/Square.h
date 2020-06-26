@@ -39,7 +39,7 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief Square flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref SquareFlags, @ref squareSolid()
 */
@@ -50,7 +50,7 @@ enum class SquareFlag: UnsignedByte {
 
 /**
 @brief Square flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref squareSolid()
 */
@@ -61,7 +61,7 @@ CORRADE_ENUMSET_OPERATORS(SquareFlags)
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Whether to generate square texture coordinates
-@m_deprecated_since_latest Use @ref SquareFlags instead.
+@m_deprecated_since{2020,06} Use @ref SquareFlags instead.
 */
 enum class CORRADE_DEPRECATED_ENUM("use SquareFlags instead") SquareTextureCoords: UnsignedByte {
     DontGenerate,       /**< Don't generate texture coordinates */
@@ -74,7 +74,7 @@ enum class CORRADE_DEPRECATED_ENUM("use SquareFlags instead") SquareTextureCoord
 /**
 @brief Solid 2D square
 @param flags        Flags
-@m_since_latest
+@m_since{2020,06}
 
 2x2 square, centered at origin. Non-indexed @ref MeshPrimitive::TriangleStrip
 with interleaved @ref VertexFormat::Vector2 positions and optional
@@ -91,7 +91,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData squareSolid(SquareFlags flags = {});
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief planeSolid(PlaneFlags)
-@m_deprecated_since_latest Use @ref planeSolid(PlaneFlags) instead.
+@m_deprecated_since{2020,06} Use @ref planeSolid(PlaneFlags) instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH
 MAGNUM_PRIMITIVES_EXPORT CORRADE_DEPRECATED("use squareSolid(SquareFlags) instead") Trade::MeshData squareSolid(SquareTextureCoords textureCoords);

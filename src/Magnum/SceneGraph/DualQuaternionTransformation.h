@@ -135,7 +135,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
          * @brief Rotate the object using a quaternion
          * @param quaternion    Normalized quaternion
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Same as calling @ref transform() with @p quaternion. Expects that
          * the quaternion is normalized.
@@ -149,7 +149,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
 
         /**
          * @brief Rotate the object using a quaternion as a local transformation
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Similar to the above, except that the transformation is applied
          * before all others.

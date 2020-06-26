@@ -663,7 +663,7 @@ template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Ve
 
 /**
 @brief Reflect a vector
-@m_since_latest
+@m_since{2020,06}
 
 Reflects the vector off a surface given the surface outward normal. Expects
 that the normal vector is normalized. For a vector @f$ \boldsymbol{v} @f$ and a
@@ -683,7 +683,7 @@ template<std::size_t size, class T> inline Vector<size, T> reflect(const Vector<
 
 /**
 @brief Refract a vector
-@m_since_latest
+@m_since{2020,06}
 
 Refracts a vector through a medium given the surface outward normal and ratio
 of indices of refraction eta. Expects that both @p vector and @p normal is

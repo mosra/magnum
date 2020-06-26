@@ -28,7 +28,7 @@
 #ifndef MAGNUM_TARGET_GLES
 /** @file
  * @brief Class @ref Magnum::GL::PipelineStatisticsQuery
- * @m_since_latest
+ * @m_since{2020,06}
  */
 #endif
 
@@ -39,7 +39,7 @@ namespace Magnum { namespace GL {
 
 /**
 @brief Pipeline statistics query
-@m_since_latest
+@m_since{2020,06}
 
 Provides various data about the rendering pipeline, useful for profiling and
 performance measurements.

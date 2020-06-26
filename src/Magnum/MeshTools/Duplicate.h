@@ -70,7 +70,7 @@ template<class IndexType, class T> Containers::Array<T> duplicate(const Containe
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Duplicate data using given index array
-@m_deprecated_since_latest Use @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&)
+@m_deprecated_since{2020,06} Use @ref duplicate(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&)
     or @ref duplicateInto() instead.
 */
 template<class T> CORRADE_DEPRECATED("use duplicate() taking a StridedArrayView instead") std::vector<T> duplicate(const std::vector<UnsignedInt>& indices, const std::vector<T>& data) {
@@ -98,7 +98,7 @@ template<class IndexType, class T> void duplicateInto(const Containers::StridedA
 @param[in]  indices Index array to use
 @param[in]  data    Input data
 @param[out] out     Where to store the output
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref duplicateInto(const Containers::StridedArrayView1D<const IndexType>&, const Containers::StridedArrayView1D<const T>&, const Containers::StridedArrayView1D<T>&)
 accepts a 2D view, where the second dimension spans the actual type. Expects
@@ -110,19 +110,19 @@ MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedShort>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView1D<const UnsignedByte>& indices, const Containers::StridedArrayView2D<const char>& data, const Containers::StridedArrayView2D<char>& out);
 
 /**
 @brief Duplicate type-erased data using a type-erased index array into given output array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
@@ -133,7 +133,7 @@ MAGNUM_MESHTOOLS_EXPORT void duplicateInto(const Containers::StridedArrayView2D<
 
 /**
 @brief Duplicate indexed mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Returns a copy of @p data that's not indexed and has all attributes interleaved
 and duplicated according to @p data's index buffer. The @p extra attributes, if
@@ -153,7 +153,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, C
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData duplicate(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra);
 

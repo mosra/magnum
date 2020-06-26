@@ -27,7 +27,7 @@
 
 /** @file
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref MatrixTransformation2D.h
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include "MatrixTransformation2D.h"

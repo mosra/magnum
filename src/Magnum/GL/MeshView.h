@@ -62,7 +62,7 @@ class MAGNUM_GL_EXPORT MeshView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw multiple meshes at once
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
          *      instead.
          */
@@ -70,7 +70,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>)
          *      instead.
          */
@@ -78,7 +78,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
          *      instead.
          */
@@ -86,7 +86,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::draw(std::initializer_list<Containers::Reference<MeshView>>)
          *      instead.
          */
@@ -224,14 +224,14 @@ class MAGNUM_GL_EXPORT MeshView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Draw the mesh
-         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         * @m_deprecated_since{2020,06} Use @ref AbstractShaderProgram::draw()
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") MeshView& draw(AbstractShaderProgram& shader);
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use @ref AbstractShaderProgram::draw()
+         * @m_deprecated_since{2020,06} Use @ref AbstractShaderProgram::draw()
          *      instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::draw() instead") MeshView& draw(AbstractShaderProgram&& shader);
@@ -239,14 +239,14 @@ class MAGNUM_GL_EXPORT MeshView {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw the mesh with vertices coming out of transform feedback
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
          *      @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") MeshView& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
 
         /**
          * @overload
-         * @m_deprecated_since_latest Use
+         * @m_deprecated_since{2020,06} Use
                 @ref AbstractShaderProgram::drawTransformFeedback() instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::drawTransformFeedback() instead") MeshView& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0);

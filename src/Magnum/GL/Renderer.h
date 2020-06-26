@@ -117,7 +117,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance0 = GL_CLIP_DISTANCE0,
@@ -140,7 +140,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance1 = GL_CLIP_DISTANCE1,
@@ -163,7 +163,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance2 = GL_CLIP_DISTANCE2,
@@ -186,7 +186,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance3 = GL_CLIP_DISTANCE3,
@@ -209,7 +209,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance4 = GL_CLIP_DISTANCE4,
@@ -232,7 +232,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance5 = GL_CLIP_DISTANCE5,
@@ -255,7 +255,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance6 = GL_CLIP_DISTANCE6,
@@ -278,7 +278,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      @gl_extension{EXT,clip_cull_distance}
              * @requires_webgl_extension WebGL 2.0 and extension
              *      @webgl_extension{EXT,clip_cull_distance}
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClipDistance7 = GL_CLIP_DISTANCE7,
@@ -514,7 +514,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Enable a feature for given draw buffer
          * @param feature       Feature to enable
          * @param drawBuffer    Draw buffer index
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref disable(Feature, UnsignedInt),
          *      @ref setFeature(Feature, UnsignedInt, bool),
@@ -540,7 +540,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Disable a feature for given draw buffer
          * @param feature       Feature to disable
          * @param drawBuffer    Draw buffer index
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref enable(Feature, UnsignedInt),
          *      @ref setFeature(Feature, UnsignedInt, bool),
@@ -881,7 +881,7 @@ class MAGNUM_GL_EXPORT Renderer {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Max supported component patch vertex count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,tessellation_shader} (part
@@ -896,7 +896,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
         /**
          * @brief Set tessellation patch vertex count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Specifies number of vertices that will be used to make up a single
          * tessellation patch primitive.
@@ -914,7 +914,7 @@ class MAGNUM_GL_EXPORT Renderer {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set default patch inner tessellation level
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * When no tessellation control shader is present, specifies the
          * default inner tessellation levels to be used.
@@ -928,7 +928,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
         /**
          * @brief Set default patch outer tessellation level
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * When no tessellation control shader is present, specifies the
          * default outer tessellation levels to be used.
@@ -944,7 +944,7 @@ class MAGNUM_GL_EXPORT Renderer {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /**
          * @brief Max supported clip distance count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither OpenGL 3.0 nor
@@ -961,7 +961,7 @@ class MAGNUM_GL_EXPORT Renderer {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported cull distance count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
@@ -976,7 +976,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
         /**
          * @brief Max supported combined clip and cull distance count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,cull_distance} (part of
@@ -1181,7 +1181,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @param allowGreen    Allow green channel to be written
          * @param allowBlue     Allow blue channel to be written
          * @param allowAlpha    Allow alpha channel to be written
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref GL-Framebuffer-usage-multiple-outputs,
          *      @fn_gl2_keyword{ColorMaski,ColorMask}
@@ -1618,7 +1618,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Set blend equation for given draw buffer
          * @param drawBuffer    Draw buffer index
          * @param equation      Blend equation
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref GL-Framebuffer-usage-multiple-outputs,
          *      @fn_gl2_keyword{BlendEquationi,BlendEquation}
@@ -1647,7 +1647,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @param drawBuffer    Draw buffer index
          * @param rgb           Blend equation for RGB components
          * @param alpha         Blend equation for the alpha component
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref GL-Framebuffer-usage-multiple-outputs,
          *      @fn_gl2_keyword{BlendEquationSeparatei,BlendEquationSeparate}
@@ -1696,7 +1696,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *      from pixel value
          * @param destination   How the destination blending factor is
          *      computed from framebuffer
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * See @ref setBlendFunction(BlendFunction, BlendFunction) for more
          * information.
@@ -1731,7 +1731,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *      computed from framebuffer for RGB components
          * @param destinationAlpha  How the destination blending factor is
          *      computed from framebuffer for the alpha component
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * See @ref setBlendFunction(BlendFunction, BlendFunction) for more
          * information.

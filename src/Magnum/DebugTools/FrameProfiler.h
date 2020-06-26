@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::DebugTools::FrameProfiler, @ref Magnum::DebugTools::GLFrameProfiler
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <string>
@@ -41,7 +41,7 @@ namespace Magnum { namespace DebugTools {
 
 /**
 @brief Frame profiler
-@m_since_latest
+@m_since{2020,06}
 
 A generic implementation of a frame profiler supporting a moving average over
 a set of frames as well as delayed measurements to avoid stalls when querying
@@ -486,14 +486,14 @@ class MAGNUM_DEBUGTOOLS_EXPORT FrameProfiler::Measurement {
 
 /**
 @debugoperatorclassenum{FrameProfiler,FrameProfiler::Units}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, FrameProfiler::Units value);
 
 #ifdef MAGNUM_TARGET_GL
 /**
 @brief OpenGL frame profiler
-@m_since_latest
+@m_since{2020,06}
 
 A @ref FrameProfiler with OpenGL-specific measurements. Instantiate with a
 desired subset of measured values and then continue the same way as described
@@ -700,13 +700,13 @@ CORRADE_ENUMSET_OPERATORS(GLFrameProfiler::Values)
 
 /**
 @debugoperatorclassenum{GLFrameProfiler,GLFrameProfiler::Value}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Value value);
 
 /**
 @debugoperatorclassenum{GLFrameProfiler,GLFrameProfiler::Values}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_DEBUGTOOLS_EXPORT Debug& operator<<(Debug& debug, GLFrameProfiler::Values value);
 #endif
@@ -718,7 +718,7 @@ namespace Corrade { namespace Utility {
 #ifdef MAGNUM_TARGET_GL
 /**
 @configurationvalue{Magnum::DebugTools::GLFrameProfiler::Value}
-@m_since_latest
+@m_since{2020,06}
 */
 template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Value> {
     ConfigurationValue() = delete;
@@ -740,7 +740,7 @@ template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools
 
 /**
 @configurationvalue{Magnum::DebugTools::GLFrameProfiler::Values}
-@m_since_latest
+@m_since{2020,06}
 */
 template<> struct MAGNUM_DEBUGTOOLS_EXPORT ConfigurationValue<Magnum::DebugTools::GLFrameProfiler::Values> {
     ConfigurationValue() = delete;

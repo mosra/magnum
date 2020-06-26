@@ -46,7 +46,7 @@ namespace Magnum { namespace Text {
 
 /**
 @brief Features supported by a font implementation
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref FontFeatures, @ref AbstractFont::features()
 */
@@ -87,7 +87,7 @@ enum class FontFeature: UnsignedByte {
 
 /**
 @brief Set of features supported by a font implementation
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractFont::features()
 */
@@ -175,12 +175,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief FontFeature
-         * @m_deprecated_since_latest Use @ref FontFeature instead.
+         * @m_deprecated_since{2020,06} Use @ref FontFeature instead.
          */
         typedef CORRADE_DEPRECATED("use FontFeature instead") FontFeature Feature;
 
         /** @brief @copybrief FontFeatures
-         * @m_deprecated_since_latest Use @ref FontFeatures instead.
+         * @m_deprecated_since{2020,06} Use @ref FontFeatures instead.
          */
         typedef CORRADE_DEPRECATED("use FontFeatures instead") FontFeatures Features;
         #endif

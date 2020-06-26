@@ -88,7 +88,7 @@ template<UnsignedInt location, class T> class Attribute {
 
             /**
              * Count of vectors in this type.
-             * @m_since_latest
+             * @m_since{2020,06}
              *
              * Is @cpp 1 @ce for non-matrix attributes.
              * @see @ref vectorSize()
@@ -98,7 +98,7 @@ template<UnsignedInt location, class T> class Attribute {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Count of vectors in this type,
-             * @m_deprecated_since_latest Use @ref Vectors instead.
+             * @m_deprecated_since{2020,06} Use @ref Vectors instead.
              */
             VectorCount CORRADE_DEPRECATED_ENUM("use Vectors instead") = Vectors
             #endif
@@ -195,7 +195,7 @@ template<UnsignedInt location, class T> class Attribute {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Half float. Only for float attribute types.
-             * @m_since_latest
+             * @m_since{2020,06}
              * @requires_gl30 Extension @gl_extension{ARB,half_float_vertex}
              * @requires_gles30 Extension @gl_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
@@ -211,7 +211,7 @@ template<UnsignedInt location, class T> class Attribute {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Half float.
-             * @m_deprecated_since_latest Use @ref DataType::Half instead.
+             * @m_deprecated_since{2020,06} Use @ref DataType::Half instead.
              */
             HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
             #endif
@@ -327,7 +327,7 @@ template<UnsignedInt location, class T> class Attribute {
          *      type used in shader (e.g. @ref DataType::Int for
          *      @ref Magnum::Vector4i "Vector4i").
          * @param dataOptions   Data options. Default is no options.
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Component count is set to the same value as in type used in shader
          * (e.g. @ref Components::Three for @ref Magnum::Vector3 "Vector3").
@@ -343,7 +343,7 @@ template<UnsignedInt location, class T> class Attribute {
          *      type used in shader (e.g. @ref DataType::Int for
          *      @ref Magnum::Vector4i "Vector4i").
          * @param dataOptions   Data options. Default is no options.
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         constexpr Attribute(Components components, UnsignedInt vectorStride, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components{components}, _vectorStride{vectorStride}, _dataType{dataType}, _dataOptions{dataOptions} {}
 
@@ -355,7 +355,7 @@ template<UnsignedInt location, class T> class Attribute {
 
         /**
          * @brief Stride between consecutive vector elements
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Used for describing matrix attributes. Implicitly the same as size
          * of given vector type (e.g. @cpp 9 @ce for a
@@ -368,7 +368,7 @@ template<UnsignedInt location, class T> class Attribute {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Size of each vector in passed data
-         * @m_deprecated_since_latest Use @ref vectorStride() instead.
+         * @m_deprecated_since{2020,06} Use @ref vectorStride() instead.
          *
          * @see @ref Vectors
          */
@@ -515,7 +515,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             /**
              * Half float. Only for float attribute types.
-             * @m_since_latest
+             * @m_since{2020,06}
              * @requires_gl30 Extension @gl_extension{ARB,half_float_vertex}
              * @requires_gles30 Extension @gl_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
@@ -531,7 +531,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Half float.
-             * @m_deprecated_since_latest Use @ref DataType::Half instead.
+             * @m_deprecated_since{2020,06} Use @ref DataType::Half instead.
              */
             HalfFloat CORRADE_DEPRECATED_ENUM("use Half instead") = Half,
             #endif
@@ -604,7 +604,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * @param components    Component count
          * @param vectors       Vector count
          * @param dataType      Type of passed data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Vector stride is set to size of the data type times component count.
          */
@@ -619,7 +619,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
          * @param vectorStride  Stride between consecutive matrix column
          *      vectors
          * @param dataType      Type of passed data
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         constexpr explicit DynamicAttribute(Kind kind, UnsignedInt location, Components components, UnsignedInt vectors, UnsignedInt vectorStride, DataType dataType): _kind{kind}, _location{location}, _components{components}, _vectors{vectors}, _vectorStride{vectorStride}, _dataType{dataType} {}
 
@@ -631,7 +631,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
 
         /**
          * @brief Construct from a generic mesh attribute type
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The @p type is expected to be available on given target and be
          * compatible with @p kind --- i.e., normalized or floating-point for
@@ -643,7 +643,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
 
         /**
          * @brief Construct from a compile-time attribute with a generic mesh attribute type override
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Extracts kind and location from passed @ref Attribute type and calls
          * @ref DynamicAttribute(Kind, UnsignedInt, VertexFormat). Expects that
@@ -666,7 +666,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
 
         /**
          * @brief Vector count
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Returns @cpp 1 @ce for non-matrix attributes.
          */
@@ -674,7 +674,7 @@ class MAGNUM_GL_EXPORT DynamicAttribute {
 
         /**
          * @brief Vector stride
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         constexpr UnsignedInt vectorStride() const { return _vectorStride; }
 
@@ -705,7 +705,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::DataType);
 
 /**
 @brief Check availability of a generic mesh attribute type
-@m_since_latest
+@m_since{2020,06}
 
 Some OpenGL targets don't support all mesh attribute types (for example OpenGL
 ES doesn't support double-precision types). Returns @cpp false @ce if current

@@ -432,7 +432,7 @@ template<class T> class Quaternion {
 
         /**
          * @brief Convert to an euler vector
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the quaternion is normalized. Returns the angles in an
          * XYZ order, you can combine them back to a quaternion like this:

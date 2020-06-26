@@ -476,7 +476,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
         /**
          * @brief Rotate a vector with a dual quaternion
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Calls @ref Quaternion::transformVector() on the @ref real() part,
          * see its documentation for more information.
@@ -487,7 +487,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
         /**
          * @brief Rotate a vector with a normalized dual quaternion
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Calls @ref Quaternion::transformVectorNormalized() on the
          * @ref real() part, see its documentation for more information.

@@ -2310,7 +2310,7 @@ namespace Corrade { namespace Utility {
 
 /**
 @configurationvalue{Magnum::PixelFormat}
-@m_since_latest
+@m_since{2020,06}
 */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
     ConfigurationValue() = delete;
@@ -2332,7 +2332,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
 
 /**
 @configurationvalue{Magnum::CompressedPixelFormat}
-@m_since_latest
+@m_since{2020,06}
 */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::CompressedPixelFormat> {
     ConfigurationValue() = delete;

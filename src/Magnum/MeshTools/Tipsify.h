@@ -60,20 +60,20 @@ MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT void tipsifyInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, UnsignedInt vertexCount, std::size_t cacheSize);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
  * @brief @copybrief tipsifyInPlace()
- * @m_deprecated_since_latest Use @ref tipsifyInPlace() instead.
+ * @m_deprecated_since{2020,06} Use @ref tipsifyInPlace() instead.
  */
 inline CORRADE_DEPRECATED("use tipsifyInPlace() instead") void tipsify(std::vector<UnsignedInt>& indices, UnsignedInt vertexCount, std::size_t cacheSize) {
     tipsifyInPlace(indices, vertexCount, cacheSize);

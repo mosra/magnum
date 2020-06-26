@@ -252,7 +252,7 @@ class AnimationTrackData {
          * @param targetType    Track target type
          * @param target        Track target
          * @param view          @ref Animation::TrackView instance
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Detects @ref AnimationTrackType from @p view type and delegates to
          * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTargetType, UnsignedInt, Animation::TrackViewStorage<const Float>).
@@ -329,7 +329,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /* Not noexcept because allocation happens inside */
         explicit AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const void* importerState = nullptr);
@@ -341,7 +341,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          *      for this animation clip
          * @param tracks        Track data
          * @param importerState Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref AnimationData(Containers::Array<char>&&, Containers::Array<AnimationTrackData>&&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -353,7 +353,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /* Not noexcept because allocation happens inside */
         explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const void* importerState = nullptr);
@@ -378,7 +378,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /* Not noexcept because allocation happens inside */
         explicit AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState = nullptr);
@@ -391,7 +391,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * @param tracks        Track data
          * @param duration      Animation track duration
          * @param importerState Importer-specific state
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Compared to @ref AnimationData(Containers::Array<char>&&, Containers::Array<AnimationTrackData>&&, const Range1D&, const void*)
          * creates an instance that doesn't own the passed data. The
@@ -403,7 +403,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /* Not noexcept because allocation happens inside */
         explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState = nullptr);
@@ -424,7 +424,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @brief Data flags
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref release(), @ref mutableData(), @ref mutableTrack()
          */
@@ -443,7 +443,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @brief Mutable raw data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Like @ref data(), but returns a non-const view. Expects that the
          * animation is mutable.
@@ -453,7 +453,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @brief Taking a view to a r-value instance is not allowed
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         Containers::ArrayView<char> mutableData() && = delete;
 
@@ -526,7 +526,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @brief Mutable track data storage
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Like @ref track(), but returns a mutable view. Expects that the
          * animation is mutable.
@@ -550,7 +550,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 
         /**
          * @brief Mutable track data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Like @ref track(), but returns a mutable view. Expects that the
          * animation is mutable.

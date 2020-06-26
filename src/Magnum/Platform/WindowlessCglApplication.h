@@ -128,7 +128,7 @@ class WindowlessCglContext {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call CGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the
@@ -157,7 +157,7 @@ class WindowlessCglContext::Configuration {
         /**
          * @brief Create a shared context
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * When set, the created context will share a subset of OpenGL objects
          * with @p context, instead of being independent. Many caveats and
@@ -174,7 +174,7 @@ class WindowlessCglContext::Configuration {
 
         /**
          * @brief Shared context
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         CGLContextObj sharedContext() const { return _sharedContext; }
 
@@ -329,7 +329,7 @@ class WindowlessCglApplication {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call CGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the

@@ -42,7 +42,7 @@ namespace Magnum { namespace Math {
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief No initialization tag type
-@m_deprecated_since_latest Use @ref Magnum::NoInitT instead.
+@m_deprecated_since{2020,06} Use @ref Magnum::NoInitT instead.
 */
 typedef CORRADE_DEPRECATED("use Magnum::NoInitT instead") Magnum::NoInitT NoInitT;
 #endif
@@ -78,7 +78,7 @@ struct IdentityInitT {
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief No initialization tag
-@m_deprecated_since_latest Use @ref Magnum::NoInit instead.
+@m_deprecated_since{2020,06} Use @ref Magnum::NoInit instead.
 */
 /** @todo when removing, clean up all Magnum::NoInit in Math to be NoInit again */
 /* Explicit constructor to avoid ambiguous calls when using {} */

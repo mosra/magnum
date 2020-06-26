@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Namespace @ref Magnum::DebugTools::ColorMap
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include "Magnum/Magnum.h"
@@ -37,7 +37,7 @@ namespace Magnum { namespace DebugTools {
 
 /**
 @brief Color maps
-@m_since_latest
+@m_since{2020,06}
 
 A collection of predefined color maps for visualization of gradient data.
 
@@ -127,7 +127,7 @@ namespace ColorMap {
 
 /**
 @brief Turbo colormap
-@m_since_latest
+@m_since{2020,06}
 
 @image html colormap-turbo.png width=100%
 
@@ -142,7 +142,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> turbo
 
 /**
 @brief Magma colormap
-@m_since_latest
+@m_since{2020,06}
 
 @image html colormap-magma.png width=100%
 
@@ -158,7 +158,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> magma
 
 /**
 @brief Plasma colormap
-@m_since_latest
+@m_since{2020,06}
 
 @image html colormap-plasma.png width=100%
 
@@ -174,7 +174,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> plasm
 
 /**
 @brief Inferno colormap
-@m_since_latest
+@m_since{2020,06}
 
 @image html colormap-inferno.png width=100%
 
@@ -190,7 +190,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> infer
 
 /**
 @brief Viridis colormap
-@m_since_latest
+@m_since{2020,06}
 
 @image html colormap-viridis.png width=100%
 

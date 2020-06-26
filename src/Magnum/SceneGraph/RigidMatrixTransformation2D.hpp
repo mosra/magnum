@@ -27,7 +27,7 @@
 
 /** @file
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref RigidMatrixTransformation2D.h
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include "RigidMatrixTransformation2D.h"

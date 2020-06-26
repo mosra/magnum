@@ -68,7 +68,7 @@ Defined if built as static libraries. Default are shared libraries.
 
 /**
 @brief Static library build with globals unique across shared libraries
-@m_since_latest
+@m_since{2020,06}
 
 Enabled by default in a static build.
 @see @ref building, @ref cmake
@@ -281,73 +281,73 @@ typedef Math::Vector4<Float> Vector4;
 
 /**
 @brief Two-component unsigned byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector2<UnsignedByte> Vector2ub;
 
 /**
 @brief Three-component unsigned byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 
 /**
 @brief Four-component unsigned byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector4<UnsignedByte> Vector4ub;
 
 /**
 @brief Two-component signed byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector2<Byte> Vector2b;
 
 /**
 @brief Three-component signed byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector3<Byte> Vector3b;
 
 /**
 @brief Four-component signed byte vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector4<Byte> Vector4b;
 
 /**
 @brief Two-component unsigned short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector2<UnsignedShort> Vector2us;
 
 /**
 @brief Three-component unsigned short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector3<UnsignedShort> Vector3us;
 
 /**
 @brief Four-component unsigned short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector4<UnsignedShort> Vector4us;
 
 /**
 @brief Two-component signed short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector2<Short> Vector2s;
 
 /**
 @brief Three-component signed short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector3<Short> Vector3s;
 
 /**
 @brief Four-component signed short vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector4<Short> Vector4s;
 
@@ -420,7 +420,7 @@ typedef Math::Color3<UnsignedByte> Color3ub;
 
 /**
 @brief Three-component (RGB) unsigned short color
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Color3<UnsignedShort> Color3us;
 
@@ -436,7 +436,7 @@ typedef Math::Color4<UnsignedByte> Color4ub;
 
 /**
 @brief Four-component (RGB) unsigned short color
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Color4<UnsignedShort> Color4us;
 
@@ -534,7 +534,7 @@ typedef Math::Matrix4x3<Float> Matrix4x3;
 
 /**
 @brief Signed byte matrix with 2 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -548,7 +548,7 @@ typedef Math::Matrix2x2<Byte> Matrix2x2b;
 
 /**
 @brief Signed byte matrix with 2 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -562,7 +562,7 @@ typedef Math::Matrix2x3<Byte> Matrix2x3b;
 
 /**
 @brief Signed byte matrix with 2 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -572,7 +572,7 @@ typedef Math::Matrix2x4<Byte> Matrix2x4b;
 
 /**
 @brief Signed byte matrix with 3 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -586,7 +586,7 @@ typedef Math::Matrix3x2<Byte> Matrix3x2b;
 
 /**
 @brief Signed byte matrix with 3 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -600,7 +600,7 @@ typedef Math::Matrix3x3<Byte> Matrix3x3b;
 
 /**
 @brief Signed byte matrix with 3 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -610,7 +610,7 @@ typedef Math::Matrix3x4<Byte> Matrix3x4b;
 
 /**
 @brief Signed byte matrix with 4 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -624,7 +624,7 @@ typedef Math::Matrix4x2<Byte> Matrix4x2b;
 
 /**
 @brief Signed byte matrix with 4 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -638,7 +638,7 @@ typedef Math::Matrix4x3<Byte> Matrix4x3b;
 
 /**
 @brief Signed byte matrix with 4 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 8-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -648,7 +648,7 @@ typedef Math::Matrix4x4<Byte> Matrix4x4b;
 
 /**
 @brief Signed short matrix with 2 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -658,7 +658,7 @@ typedef Math::Matrix2x2<Short> Matrix2x2s;
 
 /**
 @brief Signed short matrix with 2 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -672,7 +672,7 @@ typedef Math::Matrix2x3<Short> Matrix2x3s;
 
 /**
 @brief Signed short matrix with 2 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -682,7 +682,7 @@ typedef Math::Matrix2x4<Short> Matrix2x4s;
 
 /**
 @brief Signed short matrix with 3 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -692,7 +692,7 @@ typedef Math::Matrix3x2<Short> Matrix3x2s;
 
 /**
 @brief Signed short matrix with 3 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -706,7 +706,7 @@ typedef Math::Matrix3x3<Short> Matrix3x3s;
 
 /**
 @brief Signed short matrix with 3 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -716,7 +716,7 @@ typedef Math::Matrix3x4<Short> Matrix3x4s;
 
 /**
 @brief Signed short matrix with 4 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -726,7 +726,7 @@ typedef Math::Matrix4x2<Short> Matrix4x2s;
 
 /**
 @brief Signed short matrix with 4 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -740,7 +740,7 @@ typedef Math::Matrix4x3<Short> Matrix4x3s;
 
 /**
 @brief Signed short matrix with 4 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 
 Storage only, in ordet to support matrices packed into 16-bit types. For
 performing arithmetic on this type use @ref Math::unpack() / @ref Math::unpackInto() to convert to a float type first and then @ref Math::pack()
@@ -833,43 +833,43 @@ for performing arithmetic on these types use @ref Math::unpackHalf() / @ref Math
 
 /**
 @brief Two-component half-float vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector2<Half> Vector2h;
 
 /**
 @brief Three-component half-float vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector3<Half> Vector3h;
 
 /**
 @brief Four-component half-float vector
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Vector4<Half> Vector4h;
 
 /**
 @brief Three-component (RGB) half-float color
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Color3<Half> Color3h;
 
 /**
 @brief Four-component (RGBA) half-float color
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Color4<Half> Color4h;
 
 /**
 @brief Half-float matrix with 2 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix2x2<Half> Matrix2x2h;
 
 /**
 @brief Half-float matrix with 2 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Note that this type doesn't have the columns four-byte aligned, which may
 negatively affect performance in some cases. For better alignment use
@@ -879,19 +879,19 @@ typedef Math::Matrix2x3<Half> Matrix2x3h;
 
 /**
 @brief Half-float matrix with 2 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix2x4<Half> Matrix2x4h;
 
 /**
 @brief Half-float matrix with 3 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix3x2<Half> Matrix3x2h;
 
 /**
 @brief Half-float matrix with 3 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Note that this type doesn't have the columns four-byte aligned, which may
 negatively affect performance in some cases. For better alignment use
@@ -901,19 +901,19 @@ typedef Math::Matrix3x3<Half> Matrix3x3h;
 
 /**
 @brief Half-float matrix with 3 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix3x4<Half> Matrix3x4h;
 
 /**
 @brief Half-float matrix with 4 columns and 2 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix4x2<Half> Matrix4x2h;
 
 /**
 @brief Half-float matrix with 4 columns and 3 rows
-@m_since_latest
+@m_since{2020,06}
 
 Note that this type doesn't have the columns four-byte aligned, which may
 negatively affect performance in some cases. For better alignment use
@@ -923,7 +923,7 @@ typedef Math::Matrix4x3<Half> Matrix4x3h;
 
 /**
 @brief Half-float matrix with 4 columns and 4 rows
-@m_since_latest
+@m_since{2020,06}
 */
 typedef Math::Matrix4x4<Half> Matrix4x4h;
 

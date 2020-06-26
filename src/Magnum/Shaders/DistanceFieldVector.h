@@ -82,7 +82,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Flag
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref Flags, @ref flags()
          */
@@ -90,14 +90,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
             /**
              * Enable texture coordinate transformation.
              * @see @ref setTextureMatrix()
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             TextureTransformation = 1 << 0
         };
 
         /**
          * @brief Flags
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref flags()
          */
@@ -148,7 +148,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
 
         /**
          * @brief Flags
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         Flags flags() const { return _flags; }
 
@@ -163,7 +163,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         /**
          * @brief Set texture coordinate transformation matrix
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an

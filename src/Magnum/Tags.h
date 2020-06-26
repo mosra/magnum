@@ -37,7 +37,7 @@ namespace Magnum {
 
 /**
 @brief No initialization tag type
-@m_since_latest
+@m_since{2020,06}
 
 Used to distinguish construction with no initialization at all.
 @see @ref NoInit
@@ -61,7 +61,7 @@ struct NoCreateT {
 
 /**
 @brief No initialization tag
-@m_since_latest
+@m_since{2020,06}
 
 Use for construction with no initialization at all.
 */

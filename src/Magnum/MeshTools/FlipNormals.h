@@ -57,19 +57,19 @@ void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>& indic
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 void flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices, const Containers::StridedArrayView1D<Vector3>& normals);
 
 /**
 @brief Flip mesh normals and face winding in-place on a type-erased index array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
@@ -81,7 +81,7 @@ void flipNormalsInPlace(const Containers::StridedArrayView2D<char>& indices, con
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
-@m_deprecated_since_latest Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&)
     instead.
 */
 CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<UnsignedInt>& indices, std::vector<Vector3>& normals);
@@ -90,7 +90,7 @@ CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT v
 /**
 @brief Flip face winding in-place
 @param[in,out] indices  Index array to operate on
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref flipNormalsInPlace(const Containers::StridedArrayView1D<UnsignedInt>&, const Containers::StridedArrayView1D<Vector3>&),
 but flips only face winding. Expects a triangle mesh, thus the index count has
@@ -100,19 +100,19 @@ void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArr
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedShort>& indices);
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedByte>& indices);
 
 /**
 @brief Flip face winding in-place on a type-erased index array
-@m_since_latest
+@m_since{2020,06}
 
 Expects that the second dimension of @p indices is contiguous and represents
 the actual 1/2/4-byte index type. Based on its size then calls one of the
@@ -124,7 +124,7 @@ void MAGNUM_MESHTOOLS_EXPORT flipFaceWindingInPlace(const Containers::StridedArr
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
-@m_deprecated_since_latest Use @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
+@m_deprecated_since{2020,06} Use @ref flipFaceWindingInPlace(const Containers::StridedArrayView1D<UnsignedInt>&)
     instead.
 */
 CORRADE_DEPRECATED("use flipFaceWindingInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipFaceWinding(std::vector<UnsignedInt>& indices);
@@ -142,7 +142,7 @@ void MAGNUM_MESHTOOLS_EXPORT flipNormalsInPlace(const Containers::StridedArrayVi
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @copybrief flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
-@m_deprecated_since_latest Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
+@m_deprecated_since{2020,06} Use @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)
     instead.
 */
 CORRADE_DEPRECATED("use flipNormalsInPlace() instead") MAGNUM_MESHTOOLS_EXPORT void flipNormals(std::vector<Vector3>& normals);

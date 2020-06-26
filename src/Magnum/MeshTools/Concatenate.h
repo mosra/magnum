@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Function @ref Magnum::MeshTools::concatenate(), @ref Magnum::MeshTools::concatenateInto()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/Containers/GrowableArray.h>
@@ -45,7 +45,7 @@ namespace Implementation {
 
 /**
 @brief Concatenate meshes together
-@m_since_latest
+@m_since{2020,06}
 
 The returned mesh contains vertices from all meshes concatenated together. If
 any mesh is indexed, the resulting mesh is indexed as well, with indices
@@ -76,7 +76,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(Containers::ArrayView<const 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes);
 
@@ -86,7 +86,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData concatenate(std::initializer_list<Contai
 @param[in,out] destination  Destination mesh from which the output arrays as
     well as desired attribute layout is taken
 @param[in] meshes           Meshes to concatenate
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref concatenate(Containers::ArrayView<const Containers::Reference<const Trade::MeshData>>)
 this function resizes existing index and vertex buffers in @p destination using
@@ -126,7 +126,7 @@ template<template<class> class Allocator = Containers::ArrayAllocator> void conc
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 template<template<class> class Allocator = Containers::ArrayAllocator> void concatenateInto(Trade::MeshData& destination, const std::initializer_list<Containers::Reference<const Trade::MeshData>> meshes) {
     concatenateInto<Allocator>(destination, Containers::arrayView(meshes));

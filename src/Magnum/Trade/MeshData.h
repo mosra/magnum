@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Trade::MeshData, @ref Magnum::Trade::MeshIndexData, @ref Magnum::Trade::MeshAttributeData, enum @ref Magnum::Trade::MeshAttribute, function @ref Magnum::Trade::isMeshAttributeCustom(), @ref Magnum::Trade::meshAttributeCustom()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <Corrade/Containers/Array.h>
@@ -42,7 +42,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Mesh attribute name
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref MeshData, @ref MeshAttributeData, @ref VertexFormat,
     @ref AbstractImporter::meshAttributeForName(),
@@ -159,13 +159,13 @@ enum class MeshAttribute: UnsignedShort {
 
 /**
 @debugoperatorenum{MeshAttribute}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MeshAttribute value);
 
 /**
 @brief Whether a mesh attribute is custom
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp true @ce if @p name has a value larger or equal to
 @ref MeshAttribute::Custom, @cpp false @ce otherwise.
@@ -178,7 +178,7 @@ constexpr bool isMeshAttributeCustom(MeshAttribute name) {
 
 /**
 @brief Create a custom mesh attribute
-@m_since_latest
+@m_since{2020,06}
 
 Returns a custom mesh attribute with index @p id. The index is expected to be
 less than the value of @ref MeshAttribute::Custom. Use
@@ -194,7 +194,7 @@ constexpr MeshAttribute meshAttributeCustom(UnsignedShort id) {
 
 /**
 @brief Get index of a custom mesh attribute
-@m_since_latest
+@m_since{2020,06}
 
 Inverse to @ref meshAttributeCustom(UnsignedShort). Expects that the attribute
 is custom.
@@ -208,7 +208,7 @@ constexpr UnsignedShort meshAttributeCustom(MeshAttribute name) {
 
 /**
 @brief Mesh index data
-@m_since_latest
+@m_since{2020,06}
 
 Convenience type for populating @ref MeshData, see its documentation for an
 introduction.
@@ -285,7 +285,7 @@ class MAGNUM_TRADE_EXPORT MeshIndexData {
 
 /**
 @brief Mesh attribute data
-@m_since_latest
+@m_since{2020,06}
 
 Convenience type for populating @ref MeshData, see its documentation for an
 introduction. Additionally usable in various @ref MeshTools algorithms such as
@@ -575,7 +575,7 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
 
 /** @relatesalso MeshAttributeData
 @brief Create a non-owning array of @ref MeshAttributeData items
-@m_since_latest
+@m_since{2020,06}
 
 Useful when you have the attribute definitions statically defined (for example
 when the vertex data themselves are already defined at compile time) and don't
@@ -585,7 +585,7 @@ Containers::Array<MeshAttributeData> MAGNUM_TRADE_EXPORT meshAttributeDataNonOwn
 
 /**
 @brief Mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Provides access to mesh vertex and index data, together with additional
 information such as primitive type. Populated instances of this class are

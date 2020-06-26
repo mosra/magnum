@@ -791,7 +791,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      information
          * @param data          Data
          * @param usage         Buffer usage
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Equivalent to constructing via @ref Buffer(TargetHint) and then
          * calling @ref setData().
@@ -802,13 +802,13 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         template<class T> explicit Buffer(TargetHint targetHint, std::initializer_list<T> data, BufferUsage usage = BufferUsage::StaticDraw): Buffer{targetHint, Containers::arrayView(data), usage} {}
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Equivalent to calling @ref Buffer(TargetHint, Containers::ArrayView<const void>, BufferUsage)
          * with @ref TargetHint::Array. Unlike with

@@ -38,7 +38,7 @@ namespace Magnum { namespace Audio {
 
 /**
 @brief Features supported by an audio importer
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref ImporterFeatures, @ref AbstractImporter::features()
 */
@@ -49,7 +49,7 @@ enum class ImporterFeature: UnsignedByte {
 
 /**
 @brief Features supported by an audio importer
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImporter::features()
 */
@@ -110,12 +110,12 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief ImporterFeature
-         * @m_deprecated_since_latest Use @ref ImporterFeature instead.
+         * @m_deprecated_since{2020,06} Use @ref ImporterFeature instead.
          */
         typedef CORRADE_DEPRECATED("use ImporterFeature instead") ImporterFeature Feature;
 
         /** @brief @copybrief ImporterFeatures
-         * @m_deprecated_since_latest Use @ref ImporterFeatures instead.
+         * @m_deprecated_since{2020,06} Use @ref ImporterFeatures instead.
          */
         typedef CORRADE_DEPRECATED("use ImporterFeatures instead") ImporterFeatures Features;
         #endif

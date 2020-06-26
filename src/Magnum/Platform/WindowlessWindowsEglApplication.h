@@ -121,7 +121,7 @@ class WindowlessWindowsEglContext {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call EGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the
@@ -217,7 +217,7 @@ class WindowlessWindowsEglContext::Configuration {
         /**
          * @brief Create a shared context
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * When set, the created context will share a subset of OpenGL objects
          * with @p context, instead of being independent. Many caveats and
@@ -234,7 +234,7 @@ class WindowlessWindowsEglContext::Configuration {
 
         /**
          * @brief Shared context
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         EGLContext sharedContext() const { return _sharedContext; }
 
@@ -393,7 +393,7 @@ class WindowlessWindowsEglApplication {
 
         /**
          * @brief Underlying OpenGL context
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use in case you need to call EGL functionality directly or in order
          * to create a shared context. Returns @cpp nullptr @ce in case the

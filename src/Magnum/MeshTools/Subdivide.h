@@ -54,7 +54,7 @@ template<class IndexType, class Vertex, class Interpolator> void subdivideInPlac
 @param[in,out] vertices Vertex array to operate on
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: @cpp Vertex interpolator(Vertex a, Vertex b) @ce
-@m_since_latest
+@m_since{2020,06}
 
 Goes through all triangle faces and subdivides them into four new, enlarging
 the @p indices and @p vertices arrays as appropriate. Removing duplicate
@@ -72,7 +72,7 @@ template<class IndexType, class Vertex, class Interpolator> void subdivide(Conta
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Subdivide a mesh
-@m_deprecated_since_latest Use @ref subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator)
+@m_deprecated_since{2020,06} Use @ref subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator)
     or @ref subdivideInPlace() instead.
 */
 template<class Vertex, class Interpolator> CORRADE_DEPRECATED("use subdivide(Containers::Array<IndexType>&, Containers::Array<Vertex>&vertices, Interpolator) or subdivideInPlace() instead") void subdivide(std::vector<UnsignedInt>& indices, std::vector<Vertex>& vertices, Interpolator interpolator) {
@@ -92,7 +92,7 @@ template<class Vertex, class Interpolator> CORRADE_DEPRECATED("use subdivide(Con
 @param[in,out] vertices Vertex array to operate on
 @param interpolator     Functor or function pointer which interpolates
     two adjacent vertices: @cpp Vertex interpolator(Vertex a, Vertex b) @ce
-@m_since_latest
+@m_since{2020,06}
 
 Assuming the original mesh has @f$ i @f$ indices and @f$ v @f$ vertices,
 expects the @p indices array to have a size of @f$ 4i @f$ (as every triangle
@@ -162,7 +162,7 @@ template<class IndexType, class Vertex, class Interpolator> void subdivideInPlac
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 template<class IndexType, class Vertex, class Interpolator> void subdivideInPlace(const Containers::ArrayView<IndexType>& indices, const Containers::StridedArrayView1D<Vertex>& vertices, Interpolator interpolator) {
     subdivideInPlace(Containers::stridedArrayView(indices), vertices, interpolator);

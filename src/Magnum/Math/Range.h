@@ -380,7 +380,7 @@ template<class T> class Range2D: public Range<2, T> {
 
         /**
          * @brief Construct a range from a pair of minimal and maximal coordinates
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate texture bounds:
@@ -393,7 +393,7 @@ template<class T> class Range2D: public Range<2, T> {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /*implicit*/ Range2D(const std::pair<Vector<2, T>, Vector<2, T>>& minmax) noexcept: Range<2, T>{minmax.first, minmax.second} {}
 
@@ -534,7 +534,7 @@ template<class T> class Range3D: public Range<3, T> {
 
         /**
          * @brief Construct a range from a pair of minimal and maximal coordinates
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Useful in combination with e.g. @ref minmax(), here for example to
          * calculate bounds of a triangle:
@@ -547,7 +547,7 @@ template<class T> class Range3D: public Range<3, T> {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         /*implicit*/ Range3D(const std::pair<Vector<3, T>, Vector<3, T>>& minmax) noexcept: Range<3, T>{minmax.first, minmax.second} {}
 

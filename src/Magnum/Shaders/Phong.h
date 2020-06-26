@@ -210,7 +210,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief (Instanced) object ID
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
          * Used only if @ref Flag::InstancedObjectId is set.
@@ -223,7 +223,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief (Instanced) transformation matrix
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix4.
          * Used only if @ref Flag::InstancedTransformation is set.
@@ -238,7 +238,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief (Instanced) normal matrix
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3x3.
          * Used only if @ref Flag::InstancedTransformation is set.
@@ -253,7 +253,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief (Instanced) texture offset
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
          * only if @ref Flag::InstancedTextureOffset is set.
@@ -350,7 +350,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @ref Flag::SpecularTexture or @ref Flag::NormalTexture is
              * enabled as well.
              * @see @ref setTextureMatrix()
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             TextureTransformation = 1 << 6,
 
@@ -376,7 +376,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0 or WebGL
              *      1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 8)|ObjectId,
             #endif
@@ -395,7 +395,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
              *      in WebGL 1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedTransformation = 1 << 9,
 
@@ -414,7 +414,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
              *      in WebGL 1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedTextureOffset = (1 << 10)|TextureTransformation
         };
@@ -639,7 +639,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Set texture coordinate transformation matrix
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an

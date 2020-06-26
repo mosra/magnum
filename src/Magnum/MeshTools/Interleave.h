@@ -192,7 +192,7 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> bu
 
 /**
 @brief If the mesh data is interleaved
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp true @ce if all attributes have the same stride and the difference
 between minimal and maximal offset is not larger than the stride, @cpp false @ce
@@ -205,7 +205,7 @@ MAGNUM_MESHTOOLS_EXPORT bool isInterleaved(const Trade::MeshData& data);
 
 /**
 @brief Type-erased view on interleaved mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Returns a 2D view on @ref Trade::MeshData::vertexData() that spans all
 interleaved attributes, with the first dimension being the vertex count and the
@@ -217,7 +217,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<const char> interleavedDa
 
 /**
 @brief Mutable type-erased view on interleaved mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Same as @ref interleavedData(), but returns a mutable view. Expects that the
 mesh is interleaved and vertex data is mutable.
@@ -227,7 +227,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::StridedArrayView2D<char> interleavedMutableD
 
 /**
 @brief Create an interleaved mesh layout
-@m_since_latest
+@m_since{2020,06}
 
 Returns a @ref Trade::MeshData instance with its vertex data allocated for
 @p vertexCount vertices containing attributes from both @p data and @p extra
@@ -260,13 +260,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData&
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(const Trade::MeshData& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
 
 /**
 @brief Create an interleaved mesh layout
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref interleavedLayout(const Trade::MeshData&, UnsignedInt, Containers::ArrayView<const Trade::MeshAttributeData>)
 this function can reuse the @ref Trade::MeshAttributeData array from @p data
@@ -277,13 +277,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleavedLayout(Trade::MeshData&& data, UnsignedInt vertexCount, std::initializer_list<Trade::MeshAttributeData> extra);
 
 /**
 @brief Interleave mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Returns a copy of @p data with all attributes interleaved. Indices (if any) are
 kept as-is. The @p extra attributes, if any, are interleaved together with
@@ -305,13 +305,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, 
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(const Trade::MeshData& data, std::initializer_list<Trade::MeshAttributeData> extra);
 
 /**
 @brief Interleave mesh data
-@m_since_latest
+@m_since{2020,06}
 
 Compared to @ref interleave(const Trade::MeshData&, Containers::ArrayView<const Trade::MeshAttributeData>)
 this function can transfer ownership of @p data index buffer (in case it is
@@ -326,7 +326,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, Conta
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData interleave(Trade::MeshData&& data, std::initializer_list<Trade::MeshAttributeData> extra);
 

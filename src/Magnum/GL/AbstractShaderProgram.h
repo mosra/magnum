@@ -464,7 +464,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Max supported count of vertices emitted by a geometry shader
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither @gl_extension{ARB,geometry_shader4} (part of
@@ -752,7 +752,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Draw a mesh
          * @param mesh      Mesh to draw
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that @p mesh is compatible with this shader and is fully set
          * up. If its vertex/index count or instance count is @cpp 0 @ce, no
@@ -798,13 +798,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         void draw(Mesh&& mesh) { draw(mesh); }
 
         /**
          * @brief Draw a mesh view
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * See @ref draw(Mesh&) for more information.
          * @see @ref draw(Containers::ArrayView<const Containers::Reference<MeshView>>),
@@ -832,13 +832,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         void draw(MeshView&& mesh) { draw(mesh); }
 
         /**
          * @brief Draw multiple meshes at once
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * In OpenGL ES, if @gl_extension{EXT,multi_draw_arrays} is not
          * present, the functionality is emulated using a sequence of
@@ -866,7 +866,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @overload
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         void draw(std::initializer_list<Containers::Reference<MeshView>> meshes);
 
@@ -876,7 +876,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param mesh      Mesh to draw
          * @param xfb       Transform feedback to use for vertex count
          * @param stream    Transform feedback stream ID
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that @p mesh is compatible with this shader, is fully set up
          * and that the output buffer(s) from @p xfb are used as vertex buffers
@@ -905,7 +905,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /**
          * @brief Draw a mesh view with vertices coming out of transform feedback
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Everything set by @ref MeshView::setCount(),
          * @ref MeshView::setBaseInstance(), @ref MeshView::setBaseVertex(),

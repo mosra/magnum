@@ -493,7 +493,7 @@ template<class K> class TrackViewStorage {
 
         /**
          * @brief Type-erased value data
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Use @ref TrackView and @ref TrackView::values() to get a typed view,
          * alternatively you can cast to a concrete type using

@@ -89,7 +89,7 @@ MAGNUM_VK_EXPORT VkIndexType vkIndexType(Magnum::MeshIndexType type);
 
 /**
 @brief Check availability of a generic vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Some Vulkan targets don't support all generic vertex formats. Returns
 @cpp false @ce if current target can't support such format, @cpp true @ce
@@ -144,7 +144,7 @@ MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::CompressedPixelFormat format);
 
 /**
 @brief Convert a generic vertex format to Vulkan format
-@m_since_latest
+@m_since{2020,06}
 
 In case @ref isVertexFormatImplementationSpecific() returns @cpp false @ce for
 @p format, maps it to a corresponding Vulkan format. In case

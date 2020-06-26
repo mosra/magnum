@@ -120,7 +120,7 @@ class MAGNUM_AUDIO_EXPORT Buffer {
 
         /**
          * @brief Buffer frequency
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref size(), @ref channels(), @ref bitDepth(),
          *      @ref sampleCount()

@@ -39,7 +39,7 @@ namespace Magnum {
 
 /**
 @brief Vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Like @ref PixelFormat, but for mesh attributes --- including double-precision
 types and matrices. Can act also as a wrapper for implementation-specific mesh
@@ -1321,13 +1321,13 @@ enum class VertexFormat: UnsignedInt {
 
 /**
 @debugoperatorenum{VertexFormat}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, VertexFormat value);
 
 /**
 @brief Whether a @ref VertexFormat value wraps an implementation-specific identifier
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp true @ce if value of @p format has its highest bit set,
 @cpp false @ce otherwise. Use @ref vertexFormatWrap() and @ref vertexFormatUnwrap()
@@ -1340,7 +1340,7 @@ constexpr bool isVertexFormatImplementationSpecific(VertexFormat format) {
 
 /**
 @brief Wrap an implementation-specific vertex format identifier in @ref VertexFormat
-@m_since_latest
+@m_since{2020,06}
 
 Sets the highest bit on @p type to mark it as implementation-specific. Expects
 that @p type fits into the remaining bits. Use @ref vertexFormatUnwrap()
@@ -1356,7 +1356,7 @@ template<class T> constexpr VertexFormat vertexFormatWrap(T implementationSpecif
 
 /**
 @brief Unwrap an implementation-specific vertex format identifier from @ref VertexFormat
-@m_since_latest
+@m_since{2020,06}
 
 Unsets the highest bit from @p type to extract the implementation-specific
 value. Expects that @p type has it set. Use @ref vertexFormatWrap() for
@@ -1371,7 +1371,7 @@ template<class T = UnsignedInt> constexpr T vertexFormatUnwrap(VertexFormat form
 
 /**
 @brief Size of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 To get size of a single component, call this function on a result of
 @ref vertexFormatComponentFormat().
@@ -1380,7 +1380,7 @@ MAGNUM_EXPORT UnsignedInt vertexFormatSize(VertexFormat format);
 
 /**
 @brief Component format of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 The function also removes the normalization aspect from the type --- use
 @ref isVertexFormatNormalized() to query that. Returns for example
@@ -1395,7 +1395,7 @@ MAGNUM_EXPORT VertexFormat vertexFormatComponentFormat(VertexFormat format);
 
 /**
 @brief Component count of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp 1 @ce for scalar types and e.g. @cpp 3 @ce for
 @ref VertexFormat::Vector3ub.
@@ -1405,7 +1405,7 @@ MAGNUM_EXPORT UnsignedInt vertexFormatComponentCount(VertexFormat format);
 
 /**
 @brief Vector count of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp 1 @ce for scalar and vector types and e.g. @cpp 3 @ce for
 @ref VertexFormat::Matrix3x2d.
@@ -1414,7 +1414,7 @@ MAGNUM_EXPORT UnsignedInt vertexFormatVectorCount(VertexFormat format);
 
 /**
 @brief Vector stride of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Returns type size for scalar and vector types and e.g. @cpp 8 @ce for
 @ref VertexFormat::Matrix2x3hAligned (but @cpp 6 @ce for
@@ -1424,7 +1424,7 @@ MAGNUM_EXPORT UnsignedInt vertexFormatVectorStride(VertexFormat format);
 
 /**
 @brief Component count of given vertex format
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp true @ce for `*Normalized` types, @cpp false @ce otherwise. In
 particular, floating-point types are *not* treated as normalized, even though
@@ -1436,7 +1436,7 @@ MAGNUM_EXPORT bool isVertexFormatNormalized(VertexFormat format);
 
 /**
 @brief Assemble a vertex format from parts
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p format to a new format of desired component count and
 normalization. Expects that @p componentCount is not larger than @cpp 4 @ce and
@@ -1449,7 +1449,7 @@ MAGNUM_EXPORT VertexFormat vertexFormat(VertexFormat format, UnsignedInt compone
 
 /**
 @brief Assemble a matrix vertex format from parts
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p format to a new format of desired component and vertex count and
 normalization. Expects that both @p vectorCount and @p componentCount is either
@@ -1469,7 +1469,7 @@ namespace Corrade { namespace Utility {
 
 /**
 @configurationvalue{Magnum::VertexFormat}
-@m_since_latest
+@m_since{2020,06}
 */
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::VertexFormat> {
     ConfigurationValue() = delete;

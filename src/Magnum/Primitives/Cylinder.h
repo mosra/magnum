@@ -45,14 +45,14 @@ namespace Magnum { namespace Primitives {
 enum class CylinderFlag: UnsignedByte {
     /**
      * Generate texture coordinates
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     TextureCoordinates = 1 << 0,
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * Generate texture coordinates
-     * @m_deprecated_since_latest Use @ref CylinderFlag::TextureCoordinates
+     * @m_deprecated_since{2020,06} Use @ref CylinderFlag::TextureCoordinates
      *      instead.
      */
     GenerateTextureCoords CORRADE_DEPRECATED_ENUM("use TextureCoordinates instead") = TextureCoordinates,
@@ -62,7 +62,7 @@ enum class CylinderFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 1,
 

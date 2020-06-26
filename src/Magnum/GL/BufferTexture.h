@@ -238,7 +238,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         /**
          * @brief Remove existing buffer from the texture
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @see @ref setBuffer()
          */

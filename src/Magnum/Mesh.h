@@ -143,7 +143,7 @@ enum class MeshPrimitive: UnsignedInt {
 
     /**
      * Per-instance data.
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * Has no direct mapping to GPU APIs, but can be used to annotate
      * @ref Trade::MeshData containing per-instance data (such as colors,
@@ -154,7 +154,7 @@ enum class MeshPrimitive: UnsignedInt {
 
     /**
      * Per-face data.
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * Can be used to annotate @ref Trade::MeshData containing data that are
      * per-face, as opposed to per-vertex. Has no direct mapping to common GPU
@@ -168,7 +168,7 @@ enum class MeshPrimitive: UnsignedInt {
 
     /**
      * Per-edge data.
-     * @m_since_latest
+     * @m_since{2020,06}
      *
      * Can be used to annotate @ref Trade::MeshData containing data that are
      * per-edge, as opposed to per-vertex. This is different from
@@ -188,7 +188,7 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
 /**
 @brief Whether a @ref MeshPrimitive value wraps an implementation-specific identifier
-@m_since_latest
+@m_since{2020,06}
 
 Returns @cpp true @ce if value of @p primitive has its highest bit set,
 @cpp false @ce otherwise. Use @ref meshPrimitiveWrap() and @ref meshPrimitiveUnwrap()
@@ -201,7 +201,7 @@ constexpr bool isMeshPrimitiveImplementationSpecific(MeshPrimitive primitive) {
 
 /**
 @brief Wrap an implementation-specific mesh primitive identifier in @ref MeshPrimitive
-@m_since_latest
+@m_since{2020,06}
 
 Sets the highest bit on @p primitive to mark it as implementation-specific.
 Expects that @p primitive fits into the remaining bits. Use
@@ -217,7 +217,7 @@ template<class T> constexpr MeshPrimitive meshPrimitiveWrap(T implementationSpec
 
 /**
 @brief Unwrap an implementation-specific mesh primitive identifier from @ref MeshPrimitive
-@m_since_latest
+@m_since{2020,06}
 
 Unsets the highest bit from @p primitive to extract the implementation-specific
 value. Expects that @p primitive has it set. Use @ref meshPrimitiveWrap() for

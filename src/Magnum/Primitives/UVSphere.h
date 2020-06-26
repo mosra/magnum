@@ -39,7 +39,7 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief UV sphere flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref UVSphereFlags, @ref uvSphereSolid()
 */
@@ -50,14 +50,14 @@ enum class UVSphereFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 1
 };
 
 /**
 @brief UV sphere flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref uvSphereSolid()
 */
@@ -72,7 +72,7 @@ CORRADE_ENUMSET_OPERATORS(UVSphereFlags)
 @param segments         Number of (face) segments. Must be larger or
     equal to @cpp 3 @ce.
 @param flags            Flags
-@m_since_latest
+@m_since{2020,06}
 
 Sphere of radius @cpp 1.0f @ce, centered at origin.
 @ref MeshPrimitive::Triangles with @ref MeshIndexType::UnsignedInt indices,
@@ -90,7 +90,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData uvSphereSolid(UnsignedInt rings, Unsign
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Whether to generate UV sphere texture coordinates
-@m_deprecated_since_latest Use @ref UVSphereFlags instead.
+@m_deprecated_since{2020,06} Use @ref UVSphereFlags instead.
 */
 enum class CORRADE_DEPRECATED("use UVSphereFlags instead") UVSphereTextureCoords: UnsignedByte {
     DontGenerate,       /**< Don't generate texture coordinates */
@@ -99,7 +99,7 @@ enum class CORRADE_DEPRECATED("use UVSphereFlags instead") UVSphereTextureCoords
 
 /**
 @brief @copybrief uvSphereSolid(UnsignedInt, UnsignedInt, UVSphereFlags)
-@m_deprecated_since_latest Use @ref uvSphereSolid(UnsignedInt, UnsignedInt, UVSphereFlags)
+@m_deprecated_since{2020,06} Use @ref uvSphereSolid(UnsignedInt, UnsignedInt, UVSphereFlags)
     instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH

@@ -341,7 +341,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
 
         /**
          * @brief Rotate a vector with a dual complex number
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Calls @ref Complex::transformVector() on the @ref real() part,
          * see its documentation for more information.

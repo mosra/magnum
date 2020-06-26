@@ -39,7 +39,7 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Features supported by an image converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref ImageConverterFeatures, @ref AbstractImageConverter::features()
 */
@@ -85,7 +85,7 @@ enum class ImageConverterFeature: UnsignedByte {
 
 /**
 @brief Features supported by an image converter
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImageConverter::features()
 */
@@ -101,7 +101,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFeatures value
 
 /**
 @brief Image converter flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref ImageConverterFlags, @ref AbstractImageConverter::setFlags()
 */
@@ -118,7 +118,7 @@ enum class ImageConverterFlag: UnsignedByte {
 
 /**
 @brief Image converter flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref AbstractImporter::setFlags()
 */
@@ -128,13 +128,13 @@ CORRADE_ENUMSET_OPERATORS(ImageConverterFlags)
 
 /**
 @debugoperatorenum{ImageConverterFlag}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlag value);
 
 /**
 @debugoperatorenum{ImageConverterFlags}
-@m_since_latest
+@m_since{2020,06}
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFlags value);
 
@@ -193,12 +193,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief ImageConverterFeature
-         * @m_deprecated_since_latest Use @ref ImageConverterFeature instead.
+         * @m_deprecated_since{2020,06} Use @ref ImageConverterFeature instead.
          */
         typedef CORRADE_DEPRECATED("use ImageConverterFeature instead") ImageConverterFeature Feature;
 
         /** @brief @copybrief ImageConverterFeatures
-         * @m_deprecated_since_latest Use @ref ImageConverterFeatures instead.
+         * @m_deprecated_since{2020,06} Use @ref ImageConverterFeatures instead.
          */
         typedef CORRADE_DEPRECATED("use ImageConverterFeatures instead") ImageConverterFeatures Features;
         #endif
@@ -243,13 +243,13 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
 
         /**
          * @brief Converter flags
-         * @m_since_latest
+         * @m_since{2020,06}
          */
         ImageConverterFlags flags() const { return _flags; }
 
         /**
          * @brief Set converter flags
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ImageConverterFlag for more

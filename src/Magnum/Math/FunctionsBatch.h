@@ -79,7 +79,7 @@ template<class T> auto isInf(const Corrade::Containers::StridedArrayView1D<const
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
 above overload. Works with any type that's convertible to
@@ -131,7 +131,7 @@ template<class T> inline auto isNan(const Corrade::Containers::StridedArrayView1
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
 above overload. Works with any type that's convertible to
@@ -211,7 +211,7 @@ template<class T> inline T min(const Corrade::Containers::StridedArrayView1D<con
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
 above overload. Works with any type that's convertible to
@@ -256,7 +256,7 @@ template<class T> inline T max(const Corrade::Containers::StridedArrayView1D<con
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
 above overload. Works with any type that's convertible to
@@ -317,7 +317,7 @@ template<class T> inline std::pair<T, T> minmax(const Corrade::Containers::Strid
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Converts @p range to @ref Corrade::Containers::StridedArrayView1D and calls the
 above overload. Works with any type that's convertible to

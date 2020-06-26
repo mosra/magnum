@@ -28,7 +28,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @file
  * @brief Class @ref Magnum::Trade::MeshData3D
- * @m_deprecated_since_latest Use @ref Magnum/Trade/MeshData.h and the
+ * @m_deprecated_since{2020,06} Use @ref Magnum/Trade/MeshData.h and the
  *      @ref Magnum::Trade::MeshData "MeshData" class instead.
  */
 #endif
@@ -59,7 +59,7 @@ to positions and normals:
 
 @snippet MagnumTrade.cpp MeshData3D-transform
 
-@m_deprecated_since_latest Use @ref MeshData instead.
+@m_deprecated_since{2020,06} Use @ref MeshData instead.
 
 @see @ref AbstractImporter::mesh3D(), @ref MeshData2D
 */
@@ -83,7 +83,7 @@ class CORRADE_DEPRECATED("use MeshData instead") MAGNUM_TRADE_EXPORT MeshData3D 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Construct from @ref MeshData
-         * @m_deprecated_since_latest Use @ref MeshData directly instead.
+         * @m_deprecated_since{2020,06} Use @ref MeshData directly instead.
          */
         /* No data moving can take place because std::vector is damn shitty
            regarding memory ownership transfer, so it can well be a copy. */

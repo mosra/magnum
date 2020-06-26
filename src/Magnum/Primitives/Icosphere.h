@@ -57,7 +57,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData icosphereSolid(UnsignedInt subdivisions
 
 /**
 @brief Wireframe 3D icosphere
-@m_since_latest
+@m_since{2020,06}
 
 Sphere of radius @cpp 1.0f @ce with 12 vertices and 30 edges, centered at
 origin. @ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort

@@ -39,7 +39,7 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief 2D circle flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref Circle2DFlags, @ref circle2DSolid()
 */
@@ -49,7 +49,7 @@ enum class Circle2DFlag: UnsignedByte {
 
 /**
 @brief 2D circle flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref circle2DSolid()
 */
@@ -60,7 +60,7 @@ CORRADE_ENUMSET_OPERATORS(Circle2DFlags)
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Whether to generate circle texture coordinates
-@m_deprecated_since_latest Use @ref Circle2DFlags or @ref Circle3DFlags
+@m_deprecated_since{2020,06} Use @ref Circle2DFlags or @ref Circle3DFlags
     instead.
 */
 enum class CORRADE_DEPRECATED_ENUM("use Circle2DFlags or Circle3DFlags instead") CircleTextureCoords: UnsignedByte {
@@ -73,7 +73,7 @@ enum class CORRADE_DEPRECATED_ENUM("use Circle2DFlags or Circle3DFlags instead")
 @brief Solid 2D circle
 @param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
 @param flags        Flags
-@m_since_latest
+@m_since{2020,06}
 
 Circle with radius @cpp 1.0f @ce, centered at origin.
 @ref MeshPrimitive::TriangleFan with @ref MeshIndexType::UnsignedInt indices,
@@ -90,7 +90,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DSolid(UnsignedInt segments, Cir
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief circle2DSolid(UnsignedInt, Circle2DFlags)
-@m_deprecated_since_latest Use @ref circle2DSolid(UnsignedInt, Circle2DFlags)
+@m_deprecated_since{2020,06} Use @ref circle2DSolid(UnsignedInt, Circle2DFlags)
     instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH
@@ -115,7 +115,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle2DWireframe(UnsignedInt segments)
 
 /**
 @brief 3D circle flag
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref Circle3DFlags, @ref circle3DSolid()
 */
@@ -126,14 +126,14 @@ enum class Circle3DFlag: UnsignedByte {
      * Generate four-component tangents. The last component can be used to
      * reconstruct a bitangent as described in the documentation of
      * @ref Trade::MeshAttribute::Tangent.
-     * @m_since_latest
+     * @m_since{2020,06}
      */
     Tangents = 1 << 1
 };
 
 /**
 @brief 3D circle flags
-@m_since_latest
+@m_since{2020,06}
 
 @see @ref circle3DSolid()
 */
@@ -145,7 +145,7 @@ CORRADE_ENUMSET_OPERATORS(Circle3DFlags)
 @brief Solid 3D circle
 @param segments     Number of segments. Must be greater or equal to @cpp 3 @ce.
 @param flags        Flags
-@m_since_latest
+@m_since{2020,06}
 
 Circle on the XY plane with radius @cpp 1.0f @ce, centered at origin.
 Non-indexed @ref MeshPrimitive::TriangleFan with interleaved
@@ -163,7 +163,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData circle3DSolid(UnsignedInt segments, Cir
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief @copybrief circle3DSolid(UnsignedInt, Circle3DFlags)
-@m_deprecated_since_latest Use @ref circle3DSolid(UnsignedInt, Circle3DFlags)
+@m_deprecated_since{2020,06} Use @ref circle3DSolid(UnsignedInt, Circle3DFlags)
     instead.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH

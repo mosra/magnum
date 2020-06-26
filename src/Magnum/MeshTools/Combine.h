@@ -27,7 +27,7 @@
 
 /** @file
  * @brief Function @ref Magnum::MeshTools::combineIndexedAttributes(), @ref Magnum::MeshTools::combineFaceAttributes()
- * @m_since_latest
+ * @m_since{2020,06}
  */
 
 #include <initializer_list>
@@ -39,7 +39,7 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Combine differently indexed attributes into a single mesh
-@m_since_latest
+@m_since{2020,06}
 
 Assuming each @p data contains only unique vertex data, creates an indexed mesh
 that contains all attributes from @p data combined, with duplicate vertices
@@ -89,13 +89,13 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(const Container
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineIndexedAttributes(std::initializer_list<Containers::Reference<const Trade::MeshData>> data);
 
 /**
 @brief Combine per-face attributes into an existing mesh
-@m_since_latest
+@m_since{2020,06}
 
 The resulting mesh will have all per-face attributes turned into per-vertex
 attributes, leaving only unique combinations and adjusting the index buffer
@@ -114,7 +114,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshD
 
 /**
 @overload
-@m_since_latest
+@m_since{2020,06}
 
 Same as above with @p faceAttributes wrapped in a @ref Trade::MeshData with
 @ref MeshPrimitive::Faces and no index buffer. Same as in the above case,
@@ -126,7 +126,7 @@ MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshD
 
 /**
  * @overload
- * @m_since_latest
+ * @m_since{2020,06}
  */
 MAGNUM_MESHTOOLS_EXPORT Trade::MeshData combineFaceAttributes(const Trade::MeshData& mesh, std::initializer_list<Trade::MeshAttributeData> faceAttributes);
 

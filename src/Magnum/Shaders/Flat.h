@@ -194,7 +194,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief (Instanced) object ID
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::UnsignedInt.
          * Used only if @ref Flag::InstancedObjectId is set.
@@ -207,7 +207,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
         /**
          * @brief (Instanced) transformation matrix
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Matrix3 in
          * 2D, @ref Magnum::Matrix4 in 3D. Used only if
@@ -223,7 +223,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
         /**
          * @brief (Instanced) texture offset
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Vector2. Used
          * only if @ref Flag::InstancedTextureOffset is set.
@@ -298,7 +298,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * Enable texture coordinate transformation. If this flag is set,
              * the shader expects that @ref Flag::Textured is enabled as well.
              * @see @ref setTextureMatrix()
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             TextureTransformation = 1 << 3,
 
@@ -324,7 +324,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * @requires_gles30 Object ID output requires integer support in
              *      shaders, which is not available in OpenGL ES 2.0 or WebGL
              *      1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedObjectId = (1 << 5)|ObjectId,
             #endif
@@ -342,7 +342,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
              *      in WebGL 1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedTransformation = 1 << 6,
 
@@ -361,7 +361,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
              *      in WebGL 1.0.
-             * @m_since_latest
+             * @m_since{2020,06}
              */
             InstancedTextureOffset = (1 << 7)|TextureTransformation
         };
@@ -425,7 +425,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         /**
          * @brief Set texture coordinate transformation matrix
          * @return Reference to self (for method chaining)
-         * @m_since_latest
+         * @m_since{2020,06}
          *
          * Expects that the shader was created with
          * @ref Flag::TextureTransformation enabled. Initial value is an
