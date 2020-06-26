@@ -41,9 +41,6 @@ VERSION_LABELS = True
 _magnum_colors_src = re.compile(r"""<span class="mh">0x(?P<hex>[0-9a-f]{6})(?P<alpha>[0-9a-f]{2})?(?P<literal>_s?rgba?f?)</span>""")
 _magnum_colors_dst = r"""<span class="mh">0x\g<hex>\g<alpha>\g<literal><span class="m-code-color" style="background-color: #\g<hex>;"></span></span>"""
 
-#def _add_color_swatch(str):
-    #return
-
 M_CODE_FILTERS_POST = {
     'C++': lambda str: _magnum_colors_src.sub(_magnum_colors_dst, str)
 }
