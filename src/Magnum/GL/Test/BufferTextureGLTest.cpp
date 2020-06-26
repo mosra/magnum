@@ -34,6 +34,11 @@
 #include "Magnum/GL/ImageFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferTextureGLTest: OpenGLTester {
@@ -57,6 +62,7 @@ struct BufferTextureGLTest: OpenGLTester {
     void appleSetBufferQueryData();
     void appleSetBufferMap();
     void appleSetBufferMapRange();
+    void appleBindUnrelatedTextureInBetween();
     #endif
 };
 
@@ -78,7 +84,8 @@ BufferTextureGLTest::BufferTextureGLTest() {
               &BufferTextureGLTest::appleSetUnrelatedBufferData,
               &BufferTextureGLTest::appleSetBufferQueryData,
               &BufferTextureGLTest::appleSetBufferMap,
-              &BufferTextureGLTest::appleSetBufferMapRange
+              &BufferTextureGLTest::appleSetBufferMapRange,
+              &BufferTextureGLTest::appleBindUnrelatedTextureInBetween
               #endif
               });
 }
@@ -450,6 +457,34 @@ void BufferTextureGLTest::appleSetBufferMapRange() {
 
     /* This would crash again unless worked around */
     buffer.unmap();
+
+    CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::appleBindUnrelatedTextureInBetween() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    BufferTexture texture;
+    Buffer buffer{Buffer::TargetHint::Texture};
+    buffer.setData<UnsignedByte>({
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    });
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Bind a texture of different type to the same slot, which makes Magnum's
+       state tracker think there's no buffer texture bound */
+    Texture2D whatever;
+    whatever.setStorage(1, GL::TextureFormat::RGBA32F, Vector2i{16, 16});
+
+    /* This then crashes, unless we remember there was a buffer texture bound
+       before and account for that. */
+    buffer.setSubData<UnsignedByte>(2, {0xf3, 0xab, 0x01, 0x57});
 
     CORRADE_COMPARE(texture.size(), 8);
 
