@@ -894,7 +894,7 @@ inverse.
     -   Don't forget about the bootstrap repository and toolchains as well
 6.  Go through merged PRs (and the *most important* issues) and add new people
     to `dox/credits.md` (and similar files in other repositories) and
-    https://magnum.graphics/about/, if they are not there yet
+    https://magnum.graphics/about/ , if they are not there yet
 7.  Update changelog for the next release:
     -   change section names for the latest release from `latest` to `20XY-ab`
     -   change the title from `Changes since 20XY.aa` to `20XY.ab`
@@ -903,8 +903,13 @@ inverse.
     -   add a temporary <tt>\@<b></b>anchor changelog-latest</tt> (and
         equivalent in other repos) on top so the links from main page work
         properly
-8.  Convert all occurences of <tt>\@m_since_latest</tt> to
-    <tt>\@m_since{20XY,ab}</tt>
+8.  Convert all occurences of
+    -   <tt>\@m_since_latest_{thing}</tt> to <tt>\@m_since_{thing,20XY,ab}</tt>
+    -   <tt>\@m_since_latest</tt> to <tt>\@m_since{20XY,ab}</tt>
+    -   <tt>\@m_deprecated_since_latest_{thing}</tt> to
+        <tt>\@m_deprecated_since_{thing,20XY,ab}</tt>
+    -   <tt>\@m_deprecated_since_latest</tt> to
+        <tt>\@m_deprecated_since{20XY,ab}</tt>
 9.  Bump `MAGNUM*_LIBRARY_VERSION`, `MAGNUM*_LIBRARY_SOVERSION`
     `MAGNUM*_VERSION_YEAR` and `MAGNUM*_VERSION_MONTH` in all projects. Ensure
     all projects have the exact same version.
