@@ -63,6 +63,7 @@ struct TextureState {
     void(*bindMultiImplementation)(GLint, Containers::ArrayView<AbstractTexture* const>);
     void(AbstractTexture::*createImplementation)();
     void(AbstractTexture::*bindImplementation)(GLint);
+    void(AbstractTexture::*bindInternalImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);
     void(AbstractTexture::*parameterfImplementation)(GLenum, GLfloat);
     #ifndef MAGNUM_TARGET_GLES2

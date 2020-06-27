@@ -539,9 +539,12 @@ void AbstractTexture::bindInternal() {
 
     /* Update state tracker, bind the texture to the unit. Not directly calling
        glBindTexture() here because we may need to include various
-       platform-specific workarounds (Apple, Intel Windpws) */
+       platform-specific workarounds (Apple, Intel Windpws), also can't just
+       reuse textureState.bindImplementation as we *need* to call
+       glBindTexture() in order to create it and have ObjectFlag::Created set
+       (which is then asserted in createIfNotAlready()) */
     textureState.bindings[internalTextureUnit] = {_target, _id};
-    (this->*textureState.bindImplementation)(internalTextureUnit);
+    (this->*textureState.bindInternalImplementation)(internalTextureUnit);
 }
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
