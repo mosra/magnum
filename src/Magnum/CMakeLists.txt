@@ -38,10 +38,12 @@ if(Git_FOUND)
         OUTPUT_VARIABLE MAGNUM_VERSION_STRING
         RESULT_VARIABLE _MAGNUM_VERSION_RESULT
         ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(MAGNUM_VERSION_STRING MATCHES "^v([0-9][0-9][0-9][0-9])\\.0?([0-9][0-9])-([0-9]+)-g([a-f0-9]+)$")
+    if(MAGNUM_VERSION_STRING MATCHES "^v([0-9][0-9][0-9][0-9])\\.0?([0-9][0-9]?)-([0-9]+)-g([a-f0-9]+)$")
         set(MAGNUM_VERSION_YEAR ${CMAKE_MATCH_1})
         set(MAGNUM_VERSION_MONTH ${CMAKE_MATCH_2})
         set(MAGNUM_VERSION_COMMIT ${CMAKE_MATCH_3})
+        # Otherwise if commit is 0, it would #undef the variable
+        set(MAGNUM_VERSION_COMMIT " ${MAGNUM_VERSION_COMMIT}")
         set(MAGNUM_VERSION_HASH ${CMAKE_MATCH_4})
     elseif(_MAGNUM_VERSION_RESULT EQUAL 0)
         message(WARNING "Can't match Git version from ${MAGNUM_VERSION_STRING}")
