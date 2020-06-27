@@ -256,8 +256,7 @@ void AbstractTexture::createIfNotAlready() {
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glBindTextures() or glObjectLabel()) operate with IDs
        directly and they require the object to be created. Binding the texture
-       to desired target finally creates it. Also all EXT DSA functions
-       implicitly create it. */
+       to desired target finally creates it. */
     bindInternal();
     CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
