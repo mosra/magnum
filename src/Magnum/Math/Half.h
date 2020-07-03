@@ -30,7 +30,9 @@
  */
 
 #include <utility>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Utility.h>
+#endif
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Math.h"
