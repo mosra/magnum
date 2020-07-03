@@ -1046,7 +1046,7 @@ class GlfwApplication::Configuration {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * Always on top
-             * @deprecated Use @ref WindowFlag::AlwaysOnTop instead.
+             * @m_deprecated_since{2020,06} Use @ref WindowFlag::AlwaysOnTop instead.
              */
             Floating CORRADE_DEPRECATED_ENUM("use AlwaysOnTop instead") = AlwaysOnTop,
             #endif

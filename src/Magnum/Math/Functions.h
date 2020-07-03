@@ -5,6 +5,8 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2020 Nghia Truong <nghiatruong.vn@gmail.com>
+    Copyright © 2020 Pablo Escobar <mail@rvrs.in>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -412,13 +414,15 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
 @brief Floating point division remainder
 @param a     Numerator
 @param b     Denumerator
+@m_since_latest
 
 Calculates the remainder @f$ r @f$ of a floating point division: @f[
-    r = a - b * \operatorname{trunc}(a/b)
+    r = a - b ~ \operatorname{trunc}(\frac{a}{b})
 @f]
 
-@attention This function differs from the GLSL `mod` function when @f$ a/b @f$ is negative.
-The return value has the same sign as the numerator, whereas `mod` keeps the denumerator's sign.
+@attention This function differs from the GLSL @glsl mod() @ce function when
+    @f$ \frac{a}{b} @f$ is negative. The return value has the same sign as the
+    numerator, whereas @glsl mod() @ce keeps the denumerator's sign.
 
 @m_keyword{mod(),GLSL mod(),}
 */
@@ -426,7 +430,10 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fm
     return T(std::fmod(UnderlyingTypeOf<T>(a), UnderlyingTypeOf<T>(b)));
 }
 
-/** @overload */
+/**
+@overload
+@m_since_latest
+*/
 template<std::size_t size, class T> inline Vector<size, T> fmod(const Vector<size, T>& a, const Vector<size, T>& b) {
     Vector<size, T> out{Magnum::NoInit};
     for(std::size_t i = 0; i != size; ++i)

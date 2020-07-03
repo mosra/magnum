@@ -494,7 +494,8 @@ headless tests / benchmarks and currently there's no builtin way in Magnum to
 circumvent this limitation.
 
 If you're on Firefox, you can enable the `webgl.allow-immediate-queries` option
-in `about:flags`, which will make these working.
+in `about:flags`, which will make these work even without giving the control
+back to the browser.
 
 @section platforms-html5-code-size Compilation time / code size tradeoffs
 

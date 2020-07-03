@@ -71,8 +71,8 @@ some drawable group and add the drawable objects to both the scene and the
 group. You can also use @ref DrawableGroup::add() and
 @ref DrawableGroup::remove() instead of passing the group in the constructor.
 If you don't need to change any properties of the drawable later, you can just
-"create and forget", the scene graph will take care of all memory manager from
-there.
+"create and forget", the scene graph will take care of all memory management
+from there, deleting the drawable when the object is attached to is deleted.
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage-instance
 

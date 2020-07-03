@@ -47,6 +47,7 @@ namespace Magnum { namespace MeshTools {
 @brief Flip mesh normals and face winding in-place
 @param[in,out] indices  Index array to operate on
 @param[in,out] normals  Normal array to operate on
+@m_since{2020,06}
 
 Flips normal vectors and face winding in index array for face culling to work
 properly too. See also @ref flipNormalsInPlace(const Containers::StridedArrayView1D<Vector3>&)

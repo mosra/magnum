@@ -251,6 +251,7 @@ class WindowlessEglContext::Configuration {
 
         /**
          * @brief Device ID to use
+         * @m_since{2019,10}
          *
          * @requires_gles Device selection is not available in WebGL.
          */
@@ -259,6 +260,7 @@ class WindowlessEglContext::Configuration {
         /**
          * @brief Set device ID to use
          * @return Reference to self (for method chaining)
+         * @m_since{2019,10}
          *
          * The device ID is expected to be smaller than the count of devices
          * reported by EGL. When using @ref WindowlessEglApplication, this is
@@ -279,6 +281,7 @@ class WindowlessEglContext::Configuration {
 
         /**
          * @brief CUDA device ID to use
+         * @m_since{2020,06}
          *
          * @requires_gles Device selection is not available in WebGL.
          */
@@ -287,6 +290,7 @@ class WindowlessEglContext::Configuration {
         /**
          * @brief Set the CUDA device ID to use
          * @return Reference to self (for method chaining)
+         * @m_since{2020,06}
          *
          * If a device with given CUDA ID is not found, context creation fails.
          * When using @ref WindowlessEglApplication, this is also exposed as a

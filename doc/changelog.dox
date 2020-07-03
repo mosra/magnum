@@ -36,7 +36,13 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@anchor changelog-latest
+@section changelog-latest Changes since 2020.06
+
+@subsection changelog-latest-new New features
+
+@subsubsection changelog-latest-new-math Math library
+
+-   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
 
 @section changelog-2020-06 2020.06
 
@@ -265,7 +271,7 @@ Released 2020-06-27, tagged as
     @ref Shaders::MeshVisualizer2D and @ref Shaders::MeshVisualizer3D
 -   Texture coordinate transformation in @ref Shaders::DistanceFieldVector,
     @ref Shaders::Flat, @ref Shaders::Phong and @ref Shaders::Vector
--   Ability to render Per-instance / per-vertex object ID in @ref Shaders::Flat
+-   Ability to render per-instance / per-vertex object ID in @ref Shaders::Flat
     and @ref Shaders::Phong, in addition to uniform object ID
 -   New attribute definitions and an location allocation scheme in
     @ref Shaders::Generic --- @ref Shaders::Generic::Tangent4,
@@ -515,6 +521,10 @@ Released 2020-06-27, tagged as
 -   Updated Android building and troubleshooting guide to make it work with NDK
     r19+ and CMake 3.16+. See also [mosra/corrade#84](https://github.com/mosra/corrade/issues/84)
     and [mosra/magnum#310](https://github.com/mosra/magnum/issues/310).
+-   Vcpkg packages now ignore features that are incompatible with target
+    platform, allowing `vcpkg install magnum[*]` to work again. See also
+    [mosra/magnum#368](https://github.com/mosra/magnum/pull/368) and
+    [microsoft/vcpkg#12211](https://github.com/microsoft/vcpkg/pull/12211).
 
 @subsection changelog-2020-06-bugfixes Bug fixes
 
