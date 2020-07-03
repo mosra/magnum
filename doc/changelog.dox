@@ -46,6 +46,11 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+@subsubsection changelog-latest-changes-meshtools MeshTools library
+
+-   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
+    showing data ranges of known attributes
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"

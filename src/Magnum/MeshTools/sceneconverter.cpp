@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <chrono>
 #include <set>
+#include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -34,6 +35,8 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData.h"
@@ -72,7 +75,8 @@ magnum-sceneconverter [-h|--help] [--importer IMPORTER]
     [--remove-duplicates-fuzzy EPSILON]
     [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…]... [--mesh MESH]
-    [--level LEVEL][--info] [-v|--verbose] [--profile] [--] input output
+    [--level LEVEL] [--info] [--bounds] [-v|--verbose] [--profile]
+    [--] input output
 @endcode
 
 Arguments:
@@ -98,6 +102,7 @@ Arguments:
 -   `--mesh MESH` --- mesh to import (default: `0`)
 -   `--level LEVEL` --- mesh level to import (default: `0`)
 -   `--info` --- print info about the input file and exit
+-   `--bounds` --- show bounds of known attributes in `--info` output
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
@@ -168,6 +173,23 @@ struct Duration {
         std::chrono::high_resolution_clock::time_point _t;
 };
 
+/** @todo const Array& doesn't work, minmax() would fail to match */
+template<class T> std::string calculateBounds(Containers::Array<T>&& attribute) {
+    /** @todo clean up when Debug::toString() exists */
+    std::ostringstream out;
+    Debug{&out, Debug::Flag::NoNewlineAtTheEnd} << Math::minmax(attribute);
+    return out.str();
+}
+
+/* Named attribute index from a global index */
+/** @todo some helper for this directly on the MeshData class? */
+UnsignedInt namedAttributeId(const Trade::MeshData& mesh, UnsignedInt id) {
+    const Trade::MeshAttribute name = mesh.attributeName(id);
+    for(UnsignedInt i = 0; i != mesh.attributeCount(name); ++i)
+        if(mesh.attributeId(name, i) == id) return i;
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -185,6 +207,7 @@ int main(int argc, char** argv) {
         .addOption("mesh", "0").setHelp("mesh", "mesh to import")
         .addOption("level", "0").setHelp("level", "mesh level to import")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
+        .addBooleanOption("bounds").setHelp("bounds", "show bounds of known attributes in --info output")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .addBooleanOption("profile").setHelp("profile", "measure import and conversion time")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
@@ -251,6 +274,7 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             Trade::MeshAttribute name;
             std::string customName;
             VertexFormat format;
+            std::string bounds;
         };
 
         struct MeshInfo {
@@ -306,13 +330,49 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                 }
                 for(UnsignedInt k = 0; k != mesh->attributeCount(); ++k) {
                     const Trade::MeshAttribute name = mesh->attributeName(k);
+
+                    /* Calculate bounds, if requested and this is not an
+                       implementation-specific format */
+                    std::string bounds;
+                    if(args.isSet("bounds") && !isVertexFormatImplementationSpecific(mesh->attributeFormat(k))) switch(name) {
+                        case Trade::MeshAttribute::Position:
+                            bounds = calculateBounds(mesh->positions3DAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::Tangent:
+                            bounds = calculateBounds(mesh->tangentsAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::Bitangent:
+                            bounds = calculateBounds(mesh->bitangentsAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::Normal:
+                            bounds = calculateBounds(mesh->normalsAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::TextureCoordinates:
+                            bounds = calculateBounds(mesh->textureCoordinates2DAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::Color:
+                            bounds = calculateBounds(mesh->colorsAsArray(namedAttributeId(*mesh, k)));
+                            break;
+                        case Trade::MeshAttribute::ObjectId:
+                            Debug{} << mesh->objectIdsAsArray(namedAttributeId(*mesh, k));
+                            bounds = calculateBounds(mesh->objectIdsAsArray(namedAttributeId(*mesh, k)));
+                            break;
+
+                        /* And also all other custom attribs. Not saying
+                           default: here so we get notified when we forget to
+                           handle newly added attribute names */
+                        case Trade::MeshAttribute::Custom:
+                            break;
+                    }
+
                     arrayAppend(info.attributes, Containers::InPlaceInit,
                         mesh->attributeOffset(k),
                         mesh->attributeStride(k),
                         mesh->attributeArraySize(k),
                         name, Trade::isMeshAttributeCustom(name) ?
                             importer->meshAttributeName(name) : "",
-                        mesh->attributeFormat(k));
+                        mesh->attributeFormat(k),
+                        bounds);
                 }
 
                 std::sort(info.attributes.begin(), info.attributes.end(),
@@ -363,6 +423,8 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                 }
                 d << "@" << attribute.format << Debug::nospace << ", stride"
                     << attribute.stride;
+                if(!attribute.bounds.empty())
+                    d << Debug::newline << "      bounds:" << attribute.bounds;
             }
         }
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
