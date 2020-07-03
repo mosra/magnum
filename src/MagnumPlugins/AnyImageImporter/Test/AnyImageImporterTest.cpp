@@ -92,6 +92,7 @@ constexpr struct {
     {"GIF", "image.gif", nullptr, "GifImporter"},
     {"PSD", "image.psd", nullptr, "PsdImporter"},
     {"TIFF", "image.tiff", nullptr, "TiffImporter"},
+    {"TIFF data", "image.tiff", fileCallback, "TiffImporter"},
     {"Basis", "rgb.basis", nullptr, "BasisImporter"}
     /* Not testing everything, just the most important ones */
 };

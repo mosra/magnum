@@ -88,8 +88,8 @@ tries to open the file with it. Supported formats:
 -   Adobe Photoshop (`*.psd`), loaded with any plugin that provides `PsdImporter`
 -   Silicon Graphics (`*.sgi`, `*.bw`, `*.rgb`, `*.rgba`), loaded with any
     plugin that provides `SgiImporter`
--   Tagged Image File Format (`*.tif`, `*.tiff`), loaded with any plugin that
-    provides `TiffImporter`
+-   Tagged Image File Format (`*.tif`, `*.tiff` or data with corresponding
+    signature), loaded with any plugin that provides `TiffImporter`
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst` or data with
     corresponding signature), loaded with @ref TgaImporter or any other plugin
     that provides it

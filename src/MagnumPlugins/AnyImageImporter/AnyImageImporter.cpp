@@ -165,6 +165,11 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
     else if(Utility::String::viewBeginsWith(data, "\x89PNG\x0d\x0a\x1a\x0a"))
         plugin = "PngImporter";
+    /* http://paulbourke.net/dataformats/tiff/,
+       http://paulbourke.net/dataformats/tiff/tiff_summary.pdf */
+    else if(Utility::String::viewBeginsWith(data, "II\x2a\x00") ||
+            Utility::String::viewBeginsWith(data, "MM\x00\x2a"))
+        plugin = "TiffImporter";
     /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
        TGAs are a complete guesswork, so try after everything else fails. */
     else if([data]() {

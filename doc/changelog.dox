@@ -44,6 +44,12 @@ See also:
 
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
 
+@subsection changelog-latest-changes Changes and improvements
+
+@subsubsection changelog-latest-changes-trade Trade library
+
+-   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
+
 @subsection changelog-latest-buildsystem Build system
 
 -   Fixed compilation of the @ref GL library on macOS with ANGLE --- new code
