@@ -409,6 +409,32 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
 }
 
 /**
+@brief Floating point division remainder
+@param a     Numerator
+@param b     Denumerator
+
+Calculates the remainder @f$ r @f$ of a floating point division: @f[
+    r = a - b * \operatorname{trunc}(a/b)
+@f]
+
+@attention This function differs from the GLSL `mod` function when @f$ a/b @f$ is negative.
+The return value has the same sign as the numerator, whereas `mod` keeps the denumerator's sign.
+
+@m_keyword{mod(),GLSL mod(),}
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fmod(T a, T b) {
+    return T(std::fmod(UnderlyingTypeOf<T>(a), UnderlyingTypeOf<T>(b)));
+}
+
+/** @overload */
+template<std::size_t size, class T> inline Vector<size, T> fmod(const Vector<size, T>& a, const Vector<size, T>& b) {
+    Vector<size, T> out{Magnum::NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Math::fmod(a[i], b[i]);
+    return out;
+}
+
+/**
 @brief Linear interpolation of two values
 @param a     First value
 @param b     Second value

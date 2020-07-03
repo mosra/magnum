@@ -51,6 +51,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void floor();
     void round();
     void ceil();
+    void fmod();
 
     void sqrt();
     void sqrtInverted();
@@ -112,6 +113,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::floor,
               &FunctionsTest::round,
               &FunctionsTest::ceil,
+              &FunctionsTest::fmod,
 
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
@@ -289,6 +291,14 @@ void FunctionsTest::ceil() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::ceil(2.7_degf), 3.0_degf);
+}
+
+void FunctionsTest::fmod() {
+    CORRADE_COMPARE(Math::fmod(5.1f, 3.0f), 2.1f);
+    CORRADE_COMPARE(Math::fmod(Vector3(5.1f, -5.1f, 6.8f), Vector3(3.0f, 3.0f, 1.1f)), Vector3(2.1f, -2.1f, 0.2f));
+
+    /* Wrapped types */
+    CORRADE_COMPARE(Math::fmod(2.7_degf, 1.3_degf), 0.1_degf);
 }
 
 void FunctionsTest::sqrt() {
