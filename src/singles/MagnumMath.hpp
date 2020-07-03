@@ -15,6 +15,22 @@
     -   GitHub project page — https://github.com/mosra/magnum
     -   GitHub Singles repository — https://github.com/mosra/magnum-singles
 
+    v2020.06-0-gfac6f4da2 (2020-06-27)
+    -   Various fixes for Clang-CL compatibility
+    -   Expanding the APIs to work with Half and long double types
+    -   Magnum::Math::NoInit is now Magnum::NoInit
+    -   Minor changes for faster performance of dot() and cross() in Debug
+    -   Added reflect() and refract() functions
+    -   slerp() / slerpShortestPath() falls back to linear interpolation for
+        quaternions that are close together, instead or always returning the
+        first
+    -   Added Quaternion::toEuler()
+    -   Added transformVector() to DualComplex and DualQuaternion to have the
+        the same set of APIs as with Matrix3 / Matrix4
+    -   Mutable access to Frustum planes
+    -   Fixed implicit conversion of std::pair to Range*D
+    -   New BoolVector[234], 8-/16-bit and half-float vector and matrix
+        convenience typedefs
     v2019.10-0-g8412e8f99 (2019-10-24)
     -   New IsScalar, IsVector, IsIntegral, IsFloatingPoint type traits,
         correct handling of Deg and Rad types in all APIs
@@ -45,23 +61,31 @@
 #endif
 // {{includes}}
 #include <cmath>
-#if (!defined(CORRADE_ASSERT) || !defined(CORRADE_CONSTEXPR_ASSERT) || !defined(CORRADE_INTERNAL_ASSERT_OUTPUT) || !defined(CORRADE_ASSERT_UNREACHABLE)) && !defined(NDEBUG)
+#if (!defined(CORRADE_ASSERT) || !defined(CORRADE_CONSTEXPR_ASSERT) || !defined(CORRADE_INTERNAL_ASSERT_OUTPUT) || !defined(CORRADE_INTERNAL_ASSERT_UNREACHABLE)) && !defined(NDEBUG)
 #include <cassert>
 #endif
 
+/* Combined copyrights because the rool isn't able to merge those on its own:
+
+    Copyright © 2016, 2018, 2020 Jonathan Hale <squareys@googlemail.com>
+
+*/
+
 /* We're taking stuff from integration as well */
 #pragma ACME path ../../../magnum-integration/src
-#pragma ACME revision magnum-integration/src echo "$(git describe --match 'v*') ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
+#pragma ACME revision magnum-integration/src echo "$(git describe --long --match 'v*') ($(date -d @$(git log -1 --format=%at) +%Y-%m-%d))"
 
 /* Disable asserts that are not used. CORRADE_ASSERT, CORRADE_CONSTEXPR_ASSERT,
-   CORRADE_INTERNAL_ASSERT_OUTPUT and CORRADE_ASSERT_UNREACHABLE are used,
-   wrapping the #include <cassert> above. When enabling additional asserts, be
-   sure to update them above as well. */
+   CORRADE_INTERNAL_ASSERT_OUTPUT and CORRADE_INTERNAL_ASSERT_UNREACHABLE are
+   used, wrapping the #include <cassert> above. When enabling additional
+   asserts, be sure to update them above as well. */
+#pragma ACME enable CORRADE_ASSUME
 #pragma ACME enable CORRADE_ASSERT_OUTPUT
+#pragma ACME enable CORRADE_ASSERT_UNREACHABLE
 #pragma ACME enable CORRADE_INTERNAL_ASSERT
 #pragma ACME enable CORRADE_INTERNAL_CONSTEXPR_ASSERT
 
-/* We don't need anything from configure.h here */
+/* We don't need everything from configure.h here */
 #pragma ACME enable Corrade_configure_h
 #pragma ACME enable Magnum_configure_h
 #if defined(_MSC_VER) && _MSC_VER <= 1920
@@ -80,6 +104,46 @@
 #define CORRADE_TARGET_ANDROID
 #endif
 
+/* CORRADE_TARGET_LIBSTDCXX needed for CORRADE_STD_IS_TRIVIALLY_TRAITS_SUPPORTED,
+   and because it's so complex to check for it I can as well pull in the whole
+   thing */
+#include <ciso646>
+#ifdef _LIBCPP_VERSION
+#define CORRADE_TARGET_LIBCXX
+#elif defined(_CPPLIB_VER)
+#define CORRADE_TARGET_DINKUMWARE
+#elif defined(__GLIBCXX__)
+#define CORRADE_TARGET_LIBSTDCXX
+/* GCC's <ciso646> provides the __GLIBCXX__ macro only since 6.1, so on older
+   versions we'll try to get it from bits/c++config.h */
+#elif defined(__has_include)
+    #if __has_include(<bits/c++config.h>)
+        #include <bits/c++config.h>
+        #ifdef __GLIBCXX__
+        #define CORRADE_TARGET_LIBSTDCXX
+        #endif
+    #endif
+/* GCC < 5.0 doesn't have __has_include, so on these versions we'll just assume
+   it's libstdc++ as I don't think those versions are used with anything else
+   nowadays anyway. Clang reports itself as GCC 4.4, so exclude that one. */
+#elif defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5
+#define CORRADE_TARGET_LIBSTDCXX
+#else
+/* Otherwise no idea. */
+#endif
+
+#ifdef _MSC_VER
+#define CORRADE_TARGET_MSVC
+#endif
+#if defined(__clang__) && defined(_MSC_VER)
+#define CORRADE_TARGET_CLANG_CL
+#endif
+/* Needed by TypeTraits::equal() */
+#if defined(CORRADE_TARGET_MSVC) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __LDBL_DIG__ == __DBL_DIG__)
+#define CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
+#endif
+/* CORRADE_TARGET_SSE2 or CORRADE_TARGET_BIG_ENDIAN not used anywhere yet */
+
 /* Our own subset of visibility macros */
 #pragma ACME enable Magnum_visibility_h
 #pragma ACME enable Corrade_Utility_VisibilityMacros_h
@@ -97,9 +161,24 @@
 namespace Magnum {
 
 typedef Math::Half Half;
+typedef Math::BoolVector<2> BoolVector2;
+typedef Math::BoolVector<3> BoolVector3;
+typedef Math::BoolVector<4> BoolVector4;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector4<Float> Vector4;
+typedef Math::Vector2<UnsignedByte> Vector2ub;
+typedef Math::Vector3<UnsignedByte> Vector3ub;
+typedef Math::Vector4<UnsignedByte> Vector4ub;
+typedef Math::Vector2<Byte> Vector2b;
+typedef Math::Vector3<Byte> Vector3b;
+typedef Math::Vector4<Byte> Vector4b;
+typedef Math::Vector2<UnsignedShort> Vector2us;
+typedef Math::Vector3<UnsignedShort> Vector3us;
+typedef Math::Vector4<UnsignedShort> Vector4us;
+typedef Math::Vector2<Short> Vector2s;
+typedef Math::Vector3<Short> Vector3s;
+typedef Math::Vector4<Short> Vector4s;
 typedef Math::Vector2<UnsignedInt> Vector2ui;
 typedef Math::Vector3<UnsignedInt> Vector3ui;
 typedef Math::Vector4<UnsignedInt> Vector4ui;
@@ -110,6 +189,8 @@ typedef Math::Color3<Float> Color3;
 typedef Math::Color4<Float> Color4;
 typedef Math::Color3<UnsignedByte> Color3ub;
 typedef Math::Color4<UnsignedByte> Color4ub;
+typedef Math::Color3<UnsignedShort> Color3us;
+typedef Math::Color4<UnsignedShort> Color4us;
 typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix2x2<Float> Matrix2x2;
@@ -121,6 +202,24 @@ typedef Math::Matrix2x4<Float> Matrix2x4;
 typedef Math::Matrix4x2<Float> Matrix4x2;
 typedef Math::Matrix3x4<Float> Matrix3x4;
 typedef Math::Matrix4x3<Float> Matrix4x3;
+typedef Math::Matrix2x2<Byte> Matrix2x2b;
+typedef Math::Matrix2x3<Byte> Matrix2x3b;
+typedef Math::Matrix2x4<Byte> Matrix2x4b;
+typedef Math::Matrix3x2<Byte> Matrix3x2b;
+typedef Math::Matrix3x3<Byte> Matrix3x3b;
+typedef Math::Matrix3x4<Byte> Matrix3x4b;
+typedef Math::Matrix4x2<Byte> Matrix4x2b;
+typedef Math::Matrix4x3<Byte> Matrix4x3b;
+typedef Math::Matrix4x4<Byte> Matrix4x4b;
+typedef Math::Matrix2x2<Short> Matrix2x2s;
+typedef Math::Matrix2x3<Short> Matrix2x3s;
+typedef Math::Matrix2x4<Short> Matrix2x4s;
+typedef Math::Matrix3x2<Short> Matrix3x2s;
+typedef Math::Matrix3x3<Short> Matrix3x3s;
+typedef Math::Matrix3x4<Short> Matrix3x4s;
+typedef Math::Matrix4x2<Short> Matrix4x2s;
+typedef Math::Matrix4x3<Short> Matrix4x3s;
+typedef Math::Matrix4x4<Short> Matrix4x4s;
 typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
 typedef Math::QuadraticBezier3D<Float> QuadraticBezier3D;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
@@ -144,6 +243,20 @@ typedef Math::Range1D<Int> Range1Di;
 typedef Math::Range2D<Int> Range2Di;
 typedef Math::Range3D<Int> Range3Di;
 typedef Math::Frustum<Float> Frustum;
+typedef Math::Vector2<Half> Vector2h;
+typedef Math::Vector3<Half> Vector3h;
+typedef Math::Vector4<Half> Vector4h;
+typedef Math::Color3<Half> Color3h;
+typedef Math::Color4<Half> Color4h;
+typedef Math::Matrix2x2<Half> Matrix2x2h;
+typedef Math::Matrix2x3<Half> Matrix2x3h;
+typedef Math::Matrix2x4<Half> Matrix2x4h;
+typedef Math::Matrix3x2<Half> Matrix3x2h;
+typedef Math::Matrix3x3<Half> Matrix3x3h;
+typedef Math::Matrix3x4<Half> Matrix3x4h;
+typedef Math::Matrix4x2<Half> Matrix4x2h;
+typedef Math::Matrix4x3<Half> Matrix4x3h;
+typedef Math::Matrix4x4<Half> Matrix4x4h;
 typedef Math::Vector2<Double> Vector2d;
 typedef Math::Vector3<Double> Vector3d;
 typedef Math::Vector4<Double> Vector4d;
@@ -195,12 +308,14 @@ typedef Math::Frustum<Double> Frustumd;
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Functions.h"
+// TODO: FunctionsBatch (separate library because of StridedArrayView dep?)
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Intersection.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Packing.h"
+// TODO: PackingBatch (separate library because of StridedArrayView dep?)
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/RectangularMatrix.h"
