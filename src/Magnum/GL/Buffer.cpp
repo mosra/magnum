@@ -38,7 +38,7 @@
 #endif
 #include "Magnum/GL/Implementation/MeshState.h"
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 #include "Magnum/GL/Implementation/TextureState.h"
 #endif
 
@@ -550,7 +550,7 @@ bool Buffer::unmapImplementationDSA() {
 #endif
 #endif
 
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* See apple-buffer-texture-detach-on-data-modify for the gory details. */
 void Buffer::textureWorkaroundAppleBefore() {
     /* My Mac Mini reports 80 texture units, which means this thing can have a

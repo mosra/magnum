@@ -1251,7 +1251,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
-        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
         void MAGNUM_GL_LOCAL textureWorkaroundAppleBefore();
         void MAGNUM_GL_LOCAL textureWorkaroundAppleAfter();
         #endif

@@ -44,6 +44,11 @@ See also:
 
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
 
+@subsection changelog-latest-buildsystem Build system
+
+-   Fixed compilation of the @ref GL library on macOS with ANGLE --- new code
+    assumed macOS is always desktop GL (see [mosra/magnum#452](https://github.com/mosra/magnum/issues/452))
+
 @section changelog-2020-06 2020.06
 
 Released 2020-06-27, tagged as

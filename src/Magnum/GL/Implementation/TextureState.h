@@ -158,7 +158,7 @@ struct TextureState {
     #endif
 
     Containers::Array<std::pair<GLenum, GLuint>> bindings;
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     Math::BoolVector<80> bufferTextureBound;
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

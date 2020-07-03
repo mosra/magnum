@@ -490,7 +490,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
     bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
 
-    #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+    #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
         CORRADE_INTERNAL_ASSERT(std::size_t(maxTextureUnits) <= decltype(bufferTextureBound)::Size);
         /* Assume ARB_multi_bind is not supported, otherwise we'd need to

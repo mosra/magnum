@@ -40,7 +40,7 @@ namespace {
 /* Search the code for the following strings to see where they are implemented. */
 const char* KnownWorkarounds[]{
 /* [workarounds] */
-#if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+#if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
    on ANY buffer when ANY buffer is attached to a currently bound
    GL_TEXTURE_BUFFER crashes in gleUpdateCtxDirtyStateForBufStampChange deep
