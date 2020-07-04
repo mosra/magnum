@@ -60,6 +60,40 @@ See also:
 -   Fixed compilation of the @ref GL library on macOS with ANGLE --- new code
     assumed macOS is always desktop GL (see [mosra/magnum#452](https://github.com/mosra/magnum/issues/452))
 
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   Removed remaining APIs deprecated in version 2018.10, in particular:
+    -   @cpp Audio::PlayableGroup::setClean() @ce, use
+        @ref Audio::Listener::update() instead
+    -   @cpp GL::*Texture::setSRGBDecode() @ce,
+        @cpp GL::Renderer::Feature::FramebufferSRGB @ce,
+        @cpp Platform::*Application::GLConfiguration::setSRGBCapable() @ce and
+        @cpp Platform::*Application::GLConfiguration::isSRGBCapable() @ce, use
+        @ref GL::Texture::setSrgbDecode() "GL::*Texture::setSrgbDecode()",
+        @ref GL::Renderer::Feature::FramebufferSrgb,
+        @ref Platform::Sdl2Application::GLConfiguration::setSrgbCapable() "Platform::*Application::GLConfiguration::setSrgbCapable()" and
+        @ref Platform::Sdl2Application::GLConfiguration::isSrgbCapable() "Platform::*Application::GLConfiguration::isSrgbCapable()" instead
+    -   `Math::Geometry`, `Math::Geometry::Distance` and
+        `Math::Geometry::Intersection` namespaces, use @ref Math::Distance and
+        @ref Math::Intersection instead
+    -   @ref Math::Intersection::planeLine() taking a separate plane normal and
+        position, use @ref Math::planeEquation() instead
+    -   @ref MeshTools::compile() taking a @ref GL::BufferUsage and returning a
+        tuple, use the simpler versions instead (note that the
+        @cpp Trade::MeshData2D @ce / @cpp Trade::MeshData3D @ce overloads are
+        still present for backwards compatibility)
+    -   `Platform::*Application::viewportEvent(const Vector2i&)`, override the
+        @ref Platform::Sdl2Application::viewportEvent(ViewportEvent&) "viewportEvent(ViewportEvent&)"
+        function instead.
+    -   `Platform::Sdl2Application::Configuration::WindowFlags::AllowHighDpi`,
+        had no effect anymore
+    -   `Shaders::Generic::Color` and `Shaders::VertexColor::Color`, use
+        @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
+        instead
+    -   @ref Trade::CameraData constructor not taking an explicit type enum,
+        use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
+        instead
+
 @section changelog-2020-06 2020.06
 
 Released 2020-06-27, tagged as

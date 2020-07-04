@@ -96,14 +96,6 @@ class MAGNUM_TRADE_EXPORT CameraData {
          */
         explicit CameraData(CameraType type, const Vector2& size, Float near, Float far, const void* importerState = nullptr) noexcept;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief CameraData(CameraType, Rad, Float, Float, Float, const void*)
-         * @m_deprecated_since{2018,10} Use @ref CameraData(CameraType, Rad, Float, Float, Float, const void*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("use CameraData(CameraType, Rad, Float, Float, const void*) instead") CameraData(Rad fov, Float near, Float far, const void* importerState = nullptr) noexcept: CameraData{CameraType::Perspective3D, fov, 1.0f, near, far, importerState} {}
-        #endif
-
         /** @brief Copying is not allowed */
         CameraData(const CameraData&) = delete;
 

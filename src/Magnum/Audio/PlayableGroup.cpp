@@ -83,18 +83,6 @@ template<UnsignedInt dimensions> PlayableGroup<dimensions>& PlayableGroup<dimens
     return *this;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions> void PlayableGroup<dimensions>::setClean() {
-    std::vector<std::reference_wrapper<SceneGraph::AbstractObject<dimensions, Float>>> objects;
-    objects.reserve(this->size());
-
-    for(UnsignedInt i = 0; i < this->size(); ++i)
-        objects.push_back((*this)[i].object());
-
-    SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
-}
-#endif
-
 /* On non-MinGW Windows the instantiations are already marked with extern
    template. However Clang-CL doesn't propagate the export from the extern
    template, it seems. */

@@ -582,15 +582,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             AbstractTexture::setSrgbDecode(decode);
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief setSrgbDecode()
-         * @m_deprecated_since{2018,10} Use @ref setSrgbDecode() instead.
-         */
-        CORRADE_DEPRECATED("use setSrgbDecode() instead") Texture<dimensions>& setSRGBDecode(bool decode) {
-            return setSrgbDecode(decode);
-        }
-        #endif
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

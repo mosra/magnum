@@ -139,18 +139,8 @@ template<class Application> void BasicScreen<Application>::focusEvent() {}
 template<class Application> void BasicScreen<Application>::blurEvent() {}
 
 template<class Application> void BasicScreen<Application>::viewportEvent(ViewportEvent& event) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    viewportEvent(event.windowSize());
-    CORRADE_IGNORE_DEPRECATED_POP
-    #else
     static_cast<void>(event);
-    #endif
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class Application> void BasicScreen<Application>::viewportEvent(const Vector2i&) {}
-#endif
 
 template<class Application> void BasicScreen<Application>::mousePressEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseReleaseEvent(MouseEvent&) {}

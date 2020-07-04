@@ -879,18 +879,6 @@ class Sdl2Application {
          */
         virtual void viewportEvent(ViewportEvent& event);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief viewportEvent(ViewportEvent&)
-         * @m_deprecated_since{2018,10} Use @ref viewportEvent(ViewportEvent&)
-         *      instead. To preserve backwards compatibility, this function is
-         *      called from @ref viewportEvent(ViewportEvent&) with
-         *      @ref ViewportEvent::framebufferSize() passed to @p size.
-         *      Overriding the new function will cause this function to not be
-         *      called anymore.
-         */
-        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
-        #endif
-
         /**
          * @brief Draw event
          *
@@ -1440,22 +1428,6 @@ class Sdl2Application::GLConfiguration {
             _srgbCapable = enabled;
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief isSrgbCapable()
-         * @m_deprecated_since{2018,10} Use @ref isSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use isSrgbCapable() instead") bool isSRGBCapable() const { return isSrgbCapable(); }
-
-        /**
-         * @brief @copybrief setSrgbCapable()
-         * @m_deprecated_since{2018,10} Use @ref setSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use setSrgbCapable() instead") GLConfiguration& setSRGBCapable(bool enabled) {
-            return setSrgbCapable(enabled);
-        }
-        #endif
         #endif
 
     private:
@@ -1548,17 +1520,6 @@ class Sdl2Application::Configuration {
              * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
             Borderless = SDL_WINDOW_BORDERLESS,
-            #endif
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * Allow high DPI.
-             *
-             * @m_deprecated_since{2018,10} Has no effect, as this flag is
-             *      passed implicitly on platforms where needed. See
-             *      @ref Platform-Sdl2Application-dpi for more information.
-             */
-            AllowHighDpi CORRADE_DEPRECATED_ENUM("has no effect, passed implicitly on platforms that need it") = 0,
             #endif
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN

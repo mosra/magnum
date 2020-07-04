@@ -535,18 +535,6 @@ class GlfwApplication {
          */
         virtual void viewportEvent(ViewportEvent& event);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief viewportEvent(ViewportEvent&)
-         * @m_deprecated_since{2018,10} Use @ref viewportEvent(ViewportEvent&)
-         *      instead. To preserve backwards compatibility, this function is
-         *      called from @ref viewportEvent(ViewportEvent&) with
-         *      @ref ViewportEvent::windowSize() passed to @p size. Overriding
-         *      the new function will cause this function to not be called
-         *      anymore.
-         */
-        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
-        #endif
-
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 
@@ -950,22 +938,6 @@ class GlfwApplication::GLConfiguration {
             _srgbCapable = enabled;
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief isSrgbCapable()
-         * @m_deprecated_since{2018,10} Use @ref isSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use isSrgbCapable() instead") bool isSRGBCapable() const { return isSrgbCapable(); }
-
-        /**
-         * @brief @copybrief setSrgbCapable()
-         * @m_deprecated_since{2018,10} Use @ref setSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use setSrgbCapable() instead") GLConfiguration& setSRGBCapable(bool enabled) {
-            return setSrgbCapable(enabled);
-        }
-        #endif
 
     private:
         Vector4i _colorBufferSize;

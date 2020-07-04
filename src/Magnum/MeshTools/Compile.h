@@ -227,15 +227,6 @@ CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData2D& meshData);
 CORRADE_IGNORE_DEPRECATED_POP
 
-/** @brief Compile 2D mesh data
- * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData&)
- *      instead. The @p usage parameter is ignored and returned buffer
- *      instances are empty.
- */
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
-CORRADE_IGNORE_DEPRECATED_POP
-
 /**
 @brief Compile 3D mesh data
 @m_deprecated_since{2020,06} Use @ref compile(const Trade::MeshData&, CompileFlags)
@@ -265,15 +256,6 @@ greater flexibility.
 */
 CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_DEPRECATED("use compile(const Trade::MeshData&, CompileFlags) instead") MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags = {});
-CORRADE_IGNORE_DEPRECATED_POP
-
-/** @brief Compile 3D mesh data
- * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData&, CompileFlags)
- *      instead. The @p usage parameter is ignored and returned buffer
- *      instances are empty.
- */
-CORRADE_IGNORE_DEPRECATED_PUSH
-CORRADE_DEPRECATED("use compile(const Trade::MeshData&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 

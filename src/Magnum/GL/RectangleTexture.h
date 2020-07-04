@@ -280,15 +280,6 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief setSrgbDecode()
-         * @m_deprecated_since{2018,10} Use @ref setSrgbDecode() instead.
-         */
-        CORRADE_DEPRECATED("use setSrgbDecode() instead") RectangleTexture& setSRGBDecode(bool decode) {
-            return setSrgbDecode(decode);
-        }
-        #endif
-
         /**
          * @brief @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)

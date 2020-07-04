@@ -309,12 +309,6 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
     return mesh;
 }
 
-std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage) {
-    return std::make_tuple(compile(meshData),
-        std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
-        std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
-}
-
 GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
@@ -467,12 +461,6 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     } else mesh.setCount(positions.size());
 
     return mesh;
-}
-
-std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage) {
-    return std::make_tuple(compile(meshData),
-        std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
-        std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
 }
 CORRADE_IGNORE_DEPRECATED_POP
 #endif

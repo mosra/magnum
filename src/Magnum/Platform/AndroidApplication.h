@@ -377,11 +377,6 @@ class AndroidApplication {
          */
         virtual void viewportEvent(ViewportEvent& event);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copydoc GlfwApplication::viewportEvent(const Vector2i&) */
-        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
-        #endif
-
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
 

@@ -39,11 +39,6 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @todo remove once people get used to including this where needed */
-#include <Corrade/Containers/ArrayViewStl.h>
-#endif
-
 namespace Magnum { namespace GL {
 
 /**

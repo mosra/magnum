@@ -75,28 +75,11 @@ void PlayableALTest::group() {
     PlayableGroup3D group;
     Playable3D playable{object, &group};
 
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    constexpr Vector3 offset{-3.0f, 2.0f, 1.0f};
-    object.translate(offset);
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    group.setClean();
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(playable.source().position(), offset);
-    #endif
-
     group.setGain(0.5f);
     CORRADE_COMPARE(playable.source().gain(), 0.5f);
 
     playable.setGain(0.5f);
     CORRADE_COMPARE(playable.source().gain(), 0.25f);
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    group.setSoundTransformation(Matrix4::fromDiagonal(Vector4{10.0f, 10.0f, 10.0f, 1.0f}));
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    group.setClean();
-    CORRADE_IGNORE_DEPRECATED_POP
-    CORRADE_COMPARE(playable.source().position(), offset*10.0f);
-    #endif
 
     group.play();
     group.pause();

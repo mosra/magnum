@@ -72,9 +72,6 @@ set_target_properties(MagnumMath PROPERTIES FOLDER "Magnum/Math")
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
 add_subdirectory(Algorithms)
-if(BUILD_DEPRECATED)
-    add_subdirectory(Geometry)
-endif()
 
 if(BUILD_TESTS)
     add_subdirectory(Test)

@@ -354,18 +354,6 @@ template<class Application> class BasicScreen:
          */
         virtual void viewportEvent(ViewportEvent& event);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief viewportEvent(ViewportEvent&)
-         * @m_deprecated_since{2018,10} Use @ref viewportEvent(ViewportEvent&)
-         *      instead. To preserve backwards compatibility, this function is
-         *      called from @ref viewportEvent(ViewportEvent&) with
-         *      @ref Sdl2Application::ViewportEvent::windowSize() "*Application::ViewportEvent::windowSize()"
-         *      passed to @p size. Overriding the new function will cause this
-         *      function to not be called anymore.
-         */
-        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
-        #endif
-
         /**
          * @brief Draw event
          *

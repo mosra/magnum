@@ -1146,24 +1146,8 @@ void Sdl2Application::anyEvent(SDL_Event&) {
 }
 
 void Sdl2Application::viewportEvent(ViewportEvent& event) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    viewportEvent(
-        #ifdef MAGNUM_TARGET_GL
-        event.framebufferSize()
-        #else
-        event.windowSize()
-        #endif
-    );
-    CORRADE_IGNORE_DEPRECATED_POP
-    #else
     static_cast<void>(event);
-    #endif
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Sdl2Application::viewportEvent(const Vector2i&) {}
-#endif
 
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}

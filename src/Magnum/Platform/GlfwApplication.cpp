@@ -844,18 +844,8 @@ void GlfwApplication::exitEvent(ExitEvent& event) {
 }
 
 void GlfwApplication::viewportEvent(ViewportEvent& event) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    viewportEvent(event.windowSize());
-    CORRADE_IGNORE_DEPRECATED_POP
-    #else
     static_cast<void>(event);
-    #endif
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void GlfwApplication::viewportEvent(const Vector2i&) {}
-#endif
 
 void GlfwApplication::keyPressEvent(KeyEvent&) {}
 void GlfwApplication::keyReleaseEvent(KeyEvent&) {}

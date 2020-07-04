@@ -31,10 +31,6 @@
 
 #include "Magnum/GL/Attribute.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Shaders {
 
 /**
@@ -431,29 +427,6 @@ template<UnsignedInt dimensions> struct Generic {
      *      in WebGL 1.0.
      */
     typedef GL::Attribute<15, Vector2> TextureOffset;
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /**
-     * @brief Vertex color
-     * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
-     */
-    struct Color: GL::Attribute<3, Magnum::Color4> {
-        /**
-         * @brief Constructor
-         * @param components    Component count
-         * @param dataType      Type of passed data
-         * @param dataOptions   Data options
-         *
-         * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
-         */
-        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
-
-        /** @brief @copybrief Color(Components, DataType, DataOptions)
-         * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
-         */
-        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});
-    };
-    #endif
 };
 #endif
 
@@ -480,14 +453,6 @@ struct BaseGeneric {
     #endif
 
     typedef GL::Attribute<15, Vector2> TextureOffset;
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    struct Color: GL::Attribute<3, Magnum::Color4> {
-        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Magnum::Color4>{components, dataType, dataOptions} {}
-
-        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Magnum::Color4>{Components::Three, dataType, dataOptions} {}
-    };
-    #endif
 };
 
 template<> struct Generic<2>: BaseGeneric {

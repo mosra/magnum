@@ -105,14 +105,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
             ColorOutput = Generic<dimensions>::ColorOutput
         };
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Vertex color
-         * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
-         */
-        typedef CORRADE_DEPRECATED("use Color3 or Color4 instead") typename Generic<dimensions>::Color Color;
-        #endif
-
         explicit VertexColor();
 
         /**
