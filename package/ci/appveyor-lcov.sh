@@ -1,7 +1,9 @@
 #!/bin/bash
 set -ev
 
-pacman -Sy --noconfirm mingw-w64-x86_64-perl
+# Since 2020-07-04 this is asking for Import PGP key bla? [Y/n]
+pacman -Sy --noconfirm msys2-keyring
+pacman -S --noconfirm mingw-w64-x86_64-perl
 
 # mingw lcov package is empty, so download and use it manually
 # https://github.com/appveyor/ci/issues/1628
