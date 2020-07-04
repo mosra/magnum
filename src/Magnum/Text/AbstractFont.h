@@ -38,10 +38,6 @@
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/PointerStl.h>
-#endif
-
 namespace Magnum { namespace Text {
 
 /**

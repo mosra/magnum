@@ -34,6 +34,10 @@
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#endif
+
 using namespace Magnum;
 
 int main() {

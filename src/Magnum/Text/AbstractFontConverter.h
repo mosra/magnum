@@ -37,10 +37,6 @@
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/PointerStl.h>
-#endif
-
 #ifdef CORRADE_TARGET_LIBCXX
 #include <string> /* Libc++ doesn't have std::u32string in the fwdecl */
 #else

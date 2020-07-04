@@ -40,8 +40,6 @@
 #include "Magnum/MeshTools/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-#include <memory> /* deliberately kept here */
 #include <Corrade/Utility/Macros.h>
 #endif
 
