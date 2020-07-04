@@ -91,7 +91,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in WebGL.
+             * @requires_gles Enabled by default on WebGL if the
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
+             *      is available.
              */
             BlendAdvancedCoherent = GL_BLEND_ADVANCED_COHERENT_KHR,
             #endif
@@ -1265,7 +1267,6 @@ class MAGNUM_GL_EXPORT Renderer {
             Max = GL_MAX_EXT,
             #endif
 
-            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Multiply. Not accepted as separate parameters in
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
@@ -1274,8 +1275,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Multiply = GL_MULTIPLY_KHR,
 
@@ -1287,8 +1288,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Screen = GL_SCREEN_KHR,
 
@@ -1300,8 +1301,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Overlay = GL_OVERLAY_KHR,
 
@@ -1313,8 +1314,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Darken = GL_DARKEN_KHR,
 
@@ -1326,8 +1327,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Lighten = GL_LIGHTEN_KHR,
 
@@ -1339,8 +1340,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             ColorDodge = GL_COLORDODGE_KHR,
 
@@ -1352,8 +1353,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             ColorBurn = GL_COLORBURN_KHR,
 
@@ -1365,8 +1366,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             HardLight = GL_HARDLIGHT_KHR,
 
@@ -1378,8 +1379,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             SoftLight = GL_SOFTLIGHT_KHR,
 
@@ -1391,8 +1392,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Difference = GL_DIFFERENCE_KHR,
 
@@ -1404,8 +1405,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             Exclusion = GL_EXCLUSION_KHR,
 
@@ -1417,8 +1418,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             HslHue = GL_HSL_HUE_KHR,
 
@@ -1430,8 +1431,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             HslSaturation = GL_HSL_SATURATION_KHR,
 
@@ -1443,8 +1444,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             HslColor = GL_HSL_COLOR_KHR,
 
@@ -1456,11 +1457,10 @@ class MAGNUM_GL_EXPORT Renderer {
              * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,blend_equation_advanced}
-             * @requires_gles Advanced blend equations are not available in
-             *      WebGL.
+             * @requires_webgl_extension Extension
+             *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
              */
             HslLuminosity = GL_HSL_LUMINOSITY_KHR
-            #endif
         };
 
         /**
@@ -1762,7 +1762,9 @@ class MAGNUM_GL_EXPORT Renderer {
          * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
          * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
          *      @gl_extension{KHR,blend_equation_advanced}
-         * @requires_gles Advanced blend equations are not available in WebGL.
+         * @requires_gles Enabled by default on WebGL if the
+         *      @webgl_extension{WEBGL,blend_equation_advanced_coherent}
+         *      is available.
          */
         static void blendBarrier() { glBlendBarrierKHR(); }
         #endif

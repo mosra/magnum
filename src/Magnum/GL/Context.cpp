@@ -280,6 +280,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OVR,multiview2),
     #endif
+    _extension(WEBGL,blend_equation_advanced_coherent),
     _extension(WEBGL,compressed_texture_astc),
     _extension(WEBGL,compressed_texture_pvrtc),
     _extension(WEBGL,compressed_texture_s3tc),

@@ -561,6 +561,7 @@ Extension                                   | Status
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
+@webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
 
 @section opengl-unsupported Unsupported OpenGL features
 

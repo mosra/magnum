@@ -46,6 +46,9 @@ See also:
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all
     platforms
+-   Implemented @webgl_extension{WEBGL,blend_equation_advanced_coherent}
+    extension, making advanced @ref GL::Renderer::BlendEquation values
+    available on all platforms
 
 @subsubsection changelog-latest-new-math Math library
 

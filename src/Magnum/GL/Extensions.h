@@ -335,6 +335,7 @@ namespace ANGLE {
     #endif
     _extension(30,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
     _extension(31,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
+    _extension(32,WEBGL,blend_equation_advanced_coherent,GLES200,None) // #42
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2
     _extension(40,MAGNUM,shader_vertex_id,          GLES300, GLES300)
