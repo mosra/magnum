@@ -331,68 +331,117 @@ enum class TextureFormat: GLenum {
     RGBA8Snorm = GL_RGBA8_SNORM,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    /* Available everywhere except ES2 (WebGL 1 has it) */
+    #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     /**
      * Red component, normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles30 Only byte-sized normalized formats are available in
+     *      OpenGL ES 2.0
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     R16 = GL_R16,
+    #else
+    R16 = GL_R16_EXT,
+    #endif
 
     /**
      * Red and green component, each normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RG16 = GL_RG16,
+    #else
+    RG16 = GL_RG16_EXT,
+    #endif
 
     /**
      * RGB, each component normalized unsigned short.
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGB16 = GL_RGB16,
+    #else
+    RGB16 = GL_RGB16_EXT,
+    #endif
 
     /**
      * RGBA, each component normalized unsigned short.
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGBA16 = GL_RGBA16,
+    #else
+    RGBA16 = GL_RGBA16_EXT,
+    #endif
 
     /**
      * Red component, normalized signed short.
      * @requires_gl31 Extension @gl_extension{EXT,texture_snorm}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     R16Snorm = GL_R16_SNORM,
+    #else
+    R16Snorm = GL_R16_SNORM_EXT,
+    #endif
 
     /**
      * Red and green component, each normalized signed short.
      * @requires_gl31 Extension @gl_extension{EXT,texture_snorm}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RG16Snorm = GL_RG16_SNORM,
+    #else
+    RG16Snorm = GL_RG16_SNORM_EXT,
+    #endif
 
     /**
      * RGB, each component normalized signed short.
      * @requires_gl31 Extension @gl_extension{EXT,texture_snorm}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGB16Snorm = GL_RGB16_SNORM,
+    #else
+    RGB16Snorm = GL_RGB16_SNORM_EXT,
+    #endif
 
     /**
      * RGBA, each component normalized signed short.
      * @requires_gl31 Extension @gl_extension{EXT,texture_snorm}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gles31 Only byte-sized normalized formats are available in
+     *      OpenGL ES 3.0 and older; not defined on ES2
+     * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGBA16Snorm = GL_RGBA16_SNORM,
+    #else
+    RGBA16Snorm = GL_RGBA16_SNORM_EXT,
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2

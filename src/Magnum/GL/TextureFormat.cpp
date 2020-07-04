@@ -87,7 +87,7 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         _c(RGB8Snorm)
         _c(RGBA8Snorm)
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         _c(R16)
         _c(RG16)
         _c(RGB16)

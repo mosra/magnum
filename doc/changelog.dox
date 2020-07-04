@@ -40,6 +40,13 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-gl GL library
+
+-   Implemented @gl_extension{EXT,texture_norm16} and
+    @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
+    normalized 16-bit texture and renderbuffer formats available on all
+    platforms
+
 @subsubsection changelog-latest-new-math Math library
 
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))

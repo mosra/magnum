@@ -470,6 +470,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,pvrtc_sRGB}               | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
+@gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
 @gl_extension{EXT,polygon_offset_clamp}     | |
@@ -552,6 +553,7 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{EXT,clip_cull_distance}    | done
+@webgl_extension{EXT,texture_norm16}        | done
 @webgl_extension{EXT,draw_buffers_indexed}  | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OVR,multiview2}            | |

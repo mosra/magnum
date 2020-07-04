@@ -759,6 +759,17 @@ typedef struct __GLsync *GLsync;
 #define GL_CLIP_DISTANCE6_EXT 0x3006
 #define GL_CLIP_DISTANCE7_EXT 0x3007
 
+/* GL_EXT_texture_norm16 */
+
+#define GL_R16_EXT 0x822A
+#define GL_RG16_EXT 0x822C
+#define GL_RGBA16_EXT 0x805B
+#define GL_RGB16_EXT 0x8054
+#define GL_R16_SNORM_EXT 0x8F98
+#define GL_RG16_SNORM_EXT 0x8F99
+#define GL_RGB16_SNORM_EXT 0x8F9A
+#define GL_RGBA16_SNORM_EXT 0x8F9B
+
 /* GL_EXT_draw_buffers_indexed */
 
 #define GL_BLEND_EQUATION_RGB 0x8009

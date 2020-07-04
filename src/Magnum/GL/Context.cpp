@@ -275,6 +275,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_compression_bptc),
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_filter_anisotropic),
+    _extension(EXT,texture_norm16),
     _extension(OES,texture_float_linear),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(OVR,multiview2),
@@ -349,6 +350,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_filter_anisotropic),
     _extension(EXT,texture_format_BGRA8888),
     #ifndef MAGNUM_TARGET_GLES2
+    _extension(EXT,texture_norm16),
     _extension(EXT,texture_sRGB_R8),
     #endif
     #ifndef MAGNUM_TARGET_GLES2

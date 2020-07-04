@@ -564,7 +564,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::SR8:
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R16:
         case TextureFormat::R16Snorm:
         #endif
@@ -614,7 +614,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifdef MAGNUM_TARGET_GLES
         case TextureFormat::SRG8:
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG16:
         case TextureFormat::RG16Snorm:
         #endif
@@ -662,7 +662,8 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB8Snorm:
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         case TextureFormat::RGB16:
         case TextureFormat::RGB16Snorm:
         #endif
@@ -740,7 +741,8 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGBA8Snorm:
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         case TextureFormat::RGBA16:
         case TextureFormat::RGBA16Snorm:
         #endif
@@ -851,8 +853,16 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
 
         #ifdef MAGNUM_TARGET_GLES2
         case TextureFormat::Luminance:
+        #ifdef MAGNUM_TARGET_WEBGL
+        case TextureFormat::R16:
+        case TextureFormat::R16Snorm:
+        #endif
             return PixelFormat::Luminance;
         case TextureFormat::LuminanceAlpha:
+        #ifdef MAGNUM_TARGET_WEBGL
+        case TextureFormat::RG16:
+        case TextureFormat::RG16Snorm:
+        #endif
             return PixelFormat::LuminanceAlpha;
         #endif
 
@@ -1046,7 +1056,8 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
             #endif
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         case TextureFormat::R16:
         case TextureFormat::RG16:
         case TextureFormat::RGB16:
@@ -1067,17 +1078,18 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         #endif
             return PixelType::UnsignedShort;
 
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         case TextureFormat::R16Snorm:
         case TextureFormat::RG16Snorm:
         case TextureFormat::RGB16Snorm:
         case TextureFormat::RGBA16Snorm:
-        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R16I:
         case TextureFormat::RG16I:
         case TextureFormat::RGB16I:
         case TextureFormat::RGBA16I:
+        #endif
             return PixelType::Short;
         #endif
 

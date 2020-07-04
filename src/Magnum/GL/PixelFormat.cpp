@@ -135,7 +135,8 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
         #endif
             size = 1; break;
         case PixelType::UnsignedShort:
-        #ifndef MAGNUM_TARGET_GLES2
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         case PixelType::Short:
         #endif
         case PixelType::Half:
@@ -344,7 +345,8 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         _c(Byte)
         #endif
         _c(UnsignedShort)
-        #ifndef MAGNUM_TARGET_GLES2
+        /* Available everywhere except ES2 (WebGL 1 has it) */
+        #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         _c(Short)
         #endif
         _c(UnsignedInt)

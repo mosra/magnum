@@ -11,6 +11,7 @@ extension EXT_color_buffer_float                optional
 extension EXT_texture_compression_rgtc          optional
 extension EXT_texture_compression_bptc          optional
 extension EXT_clip_cull_distance                optional
+extension EXT_texture_norm16                    optional
 extension EXT_draw_buffers_indexed              optional
 # WebGL has only OVR_multiview2, but we need the definitions from OVR_multiview
 extension OVR_multiview                         optional
