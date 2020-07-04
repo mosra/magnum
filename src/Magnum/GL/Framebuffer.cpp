@@ -405,6 +405,9 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         _c(Complete)
         _c(IncompleteAttachment)
         _c(IncompleteMissingAttachment)
+        #ifdef MAGNUM_TARGET_GLES2
+        _c(IncompleteDimensions)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(IncompleteDrawBuffer)
         _c(IncompleteReadBuffer)
