@@ -521,6 +521,8 @@ Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{ANGLE,instanced_arrays}    | done
 @webgl_extension{EXT,color_buffer_half_float} | |
+@webgl_extension{EXT,frag_depth}            | done (shading language only)
+@webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,blend_minmax}          | done
 @webgl_extension{EXT,shader_texture_lod}    | done (shading language only)
 `MAGNUM_shader_vertex_id` \n @m_span{m-text m-dim} Pseudo-extension denoting support for the @glsl gl_VertexID @ce \n GLSL builtin. Exposed on WebGL 2 builds only. @m_endspan | done
@@ -540,16 +542,17 @@ Extension                                   | Status
     are included in this table because they are subsumed by
     @webgl_extension{EXT,color_buffer_float} in WebGL 2.0.
 
-@subsection opengl-support-webgl-extensions WebGL extensions to match desktop functionality
+@subsection opengl-support-webgl-extensions WebGL extensions
 
 @m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{EXT,texture_filter_anisotropic} | done
-@webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
+@webgl_extension{EXT,disjoint_timer_query_webgl2}  | [missing support in Emscripten](https://github.com/emscripten-core/emscripten/pull/9652)
 @webgl_extension{EXT,color_buffer_float}    | |
+@webgl_extension{EXT,float_blend}           | |
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{EXT,clip_cull_distance}    | done
@@ -557,11 +560,17 @@ Extension                                   | Status
 @webgl_extension{EXT,draw_buffers_indexed}  | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OVR,multiview2}            | |
+@webgl_extension{WEBGL,lose_context}        | |
+@webgl_extension{WEBGL,debug_renderer_info} | |
+@webgl_extension{WEBGL,debug_shaders}       | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
+@webgl_extension{WEBGL,multi_draw}          | missing support in Emscripten
 @webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
+@webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | missing support in Emscripten
+@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | missing support in Emscripten
 
 @section opengl-unsupported Unsupported OpenGL features
 

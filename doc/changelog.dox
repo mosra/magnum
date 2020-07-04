@@ -49,6 +49,17 @@ See also:
 -   Implemented @webgl_extension{WEBGL,blend_equation_advanced_coherent}
     extension, making advanced @ref GL::Renderer::BlendEquation values
     available on all platforms
+-   Implemented @webgl_extension{EXT,frag_depth} WebGL 1.0 extension (shading
+    language only)
+-   Recognizing @webgl_extension{EXT,float_blend},
+    @webgl_extension{WEBGL,debug_renderer_info} and
+    @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
+    yet
+-   Recognizing @webgl_extension{WEBGL,multi_draw},
+    @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} and
+    @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+    extensions, however there's no Emscripten entrypoints for those yet which
+    means these can'be implemented right now.
 
 @subsubsection changelog-latest-new-math Math library
 

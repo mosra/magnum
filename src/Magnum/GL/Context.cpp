@@ -272,6 +272,7 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,draw_buffers_indexed),
     #endif
+    _extension(EXT,float_blend),
     _extension(EXT,texture_compression_bptc),
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_filter_anisotropic),
@@ -284,12 +285,24 @@ constexpr Extension ExtensionList[]{
     _extension(WEBGL,compressed_texture_astc),
     _extension(WEBGL,compressed_texture_pvrtc),
     _extension(WEBGL,compressed_texture_s3tc),
-    _extension(WEBGL,compressed_texture_s3tc_srgb)};
+    _extension(WEBGL,compressed_texture_s3tc_srgb),
+    _extension(WEBGL,debug_renderer_info),
+    _extension(WEBGL,debug_shaders),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(WEBGL,draw_instanced_base_vertex_base_instance),
+    #endif
+    _extension(WEBGL,lose_context),
+    _extension(WEBGL,multi_draw),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(WEBGL,multi_draw_instanced_base_vertex_base_instance)
+    #endif
+};
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
     _extension(ANGLE,instanced_arrays),
     _extension(EXT,blend_minmax),
     _extension(EXT,color_buffer_half_float),
+    _extension(EXT,frag_depth),
     _extension(EXT,sRGB),
     _extension(EXT,shader_texture_lod),
     #endif
