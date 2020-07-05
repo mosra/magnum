@@ -928,11 +928,15 @@ inverse.
     releases in PPAs can be done directly from the tag with no extra patching
 16. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
     `Version 20XY.ab` as a message
-17. Push the tag, verify that the CIs are still green
+17. Push the tag, verify that the CIs are still green; if not, retry and tag
+    again
     -   to GitLab as well
-18. Update the Corrade and Magnum tagfiles on the website using the
+18. Regenerate singles with changelogs for what changed *and only then*
+    commit the changelog updates so the generated singles refer to the actual
+    tag
+19. Update the Corrade and Magnum tagfiles on the website using the
     freshly-built *public* docs
-19. Write a release announcement for the blog
+20. Write a release announcement for the blog
     -   highlight the most prominent features, mention detailed blog posts
         about them, if any
     -   reference detailed changelogs for all projects at the end
@@ -940,8 +944,8 @@ inverse.
     -   create some fancy eye-catchy cover image featuring nice screenshots of
         new functionality
     -   add release annoucement link under the button on front page
-20. Publish the release announcement, verify it looks correct
-21. Advertise the release announcement, preferrably Monday 5 PM, never Friday
+21. Publish the release announcement, verify it looks correct
+22. Advertise the release announcement, preferrably Monday 5 PM, never Friday
     or weekends
     -   come up with some 100-character-long extended title
     -   Twitter (extended title + url and some hashtags), first dry-run the
@@ -956,9 +960,9 @@ inverse.
     -   send an e-mail to companies and universities on the private list
     -   add a message to the Gitter chat (title as heading, cover image,
         summary in a blockquote and "read more" link, `@` contributors)
-22. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
+23. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
     note at the end of the article, reupload that change
-23. Update versions of ArchLinux AUR packages:
+24. Update versions of ArchLinux AUR packages:
     -   run `makepkg` in `package/archlinux/magnum*-git`, verify it builds and
         says correct version, ideally with `r0` at the end
     -   copy the updated `PKGBUILD` to the AUR package repo, run
@@ -966,12 +970,12 @@ inverse.
     -   commit the updated `PKGBUILD` and `.SRCINFO`, push
     -   after pushing all, verify that the version is updated in the AUR web
         interface as well
-24. Update Homebrew package versions
-25. Ask someone to update the Ubuntu PPA
-26. Ask someone to update Vcpkg packages
-27. Close the 20XY.ab GitHub milestone
-28. Add link to the release notes to the tag on GitHub
-29. Have a drink and take two days off
+25. Update Homebrew package versions
+26. Ask someone to update the Ubuntu PPA
+27. Ask someone to update Vcpkg packages
+28. Close the 20XY.ab GitHub milestone
+29. Add link to the release notes to the tag on GitHub
+30. Have a drink and take two days off
 
 */
 }
