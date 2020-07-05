@@ -89,7 +89,7 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-gl-info gl-info}
 
-@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/magnum-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/gl-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
 This utility is built if both `WITH_GL` and `WITH_GL_INFO` is enabled when
 building Magnum. To use this utility with CMake, you need to request the

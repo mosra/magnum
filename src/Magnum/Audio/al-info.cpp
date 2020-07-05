@@ -37,7 +37,7 @@ namespace Magnum {
 @m_footernavigation
 @m_keywords{magnum-al-info al-info}
 
-@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/magnum-al-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebAudio @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://magnum.graphics/showcase/al-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebAudio @m_enddiv </a> @m_enddiv
 
 This utility depends on the [OpenAL](https://www.openal.org/) library. It is
 built if both `WITH_AUDIO` and `WITH_AL_INFO` is enabled when building Magnum.

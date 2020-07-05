@@ -171,16 +171,6 @@ See @ref building and @ref cmake for more information.
     projects. See @ref singles and @ref Math for more information.
 */
 
-/** @dir Magnum/Math/Geometry
- * @brief Namespace @ref Magnum::Math::Geometry
- * @m_deprecated_since{2018,10} Use @ref Magnum/Math/Distance.h and
-        @ref Magnum/Math/Intersection.h instead.
- */
-/** @namespace Magnum::Math::Geometry
- * @m_deprecated_since{2018,10} Use @ref Magnum::Math::Distance and
-        @ref Magnum::Math::Intersection namespaces instead.
- */
-
 /** @namespace Magnum::Math::Distance
 @brief Functions for calculating distances
 
