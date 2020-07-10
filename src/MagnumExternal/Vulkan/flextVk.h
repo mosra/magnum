@@ -4387,7 +4387,7 @@ struct FlextVkInstance {
 };
 
 /* Per-instance function pointer initialization */
-void FLEXTVK_EXPORT flextVkInitInstance(VkInstance instance, FlextVkInstance* data);
+void flextVkInitInstance(VkInstance instance, FlextVkInstance* data);
 
 /* Per-device function pointers */
 struct FlextVkDevice {
@@ -4653,7 +4653,7 @@ struct FlextVkDevice {
 };
 
 /* Per-device function pointer initialization */
-void FLEXTVK_EXPORT flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*));
+void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*));
 
 #endif
 
