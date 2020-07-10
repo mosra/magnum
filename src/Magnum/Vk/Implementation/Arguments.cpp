@@ -37,12 +37,14 @@ Utility::Arguments arguments() {
         .addOption("enable-instance-extensions").setHelp("enable-instance-extensions", "Vulkan instance extensions to enable in addition to the defaults and what the application requests", "LIST")
         .addOption("vulkan-version").setHelp("vulkan-version", "force Vulkan version", "X.Y")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .addOption("device").setHelp("device", "device to use", "ID|integrated|discrete|virtual|cpu")
         .setFromEnvironment("disable-layers")
         .setFromEnvironment("disable-extensions")
         .setFromEnvironment("enable-layers")
         .setFromEnvironment("enable-instance-extensions")
         .setFromEnvironment("vulkan-version")
-        .setFromEnvironment("log");
+        .setFromEnvironment("log")
+        .setFromEnvironment("device");
     return args;
 }
 

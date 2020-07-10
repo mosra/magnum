@@ -25,11 +25,13 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
@@ -58,7 +60,25 @@ struct DevicePropertiesVkTest: TestSuite::Tester {
     void extensionIsSupported();
     void extensionNamedRevision();
 
+    void pickDevice();
+    void pickDeviceIndex();
+    void pickDeviceType();
+    void pickDeviceError();
+
     Instance _instance;
+};
+
+const struct {
+    const char* name;
+    Containers::Array<const char*> args;
+    const char* message;
+} PickDeviceErrorData[] {
+    {"nothing for type found", Containers::array({"", "--magnum-device", "virtual"}),
+        "Vk::tryPickDevice(): no Vk::DeviceType::VirtualGpu found among {} Vulkan devices\n"},
+    {"index out of bounds", Containers::array({"", "--magnum-device", "666"}),
+        "Vk::tryPickDevice(): index 666 out of bounds for {} Vulkan devices\n"},
+    {"unknown type", Containers::array({"", "--magnum-device", "FAST"}),
+        "Vk::tryPickDevice(): unknown Vulkan device type FAST\n"}
 };
 
 DevicePropertiesVkTest::DevicePropertiesVkTest(): _instance{InstanceCreateInfo{arguments().first, arguments().second}} {
@@ -72,7 +92,14 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): _instance{InstanceCreateInfo{a
 
               &DevicePropertiesVkTest::extensionConstructMove,
               &DevicePropertiesVkTest::extensionIsSupported,
-              &DevicePropertiesVkTest::extensionNamedRevision});
+              &DevicePropertiesVkTest::extensionNamedRevision,
+
+              &DevicePropertiesVkTest::pickDevice,
+              &DevicePropertiesVkTest::pickDeviceIndex,
+              &DevicePropertiesVkTest::pickDeviceType});
+
+    addInstancedTests({&DevicePropertiesVkTest::pickDeviceError},
+        Containers::arraySize(PickDeviceErrorData));
 }
 
 void DevicePropertiesVkTest::enumerate() {
@@ -225,6 +252,53 @@ void DevicePropertiesVkTest::extensionNamedRevision() {
         TestSuite::Compare::GreaterOrEqual);
     CORRADE_COMPARE_AS(properties.revision(Extensions::KHR::maintenance1{}), 0,
         TestSuite::Compare::GreaterOrEqual);
+}
+
+void DevicePropertiesVkTest::pickDevice() {
+    /* Default behavior */
+    Containers::Optional<DeviceProperties> device = tryPickDevice(_instance);
+    CORRADE_VERIFY(device);
+}
+
+void DevicePropertiesVkTest::pickDeviceIndex() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    CORRADE_VERIFY(!devices.empty());
+
+    /* Pick the last one */
+    CORRADE_COMPARE_AS(devices.size(), 10, TestSuite::Compare::Less);
+    const char id[] {char('0' + devices.size() - 1), '\0'};
+    const char* argv[] {"", "--magnum-device", id};
+
+    /* Creating another dedicated instance so we can pass custom args */
+    Instance instance{InstanceCreateInfo{Int(Containers::arraySize(argv)), argv}};
+
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
+    CORRADE_VERIFY(device);
+}
+
+void DevicePropertiesVkTest::pickDeviceType() {
+    const char* argv[] {"", "--magnum-device", "cpu"};
+
+    /* Creating a dedicated instance so we can pass custom args */
+    Instance instance{InstanceCreateInfo{Int(Containers::arraySize(argv)), argv}};
+
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
+    if(!device) CORRADE_SKIP("No CPU device found.");
+
+    CORRADE_VERIFY(device->type() == DeviceType::Cpu);
+}
+
+void DevicePropertiesVkTest::pickDeviceError() {
+    auto&& data = PickDeviceErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /* Creating a dedicated instance so we can pass custom args */
+    Instance instance{InstanceCreateInfo{Int(data.args.size()), const_cast<const char**>(data.args.data())}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!tryPickDevice(instance));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.message, enumerateDevices(_instance).size()));
 }
 
 }}}}

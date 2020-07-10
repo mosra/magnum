@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, function @ref Magnum::Vk::enumerateDevices()
+ * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, function @ref Magnum::Vk::enumerateDevices(), @ref Magnum::Vk::pickDevice(), @ref Magnum::Vk::tryPickDevice()
  * @m_since_latest
  */
 
@@ -86,7 +86,7 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DeviceType value);
 
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
 properties.
-@see @ref enumeratePhysicalDevices()
+@see @ref enumerateDevices()
 */
 class MAGNUM_VK_EXPORT DeviceProperties {
     public:
@@ -227,6 +227,26 @@ class MAGNUM_VK_EXPORT DeviceProperties {
 @see @fn_vk_keyword{EnumeratePhysicalDevices}
 */
 MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance& instance);
+
+/**
+@brief Pick a physical device
+@m_since_latest
+
+Calls @ref enumerateDevices() and selects a device based on preferences
+specified through command-line parameters or the environment. If a device is
+not found, exits. See @ref tryPickDevice() for an alternative that doesn't exit
+on failure.
+*/
+MAGNUM_VK_EXPORT DeviceProperties pickDevice(Instance& instance);
+
+/**
+@brief Try to pick a physical device
+@m_since_latest
+
+Compared to @ref pickDevice() the function returns @ref Containers::NullOpt if
+a device isn't found instead of exiting.
+*/
+MAGNUM_VK_EXPORT Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance);
 
 }}
 

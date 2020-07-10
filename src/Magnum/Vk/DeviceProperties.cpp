@@ -26,13 +26,16 @@
 #include "DeviceProperties.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
 
 namespace Magnum { namespace Vk {
@@ -112,6 +115,59 @@ Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
         new(out.data() + i - 1) DeviceProperties{instance, handles[i - 1]};
 
     return out;
+}
+
+Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
+    Utility::Arguments args = Implementation::arguments();
+    args.parse(instance.state().argc, instance.state().argv);
+
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance);
+
+    /* Pick the first by default */
+    if(args.value("device").empty()) {
+        if(devices.empty()) {
+            Error{} << "Vk::tryPickDevice(): no Vulkan devices found";
+            return {};
+        }
+        return std::move(devices.front());
+    }
+
+    /* Pick by ID */
+    if(args.value("device")[0] >= '0' && args.value("device")[0] <= '9') {
+        UnsignedInt id = args.value<UnsignedInt>("device");
+        if(id >= devices.size()) {
+            Error{} << "Vk::tryPickDevice(): index" << id << "out of bounds for" << devices.size() << "Vulkan devices";
+            return {};
+        }
+        return std::move(devices[id]);
+    }
+
+    /* Pick by type */
+    DeviceType type;
+    if(args.value("device") == "integrated")
+        type = DeviceType::IntegratedGpu;
+    else if(args.value("device") == "discrete")
+        type = DeviceType::DiscreteGpu;
+    else if(args.value("device") == "virtual")
+        type = DeviceType::VirtualGpu;
+    else if(args.value("device") == "cpu")
+        type = DeviceType::Cpu;
+    else {
+        Error{} << "Vk::tryPickDevice(): unknown Vulkan device type" << args.value<Containers::StringView>("device");
+        return {};
+    }
+
+    for(DeviceProperties& device: devices)
+        if(device.type() == type) return std::move(device);
+
+    Error{} << "Vk::tryPickDevice(): no" << type << "found among" << devices.size() << "Vulkan devices";
+    return {};
+}
+
+DeviceProperties pickDevice(Instance& instance) {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
+    if(device) return *std::move(device);
+    std::exit(1); /* LCOV_EXCL_LINE */
 }
 
 Debug& operator<<(Debug& debug, const DeviceType value) {
