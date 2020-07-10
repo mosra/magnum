@@ -364,6 +364,8 @@ class MAGNUM_VK_EXPORT Instance {
          *
          * @snippet MagnumVk.cpp Instance-global-function-pointers
          *
+         * Use @ref Device::populateGlobalFunctionPointers() to populate
+         * device-level global function pointers.
          * @attention This operation is changing global state. You need to
          *      ensure that this function is not called simultaenously from
          *      multiple threads and code using those function points is

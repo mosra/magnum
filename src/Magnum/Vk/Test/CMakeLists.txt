@@ -24,6 +24,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDevicePropertiesTest DevicePropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkEnumsTest EnumsTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkExtensionsTest ExtensionsTest.cpp LIBRARIES MagnumVk)
@@ -36,6 +37,7 @@ corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 
 if(BUILD_VK_TESTS)
+    corrade_add_test(VkDeviceVkTest DeviceVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkDevicePropertiesVkTest DevicePropertiesVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkExtensionPropertiesVkTest ExtensionPropertiesVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkLayerPropertiesVkTest LayerPropertiesVkTest.cpp LIBRARIES MagnumVkTestLib)

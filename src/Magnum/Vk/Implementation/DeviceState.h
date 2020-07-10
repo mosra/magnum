@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
+#ifndef Magnum_Vk_Implementation_DeviceState_h
+#define Magnum_Vk_Implementation_DeviceState_h
 /*
     This file is part of Magnum.
 
@@ -25,36 +25,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Magnum/Vk/Vk.h"
+#include "Magnum/Vk/Vulkan.h"
 
-#include <Corrade/Containers/Containers.h>
+namespace Magnum { namespace Vk { namespace Implementation {
 
-#include "Magnum/Magnum.h"
+struct DeviceState {
+    explicit DeviceState(Device& instance);
+};
 
-namespace Magnum { namespace Vk {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class Device;
-class DeviceCreateInfo;
-class DeviceProperties;
-enum class DeviceType: Int;
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-enum class QueueFlag: UnsignedInt;
-typedef Containers::EnumSet<QueueFlag> QueueFlags;
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
-
-}}
+}}}
 
 #endif
+

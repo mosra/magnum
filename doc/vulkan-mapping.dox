@@ -130,7 +130,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | |
 @fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | |
 @fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | |
+@fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | @ref Device constructor and destructor
 @fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
 @fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | |
 @fn_vk{CreateFramebuffer}, \n @fn_vk{DestroyFramebuffer} | |
@@ -193,7 +193,7 @@ Vulkan function                         | Matching API
 @fn_vk{GetDescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceGroupPeerMemoryFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceMemoryCommitment}       | |
-@fn_vk{GetDeviceProcAddr}               | |
+@fn_vk{GetDeviceProcAddr}               | @ref Device constructor
 @fn_vk{GetDeviceQueue}, \n @fn_vk{GetDeviceQueue2} @m_class{m-label m-flat m-success} **1.1** | |
 @fn_vk{GetEventStatus}                  | |
 @fn_vk{GetFenceStatus}                  | |
@@ -303,6 +303,15 @@ Vulkan function                         | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{ApplicationInfo}               | @ref InstanceCreateInfo
+
+@subsection vulkan-mapping-structures-d D
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{DeviceCreateInfo}              | @ref DeviceCreateInfo
+@type_vk{DeviceQueueCreateInfo}         | not exposed, but you can pass a custom instance to @ref DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo&)
 
 @subsection vulkan-mapping-structures-i I
 

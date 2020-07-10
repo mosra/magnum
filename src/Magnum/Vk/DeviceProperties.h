@@ -288,8 +288,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
 
         /**
          * @brief Pick a queue family satisfying given flags
-         * @return Queue family index for use in @ref queueFamilySize() and
-         *      @ref queueFamilyFlags()
+         * @return Queue family index for use in @ref queueFamilySize(),
+         *      @ref queueFamilyFlags() and @ref DeviceCreateInfo::addQueues()
          *
          * Queries queue family properties using @ref queueFamilyProperties()
          * and tries to find the first that contains all @p flags. If it is not
@@ -313,6 +313,7 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* The DAMN THING lists this among friends, which is AN IMPLEMENTATION
            DETAIL */
+        friend DeviceCreateInfo;
         friend MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance&);
         #endif
 

@@ -27,6 +27,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Integration.h"
@@ -34,7 +35,39 @@
 
 using namespace Magnum;
 
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
+
 int main() {
+{
+Vk::Device device{NoCreate};
+/* [Device-isExtensionEnabled] */
+if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
+    // keep mesh indices 8bit
+} else {
+    // convert them to 16bit
+}
+/* [Device-isExtensionEnabled] */
+}
+
+{
+Vk::Instance instance;
+/* Header included again inside a function, but it's fine as the guards will
+   make it empty */
+/* [Device-global-function-pointers] */
+#include <MagnumExternal/Vulkan/flextVkGlobal.h>
+
+// …
+
+Vk::Device device{DOXYGEN_IGNORE(instance, Vk::DeviceCreateInfo{instance})};
+device.populateGlobalFunctionPointers();
+
+VkCommandPool commandPool;
+VkCommandPoolCreateInfo info{};
+// …
+vkCreateCommandPool(device, &info, nullptr, &commandPool);
+/* [Device-global-function-pointers] */
+}
+
 {
 Vk::Instance instance;
 /* [Instance-isExtensionEnabled] */
