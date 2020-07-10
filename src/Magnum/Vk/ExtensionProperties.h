@@ -45,6 +45,8 @@ namespace Magnum { namespace Vk {
 @brief Extension properties
 @m_since_latest
 
+Provides a searchable container of Vulkan device extensions enumerated with
+@ref DeviceProperties::enumerateExtensionProperties().
 @see @ref InstanceExtensionProperties, @type_vk_keyword{ExtensionProperties}
 */
 class MAGNUM_VK_EXPORT ExtensionProperties {
@@ -52,7 +54,9 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
         /**
          * @brief Construct without populating the contents
          *
-         * Equivalent to a moved-from state.
+         * Equivalent to a moved-from state. Move over the result of
+         * @ref DeviceProperties::enumerateExtensionProperties() to make it
+         * usable.
          */
         explicit ExtensionProperties(NoCreateT);
 
@@ -238,6 +242,7 @@ class MAGNUM_VK_EXPORT InstanceExtensionProperties: public ExtensionProperties {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* The DAMN THING forgets parameter name if this is present, FFS. It
            also lists this among friends, which is AN IMPLEMENTATION DETAIL */
+        friend DeviceProperties;
         friend MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(Containers::ArrayView<const Containers::StringView>);
         #endif
 

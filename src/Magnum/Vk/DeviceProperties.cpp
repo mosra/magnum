@@ -30,6 +30,8 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/ExtensionProperties.h"
+#include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
 
@@ -78,6 +80,17 @@ void DeviceProperties::getPropertiesImplementationKHR(DeviceProperties& self, Vk
 
 void DeviceProperties::getPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceProperties2& properties) {
     return (**self._instance).GetPhysicalDeviceProperties2(self._handle, &properties);
+}
+
+ExtensionProperties DeviceProperties::enumerateExtensionProperties(Containers::ArrayView<const Containers::StringView> layers) {
+    return InstanceExtensionProperties{layers, [](void* state, const char* const layer, UnsignedInt* count, VkExtensionProperties* properties) {
+        auto& deviceProperties = *static_cast<DeviceProperties*>(state);
+        return (**deviceProperties._instance).EnumerateDeviceExtensionProperties(deviceProperties._handle, layer, count, properties);
+    }, this};
+}
+
+ExtensionProperties DeviceProperties::enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers) {
+    return enumerateExtensionProperties(Containers::arrayView(layers));
 }
 
 Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {

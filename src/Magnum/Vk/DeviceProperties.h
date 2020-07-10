@@ -30,6 +30,7 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/Reference.h>
 
@@ -181,6 +182,20 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * on first request.
          */
         Containers::StringView name();
+
+        /**
+         * @brief Enumerate device extensions
+         * @param layers        Additional layers to list extensions from
+         *
+         * Expects that all listed layers are supported --- however they don't
+         * need to be enabled on the instance.
+         * @see @ref LayerProperties::isSupported(),
+         *      @fn_vk_keyword{EnumerateDeviceExtensionProperties}
+         */
+        ExtensionProperties enumerateExtensionProperties(Containers::ArrayView<const Containers::StringView> layers = {});
+
+        /** @overload */
+        ExtensionProperties enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers);
 
     private:
         friend Implementation::InstanceState;
