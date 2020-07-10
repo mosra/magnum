@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, function @ref Magnum::Vk::enumerateDevices(), @ref Magnum::Vk::pickDevice(), @ref Magnum::Vk::tryPickDevice()
+ * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, @ref Magnum::Vk::QueueFlag, enum set @ref Magnum::Vk::QueueFlags, function @ref Magnum::Vk::enumerateDevices(), @ref Magnum::Vk::pickDevice(), @ref Magnum::Vk::tryPickDevice()
  * @m_since_latest
  */
 
@@ -81,11 +81,60 @@ enum class DeviceType: Int {
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DeviceType value);
 
 /**
+@brief Queue flag
+@m_since_latest
+
+Wraps a @type_vk_keyword{QueueFlagBits}.
+@see @ref QueueFlags, @ref DeviceProperties::queueFamilyFlags()
+@m_enum_values_as_keywords
+*/
+enum class QueueFlag: UnsignedInt {
+    /** Supports graphics operations */
+    Graphics = VK_QUEUE_GRAPHICS_BIT,
+
+    /** Supports compute operations */
+    Compute = VK_QUEUE_COMPUTE_BIT,
+
+    /** Supports transfer operations */
+    Transfer = VK_QUEUE_TRANSFER_BIT,
+
+    /** Supports sparse memory management operations */
+    SparseBinding = VK_QUEUE_SPARSE_BINDING_BIT,
+
+    /** Supports protected memory operations */
+    Protected = VK_QUEUE_PROTECTED_BIT
+};
+
+/**
+@debugoperatorclassenum{DeviceProperties,QueueFlag}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, QueueFlag value);
+
+/**
+@brief Queue flags
+@m_since_latest
+
+Type-safe wrapper for @type_vk_keyword{QueueFlags}.
+@see @ref DeviceProperties::queueFamilyFlags()
+*/
+typedef Containers::EnumSet<QueueFlag> QueueFlags;
+
+CORRADE_ENUMSET_OPERATORS(QueueFlags)
+
+/**
+@debugoperatorclassenum{DeviceProperties,QueueFlags}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, QueueFlags value);
+
+/**
 @brief Physical device properties
 @m_since_latest
 
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
-properties.
+properties such as @type_vk_keyword{PhysicalDeviceProperties2} and
+@type_vk_keyword{GetPhysicalDeviceQueueFamilyProperties2}.
 @see @ref enumerateDevices()
 */
 class MAGNUM_VK_EXPORT DeviceProperties {
@@ -197,6 +246,67 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /** @overload */
         ExtensionProperties enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers);
 
+        /**
+         * @brief Queue family properties
+         *
+         * Populated lazily on first request. If Vulkan 1.1 or the
+         * @vk_extension{KHR,get_physical_device_properties2} extension is not
+         * enabled on the originating instance, only the Vulkan 1.0 subset of
+         * device properties is queried.
+         * @see @fn_vk_keyword{GetPhysicalDeviceQueueFamilyProperties2},
+         *      @fn_vk_keyword{GetPhysicalDeviceQueueFamilyProperties}
+         */
+        Containers::ArrayView<const VkQueueFamilyProperties2> queueFamilyProperties();
+
+        /**
+         * @brief Queue family count
+         *
+         * Convenience access to @ref queueFamilyProperties() internals,
+         * populated lazily on first request.
+         */
+        UnsignedInt queueFamilyCount();
+
+        /**
+         * @brief Queue count in given family
+         * @param queueFamily   Queue family index, expected to be smaller than
+         *      @ref queueFamilyCount()
+         *
+         * Convenience access to @ref queueFamilyProperties() internals,
+         * populated lazily on first request.
+         */
+        UnsignedInt queueFamilySize(UnsignedInt queueFamily);
+
+        /**
+         * @brief Queue family flags
+         * @param queueFamily   Queue family index, expected to be smaller than
+         *      @ref queueFamilyCount()
+         *
+         * Convenience access to @ref queueFamilyProperties() internals,
+         * populated lazily on first request.
+         */
+        QueueFlags queueFamilyFlags(UnsignedInt queueFamily);
+
+        /**
+         * @brief Pick a queue family satisfying given flags
+         * @return Queue family index for use in @ref queueFamilySize() and
+         *      @ref queueFamilyFlags()
+         *
+         * Queries queue family properties using @ref queueFamilyProperties()
+         * and tries to find the first that contains all @p flags. If it is not
+         * found, exits. See @ref tryPickQueueFamily() for an alternative that
+         * doesn't exit on failure.
+         */
+        UnsignedInt pickQueueFamily(QueueFlags flags);
+
+        /**
+         * @brief Try to pick a queue family satisfying given flags
+         *
+         * Compared to @ref pickQueueFamily() the function returns
+         * @ref Containers::NullOpt if a desired family isn't found instead of
+         * exiting.
+         */
+        Containers::Optional<UnsignedInt> tryPickQueueFamily(QueueFlags flags);
+
     private:
         friend Implementation::InstanceState;
 
@@ -211,6 +321,10 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         MAGNUM_VK_LOCAL static void getPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
+
+        MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationDefault(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
+        MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationKHR(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
+        MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementation11(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
 
         /* Can't be a reference because of the NoCreate constructor */
         Instance* _instance;

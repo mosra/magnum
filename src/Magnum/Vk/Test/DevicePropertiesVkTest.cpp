@@ -60,6 +60,11 @@ struct DevicePropertiesVkTest: TestSuite::Tester {
     void extensionIsSupported();
     void extensionNamedRevision();
 
+    void queueFamilies();
+    void queueFamiliesOutOfRange();
+    void queueFamiliesPick();
+    void queueFamiliesPickFailed();
+
     void pickDevice();
     void pickDeviceIndex();
     void pickDeviceType();
@@ -93,6 +98,11 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): _instance{InstanceCreateInfo{a
               &DevicePropertiesVkTest::extensionConstructMove,
               &DevicePropertiesVkTest::extensionIsSupported,
               &DevicePropertiesVkTest::extensionNamedRevision,
+
+              &DevicePropertiesVkTest::queueFamilies,
+              &DevicePropertiesVkTest::queueFamiliesOutOfRange,
+              &DevicePropertiesVkTest::queueFamiliesPick,
+              &DevicePropertiesVkTest::queueFamiliesPickFailed,
 
               &DevicePropertiesVkTest::pickDevice,
               &DevicePropertiesVkTest::pickDeviceIndex,
@@ -252,6 +262,69 @@ void DevicePropertiesVkTest::extensionNamedRevision() {
         TestSuite::Compare::GreaterOrEqual);
     CORRADE_COMPARE_AS(properties.revision(Extensions::KHR::maintenance1{}), 0,
         TestSuite::Compare::GreaterOrEqual);
+}
+
+void DevicePropertiesVkTest::queueFamilies() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    CORRADE_VERIFY(!devices.empty());
+
+    Debug{} << "Available queue family count:" << devices[0].queueFamilyCount();
+
+    CORRADE_COMPARE_AS(devices[0].queueFamilyCount(), 0,
+        TestSuite::Compare::Greater);
+
+    for(std::size_t i = 0; i != devices[0].queueFamilyCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_ITERATION(devices[0].queueFamilyFlags(i));
+
+        CORRADE_VERIFY(devices[0].queueFamilyFlags(i) != QueueFlags{});
+        CORRADE_COMPARE(devices[0].queueFamilyFlags(i), QueueFlag(devices[0].queueFamilyProperties()[i].queueFamilyProperties.queueFlags));
+
+        CORRADE_COMPARE_AS(devices[0].queueFamilySize(i), 0,
+            TestSuite::Compare::Greater);
+        CORRADE_COMPARE(devices[0].queueFamilySize(i), devices[0].queueFamilyProperties()[i].queueFamilyProperties.queueCount);
+    }
+}
+
+void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    CORRADE_VERIFY(!devices.empty());
+
+    const UnsignedInt count = devices[0].queueFamilyCount();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    devices[0].queueFamilySize(count);
+    devices[0].queueFamilyFlags(count);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Vk::DeviceProperties::queueFamilySize(): index {0} out of range for {0} entries\n"
+        "Vk::DeviceProperties::queueFamilyFlags(): index {0} out of range for {0} entries\n", count));
+}
+
+void DevicePropertiesVkTest::queueFamiliesPick() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    CORRADE_VERIFY(!devices.empty());
+
+    Containers::Optional<UnsignedInt> id = devices[0].tryPickQueueFamily(QueueFlag::Compute|QueueFlag::Graphics);
+    CORRADE_VERIFY(id);
+    CORRADE_COMPARE_AS(*id, devices[0].queueFamilyCount(), TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(devices[0].queueFamilyFlags(*id),
+        QueueFlag::Compute|QueueFlag::Graphics,
+        TestSuite::Compare::GreaterOrEqual);
+
+    /* Pick should return the same ID, and shouldn't exit */
+    CORRADE_COMPARE(devices[0].pickQueueFamily(QueueFlag::Compute|QueueFlag::Graphics), id);
+}
+
+void DevicePropertiesVkTest::queueFamiliesPickFailed() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    CORRADE_VERIFY(!devices.empty());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!devices[0].tryPickQueueFamily(QueueFlag(0xc0ffeee0)));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Vk::DeviceProperties::tryPickQueueFamily(): no Vk::QueueFlag(0xc0ffeee0) found among {} queue families\n", devices[0].queueFamilyCount()));
 }
 
 void DevicePropertiesVkTest::pickDevice() {

@@ -29,6 +29,8 @@
  * @brief Forward declarations for the @ref Magnum::Vk namespace
  */
 
+#include <Corrade/Containers/Containers.h>
+
 #include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Vk {
@@ -45,7 +47,8 @@ class InstanceCreateInfo;
 class InstanceExtension;
 class InstanceExtensionProperties;
 class LayerProperties;
-
+enum class QueueFlag: UnsignedInt;
+typedef Containers::EnumSet<QueueFlag> QueueFlags;
 enum class Result: Int;
 enum class Version: UnsignedInt;
 #endif

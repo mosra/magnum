@@ -37,6 +37,7 @@ struct InstanceState {
     const char** argv;
 
     void(*getPhysicalDevicePropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceProperties2&);
+    void(*getPhysicalDeviceQueueFamilyPropertiesImplementation)(DeviceProperties&, UnsignedInt&, VkQueueFamilyProperties2*);
 };
 
 }}}

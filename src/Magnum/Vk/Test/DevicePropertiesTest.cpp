@@ -38,13 +38,17 @@ struct DevicePropertiesTest: TestSuite::Tester {
     void constructCopy();
 
     void debugDeviceType();
+    void debugQueueFamilyPropertiesFlag();
+    void debugQueueFamilyPropertiesFlags();
 };
 
 DevicePropertiesTest::DevicePropertiesTest() {
     addTests({&DevicePropertiesTest::constructNoCreate,
               &DevicePropertiesTest::constructCopy,
 
-              &DevicePropertiesTest::debugDeviceType});
+              &DevicePropertiesTest::debugDeviceType,
+              &DevicePropertiesTest::debugQueueFamilyPropertiesFlag,
+              &DevicePropertiesTest::debugQueueFamilyPropertiesFlags});
 }
 
 void DevicePropertiesTest::constructNoCreate() {
@@ -66,6 +70,18 @@ void DevicePropertiesTest::debugDeviceType() {
     std::ostringstream out;
     Debug{&out} << DeviceType::DiscreteGpu << DeviceType(-10007655);
     CORRADE_COMPARE(out.str(), "Vk::DeviceType::DiscreteGpu Vk::DeviceType(-10007655)\n");
+}
+
+void DevicePropertiesTest::debugQueueFamilyPropertiesFlag() {
+    std::ostringstream out;
+    Debug{&out} << QueueFlag::SparseBinding << QueueFlag(0xdeadcafe);
+    CORRADE_COMPARE(out.str(), "Vk::QueueFlag::SparseBinding Vk::QueueFlag(0xdeadcafe)\n");
+}
+
+void DevicePropertiesTest::debugQueueFamilyPropertiesFlags() {
+    std::ostringstream out;
+    Debug{&out} << (QueueFlag::Compute|QueueFlag::Graphics) << QueueFlags{};
+    CORRADE_COMPARE(out.str(), "Vk::QueueFlag::Graphics|Vk::QueueFlag::Compute Vk::QueueFlags{}\n");
 }
 
 }}}}

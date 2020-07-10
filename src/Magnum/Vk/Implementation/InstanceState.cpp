@@ -34,10 +34,13 @@ namespace Magnum { namespace Vk { namespace Implementation {
 InstanceState::InstanceState(Instance& instance, Int argc, const char** argv): argc{argc}, argv{argv} {
     if(instance.isVersionSupported(Version::Vk11)) {
         getPhysicalDevicePropertiesImplementation = &DeviceProperties::getPropertiesImplementation11;
+        getPhysicalDeviceQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementation11;
     } else if(instance.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
         getPhysicalDevicePropertiesImplementation = &DeviceProperties::getPropertiesImplementationKHR;
+        getPhysicalDeviceQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationKHR;
     } else {
         getPhysicalDevicePropertiesImplementation = DeviceProperties::getPropertiesImplementationDefault;
+        getPhysicalDeviceQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationDefault;
     }
 }
 

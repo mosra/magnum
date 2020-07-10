@@ -27,7 +27,6 @@
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
-    DeviceProperties.cpp
     Extensions.cpp
     Handle.cpp
     Instance.cpp
@@ -38,6 +37,7 @@ set(MagnumVk_SRCS
     Implementation/InstanceState.cpp)
 
 set(MagnumVk_GracefulAssert_SRCS
+    DeviceProperties.cpp
     Enums.cpp
     ExtensionProperties.cpp
     LayerProperties.cpp)
