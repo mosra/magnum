@@ -8,6 +8,7 @@ url="https://magnum.graphics"
 license=('MIT')
 depends=('corrade' 'openal' 'sdl2' 'glfw' 'vulkan-icd-loader')
 makedepends=('cmake' 'ninja')
+checkdepends=('swiftshader')
 options=('!strip')
 provides=('magnum-git')
 
@@ -109,8 +110,12 @@ check() {
         MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
         MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest
 
-        MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
-        MAGNUM_DISABLE_EXTENSIONS=VK_KHR_get_physical_device_properties2 MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+        # Run all Vulkan tests with SwiftShader as well
+        MAGNUM_DEVICE=cpu CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+        for device in "" cpu; do
+            MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+            MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS=VK_KHR_get_physical_device_properties2 MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+        done
     done
 }
 
