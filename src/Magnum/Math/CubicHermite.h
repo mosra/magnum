@@ -417,7 +417,7 @@ template<class T> inline Complex<T> slerp(const CubicHermiteComplex<T>& a, const
 
 Equivalent to calling @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
 on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
-@ref CubicHermite::point() is a normalized complex number in both @p a and @p b.
+@ref CubicHermite::point() is a normalized quaternion in both @p a and @p b.
 @see @ref Quaternion::isNormalized(),
     @ref slerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
