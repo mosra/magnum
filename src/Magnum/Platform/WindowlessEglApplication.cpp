@@ -442,7 +442,19 @@ WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other):
 }
 
 WindowlessEglContext::~WindowlessEglContext() {
-    if(_context) eglDestroyContext(_display, _context);
+    if(_context) {
+        /* eglDestroyContext() doesn't actually destroy the context if it's
+           still current, it's only destroyed once eglMakeCurrent() makes some
+           other context current. This causes the "cannot make the previous
+           context current" error from above to appear if one creates an EGL
+           context again for a second time --- we switch from the (now zombie)
+           context to a new one to read the vendor string for the
+           "no-forward-compatible-core-context" workaround, at which point the
+           zombie gets finally killed, which then means we can't
+           eglMakeCurrent() it back after. */
+        eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglDestroyContext(_display, _context);
+    }
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(_surface) eglDestroySurface(_display, _surface);
     #endif
