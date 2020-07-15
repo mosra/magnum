@@ -363,7 +363,9 @@ enabled.
 
 Wireframe visualization is done by enabling @ref Flag::Wireframe. It is done
 either using geometry shaders or with help of additional vertex information. If
-you have geometry shaders available, you don't need to do anything else.
+you have geometry shaders available, you don't need to do anything else except
+calling @ref setViewportSize() to correctly size the wireframe --- without
+this, the mesh will be rendered in a single color.
 
 @requires_gl32 Extension @gl_extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
