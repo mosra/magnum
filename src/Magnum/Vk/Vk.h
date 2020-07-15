@@ -49,6 +49,7 @@ class InstanceCreateInfo;
 class InstanceExtension;
 class InstanceExtensionProperties;
 class LayerProperties;
+class Queue;
 enum class QueueFlag: UnsignedInt;
 typedef Containers::EnumSet<QueueFlag> QueueFlags;
 enum class Result: Int;

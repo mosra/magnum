@@ -37,6 +37,7 @@
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 
@@ -53,11 +54,14 @@ struct DeviceVkTest: TestSuite::Tester {
     void createInfoExtensions();
     void createInfoCopiedStrings();
     void createInfoNoQueuePriorities();
+    void createInfoWrongQueueOutputCount();
 
     void construct();
     void constructExtensions();
     void constructExtensionsCommandLineDisable();
     void constructExtensionsCommandLineEnable();
+    void constructMultipleQueues();
+    void constructRawQueue();
     void constructMove();
     void constructUnknownExtension();
     void constructNoQueue();
@@ -125,6 +129,7 @@ DeviceVkTest::DeviceVkTest(): _instance{InstanceCreateInfo{arguments().first, ar
               &DeviceVkTest::createInfoExtensions,
               &DeviceVkTest::createInfoCopiedStrings,
               &DeviceVkTest::createInfoNoQueuePriorities,
+              &DeviceVkTest::createInfoWrongQueueOutputCount,
 
               &DeviceVkTest::construct,
               &DeviceVkTest::constructExtensions});
@@ -133,7 +138,10 @@ DeviceVkTest::DeviceVkTest(): _instance{InstanceCreateInfo{arguments().first, ar
                        &DeviceVkTest::constructExtensionsCommandLineEnable},
         Containers::arraySize(ConstructCommandLineData));
 
-    addTests({&DeviceVkTest::constructMove,
+    addTests({&DeviceVkTest::constructMultipleQueues,
+              &DeviceVkTest::constructRawQueue,
+
+              &DeviceVkTest::constructMove,
               &DeviceVkTest::constructUnknownExtension,
               &DeviceVkTest::constructNoQueue,
 
@@ -220,8 +228,20 @@ void DeviceVkTest::createInfoNoQueuePriorities() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DeviceCreateInfo{_instance}.addQueues(0, {});
+    DeviceCreateInfo{_instance}.addQueues(0, {}, {});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified\n");
+}
+
+void DeviceVkTest::createInfoWrongQueueOutputCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Queue a{NoCreate}, b{NoCreate};
+    DeviceCreateInfo{_instance}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
+    CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
 }
 
 void DeviceVkTest::construct() {
@@ -230,8 +250,9 @@ void DeviceVkTest::construct() {
 
     {
         DeviceProperties deviceProperties = pickDevice(_instance);
+        Queue queue{NoCreate};
         Device device{_instance, DeviceCreateInfo{deviceProperties}
-            .addQueues(0, {0.0f})
+            .addQueues(0, {0.0f}, {queue})
         };
         CORRADE_VERIFY(device.handle());
         /* Device function pointers should be populated */
@@ -245,6 +266,9 @@ void DeviceVkTest::construct() {
         CORRADE_VERIFY(!device.isExtensionEnabled<Extensions::EXT::debug_marker>());
         /* ... and thus also no function pointers loaded */
         CORRADE_VERIFY(!device->CmdDebugMarkerInsertEXT);
+
+        /* The queue should be also filled in */
+        CORRADE_VERIFY(queue.handle());
     }
 
     /* Shouldn't crash or anything */
@@ -273,8 +297,9 @@ void DeviceVkTest::constructExtensions() {
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
+    Queue queue{NoCreate};
     Device device{instance, DeviceCreateInfo{deviceProperties}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions({
             Extensions::EXT::debug_marker::string(),
             "VK_KHR_maintenance1"_s
@@ -320,8 +345,9 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
 
     std::ostringstream out;
     Debug redirectOutput{&out};
+    Queue queue{NoCreate};
     Device device{instance, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions<
             Extensions::EXT::debug_marker,
             Extensions::KHR::maintenance1
@@ -375,8 +401,9 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
 
     std::ostringstream out;
     Debug redirectOutput{&out};
+    Queue queue{NoCreate};
     Device device{instance, DeviceCreateInfo{instance, DeviceCreateInfo::Flag::NoImplicitExtensions}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
         /* Nothing enabled by the application */
     };
     CORRADE_VERIFY(device.handle());
@@ -397,14 +424,97 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     CORRADE_COMPARE(!!device->TrimCommandPoolKHR, data.maintenance1Enabled);
 }
 
+void DeviceVkTest::constructMultipleQueues() {
+    /* Find a GPU that has at least two queue families and at least four
+       queues in one family */
+    Containers::Array<DeviceProperties> deviceProperties = enumerateDevices(_instance);
+
+    DeviceProperties* deviceWithMultipleQueues = nullptr;
+    UnsignedInt largeFamily = ~UnsignedInt{};
+    for(DeviceProperties& i: deviceProperties) {
+        if(i.queueFamilyCount() < 2) continue;
+        for(UnsignedInt family = 0; family != i.queueFamilyCount(); ++family) {
+            if(i.queueFamilySize(family) < 4) continue;
+            largeFamily = family;
+            break;
+        }
+
+        deviceWithMultipleQueues = &i;
+        break;
+    }
+
+    if(!deviceWithMultipleQueues || largeFamily == ~UnsignedInt{})
+        CORRADE_SKIP("No device with at least two queue families and at least four queues in one family found, can't test");
+
+    const UnsignedInt otherFamily = largeFamily == 0 ? 1 : 0;
+
+    constexpr Float zero = 0.0f;
+    VkDeviceQueueCreateInfo rawQueueInfo{};
+    rawQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    rawQueueInfo.pQueuePriorities = &zero;
+    rawQueueInfo.queueFamilyIndex = otherFamily;
+    rawQueueInfo.queueCount = 1;
+
+    Queue a{NoCreate}, b{NoCreate}, c{NoCreate};
+    Device device{_instance, DeviceCreateInfo{*deviceWithMultipleQueues}
+        /* Request a raw queue in the middle of it all to test we skip it when
+           populating the outputs, and correctly offset the next IDs. According
+           to the spec we can request each family only once, which makes the
+           implementation and testing slightly simpler. */
+        .addQueues(rawQueueInfo)
+        /* Request multiple queues in a single family to test we correctly loop
+           over these as well */
+        .addQueues(largeFamily, {0.5f, 0.75f, 1.0f}, {a, b, c})};
+
+    /* All queues should be found and different */
+    CORRADE_VERIFY(a.handle());
+    CORRADE_VERIFY(b.handle());
+    CORRADE_VERIFY(c.handle());
+    CORRADE_VERIFY(a.handle() != b.handle());
+    CORRADE_VERIFY(a.handle() != c.handle());
+    CORRADE_VERIFY(b.handle() != c.handle());
+
+    /* Fetching the same queue again should give the same handle */
+    VkQueue aAgain;
+    device->GetDeviceQueue(device, largeFamily, 0, &aAgain);
+    CORRADE_COMPARE(aAgain, a.handle());
+
+    /* Fetch the raw queue, should be different from everything else as well */
+    VkQueue rawQueue;
+    device->GetDeviceQueue(device, otherFamily, 0, &rawQueue);
+    CORRADE_VERIFY(rawQueue);
+    CORRADE_VERIFY(rawQueue != a.handle());
+    CORRADE_VERIFY(rawQueue != b.handle());
+    CORRADE_VERIFY(rawQueue != c.handle());
+}
+
+void DeviceVkTest::constructRawQueue() {
+    /* Testing a subset of constructQueues() again because not all drivers
+       have multiple queues and we want to have the coverage */
+    constexpr Float zero = 0.0f;
+    VkDeviceQueueCreateInfo rawQueueInfo{};
+    rawQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    rawQueueInfo.pQueuePriorities = &zero;
+    rawQueueInfo.queueFamilyIndex = 0;
+    rawQueueInfo.queueCount = 1;
+    Device device{_instance, DeviceCreateInfo{_instance}
+        .addQueues(rawQueueInfo)};
+
+    /* Fetch the raw queue */
+    VkQueue rawQueue;
+    device->GetDeviceQueue(device, 0, 0, &rawQueue);
+    CORRADE_VERIFY(rawQueue);
+}
+
 void DeviceVkTest::constructMove() {
     DeviceProperties deviceProperties = pickDevice(_instance);
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties();
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
+    Queue queue{NoCreate};
     Device a{_instance, DeviceCreateInfo{deviceProperties}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions<Extensions::KHR::maintenance1>()
     };
     VkDevice handle = a.handle();
@@ -444,8 +554,9 @@ void DeviceVkTest::constructUnknownExtension() {
 
     std::ostringstream out;
     Error redirectError{&out};
+    Queue queue{NoCreate};
     Device device{_instance, DeviceCreateInfo{_instance}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions({"VK_this_doesnt_exist"_s})};
     CORRADE_COMPARE(out.str(), "TODO");
 }
@@ -487,15 +598,19 @@ void DeviceVkTest::wrap() {
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
     VkDevice device;
+    Queue queue{NoCreate};
     CORRADE_COMPARE(Result(instance->CreateDevice(deviceProperties,
         DeviceCreateInfo{instance}
-            .addQueues(0, {0.0f})
+            .addQueues(0, {0.0f}, {queue})
             .addEnabledExtensions<
                 Extensions::EXT::debug_marker,
                 Extensions::KHR::maintenance1
             >(),
         nullptr, &device)), Result::Success);
     CORRADE_VERIFY(device);
+    /* Populating the queue handle is done only from Device itself, so it won't
+       happen here -- would need to call vkGetDeviceQueue[2] directly */
+    CORRADE_VERIFY(!queue.handle());
 
     {
         /* Wrapping should load the basic function pointers */
@@ -532,8 +647,9 @@ void DeviceVkTest::wrap() {
 void DeviceVkTest::populateGlobalFunctionPointers() {
     vkDestroyDevice = nullptr;
 
+    Queue queue{NoCreate};
     Device device{_instance, DeviceCreateInfo{_instance}
-        .addQueues(0, {0.0f})
+        .addQueues(0, {0.0f}, {queue})
     };
     CORRADE_VERIFY(!vkDestroyDevice);
     device.populateGlobalFunctionPointers();

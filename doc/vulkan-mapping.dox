@@ -194,7 +194,7 @@ Vulkan function                         | Matching API
 @fn_vk{GetDeviceGroupPeerMemoryFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceMemoryCommitment}       | |
 @fn_vk{GetDeviceProcAddr}               | @ref Device constructor
-@fn_vk{GetDeviceQueue}, \n @fn_vk{GetDeviceQueue2} @m_class{m-label m-flat m-success} **1.1** | |
+@fn_vk{GetDeviceQueue}, \n @fn_vk{GetDeviceQueue2} @m_class{m-label m-flat m-success} **1.1** | @ref Device constructor
 @fn_vk{GetEventStatus}                  | |
 @fn_vk{GetFenceStatus}                  | |
 @fn_vk{GetImageMemoryRequirements}, \n @fn_vk{GetImageMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |

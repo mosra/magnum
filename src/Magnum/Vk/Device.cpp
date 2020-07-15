@@ -40,6 +40,7 @@
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
+#include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
@@ -57,6 +58,7 @@ struct DeviceCreateInfo::State {
     Containers::Array<Containers::StringView> disabledExtensions;
     Containers::Array<VkDeviceQueueCreateInfo> queues;
     Containers::StaticArray<32, Float> queuePriorities;
+    Containers::StaticArray<32, Queue*> queueOutput;
 
     std::size_t nextQueuePriority = 0;
     bool quietLog = false;
@@ -182,8 +184,9 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_
     return addEnabledExtensions(Containers::arrayView(extensions));
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities) {
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) {
     CORRADE_ASSERT(!priorities.empty(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified", *this);
+    CORRADE_ASSERT(output.size() == priorities.size(), "Vk::DeviceCreateInfo::addQueues(): expected" << priorities.size() << "outuput queue references but got" << output.size(), *this);
 
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
@@ -195,19 +198,22 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(UnsignedInt family, Containers::Ar
     info.queueCount = priorities.size();
     info.pQueuePriorities = _state->queuePriorities + _state->nextQueuePriority;
 
-    /* Copy the passed queue priorities to an internal storage that never
-       reallocates. If this blows up, see the definition of queuePriorities for
-       details. We can't easily reallocate if this grows too big as all
-       pointers would need to be patched, so there's a static limit. */
+    /* Copy the passed queue priorities and output queue references to an
+       internal storage that never reallocates. If this blows up, see the
+       definition of queuePriorities for details. We can't easily reallocate if
+       this grows too big as all pointers would need to be patched, so there's
+       a static limit. */
     CORRADE_INTERNAL_ASSERT(_state->nextQueuePriority + priorities.size() <= _state->queuePriorities.size());
     Utility::copy(priorities, _state->queuePriorities.suffix(_state->nextQueuePriority).prefix(priorities.size()));
+    for(std::size_t i = 0; i != priorities.size(); ++i)
+        _state->queueOutput[_state->nextQueuePriority + i] = &*output[i];
     _state->nextQueuePriority += priorities.size();
 
     return addQueues(info);
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addQueues(UnsignedInt family, std::initializer_list<Float> priorities) {
-    return addQueues(family, Containers::arrayView(priorities));
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) {
+    return addQueues(family, Containers::arrayView(priorities), Containers::arrayView(output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) {
@@ -266,6 +272,38 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info):
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     initialize(instance, version);
+
+    /* Extension-dependent state is initialized, now we can retrieve the queues
+       from the device and save them to the outputs specified in addQueues().
+       Each of those calls added one or more entries into _state->queueOutput,
+       maintain an offset into it. */
+    UnsignedInt queueOutputIndex = 0;
+    for(const VkDeviceQueueCreateInfo& createInfo: info._state->queues) {
+        /* If the info structure doesn't point into our priority array, it
+           means it was added with the addQueues(VkDeviceQueueCreateInfo)
+           overload. For that we didn't remember any output, thus skip it */
+        if(createInfo.pQueuePriorities < info._state->queuePriorities.begin() ||
+           createInfo.pQueuePriorities >= info._state->queuePriorities.end())
+            continue;
+
+        for(UnsignedInt i = 0; i != createInfo.queueCount; ++i) {
+            VkDeviceQueueInfo2 requestInfo{};
+            requestInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_INFO_2;
+            requestInfo.queueFamilyIndex = createInfo.queueFamilyIndex;
+            /* According to the spec we can request each family only once,
+               which means here we don't need to remember the per-family index
+               across multiple VkDeviceQueueCreateInfos, making the
+               implementation a bit simpler. */
+            requestInfo.queueIndex = i;
+
+            /* Retrieve the queue handle, create a new Queue object in desired
+               output location, and increment the output location for the next
+               queue */
+            VkQueue queue;
+            _state->getDeviceQueueImplementation(*this, requestInfo, queue);
+            *info._state->queueOutput[queueOutputIndex++] = Queue::wrap(*this, queue);
+        }
+    }
 }
 
 Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
@@ -330,6 +368,14 @@ VkDevice Device::release() {
 
 void Device::populateGlobalFunctionPointers() {
     flextVkDevice = _functionPointers;
+}
+
+void Device::getQueueImplementation11(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue) {
+    return self->GetDeviceQueue2(self, &info, &queue);
+}
+
+void Device::getQueueImplementationDefault(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue) {
+    return self->GetDeviceQueue(self, info.queueFamilyIndex, info.queueIndex, &queue);
 }
 
 }}

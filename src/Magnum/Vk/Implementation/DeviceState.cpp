@@ -25,8 +25,17 @@
 
 #include "DeviceState.h"
 
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Version.h"
+
 namespace Magnum { namespace Vk { namespace Implementation {
 
-DeviceState::DeviceState(Device&) {}
+DeviceState::DeviceState(Device& device) {
+    if(device.isVersionSupported(Version::Vk11)) {
+        getDeviceQueueImplementation = &Device::getQueueImplementation11;
+    } else {
+        getDeviceQueueImplementation = &Device::getQueueImplementationDefault;
+    }
+}
 
 }}}

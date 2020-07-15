@@ -32,9 +32,10 @@ namespace Magnum { namespace Vk { namespace Implementation {
 
 struct DeviceState {
     explicit DeviceState(Device& instance);
+
+    void(*getDeviceQueueImplementation)(Device&, const VkDeviceQueueInfo2&, VkQueue&);
 };
 
 }}}
 
 #endif
-

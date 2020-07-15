@@ -32,6 +32,7 @@
 
 #include <cstddef>
 #include <Corrade/Containers/Pointer.h>
+#include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/Math/BoolVector.h"
@@ -169,18 +170,20 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
 
         /**
          * @brief Add queues
-         * @param family        Family index, smaller than
+         * @param[in] family        Family index, smaller than
          *      @ref DeviceProperties::queueFamilyCount()
-         * @param priorities    Queue priorities. Size of the array implies how
-         *      many queues to add and has to be at least one.
+         * @param[in] priorities    Queue priorities. Size of the array implies
+         *      how many queues to add and has to be at least one.
+         * @param[out] output       Where to save resulting queues once the
+         *      device is created. Has to have the same sizes as @p priorities.
          * @return Reference to self (for method chaining)
          *
          * At least one queue has to be added.
          * @see @ref DeviceProperties::pickQueueFamily()
          */
-        DeviceCreateInfo& addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities);
+        DeviceCreateInfo& addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output);
         /** @overload */
-        DeviceCreateInfo& addQueues(UnsignedInt family, std::initializer_list<Float> priorities);
+        DeviceCreateInfo& addQueues(UnsignedInt family, std::initializer_list<Float> priorities, std::initializer_list<Containers::Reference<Queue>> output);
 
         /**
          * @brief Add queues using raw info
@@ -255,7 +258,10 @@ class MAGNUM_VK_EXPORT Device {
          * @param instance  Vulkan instance to create the device on
          * @param info      Device creation info
          *
-         * @see @fn_vk_keyword{CreateDevice}
+         * After creating the device requests device queues added via
+         * @ref DeviceCreateInfo::addQueues(UnsignedInt, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>), populating the @ref Queue references.
+         * @see @fn_vk_keyword{CreateDevice}, @fn_vk_keyword{GetDeviceQueue2},
+         *      @fn_vk_keyword{GetDeviceQueue}
          */
         explicit Device(Instance& instance, const DeviceCreateInfo& info);
 
@@ -374,8 +380,13 @@ class MAGNUM_VK_EXPORT Device {
         Implementation::DeviceState& state() { return *_state; }
 
     private:
+        friend Implementation::DeviceState;
+
         template<class T> MAGNUM_VK_LOCAL void initializeExtensions(Containers::ArrayView<const T> enabledExtensions);
         MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version);
+
+        MAGNUM_VK_LOCAL static void getQueueImplementationDefault(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
+        MAGNUM_VK_LOCAL static void getQueueImplementation11(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
 
         VkDevice _handle;
         HandleFlags _flags;
