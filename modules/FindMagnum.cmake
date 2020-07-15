@@ -880,7 +880,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Vk library
         elseif(_component STREQUAL Vk)
-            set(Vulkan_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumExternal/Vulkan)
             find_package(Vulkan REQUIRED)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)

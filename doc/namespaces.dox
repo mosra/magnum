@@ -582,9 +582,11 @@ Additional plugins and utilities are built separately. See particular
 
 C++14 wrappers and helpers for Vulkan development.
 
-This library is built if `WITH_VK` is enabled when building Magnum. To use this
-library with CMake, request the `Vk` component of the `Magnum` package and link
-to the `Magnum::Vk` target:
+This library is depends on [Vulkan](https://www.khronos.org/vulkan/) and is
+built if `WITH_VK` is enabled when building Magnum. To use this library with
+CMake, put [FindVulkan.cmake](https://github.com/mosra/magnum/blob/master/modules/FindVulkan.cmake)
+into your `modules/` directory, request the `Vk` component of the `Magnum`
+package and link to the `Magnum::Vk` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED Vk)
