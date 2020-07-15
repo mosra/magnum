@@ -41,6 +41,28 @@ VERSION_LABELS = True
 _magnum_colors_src = re.compile(r"""<span class="mh">0x(?P<hex>[0-9a-f]{6})(?P<alpha>[0-9a-f]{2})?(?P<literal>_s?rgba?f?)</span>""")
 _magnum_colors_dst = r"""<span class="mh">0x\g<hex>\g<alpha>\g<literal><span class="m-code-color" style="background-color: #\g<hex>;"></span></span>"""
 
+# Code wrapped in DOXYGEN_IGNORE() will get replaced by an (Unicode) ellipsis
+# in the output. In order to make the same code compilable, add
+#
+#   #define DOXYGEN_IGNORE(...) __VA_ARGS__
+#
+# to the snippet code
+def _doxygen_ignore(code: str):
+    while 'DOXYGEN_IGNORE(' in code:
+        i = code.index('DOXYGEN_IGNORE(')
+        depth = 1
+        for j in range(i + len('DOXYGEN_IGNORE('), len(code)):
+            if code[j] == '(': depth += 1
+            elif code[j] == ')': depth -= 1
+            if depth == 0: break
+        assert depth == 0, "unmatched DOXYGEN_IGNORE() parentheses in %s" % code
+        code = code[:i] + '…' + code[j+1:]
+    return code
+
+M_CODE_FILTERS_PRE = {
+    'C++': _doxygen_ignore
+}
+
 M_CODE_FILTERS_POST = {
     'C++': lambda str: _magnum_colors_src.sub(_magnum_colors_dst, str)
 }
