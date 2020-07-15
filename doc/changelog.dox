@@ -89,6 +89,9 @@ See also:
 
 @subsection changelog-latest-bugfixes Bug fixes
 
+-   @ref Platform::EmscriptenApplication randomly created antialiased contexts
+    due to an uninitialized variable in its
+    @ref Platform::EmscriptenApplication::GLConfiguration "GLConfiguration"
 -   Creating @ref Platform::WindowlessEglApplication again after it was
     destroyed could fail with an error saying "cannot make the previous context
     current" on certain system. This was due to EGL not destroying the context
