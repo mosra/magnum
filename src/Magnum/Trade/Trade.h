@@ -48,9 +48,13 @@ class AbstractSceneConverter;
 typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
 #endif
 
+enum class MaterialAttribute: UnsignedInt;
+enum class MaterialAttributeType: UnsignedByte;
 enum class MaterialType: UnsignedByte;
 enum class MaterialAlphaMode: UnsignedByte;
 class AbstractMaterialData;
+class MaterialAttributeData;
+class MaterialData;
 
 enum class AnimationTrackTargetType: UnsignedByte;
 enum class AnimationTrackType: UnsignedByte;

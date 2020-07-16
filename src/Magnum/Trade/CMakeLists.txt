@@ -42,6 +42,7 @@ set(MagnumTrade_GracefulAssert_SRCS
     AnimationData.cpp
     CameraData.cpp
     ImageData.cpp
+    MaterialData.cpp
     MeshData.cpp
     ObjectData2D.cpp
     ObjectData3D.cpp
@@ -58,6 +59,7 @@ set(MagnumTrade_HEADERS
     Data.h
     ImageData.h
     LightData.h
+    MaterialData.h
     MeshData.h
     MeshObjectData2D.h
     MeshObjectData3D.h
@@ -72,7 +74,8 @@ set(MagnumTrade_HEADERS
 
 set(MagnumTrade_PRIVATE_HEADERS
     Implementation/arrayUtilities.h
-    Implementation/converterUtilities.h)
+    Implementation/converterUtilities.h
+    Implementation/materialAttributeProperties.hpp)
 
 if(MAGNUM_BUILD_DEPRECATED)
     list(APPEND MagnumTrade_GracefulAssert_SRCS

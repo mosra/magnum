@@ -60,6 +60,7 @@ corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES MagnumTrade)
 
 set_property(TARGET
     TradeAnimationDataTest
+    TradeMaterialDataTest
     TradeMeshDataTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 

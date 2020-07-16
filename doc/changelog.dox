@@ -72,6 +72,12 @@ See also:
 
 -   Added @ref SceneGraph::Object::move()
 
+@subsubsection changelog-latest-new-trade Trade library
+
+-   A new, redesigned @ref Trade::MaterialData class allowing to store custom
+    material attributes as well as more material types together in a single
+    instance. See [mosra/magnum#459](https://github.com/mosra/magnum/pull/459).
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-gl GL library
