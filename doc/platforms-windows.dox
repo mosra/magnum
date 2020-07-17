@@ -30,6 +30,7 @@ namespace Magnum {
 
 @tableofcontents
 @m_keyword{ANGLE OpenGL compatibility layer,,}
+@m_keywords{clang-cl}
 @m_footernavigation
 
 @section platforms-windows-hidpi HiDPI support
