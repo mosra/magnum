@@ -137,6 +137,12 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text librariess
+-   @ref SceneGraph::Object:addChild() no longer requires the type constructor
+    to have the last parameter a parent object object pointer, as that was
+    quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
+    afterwards. This can cause compilation breakages in case the type
+    constructor has the parent parameter non-optional, pass the parent
+    explicitly in that case.
 
 @section changelog-2020-06 2020.06
 
