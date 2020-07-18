@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Assert.h>
+
 #include "Functions.h"
 
 namespace Magnum { namespace Math {
@@ -39,6 +41,22 @@ UnsignedInt log2(UnsignedInt number) {
     while(number >>= 1)
         ++log;
     return log;
+}
+
+
+UnsignedLong binomialCoefficient(UnsignedInt n, UnsignedInt k) {
+    if (k > n) return 0;
+    if (k * 2 > n)
+        k = n-k;
+    if (k == 0) return 1;
+
+    UnsignedLong result = n;
+    for(UnsignedInt i = 2; i <= k; ++i ) {
+        CORRADE_ASSERT(result < ~UnsignedLong{} / (n-i+1), "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", 0ul);
+        result *= (n-i+1);
+        result /= i;
+    }
+    return result;
 }
 
 }}

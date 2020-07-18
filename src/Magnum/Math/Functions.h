@@ -410,6 +410,18 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
     return out;
 }
 
+
+/**
+@brief [Binomial Coefficient](https://en.wikipedia.org/wiki/Binomial_coefficient)
+
+Returns the number of combinations of @f$ n @f$ things taken @f$ k @f$ at a time.
+The number of ways to do this is given by
+@f[
+    \begin{pmatrix} n \\ k \end{pmatrix} = \frac{n! \cdot (n-k)!}{k!} = \frac{n \cdot (n-1) \cdots (n - k + 1)}{k \cdots 1}.
+@f]
+*/
+UnsignedLong MAGNUM_EXPORT binomialCoefficient(UnsignedInt n, UnsignedInt k);
+
 /**
 @brief Floating point division remainder
 @param a     Numerator

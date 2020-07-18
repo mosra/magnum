@@ -53,6 +53,9 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void ceil();
     void fmod();
 
+    void binomialCoefficient();
+    void binomialCoefficientOverflow();
+
     void sqrt();
     void sqrtInverted();
     void lerp();
@@ -114,6 +117,9 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::round,
               &FunctionsTest::ceil,
               &FunctionsTest::fmod,
+
+              &FunctionsTest::binomialCoefficient,
+              &FunctionsTest::binomialCoefficientOverflow,
 
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
@@ -291,6 +297,27 @@ void FunctionsTest::ceil() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::ceil(2.7_degf), 3.0_degf);
+}
+
+void FunctionsTest::binomialCoefficient() {
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 1), 1ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 0), 1ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(19, 11), 75582ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(1000, 999), 1000ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(0, 0), 1ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(32, 11), 129024480ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(62, 31), 465428353255261088ul);
+}
+
+void FunctionsTest::binomialCoefficientOverflow() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::binomialCoefficient(63, 31);
+    CORRADE_COMPARE(out.str(), "Math::binomialCoefficient(): overflow for (63 choose 31)\n");
 }
 
 void FunctionsTest::fmod() {
