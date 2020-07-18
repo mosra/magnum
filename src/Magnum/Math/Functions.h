@@ -416,10 +416,10 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
 @brief Computes a Binomial Coefficient
 
 Given n elements computes the number of ways to choose k elements
-without replacement from n elements. The number of ways to do this is
+without replacement. The number of ways to do this is
 given by
 @f[
-    \frac{n}{k} = \frac{n! \cdot (n-k)!}{k!} = \frac{n \cdot (n-1) \cdots (n - k + 1)}{k \cdots 1}.
+    \begin{pmatrix} n \\ k \end{pmatrix} = \frac{n! \cdot (n-k)!}{k!} = \frac{n \cdot (n-1) \cdots (n - k + 1)}{k \cdots 1}.
 @f]
 */
 template<class T> inline typename std::enable_if<IsIntegral<T>::value, T>::type binomialCoefficient(T n, T k) {
