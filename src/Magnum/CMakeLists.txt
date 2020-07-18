@@ -111,11 +111,11 @@ set(MagnumMath_SRCS
     Math/Angle.cpp
     Math/Color.cpp
     Math/Half.cpp
-    Math/Functions.cpp
     Math/Packing.cpp
     Math/instantiation.cpp)
 
 set(MagnumMath_GracefulAssert_SRCS
+    Math/Functions.cpp
     Math/PackingBatch.cpp)
 
 # Objects shared between main and math test library
