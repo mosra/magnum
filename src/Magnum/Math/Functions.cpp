@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Functions.h"
 
