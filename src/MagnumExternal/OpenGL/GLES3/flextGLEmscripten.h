@@ -44,6 +44,7 @@
 #define __gl2_h_
 #define __gl3_h_
 #define __gl31_h_
+#define __gl32_h_
 #define __gl2ext_h_
 #define __gl3ext_h_
 #define __gl2platform_h_
