@@ -861,10 +861,6 @@ typedef struct __GLsync *GLsync;
 #define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR 0x93DC
 #define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR 0x93DD
 
-/* GL_KHR_blend_equation_advanced_coherent */
-
-#define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
-
 /* GL_KHR_blend_equation_advanced */
 
 #define GL_MULTIPLY_KHR 0x9294
