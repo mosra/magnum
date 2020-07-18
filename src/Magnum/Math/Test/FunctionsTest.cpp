@@ -53,6 +53,8 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void ceil();
     void fmod();
 
+    void binomialCoefficient();
+
     void sqrt();
     void sqrtInverted();
     void lerp();
@@ -114,6 +116,8 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::round,
               &FunctionsTest::ceil,
               &FunctionsTest::fmod,
+
+              &FunctionsTest::binomialCoefficient,
 
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
@@ -291,6 +295,15 @@ void FunctionsTest::ceil() {
 
     /* Wrapped types */
     CORRADE_COMPARE(Math::ceil(2.7_degf), 3.0_degf);
+}
+
+void FunctionsTest::binomialCoefficient() {
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 1), 1);
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 0), 1);
+    CORRADE_COMPARE(Math::binomialCoefficient(19, 11), 75582);
+    CORRADE_COMPARE(Math::binomialCoefficient(1000, 999), 1000);
+    CORRADE_COMPARE(Math::binomialCoefficient(0, 0), 1);
+    CORRADE_COMPARE(Math::binomialCoefficient(32, 11), 129024480);
 }
 
 void FunctionsTest::fmod() {

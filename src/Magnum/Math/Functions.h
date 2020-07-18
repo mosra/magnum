@@ -34,6 +34,7 @@
 #include <cstdlib> /* std::div() */
 #include <type_traits>
 #include <utility>
+#include <limits>
 #include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
@@ -408,6 +409,33 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
     for(std::size_t i = 0; i != size; ++i)
         out[i] = Math::ceil(a[i]);
     return out;
+}
+
+
+/**
+@brief Computes a Binomial Coefficient
+
+Given n elements computes the number of ways to choose k elements
+without replacement from n elements. The number of ways to do this is
+given by
+@f[
+    \frac{n}{k} = \frac{n! \cdot (n-k)!}{k!} = \frac{n \cdot (n-1) \cdots (n - k + 1)}{k \cdots 1}.
+@f]
+*/
+template<class T> inline typename std::enable_if<IsIntegral<T>::value, T>::type binomialCoefficient(T n, T k) {
+    CORRADE_ASSERT(k >= 0, "k must be positive to compute the Binomial Coefficient", T{0});
+    if (k > n) return 0;
+    if (k * 2 > n)
+        k = n-k;
+    if (k == 0) return 1;
+
+    T result = n;
+    for(T i = 2; i <= k; ++i ) {
+        CORRADE_ASSERT(result < std::numeric_limits<T>::max()/(n-i+1), "Overflow In Binomial Coefficient", T{0});
+        result *= (n-i+1);
+        result /= i;
+    }
+    return result;
 }
 
 /**
