@@ -814,7 +814,7 @@ Debug& operator<<(Debug& debug, const MeshAttribute value) {
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MeshAttribute::value: return debug << "::" << Debug::nospace << #value;
+        #define _c(value) case MeshAttribute::value: return debug << "::" #value;
         _c(Position)
         _c(Tangent)
         _c(Bitangent)
