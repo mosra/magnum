@@ -34,7 +34,7 @@
 
 /* Defensive include guards */
 
-#if defined(__gl_h_) || defined(__gl2_h_) || defined(__gl3_h_) || defined(__gl31_h_)
+#if defined(__gl_h_) || defined(__gl2_h_) || defined(__gl3_h_) || defined(__gl31_h_) || defined(__gl32_h_)
 #error Attempt to include auto-generated header after including gl3.h
 #endif
 #if defined(__gl2ext_h_) || defined(__gl3ext_h_)
