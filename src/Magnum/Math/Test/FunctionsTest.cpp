@@ -301,13 +301,13 @@ void FunctionsTest::ceil() {
 }
 
 void FunctionsTest::binomialCoefficient() {
-    CORRADE_COMPARE(Math::binomialCoefficient(1, 1), 1ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(1, 0), 1ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(19, 11), 75582ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(1000, 999), 1000ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(0, 0), 1ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(32, 11), 129024480ul);
-    CORRADE_COMPARE(Math::binomialCoefficient(62, 31), 465428353255261088ul);
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 1), 1ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(1, 0), 1ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(19, 11), 75582ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(1000, 999), 1000ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(0, 0), 1ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(32, 11), 129024480ull);
+    CORRADE_COMPARE(Math::binomialCoefficient(62, 31), 465428353255261088ull);
 }
 
 void FunctionsTest::binomialCoefficientOverflow() {
