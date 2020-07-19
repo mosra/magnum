@@ -55,6 +55,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void fmod();
 
     void binomialCoefficient();
+    void binomialCoefficientInvalidInput();
     void binomialCoefficientOverflow();
 
     void sqrt();
@@ -120,6 +121,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::fmod,
 
               &FunctionsTest::binomialCoefficient,
+              &FunctionsTest::binomialCoefficientInvalidInput,
               &FunctionsTest::binomialCoefficientOverflow,
 
               &FunctionsTest::sqrt,
@@ -308,6 +310,17 @@ void FunctionsTest::binomialCoefficient() {
     CORRADE_COMPARE(Math::binomialCoefficient(0, 0), 1ull);
     CORRADE_COMPARE(Math::binomialCoefficient(32, 11), 129024480ull);
     CORRADE_COMPARE(Math::binomialCoefficient(62, 31), 465428353255261088ull);
+}
+
+void FunctionsTest::binomialCoefficientInvalidInput() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::binomialCoefficient(15, 16);
+    CORRADE_COMPARE(out.str(), "Math::binomialCoefficient(): k can't be greater than n in (15 choose 16)\n");
 }
 
 void FunctionsTest::binomialCoefficientOverflow() {

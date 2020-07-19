@@ -45,7 +45,8 @@ UnsignedInt log2(UnsignedInt number) {
 }
 
 UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
-    if(k > n) return 0;
+    CORRADE_ASSERT(n >= k,
+        "Math::binomialCoefficient(): k can't be greater than n in (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
 
     /* k and n - k gives the same value, optimize the calculation to do fewer
        steps */
