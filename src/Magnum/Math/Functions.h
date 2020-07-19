@@ -7,6 +7,7 @@
                 2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2020 Nghia Truong <nghiatruong.vn@gmail.com>
     Copyright © 2020 Pablo Escobar <mail@rvrs.in>
+    Copyright © 2020 janos <janos.meny@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -410,14 +411,16 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
     return out;
 }
 
-
 /**
-@brief [Binomial Coefficient](https://en.wikipedia.org/wiki/Binomial_coefficient)
+@brief [Binomial coefficient](https://en.wikipedia.org/wiki/Binomial_coefficient).
+@m_since_latest
 
-Returns the number of combinations of @f$ n @f$ things taken @f$ k @f$ at a time.
-The number of ways to do this is given by
-@f[
-    \begin{pmatrix} n \\ k \end{pmatrix} = \frac{n! \cdot (n-k)!}{k!} = \frac{n \cdot (n-1) \cdots (n - k + 1)}{k \cdots 1}.
+Returns the number of combinations of @f$ n @f$ things taken @f$ k @f$ at a
+time, with @f$ n \ge k \ge 0 @f$: @f[
+    \begin{pmatrix} n \\ k \end{pmatrix} =
+        \frac{n! (n - k)!}{k!} =
+        \frac{n (n - 1) (n - 2) ~ \cdots ~ (n - (k - 1))}{k (k - 1) ~ \cdots ~ 1} =
+        \prod_{i=1}^k \frac{n + 1 - i}{i}
 @f]
 */
 UnsignedLong MAGNUM_EXPORT binomialCoefficient(UnsignedInt n, UnsignedInt k);

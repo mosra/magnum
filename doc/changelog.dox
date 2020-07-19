@@ -64,6 +64,7 @@ See also:
 @subsubsection changelog-latest-new-math Math library
 
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
+-   Added @ref Math::binomialCoefficient() (see [mosra/magnum#461](https://github.com/mosra/magnum/pull/461))
 
 @subsection changelog-latest-changes Changes and improvements
 
@@ -139,7 +140,7 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text librariess
--   @ref SceneGraph::Object:addChild() no longer requires the type constructor
+-   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
     afterwards. This can cause compilation breakages in case the type

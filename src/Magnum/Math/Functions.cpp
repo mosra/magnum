@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2020 janos <janos.meny@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -43,19 +44,23 @@ UnsignedInt log2(UnsignedInt number) {
     return log;
 }
 
+UnsignedLong binomialCoefficient(const UnsignedInt n, UnsignedInt k) {
+    if(k > n) return 0;
 
-UnsignedLong binomialCoefficient(UnsignedInt n, UnsignedInt k) {
-    if (k > n) return 0;
-    if (k * 2 > n)
-        k = n-k;
-    if (k == 0) return 1;
+    /* k and n - k gives the same value, optimize the calculation to do fewer
+       steps */
+    if(k*2 > n) k = n - k;
+
+    if(k == 0) return 1;
 
     UnsignedLong result = n;
-    for(UnsignedInt i = 2; i <= k; ++i ) {
-        CORRADE_ASSERT(result < ~UnsignedLong{} / (n-i+1), "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", 0ul);
-        result *= (n-i+1);
+    for(UnsignedInt i = 2; i <= k; ++i) {
+        CORRADE_ASSERT(result < ~UnsignedLong{} / (n-i+1), "Math::binomialCoefficient(): overflow for (" << Corrade::Utility::Debug::nospace << n << "choose" << k << Corrade::Utility::Debug::nospace << ")", {});
+
+        result *= n - i + 1;
         result /= i;
     }
+
     return result;
 }
 
