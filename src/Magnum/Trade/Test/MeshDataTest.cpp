@@ -52,6 +52,7 @@ struct MeshDataTest: TestSuite::Tester {
     void constructIndexNullptr();
 
     void constructAttribute();
+    void constructAttributeDefault();
     void constructAttributeCustom();
     void constructAttribute2D();
     void constructAttribute2DWrongSize();
@@ -212,6 +213,7 @@ MeshDataTest::MeshDataTest() {
               &MeshDataTest::constructIndexNullptr,
 
               &MeshDataTest::constructAttribute,
+              &MeshDataTest::constructAttributeDefault,
               &MeshDataTest::constructAttributeCustom,
               &MeshDataTest::constructAttribute2D,
               &MeshDataTest::constructAttribute2DWrongSize,
@@ -590,6 +592,16 @@ void MeshDataTest::constructAttribute() {
     CORRADE_COMPARE(format, VertexFormat::Vector2);
     CORRADE_COMPARE(stride, sizeof(Vector2));
     CORRADE_COMPARE(data.data(), Positions);
+}
+
+void MeshDataTest::constructAttributeDefault() {
+    MeshAttributeData data;
+    CORRADE_COMPARE(data.name(), MeshAttribute{});
+    CORRADE_COMPARE(data.format(), VertexFormat{});
+
+    constexpr MeshAttributeData cdata;
+    CORRADE_COMPARE(cdata.name(), MeshAttribute{});
+    CORRADE_COMPARE(cdata.format(), VertexFormat{});
 }
 
 void MeshDataTest::constructAttributeCustom() {
