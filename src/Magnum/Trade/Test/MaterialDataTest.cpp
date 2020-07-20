@@ -73,6 +73,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructCopy();
         void constructMove();
 
+        void accessOptional();
         void accessOutOfBounds();
         void accessInvalidAttributeName();
         void accessNotFound();
@@ -161,6 +162,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMove,
 
+              &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
               &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessNotFound,
@@ -666,6 +668,31 @@ void MaterialDataTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<MaterialData>::value);
 }
 
+void MaterialDataTest::accessOptional() {
+    MaterialData data{{
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }};
+
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute("SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute("SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const Int*>(data.tryAttribute(MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture), 3);
+    CORRADE_COMPARE(data.attributeOr("SpecularTexture", 5u), 3);
+    CORRADE_COMPARE(data.attributeOr(MaterialAttribute::SpecularTexture, 5u), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute("DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialAttribute::DiffuseTexture));
+    CORRADE_COMPARE(data.attributeOr("DiffuseTexture", 5u), 5);
+    CORRADE_COMPARE(data.attributeOr(MaterialAttribute::DiffuseTexture, 5u), 5);
+}
+
 void MaterialDataTest::accessOutOfBounds() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -708,6 +735,12 @@ void MaterialDataTest::accessInvalidAttributeName() {
     data.attribute(MaterialAttribute(0xfefe));
     data.attribute<Int>(MaterialAttribute(0x0));
     data.attribute<Int>(MaterialAttribute(0xfefe));
+    data.tryAttribute(MaterialAttribute(0x0));
+    data.tryAttribute(MaterialAttribute(0xfefe));
+    data.tryAttribute<Int>(MaterialAttribute(0x0));
+    data.tryAttribute<Int>(MaterialAttribute(0xfefe));
+    data.attributeOr(MaterialAttribute(0x0), 42);
+    data.attributeOr(MaterialAttribute(0xfefe), 42);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
@@ -718,7 +751,13 @@ void MaterialDataTest::accessInvalidAttributeName() {
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
         "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n");
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0xfefe)\n");
 }
 
 void MaterialDataTest::accessNotFound() {
@@ -759,7 +798,17 @@ void MaterialDataTest::accessWrongType() {
     data.attribute<Color3>(0);
     data.attribute<Color3>(MaterialAttribute::DiffuseColor);
     data.attribute<Color3>("DiffuseColor");
+    data.tryAttribute<Color3>(MaterialAttribute::DiffuseColor);
+    data.tryAttribute<Color3>("DiffuseColor");
+    data.attributeOr(MaterialAttribute::DiffuseColor, Color3{1.0f});
+    data.attributeOr("DiffuseColor", Color3{1.0f});
     CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
+        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
+        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
+        /* tryAttribute() and attributeOr() delegate to attribute() so the
+           assert is the same */
+        "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n");

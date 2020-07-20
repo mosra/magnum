@@ -262,6 +262,18 @@ const void* MaterialData::attribute(const MaterialAttribute name) const {
     return attribute(string);
 }
 
+const void* MaterialData::tryAttribute(const Containers::StringView name) const {
+    const UnsignedInt id = attributeFor(name);
+    if(id == ~UnsignedInt{}) return nullptr;
+    return _data[id].value();
+}
+
+const void* MaterialData::tryAttribute(const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
+    return tryAttribute(string);
+}
+
 Containers::Array<MaterialAttributeData> MaterialData::release() {
     return std::move(_data);
 }
