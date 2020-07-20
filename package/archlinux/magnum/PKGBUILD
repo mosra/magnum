@@ -1,8 +1,11 @@
 # Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
 # Contributor: Mosra <mosra@centrum.cz>
 
+# An up-to-date version of this PKGBUILD is maintained at
+# https://github.com/mosra/magnum/blob/master/package/archlinux/magnum/PKGBUILD
+
 pkgname=magnum
-pkgver=2019.10
+pkgver=2020.06
 pkgrel=1
 pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
 arch=(x86_64)
@@ -54,7 +57,6 @@ package() {
   install -Dm644 magnum/COPYING \
     "$pkgdir/usr/share/licenses/$pkgname/COPYING"
 }
-
 
 # getver: github.com/mosra/magnum/releases/latest
 # vim: ts=2 sw=2 et:
