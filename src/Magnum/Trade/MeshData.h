@@ -662,7 +662,7 @@ too:
 
 In cases where you want the @ref MeshData instance to only refer to external
 data without taking ownership (for example in a memory-mapped file, constant
-memory etc., instead of moving in an @ref Corrade::Containers::Array you pass
+memory etc.). Instead of moving in an @ref Corrade::Containers::Array you pass
 @ref DataFlags describing if the data is mutable or not together with an
 @ref Corrade::Containers::ArrayView. A variant of the above where the index
 data is constant and vertex data mutable, both referenced externally:
