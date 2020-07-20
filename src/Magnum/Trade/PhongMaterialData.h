@@ -180,13 +180,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          *      instead.
          */
         explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
-
-        /**
-         * @brief Constructor
-         * @m_deprecated_since{2018,10} Use @ref PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept;
         #endif
 
         /** @brief Copying is not allowed */

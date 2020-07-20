@@ -64,8 +64,6 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, alphaMode, alphaMask, shininess, importerState} {}
-
-PhongMaterialData::PhongMaterialData(const Flags flags, const Float shininess, const void* const importerState) noexcept: PhongMaterialData{flags, 0x000000ff_rgbaf, {}, 0xffffffff_rgbaf, {}, 0xffffffff_rgbaf, {}, {}, {}, MaterialAlphaMode::Opaque, 0.5f, shininess, importerState} {}
 #endif
 
 PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept = default;

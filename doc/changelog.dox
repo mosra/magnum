@@ -133,6 +133,11 @@ See also:
     -   @ref Trade::CameraData constructor not taking an explicit type enum,
         use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
         instead
+    -   @ref Trade::AbstractMaterialData constructor taking just two parameters
+        and @ref Trade::PhongMaterialData constructor taking three parameters,
+        use @ref Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
+        and @ref Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+        instead
 -   All includes of @ref Corrade/Containers/PointerStl.h and
     @ref Corrade/Containers/ArrayViewStl.h that were added in 2019.01 for
     preserving backwards compatibility after the move from @ref std::unique_ptr

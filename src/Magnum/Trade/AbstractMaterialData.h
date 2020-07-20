@@ -34,10 +34,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Trade {
 
 /**
@@ -160,14 +156,6 @@ class MAGNUM_TRADE_EXPORT AbstractMaterialData {
          * @param importerState     Importer-specific state
          */
         explicit AbstractMaterialData(MaterialType type, Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, const void* importerState = nullptr) noexcept;
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief Constructor
-         * @m_deprecated_since{2018,10} Use @ref AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("use AbstractMaterialData(MaterialType, UnsignedInt, MaterialAlphaMode, Float) instead") AbstractMaterialData(MaterialType type, const void* importerState = nullptr) noexcept: AbstractMaterialData{type, {}, MaterialAlphaMode::Opaque, 0.5f, importerState} {}
-        #endif
 
     private:
         MaterialType _type;
