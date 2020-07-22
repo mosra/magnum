@@ -52,9 +52,11 @@ enum class MaterialAttribute: UnsignedInt;
 enum class MaterialAttributeType: UnsignedByte;
 enum class MaterialType: UnsignedInt;
 enum class MaterialAlphaMode: UnsignedByte;
-class AbstractMaterialData;
 class MaterialAttributeData;
 class MaterialData;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use MaterialData instead") MaterialData AbstractMaterialData;
+#endif
 
 enum class AnimationTrackTargetType: UnsignedByte;
 enum class AnimationTrackType: UnsignedByte;

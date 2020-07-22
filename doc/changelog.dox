@@ -94,6 +94,15 @@ See also:
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
+-   Added @ref Trade::PhongMaterialData::ambientTextureMatrix(),
+    @ref Trade::PhongMaterialData::diffuseTextureMatrix(),
+    @ref Trade::PhongMaterialData::specularTextureMatrix() and
+    @ref Trade::PhongMaterialData::normalTextureMatrix() exposing also
+    per-texture coordinate transformation, similarly to per-texture coordinate
+    sets added in 2020.06
+-   Added @ref Trade::PhongMaterialData::textureCoordinates() exposing a common
+    texture coordinate set as a complement to a per-texture property added in
+    2020.06
 
 @subsection changelog-latest-buildsystem Build system
 
@@ -119,6 +128,9 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   @cpp Trade::AbstractMaterialData @ce as well as its containing header
+    `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
+    and more flexible @ref Trade::MaterialData.
 -   @cpp Trade::PhongMaterialData::ambientCoordinateSet() @ce,
     @cpp diffuseCoordinateSet() @ce, @cpp specularCoordinateSet() @ce and
     @cpp normalCoordinateSet() @ce are deprecated in favor of more consistently
@@ -126,6 +138,18 @@ See also:
     @ref Trade::PhongMaterialData::diffuseTextureCoordinates() "diffuseTextureCoordinates()",
     @ref Trade::PhongMaterialData::specularTextureCoordinates() "specularTextureCoordinates()"
     and @ref Trade::PhongMaterialData::normalTextureCoordinates() "normalTextureCoordinates()"
+-   @ref Trade::PhongMaterialData constructor is deprecated as the designated
+    way is to populate the @ref Trade::MaterialData class directly instead.
+-   @cpp Trade::MaterialData::type() @ce (coming from the original
+    `AbstractMaterialData` class) is deprecated in favor of
+    @ref Trade::MaterialData::types(), as a material data can now contain
+    attributes for multiple different material types at once
+-   @cpp Trade::MaterialData::flags() @ce (coming from the original
+    `AbstractMaterialData` class), @cpp Trade::PhongMaterialData::flags() @ce
+    and related enum (sets) are deprecated. The flags are no longer stored
+    directly but rather generated on-the-fly from attribute data, which makes
+    them less efficient than calling @ref Trade::MaterialData::hasAttribute()
+    etc.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
@@ -160,11 +184,12 @@ See also:
     -   @ref Trade::CameraData constructor not taking an explicit type enum,
         use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
         instead
-    -   @ref Trade::AbstractMaterialData constructor taking just two parameters
-        and @ref Trade::PhongMaterialData constructor taking three parameters,
-        use @ref Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
-        and @ref Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
-        instead
+    -   @cpp Trade::AbstractMaterialData @ce constructor taking just two
+        parameters and @ref Trade::PhongMaterialData constructor taking three
+        parameters, use either the (also deprecated)
+        @cpp Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*) @ce
+        and @cpp Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) @ce
+        constructors or directly the new @ref Trade::MaterialData class
 -   All includes of @ref Corrade/Containers/PointerStl.h and
     @ref Corrade/Containers/ArrayViewStl.h that were added in 2019.01 for
     preserving backwards compatibility after the move from @ref std::unique_ptr
@@ -183,6 +208,16 @@ See also:
     implement through the redesigned @ref Trade::MaterialData APIs. However
     these APIs were mainly used to populate the contents in asset importers, so
     this shouldn't cause any breakages in user code.
+-   @ref Trade::MaterialData::flags() now calculates the output on-the-fly
+    based on what attributes are present. This means that arbitrary extra bits
+    passed to the constructor from @cpp AbstractMaterialData @ce subclasses are
+    now discarded, and thus subclasses have to override the
+    @ref Trade::MaterialData::flags() "flags()" function to keep the same
+    behavior.
+-   @ref Trade::MaterialData, which the deprecated
+    @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
+    @cpp virtual @ce destructor as subclasses with extra data members aren't a
+    desired use case anymore.
 
 @section changelog-2020-06 2020.06
 
@@ -2486,10 +2521,10 @@ Released 2018-10-23, tagged as
 -   `Shaders::VertexColor::Color` is deprecated, use the direct
     @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
     alternatives instead
--   @ref Trade::AbstractMaterialData constructor taking just two parameters
+-   @cpp Trade::AbstractMaterialData @ce constructor taking just two parameters
     and @ref Trade::PhongMaterialData constructor taking three parameters are
-    deprecated, use @ref Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
-    and @ref Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+    deprecated, use @cpp Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*) @ce
+    and @cpp Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) @ce
     instead
 -   @ref Trade::CameraData constructor not taking an explicit type enum is
     deprecated, use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)

@@ -28,6 +28,7 @@
 #include <cstring>
 #include <algorithm>
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/GrowableArray.h>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Matrix.h"
@@ -275,6 +276,33 @@ const void* MaterialData::tryAttribute(const MaterialAttribute name) const {
     return tryAttribute(string);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+MaterialData::Flags MaterialData::flags() const {
+    Flags flags;
+    if(isDoubleSided())
+        flags |= Flag::DoubleSided;
+    return flags;
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+bool MaterialData::isDoubleSided() const {
+    return attributeOr(MaterialAttribute::DoubleSided, false);
+}
+
+MaterialAlphaMode MaterialData::alphaMode() const {
+    if(attributeOr(MaterialAttribute::AlphaBlend, false))
+        return MaterialAlphaMode::Blend;
+    if(hasAttribute(MaterialAttribute::AlphaMask))
+        return MaterialAlphaMode::Mask;
+    return MaterialAlphaMode::Opaque;
+}
+
+Float MaterialData::alphaMask() const {
+    return attributeOr(MaterialAttribute::AlphaMask, 0.5f);
+}
+
 Containers::Array<MaterialAttributeData> MaterialData::release() {
     return std::move(_data);
 }
@@ -342,6 +370,46 @@ Debug& operator<<(Debug& debug, const MaterialTypes value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialTypes{}", {
         MaterialType::Phong
     });
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+Debug& operator<<(Debug& debug, const MaterialData::Flag value) {
+    debug << "Trade::MaterialData::Flag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialData::Flag::value: return debug << "::" #value;
+        _c(DoubleSided)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MaterialData::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialData::Flags{}", {
+        MaterialData::Flag::DoubleSided
+    });
+}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
+
+Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
+    debug << "Trade::MaterialAlphaMode" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialAlphaMode::value: return debug << "::" #value;
+        _c(Opaque)
+        _c(Mask)
+        _c(Blend)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

@@ -30,10 +30,7 @@
  * @brief Class @ref Magnum::Trade::PhongMaterialData
  */
 
-#include "Magnum/Magnum.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix3.h"
-#include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Trade/MaterialData.h"
 
 namespace Magnum { namespace Trade {
 
@@ -42,16 +39,22 @@ namespace Magnum { namespace Trade {
 
 @see @ref AbstractImporter::material()
 */
-class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
+class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Material flag
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided(), @ref hasTextureTransformation(),
+         *      @ref hasTextureCoordinates() etc.
          *
-         * A superset of @ref AbstractMaterialData::Flag.
+         * A superset of @ref MaterialData::Flag.
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedShort {
-            /** @copydoc AbstractMaterialData::Flag::DoubleSided */
+        enum class CORRADE_DEPRECATED_ENUM("use hasAttribute() etc. instead") Flag: UnsignedInt {
+            /** @copydoc MaterialData::Flag::DoubleSided */
             DoubleSided = 1 << 0,
 
             /** The material has an ambient texture */
@@ -93,12 +96,30 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Material flags
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided(), @ref hasTextureTransformation(),
+         *      @ref hasTextureCoordinates() etc.
          *
-         * A superset of @ref AbstractMaterialData::Flags.
+         * A superset of @ref MaterialData::Flags.
          * @see @ref flags()
          */
-        typedef Containers::EnumSet<Flag> Flags;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        typedef CORRADE_DEPRECATED("use hasAttribute() etc. instead") Containers::EnumSet<Flag> Flags;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Allow constructing subclasses directly. While not used in the
+           general Importer workflow, it allows users to create instances with
+           desired convenience APIs easier (and simplifies testing). It's
+           however hidden from the docs as constructing instances this way
+           isn't really common and it would add a lot of noise. */
+        using MaterialData::MaterialData;
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
          * @param flags             Material flags
@@ -107,12 +128,12 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          *      non-textured material and @cpp 0xffffffff_rgbaf @ce for a
          *      default value for a textured material.
          * @param ambientTexture    Ambient texture ID. Ignored if @p flags
-         *      doesn't have @ref Flag::AmbientTexture
+         *      doesn't have @ref Flag::AmbientTexture.
          * @param diffuseColor      Diffuse color. Use
          *      @cpp 0xffffffff_rgbaf @ce for a default value for both a
          *      non-textured and a textured material.
          * @param diffuseTexture    Diffuse texture ID. Ignored if @p flags
-         *      doesn't have @ref Flag::DiffuseTexture
+         *      doesn't have @ref Flag::DiffuseTexture.
          * @param specularColor     Specular color. Use
          *      @cpp 0xffffff00_rgbaf @ce for a default value for both a
          *      non-textured and a textured material.
@@ -128,13 +149,19 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param shininess         Shininess. Use @cpp 80.0f @ce for a default
          *      value.
          * @param importerState     Importer-specific state
-         * @m_since{2020,06}
          *
          * All `*TextureCoordinates()` accessors are implicitly zero with this
          * constructor. If @p textureMatrix is not default-constructed, expects
          * @ref Flag::TextureTransformation to be enabled as well.
+         *
+         * @m_deprecated_since_latest Populate a @ref MaterialData instance
+         *      using @ref MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*)
+         *      instead. This class is not meant to be constructed directly
+         *      anymore.
          */
-        explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, const Color4& diffuseColor, UnsignedInt diffuseTexture, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt normalTexture, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        explicit CORRADE_DEPRECATED("use MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*) instead") PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, const Color4& diffuseColor, UnsignedInt diffuseTexture, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt normalTexture, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Construct with non-zero texture coordinate sets
@@ -173,69 +200,122 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param shininess             Shininess. Use @cpp 80.0f @ce for a
          *      default value.
          * @param importerState         Importer-specific state
-         * @m_since{2020,06}
          *
          * If @p textureMatrix is not default-constructed, expects
          * @ref Flag::TextureTransformation to be enabled as well. If any
          * `*Coordinates` parameter is non-zero, expects
          * @ref Flag::TextureCoordinates to be enabled as well.
+         *
+         * @m_deprecated_since_latest Populate a @ref MaterialData instance
+         *      using @ref MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*)
+         *      instead. This class is not meant to be constructed directly
+         *      anymore.
          */
-        explicit PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, UnsignedInt ambientTextureCoordinates, const Color4& diffuseColor, UnsignedInt diffuseTexture, UnsignedInt diffuseTextureCoordinates, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt specularTextureCoordinates, UnsignedInt normalTexture, UnsignedInt normalTextureCoordinates, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        explicit CORRADE_DEPRECATED("use MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*) instead") PhongMaterialData(Flags flags, const Color4& ambientColor, UnsignedInt ambientTexture, UnsignedInt ambientTextureCoordinates, const Color4& diffuseColor, UnsignedInt diffuseTexture, UnsignedInt diffuseTextureCoordinates, const Color4& specularColor, UnsignedInt specularTexture, UnsignedInt specularTextureCoordinates, UnsignedInt normalTexture, UnsignedInt normalTextureCoordinates, const Matrix3& textureMatrix, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
+
+        /**
+         * @brief Constructor
+         * @m_deprecated_since{2020,06} Populate a @ref MaterialData instance
+         *      using @ref MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*)
+         *      instead. This class is not meant to be constructed directly
+         *      anymore.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        explicit CORRADE_DEPRECATED("use MaterialData::MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, const void*) instead") PhongMaterialData(Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+
+        /**
+         * @brief Whether the material has texture transformation
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::AmbientTextureMatrix,
+         * @ref MaterialAttribute::DiffuseTextureMatrix,
+         * @ref MaterialAttribute::SpecularTextureMatrix,
+         * @ref MaterialAttribute::NormalTextureMatrix or
+         * @ref MaterialAttribute::TextureMatrix attributes is present,
+         * @cpp false @ce otherwise.
+         */
+        bool hasTextureTransformation() const;
+
+        /**
+         * @brief Whether the material uses extra texture coordinate sets
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if any of the
+         * @ref MaterialAttribute::AmbientTextureCoordinates,
+         * @ref MaterialAttribute::DiffuseTextureCoordinates,
+         * @ref MaterialAttribute::SpecularTextureCoordinates,
+         * @ref MaterialAttribute::NormalTextureCoordinates or
+         * @ref MaterialAttribute::TextureCoordinates attributes is present and
+         * has a non-zero value, @cpp false @ce otherwise.
+         */
+        bool hasTextureCoordinates() const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Constructor
-         * @m_deprecated_since{2020,06} Use @ref PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, const Color4&, UnsignedInt, const Color4&, UnsignedInt, const Color4&, UnsignedInt, UnsignedInt, const Matrix3&, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
-        #endif
-
-        /** @brief Copying is not allowed */
-        PhongMaterialData(const PhongMaterialData&) = delete;
-
-        /** @brief Move constructor */
-        PhongMaterialData(PhongMaterialData&& other) noexcept;
-
-        /** @brief Copying is not allowed */
-        PhongMaterialData& operator=(const PhongMaterialData&) = delete;
-
-        /** @brief Move assignment */
-        PhongMaterialData& operator=(PhongMaterialData&& other) noexcept;
-
-        /**
          * @brief Material flags
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided(), @ref hasTextureTransformation(),
+         *      @ref hasTextureCoordinates() etc.
          *
-         * A superset of @ref AbstractMaterialData::flags().
+         * A superset of @ref MaterialData::flags().
          */
-        Flags flags() const {
-            return Flag(UnsignedShort(AbstractMaterialData::flags()));
-        }
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        CORRADE_DEPRECATED("use hasAttribute() instead") Flags flags() const;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief Ambient color
          *
-         * If the material has @ref Flag::AmbientTexture, the color and texture
-         * is multiplied together.
-         * @see @ref flags()
+         * Convenience access to the @ref MaterialAttribute::AmbientColor
+         * attribute. If not present, the default is either
+         * @cpp 0xffffffff_rgbaf @ce if there's
+         * @ref MaterialAttribute::AmbientTexture and @cpp 0x000000ff_rgbaf @ce
+         * otherwise.
+         *
+         * If the material has @ref MaterialAttribute::AmbientTexture, the
+         * color and texture is meant to be multiplied together.
+         * @see @ref hasAttribute()
          */
-        Color4 ambientColor() const { return _ambientColor; }
+        Color4 ambientColor() const;
 
         /**
          * @brief Ambient texture ID
          *
-         * Available only if the material has @ref Flag::AmbientTexture.
-         * Multiplied with @ref ambientColor().
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Available only if @ref MaterialAttribute::AmbientTexture is
+         * present. Meant to be multiplied with @ref ambientColor().
+         * @see @ref hasAttribute()
          */
         UnsignedInt ambientTexture() const;
+
+        /**
+         * @brief Ambient texture coordinate transformation matrix
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::AmbientTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes. If neither is
+         * present, the default is an identity matrix. Available only if the
+         * material has @ref MaterialAttribute::AmbientTexture.
+         * @see @ref hasAttribute()
+         */
+        Matrix3 ambientTextureMatrix() const;
 
         /**
          * @brief Ambient texture coordinate set
          * @m_since_latest
          *
-         * Available only if the material has @ref Flag::AmbientTexture.
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Convenience access to the @ref MaterialAttribute::AmbientTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither
+         * is present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::AmbientTexture.
+         * @see @ref hasAttribute()
          */
         UnsignedInt ambientTextureCoordinates() const;
 
@@ -253,27 +333,45 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Diffuse color
          *
-         * If the material has @ref Flag::DiffuseTexture, the color and texture
-         * is multiplied together.
-         * @see @ref flags()
+         * Convenience access to the @ref MaterialAttribute::DiffuseColor
+         * attribute. If not present, the default is @cpp 0xffffffff_rgbaf @ce.
+         *
+         * If the material has @ref MaterialAttribute::DiffuseTexture, the
+         * color and texture is meant to be multiplied together.
+         * @see @ref hasAttribute()
          */
-        Color4 diffuseColor() const { return _diffuseColor; }
+        Color4 diffuseColor() const;
 
         /**
          * @brief Diffuse texture ID
          *
-         * Available only if the material has @ref Flag::DiffuseTexture.
-         * Multiplied with @ref diffuseColor().
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Available only if @ref MaterialAttribute::DiffuseTexture is
+         * present. Meant to be multiplied with @ref diffuseColor().
+         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
          */
         UnsignedInt diffuseTexture() const;
+
+        /**
+         * @brief Diffuse texture coordinate transformation matrix
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::DiffuseTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes. If neither is
+         * present, the default is an identity matrix. Available only if the
+         * material has @ref MaterialAttribute::DiffuseTexture.
+         * @see @ref hasAttribute()
+         */
+        Matrix3 diffuseTextureMatrix() const;
 
         /**
          * @brief Diffuse texture coordinate set
          * @m_since_latest
          *
-         * Available only if the material has @ref Flag::DiffuseTexture.
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Convenience access to the @ref MaterialAttribute::DiffuseTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither
+         * is present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::DiffuseTexture.
+         * @see @ref hasAttribute()
          */
         UnsignedInt diffuseTextureCoordinates() const;
 
@@ -291,27 +389,45 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Specular color
          *
-         * If the material has @ref Flag::SpecularTexture, the color and
-         * texture is multiplied together.
-         * @see @ref flags()
+         * Convenience access to the @ref MaterialAttribute::SpecularColor
+         * attribute. If not present, the default is @cpp 0xffffffff_rgbaf @ce.
+         *
+         * If the material has @ref MaterialAttribute::SpecularTexture, the
+         * color and texture is meant to be multiplied together.
+         * @see @ref hasAttribute()
          */
-        Color4 specularColor() const { return _specularColor; }
+        Color4 specularColor() const;
 
         /**
          * @brief Specular texture ID
          *
-         * Available only if the material has @ref Flag::SpecularTexture.
-         * Multiplied with @ref specularColor().
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Available only if @ref MaterialAttribute::SpecularTexture is
+         * present. Meant to be multiplied with @ref specularColor().
+         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
          */
         UnsignedInt specularTexture() const;
+
+        /**
+         * @brief Specular texture coordinate transformation matrix
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::SpecularTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes. If neither is
+         * present, the default is an identity matrix. Available only if the
+         * material has @ref MaterialAttribute::SpecularTexture.
+         * @see @ref hasAttribute()
+         */
+        Matrix3 specularTextureMatrix() const;
 
         /**
          * @brief Specular texture coordinate set
          * @m_since_latest
          *
-         * Available only if the material has @ref Flag::SpecularTexture.
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Convenience access to the @ref MaterialAttribute::SpecularTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither
+         * is present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::SpecularTexture.
+         * @see @ref hasAttribute()
          */
         UnsignedInt specularTextureCoordinates() const;
 
@@ -330,17 +446,32 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @brief Normal texture ID
          * @m_since{2020,06}
          *
-         * Available only if the material has @ref Flag::NormalTexture.
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Available only if @ref MaterialAttribute::NormalTexture is present.
+         * @see @ref hasAttribute(), @ref AbstractImporter::texture()
          */
         UnsignedInt normalTexture() const;
+
+        /**
+         * @brief Normal texture coordinate transformation matrix
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes. If neither is
+         * present, the default is an identity matrix. Available only if the
+         * material has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
+         */
+        Matrix3 normalTextureMatrix() const;
 
         /**
          * @brief Normal texture coordinate set
          * @m_since_latest
          *
-         * Available only if the material has @ref Flag::NormalTexture.
-         * @see @ref flags(), @ref AbstractImporter::texture()
+         * Convenience access to the @ref MaterialAttribute::NormalTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes. If neither
+         * is present, the default is @cpp 0 @ce. Available only if the
+         * material has @ref MaterialAttribute::NormalTexture.
+         * @see @ref hasAttribute()
          */
         UnsignedInt normalTextureCoordinates() const;
 
@@ -356,43 +487,78 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         #endif
 
         /**
-         * @brief Texture coordinate transformation matrix
+         * @brief Common texture coordinate transformation matrix for all textures
          * @m_since{2020,06}
          *
-         * If the material doesn't have @ref Flag::TextureTransformation,
-         * returns an identity matrix.
-         * @see @ref flags()
+         * Convenience access to the @ref MaterialAttribute::TextureMatrix
+         * attribute. If not present, the default is an identity matrix. Note
+         * that the material may also define per-texture transformation using
+         * the @ref MaterialAttribute::AmbientTextureMatrix,
+         * @ref MaterialAttribute::DiffuseTextureMatrix,
+         * @ref MaterialAttribute::SpecularTextureMatrix and
+         * @ref MaterialAttribute::NormalTextureMatrix attributes, which then
+         * take precedence over the common one.
+         * @see @ref hasAttribute(), @ref ambientTextureMatrix(),
+         *      @ref diffuseTextureMatrix(), @ref specularTextureMatrix(),
+         *      @ref normalTextureMatrix()
          */
-        Matrix3 textureMatrix() const { return _textureMatrix; }
+        Matrix3 textureMatrix() const;
 
-        /** @brief Shininess */
-        Float shininess() const { return _shininess; }
+        /**
+         * @brief Common texture coordinate set index for all textures
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::TextureCoordinates
+         * attribute. If not present, the default is @cpp 0 @ce. Note that the
+         * material may also define per-texture coordinate set using the
+         * @ref MaterialAttribute::AmbientTextureCoordinates,
+         * @ref MaterialAttribute::DiffuseTextureCoordinates,
+         * @ref MaterialAttribute::SpecularTextureCoordinates and
+         * @ref MaterialAttribute::NormalTextureCoordinates attributes, which
+         * then take precedence over the common one.
+         * @see @ref hasAttribute(), @ref ambientTextureCoordinates(),
+         *      @ref diffuseTextureCoordinates(),
+         *      @ref specularTextureCoordinates(),
+         *      @ref normalTextureCoordinates()
+         */
+        UnsignedInt textureCoordinates() const;
 
-    private:
-        /* Initializing texture IDs to insane values to make accidents worse
-           and thus better noticeable */
-        Color4 _ambientColor;
-        UnsignedInt _ambientTexture{~UnsignedInt{}};
-        UnsignedInt _ambientTextureCoordinates;
-        Color4 _diffuseColor;
-        UnsignedInt _diffuseTexture{~UnsignedInt{}};
-        UnsignedInt _diffuseTextureCoordinates;
-        Color4 _specularColor;
-        UnsignedInt _specularTexture{~UnsignedInt{}};
-        UnsignedInt _specularTextureCoordinates;
-        UnsignedInt _normalTexture{~UnsignedInt{}};
-        UnsignedInt _normalTextureCoordinates;
-        Matrix3 _textureMatrix;
-        Float _shininess;
+        /**
+         * @brief Shininess
+         *
+         * Convenience access to the @ref MaterialAttribute::Shininess
+         * attribute. If not present, the default is @cpp 80.0f @ce.
+         */
+        Float shininess() const;
 };
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
 
-/** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flag} */
+/**
+@debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flag}
+@m_deprecated_since_latest The flags are no longer stored directly but
+    generated on-the-fly from attribute data, which makes them less efficient
+    than calling @ref MaterialData::hasAttribute(),
+    @ref MaterialData::isDoubleSided(),
+    @ref PhongMaterialData::hasTextureTransformation(),
+    @ref PhongMaterialData::hasTextureCoordinates() etc.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flag value);
 
-/** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flags} */
+/**
+@debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flags}
+@m_deprecated_since_latest The flags are no longer stored directly but
+    generated on-the-fly from attribute data, which makes them less efficient
+    than calling @ref MaterialData::hasAttribute(),
+    @ref MaterialData::isDoubleSided(),
+    @ref PhongMaterialData::hasTextureTransformation(),
+    @ref PhongMaterialData::hasTextureCoordinates() etc.
+*/
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags value);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 }}
 

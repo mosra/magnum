@@ -33,6 +33,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Animation/Player.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/Transform.h"

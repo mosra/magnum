@@ -31,6 +31,7 @@
  */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
 
@@ -63,6 +64,8 @@ enum class MaterialAttribute: UnsignedInt {
      * preferred, however renderers can fall back to alpha-masked rendering.
      * Alpha values below this value are meant to be rendered as fully
      * transparent and alpha values above this value as fully opaque.
+     * @see @ref MaterialAlphaMode, @ref MaterialData::alphaMode(),
+     *      @ref MaterialData::alphaMask()
      */
     AlphaMask = 1,
 
@@ -74,6 +77,7 @@ enum class MaterialAttribute: UnsignedInt {
      * the material should be treated as opaque. If set together with
      * @ref MaterialAttribute::AlphaMask, blending is preferred, however
      * renderers can fall back to alpha-masked rendering.
+     * @see @ref MaterialAlphaMode, @ref MaterialData::alphaMode()
      */
     AlphaBlend,
 
@@ -81,6 +85,7 @@ enum class MaterialAttribute: UnsignedInt {
      * Double sided, @ref MaterialAttributeType::Bool.
      *
      * If not present, the default value is @cpp false @ce.
+     * @see @ref MaterialData::isDoubleSided()
      */
     DoubleSided,
 
@@ -89,6 +94,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::AmbientTexture is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::ambientColor()
      */
     AmbientColor,
 
@@ -98,6 +104,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::AmbientColor is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::ambientTexture()
      */
     AmbientTexture,
 
@@ -107,6 +114,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     * @see @ref PhongMaterialData::ambientTextureMatrix()
      */
     AmbientTextureMatrix,
 
@@ -116,6 +124,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     * @see @ref PhongMaterialData::ambientTextureCoordinates()
      */
     AmbientTextureCoordinates,
 
@@ -124,6 +133,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::DiffuseTexture is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::diffuseColor()
      */
     DiffuseColor,
 
@@ -133,6 +143,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::DiffuseColor is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::diffuseTexture()
      */
     DiffuseTexture,
 
@@ -142,6 +153,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     * @see @ref PhongMaterialData::diffuseTextureMatrix()
      */
     DiffuseTextureMatrix,
 
@@ -151,6 +163,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     * @see @ref PhongMaterialData::diffuseTextureCoordinates()
      */
     DiffuseTextureCoordinates,
 
@@ -159,6 +172,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::SpecularTexture is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::specularColor()
      */
     SpecularColor,
 
@@ -168,6 +182,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::SpecularColor is present as well, these two
      * are multiplied together.
+     * @see @ref PhongMaterialData::specularTexture()
      */
     SpecularTexture,
 
@@ -177,6 +192,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     * @see @ref PhongMaterialData::specularTextureMatrix()
      */
     SpecularTextureMatrix,
 
@@ -186,17 +202,21 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     * @see @ref PhongMaterialData::specularTextureCoordinates()
      */
     SpecularTextureCoordinates,
 
     /**
      * Shininess value for Phong materials, @ref MaterialAttributeType::Float.
+     *
+     * @see @ref PhongMaterialData::shininess()
      */
     Shininess,
 
     /**
      * Tangent-space normal map texture index,
      * @ref MaterialAttributeType::UnsignedInt.
+     * @see @ref PhongMaterialData::normalTexture()
      */
     NormalTexture,
 
@@ -206,6 +226,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
+     * @see @ref PhongMaterialData::normalTextureMatrix()
      */
     NormalTextureMatrix,
 
@@ -215,6 +236,7 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
+     * @see @ref PhongMaterialData::normalTextureCoordinates()
      */
     NormalTextureCoordinates,
 
@@ -227,6 +249,7 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::SpecularTextureMatrix /
      * @ref MaterialAttribute::NormalTextureMatrix have a precedence over this
      * attribute for given texture, if present.
+     * @see @ref PhongMaterialData::textureMatrix()
      */
     TextureMatrix,
 
@@ -237,8 +260,9 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::AmbientTextureCoordinates /
      * @ref MaterialAttribute::DiffuseTextureCoordinates /
      * @ref MaterialAttribute::SpecularTextureCoordinates /
-     * @ref MaterialAttribute::NormalTextureCoordinates have a precedence over
-     * this attribute for given texture, if present.
+     * @ref MaterialAttribute::NormalTextureCoordinates have a precedence
+     * over this attribute for given texture, if present.
+     * @see @ref PhongMaterialData::textureCoordinates()
      */
     TextureCoordinates,
 };
@@ -510,11 +534,13 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
 /**
 @brief Material type
 
-@see @ref MaterialTypes, @ref MaterialData::types(),
-    @ref AbstractMaterialData::type()
+@see @ref MaterialTypes, @ref MaterialData::types()
 */
 enum class MaterialType: UnsignedInt {
-    Phong = 1 << 0      /**< Phong shading */
+    /**
+     * Phong. Use @ref PhongMaterialData for convenience attribute access.
+     */
+    Phong = 1 << 0
 };
 
 /** @debugoperatorenum{MaterialType} */
@@ -532,6 +558,34 @@ CORRADE_ENUMSET_OPERATORS(MaterialTypes)
 
 /** @debugoperatorenum{MaterialTypes} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialTypes value);
+
+/**
+@brief Material alpha mode
+
+Convenience access to @ref MaterialAttribute::AlphaBlend and
+@ref MaterialAttribute::AlphaMask attributes.
+@see @ref MaterialData::alphaMode(), @ref MaterialData::alphaMask()
+*/
+enum class MaterialAlphaMode: UnsignedByte {
+    /** Alpha value is ignored and the rendered output is fully opaque. */
+    Opaque,
+
+    /**
+     * The rendered output is either fully transparent or fully opaque,
+     * depending on the alpha value and specified
+     * @ref MaterialData::alphaMask() value.
+     */
+    Mask,
+
+    /**
+     * The alpha value is used to combine source and destination colors using
+     * additive blending.
+     */
+    Blend
+};
+
+/** @debugoperatorenum{MaterialAlphaMode} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAlphaMode value);
 
 /**
 @brief Material data
@@ -567,6 +621,41 @@ precision.
 */
 class MAGNUM_TRADE_EXPORT MaterialData {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Material flag
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided() etc.
+         *
+         * This enum is further extended in subclasses.
+         * @see @ref Flags, @ref flags()
+         */
+        enum class CORRADE_DEPRECATED_ENUM("use hasAttribute() etc. instead") Flag: UnsignedInt {
+            /**
+             * The material is double-sided. Back faces should not be culled
+             * away but rendered as well, with normals flipped for correct
+             * lighting.
+             */
+            DoubleSided = 1 << 0
+        };
+
+        /**
+         * @brief Material flags
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided() etc.
+         *
+         * This enum is extended in subclasses.
+         * @see @ref flags()
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flag, ugh */
+        typedef CORRADE_DEPRECATED("use hasAttribute() etc. instead") Containers::EnumSet<Flag> Flags;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+
         /**
          * @brief Construct
          * @param types             Which material types are described by this
@@ -617,6 +706,16 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * given type. For custom materials the set can also be empty.
          */
         MaterialTypes types() const { return _types; }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Material type
+         * @m_deprecated_since_latest Use @ref types() instead.
+         */
+        CORRADE_DEPRECATED("use types() instead") MaterialType type() const {
+            return MaterialType(UnsignedInt(_types & MaterialType::Phong));
+        }
+        #endif
 
         /**
          * @brief Raw attribute data
@@ -745,6 +844,47 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         template<class T> T attributeOr(MaterialAttribute name, const T& defaultValue) const; /**< @overload */
 
         /**
+         * @brief Whether a material is double-sided
+         *
+         * Convenience access to the @ref MaterialAttribute::DoubleSided
+         * attribute. If not present, the default is @cpp false @ce.
+         */
+        bool isDoubleSided() const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Material flags
+         * @m_deprecated_since_latest The flags are no longer stored directly
+         *      but generated on-the-fly from attribute data, which makes them
+         *      less efficient than calling @ref hasAttribute(),
+         *      @ref isDoubleSided() etc.
+         *
+         * Not all bits returned might be defined by @ref Flag, subclasses may
+         * define extra values.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* GCC warns about Flags, ugh */
+        CORRADE_DEPRECATED("use hasAttribute() instead") Flags flags() const;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+
+        /**
+         * @brief Alpha mode
+         *
+         * Convenience access to @ref MaterialAttribute::AlphaBlend and
+         * @ref MaterialAttribute::AlphaMask attributes. If neither is present,
+         * the default is @ref MaterialAlphaMode::Opaque.
+         */
+        MaterialAlphaMode alphaMode() const;
+
+        /**
+         * @brief Alpha mask
+         *
+         * Convenience access to the @ref MaterialAttribute::AlphaMask
+         * attribute. If not present, the default is @cpp 0.5f @ce.
+         */
+        Float alphaMask() const;
+
+        /**
          * @brief Release data storage
          *
          * Releases the ownership of the attribute array and resets internal
@@ -772,6 +912,32 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         MaterialTypes _types;
         const void* _importerState;
 };
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+CORRADE_ENUMSET_OPERATORS(MaterialData::Flags)
+
+/**
+@debugoperatorclassenum{MaterialData,MaterialData::Flag}
+@m_deprecated_since_latest The flags are no longer stored directly but
+    generated on-the-fly from attribute data, which makes them less efficient
+    than calling @ref MaterialData::hasAttribute(),
+    @ref MaterialData::isDoubleSided() etc.
+*/
+/* Not marked with CORRADE_DEPRECATED() as there's enough warnings already */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialData::Flag value);
+
+/**
+@debugoperatorclassenum{MaterialData,MaterialData::Flags}
+@m_deprecated_since_latest The flags are no longer stored directly but
+    generated on-the-fly from attribute data, which makes them less efficient
+    than calling @ref MaterialData::hasAttribute(),
+    @ref MaterialData::isDoubleSided() etc.
+*/
+/* Not marked with CORRADE_DEPRECATED() as there's enough warnings already */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialData::Flags value);
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 namespace Implementation {
     /* LCOV_EXCL_START */
