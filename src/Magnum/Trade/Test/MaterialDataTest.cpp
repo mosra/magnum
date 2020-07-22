@@ -189,7 +189,6 @@ void MaterialDataTest::constructPhongTexturedCoordinateSets() {
     CORRADE_COMPARE(cdata.importerState(), &a);
 }
 
-
 void MaterialDataTest::constructPhongTextureTransformNoTextures() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
