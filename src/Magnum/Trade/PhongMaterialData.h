@@ -212,18 +212,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          */
         Color4 ambientColor() const { return _ambientColor; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead.
-         */
-        /* Not marked with CORRADE_DEPRECATED() because the compiler picks this
-           overload over the const one for a non-const instance and there's no
-           way to selectively enable deprecation warnings only if the code
-           attempts to modify the value. */
-        Color4& ambientColor() { return _ambientColor; }
-        #endif
-
         /**
          * @brief Ambient texture ID
          *
@@ -232,15 +220,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt ambientTexture() const;
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead of modifying the instance afterwards.
-         */
-        /* Not using CORRADE_DEPRECATED(), see why above */
-        UnsignedInt& ambientTexture();
-        #endif
 
         /**
          * @brief Ambient texture coordinate set
@@ -260,15 +239,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          */
         Color4 diffuseColor() const { return _diffuseColor; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead of modifying the instance afterwards.
-         */
-        /* Not using CORRADE_DEPRECATED(), see why above */
-        Color4& diffuseColor() { return _diffuseColor; }
-        #endif
-
         /**
          * @brief Diffuse texture ID
          *
@@ -277,15 +247,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt diffuseTexture() const;
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead of modifying the instance afterwards.
-         */
-        /* Not using CORRADE_DEPRECATED(), see why above */
-        UnsignedInt& diffuseTexture();
-        #endif
 
         /**
          * @brief Diffuse texture coordinate set
@@ -305,15 +266,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          */
         Color4 specularColor() const { return _specularColor; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead of modifying the instance afterwards.
-         */
-        /* Not using CORRADE_DEPRECATED(), see why above */
-        Color4& specularColor() { return _specularColor; }
-        #endif
-
         /**
          * @brief Specular texture ID
          *
@@ -322,15 +274,6 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @see @ref flags(), @ref AbstractImporter::texture()
          */
         UnsignedInt specularTexture() const;
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @m_deprecated_since{2020,06} Use the constructor to populate all
-         *      values instead of modifying the instance afterwards.
-         */
-        /* Not using CORRADE_DEPRECATED(), see why above */
-        UnsignedInt& specularTexture();
-        #endif
 
         /**
          * @brief Specular texture coordinate set

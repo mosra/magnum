@@ -75,12 +75,6 @@ UnsignedInt PhongMaterialData::ambientTexture() const {
     return _ambientTexture;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-UnsignedInt& PhongMaterialData::ambientTexture() {
-    CORRADE_ASSERT(flags() & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture", _ambientTexture);
-    return _ambientTexture;
-}
-#endif
 
 UnsignedInt PhongMaterialData::ambientCoordinateSet() const {
     CORRADE_ASSERT(flags() & Flag::AmbientTexture, "Trade::PhongMaterialData::ambientCoordinateSet(): the material doesn't have an ambient texture", {});
@@ -92,12 +86,6 @@ UnsignedInt PhongMaterialData::diffuseTexture() const {
     return _diffuseTexture;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-UnsignedInt& PhongMaterialData::diffuseTexture() {
-    CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture", _diffuseTexture);
-    return _diffuseTexture;
-}
-#endif
 
 UnsignedInt PhongMaterialData::diffuseCoordinateSet() const {
     CORRADE_ASSERT(flags() & Flag::DiffuseTexture, "Trade::PhongMaterialData::diffuseCoordinateSet(): the material doesn't have a diffuse texture", {});
@@ -109,12 +97,6 @@ UnsignedInt PhongMaterialData::specularTexture() const {
     return _specularTexture;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-UnsignedInt& PhongMaterialData::specularTexture() {
-    CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", _specularTexture);
-    return _specularTexture;
-}
-#endif
 
 UnsignedInt PhongMaterialData::specularCoordinateSet() const {
     CORRADE_ASSERT(flags() & Flag::SpecularTexture, "Trade::PhongMaterialData::specularCoordinateSet(): the material doesn't have a specular texture", {});

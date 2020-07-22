@@ -162,6 +162,11 @@ See also:
     afterwards. This can cause compilation breakages in case the type
     constructor has the parent parameter non-optional, pass the parent
     explicitly in that case.
+-   Mutable access to @ref Trade::PhongMaterialData color and texture
+    information, deprecated in 2020.06, is now removed, as it's impossible to
+    implement through the redesigned @ref Trade::MaterialData APIs. However
+    these APIs were mainly used to populate the contents in asset importers, so
+    this shouldn't cause any breakages in user code.
 
 @section changelog-2020-06 2020.06
 
@@ -821,6 +826,10 @@ Released 2020-06-27, tagged as
     deprecated on the 3D variant, use separate
     @ref Shaders::MeshVisualizer3D::setTransformationMatrix() and
     @ref Shaders::MeshVisualizer3D::setProjectionMatrix() instead
+-   Mutable access to @ref Trade::PhongMaterialData color and texture
+    information is deprecated. This was mainly used to populate the contents
+    in asset importers, but the class was redesigned and this is no longer
+    needed.
 -   The unprefixed and alien-looking @cpp FLOAT_EQUALITY_PRECISION @ce,
     @cpp DOUBLE_EQUALITY_PRECISION @ce and @cpp LONG_DOUBLE_EQUALITY_PRECISION @ce
     macros are no longer used by any code and thus deprecated in favor of using
