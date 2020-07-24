@@ -99,6 +99,9 @@ See also:
     destroyed could fail with an error saying "cannot make the previous context
     current" on certain system. This was due to EGL not destroying the context
     if it's still made current.
+-   For meshes with multiple sets of vertex attributes (such as texture
+    coordinates), @ref MeshTools::compile() should be using only the first set
+    but it wasn't.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
