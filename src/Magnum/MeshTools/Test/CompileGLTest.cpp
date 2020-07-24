@@ -101,6 +101,7 @@ struct CompileGLTest: GL::OpenGLTester {
         template<class T> void twoDimensions();
         template<class T> void threeDimensions();
 
+        void multipleAttributes();
         void packedAttributes();
 
         void customAttribute();
@@ -249,7 +250,8 @@ CompileGLTest::CompileGLTest() {
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    addTests({&CompileGLTest::packedAttributes},
+    addTests({&CompileGLTest::multipleAttributes,
+              &CompileGLTest::packedAttributes},
         &CompileGLTest::renderSetup,
         &CompileGLTest::renderTeardown);
 
@@ -878,6 +880,68 @@ template<class T> void CompileGLTest::threeDimensions() {
         CORRADE_SKIP("Geometry shaders not available on ES2 or WebGL.");
         #endif
     }
+}
+
+void CompileGLTest::multipleAttributes() {
+    struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates1, textureCoordinates2;
+    } vertexData[]{
+        {{-0.75f, -0.75f}, {0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, {5.0f, 0.0f}},
+        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, {10.0f, 0.0f}},
+
+        {{-0.75f,  0.00f}, {0.0f, 0.5f}, {0.0f, 5.0f}},
+        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, {5.0f, 5.0f}},
+        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, {10.0f, 5.0f}},
+
+        {{-0.75f,  0.75f}, {0.0f, 1.0f}, {0.0f, 10.0f}},
+        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, {5.0f, 10.0f}},
+        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, {10.0f, 10.0f}}
+    };
+
+    const UnsignedInt indexData[]{
+        0, 1, 4, 0, 4, 3,
+        1, 2, 5, 1, 5, 4,
+        3, 4, 7, 3, 7, 6,
+        4, 5, 8, 4, 8, 7
+    };
+
+    Trade::MeshData meshData{MeshPrimitive::Triangles,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, vertexData, {
+            Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+                Containers::stridedArrayView(vertexData,
+                &vertexData[0].position, Containers::arraySize(vertexData), sizeof(Vertex))},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                Containers::stridedArrayView(vertexData,
+                &vertexData[0].textureCoordinates1, Containers::arraySize(vertexData), sizeof(Vertex))},
+            Trade::MeshAttributeData{Trade::MeshAttribute::TextureCoordinates,
+                Containers::stridedArrayView(vertexData,
+                &vertexData[0].textureCoordinates2, Containers::arraySize(vertexData), sizeof(Vertex))},
+        }};
+
+    GL::Mesh mesh = compile(meshData);
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    _flatTextured2D
+        .bindTexture(_texture)
+        .draw(mesh);
+
+    /* The output should be the same as in the textured case of twoDimensions()
+       -- i.e., the second texture coordinate set not affecting anything */
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "textured2D.tga"),
+        /* SwiftShader has some minor off-by-one precision differences,
+            llvmpipe as well */
+        (DebugTools::CompareImageToFile{_manager, 1.75f, 0.22f}));
 }
 
 /* Can't be inline because MSVC 2015 doesn't like anonymous bitfields in local
