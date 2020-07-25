@@ -27,6 +27,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -189,6 +190,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     #endif
 
     void material();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void materialDeprecatedFallback();
+    #endif
     void materialNameNotImplemented();
     void materialNameOutOfRange();
     void materialNotImplemented();
@@ -391,6 +395,9 @@ AbstractImporterTest::AbstractImporterTest() {
               #endif
 
               &AbstractImporterTest::material,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImporterTest::materialDeprecatedFallback,
+              #endif
               &AbstractImporterTest::materialNameNotImplemented,
               &AbstractImporterTest::materialNameOutOfRange,
               &AbstractImporterTest::materialNotImplemented,
@@ -2989,12 +2996,8 @@ void AbstractImporterTest::material() {
             if(id == 7) return "eighth";
             else return {};
         }
-        Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id) override {
-            if(id == 7) return Containers::pointer(new PhongMaterialData{{},
-                {}, {},
-                {}, {},
-                {}, {}, {}, {},
-                {}, {}, {}, &state});
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
+            if(id == 7) return Containers::optional<MaterialData>(MaterialTypes{}, nullptr, &state);
             else return {};
         }
     } importer;
@@ -3013,6 +3016,49 @@ void AbstractImporterTest::material() {
         CORRADE_COMPARE(data->importerState(), &state);
     }
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImporterTest::materialDeprecatedFallback() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 8; }
+        Int doMaterialForName(const std::string&) override { return 0; }
+        /* Using a deprecated PhongMaterialData constructor to verify that
+           propagating such instance works as well (array deleters etc.) */
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            CORRADE_IGNORE_DEPRECATED_PUSH
+            return Containers::Optional<MaterialData>{std::move(PhongMaterialData{{},
+                {}, {},
+                {}, {},
+                {}, {},
+                {},
+                {}, {}, {}, {}, &state
+            })};
+            CORRADE_IGNORE_DEPRECATED_POP
+        }
+    } importer;
+
+    {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        Containers::Pointer<MaterialData> data = importer.material(0);
+        CORRADE_IGNORE_DEPRECATED_POP
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE_AS(data->attributeCount(), 0, TestSuite::Compare::Greater);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        Containers::Pointer<MaterialData> data = importer.material("");
+        CORRADE_IGNORE_DEPRECATED_POP
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE_AS(data->attributeCount(), 0, TestSuite::Compare::Greater);
+        CORRADE_COMPARE(data->importerState(), &state);
+    }
+}
+#endif
+
 void AbstractImporterTest::materialNameNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }

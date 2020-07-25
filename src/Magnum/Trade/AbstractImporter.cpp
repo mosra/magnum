@@ -33,12 +33,12 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/FileCallback.h"
-#include "Magnum/Trade/AbstractMaterialData.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ArrayAllocator.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
@@ -59,7 +59,7 @@
 namespace Magnum { namespace Trade {
 
 std::string AbstractImporter::pluginInterface() {
-    return "cz.mosra.magnum.Trade.AbstractImporter/0.3.1";
+    return "cz.mosra.magnum.Trade.AbstractImporter/0.3.2";
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -671,17 +671,35 @@ std::string AbstractImporter::materialName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
-Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const UnsignedInt id) {
+#if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+Containers::Optional<MaterialData>
+#else
+OptionalButAlsoPointer<MaterialData>
+#endif
+AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index" << id << "out of range for" << doMaterialCount() << "entries", {});
-    return doMaterial(id);
+
+    Containers::Optional<MaterialData> material = doMaterial(id);
+
+    /* GCC 4.8 and clang-cl needs an explicit conversion here */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    return OptionalButAlsoPointer<MaterialData>{std::move(material)};
+    #else
+    return material;
+    #endif
 }
 
-Containers::Pointer<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) {
+Containers::Optional<MaterialData> AbstractImporter::doMaterial(UnsignedInt) {
     CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::material(): not implemented", {});
 }
 
-Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const std::string& name) {
+#if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+Containers::Optional<MaterialData>
+#else
+OptionalButAlsoPointer<MaterialData>
+#endif
+AbstractImporter::material(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     const Int id = doMaterialForName(name);
     if(id == -1) {

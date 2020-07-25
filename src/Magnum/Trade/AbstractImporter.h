@@ -129,6 +129,18 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlag value);
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFlags value);
 
+#if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+/* Could be a concrete type as only MaterialData need this, but that would
+   mean I'd need to include MaterialData here */
+template<class T> struct OptionalButAlsoPointer: Containers::Optional<T> {
+    /*implicit*/ OptionalButAlsoPointer() = default;
+    /*implicit*/ OptionalButAlsoPointer(Containers::Optional<T>&& optional): Containers::Optional<T>{std::move(optional)} {}
+    CORRADE_DEPRECATED("use Containers::Optional instead of Containers::Pointer for a MaterialData") /*implicit*/ operator Containers::Pointer<T>() && {
+        return Containers::Pointer<T>{new T{std::move(**this)}};
+    }
+};
+#endif
+
 /**
 @brief Base for importer plugins
 
@@ -186,8 +198,8 @@ expose internal state through various accessors:
 
 -   @ref importerState() can expose a pointer to the global importer
     state for currently opened file
--   @ref AbstractMaterialData::importerState() can expose importer state for
-    given material imported by @ref material()
+-   @ref MaterialData::importerState() can expose importer state for given
+    material imported by @ref material()
 -   @ref AnimationData::importerState() can expose importer state for given
     animation imported by @ref animation()
 -   @ref CameraData::importerState() can expose importer state for a camera
@@ -325,7 +337,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Plugin interface
          *
          * @code{.cpp}
-         * "cz.mosra.magnum.Trade.AbstractImporter/0.3.1"
+         * "cz.mosra.magnum.Trade.AbstractImporter/0.3.2"
          * @endcode
          */
         static std::string pluginInterface();
@@ -1020,11 +1032,16 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Material
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
-         * Returns given material or @cpp nullptr @ce if importing failed.
-         * Expects that a file is opened.
+         * Returns given material or @ref Containers::NullOpt if importing
+         * failed. Expects that a file is opened.
          * @see @ref material(const std::string&)
          */
-        Containers::Pointer<AbstractMaterialData> material(UnsignedInt id);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<MaterialData>
+        #else
+        OptionalButAlsoPointer<MaterialData>
+        #endif
+        material(UnsignedInt id);
 
         /**
          * @brief Material for given name
@@ -1036,7 +1053,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref Containers::NullOpt, otherwise propagates the result from
          * @ref material(UnsignedInt). Expects that a file is opened.
          */
-        Containers::Pointer<AbstractMaterialData> material(const std::string& name);
+        #if !defined(MAGNUM_BUILD_DEPRECATED) || defined(DOXYGEN_GENERATING_OUTPUT)
+        Containers::Optional<MaterialData>
+        #else
+        OptionalButAlsoPointer<MaterialData>
+        #endif
+        material(const std::string& name);
 
         /**
          * @brief Texture count
@@ -1695,7 +1717,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual std::string doMaterialName(UnsignedInt id);
 
         /** @brief Implementation for @ref material() */
-        virtual Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id);
+        virtual Containers::Optional<MaterialData> doMaterial(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref textureCount()

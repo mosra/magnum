@@ -42,7 +42,7 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
-#include "Magnum/Trade/ObjectData3D.h"
+#include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
@@ -116,17 +116,17 @@ importer->openFile("scene.gltf"); // memory-maps all files
 
 {
 Containers::Pointer<Trade::AbstractImporter> importer;
-Float shininess;
+Int materialIndex;
 /* [AbstractImporter-usage-cast] */
-Containers::Pointer<Trade::AbstractMaterialData> data = importer->material(12);
-if(data && data->type() == Trade::MaterialType::Phong) {
-    auto& phong = static_cast<Trade::PhongMaterialData&>(*data);
+Containers::Pointer<Trade::ObjectData3D> data = importer->object3D(12);
+if(data && data->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
+    auto& mesh = static_cast<Trade::MeshObjectData3D&>(*data);
 
-    shininess = phong.shininess();
+    materialIndex = mesh.material();
     // ...
 }
 /* [AbstractImporter-usage-cast] */
-static_cast<void>(shininess);
+static_cast<void>(materialIndex);
 }
 
 {

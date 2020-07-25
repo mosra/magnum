@@ -203,7 +203,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMaterialCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMaterialForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doMaterialName(UnsignedInt id) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doTextureCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doTextureForName(const std::string& name) override;

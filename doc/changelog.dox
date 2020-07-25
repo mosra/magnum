@@ -150,6 +150,12 @@ See also:
     directly but rather generated on-the-fly from attribute data, which makes
     them less efficient than calling @ref Trade::MaterialData::hasAttribute()
     etc.
+-   @ref Trade::AbstractImporter::material() now returns
+    @ref Corrade::Containers::Optional instead of a @ref Corrade::Containers::Pointer,
+    as the new @ref Trade::MaterialData class isn't polymorphic anymore. If
+    @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
+    @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
+    to a @ref Corrade::Containers::Pointer to avoid breaking user code.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

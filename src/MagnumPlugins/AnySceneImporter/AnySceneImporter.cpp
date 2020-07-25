@@ -32,11 +32,11 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
-#include "Magnum/Trade/AbstractMaterialData.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
@@ -217,7 +217,7 @@ CORRADE_IGNORE_DEPRECATED_POP
 UnsignedInt AnySceneImporter::doMaterialCount() const { return _in->materialCount(); }
 Int AnySceneImporter::doMaterialForName(const std::string& name) { return _in->materialForName(name); }
 std::string AnySceneImporter::doMaterialName(const UnsignedInt id) { return _in->materialName(id); }
-Containers::Pointer<AbstractMaterialData> AnySceneImporter::doMaterial(const UnsignedInt id) { return _in->material(id); }
+Containers::Optional<MaterialData> AnySceneImporter::doMaterial(const UnsignedInt id) { return _in->material(id); }
 
 UnsignedInt AnySceneImporter::doTextureCount() const { return _in->textureCount(); }
 Int AnySceneImporter::doTextureForName(const std::string& name) { return _in->textureForName(name); }
@@ -245,4 +245,4 @@ Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.1")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.2")
