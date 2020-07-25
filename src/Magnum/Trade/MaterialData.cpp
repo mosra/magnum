@@ -104,12 +104,29 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
         case MaterialAttributeType::Pointer:
         case MaterialAttributeType::MutablePointer:
             return sizeof(void*);
+
+        case MaterialAttributeType::String:
+            CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): string size is unknown", {});
     }
 
     CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): invalid type" << type, {});
 }
 
 MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const std::size_t size, const void* const value) noexcept: _data{} /* zero-initialized */ {
+    /* Special handling for strings */
+    if(type == MaterialAttributeType::String) {
+        const auto& stringValue = *static_cast<const Containers::StringView*>(value);
+        /* The 4 extra bytes are for a null byte after both the name and value,
+           a type and a string size */
+        CORRADE_ASSERT(name.size() + stringValue.size() + 4 <= Implementation::MaterialAttributeDataSize,
+        "Trade::MaterialAttributeData: name" << name << "and value" << stringValue << "too long, expected at most" << Implementation::MaterialAttributeDataSize - 4 << "bytes in total but got" << name.size() + stringValue.size(), );
+        _data.type = MaterialAttributeType::String;
+        std::memcpy(_data.data + 1, name.data(), name.size());
+        std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - stringValue.size() - 2, stringValue.data(), stringValue.size());
+        _data.data[Implementation::MaterialAttributeDataSize - 1] = stringValue.size();
+        return;
+    }
+
     /* The 2 extra bytes are for a null byte after the name and a type */
     CORRADE_ASSERT(name.size() + size + 2 <= Implementation::MaterialAttributeDataSize,
         "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - size - 2 << "bytes for" << type << "but got" << name.size(), );
@@ -118,21 +135,37 @@ MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, 
     std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - size, value, size);
 }
 
-MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const void* const value) noexcept: MaterialAttributeData{name, type, materialAttributeTypeSize(type), value} {}
+MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const MaterialAttributeType type, const void* const value) noexcept: MaterialAttributeData{name, type, type == MaterialAttributeType::String ? ~std::size_t{} : materialAttributeTypeSize(type), value} {}
 
 MaterialAttributeData::MaterialAttributeData(const MaterialAttribute name, const MaterialAttributeType type, const void* const value) noexcept {
     CORRADE_ASSERT(UnsignedInt(name) - 1 < Containers::arraySize(AttributeMap),
         "Trade::MaterialAttributeData: invalid name" << name, );
     CORRADE_ASSERT(AttributeMap[UnsignedInt(name) - 1].type == type,
         "Trade::MaterialAttributeData: expected" << AttributeMap[UnsignedInt(name) - 1].type << "for" << name << "but got" << type, );
+
+    /* No builtin string attributes yet */
+    CORRADE_INTERNAL_ASSERT(type != MaterialAttributeType::String);
+
     _data.type = type;
     std::memcpy(_data.data + 1, AttributeMap[UnsignedInt(name) - 1].name.data(), AttributeMap[UnsignedInt(name) - 1].name.size());
     std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - AttributeMap[UnsignedInt(name) - 1].size, value, AttributeMap[UnsignedInt(name) - 1].size);
 }
 
 const void* MaterialAttributeData::value() const {
+    if(_data.type == MaterialAttributeType::String)
+        return _data.s.nameValue + Implementation::MaterialAttributeDataSize - _data.s.size - 3;
     return _data.data + Implementation::MaterialAttributeDataSize - materialAttributeTypeSize(_data.type);
 }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* On Windows (MSVC, clang-cl and MinGw) it needs an explicit export otherwise
+   the symbol doesn't get exported. */
+template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialAttributeData::value<Containers::StringView>() const {
+    CORRADE_ASSERT(_data.type == MaterialAttributeType::String,
+        "Trade::MaterialAttributeData::value():" << (_data.data + 1) << "of" << _data.type << "can't be retrieved as a string", {});
+    return {_data.s.nameValue + Implementation::MaterialAttributeDataSize - _data.s.size - 3, _data.s.size, Containers::StringViewFlag::NullTerminated};
+}
+#endif
 
 MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& data, const void* const importerState) noexcept: _data{std::move(data)}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
@@ -270,6 +303,20 @@ const void* MaterialData::attribute(const MaterialAttribute name) const {
     return attribute(string);
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* On Windows (MSVC, clang-cl and MinGw) it needs an explicit export otherwise
+   the symbol doesn't get exported. */
+template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Containers::StringView>(const UnsignedInt id) const {
+    /* Can't delegate to attribute() returning const void* because that doesn't
+       include the size */
+    CORRADE_ASSERT(id < _data.size(),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << _data.size() << "attributes", {});
+    CORRADE_ASSERT(_data[id]._data.type == MaterialAttributeType::String,
+        "Trade::MaterialData::attribute():" << (_data[id]._data.data + 1) << "of" << _data[id]._data.type << "can't be retrieved as a string", {});
+    return {_data[id]._data.s.nameValue + Implementation::MaterialAttributeDataSize - _data[id]._data.s.size - 3, _data[id]._data.s.size, Containers::StringViewFlag::NullTerminated};
+}
+#endif
+
 const void* MaterialData::tryAttribute(const Containers::StringView name) const {
     const UnsignedInt id = attributeFor(name);
     if(id == ~UnsignedInt{}) return nullptr;
@@ -355,6 +402,7 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         _c(Matrix4x3)
         _c(Pointer)
         _c(MutablePointer)
+        _c(String)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

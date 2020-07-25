@@ -57,13 +57,16 @@ class MaterialDataTest: public TestSuite::Tester {
 
         void constructAttributePointer();
         void constructAttributeMutablePointer();
+        void constructAttributeStringValue();
 
         void constructAttributeInvalidName();
         void constructAttributeWrongTypeForName();
         void constructAttributeInvalidType();
         void constructAttributeTooLarge();
+        void constructAttributeTooLargeString();
         void constructAttributeWrongAccessType();
         void constructAttributeWrongAccessPointerType();
+        void constructAttributeWrongAccessTypeString();
 
         void construct();
         void constructEmptyAttribute();
@@ -80,12 +83,14 @@ class MaterialDataTest: public TestSuite::Tester {
 
         void access();
         void accessPointer();
+        void accessString();
         void accessOptional();
         void accessOutOfBounds();
         void accessInvalidAttributeName();
         void accessNotFound();
         void accessWrongType();
         void accessWrongPointerType();
+        void accessWrongTypeString();
 
         void release();
 
@@ -162,13 +167,16 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::constructAttributePointer,
               &MaterialDataTest::constructAttributeMutablePointer,
+              &MaterialDataTest::constructAttributeStringValue,
 
               &MaterialDataTest::constructAttributeInvalidName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
               &MaterialDataTest::constructAttributeInvalidType,
               &MaterialDataTest::constructAttributeTooLarge,
+              &MaterialDataTest::constructAttributeTooLargeString,
               &MaterialDataTest::constructAttributeWrongAccessType,
               &MaterialDataTest::constructAttributeWrongAccessPointerType,
+              &MaterialDataTest::constructAttributeWrongAccessTypeString,
 
               &MaterialDataTest::construct,
               &MaterialDataTest::constructEmptyAttribute});
@@ -188,12 +196,14 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::access,
               &MaterialDataTest::accessPointer,
+              &MaterialDataTest::accessString,
               &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
               &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessNotFound,
               &MaterialDataTest::accessWrongType,
               &MaterialDataTest::accessWrongPointerType,
+              &MaterialDataTest::accessWrongTypeString,
 
               &MaterialDataTest::release,
 
@@ -256,9 +266,11 @@ void MaterialDataTest::attributeTypeSizeInvalid() {
     Error redirectError{&out};
     materialAttributeTypeSize(MaterialAttributeType(0x0));
     materialAttributeTypeSize(MaterialAttributeType(0xfe));
+    materialAttributeTypeSize(MaterialAttributeType::String);
     CORRADE_COMPARE(out.str(),
         "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0x0)\n"
-        "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n");
+        "Trade::materialAttributeTypeSize(): invalid type Trade::MaterialAttributeType(0xfe)\n"
+        "Trade::materialAttributeTypeSize(): string size is unknown\n");
 }
 
 void MaterialDataTest::attributeMap() {
@@ -439,6 +451,41 @@ void MaterialDataTest::constructAttributeMutablePointer() {
     CORRADE_COMPARE(typeErased.value<void*>(), &data);
 }
 
+void MaterialDataTest::constructAttributeStringValue() {
+    /* Explicitly using a non-null-terminated view on input to check the null
+       byte isn't read by accident*/
+    MaterialAttributeData attribute{"name that's long", "and a value\0that's also long but still fits!!"_s.except(1)};
+    CORRADE_COMPARE(attribute.name(), "name that's long");
+    CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::String);
+    /* Pointer access will stop at the first null byte, but typed access won't */
+    CORRADE_COMPARE(static_cast<const char*>(attribute.value()), "and a value"_s);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>(), "and a value\0that's also long but still fits!"_s);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>()[attribute.value<Containers::StringView>().size()], '\0');
+
+    constexpr MaterialAttributeData cattribute{"name that's long"_s, "and a value\0that's also long but still fits!!"_s.except(1)};
+    CORRADE_COMPARE(cattribute.name(), "name that's long");
+    CORRADE_COMPARE(cattribute.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(cattribute.name()[cattribute.name().size()], '\0');
+    CORRADE_COMPARE(cattribute.type(), MaterialAttributeType::String);
+    CORRADE_COMPARE(cattribute.value<Containers::StringView>(), "and a value\0that's also long but still fits!"_s);
+    CORRADE_COMPARE(cattribute.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(cattribute.value<Containers::StringView>()[cattribute.value<Containers::StringView>().size()], '\0');
+
+    /* Type-erased variant */
+    const Containers::StringView value = "and a value\0that's also long but still fits!!"_s.except(1);
+    MaterialAttributeData typeErased{"name that's long", MaterialAttributeType::String, &value};
+    CORRADE_COMPARE(typeErased.name(), "name that's long");
+    CORRADE_COMPARE(typeErased.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(typeErased.name()[typeErased.name().size()], '\0');
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::String);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>(), "and a value\0that's also long but still fits!"_s);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
+}
+
 void MaterialDataTest::constructAttributeInvalidName() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -495,6 +542,22 @@ void MaterialDataTest::constructAttributeTooLarge() {
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n");
 }
 
+void MaterialDataTest::constructAttributeTooLargeString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"attribute is long", "This is a problem, got a long piece of text!"};
+    /* Constexpr variant has the same assert, but in the header. It should have
+       the same output. */
+    /*constexpr*/ MaterialAttributeData{"attribute is long"_s, "This is a problem, got a long piece of text!"_s};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n"
+        "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n");
+}
+
 void MaterialDataTest::constructAttributeWrongAccessType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -521,6 +584,17 @@ void MaterialDataTest::constructAttributeWrongAccessPointerType() {
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialAttributeData::value(): improper type requested for thing3 of Trade::MaterialAttributeType::MutablePointer\n"
         "Trade::MaterialAttributeData::value(): improper type requested for boom of Trade::MaterialAttributeType::Pointer\n");
+}
+
+void MaterialDataTest::constructAttributeWrongAccessTypeString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"thing3", Matrix4x3{}}.value<Containers::StringView>();
+    CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): thing3 of Trade::MaterialAttributeType::Matrix4x3 can't be retrieved as a string\n");
 }
 
 void MaterialDataTest::construct() {
@@ -818,6 +892,19 @@ void MaterialDataTest::accessPointer() {
     CORRADE_COMPARE(data.attribute<Long*>("mutable"), &b);
 }
 
+void MaterialDataTest::accessString() {
+    MaterialData data{{}, {
+        {"name?", "THIS IS\0WHO I AM!"_s}
+    }};
+    CORRADE_COMPARE(data.attributeType("name?"), MaterialAttributeType::String);
+
+    /* Pointer access will stop at the first null byte, but typed access won't */
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(0)), "THIS IS"_s);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(0), "THIS IS\0WHO I AM!"_s);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(0).flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(0)[data.attribute<Containers::StringView>(0).size()], '\0');
+}
+
 void MaterialDataTest::accessOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -859,9 +946,11 @@ void MaterialDataTest::accessOutOfBounds() {
     data.attributeType(2);
     data.attribute(2);
     data.attribute<Int>(2);
+    data.attribute<Containers::StringView>(2);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes\n"
         "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n"
         "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n");
 }
@@ -988,6 +1077,36 @@ void MaterialDataTest::accessWrongPointerType() {
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attribute(): improper type requested for mutablePointer of Trade::MaterialAttributeType::MutablePointer\n"
         "Trade::MaterialData::attribute(): improper type requested for pointer of Trade::MaterialAttributeType::Pointer\n");
+}
+
+void MaterialDataTest::accessWrongTypeString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {"Shininess", 0.0f}
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attribute<Containers::StringView>(0);
+    data.attribute<Containers::StringView>(MaterialAttribute::Shininess);
+    data.attribute<Containers::StringView>("Shininess");
+    data.tryAttribute<Containers::StringView>(MaterialAttribute::Shininess);
+    data.tryAttribute<Containers::StringView>("Shininess");
+    data.attributeOr(MaterialAttribute::Shininess, Containers::StringView{});
+    data.attributeOr("Shininess", Containers::StringView{});
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        /* tryAttribute() and attributeOr() delegate to attribute() so the
+           assert is the same */
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n"
+        "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n");
 }
 
 void MaterialDataTest::release() {
