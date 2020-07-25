@@ -55,11 +55,15 @@ class MaterialDataTest: public TestSuite::Tester {
 
         template<class T> void constructAttributeStringConstexpr();
 
+        void constructAttributePointer();
+        void constructAttributeMutablePointer();
+
         void constructAttributeInvalidName();
         void constructAttributeWrongTypeForName();
         void constructAttributeInvalidType();
         void constructAttributeTooLarge();
         void constructAttributeWrongAccessType();
+        void constructAttributeWrongAccessPointerType();
 
         void construct();
         void constructEmptyAttribute();
@@ -75,11 +79,13 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructMove();
 
         void access();
+        void accessPointer();
         void accessOptional();
         void accessOutOfBounds();
         void accessInvalidAttributeName();
         void accessNotFound();
         void accessWrongType();
+        void accessWrongPointerType();
 
         void release();
 
@@ -134,6 +140,8 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeStringConstexpr<Rad>,
               &MaterialDataTest::constructAttributeStringConstexpr<UnsignedInt>,
               &MaterialDataTest::constructAttributeStringConstexpr<Int>,
+              &MaterialDataTest::constructAttributeStringConstexpr<UnsignedLong>,
+              &MaterialDataTest::constructAttributeStringConstexpr<Long>,
               &MaterialDataTest::constructAttributeStringConstexpr<Vector2>,
               &MaterialDataTest::constructAttributeStringConstexpr<Vector2ui>,
               &MaterialDataTest::constructAttributeStringConstexpr<Vector2i>,
@@ -152,11 +160,15 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeStringConstexpr<Matrix4x2>,
               &MaterialDataTest::constructAttributeStringConstexpr<Matrix4x3>,
 
+              &MaterialDataTest::constructAttributePointer,
+              &MaterialDataTest::constructAttributeMutablePointer,
+
               &MaterialDataTest::constructAttributeInvalidName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
               &MaterialDataTest::constructAttributeInvalidType,
               &MaterialDataTest::constructAttributeTooLarge,
               &MaterialDataTest::constructAttributeWrongAccessType,
+              &MaterialDataTest::constructAttributeWrongAccessPointerType,
 
               &MaterialDataTest::construct,
               &MaterialDataTest::constructEmptyAttribute});
@@ -175,11 +187,13 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructMove,
 
               &MaterialDataTest::access,
+              &MaterialDataTest::accessPointer,
               &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
               &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessNotFound,
               &MaterialDataTest::accessWrongType,
+              &MaterialDataTest::accessWrongPointerType,
 
               &MaterialDataTest::release,
 
@@ -377,6 +391,54 @@ template<class T> void MaterialDataTest::constructAttributeStringConstexpr() {
     CORRADE_COMPARE(attribute.value<T>(), T(15));
 }
 
+constexpr Int SomeData = 3;
+
+void MaterialDataTest::constructAttributePointer() {
+    MaterialAttributeData attribute{"pointer!", &SomeData};
+    CORRADE_COMPARE(attribute.name(), "pointer!");
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::Pointer);
+    CORRADE_COMPARE(*static_cast<const Int* const*>(attribute.value()), &SomeData);
+    CORRADE_COMPARE(attribute.value<const Int*>(), &SomeData);
+    /* Any type works */
+    CORRADE_COMPARE(attribute.value<const void*>(), &SomeData);
+
+    constexpr MaterialAttributeData cattribute{"pointer!"_s, &SomeData};
+    CORRADE_COMPARE(cattribute.name(), "pointer!");
+    CORRADE_COMPARE(cattribute.type(), MaterialAttributeType::Pointer);
+    CORRADE_COMPARE(*static_cast<const Int* const*>(cattribute.value()), &SomeData);
+    CORRADE_COMPARE(cattribute.value<const Int*>(), &SomeData);
+
+    /* Type-erased variant */
+    const Int* pointer = &SomeData;
+    MaterialAttributeData typeErased{"pointer!", MaterialAttributeType::Pointer, &pointer};
+    CORRADE_COMPARE(typeErased.name(), "pointer!");
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::Pointer);
+    CORRADE_COMPARE(typeErased.value<const Int*>(), &SomeData);
+    /* Any type works */
+    CORRADE_COMPARE(typeErased.value<const void*>(), &SomeData);
+}
+
+void MaterialDataTest::constructAttributeMutablePointer() {
+    Float data = 85.1f;
+
+    MaterialAttributeData attribute{"pointer!", &data};
+    CORRADE_COMPARE(attribute.name(), "pointer!");
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::MutablePointer);
+    CORRADE_COMPARE(*static_cast<Float* const*>(attribute.value()), &data);
+    CORRADE_COMPARE(attribute.value<Float*>(), &data);
+    /* Any type works */
+    CORRADE_COMPARE(attribute.value<void*>(), &data);
+
+    /* Type-erased variant */
+    Float* pointer = &data;
+    MaterialAttributeData typeErased{"pointer!", MaterialAttributeType::MutablePointer, &pointer};
+    CORRADE_COMPARE(typeErased.name(), "pointer!");
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::MutablePointer);
+    CORRADE_COMPARE(typeErased.value<Float*>(), &data);
+    /* Any type works */
+    CORRADE_COMPARE(typeErased.value<void*>(), &data);
+}
+
 void MaterialDataTest::constructAttributeInvalidName() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -442,6 +504,23 @@ void MaterialDataTest::constructAttributeWrongAccessType() {
     Error redirectError{&out};
     MaterialAttributeData{"thing3", Matrix4x3{}}.value<Int>();
     CORRADE_COMPARE(out.str(), "Trade::MaterialAttributeData::value(): improper type requested for thing3 of Trade::MaterialAttributeType::Matrix4x3\n");
+}
+
+void MaterialDataTest::constructAttributeWrongAccessPointerType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Int a = 3;
+    const Float b = 57.0f;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{"thing3", &a}.value<Int>();
+    MaterialAttributeData{"boom", &b}.value<Float>();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData::value(): improper type requested for thing3 of Trade::MaterialAttributeType::MutablePointer\n"
+        "Trade::MaterialAttributeData::value(): improper type requested for boom of Trade::MaterialAttributeType::Pointer\n");
 }
 
 void MaterialDataTest::construct() {
@@ -722,6 +801,23 @@ void MaterialDataTest::access() {
     CORRADE_COMPARE(c.alphaMask(), 0.5f);
 }
 
+void MaterialDataTest::accessPointer() {
+    const Float a = 3.0f;
+    Long b = -4;
+
+    MaterialData data{{}, {
+        {"pointer", &a},
+        {"mutable", &b}
+    }};
+    CORRADE_COMPARE(data.attributeType("pointer"), MaterialAttributeType::Pointer);
+    CORRADE_COMPARE(data.attributeType("mutable"), MaterialAttributeType::MutablePointer);
+
+    CORRADE_COMPARE(*static_cast<const Float* const*>(data.attribute("pointer")), &a);
+    CORRADE_COMPARE(*static_cast<Long* const*>(data.attribute("mutable")), &b);
+    CORRADE_COMPARE(data.attribute<const Float*>("pointer"), &a);
+    CORRADE_COMPARE(data.attribute<Long*>("mutable"), &b);
+}
+
 void MaterialDataTest::accessOptional() {
     MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
@@ -866,6 +962,32 @@ void MaterialDataTest::accessWrongType() {
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n"
         "Trade::MaterialData::attribute(): improper type requested for DiffuseColor of Trade::MaterialAttributeType::Vector4\n");
+}
+
+void MaterialDataTest::accessWrongPointerType() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Int a = 3;
+    const Double b = 57.0;
+
+    MaterialData data{{}, {
+        {"mutablePointer", &a},
+        {"pointer", &b}
+    }};
+
+    /* These are fine (type is not checked) */
+    data.attribute<Byte*>("mutablePointer");
+    data.attribute<const Float*>("pointer");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attribute<const Int*>("mutablePointer");
+    data.attribute<Double*>("pointer");
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attribute(): improper type requested for mutablePointer of Trade::MaterialAttributeType::MutablePointer\n"
+        "Trade::MaterialData::attribute(): improper type requested for pointer of Trade::MaterialAttributeType::Pointer\n");
 }
 
 void MaterialDataTest::release() {

@@ -68,6 +68,8 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
         case MaterialAttributeType::Int:
             return 4;
 
+        case MaterialAttributeType::UnsignedLong:
+        case MaterialAttributeType::Long:
         case MaterialAttributeType::Vector2:
         case MaterialAttributeType::Vector2ui:
         case MaterialAttributeType::Vector2i:
@@ -98,6 +100,10 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
         case MaterialAttributeType::Matrix3x4:
         case MaterialAttributeType::Matrix4x3:
             return 48;
+
+        case MaterialAttributeType::Pointer:
+        case MaterialAttributeType::MutablePointer:
+            return sizeof(void*);
     }
 
     CORRADE_ASSERT_UNREACHABLE("Trade::materialAttributeTypeSize(): invalid type" << type, {});
@@ -328,6 +334,8 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         _c(Rad)
         _c(UnsignedInt)
         _c(Int)
+        _c(UnsignedLong)
+        _c(Long)
         _c(Vector2)
         _c(Vector2ui)
         _c(Vector2i)
@@ -345,6 +353,8 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         _c(Matrix3x4)
         _c(Matrix4x2)
         _c(Matrix4x3)
+        _c(Pointer)
+        _c(MutablePointer)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
