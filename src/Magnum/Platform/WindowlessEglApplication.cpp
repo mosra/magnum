@@ -184,7 +184,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                         Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
 
                     EGLAttrib cudaDeviceNumber;
-                    if(eglQueryDeviceAttribEXT(devices[selectedDevice], EGL_CUDA_DEVICE_NV, &cudaDeviceNumber) && cudaDeviceNumber == configuration.cudaDevice())
+                    if(eglQueryDeviceAttribEXT(devices[selectedDevice], EGL_CUDA_DEVICE_NV, &cudaDeviceNumber) && UnsignedInt(cudaDeviceNumber) == configuration.cudaDevice())
                         break;
                 }
 
