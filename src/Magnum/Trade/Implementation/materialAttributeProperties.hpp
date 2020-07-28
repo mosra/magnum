@@ -25,6 +25,7 @@
 
 /* See Magnum/Trade/MaterialData.cpp and Magnum/Trade/Test/MaterialDataTest.cpp */
 #ifdef _c
+_cnt(LayerName,"$LayerName",String,Containers::StringView)
 _c(AlphaMask,Float)
 _ct(AlphaBlend,Bool,bool)
 _ct(DoubleSided,Bool,bool)

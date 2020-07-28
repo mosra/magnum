@@ -57,13 +57,15 @@ class MaterialDataTest: public TestSuite::Tester {
 
         void constructAttributePointer();
         void constructAttributeMutablePointer();
-        void constructAttributeStringValue();
+        void constructAttributeStringNameStringValue();
+        void constructAttributeNameStringValue();
 
         void constructAttributeInvalidName();
         void constructAttributeWrongTypeForName();
         void constructAttributeInvalidType();
         void constructAttributeTooLarge();
         void constructAttributeTooLargeString();
+        void constructAttributeTooLargeNameString();
         void constructAttributeWrongAccessType();
         void constructAttributeWrongAccessPointerType();
         void constructAttributeWrongAccessTypeString();
@@ -73,10 +75,17 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructDuplicateAttribute();
         void constructFromImmutableSortedArray();
 
+        void constructLayers();
+        void constructLayersNotMonotonic();
+        void constructLayersOffsetOutOfBounds();
+
         void constructNonOwned();
+        void constructNonOwnedLayers();
         void constructNonOwnedEmptyAttribute();
         void constructNonOwnedNotSorted();
         void constructNonOwnedDuplicateAttribute();
+        void constructNonOwnedLayersNotMonotonic();
+        void constructNonOwnedLayersOffsetOutOfBounds();
 
         void constructCopy();
         void constructMove();
@@ -86,13 +95,25 @@ class MaterialDataTest: public TestSuite::Tester {
         void accessString();
         void accessOptional();
         void accessOutOfBounds();
-        void accessInvalidAttributeName();
         void accessNotFound();
+        void accessInvalidAttributeName();
         void accessWrongType();
         void accessWrongPointerType();
         void accessWrongTypeString();
 
-        void release();
+        void accessLayerLayerNameInBaseMaterial();
+        void accessLayerEmptyLayer();
+        void accessLayerIndexOptional();
+        void accessLayerStringOptional();
+        void accessLayerOutOfBounds();
+        void accessLayerNotFound();
+        void accessOutOfBoundsInLayerIndex();
+        void accessOutOfBoundsInLayerString();
+        void accessNotFoundInLayerIndex();
+        void accessNotFoundInLayerString();
+
+        void releaseAttributes();
+        void releaseLayers();
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         void constructPhongDeprecated();
@@ -167,13 +188,15 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::constructAttributePointer,
               &MaterialDataTest::constructAttributeMutablePointer,
-              &MaterialDataTest::constructAttributeStringValue,
+              &MaterialDataTest::constructAttributeStringNameStringValue,
+              &MaterialDataTest::constructAttributeNameStringValue,
 
               &MaterialDataTest::constructAttributeInvalidName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
               &MaterialDataTest::constructAttributeInvalidType,
               &MaterialDataTest::constructAttributeTooLarge,
               &MaterialDataTest::constructAttributeTooLargeString,
+              &MaterialDataTest::constructAttributeTooLargeNameString,
               &MaterialDataTest::constructAttributeWrongAccessType,
               &MaterialDataTest::constructAttributeWrongAccessPointerType,
               &MaterialDataTest::constructAttributeWrongAccessTypeString,
@@ -186,10 +209,17 @@ MaterialDataTest::MaterialDataTest() {
 
     addTests({&MaterialDataTest::constructFromImmutableSortedArray,
 
+              &MaterialDataTest::constructLayers,
+              &MaterialDataTest::constructLayersNotMonotonic,
+              &MaterialDataTest::constructLayersOffsetOutOfBounds,
+
               &MaterialDataTest::constructNonOwned,
+              &MaterialDataTest::constructNonOwnedLayers,
               &MaterialDataTest::constructNonOwnedEmptyAttribute,
               &MaterialDataTest::constructNonOwnedNotSorted,
               &MaterialDataTest::constructNonOwnedDuplicateAttribute,
+              &MaterialDataTest::constructNonOwnedLayersNotMonotonic,
+              &MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds,
 
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMove,
@@ -199,13 +229,25 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessString,
               &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
-              &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessNotFound,
+              &MaterialDataTest::accessInvalidAttributeName,
               &MaterialDataTest::accessWrongType,
               &MaterialDataTest::accessWrongPointerType,
               &MaterialDataTest::accessWrongTypeString,
 
-              &MaterialDataTest::release,
+              &MaterialDataTest::accessLayerLayerNameInBaseMaterial,
+              &MaterialDataTest::accessLayerEmptyLayer,
+              &MaterialDataTest::accessLayerIndexOptional,
+              &MaterialDataTest::accessLayerStringOptional,
+              &MaterialDataTest::accessLayerOutOfBounds,
+              &MaterialDataTest::accessLayerNotFound,
+              &MaterialDataTest::accessOutOfBoundsInLayerIndex,
+              &MaterialDataTest::accessOutOfBoundsInLayerString,
+              &MaterialDataTest::accessNotFoundInLayerIndex,
+              &MaterialDataTest::accessNotFoundInLayerString,
+
+              &MaterialDataTest::releaseAttributes,
+              &MaterialDataTest::releaseLayers,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &MaterialDataTest::constructPhongDeprecated,
@@ -302,9 +344,14 @@ void MaterialDataTest::attributeMap() {
                     CORRADE_COMPARE(materialAttributeTypeSize(MaterialAttributeType::typeName), sizeof(type)); \
                     CORRADE_COMPARE_AS(sizeof(type) + Containers::arraySize(#name_) + sizeof(MaterialAttributeType), sizeof(MaterialAttributeData), TestSuite::Compare::LessOrEqual); \
                     break;
+            #define _cnt(name_, string, typeName, type) \
+                case MaterialAttribute::name_: \
+                    CORRADE_COMPARE((MaterialAttributeData{MaterialAttribute::name_, type{}}.name()), string); \
+                    break;
             #include "Magnum/Trade/Implementation/materialAttributeProperties.hpp"
             #undef _c
             #undef _ct
+            #undef _cnt
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
@@ -451,7 +498,7 @@ void MaterialDataTest::constructAttributeMutablePointer() {
     CORRADE_COMPARE(typeErased.value<void*>(), &data);
 }
 
-void MaterialDataTest::constructAttributeStringValue() {
+void MaterialDataTest::constructAttributeStringNameStringValue() {
     /* Explicitly using a non-null-terminated view on input to check the null
        byte isn't read by accident*/
     MaterialAttributeData attribute{"name that's long", "and a value\0that's also long but still fits!!"_s.except(1)};
@@ -482,6 +529,33 @@ void MaterialDataTest::constructAttributeStringValue() {
     CORRADE_COMPARE(typeErased.name()[typeErased.name().size()], '\0');
     CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::String);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>(), "and a value\0that's also long but still fits!"_s);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
+}
+
+void MaterialDataTest::constructAttributeNameStringValue() {
+    /* Explicitly using a non-null-terminated view on input to check the null
+       byte isn't read by accident*/
+
+    MaterialAttributeData attribute{MaterialAttribute::LayerName, "a value\0that's long but still fits!!"_s.except(1)};
+    CORRADE_COMPARE(attribute.name(), "$LayerName");
+    CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::String);
+    /* Pointer access will stop at the first null byte, but typed access won't */
+    CORRADE_COMPARE(static_cast<const char*>(attribute.value()), "a value"_s);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>(), "a value\0that's long but still fits!"_s);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>()[attribute.value<Containers::StringView>().size()], '\0');
+
+    /* Type-erased variant */
+    const Containers::StringView value = "a value\0that's long but still fits!!"_s.except(1);
+    MaterialAttributeData typeErased{MaterialAttribute::LayerName, MaterialAttributeType::String, &value};
+    CORRADE_COMPARE(typeErased.name(), "$LayerName");
+    CORRADE_COMPARE(typeErased.name().flags(), Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(typeErased.name()[typeErased.name().size()], '\0');
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::String);
+    CORRADE_COMPARE(typeErased.value<Containers::StringView>(), "a value\0that's long but still fits!"_s);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
 }
@@ -558,6 +632,18 @@ void MaterialDataTest::constructAttributeTooLargeString() {
         "Trade::MaterialAttributeData: name attribute is long and value This is a problem, got a long piece of text! too long, expected at most 60 bytes in total but got 61\n");
 }
 
+void MaterialDataTest::constructAttributeTooLargeNameString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{MaterialAttribute::LayerName, "This is a problem, got a huge, yuuge value to store"};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name $LayerName and value This is a problem, got a huge, yuuge value to store too long, expected at most 60 bytes in total but got 61\n");
+}
+
 void MaterialDataTest::constructAttributeWrongAccessType() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -607,9 +693,14 @@ void MaterialDataTest::construct() {
     }, &state};
 
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
+    CORRADE_COMPARE(data.layerCount(), 1);
+    CORRADE_VERIFY(!data.layerData());
     CORRADE_COMPARE(data.attributeCount(), 4);
-    CORRADE_COMPARE(data.data().size(), 4);
+    CORRADE_COMPARE(data.attributeData().size(), 4);
     CORRADE_COMPARE(data.importerState(), &state);
+
+    CORRADE_COMPARE(data.layerName(0), "");
+    CORRADE_VERIFY(!data.hasLayer(""));
 
     /* Verify sorting */
     CORRADE_COMPARE(data.attributeName(0), "AmbientTextureMatrix");
@@ -734,6 +825,213 @@ void MaterialDataTest::constructFromImmutableSortedArray() {
     CORRADE_COMPARE(data.attributeName(1), "yay this is last");
 }
 
+void MaterialDataTest::constructLayers() {
+    int state;
+    MaterialData data{MaterialType::Phong, {
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::DiffuseTextureCoordinates, 5u},
+
+        /* Layer name gets sorted first by the constructor */
+        {"highlightColor", 0x335566ff_rgbaf},
+        {MaterialAttribute::AlphaBlend, true},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+
+        /* Empty layer here */
+
+        /* Unnamed but nonempty layer */
+        {"thickness", 0.015f},
+        {MaterialAttribute::NormalTexture, 3u}
+    }, {
+        2, 5, 5, 7
+    }, &state};
+
+    CORRADE_COMPARE(data.types(), MaterialType::Phong);
+    CORRADE_COMPARE(data.importerState(), &state);
+
+    CORRADE_COMPARE(data.layerCount(), 4);
+    CORRADE_COMPARE(data.layerData().size(), 4);
+
+    CORRADE_COMPARE(data.attributeData().size(), 7);
+    CORRADE_COMPARE(data.attributeCount(0), 2);
+    CORRADE_COMPARE(data.attributeCount(1), 3);
+    CORRADE_COMPARE(data.attributeCount(2), 0);
+    CORRADE_COMPARE(data.attributeCount(3), 2);
+    CORRADE_COMPARE(data.attributeCount("ClearCoat"), 3);
+
+    /* Layer access */
+    CORRADE_COMPARE(data.layerName(0), "");
+    CORRADE_COMPARE(data.layerName(1), "ClearCoat");
+    CORRADE_COMPARE(data.layerName(2), "");
+    CORRADE_COMPARE(data.layerName(3), "");
+
+    CORRADE_VERIFY(data.hasLayer("ClearCoat"));
+    CORRADE_VERIFY(!data.hasLayer(""));
+    CORRADE_VERIFY(!data.hasLayer("DoubleSided"));
+
+    CORRADE_COMPARE(data.layerId("ClearCoat"), 1);
+
+    /* Verify sorting in each layer */
+    CORRADE_COMPARE(data.attributeName(0, 0), "DiffuseTextureCoordinates");
+    CORRADE_COMPARE(data.attributeName(0, 1), "DoubleSided");
+
+    CORRADE_COMPARE(data.attributeName(1, 0), "$LayerName");
+    CORRADE_COMPARE(data.attributeName(1, 1), "AlphaBlend");
+    CORRADE_COMPARE(data.attributeName(1, 2), "highlightColor");
+
+    CORRADE_COMPARE(data.attributeName(3, 0), "NormalTexture");
+    CORRADE_COMPARE(data.attributeName(3, 1), "thickness");
+
+    /* Access by layer ID and attribute ID */
+    CORRADE_COMPARE(data.attributeType(0, 0), MaterialAttributeType::UnsignedInt);
+    CORRADE_COMPARE(data.attributeType(1, 2), MaterialAttributeType::Vector4);
+    CORRADE_COMPARE(data.attributeType(3, 1), MaterialAttributeType::Float);
+
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(0, 0), 5);
+    CORRADE_COMPARE(data.attribute<Color4>(1, 2), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.attribute<Float>(3, 1), 0.015f);
+
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(0, 0)), 5);
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(1, 2)), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(*static_cast<const Float*>(data.attribute(3, 1)), 0.015f);
+
+    /* Access by layer ID and attribute name */
+    CORRADE_VERIFY(data.hasAttribute(0, MaterialAttribute::DiffuseTextureCoordinates));
+    CORRADE_VERIFY(!data.hasAttribute(0, MaterialAttribute::AlphaBlend));
+    CORRADE_VERIFY(data.hasAttribute(1, MaterialAttribute::AlphaBlend));
+    CORRADE_VERIFY(data.hasAttribute(1, MaterialAttribute::LayerName));
+    CORRADE_VERIFY(!data.hasAttribute(2, MaterialAttribute::LayerName));
+    CORRADE_VERIFY(!data.hasAttribute(2, MaterialAttribute::NormalTexture));
+    CORRADE_VERIFY(data.hasAttribute(3, MaterialAttribute::NormalTexture));
+
+    CORRADE_COMPARE(data.attributeId(0, MaterialAttribute::DiffuseTextureCoordinates), 0);
+    CORRADE_COMPARE(data.attributeId(1, MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.attributeId(1, MaterialAttribute::LayerName), 0);
+    CORRADE_COMPARE(data.attributeId(3, MaterialAttribute::NormalTexture), 0);
+
+    CORRADE_COMPARE(data.attributeType(0, MaterialAttribute::DiffuseTextureCoordinates), MaterialAttributeType::UnsignedInt);
+    CORRADE_COMPARE(data.attributeType(1, MaterialAttribute::AlphaBlend), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType(1, MaterialAttribute::LayerName), MaterialAttributeType::String);
+    CORRADE_COMPARE(data.attributeType(3, MaterialAttribute::NormalTexture), MaterialAttributeType::UnsignedInt);
+
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(0, MaterialAttribute::DiffuseTextureCoordinates), 5);
+    CORRADE_COMPARE(data.attribute<bool>(1, MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(1, MaterialAttribute::LayerName), "ClearCoat");
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(3, MaterialAttribute::NormalTexture), 3);
+
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(0, MaterialAttribute::DiffuseTextureCoordinates)), 5);
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(1, MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(1, MaterialAttribute::LayerName)), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(3, MaterialAttribute::NormalTexture)), 3);
+
+    /* Access by layer ID and attribute string */
+    CORRADE_VERIFY(data.hasAttribute(0, "DoubleSided"));
+    CORRADE_VERIFY(!data.hasAttribute(0, "highlightColor"));
+    CORRADE_VERIFY(data.hasAttribute(1, "highlightColor"));
+    CORRADE_VERIFY(data.hasAttribute(1, "$LayerName"));
+    CORRADE_VERIFY(!data.hasAttribute(2, "$LayerName"));
+    CORRADE_VERIFY(!data.hasAttribute(2, "NormalTexture"));
+    CORRADE_VERIFY(data.hasAttribute(3, "NormalTexture"));
+
+    CORRADE_COMPARE(data.attributeId(0, "DoubleSided"), 1);
+    CORRADE_COMPARE(data.attributeId(1, "highlightColor"), 2);
+    CORRADE_COMPARE(data.attributeId(1, "$LayerName"), 0);
+    CORRADE_COMPARE(data.attributeId(3, "NormalTexture"), 0);
+
+    CORRADE_COMPARE(data.attributeType(0, "DoubleSided"), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType(1, "highlightColor"), MaterialAttributeType::Vector4);
+    CORRADE_COMPARE(data.attributeType(1, "$LayerName"), MaterialAttributeType::String);
+    CORRADE_COMPARE(data.attributeType(3, "NormalTexture"), MaterialAttributeType::UnsignedInt);
+
+    CORRADE_COMPARE(data.attribute<bool>(0, "DoubleSided"), true);
+    CORRADE_COMPARE(data.attribute<Color4>(1, "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(1, "$LayerName"), "ClearCoat");
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(3, "NormalTexture"), 3);
+
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(0, "DoubleSided")), true);
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(1, "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(1, "$LayerName")), "ClearCoat"_s);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(3, "NormalTexture")), 3);
+
+    /* Access by layer string and attribute ID */
+    CORRADE_COMPARE(data.attributeName("ClearCoat", 1), "AlphaBlend");
+    CORRADE_COMPARE(data.attributeName("ClearCoat", 2), "highlightColor");
+
+    CORRADE_COMPARE(data.attributeType("ClearCoat", 1), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType("ClearCoat", 2), MaterialAttributeType::Vector4);
+
+    CORRADE_COMPARE(data.attribute<bool>("ClearCoat", 1), true);
+    CORRADE_COMPARE(data.attribute<Color4>("ClearCoat", 2), 0x335566ff_rgbaf);
+
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute("ClearCoat", 1)), true);
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute("ClearCoat", 2)), 0x335566ff_rgbaf);
+
+    /* Access by layer string and attribute name */
+    CORRADE_VERIFY(data.hasAttribute("ClearCoat", MaterialAttribute::AlphaBlend));
+    CORRADE_VERIFY(data.hasAttribute("ClearCoat", MaterialAttribute::LayerName));
+
+    CORRADE_COMPARE(data.attributeId("ClearCoat", MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.attributeId("ClearCoat", MaterialAttribute::LayerName), 0);
+
+    CORRADE_COMPARE(data.attributeType("ClearCoat", MaterialAttribute::AlphaBlend), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType("ClearCoat", MaterialAttribute::LayerName), MaterialAttributeType::String);
+
+    CORRADE_COMPARE(data.attribute<bool>("ClearCoat", MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>("ClearCoat", MaterialAttribute::LayerName), "ClearCoat");
+
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute("ClearCoat", MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute("ClearCoat", MaterialAttribute::LayerName)), "ClearCoat"_s);
+
+    /* Access by layer string and attribute string */
+    CORRADE_VERIFY(data.hasAttribute("ClearCoat", "highlightColor"));
+    CORRADE_VERIFY(data.hasAttribute("ClearCoat", "$LayerName"));
+
+    CORRADE_COMPARE(data.attributeId("ClearCoat", "highlightColor"), 2);
+    CORRADE_COMPARE(data.attributeId("ClearCoat", "$LayerName"), 0);
+
+    CORRADE_COMPARE(data.attributeType("ClearCoat", "highlightColor"), MaterialAttributeType::Vector4);
+    CORRADE_COMPARE(data.attributeType("ClearCoat", "$LayerName"), MaterialAttributeType::String);
+
+    CORRADE_COMPARE(data.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>("ClearCoat", "$LayerName"), "ClearCoat");
+
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute("ClearCoat", "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute("ClearCoat", "$LayerName")), "ClearCoat"_s);
+}
+
+void MaterialDataTest::constructLayersNotMonotonic() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong, {
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::DiffuseTextureCoordinates, 5u},
+        {MaterialAttribute::AlphaBlend, true},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::NormalTexture, 3u}
+    }, {2, 5, 4, 5}};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
+}
+
+void MaterialDataTest::constructLayersOffsetOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong, {
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::DiffuseTextureCoordinates, 5u},
+        {MaterialAttribute::AlphaBlend, true},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::NormalTexture, 3u}
+    }, {2, 6}};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
+}
+
 void MaterialDataTest::constructNonOwned() {
     constexpr MaterialAttributeData attributes[]{
         {"AmbientTextureMatrix"_s, Matrix3{{0.5f, 0.0f, 0.0f},
@@ -749,9 +1047,11 @@ void MaterialDataTest::constructNonOwned() {
 
     /* Expecting the same output as in construct() */
     CORRADE_COMPARE(data.types(), MaterialType::Phong);
+    CORRADE_COMPARE(data.layerCount(), 1);
+    CORRADE_VERIFY(!data.layerData());
     CORRADE_COMPARE(data.attributeCount(), 4);
-    CORRADE_COMPARE(data.data().size(), 4);
-    CORRADE_COMPARE(data.data().data(), attributes);
+    CORRADE_COMPARE(data.attributeData().size(), 4);
+    CORRADE_COMPARE(data.attributeData().data(), attributes);
     CORRADE_COMPARE(data.importerState(), &state);
 
     /* We sorted the input already */
@@ -759,6 +1059,67 @@ void MaterialDataTest::constructNonOwned() {
     CORRADE_COMPARE(data.attributeName(1), "DiffuseTextureCoordinates");
     CORRADE_COMPARE(data.attributeName(2), "DoubleSided");
     CORRADE_COMPARE(data.attributeName(3), "highlightColor");
+
+    /* No need to verify the contents as there's no difference in access in
+       owned vs non-owned */
+}
+
+void MaterialDataTest::constructNonOwnedLayers() {
+    constexpr MaterialAttributeData attributes[]{
+        {"DiffuseCoordinateSet"_s, 5u},
+        {"DoubleSided"_s, true},
+
+        {"$LayerName"_s, "ClearCoat"_s},
+        {"AlphaBlend"_s, true},
+        {"highlightColor"_s, Vector4{0.2f, 0.6f, 0.4f, 1.0f}},
+
+        /* Empty layer here */
+
+        /* Unnamed but nonempty layer */
+        {"NormalTexture"_s, 3u},
+        {"thickness"_s, 0.015f}
+    };
+
+    constexpr UnsignedInt layers[]{
+        2, 5, 5, 7
+    };
+
+    int state;
+    MaterialData data{MaterialType::Phong,
+        {}, attributes,
+        {}, layers, &state};
+
+    /* Expecting the same output as in constructLayers() */
+    CORRADE_COMPARE(data.types(), MaterialType::Phong);
+    CORRADE_COMPARE(data.importerState(), &state);
+
+    CORRADE_COMPARE(data.layerCount(), 4);
+    CORRADE_COMPARE(data.layerData().size(), 4);
+    CORRADE_COMPARE(data.layerData().data(), layers);
+
+    CORRADE_COMPARE(data.attributeData().size(), 7);
+    CORRADE_COMPARE(data.attributeData().data(), attributes);
+    CORRADE_COMPARE(data.attributeCount(0), 2);
+    CORRADE_COMPARE(data.attributeCount(1), 3);
+    CORRADE_COMPARE(data.attributeCount(2), 0);
+    CORRADE_COMPARE(data.attributeCount(3), 2);
+
+    /* Layer access */
+    CORRADE_COMPARE(data.layerName(0), "");
+    CORRADE_COMPARE(data.layerName(1), "ClearCoat");
+    CORRADE_COMPARE(data.layerName(2), "");
+    CORRADE_COMPARE(data.layerName(3), "");
+
+    /* We sorted the input already */
+    CORRADE_COMPARE(data.attributeName(0, 0), "DiffuseCoordinateSet");
+    CORRADE_COMPARE(data.attributeName(0, 1), "DoubleSided");
+
+    CORRADE_COMPARE(data.attributeName(1, 0), "$LayerName");
+    CORRADE_COMPARE(data.attributeName(1, 1), "AlphaBlend");
+    CORRADE_COMPARE(data.attributeName(1, 2), "highlightColor");
+
+    CORRADE_COMPARE(data.attributeName(3, 0), "NormalTexture");
+    CORRADE_COMPARE(data.attributeName(3, 1), "thickness");
 
     /* No need to verify the contents as there's no difference in access in
        owned vs non-owned */
@@ -816,6 +1177,56 @@ void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates\n");
 }
 
+void MaterialDataTest::constructNonOwnedLayersNotMonotonic() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialAttributeData attributes[]{
+        {MaterialAttribute::AlphaBlend, true},
+        {MaterialAttribute::DiffuseTextureCoordinates, 5u},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::NormalTexture, 3u}
+    };
+
+    UnsignedInt layers[]{
+        2, 5, 4, 5
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong,
+        {}, attributes,
+        {}, layers};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (5, 4) for layer 2 with 5 attributes in total\n");
+}
+
+void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialAttributeData attributes[]{
+        {MaterialAttribute::AlphaBlend, true},
+        {MaterialAttribute::DiffuseTextureCoordinates, 5u},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::NormalTexture, 3u}
+    };
+
+    UnsignedInt layers[]{
+        2, 6
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialData data{MaterialType::Phong,
+        {}, attributes,
+        {}, layers};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialData: invalid range (2, 6) for layer 1 with 5 attributes in total\n");
+}
+
 void MaterialDataTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<MaterialData, const MaterialData&>{}));
     CORRADE_VERIFY(!(std::is_assignable<MaterialData, const MaterialData&>{}));
@@ -825,24 +1236,31 @@ void MaterialDataTest::constructMove() {
     int state;
     MaterialData a{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
+        {MaterialAttribute::AlphaBlend, true},
         {"boredomFactor", 5}
+    }, {
+        1, 1, 3
     }, &state};
 
     MaterialData b{std::move(a)};
+    CORRADE_COMPARE(a.layerCount(), 1);
     CORRADE_COMPARE(a.attributeCount(), 0);
     CORRADE_COMPARE(b.types(), MaterialType::Phong);
-    CORRADE_COMPARE(b.attributeCount(), 2);
-    CORRADE_COMPARE(b.attributeName(0), "DoubleSided");
+    CORRADE_COMPARE(b.layerCount(), 3);
+    CORRADE_COMPARE(b.attributeCount(2), 2);
+    CORRADE_COMPARE(b.attributeName(2, 0), "AlphaBlend");
     CORRADE_COMPARE(b.importerState(), &state);
 
     MaterialData c{MaterialTypes{}, {
         {MaterialAttribute::AlphaMask, 0.5f}
-    }};
+    }, {1}};
     c = std::move(b);
     CORRADE_COMPARE(b.attributeCount(), 1);
+    CORRADE_COMPARE(b.layerCount(), 1);
     CORRADE_COMPARE(c.types(), MaterialType::Phong);
-    CORRADE_COMPARE(c.attributeCount(), 2);
-    CORRADE_COMPARE(c.attributeName(0), "DoubleSided");
+    CORRADE_COMPARE(c.layerCount(), 3);
+    CORRADE_COMPARE(c.attributeCount(2), 2);
+    CORRADE_COMPARE(c.attributeName(2, 0), "AlphaBlend");
     CORRADE_COMPARE(c.importerState(), &state);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<MaterialData>::value);
@@ -948,55 +1366,11 @@ void MaterialDataTest::accessOutOfBounds() {
     data.attribute<Int>(2);
     data.attribute<Containers::StringView>(2);
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes\n"
-        "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n"
-        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes\n");
-}
-
-void MaterialDataTest::accessInvalidAttributeName() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    MaterialData data{{}, {}};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    data.hasAttribute(MaterialAttribute(0x0));
-    data.hasAttribute(MaterialAttribute(0xfefe));
-    data.attributeId(MaterialAttribute(0x0));
-    data.attributeId(MaterialAttribute(0xfefe));
-    data.attributeType(MaterialAttribute(0x0));
-    data.attributeType(MaterialAttribute(0xfefe));
-    data.attribute(MaterialAttribute(0x0));
-    data.attribute(MaterialAttribute(0xfefe));
-    data.attribute<Int>(MaterialAttribute(0x0));
-    data.attribute<Int>(MaterialAttribute(0xfefe));
-    data.tryAttribute(MaterialAttribute(0x0));
-    data.tryAttribute(MaterialAttribute(0xfefe));
-    data.tryAttribute<Int>(MaterialAttribute(0x0));
-    data.tryAttribute<Int>(MaterialAttribute(0xfefe));
-    data.attributeOr(MaterialAttribute(0x0), 42);
-    data.attributeOr(MaterialAttribute(0xfefe), 42);
-    CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
-        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0x0)\n"
-        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0xfefe)\n");
+        "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 0\n");
 }
 
 void MaterialDataTest::accessNotFound() {
@@ -1017,10 +1391,10 @@ void MaterialDataTest::accessNotFound() {
     data.attribute("DiffuseColour");
     data.attribute<Color4>("DiffuseColour");
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::attributeId(): attribute DiffuseColour not found\n"
-        "Trade::MaterialData::attributeType(): attribute DiffuseColour not found\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseColour not found\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseColour not found\n");
+        "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 0\n"
+        "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 0\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 0\n");
 }
 
 void MaterialDataTest::accessWrongType() {
@@ -1109,19 +1483,392 @@ void MaterialDataTest::accessWrongTypeString() {
         "Trade::MaterialData::attribute(): Shininess of Trade::MaterialAttributeType::Float can't be retrieved as a string\n");
 }
 
-void MaterialDataTest::release() {
+void MaterialDataTest::accessLayerLayerNameInBaseMaterial() {
+    MaterialData data{{}, {
+        {MaterialAttribute::Shininess, 50.0f},
+        {MaterialAttribute::LayerName, "base material name"}
+    }};
+
+    /* To avoid confusing the base material with a layer, LayerName is ignored
+       for the base material. */
+    CORRADE_COMPARE(data.layerName(0), "");
+    CORRADE_VERIFY(!data.hasLayer("base material name"));
+}
+
+void MaterialDataTest::accessLayerEmptyLayer() {
+    /* If a layer is empty, its contents shouldn't leak into upper layers */
+    MaterialData data{{}, {
+        {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::LayerName, "crumples"}
+    }, {0, 0, 2}};
+
+    CORRADE_COMPARE(data.layerName(0), "");
+    CORRADE_COMPARE(data.layerName(1), "");
+    CORRADE_COMPARE(data.layerName(2), "crumples");
+    CORRADE_COMPARE(data.attributeCount(0), 0);
+    CORRADE_COMPARE(data.attributeCount(1), 0);
+    CORRADE_COMPARE(data.attributeCount(2), 2);
+    CORRADE_COMPARE(data.layerId("crumples"), 2);
+    CORRADE_COMPARE(data.attribute<UnsignedInt>("crumples", MaterialAttribute::NormalTexture), 3u);
+}
+
+void MaterialDataTest::accessLayerIndexOptional() {
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 3}};
+
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute(1, "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(1, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(1, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(1, MaterialAttribute::SpecularTexture), 3);
+    CORRADE_COMPARE(data.attributeOr(1, "SpecularTexture", 5u), 3);
+    CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::SpecularTexture, 5u), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, MaterialAttribute::DiffuseTexture));
+    CORRADE_COMPARE(data.attributeOr(1, "DiffuseTexture", 5u), 5);
+    CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::DiffuseTexture, 5u), 5);
+}
+
+void MaterialDataTest::accessLayerStringOptional() {
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 4}};
+
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute("ClearCoat", "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("ClearCoat", MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::SpecularTexture), 3);
+    CORRADE_COMPARE(data.attributeOr("ClearCoat", "SpecularTexture", 5u), 3);
+    CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::SpecularTexture, 5u), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>("ClearCoat", MaterialAttribute::DiffuseTexture));
+    CORRADE_COMPARE(data.attributeOr("ClearCoat", "DiffuseTexture", 5u), 5);
+    CORRADE_COMPARE(data.attributeOr("ClearCoat", MaterialAttribute::DiffuseTexture, 5u), 5);
+}
+
+void MaterialDataTest::accessLayerOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {0, 2}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.layerName(2);
+    data.attributeCount(2);
+    data.hasAttribute(2, "AlphaMask");
+    data.hasAttribute(2, MaterialAttribute::AlphaMask);
+    data.attributeId(2, "AlphaMask");
+    data.attributeId(2, MaterialAttribute::AlphaMask);
+    data.attributeName(2, 0);
+    data.attributeType(2, 0);
+    data.attributeType(2, "AlphaMask");
+    data.attributeType(2, MaterialAttribute::AlphaMask);
+    data.attribute(2, 0);
+    data.attribute(2, "AlphaMask");
+    data.attribute(2, MaterialAttribute::AlphaMask);
+    data.attribute<Int>(2, 0);
+    data.attribute<Int>(2, "AlphaMask");
+    data.attribute<Int>(2, MaterialAttribute::AlphaMask);
+    data.attribute<Containers::StringView>(2, 0);
+    data.tryAttribute(2, "AlphaMask");
+    data.tryAttribute(2, MaterialAttribute::AlphaMask);
+    data.tryAttribute<bool>(2, "AlphaMask");
+    data.tryAttribute<bool>(2, MaterialAttribute::AlphaMask);
+    data.attributeOr(2, "AlphaMask", false);
+    data.attributeOr(2, MaterialAttribute::AlphaMask, false);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::layerName(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeCount(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::hasAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::hasAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeId(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeName(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::tryAttribute(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeOr(): index 2 out of range for 2 layers\n"
+        "Trade::MaterialData::attributeOr(): index 2 out of range for 2 layers\n");
+}
+
+void MaterialDataTest::accessLayerNotFound() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {MaterialAttribute::LayerName, "clearCoat"},
+        {MaterialAttribute::AlphaMask, 0.5f},
+    }, {0, 2}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attributeCount("ClearCoat");
+    data.hasAttribute("ClearCoat", "AlphaMask");
+    data.hasAttribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attributeId("ClearCoat", "AlphaMask");
+    data.attributeId("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attributeName("ClearCoat", 0);
+    data.attributeType("ClearCoat", 0);
+    data.attributeType("ClearCoat", "AlphaMask");
+    data.attributeType("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attribute("ClearCoat", 0);
+    data.attribute("ClearCoat", "AlphaMask");
+    data.attribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attribute<Int>("ClearCoat", 0);
+    data.attribute<Int>("ClearCoat", "AlphaMask");
+    data.attribute<Int>("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attribute<Containers::StringView>("ClearCoat", 0);
+    data.tryAttribute("ClearCoat", "AlphaMask");
+    data.tryAttribute("ClearCoat", MaterialAttribute::AlphaMask);
+    data.tryAttribute<bool>("ClearCoat", "AlphaMask");
+    data.tryAttribute<bool>("ClearCoat", MaterialAttribute::AlphaMask);
+    data.attributeOr("ClearCoat", "AlphaMask", false);
+    data.attributeOr("ClearCoat", MaterialAttribute::AlphaMask, false);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeCount(): layer ClearCoat not found\n"
+        "Trade::MaterialData::hasAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::hasAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeId(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeId(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeName(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeType(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeType(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeType(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n"
+        "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n");
+}
+
+void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {0, 2}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attributeName(1, 2);
+    data.attributeType(1, 2);
+    data.attribute(1, 2);
+    data.attribute<Int>(1, 2);
+    data.attribute<Containers::StringView>(1, 2);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer 1\n");
+}
+
+void MaterialDataTest::accessOutOfBoundsInLayerString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialAttribute::AlphaMask, 0.5f}
+    }, {0, 2}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attributeName("ClearCoat", 2);
+    data.attributeType("ClearCoat", 2);
+    data.attribute("ClearCoat", 2);
+    data.attribute<Int>("ClearCoat", 2);
+    data.attribute<Containers::StringView>("ClearCoat", 2);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeName(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::attributeType(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): index 2 out of range for 2 attributes in layer ClearCoat\n");
+}
+
+void MaterialDataTest::accessNotFoundInLayerIndex() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {"DiffuseColor", 0xff3366aa_rgbaf}
+    }, {0, 1}};
+
+    CORRADE_VERIFY(!data.hasAttribute(1, "DiffuseColour"));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attributeId(1, "DiffuseColour");
+    data.attributeType(1, "DiffuseColour");
+    data.attribute(1, "DiffuseColour");
+    data.attribute<Color4>(1, "DiffuseColour");
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer 1\n"
+        "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer 1\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer 1\n");
+}
+
+void MaterialDataTest::accessNotFoundInLayerString() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {"DiffuseColor", 0xff3366aa_rgbaf}
+    }, {0, 1}};
+
+    CORRADE_VERIFY(!data.hasAttribute(1, "DiffuseColour"));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.attributeId("ClearCoat", "DiffuseColour");
+    data.attributeType("ClearCoat", "DiffuseColour");
+    data.attribute("ClearCoat", "DiffuseColour");
+    data.attribute<Color4>("ClearCoat", "DiffuseColour");
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attributeId(): attribute DiffuseColour not found in layer ClearCoat\n"
+        "Trade::MaterialData::attributeType(): attribute DiffuseColour not found in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseColour not found in layer ClearCoat\n");
+}
+
+void MaterialDataTest::accessInvalidAttributeName() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {}};
+
+    /* The name should be converted to a string first and foremost and only
+       then delegated to another overload. Which means all asserts should
+       print the leaf function name. */
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.hasAttribute(0, MaterialAttribute(0x0));
+    data.hasAttribute("Layer", MaterialAttribute(0xfefe));
+    data.attributeId(0, MaterialAttribute(0x0));
+    data.attributeId("Layer", MaterialAttribute(0xfefe));
+    data.attributeType(0, MaterialAttribute(0x0));
+    data.attributeType("Layer", MaterialAttribute(0xfefe));
+    data.attribute(0, MaterialAttribute(0x0));
+    data.attribute("Layer", MaterialAttribute(0xfefe));
+    data.attribute<Int>(0, MaterialAttribute(0x0));
+    data.attribute<Int>("Layer", MaterialAttribute(0xfefe));
+    data.tryAttribute(0, MaterialAttribute(0x0));
+    data.tryAttribute("Layer", MaterialAttribute(0xfefe));
+    data.tryAttribute<Int>(0, MaterialAttribute(0x0));
+    data.tryAttribute<Int>("Layer", MaterialAttribute(0xfefe));
+    data.attributeOr(0, MaterialAttribute(0x0), 42);
+    data.attributeOr("Layer", MaterialAttribute(0xfefe), 42);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialAttribute(0xfefe)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0x0)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialAttribute(0xfefe)\n");
+}
+
+void MaterialDataTest::releaseAttributes() {
     MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf},
         {MaterialAttribute::NormalTexture, 0u}
-    }};
+    }, {1, 2}};
 
-    const void* pointer = data.data().data();
+    const void* pointer = data.attributeData().data();
 
-    Containers::Array<MaterialAttributeData> released = data.release();
+    Containers::Array<MaterialAttributeData> released = data.releaseAttributeData();
     CORRADE_COMPARE(released.data(), pointer);
     CORRADE_COMPARE(released.size(), 2);
-    CORRADE_VERIFY(!data.data());
-    CORRADE_COMPARE(data.attributeCount(), 0);
+    CORRADE_VERIFY(data.layerData());
+    CORRADE_COMPARE(data.layerCount(), 2);
+    CORRADE_VERIFY(!data.attributeData());
+    /* This is based on the layer offsets, not an actual attribute count, so
+       it's inconsistent, yes */
+    CORRADE_COMPARE(data.attributeCount(), 1);
+}
+
+void MaterialDataTest::releaseLayers() {
+    MaterialData data{{}, {
+        {"DiffuseColor", 0xff3366aa_rgbaf},
+        {MaterialAttribute::NormalTexture, 0u}
+    }, {1, 2}};
+
+    const void* pointer = data.layerData().data();
+
+    Containers::Array<UnsignedInt> released = data.releaseLayerData();
+    CORRADE_COMPARE(released.data(), pointer);
+    CORRADE_COMPARE(released.size(), 2);
+    CORRADE_VERIFY(!data.layerData());
+    /* Returns always at least 1 (now it sees no layer data and thus thinks
+       there's just the implicit base material) */
+    CORRADE_COMPARE(data.layerCount(), 1);
+    CORRADE_VERIFY(data.attributeData());
+    /* No layer offsets anymore, so this is the total attribute count instead
+       of the base material attribute count. It's inconsistent, yes. */
+    CORRADE_COMPARE(data.attributeCount(), 2);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1453,16 +2200,16 @@ void MaterialDataTest::phongAccessInvalidTextures() {
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
     CORRADE_COMPARE(out.str(),
-        "Trade::MaterialData::attribute(): attribute AmbientTexture not found\n"
+        "Trade::MaterialData::attribute(): attribute AmbientTexture not found in layer 0\n"
         "Trade::PhongMaterialData::ambientTextureMatrix(): the material doesn't have an ambient texture\n"
         "Trade::PhongMaterialData::ambientTextureCoordinates(): the material doesn't have an ambient texture\n"
-        "Trade::MaterialData::attribute(): attribute DiffuseTexture not found\n"
+        "Trade::MaterialData::attribute(): attribute DiffuseTexture not found in layer 0\n"
         "Trade::PhongMaterialData::diffuseTextureMatrix(): the material doesn't have a diffuse texture\n"
         "Trade::PhongMaterialData::diffuseTextureCoordinates(): the material doesn't have a diffuse texture\n"
-        "Trade::MaterialData::attribute(): attribute SpecularTexture not found\n"
+        "Trade::MaterialData::attribute(): attribute SpecularTexture not found in layer 0\n"
         "Trade::PhongMaterialData::specularTextureMatrix(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture\n"
-        "Trade::MaterialData::attribute(): attribute NormalTexture not found\n"
+        "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer 0\n"
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
 }
@@ -1470,8 +2217,8 @@ void MaterialDataTest::phongAccessInvalidTextures() {
 void MaterialDataTest::debugAttribute() {
     std::ostringstream out;
 
-    Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute(0xfefe) << MaterialAttribute{};
-    CORRADE_COMPARE(out.str(), "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
+    Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute::LayerName << MaterialAttribute(0xfefe) << MaterialAttribute{};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
 }
 
 void MaterialDataTest::debugAttributeType() {

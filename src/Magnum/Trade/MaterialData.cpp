@@ -48,9 +48,11 @@ constexpr struct {
 } AttributeMap[]{
     #define _c(name, type) {#name ## _s, MaterialAttributeType::type, sizeof(type)},
     #define _ct(name, typeName, type) {#name ## _s, MaterialAttributeType::typeName, sizeof(type)},
+    #define _cnt(name, string, typeName, type) {string ## _s, MaterialAttributeType::typeName, 255},
     #include "Magnum/Trade/Implementation/materialAttributeProperties.hpp"
     #undef _c
     #undef _ct
+    #undef _cnt
 };
 #endif
 
@@ -143,12 +145,25 @@ MaterialAttributeData::MaterialAttributeData(const MaterialAttribute name, const
     CORRADE_ASSERT(AttributeMap[UnsignedInt(name) - 1].type == type,
         "Trade::MaterialAttributeData: expected" << AttributeMap[UnsignedInt(name) - 1].type << "for" << name << "but got" << type, );
 
-    /* No builtin string attributes yet */
-    CORRADE_INTERNAL_ASSERT(type != MaterialAttributeType::String);
-
     _data.type = type;
-    std::memcpy(_data.data + 1, AttributeMap[UnsignedInt(name) - 1].name.data(), AttributeMap[UnsignedInt(name) - 1].name.size());
-    std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - AttributeMap[UnsignedInt(name) - 1].size, value, AttributeMap[UnsignedInt(name) - 1].size);
+    const Containers::StringView stringName = AttributeMap[UnsignedInt(name) - 1].name;
+    std::memcpy(_data.data + 1, stringName.data(), stringName.size());
+
+    /* Special handling for strings, in that case it's sot known in advance
+       that we fit and has to be checked */
+    if(type == MaterialAttributeType::String) {
+        const auto& stringValue = *static_cast<const Containers::StringView*>(value);
+        /* The 4 extra bytes are for a null byte after both the name and value,
+           a type and a string size */
+        CORRADE_ASSERT(stringName.size() + stringValue.size() + 4 <= Implementation::MaterialAttributeDataSize,
+        "Trade::MaterialAttributeData: name" << stringName << "and value" << stringValue << "too long, expected at most" << Implementation::MaterialAttributeDataSize - 4 << "bytes in total but got" << stringName.size() + stringValue.size(), );
+        _data.type = MaterialAttributeType::String;
+        std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - stringValue.size() - 2, stringValue.data(), stringValue.size());
+        _data.data[Implementation::MaterialAttributeDataSize - 1] = stringValue.size();
+        return;
+    } else {
+        std::memcpy(_data.data + Implementation::MaterialAttributeDataSize - AttributeMap[UnsignedInt(name) - 1].size, value, AttributeMap[UnsignedInt(name) - 1].size);
+    }
 }
 
 const void* MaterialAttributeData::value() const {
@@ -167,7 +182,7 @@ template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialAttributeData::val
 }
 #endif
 
-MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& data, const void* const importerState) noexcept: _data{std::move(data)}, _types{types}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* const importerState) noexcept: _data{std::move(attributeData)}, _layerOffsets{std::move(layerData)}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor.
        Done before sorting so the index refers to the actual input index. */
@@ -176,40 +191,66 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
             "Trade::MaterialData: attribute" << i << "doesn't specify anything", );
     #endif
 
-    /* Check if attributes are sorted already. If not, sort them. Can't just
-       call std::sort() unconditionally because if the data would be immutable
-       (for example when acquiring release()d immutable data from another
-       instance) it could cause crashes. (I expected not, but apparently ASan
-       blows up on that.) */
-    if(_data.size() > 1) for(std::size_t i = 1; i != _data.size(); ++i) {
-        if(_data[i - 1].name() < _data[i].name()) continue;
+    /* Go through all layers and sort each independently */
+    const UnsignedInt implicitLayerData[]{UnsignedInt(_data.size())};
+    const Containers::ArrayView<const UnsignedInt> layerOffsets =
+        _layerOffsets ? _layerOffsets : Containers::arrayView(implicitLayerData);
+    UnsignedInt begin = 0;
+    for(std::size_t i = 0; i != layerOffsets.size(); ++i) {
+        const UnsignedInt end = layerOffsets[i];
+        CORRADE_ASSERT(begin <= end && end <= _data.size(),
+            "Trade::MaterialData: invalid range (" << Debug::nospace << begin << Debug::nospace << "," << end << Debug::nospace <<") for layer" << i << "with" << _data.size() << "attributes in total", );
 
-        std::sort(_data.begin(), _data.end(), [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
-            /* Need to check here (instead of in the outer for loop) as we
-               exit the loop right after the sort and thus duplicates that
-               occur after the first non-sorted pair wouldn't get detected. */
-            CORRADE_ASSERT(a.name() != b.name(),
-                "Trade::MaterialData: duplicate attribute" << a.name(), false);
-            return a.name() < b.name();
-        });
-        break;
+        /* Check if attributes are sorted already. If not, sort them. Can't
+           just call std::sort() unconditionally because if the data would be
+           immutable (for example when acquiring release()d immutable data from
+           another instance) it could cause crashes. (I expected not, but
+           apparently ASan blows up on that.) */
+        if(end - begin > 1) for(std::size_t i = begin + 1; i != end; ++i) {
+            if(_data[i - 1].name() < _data[i].name()) continue;
+
+            std::sort(_data + begin, _data + end, [](const MaterialAttributeData& a, const MaterialAttributeData& b) {
+                /* Need to check here (instead of in the outer for loop) as we
+                   exit the loop right after the sort and thus duplicates that
+                   occur after the first non-sorted pair wouldn't get detected. */
+                CORRADE_ASSERT(a.name() != b.name(),
+                    "Trade::MaterialData: duplicate attribute" << a.name(), false);
+                return a.name() < b.name();
+            });
+            break;
+        }
+
+        begin = end;
     }
 }
 
-MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> data, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(data), importerState} {}
+MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> attributeData, const std::initializer_list<UnsignedInt> layerData, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(attributeData), Implementation::initializerListToArrayWithDefaultDeleter(layerData), importerState} {}
 
-MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> data, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(data.data()), data.size(), [](MaterialAttributeData*, std::size_t){}}}, _types{types}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> attributeData, DataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributeData.data()), attributeData.size(), [](MaterialAttributeData*, std::size_t){}}}, _layerOffsets{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(layerData.data()), layerData.size(), [](UnsignedInt*, std::size_t){}}}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor */
     for(std::size_t i = 0; i != _data.size(); ++i)
         CORRADE_ASSERT(_data[i]._data.type != MaterialAttributeType{},
             "Trade::MaterialData: attribute" << i << "doesn't specify anything", );
 
-    if(_data.size() > 1) for(std::size_t i = 1; i != _data.size(); ++i) {
-        CORRADE_ASSERT(_data[i - 1].name() != _data[i].name(),
-            "Trade::MaterialData: duplicate attribute" << _data[i].name(), );
-        CORRADE_ASSERT(_data[i - 1].name() < _data[i].name(),
-            "Trade::MaterialData:" << _data[i].name() << "has to be sorted before" << _data[i - 1].name() << "if passing non-owned data", );
+    /* Go through all layers and verify that each is independently sorted */
+    const UnsignedInt implicitLayerData[]{UnsignedInt(_data.size())};
+    const Containers::ArrayView<const UnsignedInt> layerOffsets =
+        _layerOffsets ? _layerOffsets : Containers::arrayView(implicitLayerData);
+    UnsignedInt begin = 0;
+    for(std::size_t i = 0; i != layerOffsets.size(); ++i) {
+        const UnsignedInt end = layerOffsets[i];
+        CORRADE_ASSERT(begin <= end && end <= _data.size(),
+            "Trade::MaterialData: invalid range (" << Debug::nospace << begin << Debug::nospace << "," << end << Debug::nospace <<") for layer" << i << "with" << _data.size() << "attributes in total", );
+
+        if(end - begin > 1) for(std::size_t i = begin + 1; i != end; ++i) {
+            CORRADE_ASSERT(_data[i - 1].name() != _data[i].name(),
+                "Trade::MaterialData: duplicate attribute" << _data[i].name(), );
+            CORRADE_ASSERT(_data[i - 1].name() < _data[i].name(),
+                "Trade::MaterialData:" << _data[i].name() << "has to be sorted before" << _data[i - 1].name() << "if passing non-owned data", );
+        }
+
+        begin = end;
     }
     #endif
 }
@@ -228,105 +269,276 @@ Containers::StringView MaterialData::attributeString(const MaterialAttribute nam
     return AttributeMap[UnsignedInt(name) - 1].name;
 }
 
-UnsignedInt MaterialData::attributeFor(const Containers::StringView name) const {
-    const MaterialAttributeData* const found = std::lower_bound(_data.begin(), _data.end(), name, [](const MaterialAttributeData& a, const Containers::StringView& b) {
-        return a.name() < b;
-    });
-    if(found == _data.end() || found->name() != name) return ~UnsignedInt{};
-    return found - _data.begin();
+UnsignedInt MaterialData::layerFor(const Containers::StringView layer) const {
+    for(std::size_t i = 1; i < _layerOffsets.size(); ++i) {
+        if(_layerOffsets[i] > _layerOffsets[i - 1] &&
+           _data[_layerOffsets[i - 1]].name() == "$LayerName"_s &&
+           _data[_layerOffsets[i - 1]].value<Containers::StringView>() == layer)
+            return i;
+    }
+    return ~UnsignedInt{};
 }
 
-bool MaterialData::hasAttribute(const Containers::StringView name) const {
-    return attributeFor(name) != ~UnsignedInt{};
+bool MaterialData::hasLayer(const Containers::StringView layer) const {
+    return layerFor(layer) != ~UnsignedInt{};
 }
 
-bool MaterialData::hasAttribute(const MaterialAttribute name) const {
-    const Containers::StringView string = attributeString(name);
-    CORRADE_ASSERT(string.data(), "Trade::MaterialData::hasAttribute(): invalid name" << name, {});
-    return hasAttribute(string);
-}
-
-UnsignedInt MaterialData::attributeId(const Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+UnsignedInt MaterialData::layerId(const Containers::StringView layer) const {
+    const UnsignedInt id = layerFor(layer);
     CORRADE_ASSERT(id != ~UnsignedInt{},
-        "Trade::MaterialData::attributeId(): attribute" << name << "not found", {});
+        "Trade::MaterialData::layerId(): layer" << layer << "not found", {});
     return id;
 }
 
-UnsignedInt MaterialData::attributeId(const MaterialAttribute name) const {
+Containers::StringView MaterialData::layerName(const UnsignedInt layer) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::layerName(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    /* Deliberately ignore this attribute in the base material */
+    if(layer && _layerOffsets[layer] > _layerOffsets[layer - 1] && _data[_layerOffsets[layer - 1]].name() == "$LayerName")
+        return _data[_layerOffsets[layer - 1]].value<Containers::StringView>();
+    return {};
+}
+
+UnsignedInt MaterialData::attributeCount(const UnsignedInt layer) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeCount(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    if(!_layerOffsets) return _data.size();
+    if(!layer) return _layerOffsets[0];
+    return _layerOffsets[layer] - _layerOffsets[layer - 1];
+}
+
+UnsignedInt MaterialData::attributeCount(const Containers::StringView layer) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeCount(): layer" << layer << "not found", {});
+    return attributeCount(layerId);
+}
+
+UnsignedInt MaterialData::attributeFor(const UnsignedInt layer, const Containers::StringView name) const {
+    const MaterialAttributeData* begin = _data.begin() +
+        (layer && _layerOffsets ? _layerOffsets[layer - 1] : 0);
+    const MaterialAttributeData* end =
+        (_layerOffsets ? _data.begin() + _layerOffsets[layer] : _data.end());
+    const MaterialAttributeData* const found = std::lower_bound(begin, end, name, [](const MaterialAttributeData& a, const Containers::StringView& b) {
+        return a.name() < b;
+    });
+    if(found == end || found->name() != name) return ~UnsignedInt{};
+    return found - begin;
+}
+
+bool MaterialData::hasAttribute(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::hasAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    return attributeFor(layer, name) != ~UnsignedInt{};
+}
+
+bool MaterialData::hasAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::hasAttribute(): invalid name" << name, {});
+    return hasAttribute(layer, string);
+}
+
+bool MaterialData::hasAttribute(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::hasAttribute(): layer" << layer << "not found", {});
+    return hasAttribute(layerId, name);
+}
+
+bool MaterialData::hasAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::hasAttribute(): invalid name" << name, {});
+    return hasAttribute(layer, string);
+}
+
+UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeId(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::attributeId(): attribute" << name << "not found in layer" << layer, {});
+    return id;
+}
+
+UnsignedInt MaterialData::attributeId(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeId(): invalid name" << name, {});
-    return attributeId(string);
+    return attributeId(layer, string);
 }
 
-Containers::StringView MaterialData::attributeName(const UnsignedInt id) const {
-    CORRADE_ASSERT(id < _data.size(),
-        "Trade::MaterialData::attributeName(): index" << id << "out of range for" << _data.size() << "attributes", {});
-    return _data[id]._data.data + 1;
-}
-
-MaterialAttributeType MaterialData::attributeType(const UnsignedInt id) const {
-    CORRADE_ASSERT(id < _data.size(),
-        "Trade::MaterialData::attributeType(): index" << id << "out of range for" << _data.size() << "attributes", {});
-    return _data[id]._data.type;
-}
-
-MaterialAttributeType MaterialData::attributeType(const Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+UnsignedInt MaterialData::attributeId(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeId(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
-        "Trade::MaterialData::attributeType(): attribute" << name << "not found", {});
-    return _data[id]._data.type;
+        "Trade::MaterialData::attributeId(): attribute" << name << "not found in layer" << layer, {});
+    return id;
 }
 
-MaterialAttributeType MaterialData::attributeType(const MaterialAttribute name) const {
+UnsignedInt MaterialData::attributeId(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeId(): invalid name" << name, {});
+    return attributeId(layer, string);
+}
+
+Containers::StringView MaterialData::attributeName(const UnsignedInt layer, const UnsignedInt id) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeName(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attributeName(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layer) + id]._data.data + 1;
+}
+
+Containers::StringView MaterialData::attributeName(const Containers::StringView layer, const UnsignedInt id) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeName(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attributeName(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layerId) + id]._data.data + 1;
+}
+
+MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const UnsignedInt id) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeType(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attributeType(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layer) + id]._data.type;
+}
+
+MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeType(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::attributeType(): attribute" << name << "not found in layer" << layer, {});
+    return _data[layerOffset(layer) + id]._data.type;
+}
+
+MaterialAttributeType MaterialData::attributeType(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeType(): invalid name" << name, {});
-    return attributeType(string);
+    return attributeType(layer, string);
 }
 
-const void* MaterialData::attribute(const UnsignedInt id) const {
-    CORRADE_ASSERT(id < _data.size(),
-        "Trade::MaterialData::attribute(): index" << id << "out of range for" << _data.size() << "attributes", {});
-    return _data[id].value();
+MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const UnsignedInt id) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeType(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attributeType(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layerId) + id]._data.type;
 }
 
-const void* MaterialData::attribute(const Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeType(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
-        "Trade::MaterialData::attribute(): attribute" << name << "not found", {});
-    return _data[id].value();
+        "Trade::MaterialData::attributeType(): attribute" << name << "not found in layer" << layer, {});
+    return _data[layerOffset(layerId) + id]._data.type;
 }
 
-const void* MaterialData::attribute(const MaterialAttribute name) const {
+MaterialAttributeType MaterialData::attributeType(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeType(): invalid name" << name, {});
+    return attributeType(layer, string);
+}
+
+const void* MaterialData::attribute(const UnsignedInt layer, const UnsignedInt id) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layer) + id].value();
+}
+
+const void* MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
+    return _data[layerOffset(layer) + id].value();
+}
+
+const void* MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
-    return attribute(string);
+    return attribute(layer, string);
+}
+
+const void* MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return _data[layerOffset(layerId) + id].value();
+}
+
+const void* MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
+    return _data[layerOffset(layerId) + id].value();
+}
+
+const void* MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
+    return attribute(layer, string);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* On Windows (MSVC, clang-cl and MinGw) it needs an explicit export otherwise
    the symbol doesn't get exported. */
-template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Containers::StringView>(const UnsignedInt id) const {
+template<> MAGNUM_TRADE_EXPORT Containers::StringView MaterialData::attribute<Containers::StringView>(const UnsignedInt layer, const UnsignedInt id) const {
     /* Can't delegate to attribute() returning const void* because that doesn't
        include the size */
-    CORRADE_ASSERT(id < _data.size(),
-        "Trade::MaterialData::attribute(): index" << id << "out of range for" << _data.size() << "attributes", {});
-    CORRADE_ASSERT(_data[id]._data.type == MaterialAttributeType::String,
-        "Trade::MaterialData::attribute():" << (_data[id]._data.data + 1) << "of" << _data[id]._data.type << "can't be retrieved as a string", {});
-    return {_data[id]._data.s.nameValue + Implementation::MaterialAttributeDataSize - _data[id]._data.s.size - 3, _data[id]._data.s.size, Containers::StringViewFlag::NullTerminated};
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    CORRADE_ASSERT(data._data.type == MaterialAttributeType::String,
+        "Trade::MaterialData::attribute():" << (data._data.data + 1) << "of" << data._data.type << "can't be retrieved as a string", {});
+    return {data._data.s.nameValue + Implementation::MaterialAttributeDataSize - data._data.s.size - 3, data._data.s.size, Containers::StringViewFlag::NullTerminated};
+}
+
+const void* MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
+    if(id == ~UnsignedInt{}) return nullptr;
+    return _data[layerOffset(layer) + id].value();
+}
+
+const void* MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
+    return tryAttribute(layer, string);
 }
 #endif
 
-const void* MaterialData::tryAttribute(const Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+const void* MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::tryAttribute(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
     if(id == ~UnsignedInt{}) return nullptr;
-    return _data[id].value();
+    return _data[layerOffset(layerId) + id].value();
 }
 
-const void* MaterialData::tryAttribute(const MaterialAttribute name) const {
+const void* MaterialData::tryAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
-    return tryAttribute(string);
+    return tryAttribute(layer, string);
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -356,7 +568,11 @@ Float MaterialData::alphaMask() const {
     return attributeOr(MaterialAttribute::AlphaMask, 0.5f);
 }
 
-Containers::Array<MaterialAttributeData> MaterialData::release() {
+Containers::Array<UnsignedInt> MaterialData::releaseLayerData() {
+    return std::move(_layerOffsets);
+}
+
+Containers::Array<MaterialAttributeData> MaterialData::releaseAttributeData() {
     return std::move(_data);
 }
 
@@ -366,7 +582,11 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
     if(UnsignedInt(value) - 1 >= Containers::arraySize(AttributeMap))
         return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 
-    return debug << "::" << Debug::nospace << AttributeMap[UnsignedInt(value) - 1].name;
+    /* LayerName is prefixed with $, drop that */
+    Containers::StringView string = AttributeMap[UnsignedInt(value) - 1].name;
+    if(string[0] == '$') string = string.suffix(1);
+
+    return debug << "::" << Debug::nospace << string;
 }
 
 Debug& operator<<(Debug& debug, const MaterialAttributeType value) {

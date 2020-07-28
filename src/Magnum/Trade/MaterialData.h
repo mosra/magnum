@@ -46,9 +46,12 @@ namespace Magnum { namespace Trade {
 @brief Material attribute name
 @m_since_latest
 
-Convenience aliases to actual attribute name strings, in the same form and
-capitalization --- so for example @ref MaterialAttribute::DoubleSided is an
-alias for @cpp "DoubleSided" @ce. When this enum si used in
+Convenience aliases to actual attribute name strings. In most cases the alias
+is in the same form and capitalization --- so for example
+@ref MaterialAttribute::DoubleSided is an alias for @cpp "DoubleSided" @ce, the
+only exception is @ref MaterialAttribute::LayerName which is @cpp "$LayerName" @ce.
+
+When this enum si used in
 @ref MaterialAttributeData constructors, the data are additionally checked for
 type compatibility. Other than that, there is no difference to the string
 variants.
@@ -56,6 +59,17 @@ variants.
 */
 enum class MaterialAttribute: UnsignedInt {
     /* Zero used for an invalid value */
+
+    /**
+     * Layer name, @ref MaterialAttributeType::String.
+     *
+     * Unlike other attributes where string name matches the enum name, in this
+     * case the corresponding string is @cpp "$LayerName" @ce, done in order to
+     * have the layer name attribute appear first in each layer and thus
+     * simplify layer implementation.
+     * @see @ref MaterialData::layerName()
+     */
+    LayerName = 1,
 
     /**
      * Alpha mask, @ref MaterialAttributeType::Float.
@@ -67,7 +81,7 @@ enum class MaterialAttribute: UnsignedInt {
      * @see @ref MaterialAlphaMode, @ref MaterialData::alphaMode(),
      *      @ref MaterialData::alphaMask()
      */
-    AlphaMask = 1,
+    AlphaMask,
 
     /**
      * Alpha blending, @ref MaterialAttributeType::Bool.
@@ -399,7 +413,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
         > constexpr /*implicit*/ MaterialAttributeData(Containers::StringView name, const T& value) noexcept;
 
         /**
-         * @brief Construct with a string name and value
+         * @brief Construct with a string name and string value
          * @param name      Attribute name
          * @param value     Attribute value
          *
@@ -439,6 +453,21 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
             , class = typename std::enable_if<!std::is_convertible<const T&, Containers::StringView>::value>::type
             #endif
         > /*implicit*/ MaterialAttributeData(MaterialAttribute name, const T& value) noexcept: MaterialAttributeData{name, Implementation::MaterialAttributeTypeFor<T>::type(), &value} {}
+
+        /**
+         * @brief Construct with a predefined name and string value
+         * @param name      Attribute name
+         * @param value     Attribute value
+         *
+         * Compared to @ref MaterialAttributeData(Containers::StringView, Containers::StringView)
+         * checks that the attribute is in expected type. The
+         * @ref MaterialAttribute gets converted to a corresponding string
+         * name. Apart from the type check, the following two instances are
+         * equivalent:
+         *
+         * @snippet MagnumTrade.cpp MaterialAttributeData-name
+         */
+        /*implicit*/ MaterialAttributeData(MaterialAttribute name, Containers::StringView value) noexcept: MaterialAttributeData{name, MaterialAttributeType::String, &value} {}
 
         /**
          * @brief Construct from a type-erased value
@@ -749,30 +778,74 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @brief Construct
          * @param types             Which material types are described by this
          *      data. Can be an empty set.
-         * @param data              Attribute data
+         * @param attributeData     Attribute data
          * @param importerState     Importer-specific state
          *
-         * The @p data gets sorted by name internally, expecting no duplicates.
+         * The @p attributeData gets sorted by name internally, expecting no
+         * duplicates.
          */
-        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& data, const void* importerState = nullptr) noexcept;
+        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, std::move(attributeData), nullptr, importerState} {}
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MaterialData(MaterialTypes types, std::initializer_list<MaterialAttributeData> data, const void* importerState = nullptr);
+        explicit MaterialData(MaterialTypes types, std::initializer_list<MaterialAttributeData> attributeData, const void* importerState = nullptr): MaterialData{types, attributeData, {}, importerState} {}
 
         /**
          * @brief Construct a non-owned material data
+         * @param types                 Which material types are described by
+         *      this data. Can be an empty set.
+         * @param attributeDataFlags    Ignored. Used only for a safer
+         *      distinction from the owning constructor.
+         * @param attributeData         Attribute data
+         * @param importerState         Importer-specific state
+         *
+         * The @p attributeData is expected to be already sorted by name,
+         * without duplicates.
+         */
+        explicit MaterialData(MaterialTypes types, DataFlags attributeDataFlags, Containers::ArrayView<const MaterialAttributeData> attributeData, const void* importerState = nullptr) noexcept: MaterialData{types, attributeDataFlags, attributeData, {}, nullptr, importerState} {}
+
+        /**
+         * @brief Construct with layers
          * @param types             Which material types are described by this
          *      data. Can be an empty set.
-         * @param dataFlags         Ignored. Used only for a safer distinction
-         *      from the owning constructor.
-         * @param data              Attribute data
+         * @param attributeData     Attribute data
+         * @param layerData         Layer offset data
+         * @param importerState     Importer-specific state
+         *
+         * The @p attributeData gets sorted by name internally, expecting no
+         * duplicates inside each layer. The @p layerData is expected to be
+         * either empty or a monotonically non-decreasing sequence of offsets
+         * not larger than @p attributeData size, with *i*-th item specifying
+         * end offset of *i*-th layer.
+         */
+        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& attributeData, Containers::Array<UnsignedInt>&& layerData, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit MaterialData(MaterialTypes types, std::initializer_list<MaterialAttributeData> attributeData, std::initializer_list<UnsignedInt> layerData, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct a non-owned material data with layers
+         * @param types                 Which material types are described by
+         *      this data. Can be an empty set.
+         * @param attributeDataFlags    Ignored. Used only for a safer
+         *      distinction from the owning constructor.
+         * @param attributeData         Attribute data
+         * @param layerDataFlags        Ignored. Used only for a safer
+         *      distinction from the owning constructor.
+         * @param layerData             Layer offset data
          * @param importerState     Importer-specific state
          *
          * The @p data is expected to be already sorted by name, without
-         * duplicates.
+         * duplicates inside each layer. The @p layerData is expected to be
+         * either empty or a monotonically non-decreasing sequence of offsets
+         * not larger than @p attributeData size, with *i*-th item specifying
+         * end offset of *i*-th layer.
          */
-        explicit MaterialData(MaterialTypes types, DataFlags dataFlags, Containers::ArrayView<const MaterialAttributeData> data, const void* importerState = nullptr) noexcept;
+        /* The second (ignored) DataFlags is present in order to make it ready
+           for a possible extension where only one of the data is non-owned.
+           But so far I didn't see a need. */
+        explicit MaterialData(MaterialTypes types, DataFlags attributeDataFlags, Containers::ArrayView<const MaterialAttributeData> attributeData, DataFlags layerDataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* importerState = nullptr) noexcept;
 
         ~MaterialData();
 
@@ -807,66 +880,255 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         #endif
 
         /**
+         * @brief Raw layer offset data
+         *
+         * May return @cpp nullptr @ce if the material doesn't have any extra
+         * layers.
+         * @see @ref releaseLayerData()
+         */
+        Containers::ArrayView<const UnsignedInt> layerData() const { return _layerOffsets; }
+
+        /**
          * @brief Raw attribute data
          *
          * Returns @cpp nullptr @ce if the material has no attributes.
-         * @see @ref release()
+         * @see @ref releaseAttributeData()
          */
-        Containers::ArrayView<const MaterialAttributeData> data() const { return _data; }
-
-        /** @brief Attribute count */
-        UnsignedInt attributeCount() const { return _data.size(); }
+        Containers::ArrayView<const MaterialAttributeData> attributeData() const { return _data; }
 
         /**
-         * @brief Whether the material has given attribute
+         * @brief Layer count
          *
+         * There's always at least the base material, so this function returns
+         * at least @cpp 1 @ce.
+         */
+        UnsignedInt layerCount() const {
+            return _layerOffsets.empty() ? 1 : _layerOffsets.size();
+        }
+
+        /**
+         * @brief Whether a material has given named layer
+         *
+         * Layers with no name assigned are skipped. The base material (layer
+         * @cpp 0 @ce is skipped as well) to avoid confusing base material with
+         * a layer. If you want to create a material consisting of just a
+         * layer, use @cpp 0 @ce for the first layer offset in the constructor.
+         * @see @ref hasAttribute()
+         */
+        bool hasLayer(Containers::StringView layer) const;
+
+        /**
+         * @brief ID of a named layer
+         *
+         * The @p layer is expected to exist.
+         * @see @ref hasLayer()
+         */
+        UnsignedInt layerId(Containers::StringView layer) const;
+
+        /**
+         * @brief Layer name
+         *
+         * Retrieves a @ref MaterialAttribute::LayerName attribute from given
+         * layer, if present. Returns a @cpp nullptr @ce view if the layer
+         * has no name, and an empty non-null view if the layer name is empty.
+         * The @p layer is expected to be smaller than @ref layerCount() const.
+         *
+         * The name, if present, is ignored for the base material (layer
+         * @cpp 0 @ce) to avoid confsing base material with a layer. If you
+         * want to create a material consisting of just a layer, use @cpp 0 @ce
+         * for the first layer offset in the constructor.
+         */
+        Containers::StringView layerName(UnsignedInt layer) const;
+
+        /**
+         * @brief Attribute count in given layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const.
+         */
+        UnsignedInt attributeCount(UnsignedInt layer) const;
+
+        /**
+         * @brief Attribute count in a named layer
+         *
+         * The @p layer is expected to exist.
+         * @see @ref hasLayer()
+         */
+        UnsignedInt attributeCount(Containers::StringView layer) const;
+
+        /**
+         * @brief Attribute count in the base material
+         *
+         * Equivalent to calling @ref attributeCount(UnsignedInt) const with
+         * @p layer set to @cpp 0 @ce.
+         */
+        UnsignedInt attributeCount() const { return attributeCount(0); }
+
+        /**
+         * @brief Whether a material layer has given attribute
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const.
+         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer()
+         */
+        bool hasAttribute(UnsignedInt layer, Containers::StringView name) const;
+        bool hasAttribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Whether a named material layer has given attribute
+         *
+         * The @p layer is expected to exist.
+         * @see @ref tryAttribute(), @ref attributeOr(), @ref hasLayer()
+         */
+        bool hasAttribute(Containers::StringView layer, Containers::StringView name) const;
+        bool hasAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Whether the base material has given attribute
+         *
+         * Equivalent to calling @ref hasAttribute(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
          * @see @ref tryAttribute(), @ref attributeOr()
          */
-        bool hasAttribute(Containers::StringView name) const;
-        bool hasAttribute(MaterialAttribute name) const; /**< @overload */
+        bool hasAttribute(Containers::StringView name) const {
+            return hasAttribute(0, name);
+        }
+        bool hasAttribute(MaterialAttribute name) const {
+            return hasAttribute(0, name);
+        } /**< @overload */
 
         /**
-         * @brief ID of a named attribute
+         * @brief ID of a named attribute in given material layer
          *
-         * The @p name is expected to exist.
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p name is expected to exist in that layer.
+         * @see @ref hasAttribute()
          */
-        UnsignedInt attributeId(Containers::StringView name) const;
-        UnsignedInt attributeId(MaterialAttribute name) const; /**< @overload */
+        UnsignedInt attributeId(UnsignedInt layer, Containers::StringView name) const;
+        UnsignedInt attributeId(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
 
         /**
-         * @brief Attribute name
+         * @brief ID of a named attribute in a named material layer
          *
-         * The @p id is expected to be smaller than @ref attributeCount() const.
-         * The returned view always has
+         * The @p layer is expected to exist and @p name is expected to exist
+         * in that layer.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        UnsignedInt attributeId(Containers::StringView layer, Containers::StringView name) const;
+        UnsignedInt attributeId(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief ID of a named attribute in the base material
+         *
+         * Equivalent to calling @ref attributeId(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        UnsignedInt attributeId(Containers::StringView name) const {
+            return attributeId(0, name);
+        }
+        UnsignedInt attributeId(MaterialAttribute name) const {
+            return attributeId(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Name of an attribute in given material layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer. The returned view always has
          * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
          * @see @ref attributeType()
          */
-        Containers::StringView attributeName(UnsignedInt id) const;
+        Containers::StringView attributeName(UnsignedInt layer, UnsignedInt id) const;
 
         /**
-         * @brief Attribute type
+         * @brief Name of an attribute in a named material layer
          *
-         * The @p id is expected to be smaller than @ref attributeCount() const.
+         * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer.
+         * @see @ref hasLayer()
+         */
+        Containers::StringView attributeName(Containers::StringView layer, UnsignedInt id) const;
+
+        /**
+         * @brief Name of an attribute in the base material
+         *
+         * Equivalent to calling @ref attributeName(UnsignedInt, UnsignedInt) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        Containers::StringView attributeName(UnsignedInt id) const {
+            return attributeName(0, id);
+        }
+
+        /**
+         * @brief Type of an attribute in given material layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer.
          * @see @ref attributeName()
          */
-        MaterialAttributeType attributeType(UnsignedInt id) const;
+        MaterialAttributeType attributeType(UnsignedInt layer, UnsignedInt id) const;
 
         /**
-         * @brief Type of a named attribute
+         * @brief Type of a named attribute in given material layer
          *
-         * The @p name is expected to exist.
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p name is expected to exist in that layer.
          * @see @ref hasAttribute()
          */
-        MaterialAttributeType attributeType(Containers::StringView name) const;
+        MaterialAttributeType attributeType(UnsignedInt layer, Containers::StringView name) const;
         /** @overload */
-        MaterialAttributeType attributeType(MaterialAttribute name) const;
+        MaterialAttributeType attributeType(UnsignedInt layer, MaterialAttribute name) const;
 
         /**
-         * @brief Type-erased attribute value
+         * @brief Type of an attribute in a named material layer
          *
-         * The @p id is expected to be smaller than @ref attributeCount() const.
-         * Cast the pointer to a concrete type based on @ref type(). Note that
-         * in case of a @ref MaterialAttributeType::Pointer or a
+         * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer.
+         * @see @ref hasLayer()
+         */
+        MaterialAttributeType attributeType(Containers::StringView layer, UnsignedInt id) const;
+
+        /**
+         * @brief Type of a named attribute in a named material layer
+         *
+         * The @p layer is expected to exist and @p name is expected to exist
+         * in that layer.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        MaterialAttributeType attributeType(Containers::StringView layer, Containers::StringView name) const;
+        MaterialAttributeType attributeType(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Type of an attribute in the base material
+         *
+         * Equivalent to calling @ref attributeType(UnsignedInt, UnsignedInt) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        MaterialAttributeType attributeType(UnsignedInt id) const {
+            return attributeType(0, id);
+        }
+
+        /**
+         * @brief Type of a named attribute in the base material
+         *
+         * Equivalent to calling @ref attributeType(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        MaterialAttributeType attributeType(Containers::StringView name) const {
+            return attributeType(0, name);
+        }
+        MaterialAttributeType attributeType(MaterialAttribute name) const {
+            return attributeType(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Type-erased value of an attribute in given material layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer. Cast the pointer to a concrete type based on
+         * @ref type(). Note that in case of a
+         * @ref MaterialAttributeType::Pointer or a
          * @ref MaterialAttributeType::MutablePointer, returns a
          * *pointer to a pointer*, not the pointer value itself.
          *
@@ -876,13 +1138,14 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * string size in case the string data contain zero bytes, thus prefer
          * to use typed access in that case.
          */
-        const void* attribute(UnsignedInt id) const;
+        const void* attribute(UnsignedInt layer, UnsignedInt id) const;
 
         /**
-         * @brief Type-erased value of a named attribute
+         * @brief Type-erased value of a named attribute in given material layer
          *
-         * The @p name is expected to exist. Cast the pointer to a concrete
-         * type based on @ref attributeType(). Note that
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p name is expected to exist in that layer. Cast the pointer to
+         * a concrete type based on @ref attributeType(). Note that
          * in case of a @ref MaterialAttributeType::Pointer or a
          * @ref MaterialAttributeType::MutablePointer, returns a
          * *pointer to a pointer*, not the pointer value itself.
@@ -894,64 +1157,263 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * to use typed access in that case.
          * @see @ref hasAttribute(), @ref tryAttribute(), @ref attributeOr()
          */
-        const void* attribute(Containers::StringView name) const;
-        const void* attribute(MaterialAttribute name) const; /**< @overload */
+        const void* attribute(UnsignedInt layer, Containers::StringView name) const;
+        const void* attribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
 
         /**
-         * @brief Attribute value
+         * @brief Type-erased value of an attribute in a named material layer
          *
-         * The @p id is expected to be smaller than @ref attributeCount() const.
-         * Expects that @p T corresponds to @ref attributeType(UnsignedInt) const
-         * for given @p id. In case of a string, the returned view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
+         * in that layer. Cast the pointer to a concrete type based on
+         * @ref attributeType(). Note that in case of a
+         * @ref MaterialAttributeType::Pointer or a
+         * @ref MaterialAttributeType::MutablePointer, returns a
+         * *pointer to a pointer*, not the pointer value itself.
+         *
+         * In case of a @ref MaterialAttributeType::String returns a
+         * null-terminated @cpp const char* @ce (not a pointer to
+         * @ref Containers::StringView). This doesn't preserve the actual
+         * string size in case the string data contain zero bytes, thus prefer
+         * to use typed access in that case.
+         * @see @ref hasLayer()
          */
-        template<class T> T attribute(UnsignedInt id) const;
+        const void* attribute(Containers::StringView layer, UnsignedInt id) const;
 
         /**
-         * @brief Value of a named attribute
+         * @brief Type-erased value of a named attribute in a named material layer
          *
-         * The @p name is expected to exist. Expects that @p T corresponds to
-         * @ref attributeType(Containers::StringView) const for given @p name.
-         * In case of a string, the returned view always has
-         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
-         * @see @ref hasAttribute()
+         * The @p layer is expected to exist and @p name is expected to exist
+         * in that layer. Cast the pointer to a concrete type based on
+         * @ref attributeType(). Note that in case of a
+         * @ref MaterialAttributeType::Pointer or a
+         * @ref MaterialAttributeType::MutablePointer, returns a
+         * *pointer to a pointer*, not the pointer value itself.
+         *
+         * In case of a @ref MaterialAttributeType::String returns a
+         * null-terminated @cpp const char* @ce (not a pointer to
+         * @ref Containers::StringView). This doesn't preserve the actual
+         * string size in case the string data contain zero bytes, thus prefer
+         * to use typed access in that case.
+         * @see @ref hasLayer(), @ref hasAttribute()
          */
-        template<class T> T attribute(Containers::StringView name) const;
-        template<class T> T attribute(MaterialAttribute name) const; /**< @overload */
+        const void* attribute(Containers::StringView layer, Containers::StringView name) const;
+        const void* attribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
 
         /**
-         * @brief Type-erased attribute value, if exists
+         * @brief Type-erased value of an attribute in the base material
          *
-         * Compared to @ref attribute(Containers::StringView name) const, if
-         * @p name doesn't exist, returns @cpp nullptr @ce instead of
-         * asserting. Cast the pointer to a concrete type based on
-         * @ref attributeType().
+         * Equivalent to calling @ref attribute(UnsignedInt, UnsignedInt) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        const void* attribute(UnsignedInt id) const {
+            return attribute(0, id);
+        }
+
+        /**
+         * @brief Type-erased value of a named attribute in the base material
+         *
+         * Equivalent to calling @ref attribute(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        const void* attribute(Containers::StringView name) const {
+            return attribute(0, name);
+        }
+        const void* attribute(MaterialAttribute name) const {
+            return attribute(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Value of an attribute in given material layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p id is expected to be smaller than
+         * @ref attributeCount(UnsignedInt) const in that layer. Expects that
+         * @p T corresponds to @ref attributeType(UnsignedInt, UnsignedInt) const
+         * for given @p layer and @p id. In case of a string, the returned view
+         * always has @ref Corrade::Containers::StringViewFlag::NullTerminated
+         * set.
+         */
+        template<class T> T attribute(UnsignedInt layer, UnsignedInt id) const;
+
+        /**
+         * @brief Value of a named attribute in given material layer
+         *
+         * The @p layer is expected to be smaller than @ref layerCount() const
+         * and @p name is expected to exist in that layer. Expects that @p T
+         * corresponds to @ref attributeType(UnsignedInt, Containers::StringView) const
+         * for given @p layer and @p name. In case of a string, the returned
+         * view always has
+         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        template<class T> T attribute(UnsignedInt layer, Containers::StringView name) const;
+        template<class T> T attribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Value of an attribute in a named material layer
+         *
+         * The @p layer is expected to exist and @p id is expected to be
+         * smaller than @ref attributeCount(UnsignedInt) const in that layer.
+         * Expects that @p T corresponds to
+         * @ref attributeType(Containers::StringView, UnsignedInt) const
+         * for given @p layer and @p id. In case of a string, the returned view
+         * always has @ref Corrade::Containers::StringViewFlag::NullTerminated
+         * set.
+         * @see @ref hasLayer()
+         */
+        template<class T> T attribute(Containers::StringView layer, UnsignedInt id) const;
+
+        /**
+         * @brief Value of a named attribute in a named material layer
+         *
+         * The @p layer is expected to exist and @p name is expected to exist
+         * in that layer. Expects that @p T corresponds to
+         * @ref attributeType(Containers::StringView, Containers::StringView) const
+         * for given @p layer and @p name. In case of a string, the returned
+         * view always has
+         * @ref Corrade::Containers::StringViewFlag::NullTerminated set.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        template<class T> T attribute(Containers::StringView layer, Containers::StringView name) const;
+        template<class T> T attribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Value of an attribute in the base material
+         *
+         * Equivalent to calling @ref attribute(UnsignedInt, UnsignedInt) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> T attribute(UnsignedInt id) const {
+            return attribute<T>(0, id);
+        }
+
+        /**
+         * @brief Value of a named attribute in the base material
+         *
+         * Equivalent to calling @ref attribute(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> T attribute(Containers::StringView name) const {
+            return attribute<T>(0, name);
+        }
+        template<class T> T attribute(MaterialAttribute name) const {
+            return attribute<T>(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Type-erased attribute value in given material layer, if exists
+         *
+         * Compared to @ref attribute(UnsignedInt, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @cpp nullptr @ce instead of
+         * asserting. Expects that @p layer is smaller than @ref layerCount() const.
+         * Cast the pointer to a concrete type based on @ref attributeType().
          * @see @ref hasAttribute(), @ref attributeOr()
          */
-        const void* tryAttribute(Containers::StringView name) const;
-        const void* tryAttribute(MaterialAttribute name) const; /**< @overload */
+        const void* tryAttribute(UnsignedInt layer, Containers::StringView name) const;
+        const void* tryAttribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
 
         /**
-         * @brief Value of a named attribute, if exists
+         * @brief Type-erased attribute value in a named material layer, if exists
          *
-         * Compared to @ref attribute(Containers::StringView name) const, if
-         * @p name doesn't exist, returns @ref Corrade::Containers::NullOpt
-         * instead of asserting. Expects that @p T corresponds to
-         * @ref attributeType(Containers::StringView) const for given @p name.
+         * Compared to @ref attribute(Containers::StringView, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @cpp nullptr @ce instead of
+         * asserting. Expects that @p layer exists. Cast the pointer to a
+         * concrete type based on @ref attributeType().
+         * @see @ref hasLayer(), @ref hasAttribute(), @ref attributeOr()
          */
-        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView name) const;
-        template<class T> Containers::Optional<T> tryAttribute(MaterialAttribute name) const; /**< @overload */
+        const void* tryAttribute(Containers::StringView layer, Containers::StringView name) const;
+        const void* tryAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
 
         /**
-         * @brief Value of a named attribute or a default
+         * @brief Value of a named attribute in given material layer, if exists
          *
-         * Compared to @ref attribute(Containers::StringView name) const, if
-         * @p name doesn't exist, returns @p defaultValue instead of asserting.
-         * Expects that @p T corresponds to
-         * @ref attributeType(Containers::StringView) const for given @p name.
+         * Compared to @ref attribute(UnsignedInt, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @ref Corrade::Containers::NullOpt
+         * instead of asserting. Expects that @p layer is smaller than
+         * @ref layerCount() const and that @p T corresponds to
+         * @ref attributeType(UnsignedInt, Containers::StringView) const for
+         * given @p layer and @p name.
          */
-        template<class T> T attributeOr(Containers::StringView name, const T& defaultValue) const;
-        template<class T> T attributeOr(MaterialAttribute name, const T& defaultValue) const; /**< @overload */
+        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer, Containers::StringView name) const;
+        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Value of a named attribute in a named material layer, if exists
+         *
+         * Compared to @ref attribute(Containers::StringView, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @ref Corrade::Containers::NullOpt
+         * instead of asserting. Expects that @p layer exists and that @p T
+         * corresponds to @ref attributeType(Containers::StringView, Containers::StringView) const
+         * for given @p layer and @p name.
+         * @see @ref hasLayer()
+         */
+        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer, Containers::StringView name) const;
+        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+
+        /**
+         * @brief Type-erased attribute value in the base material, if exists
+         *
+         * Equivalent to calling @ref tryAttribute(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        const void* tryAttribute(Containers::StringView name) const {
+            return tryAttribute(0, name);
+        }
+        const void* tryAttribute(MaterialAttribute name) const {
+            return tryAttribute(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Value of a named attribute in the base material, if exists
+         *
+         * Equivalent to calling @ref tryAttribute(UnsignedInt, Containers::StringView) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView name) const {
+            return tryAttribute<T>(0, name);
+        }
+        template<class T> Containers::Optional<T> tryAttribute(MaterialAttribute name) const {
+            return tryAttribute<T>(0, name);
+        } /**< @overload */
+
+        /**
+         * @brief Value of a named attribute in given layer or a default
+         *
+         * Compared to @ref attribute(UnsignedInt, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @p defaultValue instead of
+         * asserting. Expects that @p layer is smaller than @ref layerCount()
+         * const
+         * and that @p T corresponds to @ref attributeType(UnsignedInt, Containers::StringView) const
+         * for given @p layer and @p name.
+         */
+        template<class T> T attributeOr(UnsignedInt layer, Containers::StringView name, const T& defaultValue) const;
+        template<class T> T attributeOr(UnsignedInt layer, MaterialAttribute name, const T& defaultValue) const; /**< @overload */
+
+        /**
+         * @brief Value of a named attribute in a named layer or a default
+         *
+         * Compared to @ref attribute(Containers::StringView, Containers::StringView name) const,
+         * if @p name doesn't exist, returns @p defaultValue instead of
+         * asserting. Expects that @p layer exists and that @p T corresponds to
+         * @ref attributeType(Containers::StringView, Containers::StringView) const
+         * for given @p layer and @p name.
+         * @see @ref hasLayer()
+         */
+        template<class T> T attributeOr(Containers::StringView layer, Containers::StringView name, const T& defaultValue) const;
+        template<class T> T attributeOr(Containers::StringView layer, MaterialAttribute name, const T& defaultValue) const; /**< @overload */
+
+        /**
+         * @brief Value of a named attribute in the base material or a default
+         *
+         * Equivalent to calling @ref attributeOr(UnsignedInt, Containers::StringView, const T&) const
+         * with @p layer set to @cpp 0 @ce.
+         */
+        template<class T> T attributeOr(Containers::StringView name, const T& defaultValue) const {
+            return attributeOr<T>(0, name, defaultValue);
+        }
+        template<class T> T attributeOr(MaterialAttribute name, const T& defaultValue) const {
+            return attributeOr<T>(0, name, defaultValue);
+        }/**< @overload */
 
         /**
          * @brief Whether a material is double-sided
@@ -995,16 +1457,38 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         Float alphaMask() const;
 
         /**
-         * @brief Release data storage
+         * @brief Release layer data storage
          *
-         * Releases the ownership of the attribute array and resets internal
-         * state to default. The material then behaves like if it has no
-         * attributes. Note that the returned array has a custom no-op
+         * Releases the ownership of the layer offset array and resets internal
+         * layer-related state to default. The material then behaves like if it
+         * has no layers. Note that the returned array has a custom no-op
          * deleter when the data are not owned by the mesh, and while the
          * returned array type is mutable, the actual memory might be not.
-         * @see @ref data()
+         *
+         * @attention Querying attributes after calling @ref releaseLayerData()
+         *      has undefined behavior and might lead to crashes. This is done
+         *      intentionally in order to simplify the interaction between this
+         *      function and @ref releaseAttributeData().
+         * @see @ref layerData()
          */
-        Containers::Array<MaterialAttributeData> release();
+        Containers::Array<UnsignedInt> releaseLayerData();
+
+        /**
+         * @brief Release attribute data storage
+         *
+         * Releases the ownership of the attribute array and resets internal
+         * attribute-related state to default. The material then behaves like
+         * if it has no attributes. Note that the returned array has a custom
+         * no-op deleter when the data are not owned by the mesh, and while the
+         * returned array type is mutable, the actual memory might be not.
+         *
+         * @attention Querying layers after calling @ref releaseAttributeData()
+         *      has undefined behavior and might lead to crashes. This is done
+         *      intentionally in order to simplify the interaction between this
+         *      function and @ref releaseLayerData().
+         * @see @ref attributeData()
+         */
+        Containers::Array<MaterialAttributeData> releaseAttributeData();
 
         /**
          * @brief Importer-specific state
@@ -1015,10 +1499,15 @@ class MAGNUM_TRADE_EXPORT MaterialData {
 
     private:
         static Containers::StringView attributeString(MaterialAttribute name);
-        /* Internal helper that doesn't assert, unlike attributeId() */
-        UnsignedInt attributeFor(Containers::StringView name) const;
+        /* Internal helpers that don't assert, unlike layerId() / attributeId() */
+        UnsignedInt layerFor(Containers::StringView layer) const;
+        UnsignedInt layerOffset(UnsignedInt layer) const {
+            return layer && _layerOffsets ? _layerOffsets[layer - 1] : 0;
+        }
+        UnsignedInt attributeFor(UnsignedInt layer, Containers::StringView name) const;
 
         Containers::Array<MaterialAttributeData> _data;
+        Containers::Array<UnsignedInt> _layerOffsets;
         MaterialTypes _types;
         const void* _importerState;
 };
@@ -1131,55 +1620,113 @@ template<class T> T MaterialAttributeData::value() const {
 template<> Containers::StringView MaterialAttributeData::value<Containers::StringView>() const;
 #endif
 
-template<class T> T MaterialData::attribute(UnsignedInt id) const {
-    const void* const value = attribute(id);
+template<class T> T MaterialData::attribute(const UnsignedInt layer, const UnsignedInt id) const {
+    const void* const value = attribute(layer, id);
     #ifdef CORRADE_GRACEFUL_ASSERT
     if(!value) return {};
     #endif
-    CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == _data[id]._data.type,
-        "Trade::MaterialData::attribute(): improper type requested for" << (_data[id]._data.data + 1) << "of" << _data[id]._data.type, {});
+    const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == data._data.type,
+        "Trade::MaterialData::attribute(): improper type requested for" << (data._data.data + 1) << "of" << data._data.type, {});
     return *reinterpret_cast<const T*>(value);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<> Containers::StringView MaterialData::attribute<Containers::StringView>(UnsignedInt) const;
+template<> Containers::StringView MaterialData::attribute<Containers::StringView>(UnsignedInt, UnsignedInt) const;
 #endif
 
-template<class T> T MaterialData::attribute(Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+template<class T> T MaterialData::attribute(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
     CORRADE_ASSERT(id != ~UnsignedInt{},
-        "Trade::MaterialData::attribute(): attribute" << name << "not found", {});
-    return attribute<T>(id);
+        "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
+    return attribute<T>(layer, id);
 }
 
-template<class T> T MaterialData::attribute(MaterialAttribute name) const {
+template<class T> T MaterialData::attribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
-    return attribute<T>(string);
+    return attribute<T>(layer, string);
 }
 
-template<class T> Containers::Optional<T> MaterialData::tryAttribute(Containers::StringView name) const {
-    const UnsignedInt id = attributeFor(name);
+template<class T> T MaterialData::attribute(const Containers::StringView layer, const UnsignedInt id) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
+    CORRADE_ASSERT(id < attributeCount(layer),
+        "Trade::MaterialData::attribute(): index" << id << "out of range for" << attributeCount(layer) << "attributes in layer" << layer, {});
+    return attribute<T>(layerId, id);
+}
+
+template<class T> T MaterialData::attribute(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): layer" << layer << "not found", {});
+    const UnsignedInt id = attributeFor(layerId, name);
+    CORRADE_ASSERT(id != ~UnsignedInt{},
+        "Trade::MaterialData::attribute(): attribute" << name << "not found in layer" << layer, {});
+    return attribute<T>(layerId, id);
+}
+
+template<class T> T MaterialData::attribute(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << name, {});
+    return attribute<T>(layer, string);
+}
+
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
     if(id == ~UnsignedInt{}) return {};
-    return attribute<T>(id);
+    return attribute<T>(layer, id);
 }
 
-template<class T> Containers::Optional<T> MaterialData::tryAttribute(MaterialAttribute name) const {
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const MaterialAttribute name) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
-    return tryAttribute<T>(string);
+    return tryAttribute<T>(layer, string);
 }
 
-template<class T> T MaterialData::attributeOr(Containers::StringView name, const T& defaultValue) const {
-    const UnsignedInt id = attributeFor(name);
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Containers::StringView layer, const Containers::StringView name) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::tryAttribute(): layer" << layer << "not found", {});
+    return tryAttribute<T>(layerId, name);
+}
+
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Containers::StringView layer, const MaterialAttribute name) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << name, {});
+    return tryAttribute<T>(layer, string);
+}
+
+template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Containers::StringView name, const T& defaultValue) const {
+    CORRADE_ASSERT(layer < layerCount(),
+        "Trade::MaterialData::attributeOr(): index" << layer << "out of range for" << layerCount() << "layers", {});
+    const UnsignedInt id = attributeFor(layer, name);
     if(id == ~UnsignedInt{}) return defaultValue;
-    return attribute<T>(id);
+    return attribute<T>(layer, id);
 }
 
-template<class T> T MaterialData::attributeOr(MaterialAttribute name, const T& defaultValue) const {
+template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const MaterialAttribute name, const T& defaultValue) const {
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << name, {});
-    return attributeOr<T>(string, defaultValue);
+    return attributeOr<T>(layer, string, defaultValue);
+}
+
+template<class T> T MaterialData::attributeOr(const Containers::StringView layer, const Containers::StringView name, const T& defaultValue) const {
+    const UnsignedInt layerId = layerFor(layer);
+    CORRADE_ASSERT(layerId != ~UnsignedInt{},
+        "Trade::MaterialData::attributeOr(): layer" << layer << "not found", {});
+    return attributeOr<T>(layerId, name, defaultValue);
+}
+
+template<class T> T MaterialData::attributeOr(const Containers::StringView layer, const MaterialAttribute name, const T& defaultValue) const {
+    const Containers::StringView string = attributeString(name);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << name, {});
+    return attributeOr<T>(layer, string, defaultValue);
 }
 
 }}
