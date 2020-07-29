@@ -41,7 +41,8 @@ Two color-coded arrows for visualizing orientation (XY is RG), going from
 @cpp 0.0f @ce to @cpp 1.0f @ce on the X and Y axis. @ref MeshPrimitive::Lines
 with @ref MeshIndexType::UnsignedShort indices, interleaved
 @ref VertexFormat::Vector2 positions and @ref VertexFormat::Vector3 colors. The
-returned instance references data stored in constant memory.
+returned instance references data stored in constant memory --- pass the data
+through @ref MeshTools::owned() to get a mutable copy, if needed.
 
 @image html primitives-axis2d.png width=256px
 
@@ -56,7 +57,8 @@ Three color-coded arrows for visualizing orientation (XYZ is RGB), going from
 @cpp 0.0f @ce to @cpp 1.0f @ce on the X, Y and Z axis.
 @ref MeshPrimitive::Lines with @ref MeshIndexType::UnsignedShort indices,
 interleaved @ref VertexFormat::Vector3 positions and @ref VertexFormat::Vector3
-colors. The returned instance references data stored in constant memory.
+colors. The returned instance references data stored in constant memory ---
+pass the data through @ref MeshTools::owned() to get a mutable copy, if needed.
 
 @image html primitives-axis3d.png width=256px
 
