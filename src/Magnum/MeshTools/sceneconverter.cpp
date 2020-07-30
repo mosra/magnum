@@ -39,6 +39,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
@@ -268,6 +269,13 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             return 0;
         }
 
+        struct MaterialInfo {
+            UnsignedInt material;
+            UnsignedInt references;
+            Trade::MaterialData data{{}, {}};
+            std::string name;
+        };
+
         struct MeshAttributeInfo {
             std::size_t offset;
             UnsignedInt stride, arraySize;
@@ -290,17 +298,44 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
 
         /* Parse everything first to avoid errors interleaved with output */
 
-        /* Scene properties. Currently just counting how much is each mesh
-           shared. */
+        /* Scene properties. Currently just counting how much is each mesh /
+           material shared. */
+        Containers::Array<UnsignedInt> materialReferenceCount{importer->materialCount()};
         Containers::Array<UnsignedInt> meshReferenceCount{importer->meshCount()};
         for(UnsignedInt i = 0; i != importer->object3DCount(); ++i) {
             Containers::Pointer<Trade::ObjectData3D> object = importer->object3D(i);
-            if(object && object->instanceType() == Trade::ObjectInstanceType3D::Mesh && std::size_t(object->instance()) < meshReferenceCount.size())
-                ++meshReferenceCount[object->instance()];
+            if(object && object->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
+                auto& meshObject = static_cast<Trade::MeshObjectData3D&>(*object);
+                if(std::size_t(meshObject.instance()) < meshReferenceCount.size())
+                    ++meshReferenceCount[meshObject.instance()];
+                if(std::size_t(meshObject.material()) < materialReferenceCount.size())
+                    ++materialReferenceCount[meshObject.material()];
+            }
+        }
+
+        /* Material properties */
+        bool error = false;
+        Containers::Array<MaterialInfo> materialInfos;
+        for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
+            Containers::Optional<Trade::MaterialData> material;
+            {
+                Duration d{importTime};
+                if(!(material = importer->material(i))) {
+                    error = true;
+                    continue;
+                }
+            }
+
+            MaterialInfo info{};
+            info.material = i;
+            info.name = importer->materialName(i);
+            info.references = materialReferenceCount[i];
+            info.data = *std::move(material);
+
+            arrayAppend(materialInfos, std::move(info));
         }
 
         /* Mesh properties */
-        bool error = false;
         Containers::Array<MeshInfo> meshInfos;
         for(UnsignedInt i = 0; i != importer->meshCount(); ++i) {
             for(UnsignedInt j = 0; j != importer->meshLevelCount(i); ++j) {
@@ -389,6 +424,85 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         bool compactImages = false;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos =
             Trade::Implementation::imageInfo(*importer, error, compactImages);
+
+        for(const MaterialInfo& info: materialInfos) {
+            Debug d;
+            d << "Material" << info.material;
+            /* Print reference count only if there actually is a scene,
+               otherwise this information is useless */
+            if(importer->object3DCount())
+                d << Utility::formatString("(referenced by {} objects)", info.references);
+            d << Debug::nospace << ":";
+            if(!info.name.empty()) d << info.name;
+
+            d << Debug::newline << "  Type:" << info.data.types();
+
+            for(UnsignedInt i = 0; i != info.data.layerCount(); ++i) {
+                /* Print extra layers with extra indent */
+                const char* indent;
+                if(info.data.layerCount() != 1 && i != 0) {
+                    d << Debug::newline << "  Layer" << i << Debug::nospace << ":";
+                    if(!info.data.layerName(i).isEmpty())
+                        d << info.data.layerName(i);
+                    indent = "   ";
+                } else indent = " ";
+
+                for(UnsignedInt j = 0; j != info.data.attributeCount(i); ++j) {
+                    /* Ignore layer name (which is always first) unless it's in
+                       the base material, in which case we print it as it
+                       wouldn't otherwise be shown anywhere */
+                    if(i && !j && info.data.attributeName(i, j) == "$LayerName")
+                        continue;
+
+                    d << Debug::newline << indent
+                        << info.data.attributeName(i, j) << "@"
+                        << info.data.attributeType(i, j) << Debug::nospace
+                        << ":";
+                    switch(info.data.attributeType(i, j)) {
+                        case Trade::MaterialAttributeType::Bool:
+                            d << info.data.attribute<bool>(i, j);
+                            break;
+                        #define _c(type) case Trade::MaterialAttributeType::type: \
+                            d << info.data.attribute<type>(i, j);           \
+                            break;
+                        _c(Float)
+                        _c(Deg)
+                        _c(Rad)
+                        _c(UnsignedInt)
+                        _c(Int)
+                        _c(UnsignedLong)
+                        _c(Long)
+                        _c(Vector2)
+                        _c(Vector2ui)
+                        _c(Vector2i)
+                        _c(Vector3)
+                        _c(Vector3ui)
+                        _c(Vector3i)
+                        _c(Vector4)
+                        _c(Vector4ui)
+                        _c(Vector4i)
+                        _c(Matrix2x2)
+                        _c(Matrix2x3)
+                        _c(Matrix2x4)
+                        _c(Matrix3x2)
+                        _c(Matrix3x3)
+                        _c(Matrix3x4)
+                        _c(Matrix4x2)
+                        _c(Matrix4x3)
+                        #undef _c
+                        case Trade::MaterialAttributeType::Pointer:
+                            d << info.data.attribute<const void*>(i, j);
+                            break;
+                        case Trade::MaterialAttributeType::MutablePointer:
+                            d << info.data.attribute<void*>(i, j);
+                            break;
+                        case Trade::MaterialAttributeType::String:
+                            d << info.data.attribute<Containers::StringView>(i, j);
+                            break;
+                    }
+                }
+            }
+        }
 
         for(const MeshInfo& info: meshInfos) {
             Debug d;
