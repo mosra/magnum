@@ -91,6 +91,9 @@ PhongMaterialData::PhongMaterialData(const Flags flags, const Color4& ambientCol
 
     arrayAppend(data, Containers::InPlaceInit, MaterialAttribute::Shininess, shininess);
 
+    /* Convert back to a non-growable Array as importers don't allow custom
+       deleters in plugin implementations */
+    arrayShrink(data, Containers::DefaultInit);
     return data;
 }(), importerState} {
     /* The data can't be filled here because it won't be sorted correctly */

@@ -197,6 +197,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     void materialNameOutOfRange();
     void materialNotImplemented();
     void materialOutOfRange();
+    void materialNonOwningDeleters();
+    void materialCustomAttributeDataDeleter();
+    void materialCustomLayerDataDeleter();
 
     void texture();
     void textureNameNotImplemented();
@@ -402,6 +405,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::materialNameOutOfRange,
               &AbstractImporterTest::materialNotImplemented,
               &AbstractImporterTest::materialOutOfRange,
+              &AbstractImporterTest::materialNonOwningDeleters,
+              &AbstractImporterTest::materialCustomAttributeDataDeleter,
+              &AbstractImporterTest::materialCustomLayerDataDeleter,
 
               &AbstractImporterTest::texture,
               &AbstractImporterTest::textureNameNotImplemented,
@@ -3129,6 +3135,89 @@ void AbstractImporterTest::materialOutOfRange() {
 
     importer.material(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::material(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::materialNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 1; }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return MaterialData{{}, {}, attributeData, {}, layerData};
+        }
+
+        UnsignedInt layerData[1]{};
+        MaterialAttributeData attributeData[1]{
+            {MaterialAttribute::DiffuseColor, Color4{}}
+        };
+    } importer;
+
+    auto data = importer.material(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->attributeData()), importer.attributeData);
+    CORRADE_COMPARE(static_cast<const void*>(data->layerData()), importer.layerData);
+}
+
+void AbstractImporterTest::materialCustomAttributeDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 1; }
+        Int doMaterialForName(const std::string&) override { return 0; }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return MaterialData{{}, Containers::Array<MaterialAttributeData>{attributeData, 1, [](MaterialAttributeData*, std::size_t) {}}};
+        }
+
+        MaterialAttributeData attributeData[1]{
+            {MaterialAttribute::DiffuseColor, Color4{}}
+        };
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.material(0);
+    importer.material("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::materialCustomLayerDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMaterialCount() const override { return 1; }
+        Int doMaterialForName(const std::string&) override { return 0; }
+        Containers::Optional<MaterialData> doMaterial(UnsignedInt) override {
+            return MaterialData{{}, nullptr, Containers::Array<UnsignedInt>{layerData, 1, [](UnsignedInt*, std::size_t) {}}};
+        }
+
+        UnsignedInt layerData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.material(0);
+    importer.material("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::texture() {

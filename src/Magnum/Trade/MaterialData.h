@@ -1498,6 +1498,11 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         const void* importerState() const { return _importerState; }
 
     private:
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        friend AbstractImporter;
+
         static Containers::StringView attributeString(MaterialAttribute name);
         /* Internal helpers that don't assert, unlike layerId() / attributeId() */
         UnsignedInt layerFor(Containers::StringView layer) const;

@@ -32,6 +32,7 @@
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Matrix.h"
+#include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Implementation/arrayUtilities.h"
 
 namespace Magnum { namespace Trade {
@@ -226,7 +227,7 @@ MaterialData::MaterialData(const MaterialTypes types, Containers::Array<Material
 
 MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> attributeData, const std::initializer_list<UnsignedInt> layerData, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(attributeData), Implementation::initializerListToArrayWithDefaultDeleter(layerData), importerState} {}
 
-MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> attributeData, DataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributeData.data()), attributeData.size(), [](MaterialAttributeData*, std::size_t){}}}, _layerOffsets{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(layerData.data()), layerData.size(), [](UnsignedInt*, std::size_t){}}}, _types{types}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> attributeData, DataFlags, Containers::ArrayView<const UnsignedInt> layerData, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributeData.data()), attributeData.size(), reinterpret_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _layerOffsets{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(layerData.data()), layerData.size(), reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor */
     for(std::size_t i = 0; i != _data.size(); ++i)

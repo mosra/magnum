@@ -681,6 +681,10 @@ AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index" << id << "out of range for" << doMaterialCount() << "entries", {});
 
     Containers::Optional<MaterialData> material = doMaterial(id);
+    CORRADE_ASSERT(!material || (
+        (!material->_data.deleter() || material->_data.deleter() == reinterpret_cast<void(*)(MaterialAttributeData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!material->_layerOffsets.deleter() || material->_layerOffsets.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        "Trade::AbstractImporter::material(): implementation is not allowed to use a custom Array deleter", {});
 
     /* GCC 4.8 and clang-cl needs an explicit conversion here */
     #ifdef MAGNUM_BUILD_DEPRECATED
