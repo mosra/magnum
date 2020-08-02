@@ -59,6 +59,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructAttributeMutablePointer();
         void constructAttributeStringNameStringValue();
         void constructAttributeNameStringValue();
+        void constructAttributeTextureSwizzle();
 
         void constructAttributeInvalidName();
         void constructAttributeWrongTypeForName();
@@ -93,6 +94,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void access();
         void accessPointer();
         void accessString();
+        void accessTextureSwizzle();
         void accessOptional();
         void accessOutOfBounds();
         void accessNotFound();
@@ -133,6 +135,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void phongAccessInvalidTextures();
 
         void debugAttribute();
+        void debugTextureSwizzle();
         void debugAttributeType();
 
         void debugType();
@@ -190,6 +193,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeMutablePointer,
               &MaterialDataTest::constructAttributeStringNameStringValue,
               &MaterialDataTest::constructAttributeNameStringValue,
+              &MaterialDataTest::constructAttributeTextureSwizzle,
 
               &MaterialDataTest::constructAttributeInvalidName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
@@ -227,6 +231,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::access,
               &MaterialDataTest::accessPointer,
               &MaterialDataTest::accessString,
+              &MaterialDataTest::accessTextureSwizzle,
               &MaterialDataTest::accessOptional,
               &MaterialDataTest::accessOutOfBounds,
               &MaterialDataTest::accessNotFound,
@@ -267,6 +272,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::phongAccessInvalidTextures,
 
               &MaterialDataTest::debugAttribute,
+              &MaterialDataTest::debugTextureSwizzle,
               &MaterialDataTest::debugAttributeType,
 
               &MaterialDataTest::debugType,
@@ -558,6 +564,27 @@ void MaterialDataTest::constructAttributeNameStringValue() {
     CORRADE_COMPARE(typeErased.value<Containers::StringView>(), "a value\0that's long but still fits!"_s);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(typeErased.value<Containers::StringView>()[typeErased.value<Containers::StringView>().size()], '\0');
+}
+
+void MaterialDataTest::constructAttributeTextureSwizzle() {
+    MaterialAttributeData attribute{"swizzle", MaterialTextureSwizzle::GBA};
+    CORRADE_COMPARE(attribute.name(), "swizzle");
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::TextureSwizzle);
+    CORRADE_COMPARE(*static_cast<const MaterialTextureSwizzle*>(attribute.value()), MaterialTextureSwizzle::GBA);
+    CORRADE_COMPARE(attribute.value<MaterialTextureSwizzle>(), MaterialTextureSwizzle::GBA);
+
+    constexpr MaterialAttributeData cattribute{"swizzle"_s, MaterialTextureSwizzle::GBA};
+    CORRADE_COMPARE(cattribute.name(), "swizzle");
+    CORRADE_COMPARE(cattribute.type(), MaterialAttributeType::TextureSwizzle);
+    CORRADE_COMPARE(*static_cast<const MaterialTextureSwizzle*>(cattribute.value()), MaterialTextureSwizzle::GBA);
+    CORRADE_COMPARE(cattribute.value<MaterialTextureSwizzle>(), MaterialTextureSwizzle::GBA);
+
+    /* Type-erased variant */
+    const MaterialTextureSwizzle swizzle = MaterialTextureSwizzle::GBA;
+    MaterialAttributeData typeErased{"swizzle", MaterialAttributeType::TextureSwizzle, &swizzle};
+    CORRADE_COMPARE(typeErased.name(), "swizzle");
+    CORRADE_COMPARE(typeErased.type(), MaterialAttributeType::TextureSwizzle);
+    CORRADE_COMPARE(typeErased.value<MaterialTextureSwizzle>(), MaterialTextureSwizzle::GBA);
 }
 
 void MaterialDataTest::constructAttributeInvalidName() {
@@ -1321,6 +1348,19 @@ void MaterialDataTest::accessString() {
     CORRADE_COMPARE(data.attribute<Containers::StringView>(0), "THIS IS\0WHO I AM!"_s);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(0).flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(data.attribute<Containers::StringView>(0)[data.attribute<Containers::StringView>(0).size()], '\0');
+}
+
+void MaterialDataTest::accessTextureSwizzle() {
+    MaterialData data{{}, {
+        {"normalSwizzle", MaterialTextureSwizzle::BA}
+    }};
+    CORRADE_COMPARE(data.attributeType("normalSwizzle"), MaterialAttributeType::TextureSwizzle);
+
+    /* Pointer access will stop at the first null byte, printing the string
+       value */
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(0)), "BA"_s);
+    CORRADE_COMPARE(*static_cast<const MaterialTextureSwizzle*>(data.attribute(0)), MaterialTextureSwizzle::BA);
+    CORRADE_COMPARE(data.attribute<MaterialTextureSwizzle>(0), MaterialTextureSwizzle::BA);
 }
 
 void MaterialDataTest::accessOptional() {
@@ -2219,6 +2259,16 @@ void MaterialDataTest::debugAttribute() {
 
     Debug{&out} << MaterialAttribute::DiffuseTextureCoordinates << MaterialAttribute::LayerName << MaterialAttribute(0xfefe) << MaterialAttribute{};
     CORRADE_COMPARE(out.str(), "Trade::MaterialAttribute::DiffuseTextureCoordinates Trade::MaterialAttribute::LayerName Trade::MaterialAttribute(0xfefe) Trade::MaterialAttribute(0x0)\n");
+}
+
+void MaterialDataTest::debugTextureSwizzle() {
+    std::ostringstream out;
+
+    /* The swizzle is encoded as a fourCC, so it just prints the numerical
+       value as a char. Worst case this will print nothing or four garbage
+       letters. Sorry in that case. */
+    Debug{&out} << MaterialTextureSwizzle::BA << MaterialTextureSwizzle{};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialTextureSwizzle::BA Trade::MaterialTextureSwizzle::\n");
 }
 
 void MaterialDataTest::debugAttributeType() {

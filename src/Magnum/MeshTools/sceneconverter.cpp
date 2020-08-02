@@ -499,6 +499,9 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                         case Trade::MaterialAttributeType::String:
                             d << info.data.attribute<Containers::StringView>(i, j);
                             break;
+                        case Trade::MaterialAttributeType::TextureSwizzle:
+                            d << info.data.attribute<Trade::MaterialTextureSwizzle>(i, j);
+                            break;
                     }
                 }
             }

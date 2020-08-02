@@ -69,6 +69,7 @@ std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
         case MaterialAttributeType::Rad:
         case MaterialAttributeType::UnsignedInt:
         case MaterialAttributeType::Int:
+        case MaterialAttributeType::TextureSwizzle:
             return 4;
 
         case MaterialAttributeType::UnsignedLong:
@@ -590,6 +591,15 @@ Debug& operator<<(Debug& debug, const MaterialAttribute value) {
     return debug << "::" << Debug::nospace << string;
 }
 
+Debug& operator<<(Debug& debug, const MaterialTextureSwizzle value) {
+    /* The swizzle is encoded as a fourCC, so just print the numerical value as
+       a char. Worst case this will print nothing or four garbage letters.
+       Sorry in that case. GCC 4.8 doesn't understand just {}, wants to have
+       a full MaterialTextureSwizzle{} here. */
+    MaterialTextureSwizzle values[]{value, MaterialTextureSwizzle{}};
+    return debug << "Trade::MaterialTextureSwizzle::" << Debug::nospace << reinterpret_cast<const char*>(values);
+}
+
 Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
     debug << "Trade::MaterialAttributeType" << Debug::nospace;
 
@@ -624,6 +634,7 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
         _c(Pointer)
         _c(MutablePointer)
         _c(String)
+        _c(TextureSwizzle)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

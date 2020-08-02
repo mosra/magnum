@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::MaterialData, @ref Magnum::Trade::MaterialAttributeData, enum @ref Magnum::Trade::MaterialAttribute, @ref Magnum::Trade::MaterialAttributeType
+ * @brief Class @ref Magnum::Trade::MaterialData, @ref Magnum::Trade::MaterialAttributeData, enum @ref Magnum::Trade::MaterialAttribute, @ref Magnum::Trade::MaterialTextureSwizzle, @ref Magnum::Trade::MaterialAttributeType
  * @m_since_latest
  */
 
@@ -34,6 +34,7 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/RectangularMatrix.h"
@@ -288,6 +289,50 @@ enum class MaterialAttribute: UnsignedInt {
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAttribute value);
 
 /**
+@brief Material texture swizzle
+@m_since_latest
+
+See @ref MaterialData for more information.
+*/
+enum class MaterialTextureSwizzle: UnsignedInt {
+    /** Red component */
+    R = Utility::Endianness::fourCC('R', '\0', '\0', '\0'),
+
+    /** Green component */
+    G = Utility::Endianness::fourCC('G', '\0', '\0', '\0'),
+
+    /** Blue component */
+    B = Utility::Endianness::fourCC('B', '\0', '\0', '\0'),
+
+    /** Alpha component */
+    A = Utility::Endianness::fourCC('A', '\0', '\0', '\0'),
+
+    /** Red and green component */
+    RG = Utility::Endianness::fourCC('R', 'G', '\0', '\0'),
+
+    /** Green and blue component */
+    GB = Utility::Endianness::fourCC('G', 'B', '\0', '\0'),
+
+    /** Blue and alpha component */
+    BA = Utility::Endianness::fourCC('B', 'A', '\0', '\0'),
+
+    /** RGB components */
+    RGB = Utility::Endianness::fourCC('R', 'G', 'B', '\0'),
+
+    /** GBA components */
+    GBA = Utility::Endianness::fourCC('G', 'B', 'A', '\0'),
+
+    /** RGBA components */
+    RGBA = Utility::Endianness::fourCC('R', 'G', 'B', 'A'),
+};
+
+/**
+@debugoperatorenum{MaterialTextureSwizzle}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialTextureSwizzle value);
+
+/**
 @brief Material attribute type
 @m_since_latest
 
@@ -352,7 +397,10 @@ enum class MaterialAttributeType: UnsignedByte {
      * @ref Corrade::Containers::StringView, retrieval has to be done using
      * @ref Corrade::Containers::StringView.
      */
-    String
+    String,
+
+    /** One of the values from @ref MaterialTextureSwizzle */
+    TextureSwizzle
 };
 
 /**
@@ -575,6 +623,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
             constexpr explicit ErasedScalar(Rad value): f{Float(value)} {}
             constexpr explicit ErasedScalar(UnsignedInt value): u{value} {}
             constexpr explicit ErasedScalar(Int value): i{value} {}
+            constexpr explicit ErasedScalar(MaterialTextureSwizzle value): u{UnsignedInt(value)} {}
 
             Float f;
             UnsignedInt u;
@@ -1566,6 +1615,11 @@ namespace Implementation {
     };
     /* No specialization for StringView as this type trait should not be used
        in that case */
+    template<> struct MaterialAttributeTypeFor<MaterialTextureSwizzle> {
+        constexpr static MaterialAttributeType type() {
+            return MaterialAttributeType::TextureSwizzle;
+        }
+    };
     #ifndef DOXYGEN_GENERATING_OUTPUT
     #define _c(type_) template<> struct MaterialAttributeTypeFor<type_> {   \
         constexpr static MaterialAttributeType type() {                     \
