@@ -65,9 +65,10 @@ floating-point shader inputs. In this case you may want to normalize the values
     additional restrictions applied for OpenGL ES and WebGL, see
     @ref GL-AbstractShaderProgram-types for more information.
 
-See @ref GL-AbstractShaderProgram-subclassing for example usage in shaders and
-@ref GL-Mesh-configuration for example usage when adding vertex buffers to a
-mesh.
+See @ref GL-AbstractShaderProgram-subclassing "AbstractShaderProgram subclassing workflow"
+for example usage in shaders and @ref GL-Mesh-configuration for example usage
+when adding vertex buffers to a mesh. @ref DynamicAttribute is a variant with
+runtime-specified location and type, and is convertible from @ref VertexFormat.
 */
 template<UnsignedInt location, class T> class Attribute {
     #ifdef MAGNUM_TARGET_GLES2
