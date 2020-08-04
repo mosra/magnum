@@ -111,6 +111,16 @@ See also:
     coordinates), @ref MeshTools::compile() should be using only the first set
     but it wasn't.
 
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   @cpp Trade::PhongMaterialData::ambientCoordinateSet() @ce,
+    @cpp diffuseCoordinateSet() @ce, @cpp specularCoordinateSet() @ce and
+    @cpp normalCoordinateSet() @ce are deprecated in favor of more consistently
+    named @ref Trade::PhongMaterialData::ambientTextureCoordinates(),
+    @ref Trade::PhongMaterialData::diffuseTextureCoordinates() "diffuseTextureCoordinates()",
+    @ref Trade::PhongMaterialData::specularTextureCoordinates() "specularTextureCoordinates()"
+    and @ref Trade::PhongMaterialData::normalTextureCoordinates() "normalTextureCoordinates()"
+
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
 -   Removed remaining APIs deprecated in version 2018.10, in particular:

@@ -38,10 +38,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructPhong();
         void constructPhongTextured();
         void constructPhongTexturedTextureTransform();
-        void constructPhongTexturedCoordinateSets();
+        void constructPhongTexturedCoordinates();
         void constructPhongTextureTransformNoTextures();
         void constructPhongNoTextureTransformationFlag();
-        void constructPhongNoTextureCoordinateSetsFlag();
+        void constructPhongNoTextureCoordinatesFlag();
         void constructCopy();
         void constructMovePhong();
 
@@ -60,10 +60,10 @@ MaterialDataTest::MaterialDataTest() {
     addTests({&MaterialDataTest::constructPhong,
               &MaterialDataTest::constructPhongTextured,
               &MaterialDataTest::constructPhongTexturedTextureTransform,
-              &MaterialDataTest::constructPhongTexturedCoordinateSets,
+              &MaterialDataTest::constructPhongTexturedCoordinates,
               &MaterialDataTest::constructPhongTextureTransformNoTextures,
               &MaterialDataTest::constructPhongNoTextureTransformationFlag,
-              &MaterialDataTest::constructPhongNoTextureCoordinateSetsFlag,
+              &MaterialDataTest::constructPhongNoTextureCoordinatesFlag,
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMovePhong,
 
@@ -115,11 +115,11 @@ void MaterialDataTest::constructPhongTextured() {
     CORRADE_COMPARE(data.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture);
     CORRADE_COMPARE(data.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(data.ambientTexture(), 42);
-    CORRADE_COMPARE(data.ambientCoordinateSet(), 0);
+    CORRADE_COMPARE(data.ambientTextureCoordinates(), 0);
     CORRADE_COMPARE(data.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
-    CORRADE_COMPARE(data.specularCoordinateSet(), 0);
+    CORRADE_COMPARE(data.specularTextureCoordinates(), 0);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(data.alphaMask(), 0.37f);
@@ -153,12 +153,12 @@ void MaterialDataTest::constructPhongTexturedTextureTransform() {
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
-void MaterialDataTest::constructPhongTexturedCoordinateSets() {
+void MaterialDataTest::constructPhongTexturedCoordinates() {
     using namespace Math::Literals;
 
     const int a{};
     PhongMaterialData data{
-        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::TextureCoordinateSets,
+        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::TextureCoordinates,
         0x111111_rgbf, 42, 3,
         0xeebbff_rgbf, {}, 0,
         0xacabad_rgbf, 17, 1,
@@ -166,14 +166,14 @@ void MaterialDataTest::constructPhongTexturedCoordinateSets() {
         MaterialAlphaMode::Blend, 0.37f, 96.0f, &a};
 
     CORRADE_COMPARE(data.type(), MaterialType::Phong);
-    CORRADE_COMPARE(data.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::TextureCoordinateSets);
+    CORRADE_COMPARE(data.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::TextureCoordinates);
     CORRADE_COMPARE(data.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(data.ambientTexture(), 42);
-    CORRADE_COMPARE(data.ambientCoordinateSet(), 3);
+    CORRADE_COMPARE(data.ambientTextureCoordinates(), 3);
     CORRADE_COMPARE(data.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
-    CORRADE_COMPARE(data.specularCoordinateSet(), 1);
+    CORRADE_COMPARE(data.specularTextureCoordinates(), 1);
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(data.alphaMask(), 0.37f);
@@ -215,7 +215,7 @@ void MaterialDataTest::constructPhongNoTextureTransformationFlag() {
         "PhongMaterialData::PhongMaterialData: non-default texture matrix requires Flag::TextureTransformation to be enabled\n");
 }
 
-void MaterialDataTest::constructPhongNoTextureCoordinateSetsFlag() {
+void MaterialDataTest::constructPhongNoTextureCoordinatesFlag() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -228,7 +228,7 @@ void MaterialDataTest::constructPhongNoTextureCoordinateSetsFlag() {
         {}, {}, 3, {}, 4, {},
         {}, 0.5f, 80.0f};
     CORRADE_COMPARE(out.str(),
-        "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinateSets to be enabled\n");
+        "PhongMaterialData::PhongMaterialData: non-zero texture coordinate sets require Flag::TextureCoordinates to be enabled\n");
 }
 
 void MaterialDataTest::constructCopy() {
@@ -243,7 +243,7 @@ void MaterialDataTest::constructMovePhong() {
 
     const int a{};
     PhongMaterialData data{
-        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinateSets,
+        PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinates,
         0x111111_rgbf, 1, 0,
         0xeebbff_rgbf, 42, 1,
         0xacabad_rgbf, 24, 2, 17, 3,
@@ -252,18 +252,18 @@ void MaterialDataTest::constructMovePhong() {
 
     PhongMaterialData b{std::move(data)};
     CORRADE_COMPARE(b.type(), MaterialType::Phong);
-    CORRADE_COMPARE(b.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinateSets);
+    CORRADE_COMPARE(b.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinates);
     CORRADE_COMPARE(b.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(b.ambientTexture(), 1);
-    CORRADE_COMPARE(b.ambientCoordinateSet(), 0);
+    CORRADE_COMPARE(b.ambientTextureCoordinates(), 0);
     CORRADE_COMPARE(b.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(b.diffuseTexture(), 42);
-    CORRADE_COMPARE(b.diffuseCoordinateSet(), 1);
+    CORRADE_COMPARE(b.diffuseTextureCoordinates(), 1);
     CORRADE_COMPARE(b.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(b.specularTexture(), 24);
-    CORRADE_COMPARE(b.specularCoordinateSet(), 2);
+    CORRADE_COMPARE(b.specularTextureCoordinates(), 2);
     CORRADE_COMPARE(b.normalTexture(), 17);
-    CORRADE_COMPARE(b.normalCoordinateSet(), 3);
+    CORRADE_COMPARE(b.normalTextureCoordinates(), 3);
     CORRADE_COMPARE(b.textureMatrix(), Matrix3::rotation(90.0_degf));
     CORRADE_COMPARE(b.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(b.alphaMask(), 0.55f);
@@ -279,18 +279,18 @@ void MaterialDataTest::constructMovePhong() {
     d = std::move(b);
 
     CORRADE_COMPARE(d.type(), MaterialType::Phong);
-    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinateSets);
+    CORRADE_COMPARE(d.flags(), PhongMaterialData::Flag::AmbientTexture|PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture|PhongMaterialData::Flag::NormalTexture|PhongMaterialData::Flag::TextureTransformation|PhongMaterialData::Flag::TextureCoordinates);
     CORRADE_COMPARE(d.ambientColor(), 0x111111_rgbf);
     CORRADE_COMPARE(d.ambientTexture(), 1);
-    CORRADE_COMPARE(d.ambientCoordinateSet(), 0);
+    CORRADE_COMPARE(d.ambientTextureCoordinates(), 0);
     CORRADE_COMPARE(d.diffuseColor(), 0xeebbff_rgbf);
     CORRADE_COMPARE(d.diffuseTexture(), 42);
-    CORRADE_COMPARE(d.diffuseCoordinateSet(), 1);
+    CORRADE_COMPARE(d.diffuseTextureCoordinates(), 1);
     CORRADE_COMPARE(d.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(d.specularTexture(), 24);
-    CORRADE_COMPARE(d.specularCoordinateSet(), 2);
+    CORRADE_COMPARE(d.specularTextureCoordinates(), 2);
     CORRADE_COMPARE(d.normalTexture(), 17);
-    CORRADE_COMPARE(d.normalCoordinateSet(), 3);
+    CORRADE_COMPARE(d.normalTextureCoordinates(), 3);
     CORRADE_COMPARE(d.textureMatrix(), Matrix3::rotation(90.0_degf));
     CORRADE_COMPARE(d.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(d.alphaMask(), 0.55f);
@@ -315,22 +315,22 @@ void MaterialDataTest::accessInvalidTextures() {
     std::ostringstream out;
     Error redirectError{&out};
     a.ambientTexture();
-    a.ambientCoordinateSet();
+    a.ambientTextureCoordinates();
     a.diffuseTexture();
-    a.diffuseCoordinateSet();
+    a.diffuseTextureCoordinates();
     a.specularTexture();
-    a.specularCoordinateSet();
+    a.specularTextureCoordinates();
     a.normalTexture();
-    a.normalCoordinateSet();
+    a.normalTextureCoordinates();
     CORRADE_COMPARE(out.str(),
         "Trade::PhongMaterialData::ambientTexture(): the material doesn't have an ambient texture\n"
-        "Trade::PhongMaterialData::ambientCoordinateSet(): the material doesn't have an ambient texture\n"
+        "Trade::PhongMaterialData::ambientTextureCoordinates(): the material doesn't have an ambient texture\n"
         "Trade::PhongMaterialData::diffuseTexture(): the material doesn't have a diffuse texture\n"
-        "Trade::PhongMaterialData::diffuseCoordinateSet(): the material doesn't have a diffuse texture\n"
+        "Trade::PhongMaterialData::diffuseTextureCoordinates(): the material doesn't have a diffuse texture\n"
         "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture\n"
-        "Trade::PhongMaterialData::specularCoordinateSet(): the material doesn't have a specular texture\n"
+        "Trade::PhongMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::normalTexture(): the material doesn't have a normal texture\n"
-        "Trade::PhongMaterialData::normalCoordinateSet(): the material doesn't have a normal texture\n");
+        "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
 }
 
 void MaterialDataTest::debugType() {
