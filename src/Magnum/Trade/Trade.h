@@ -50,7 +50,7 @@ typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallb
 
 enum class MaterialAttribute: UnsignedInt;
 enum class MaterialAttributeType: UnsignedByte;
-enum class MaterialType: UnsignedByte;
+enum class MaterialType: UnsignedInt;
 enum class MaterialAlphaMode: UnsignedByte;
 class AbstractMaterialData;
 class MaterialAttributeData;

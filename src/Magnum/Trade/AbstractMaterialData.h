@@ -29,21 +29,9 @@
  * @brief Class @ref Magnum::Trade::AbstractMaterialData, enum @ref Magnum::Trade::MaterialType
  */
 
-#include <Corrade/Containers/EnumSet.h>
-
-#include "Magnum/Magnum.h"
-#include "Magnum/Trade/visibility.h"
+#include "Magnum/Trade/MaterialData.h"
 
 namespace Magnum { namespace Trade {
-
-/**
-@brief Material type
-
-@see @ref AbstractMaterialData::type()
-*/
-enum class MaterialType: UnsignedByte {
-    Phong       /**< Phong shading (see @ref PhongMaterialData) */
-};
 
 /**
 @brief Material alpha mode
@@ -164,9 +152,6 @@ class MAGNUM_TRADE_EXPORT AbstractMaterialData {
         Float _alphaMask;
         const void* _importerState;
 };
-
-/** @debugoperatorenum{MaterialType} */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialType value);
 
 /** @debugoperatorenum{MaterialAlphaMode} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAlphaMode value);

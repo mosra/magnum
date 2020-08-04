@@ -97,6 +97,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void debugAttributeType();
 
         void debugType();
+        void debugTypes();
         void debugFlag();
         void debugFlags();
         void debugAlphaMode();
@@ -186,6 +187,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::debugAttributeType,
 
               &MaterialDataTest::debugType,
+              &MaterialDataTest::debugTypes,
               &MaterialDataTest::debugFlag,
               &MaterialDataTest::debugFlags,
               &MaterialDataTest::debugAlphaMode,
@@ -422,13 +424,14 @@ void MaterialDataTest::constructAttributeWrongAccessType() {
 
 void MaterialDataTest::construct() {
     int state;
-    MaterialData data{{
+    MaterialData data{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
         {MaterialAttribute::DiffuseTextureCoordinates, 5u},
         {"highlightColor", 0x335566ff_rgbaf},
         {MaterialAttribute::AmbientTextureMatrix, Matrix3::scaling({0.5f, 1.0f})}
     }, &state};
 
+    CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.attributeCount(), 4);
     CORRADE_COMPARE(data.data().size(), 4);
     CORRADE_COMPARE(data.importerState(), &state);
@@ -509,7 +512,7 @@ void MaterialDataTest::constructEmptyAttribute() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MaterialData{{
+    MaterialData{{}, {
         {"DiffuseTexture"_s, 12u},
         MaterialAttributeData{}
     }};
@@ -537,7 +540,7 @@ void MaterialDataTest::constructDuplicateAttribute() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    MaterialData data{std::move(attributes)};
+    MaterialData data{{}, std::move(attributes)};
     /* Because with graceful asserts it doesn't exit on error, the assertion
        might get printed multiple times */
     CORRADE_COMPARE(Utility::String::partition(out.str(), '\n')[0], "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates");
@@ -549,7 +552,7 @@ void MaterialDataTest::constructFromImmutableSortedArray() {
         {"yay this is last"_s, Vector4{0.2f, 0.6f, 0.4f, 1.0f}}
     };
 
-    MaterialData data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributes), Containers::arraySize(attributes), [](MaterialAttributeData*, std::size_t) {}}};
+    MaterialData data{{}, Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(attributes), Containers::arraySize(attributes), [](MaterialAttributeData*, std::size_t) {}}};
 
     CORRADE_COMPARE(data.attributeCount(), 2);
     CORRADE_COMPARE(data.attributeName(0), "hello this is first");
@@ -567,9 +570,10 @@ void MaterialDataTest::constructNonOwned() {
     };
 
     int state;
-    MaterialData data{{}, attributes, &state};
+    MaterialData data{MaterialType::Phong, {}, attributes, &state};
 
     /* Expecting the same output as in construct() */
+    CORRADE_COMPARE(data.types(), MaterialType::Phong);
     CORRADE_COMPARE(data.attributeCount(), 4);
     CORRADE_COMPARE(data.data().size(), 4);
     CORRADE_COMPARE(data.data().data(), attributes);
@@ -598,7 +602,7 @@ void MaterialDataTest::constructNonOwnedEmptyAttribute() {
     std::ostringstream out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
-    MaterialData{{}, attributes, nullptr};
+    MaterialData{{}, {}, attributes, nullptr};
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: attribute 1 doesn't specify anything\n");
 }
 
@@ -615,7 +619,7 @@ void MaterialDataTest::constructNonOwnedNotSorted() {
     std::ostringstream out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
-    MaterialData{{}, attributes, nullptr};
+    MaterialData{{}, {}, attributes, nullptr};
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: DiffuseTexture has to be sorted before DiffuseTextureCoordinates if passing non-owned data\n");
 }
 
@@ -633,7 +637,7 @@ void MaterialDataTest::constructNonOwnedDuplicateAttribute() {
     std::ostringstream out;
     Error redirectError{&out};
     /* nullptr to avoid attributes interpreted as importerState */
-    MaterialData{{}, attributes, nullptr};
+    MaterialData{{}, {}, attributes, nullptr};
     CORRADE_COMPARE(out.str(), "Trade::MaterialData: duplicate attribute DiffuseTextureCoordinates\n");
 }
 
@@ -644,22 +648,24 @@ void MaterialDataTest::constructCopy() {
 
 void MaterialDataTest::constructMove() {
     int state;
-    MaterialData a{{
+    MaterialData a{MaterialType::Phong, {
         {MaterialAttribute::DoubleSided, true},
         {"boredomFactor", 5}
     }, &state};
 
     MaterialData b{std::move(a)};
     CORRADE_COMPARE(a.attributeCount(), 0);
+    CORRADE_COMPARE(b.types(), MaterialType::Phong);
     CORRADE_COMPARE(b.attributeCount(), 2);
     CORRADE_COMPARE(b.attributeName(0), "DoubleSided");
     CORRADE_COMPARE(b.importerState(), &state);
 
-    MaterialData c{{
+    MaterialData c{MaterialTypes{}, {
         {MaterialAttribute::AlphaMask, 0.5f}
     }};
     c = std::move(b);
     CORRADE_COMPARE(b.attributeCount(), 1);
+    CORRADE_COMPARE(c.types(), MaterialType::Phong);
     CORRADE_COMPARE(c.attributeCount(), 2);
     CORRADE_COMPARE(c.attributeName(0), "DoubleSided");
     CORRADE_COMPARE(c.importerState(), &state);
@@ -669,7 +675,7 @@ void MaterialDataTest::constructMove() {
 }
 
 void MaterialDataTest::accessOptional() {
-    MaterialData data{{
+    MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
         {MaterialAttribute::SpecularTexture, 3u}
     }};
@@ -698,7 +704,7 @@ void MaterialDataTest::accessOutOfBounds() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    MaterialData data{{
+    MaterialData data{{}, {
         {MaterialAttribute::AlphaMask, 0.5f},
         {MaterialAttribute::SpecularTexture, 3u}
     }};
@@ -721,7 +727,7 @@ void MaterialDataTest::accessInvalidAttributeName() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    MaterialData data{};
+    MaterialData data{{}, {}};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -765,7 +771,7 @@ void MaterialDataTest::accessNotFound() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    MaterialData data{{
+    MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }};
 
@@ -789,7 +795,7 @@ void MaterialDataTest::accessWrongType() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    MaterialData data{{
+    MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf}
     }};
 
@@ -815,7 +821,7 @@ void MaterialDataTest::accessWrongType() {
 }
 
 void MaterialDataTest::release() {
-    MaterialData data{{
+    MaterialData data{{}, {
         {"DiffuseColor", 0xff3366aa_rgbaf},
         {MaterialAttribute::NormalTexture, 0u}
     }};
@@ -1101,6 +1107,13 @@ void MaterialDataTest::debugType() {
 
     Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
     CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
+}
+
+void MaterialDataTest::debugTypes() {
+    std::ostringstream out;
+
+    Debug{&out} << (MaterialType::Phong|MaterialType(0xe0)) << MaterialTypes{};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong|Trade::MaterialType(0xe0) Trade::MaterialTypes{}\n");
 }
 
 void MaterialDataTest::debugFlag() {

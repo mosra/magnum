@@ -508,6 +508,32 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
 };
 
 /**
+@brief Material type
+
+@see @ref MaterialTypes, @ref MaterialData::types(),
+    @ref AbstractMaterialData::type()
+*/
+enum class MaterialType: UnsignedInt {
+    Phong = 1 << 0      /**< Phong shading */
+};
+
+/** @debugoperatorenum{MaterialType} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialType value);
+
+/**
+@brief Material types
+@m_since_latest
+
+@see @ref MaterialData::types()
+*/
+typedef Containers::EnumSet<MaterialType> MaterialTypes;
+
+CORRADE_ENUMSET_OPERATORS(MaterialTypes)
+
+/** @debugoperatorenum{MaterialTypes} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialTypes value);
+
+/**
 @brief Material data
 @m_since_latest
 
@@ -543,19 +569,23 @@ class MAGNUM_TRADE_EXPORT MaterialData {
     public:
         /**
          * @brief Construct
+         * @param types             Which material types are described by this
+         *      data. Can be an empty set.
          * @param data              Attribute data
          * @param importerState     Importer-specific state
          *
          * The @p data gets sorted by name internally, expecting no duplicates.
          */
-        explicit MaterialData(Containers::Array<MaterialAttributeData>&& data, const void* importerState = nullptr) noexcept;
+        explicit MaterialData(MaterialTypes types, Containers::Array<MaterialAttributeData>&& data, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
-        explicit MaterialData(std::initializer_list<MaterialAttributeData> data, const void* importerState = nullptr);
+        explicit MaterialData(MaterialTypes types, std::initializer_list<MaterialAttributeData> data, const void* importerState = nullptr);
 
         /**
          * @brief Construct a non-owned material data
+         * @param types             Which material types are described by this
+         *      data. Can be an empty set.
          * @param dataFlags         Ignored. Used only for a safer distinction
          *      from the owning constructor.
          * @param data              Attribute data
@@ -564,7 +594,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * The @p data is expected to be already sorted by name, without
          * duplicates.
          */
-        explicit MaterialData(DataFlags dataFlags, Containers::ArrayView<const MaterialAttributeData> data, const void* importerState = nullptr) noexcept;
+        explicit MaterialData(MaterialTypes types, DataFlags dataFlags, Containers::ArrayView<const MaterialAttributeData> data, const void* importerState = nullptr) noexcept;
 
         ~MaterialData();
 
@@ -579,6 +609,14 @@ class MAGNUM_TRADE_EXPORT MaterialData {
 
         /** @brief Move assignment */
         MaterialData& operator=(MaterialData&&) noexcept;
+
+        /**
+         * @brief Material types
+         *
+         * Each type indicates that the material data can be interpreted as
+         * given type. For custom materials the set can also be empty.
+         */
+        MaterialTypes types() const { return _types; }
 
         /**
          * @brief Raw attribute data
@@ -731,6 +769,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
         UnsignedInt attributeFor(Containers::StringView name) const;
 
         Containers::Array<MaterialAttributeData> _data;
+        MaterialTypes _types;
         const void* _importerState;
 };
 

@@ -27,6 +27,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <Corrade/Containers/EnumSet.hpp>
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Matrix.h"
@@ -126,7 +127,7 @@ const void* MaterialAttributeData::value() const {
     return _data.data + Implementation::MaterialAttributeDataSize - materialAttributeTypeSize(_data.type);
 }
 
-MaterialData::MaterialData(Containers::Array<MaterialAttributeData>&& data, const void* const importerState) noexcept: _data{std::move(data)}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, Containers::Array<MaterialAttributeData>&& data, const void* const importerState) noexcept: _data{std::move(data)}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor.
        Done before sorting so the index refers to the actual input index. */
@@ -155,9 +156,9 @@ MaterialData::MaterialData(Containers::Array<MaterialAttributeData>&& data, cons
     }
 }
 
-MaterialData::MaterialData(const std::initializer_list<MaterialAttributeData> data, const void* const importerState): MaterialData{Implementation::initializerListToArrayWithDefaultDeleter(data), importerState} {}
+MaterialData::MaterialData(const MaterialTypes types, const std::initializer_list<MaterialAttributeData> data, const void* const importerState): MaterialData{types, Implementation::initializerListToArrayWithDefaultDeleter(data), importerState} {}
 
-MaterialData::MaterialData(DataFlags, const Containers::ArrayView<const MaterialAttributeData> data, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(data.data()), data.size(), [](MaterialAttributeData*, std::size_t){}}}, _importerState{importerState} {
+MaterialData::MaterialData(const MaterialTypes types, DataFlags, const Containers::ArrayView<const MaterialAttributeData> data, const void* const importerState) noexcept: _data{Containers::Array<MaterialAttributeData>{const_cast<MaterialAttributeData*>(data.data()), data.size(), [](MaterialAttributeData*, std::size_t){}}}, _types{types}, _importerState{importerState} {
     #ifndef CORRADE_NO_ASSERT
     /* Not checking what's already done in MaterialAttributeData constructor */
     for(std::size_t i = 0; i != _data.size(); ++i)
@@ -321,6 +322,26 @@ Debug& operator<<(Debug& debug, const MaterialAttributeType value) {
     }
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MaterialType value) {
+    debug << "Trade::MaterialType" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialType::value: return debug << "::" #value;
+        _c(Phong)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MaterialTypes value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialTypes{}", {
+        MaterialType::Phong
+    });
 }
 
 }}

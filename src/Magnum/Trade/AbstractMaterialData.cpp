@@ -38,20 +38,6 @@ AbstractMaterialData::AbstractMaterialData(const MaterialType type, const Flags 
 
 AbstractMaterialData::~AbstractMaterialData() = default;
 
-Debug& operator<<(Debug& debug, const MaterialType value) {
-    debug << "Trade::MaterialType" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MaterialType::value: return debug << "::" #value;
-        _c(Phong)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
-}
-
 Debug& operator<<(Debug& debug, const AbstractMaterialData::Flag value) {
     debug << "Trade::AbstractMaterialData::Flag" << Debug::nospace;
 
