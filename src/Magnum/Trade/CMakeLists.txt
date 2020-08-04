@@ -45,6 +45,8 @@ set(MagnumTrade_GracefulAssert_SRCS
     MeshData.cpp
     ObjectData2D.cpp
     ObjectData3D.cpp
+    PbrMetallicRoughnessMaterialData.cpp
+    PbrSpecularGlossinessMaterialData.cpp
     PhongMaterialData.cpp)
 
 set(MagnumTrade_HEADERS
@@ -63,6 +65,8 @@ set(MagnumTrade_HEADERS
     MeshObjectData3D.h
     ObjectData2D.h
     ObjectData3D.h
+    PbrMetallicRoughnessMaterialData.h
+    PbrSpecularGlossinessMaterialData.h
     PhongMaterialData.h
     SceneData.h
     TextureData.h

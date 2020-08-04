@@ -90,6 +90,8 @@ class MeshObjectData2D;
 class MeshObjectData3D;
 class ObjectData2D;
 class ObjectData3D;
+class PbrMetallicRoughnessMaterialData;
+class PbrSpecularGlossinessMaterialData;
 class PhongMaterialData;
 class TextureData;
 class SceneData;
