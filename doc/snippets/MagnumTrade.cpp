@@ -40,9 +40,13 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
+#include "Magnum/Trade/PbrClearCoatMaterialData.h"
+#include "Magnum/Trade/PbrSpecularGlossinessMaterialData.h"
+#include "Magnum/Trade/PbrMetallicRoughnessMaterialData.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
@@ -60,6 +64,8 @@
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 #endif
+
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -246,6 +252,207 @@ for(auto&& row: data.mutablePixels<Color3ub>())
     for(Color3ub& pixel: row)
         pixel = Math::gather<'b', 'g', 'r'>(pixel);
 /* [ImageData-usage-mutable] */
+}
+
+{
+/* [MaterialAttributeData-name] */
+Trade::MaterialAttributeData a{
+    Trade::MaterialAttribute::DiffuseColor, 0x3bd267ff_rgbaf};
+Trade::MaterialAttributeData b{"DiffuseColor", 0x3bd267ff_rgbaf};
+/* [MaterialAttributeData-name] */
+}
+
+{
+/* [MaterialData-usage] */
+Trade::MaterialData data = DOXYGEN_IGNORE(Trade::MaterialData{{}, {}});
+
+// Assumes the attribute exists
+Float roughness = data.attribute<Float>(Trade::MaterialAttribute::Roughness);
+
+// Optional access
+Color4 color = data.attributeOr(Trade::MaterialAttribute::BaseColor,
+                                0x3bd267ff_rgbaf);
+if(Containers::Optional<UnsignedInt> texture =
+   data.tryAttribute<UnsignedInt>(Trade::MaterialAttribute::BaseColorTexture))
+{
+    // ...
+}
+/* [MaterialData-usage] */
+static_cast<void>(roughness);
+static_cast<void>(color);
+}
+
+{
+Trade::MaterialData data{{}, {}};
+/* [MaterialData-usage-types] */
+/* Prefer a specular/roughness workflow, if present */
+if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
+    const auto& pbr = data.as<Trade::PbrSpecularGlossinessMaterialData>();
+
+    Color4 diffuse = pbr.diffuseColor();
+    Color4 specular = pbr.specularColor();
+    Float glossiness = pbr.glossiness();
+
+    DOXYGEN_IGNORE(static_cast<void>(diffuse), static_cast<void>(specular), static_cast<void>(glossiness);)
+
+/* Otherwise use metallic/roughness (or defaults if no attributes present) */
+} else {
+    const auto& pbr = data.as<Trade::PbrMetallicRoughnessMaterialData>();
+
+    Color4 base = pbr.baseColor();
+    Float metalness = pbr.metalness();
+    Float roughness = pbr.roughness();
+
+    DOXYGEN_IGNORE(static_cast<void>(base), static_cast<void>(metalness), static_cast<void>(roughness);)
+}
+/* [MaterialData-usage-types] */
+}
+
+{
+/* [MaterialData-usage-packing] */
+Trade::PbrMetallicRoughnessMaterialData data = DOXYGEN_IGNORE(Trade::PbrMetallicRoughnessMaterialData{{}, {}});
+
+/* Use a shader that accepts a single packed metallic/roughness texture.
+   Querying any texture attributes will give the same values for both metalness
+   and roughness. */
+if(data.hasMetallicRoughnessTexture()) {
+    UnsignedInt metallicRoughness = data.metalnessTexture();
+
+    DOXYGEN_IGNORE(static_cast<void>(metallicRoughness);)
+
+/* Supply texture channels separately */
+} else {
+    UnsignedInt metalness = data.metalnessTexture();
+    UnsignedInt roughness = data.roughnessTexture();
+    Trade::MaterialTextureSwizzle metalnessSwizzle = data.metalnessTextureSwizzle();
+    Trade::MaterialTextureSwizzle roughnessSwizzle = data.roughnessTextureSwizzle();
+
+    DOXYGEN_IGNORE(static_cast<void>(metalness), static_cast<void>(roughness), static_cast<void>(metalnessSwizzle), static_cast<void>(roughnessSwizzle);)
+}
+/* [MaterialData-usage-packing] */
+}
+
+{
+Trade::MaterialData data{{}, {}};
+/* [MaterialData-usage-layers] */
+if(data.hasLayer(Trade::MaterialLayer::ClearCoat)) {
+    Float clearCoatFactor = data.attributeOr(Trade::MaterialLayer::ClearCoat,
+        Trade::MaterialAttribute::LayerFactor, 1.0f);
+    Float clearCoatRoughness = data.attributeOr(Trade::MaterialLayer::ClearCoat,
+        Trade::MaterialAttribute::Roughness, 0.0f);
+
+    DOXYGEN_IGNORE(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
+}
+/* [MaterialData-usage-layers] */
+}
+
+{
+Trade::MaterialData data{{}, {}};
+/* [MaterialData-usage-layers-types] */
+if(data.types() & Trade::MaterialType::PbrClearCoat) {
+    const auto& clearCoat = data.as<Trade::PbrClearCoatMaterialData>();
+
+    Float clearCoatFactor = clearCoat.layerFactor();
+    Float clearCoatRoughness = clearCoat.roughness();
+
+    DOXYGEN_IGNORE(static_cast<void>(clearCoatFactor), static_cast<void>(clearCoatRoughness);)
+}
+/* [MaterialData-usage-layers-types] */
+}
+
+{
+/* [MaterialData-populating] */
+Trade::MaterialData data{Trade::MaterialType::PbrMetallicRoughness, {
+    {Trade::MaterialAttribute::DoubleSided, true},
+    {Trade::MaterialAttribute::BaseColor, 0x3bd267ff_srgbaf},
+    {Trade::MaterialAttribute::BaseColorTexture, 17u},
+    {Trade::MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})}
+}};
+/* [MaterialData-populating] */
+}
+
+{
+/* [MaterialData-populating-non-owned] */
+using namespace Containers::Literals;
+
+constexpr Trade::MaterialAttributeData attributes[]{
+    {"DoubleSided"_s, true},
+    {"BaseColor"_s, Color4{0.043735f, 0.64448f, 0.135633f, 1.0f}},
+    {"BaseColorTexture"_s, 5u},
+    {"TextureMatrix"_s, Matrix3{{0.5f, 0.0f, 0.0f},
+                                {0.0f, 1.0f, 0.0f},
+                                {0.0f, 0.0f, 1.0f}}}
+};
+
+Trade::MaterialData data{Trade::MaterialType::Phong, {}, attributes};
+/* [MaterialData-populating-non-owned] */
+}
+
+#ifdef MAGNUM_TARGET_GL
+{
+GL::Texture2D baseColorTexture;
+/* [MaterialData-populating-custom] */
+Trade::MaterialData data{Trade::MaterialType::PbrMetallicRoughness, {
+    {Trade::MaterialAttribute::BaseColor, 0x3bd267ff_srgbaf},
+    {Trade::MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+    {"baseColorTexturePointer", &baseColorTexture},
+    {"highlightColor", 0x00ffff_srgbf},
+    {"name", "Canary Green Plastic, really ugly"}
+}};
+
+// Retrieving the texture pointer
+GL::Texture2D* texture = data.attribute<GL::Texture2D*>("baseColorTexturePointer");
+/* [MaterialData-populating-custom] */
+static_cast<void>(texture);
+}
+#endif
+
+{
+/* [MaterialData-populating-layers] */
+Trade::MaterialData data{
+    Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat,
+    {
+        {Trade::MaterialAttribute::BaseColor, 0xffcc33_srgbf},
+        {Trade::MaterialAttribute::MetallicRoughnessTexture, 0u},
+
+        {Trade::MaterialLayer::ClearCoat},
+        {Trade::MaterialAttribute::LayerFactorTexture, 1u},
+        {Trade::MaterialAttribute::RoughnessTexture,  1u},
+        {Trade::MaterialAttribute::RoughnessTextureSwizzle,
+            Trade::MaterialTextureSwizzle::G}
+    },
+
+    {2, 6}
+};
+/* [MaterialData-populating-layers] */
+}
+
+{
+UnsignedInt a, b, c, d, sandTile, grassTile, rockTile;
+/* [MaterialData-populating-layers-custom] */
+Trade::MaterialData proceduralLandscape{
+    Trade::MaterialTypes{}, // Doesn't match any builtin material type
+    {
+        // Rock layer
+        {Trade::MaterialAttribute::LayerFactorTexture, a},
+        {Trade::MaterialAttribute::BaseColorTexture, rockTile},
+
+        // Sand layer
+        {Trade::MaterialAttribute::LayerFactorTexture, b},
+        {"blendType", "mix"},
+        {Trade::MaterialAttribute::BaseColorTexture, sandTile},
+
+        // Grass layer
+        {Trade::MaterialAttribute::LayerFactorTexture, c},
+        {"blendType", "overlay"},
+        {"strandLengthTexture", d},
+        {Trade::MaterialAttribute::BaseColorTexture, grassTile},
+    },
+
+    // There's no base material, everything is in layers
+    {0, 2, 5, 9}
+};
+/* [MaterialData-populating-layers-custom] */
 }
 
 {

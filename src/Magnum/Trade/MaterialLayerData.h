@@ -41,7 +41,8 @@ namespace Magnum { namespace Trade {
 
 Convenience wrapper that re-routes all @ref MaterialData base material layer
 and attribute accessors APIS from to a layer specified in the @p layer template
-parameter. All APIs expect that given layer exists.
+parameter. All APIs expect that given layer exists. See
+@ref Trade-MaterialData-usage-layers for more information.
 */
 template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
     public:

@@ -38,8 +38,12 @@ namespace Magnum { namespace Trade {
 @brief Flat material data
 @m_since_latest
 
-@see @ref AbstractImporter::material(), @ref PbrMetallicRoughnessMaterialData,
-    @ref PbrSpecularGlossinessMaterialData, @ref PhongMaterialData
+See @ref Trade-MaterialData-usage-types for more information about how to use
+this class.
+@see @ref AbstractImporter::material(), @ref PhongMaterialData,
+    @ref PbrMetallicRoughnessMaterialData,
+    @ref PbrSpecularGlossinessMaterialData, @ref PbrClearCoatMaterialData,
+    @ref MaterialType::Flat
 */
 class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
     public:

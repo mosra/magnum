@@ -1341,8 +1341,168 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAlphaMode value);
 @brief Material data
 @m_since_latest
 
-Key-value store for material attributes in one of the types defined by
-@ref MaterialAttributeType.
+Key-value store for builtin as well as custom material attributes, with an
+ability to define additional layers further affecting the base material.
+Populated instances of this class are returned from
+@ref AbstractImporter::material().
+
+@section Trade-MaterialData-usage Usage
+
+The simplest usage is through templated @ref attribute() functions, which take
+a string attribute name or one of the pre-defined @ref MaterialAttribute
+values. You're expected to check for attribute presence first with
+@ref hasAttribute(), and the requested type has to match @ref attributeType().
+To make things easier, each of the attributes defined in @ref MaterialAttribute
+has a strictly defined type, so you can safely assume the type when requesting
+those. In addition there's @ref tryAttribute() and @ref attributeOr() that
+return a @ref Containers::NullOpt or a default value in case given attribute is
+not found.
+
+@snippet MagnumTrade.cpp MaterialData-usage
+
+It's also possible to iterate through all attributes using @ref attributeName(),
+@ref attributeType() and @ref attribute() taking indices instead of names, with
+@ref attributeCount() returning the total attribute count.
+
+@subsection Trade-MaterialData-usage-types Material types and cnvenience accessors
+
+A material usually consists of a set of attributes for a particular rendering
+workflow --- PBR metallic/roughness, Phong or for example flat-shaded
+materials. To hint what the material contains, @ref types() returns a set of
+@ref MaterialType values. It's not just a single value as the data can define
+attributes for more than one material type (for example both metallic/roughness
+and specular/glossiness PBR workflow), allowing the application to pick the
+best type for a particular use case.
+
+Because retrieving everything through the @ref attribute() APIs can get verbose
+and complex, the @ref Trade library provides a set of accessor APIs for common
+material types such as @ref FlatMaterialData, @ref PhongMaterialData,
+@ref PbrMetallicRoughnessMaterialData or @ref PbrSpecularGlossinessMaterialData.
+Using @ref as() you can convert any @ref MaterialData instance to a reference
+to one of those. These convenience APIs then take care of default values when
+an attribute isn't present or handle fallbacks when an attribute can be defined
+in multiple ways:
+
+@snippet MagnumTrade.cpp MaterialData-usage-types
+
+Each @ref MaterialAttribute is exposed through one or more of those convenience
+APIs, see the documentation of of a particular enum value for more information.
+
+@subsection Trade-MaterialData-usage-packing Texture packing
+
+Especially for single- and two-channel texture maps it's common to have more
+than one map packed into a single texture. Such packing is expressed through
+various @ref MaterialTextureSwizzle attributes such as
+@ref MaterialAttribute::MetalnessTextureSwizzle. While this provides an almost
+endless variability, real-world textures are in just a few common packing
+schemes. For convenience these have dedicated attributes such as
+@ref MaterialAttribute::MetallicRoughnessTexture and can also be checked for
+with for example @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture():
+
+@snippet MagnumTrade.cpp MaterialData-usage-packing
+
+@subsection Trade-MaterialData-usage-layers Material layers
+
+In addition to the base material, there can be material layers. While a
+material attribute can be specified only once for a particular layer, multiple
+layers can use the same attribute name for different purpose. Layers are
+commonly used in PBR workflows to describe lacquered wood, metallic paint or
+for example a thin film on leather surfaces. You can enumerate and query layers
+using @ref layerCount(), @ref layerName() and @ref hasLayer(), layer-specific
+attributes are retrieved by passing layer ID or name as the first parameter to
+the @ref attribute() family of APIs.
+
+For each layer there can be predefined @ref layerFactor(),
+@ref layerFactorTexture() and other texture-related attributes which define how
+much the layer affects the underlying material, but the exact semantics of how
+the factor is applied is left to the layer implementation.
+
+Here's an example showing retrieval of a clear coat layer parameters, if
+present:
+
+@snippet MagnumTrade.cpp MaterialData-usage-layers
+
+Like with base material attributes, builtin layers also have convenience
+accessor APIs. The above can be written in a more compact way using
+@link PbrClearCoatMaterialData @endlink:
+
+@snippet MagnumTrade.cpp MaterialData-usage-layers-types
+
+@section Trade-MaterialData-populating Populating an instance
+
+A @ref MaterialData instance by default takes over ownership of an
+@ref Corrade::Containers::Array containing @ref MaterialAttributeData
+instances, together with @ref MaterialTypes suggesting available material types
+(or an empty set, in case of a fully custom material). Attribute values can be
+in one of the types from @ref MaterialAttributeType, and the type is in most
+cases inferred implicitly. The class internally uses strings for attribute
+names, but you're encouraged to use the predefined names from
+@ref MaterialAttribute --- with those, the attribute gets checked additionally
+that it's in an expected type. Attribute order doesn't matter, the array gets
+internally sorted by name to allow a @f$ \mathcal{O}(\log n) @f$ lookup.
+
+@snippet MagnumTrade.cpp MaterialData-populating
+
+In addition to passing ownership of an array it's also possible to have the
+@ref MaterialData instance refer to external data (for example in a
+memory-mapped file, constant memory etc.). The additional second argument is
+@ref DataFlags that's used only for safely disambiguating from the owning
+constructor, and you'll pass a @ref Corrade::Containers::ArrayView instead of
+an @ref Corrade::Containers::Array. Note that in this case, since the attribute
+data is treated as immutable, you *have to* ensure the list is sorted by name.
+
+@snippet MagnumTrade.cpp MaterialData-populating-non-owned
+
+<b></b>
+
+@m_class{m-note m-info}
+
+@par
+    Additionally, as shown above, in order to create a @cpp constexpr @ce
+    @ref MaterialAttributeData array, you need to use
+    @ref Corrade::Containers::StringView literals instead of plain C strings
+    or the @ref MaterialAttribute enum, and be sure to call only
+    @cpp constexpr @ce-enabled constructors of stored data types.
+
+@subsection Trade-MaterialData-populating-custom Custom material attributes
+
+While attribute names beginning with uppercase letters are reserved for builtin
+Magnum attributes, anything beginning with a lowercase letter can be a custom
+attribute. For greater flexibility, custom attributes can be also strings or
+pointers, allowing you to store arbitrary properties or direct texture pointers
+instead of IDs:
+
+@snippet MagnumTrade.cpp MaterialData-populating-custom
+
+@subsection Trade-MaterialData-populating-layers Adding material layers
+
+Material layers are internally represented as ranges of the attribute array and
+by default the whole attribute array is treated as a base material. The actual
+split into layers can be described using an additionaly offset array passed to
+@ref MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, Containers::Array<UnsignedInt>&&, const void*),
+where entry *i* specifies the end offset of layer *i* --- in the following
+snippet we have two layers (one base material and one clear coat layer), the
+base material being the first two attributes and the clear coat layer being
+attributes in range @cpp 2 @ce to @cpp 6 @ce (thus four attributes):
+
+@snippet MagnumTrade.cpp MaterialData-populating-layers
+
+Like with just a base material, the attributes get sorted for a
+@f$ \mathcal{O}(\log n) @f$ lookup --- but not as a whole, each layer
+separately. In contrary, because layer order matters, those are not reordered
+(and thus their lookup is @f$ \mathcal{O}(n) @f$, however it isn't expected to
+have that many layers for this to matter). The layers can be named by supplying
+a @ref MaterialAttribute::LayerName attribute (or, like shown above, by using
+the convenience @ref MaterialAttributeData::MaterialAttributeData(MaterialLayer)
+constructor) but don't have to --- if a layer doesn't have a name, it can be
+only looked up by its index, not by a name.
+
+Apart from builtin layers, there's no limit in what the layers can be used for
+--- the data can for example describe a completely custom landscape from a set
+of authored `rockTile`, `sandTile`, `grassTile` textures and procedurally
+generated blend factors `a`, `b`, `c`, `d`:
+
+@snippet MagnumTrade.cpp MaterialData-populating-layers-custom
 
 @section Trade-MaterialData-representation Internal representation
 
@@ -1923,16 +2083,16 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * The @p layer is expected to be smaller than @ref layerCount() const
          * and @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
          * in that layer. Cast the pointer to a concrete type based on
-         * @ref type(). Note that in case of a
-         * @ref MaterialAttributeType::Pointer or a
-         * @ref MaterialAttributeType::MutablePointer, returns a
-         * *pointer to a pointer*, not the pointer value itself.
+         * @ref type().
          *
-         * In case of a @ref MaterialAttributeType::String returns a
-         * null-terminated @cpp const char* @ce (not a pointer to
-         * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain zero bytes, thus prefer
-         * to use typed access in that case.
+         * -    In case of a @ref MaterialAttributeType::Pointer or a
+         *      @ref MaterialAttributeType::MutablePointer, returns a
+         *      *pointer to a pointer*, not the pointer value itself.
+         * -    In case of a @ref MaterialAttributeType::String returns a
+         *      null-terminated @cpp const char* @ce (not a pointer to
+         *      @ref Containers::StringView). This doesn't preserve the actual
+         *      string size in case the string data contain zero bytes, thus
+         *      prefer to use typed access in that case.
          */
         const void* attribute(UnsignedInt layer, UnsignedInt id) const;
 
@@ -1941,16 +2101,17 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * The @p layer is expected to be smaller than @ref layerCount() const
          * and @p name is expected to exist in that layer. Cast the pointer to
-         * a concrete type based on @ref attributeType(). Note that
-         * in case of a @ref MaterialAttributeType::Pointer or a
-         * @ref MaterialAttributeType::MutablePointer, returns a
-         * *pointer to a pointer*, not the pointer value itself.
+         * a concrete type based on @ref attributeType().
          *
-         * In case of a @ref MaterialAttributeType::String returns a
-         * null-terminated @cpp const char* @ce (not a pointer to
-         * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain zero bytes, thus prefer
-         * to use typed access in that case.
+         * -    In case of a @ref MaterialAttributeType::Pointer or a
+         *      @ref MaterialAttributeType::MutablePointer, returns a
+         *      *pointer to a pointer*, not the pointer value itself.
+         * -    In case of a @ref MaterialAttributeType::String returns a
+         *      null-terminated @cpp const char* @ce (not a pointer to
+         *      @ref Containers::StringView). This doesn't preserve the actual
+         *      string size in case the string data contain zero bytes, thus prefer
+         *      to use typed access in that case.
+         *
          * @see @ref hasAttribute(), @ref tryAttribute(), @ref attributeOr()
          */
         const void* attribute(UnsignedInt layer, Containers::StringView name) const;
@@ -1961,16 +2122,17 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * The @p layer is expected to exist and the @p id is expected to be smaller than @ref attributeCount(UnsignedInt) const
          * in that layer. Cast the pointer to a concrete type based on
-         * @ref attributeType(). Note that in case of a
-         * @ref MaterialAttributeType::Pointer or a
-         * @ref MaterialAttributeType::MutablePointer, returns a
-         * *pointer to a pointer*, not the pointer value itself.
+         * @ref attributeType().
          *
-         * In case of a @ref MaterialAttributeType::String returns a
-         * null-terminated @cpp const char* @ce (not a pointer to
-         * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain zero bytes, thus prefer
-         * to use typed access in that case.
+         * -    In case of a @ref MaterialAttributeType::Pointer or a
+         *      @ref MaterialAttributeType::MutablePointer, returns a
+         *      *pointer to a pointer*, not the pointer value itself.
+         * -    In case of a @ref MaterialAttributeType::String returns a
+         *      null-terminated @cpp const char* @ce (not a pointer to
+         *      @ref Containers::StringView). This doesn't preserve the actual
+         *      string size in case the string data contain zero bytes, thus prefer
+         *      to use typed access in that case.
+         *
          * @see @ref hasLayer()
          */
         const void* attribute(Containers::StringView layer, UnsignedInt id) const;
@@ -1981,16 +2143,17 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          *
          * The @p layer is expected to exist and @p name is expected to exist
          * in that layer. Cast the pointer to a concrete type based on
-         * @ref attributeType(). Note that in case of a
-         * @ref MaterialAttributeType::Pointer or a
-         * @ref MaterialAttributeType::MutablePointer, returns a
-         * *pointer to a pointer*, not the pointer value itself.
+         * @ref attributeType().
          *
-         * In case of a @ref MaterialAttributeType::String returns a
-         * null-terminated @cpp const char* @ce (not a pointer to
-         * @ref Containers::StringView). This doesn't preserve the actual
-         * string size in case the string data contain zero bytes, thus prefer
-         * to use typed access in that case.
+         * -    In case of a @ref MaterialAttributeType::Pointer or a
+         *      @ref MaterialAttributeType::MutablePointer, returns a
+         *      *pointer to a pointer*, not the pointer value itself.
+         * -    In case of a @ref MaterialAttributeType::String returns a
+         *      null-terminated @cpp const char* @ce (not a pointer to
+         *      @ref Containers::StringView). This doesn't preserve the actual
+         *      string size in case the string data contain zero bytes, thus
+         *      prefer to use typed access in that case.
+         *
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         const void* attribute(Containers::StringView layer, Containers::StringView name) const;

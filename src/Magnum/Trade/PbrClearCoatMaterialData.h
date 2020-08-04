@@ -39,8 +39,11 @@ namespace Magnum { namespace Trade {
 @m_since_latest
 
 Exposes properties of a @ref MaterialLayer::ClearCoat layer. All APIs expect
-that the layer is present in the material.
-@see @ref AbstractImporter::material(), @ref MaterialType::PbrClearCoat
+that the layer is present in the material. See @ref Trade-MaterialData-usage-types
+for more information about how to use this class.
+@see @ref AbstractImporter::material(), @ref FlatMaterialData,
+    @ref PhongMaterialData, @ref PbrMetallicRoughnessMaterialData,
+    @ref PbrSpecularGlossinessMaterialData, @ref MaterialType::PbrClearCoat
 */
 class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<MaterialLayer::ClearCoat> {
     public:
