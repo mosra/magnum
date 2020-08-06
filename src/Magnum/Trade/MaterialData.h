@@ -1373,6 +1373,32 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         MaterialTypes types() const { return _types; }
 
+        /**
+         * @brief Interpret as a material data of concrete type
+         *
+         * Returns a reference to @cpp *this @ce cast to given type. @p T is
+         * expected to be a subclass of the same size such as
+         * @ref PbrMetallicRoughnessMaterialData,
+         * @ref PbrSpecularGlossinessMaterialData or @ref PhongMaterialData.
+         */
+        /* MSVC needs the & here, otherwise it complains that "cannot overload
+           a member function with ref-qualifier with a member function without
+           ref-qualifier". Clang or GCC doesn't. */
+        template<class T> const T& as() const & {
+            static_assert(std::is_base_of<MaterialData, T>::value && sizeof(T) == sizeof(MaterialData), "expected a trivial subclass of MaterialData");
+            return static_cast<const T&>(*this);
+        }
+
+        /**
+         * @brief Interpret a rvalue as a material data of concrete type
+         *
+         * Compared to the above, returns a value and not a reference. The
+         * original instance then behaves the same as a moved-from instance.
+         */
+        template<class T> T as() && {
+            return T{std::move(const_cast<T&>(as<T>()))};
+        }
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Material type

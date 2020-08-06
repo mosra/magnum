@@ -93,6 +93,9 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructCopy();
         void constructMove();
 
+        void as();
+        void asRvalue();
+
         void access();
         void accessPointer();
         void accessString();
@@ -251,6 +254,9 @@ MaterialDataTest::MaterialDataTest() {
 
               &MaterialDataTest::constructCopy,
               &MaterialDataTest::constructMove,
+
+              &MaterialDataTest::as,
+              &MaterialDataTest::asRvalue,
 
               &MaterialDataTest::access,
               &MaterialDataTest::accessPointer,
@@ -1340,6 +1346,56 @@ void MaterialDataTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<MaterialData>::value);
 }
 
+void MaterialDataTest::as() {
+    int state;
+    MaterialData data{MaterialType::Phong|MaterialType::PbrSpecularGlossiness, {
+        {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::SpecularColor, 0x33556600_rgbaf},
+
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {"highlightColor", 0x335566ff_rgbaf}
+    }, {
+        2, 4
+    }, &state};
+
+    auto& phong = data.as<PhongMaterialData>();
+    CORRADE_COMPARE(phong.importerState(), &state);
+    CORRADE_COMPARE(phong.layerCount(), 2);
+    CORRADE_COMPARE(phong.diffuseColor(), 0xccffbbff_rgbaf);
+    CORRADE_COMPARE(phong.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+
+    auto& specularGlossiness = data.as<PbrSpecularGlossinessMaterialData>();
+    CORRADE_COMPARE(specularGlossiness.importerState(), &state);
+    CORRADE_COMPARE(specularGlossiness.layerCount(), 2);
+    CORRADE_COMPARE(specularGlossiness.diffuseColor(), 0xccffbbff_rgbaf);
+    CORRADE_COMPARE(specularGlossiness.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+}
+
+void MaterialDataTest::asRvalue() {
+    int state;
+    MaterialData data{MaterialType::Phong|MaterialType::PbrSpecularGlossiness, {
+        {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::SpecularColor, 0x33556600_rgbaf},
+
+        {MaterialAttribute::LayerName, "ClearCoat"},
+        {"highlightColor", 0x335566ff_rgbaf}
+    }, {
+        2, 4
+    }, &state};
+
+    auto phong = std::move(data).as<PhongMaterialData>();
+    CORRADE_COMPARE(data.layerCount(), 1);
+    CORRADE_COMPARE(phong.layerCount(), 2);
+    CORRADE_COMPARE(phong.diffuseColor(), 0xccffbbff_rgbaf);
+    CORRADE_COMPARE(phong.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+
+    auto specularGlossiness = std::move(phong).as<PbrSpecularGlossinessMaterialData>();
+    CORRADE_COMPARE(phong.layerCount(), 1);
+    CORRADE_COMPARE(specularGlossiness.layerCount(), 2);
+    CORRADE_COMPARE(specularGlossiness.diffuseColor(), 0xccffbbff_rgbaf);
+    CORRADE_COMPARE(specularGlossiness.attribute<Color4>("ClearCoat", "highlightColor"), 0x335566ff_rgbaf);
+}
+
 void MaterialDataTest::access() {
     MaterialData a{{}, {
         {MaterialAttribute::DoubleSided, false},
@@ -2141,7 +2197,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccess() {
     }};
 
     CORRADE_COMPARE(base.types(), MaterialType::PbrMetallicRoughness);
-    const PbrMetallicRoughnessMaterialData& data = static_cast<const PbrMetallicRoughnessMaterialData&>(base);
+    const auto& data = base.as<PbrMetallicRoughnessMaterialData>();
 
     CORRADE_VERIFY(!data.hasMetalnessTexture());
     CORRADE_VERIFY(!data.hasRoughnessTexture());
@@ -2162,7 +2218,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessDefaults() {
 
     CORRADE_COMPARE(base.types(), MaterialTypes{});
     /* Casting is fine even if the type doesn't include PbrMetallicRoughness */
-    const PbrMetallicRoughnessMaterialData& data = static_cast<const PbrMetallicRoughnessMaterialData&>(base);
+    const auto& data = base.as<PbrMetallicRoughnessMaterialData>();
 
     CORRADE_VERIFY(!data.hasMetalnessTexture());
     CORRADE_VERIFY(!data.hasRoughnessTexture());
@@ -2756,7 +2812,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccess() {
     }};
 
     CORRADE_COMPARE(base.types(), MaterialType::PbrSpecularGlossiness);
-    const PbrSpecularGlossinessMaterialData& data = static_cast<const PbrSpecularGlossinessMaterialData&>(base);
+    const auto& data = base.as<PbrSpecularGlossinessMaterialData>();
 
     CORRADE_VERIFY(!data.hasSpecularTexture());
     CORRADE_VERIFY(!data.hasGlossinessTexture());
@@ -2773,7 +2829,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessDefaults() {
 
     CORRADE_COMPARE(base.types(), MaterialTypes{});
     /* Casting is fine even if the type doesn't include PbrMetallicRoughness */
-    const PbrSpecularGlossinessMaterialData& data = static_cast<const PbrSpecularGlossinessMaterialData&>(base);
+    const auto& data = base.as<PbrSpecularGlossinessMaterialData>();
 
     CORRADE_VERIFY(!data.hasSpecularTexture());
     CORRADE_VERIFY(!data.hasGlossinessTexture());
@@ -3138,7 +3194,7 @@ void MaterialDataTest::phongAccess() {
     }};
 
     CORRADE_COMPARE(base.types(), MaterialType::Phong);
-    const PhongMaterialData& data = static_cast<const PhongMaterialData&>(base);
+    const auto& data = base.as<PhongMaterialData>();
 
     CORRADE_VERIFY(!data.hasSpecularTexture());
     CORRADE_VERIFY(!data.hasTextureTransformation());
@@ -3154,7 +3210,7 @@ void MaterialDataTest::phongAccessDefaults() {
 
     CORRADE_COMPARE(base.types(), MaterialTypes{});
     /* Casting is fine even if the type doesn't include Phong */
-    const PhongMaterialData& data = static_cast<const PhongMaterialData&>(base);
+    const auto& data = base.as<PhongMaterialData>();
 
     CORRADE_VERIFY(!data.hasTextureTransformation());
     CORRADE_VERIFY(!data.hasTextureCoordinates());
