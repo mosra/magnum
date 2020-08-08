@@ -152,6 +152,10 @@ Float PbrMetallicRoughnessMaterialData::metalness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTexture() const {
+    /* Explicit assertion because printing  that MetalnessTexture isn't found
+       would be misleading as it can be also MetallicRoughnessTexture */
+    CORRADE_ASSERT(hasMetalnessTexture(),
+        "Trade::PbrMetallicRoughnessMaterialData::metalnessTexture(): the material doesn't have a metalness texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetallicRoughnessTexture))
         return *value;
     return attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture);
@@ -186,6 +190,10 @@ Float PbrMetallicRoughnessMaterialData::roughness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTexture() const {
+    /* Explicit assertion because printing that RoughnessTexture isn't found
+       would be misleading as it can be also MetallicRoughnessTexture */
+    CORRADE_ASSERT(hasRoughnessTexture(),
+        "Trade::PbrMetallicRoughnessMaterialData::roughnessTexture(): the material doesn't have a roughness texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetallicRoughnessTexture))
         return *value;
     return attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture);
