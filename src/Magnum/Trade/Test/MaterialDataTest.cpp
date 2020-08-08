@@ -35,6 +35,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Trade/FlatMaterialData.h"
 #include "Magnum/Trade/MaterialData.h"
+#include "Magnum/Trade/PbrClearCoatMaterialData.h"
 #include "Magnum/Trade/PbrMetallicRoughnessMaterialData.h"
 #include "Magnum/Trade/PbrSpecularGlossinessMaterialData.h"
 #include "Magnum/Trade/PhongMaterialData.h"
@@ -49,6 +50,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void attributeTypeSizeInvalid();
 
         void attributeMap();
+        void layerMap();
 
         void constructAttributeDefault();
         void constructAttributeString();
@@ -63,8 +65,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructAttributeStringNameStringValue();
         void constructAttributeNameStringValue();
         void constructAttributeTextureSwizzle();
+        void constructAttributeLayer();
 
         void constructAttributeInvalidName();
+        void constructAttributeInvalidLayerName();
         void constructAttributeWrongTypeForName();
         void constructAttributeInvalidType();
         void constructAttributeTooLarge();
@@ -120,9 +124,11 @@ class MaterialDataTest: public TestSuite::Tester {
         void accessLayerLayerNameInBaseMaterial();
         void accessLayerEmptyLayer();
         void accessLayerIndexOptional();
+        void accessLayerNameOptional();
         void accessLayerStringOptional();
         void accessLayerOutOfBounds();
         void accessLayerNotFound();
+        void accessInvalidLayerName();
         void accessOutOfBoundsInLayerIndex();
         void accessOutOfBoundsInLayerString();
         void accessNotFoundInLayerIndex();
@@ -181,6 +187,17 @@ class MaterialDataTest: public TestSuite::Tester {
         void flatAccessTexturedMismatchedMatrixCoordinates();
         void flatAccessInvalidTextures();
 
+        void templateLayerAccess();
+
+        void pbrClearCoatAccess();
+        void pbrClearCoatAccessDefaults();
+        void pbrClearCoatAccessTextured();
+        void pbrClearCoatAccessTexturedDefaults();
+        void pbrClearCoatAccessTexturedSingleMatrixCoordinates();
+        void pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates();
+        void pbrClearCoatAccessInvalidTextures();
+
+        void debugLayer();
         void debugAttribute();
         void debugTextureSwizzle();
         void debugAttributeType();
@@ -203,6 +220,7 @@ MaterialDataTest::MaterialDataTest() {
     addTests({&MaterialDataTest::attributeTypeSize,
               &MaterialDataTest::attributeTypeSizeInvalid,
               &MaterialDataTest::attributeMap,
+              &MaterialDataTest::layerMap,
 
               &MaterialDataTest::constructAttributeDefault,
               &MaterialDataTest::constructAttributeString,
@@ -241,8 +259,10 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructAttributeStringNameStringValue,
               &MaterialDataTest::constructAttributeNameStringValue,
               &MaterialDataTest::constructAttributeTextureSwizzle,
+              &MaterialDataTest::constructAttributeLayer,
 
               &MaterialDataTest::constructAttributeInvalidName,
+              &MaterialDataTest::constructAttributeInvalidLayerName,
               &MaterialDataTest::constructAttributeWrongTypeForName,
               &MaterialDataTest::constructAttributeInvalidType,
               &MaterialDataTest::constructAttributeTooLarge,
@@ -301,9 +321,11 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::accessLayerLayerNameInBaseMaterial,
               &MaterialDataTest::accessLayerEmptyLayer,
               &MaterialDataTest::accessLayerIndexOptional,
+              &MaterialDataTest::accessLayerNameOptional,
               &MaterialDataTest::accessLayerStringOptional,
               &MaterialDataTest::accessLayerOutOfBounds,
               &MaterialDataTest::accessLayerNotFound,
+              &MaterialDataTest::accessInvalidLayerName,
               &MaterialDataTest::accessOutOfBoundsInLayerIndex,
               &MaterialDataTest::accessOutOfBoundsInLayerString,
               &MaterialDataTest::accessNotFoundInLayerIndex,
@@ -362,6 +384,17 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::flatAccessTexturedMismatchedMatrixCoordinates,
               &MaterialDataTest::flatAccessInvalidTextures,
 
+              &MaterialDataTest::templateLayerAccess,
+
+              &MaterialDataTest::pbrClearCoatAccess,
+              &MaterialDataTest::pbrClearCoatAccessDefaults,
+              &MaterialDataTest::pbrClearCoatAccessTextured,
+              &MaterialDataTest::pbrClearCoatAccessTexturedDefaults,
+              &MaterialDataTest::pbrClearCoatAccessTexturedSingleMatrixCoordinates,
+              &MaterialDataTest::pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates,
+              &MaterialDataTest::pbrClearCoatAccessInvalidTextures,
+
+              &MaterialDataTest::debugLayer,
               &MaterialDataTest::debugAttribute,
               &MaterialDataTest::debugTextureSwizzle,
               &MaterialDataTest::debugAttributeType,
@@ -449,6 +482,35 @@ void MaterialDataTest::attributeMap() {
             #undef _c
             #undef _ct
             #undef _cnt
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+    }
+}
+
+void MaterialDataTest::layerMap() {
+    /* Ensure all layer names are:
+        - present in the map,
+        - and that their translated string name corresponds to the enum value
+          name
+       This goes through the first 16 bits, which should be enough. Going
+       through 32 bits takes 8 seconds, too much. */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        /* Attribute 0 reserved for an invalid value */
+
+        const auto attribute = MaterialLayer(i);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(attribute) {
+            #define _c(name_) \
+                case MaterialLayer::name_: \
+                    CORRADE_COMPARE((MaterialAttributeData{MaterialLayer::name_}.value<Containers::StringView>()), #name_); \
+                    break;
+            #include "Magnum/Trade/Implementation/materialLayerProperties.hpp"
+            #undef _c
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
@@ -678,6 +740,13 @@ void MaterialDataTest::constructAttributeTextureSwizzle() {
     CORRADE_COMPARE(typeErased.value<MaterialTextureSwizzle>(), MaterialTextureSwizzle::GBA);
 }
 
+void MaterialDataTest::constructAttributeLayer() {
+    MaterialAttributeData attribute{MaterialLayer::ClearCoat};
+    CORRADE_COMPARE(attribute.name(), "$LayerName");
+    CORRADE_COMPARE(attribute.type(), MaterialAttributeType::String);
+    CORRADE_COMPARE(attribute.value<Containers::StringView>(), "ClearCoat");
+}
+
 void MaterialDataTest::constructAttributeInvalidName() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -690,6 +759,20 @@ void MaterialDataTest::constructAttributeInvalidName() {
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialAttributeData: invalid name Trade::MaterialAttribute(0x0)\n"
         "Trade::MaterialAttributeData: invalid name Trade::MaterialAttribute(0xfefe)\n");
+}
+
+void MaterialDataTest::constructAttributeInvalidLayerName() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MaterialAttributeData{MaterialLayer(0x0)};
+    MaterialAttributeData{MaterialLayer(0xfefe)};
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: invalid name Trade::MaterialLayer(0x0)\n"
+        "Trade::MaterialAttributeData: invalid name Trade::MaterialLayer(0xfefe)\n");
 }
 
 void MaterialDataTest::constructAttributeWrongTypeForName() {
@@ -952,7 +1035,7 @@ void MaterialDataTest::constructLayers() {
         /* Layer name gets sorted first by the constructor */
         {"highlightColor", 0x335566ff_rgbaf},
         {MaterialAttribute::AlphaBlend, true},
-        {MaterialAttribute::LayerName, "ClearCoat"},
+        {MaterialLayer::ClearCoat},
 
         /* Empty layer here */
 
@@ -975,6 +1058,7 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.attributeCount(2), 0);
     CORRADE_COMPARE(data.attributeCount(3), 2);
     CORRADE_COMPARE(data.attributeCount("ClearCoat"), 3);
+    CORRADE_COMPARE(data.attributeCount(MaterialLayer::ClearCoat), 3);
 
     /* Layer access */
     CORRADE_COMPARE(data.layerName(0), "");
@@ -983,10 +1067,12 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(data.layerName(3), "");
 
     CORRADE_VERIFY(data.hasLayer("ClearCoat"));
+    CORRADE_VERIFY(data.hasLayer(MaterialLayer::ClearCoat));
     CORRADE_VERIFY(!data.hasLayer(""));
     CORRADE_VERIFY(!data.hasLayer("DoubleSided"));
 
     CORRADE_COMPARE(data.layerId("ClearCoat"), 1);
+    CORRADE_COMPARE(data.layerId(MaterialLayer::ClearCoat), 1);
 
     /* Verify sorting in each layer */
     CORRADE_COMPARE(data.attributeName(0, 0), "DiffuseTextureCoordinates");
@@ -1069,6 +1155,51 @@ void MaterialDataTest::constructLayers() {
     CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(1, "highlightColor")), 0x335566ff_rgbaf);
     CORRADE_COMPARE(static_cast<const char*>(data.attribute(1, "$LayerName")), "ClearCoat"_s);
     CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(3, "NormalTexture")), 3);
+
+    /* Access by layer name and attribute ID */
+    CORRADE_COMPARE(data.attributeName(MaterialLayer::ClearCoat, 1), "AlphaBlend");
+    CORRADE_COMPARE(data.attributeName(MaterialLayer::ClearCoat, 2), "highlightColor");
+
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, 1), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, 2), MaterialAttributeType::Vector4);
+
+    CORRADE_COMPARE(data.attribute<bool>(MaterialLayer::ClearCoat, 1), true);
+    CORRADE_COMPARE(data.attribute<Color4>(MaterialLayer::ClearCoat, 2), 0x335566ff_rgbaf);
+
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(MaterialLayer::ClearCoat, 1)), true);
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(MaterialLayer::ClearCoat, 2)), 0x335566ff_rgbaf);
+
+    /* Access by layer name and attribute name */
+    CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend));
+    CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName));
+
+    CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), 1);
+    CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), 0);
+
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), MaterialAttributeType::Bool);
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), MaterialAttributeType::String);
+
+    CORRADE_COMPARE(data.attribute<bool>(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend), true);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialLayer::ClearCoat, MaterialAttribute::LayerName), "ClearCoat");
+
+    CORRADE_COMPARE(*static_cast<const bool*>(data.attribute(MaterialLayer::ClearCoat, MaterialAttribute::AlphaBlend)), true);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(MaterialLayer::ClearCoat, MaterialAttribute::LayerName)), "ClearCoat"_s);
+
+    /* Access by layer name and attribute string */
+    CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, "highlightColor"));
+    CORRADE_VERIFY(data.hasAttribute(MaterialLayer::ClearCoat, "$LayerName"));
+
+    CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, "highlightColor"), 2);
+    CORRADE_COMPARE(data.attributeId(MaterialLayer::ClearCoat, "$LayerName"), 0);
+
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, "highlightColor"), MaterialAttributeType::Vector4);
+    CORRADE_COMPARE(data.attributeType(MaterialLayer::ClearCoat, "$LayerName"), MaterialAttributeType::String);
+
+    CORRADE_COMPARE(data.attribute<Color4>(MaterialLayer::ClearCoat, "highlightColor"), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(data.attribute<Containers::StringView>(MaterialLayer::ClearCoat, "$LayerName"), "ClearCoat");
+
+    CORRADE_COMPARE(*static_cast<const Color4*>(data.attribute(MaterialLayer::ClearCoat, "highlightColor")), 0x335566ff_rgbaf);
+    CORRADE_COMPARE(static_cast<const char*>(data.attribute(MaterialLayer::ClearCoat, "$LayerName")), "ClearCoat"_s);
 
     /* Access by layer string and attribute ID */
     CORRADE_COMPARE(data.attributeName("ClearCoat", 1), "AlphaBlend");
@@ -1678,6 +1809,7 @@ void MaterialDataTest::accessLayers() {
 
     CORRADE_COMPARE(data.layerFactor(2), 0.5f);
     CORRADE_COMPARE(data.layerFactor("ClearCoat"), 0.5f);
+    CORRADE_COMPARE(data.layerFactor(MaterialLayer::ClearCoat), 0.5f);
 }
 
 void MaterialDataTest::accessLayersDefaults() {
@@ -1691,6 +1823,7 @@ void MaterialDataTest::accessLayersDefaults() {
 
     CORRADE_COMPARE(data.layerFactor(1), 1.0f);
     CORRADE_COMPARE(data.layerFactor("ClearCoat"), 1.0f);
+    CORRADE_COMPARE(data.layerFactor(MaterialLayer::ClearCoat), 1.0f);
 }
 
 void MaterialDataTest::accessLayersTextured() {
@@ -1711,18 +1844,23 @@ void MaterialDataTest::accessLayersTextured() {
 
     CORRADE_COMPARE(data.layerFactor(2), 0.5f);
     CORRADE_COMPARE(data.layerFactor("ClearCoat"), 0.5f);
+    CORRADE_COMPARE(data.layerFactor(MaterialLayer::ClearCoat), 0.5f);
 
     CORRADE_COMPARE(data.layerFactorTexture(2), 4u);
     CORRADE_COMPARE(data.layerFactorTexture("ClearCoat"), 4u);
+    CORRADE_COMPARE(data.layerFactorTexture(MaterialLayer::ClearCoat), 4u);
 
     CORRADE_COMPARE(data.layerFactorTextureSwizzle(2), MaterialTextureSwizzle::A);
     CORRADE_COMPARE(data.layerFactorTextureSwizzle("ClearCoat"), MaterialTextureSwizzle::A);
+    CORRADE_COMPARE(data.layerFactorTextureSwizzle(MaterialLayer::ClearCoat), MaterialTextureSwizzle::A);
 
     CORRADE_COMPARE(data.layerFactorTextureMatrix(2), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.layerFactorTextureMatrix("ClearCoat"), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.layerFactorTextureMatrix(MaterialLayer::ClearCoat), Matrix3::scaling({0.5f, 1.0f}));
 
     CORRADE_COMPARE(data.layerFactorTextureCoordinates(2), 2u);
     CORRADE_COMPARE(data.layerFactorTextureCoordinates("ClearCoat"), 2u);
+    CORRADE_COMPARE(data.layerFactorTextureCoordinates(MaterialLayer::ClearCoat), 2u);
 }
 
 void MaterialDataTest::accessLayersTexturedDefault() {
@@ -1739,18 +1877,23 @@ void MaterialDataTest::accessLayersTexturedDefault() {
 
     CORRADE_COMPARE(data.layerFactor(2), 1.0f);
     CORRADE_COMPARE(data.layerFactor("ClearCoat"), 1.0f);
+    CORRADE_COMPARE(data.layerFactor(MaterialLayer::ClearCoat), 1.0f);
 
     CORRADE_COMPARE(data.layerFactorTexture(2), 3u);
     CORRADE_COMPARE(data.layerFactorTexture("ClearCoat"), 3u);
+    CORRADE_COMPARE(data.layerFactorTexture(MaterialLayer::ClearCoat), 3u);
 
     CORRADE_COMPARE(data.layerFactorTextureSwizzle(2), MaterialTextureSwizzle::R);
     CORRADE_COMPARE(data.layerFactorTextureSwizzle("ClearCoat"), MaterialTextureSwizzle::R);
+    CORRADE_COMPARE(data.layerFactorTextureSwizzle(MaterialLayer::ClearCoat), MaterialTextureSwizzle::R);
 
     CORRADE_COMPARE(data.layerFactorTextureMatrix(2), Matrix3{});
     CORRADE_COMPARE(data.layerFactorTextureMatrix("ClearCoat"), Matrix3{});
+    CORRADE_COMPARE(data.layerFactorTextureMatrix(MaterialLayer::ClearCoat), Matrix3{});
 
     CORRADE_COMPARE(data.layerFactorTextureCoordinates(2), 0);
     CORRADE_COMPARE(data.layerFactorTextureCoordinates("ClearCoat"), 0);
+    CORRADE_COMPARE(data.layerFactorTextureCoordinates(MaterialLayer::ClearCoat), 0);
 }
 
 void MaterialDataTest::accessLayersTexturedSingleMatrixCoordinates() {
@@ -1765,9 +1908,11 @@ void MaterialDataTest::accessLayersTexturedSingleMatrixCoordinates() {
 
     CORRADE_COMPARE(data.layerFactorTextureMatrix(1), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.layerFactorTextureMatrix("ClearCoat"), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.layerFactorTextureMatrix(MaterialLayer::ClearCoat), Matrix3::scaling({0.5f, 1.0f}));
 
     CORRADE_COMPARE(data.layerFactorTextureCoordinates(1), 2u);
     CORRADE_COMPARE(data.layerFactorTextureCoordinates("ClearCoat"), 2u);
+    CORRADE_COMPARE(data.layerFactorTextureCoordinates(MaterialLayer::ClearCoat), 2u);
 }
 
 void MaterialDataTest::accessLayersTexturedBaseMaterialMatrixCoordinates() {
@@ -1783,9 +1928,11 @@ void MaterialDataTest::accessLayersTexturedBaseMaterialMatrixCoordinates() {
 
     CORRADE_COMPARE(data.layerFactorTextureMatrix(1), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_COMPARE(data.layerFactorTextureMatrix("ClearCoat"), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.layerFactorTextureMatrix(MaterialLayer::ClearCoat), Matrix3::scaling({0.5f, 1.0f}));
 
     CORRADE_COMPARE(data.layerFactorTextureCoordinates(1), 2u);
     CORRADE_COMPARE(data.layerFactorTextureCoordinates("ClearCoat"), 2u);
+    CORRADE_COMPARE(data.layerFactorTextureCoordinates(MaterialLayer::ClearCoat), 2u);
 }
 
 void MaterialDataTest::accessLayersInvalidTextures() {
@@ -1801,20 +1948,28 @@ void MaterialDataTest::accessLayersInvalidTextures() {
     Error redirectError{&out};
     data.layerFactorTexture(1);
     data.layerFactorTexture("ClearCoat");
+    data.layerFactorTexture(MaterialLayer::ClearCoat);
     data.layerFactorTextureSwizzle(1);
     data.layerFactorTextureSwizzle("ClearCoat");
+    data.layerFactorTextureSwizzle(MaterialLayer::ClearCoat);
     data.layerFactorTextureMatrix(1);
     data.layerFactorTextureMatrix("ClearCoat");
+    data.layerFactorTextureMatrix(MaterialLayer::ClearCoat);
     data.layerFactorTextureCoordinates(1);
     data.layerFactorTextureCoordinates("ClearCoat");
+    data.layerFactorTextureCoordinates(MaterialLayer::ClearCoat);
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer 1\n"
         "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer ClearCoat\n"
+        "Trade::MaterialData::attribute(): attribute LayerFactorTexture not found in layer ClearCoat\n"
         "Trade::MaterialData::layerFactorTextureSwizzle(): layer 1 doesn't have a factor texture\n"
+        "Trade::MaterialData::layerFactorTextureSwizzle(): layer ClearCoat doesn't have a factor texture\n"
         "Trade::MaterialData::layerFactorTextureSwizzle(): layer ClearCoat doesn't have a factor texture\n"
         "Trade::MaterialData::layerFactorTextureMatrix(): layer 1 doesn't have a factor texture\n"
         "Trade::MaterialData::layerFactorTextureMatrix(): layer ClearCoat doesn't have a factor texture\n"
+        "Trade::MaterialData::layerFactorTextureMatrix(): layer ClearCoat doesn't have a factor texture\n"
         "Trade::MaterialData::layerFactorTextureCoordinates(): layer 1 doesn't have a factor texture\n"
+        "Trade::MaterialData::layerFactorTextureCoordinates(): layer ClearCoat doesn't have a factor texture\n"
         "Trade::MaterialData::layerFactorTextureCoordinates(): layer ClearCoat doesn't have a factor texture\n");
 }
 
@@ -1871,6 +2026,33 @@ void MaterialDataTest::accessLayerIndexOptional() {
     CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(1, MaterialAttribute::DiffuseTexture));
     CORRADE_COMPARE(data.attributeOr(1, "DiffuseTexture", 5u), 5);
     CORRADE_COMPARE(data.attributeOr(1, MaterialAttribute::DiffuseTexture, 5u), 5);
+}
+
+void MaterialDataTest::accessLayerNameOptional() {
+    MaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0x335566ff_rgbaf},
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::AlphaMask, 0.5f},
+        {MaterialAttribute::SpecularTexture, 3u}
+    }, {1, 4}};
+
+    /* This exists */
+    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture"));
+    CORRADE_VERIFY(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture));
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, "SpecularTexture")), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture)), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "SpecularTexture"), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture), 3);
+    CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, "SpecularTexture", 5u), 3);
+    CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, MaterialAttribute::SpecularTexture, 5u), 3);
+
+    /* This doesn't */
+    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, "DiffuseTexture"));
+    CORRADE_VERIFY(!data.tryAttribute<UnsignedInt>(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture));
+    CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, "DiffuseTexture", 5u), 5);
+    CORRADE_COMPARE(data.attributeOr(MaterialLayer::ClearCoat, MaterialAttribute::DiffuseTexture, 5u), 5);
 }
 
 void MaterialDataTest::accessLayerStringOptional() {
@@ -2040,6 +2222,76 @@ void MaterialDataTest::accessLayerNotFound() {
         "Trade::MaterialData::tryAttribute(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n"
         "Trade::MaterialData::attributeOr(): layer ClearCoat not found\n");
+}
+
+void MaterialDataTest::accessInvalidLayerName() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    MaterialData data{{}, {}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.layerId(MaterialLayer(0x0));
+    data.layerId(MaterialLayer(0xfefe));
+    data.layerFactor(MaterialLayer(0xfefe));
+    data.layerFactorTexture(MaterialLayer(0xfefe));
+    data.layerFactorTextureSwizzle(MaterialLayer(0xfefe));
+    data.layerFactorTextureMatrix(MaterialLayer(0xfefe));
+    data.layerFactorTextureCoordinates(MaterialLayer(0xfefe));
+    data.attributeCount(MaterialLayer(0xfefe));
+    data.hasAttribute(MaterialLayer(0xfefe), "AlphaMask");
+    data.hasAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attributeId(MaterialLayer(0xfefe), "AlphaMask");
+    data.attributeId(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attributeName(MaterialLayer(0xfefe), 0);
+    data.attributeType(MaterialLayer(0xfefe), 0);
+    data.attributeType(MaterialLayer(0xfefe), "AlphaMask");
+    data.attributeType(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attribute(MaterialLayer(0xfefe), 0);
+    data.attribute(MaterialLayer(0xfefe), "AlphaMask");
+    data.attribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attribute<Int>(MaterialLayer(0xfefe), 0);
+    data.attribute<Int>(MaterialLayer(0xfefe), "AlphaMask");
+    data.attribute<Int>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attribute<Containers::StringView>(MaterialLayer(0xfefe), 0);
+    data.tryAttribute(MaterialLayer(0xfefe), "AlphaMask");
+    data.tryAttribute(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.tryAttribute<bool>(MaterialLayer(0xfefe), "AlphaMask");
+    data.tryAttribute<bool>(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask);
+    data.attributeOr(MaterialLayer(0xfefe), "AlphaMask", false);
+    data.attributeOr(MaterialLayer(0xfefe), MaterialAttribute::AlphaMask, false);
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::layerId(): invalid name Trade::MaterialLayer(0x0)\n"
+        "Trade::MaterialData::layerId(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::layerFactor(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::layerFactorTexture(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::layerFactorTextureSwizzle(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::layerFactorTextureMatrix(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::layerFactorTextureCoordinates(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeCount(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::hasAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeId(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeName(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeType(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::tryAttribute(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialLayer(0xfefe)\n"
+        "Trade::MaterialData::attributeOr(): invalid name Trade::MaterialLayer(0xfefe)\n");
 }
 
 void MaterialDataTest::accessOutOfBoundsInLayerIndex() {
@@ -3799,6 +4051,209 @@ void MaterialDataTest::flatAccessInvalidTextures() {
         "Trade::FlatMaterialData::texture(): the material doesn't have a texture\n"
         "Trade::FlatMaterialData::textureMatrix(): the material doesn't have a texture\n"
         "Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture\n");
+}
+
+void MaterialDataTest::templateLayerAccess() {
+    MaterialLayerData<MaterialLayer::ClearCoat> data{{}, {
+        {MaterialAttribute::BaseColor, 0x335566ff_rgbaf},
+
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactor, 0.35f},
+        {MaterialAttribute::LayerFactorTexture, 3u},
+        {MaterialAttribute::LayerFactorTextureSwizzle, MaterialTextureSwizzle::B},
+        {MaterialAttribute::LayerFactorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::LayerFactorTextureCoordinates, 4u},
+    }, {1, 7}};
+
+    CORRADE_COMPARE(data.layerName(), "ClearCoat");
+    CORRADE_COMPARE(data.layerFactor(), 0.35f);
+    CORRADE_COMPARE(data.layerFactorTexture(), 3u);
+    CORRADE_COMPARE(data.layerFactorTextureSwizzle(), MaterialTextureSwizzle::B);
+    CORRADE_COMPARE(data.layerFactorTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.layerFactorTextureCoordinates(), 4u);
+
+    CORRADE_COMPARE(data.attributeCount(), 6);
+    CORRADE_VERIFY(data.hasAttribute(MaterialAttribute::LayerFactor));
+    CORRADE_VERIFY(data.hasAttribute("LayerFactorTexture"));
+    CORRADE_VERIFY(!data.hasAttribute(MaterialAttribute::BaseColor));
+    CORRADE_VERIFY(!data.hasAttribute("BaseColor"));
+    CORRADE_VERIFY(data.hasAttribute(0, MaterialAttribute::BaseColor));
+    CORRADE_VERIFY(data.hasAttribute(0, "BaseColor"));
+
+    CORRADE_COMPARE(data.attributeId(MaterialAttribute::LayerFactorTexture), 2);
+    CORRADE_COMPARE(data.attributeId("LayerFactorTexture"), 2);
+
+    CORRADE_COMPARE(data.attributeName(2), "LayerFactorTexture");
+
+    CORRADE_COMPARE(data.attributeType(2), MaterialAttributeType::UnsignedInt);
+    CORRADE_COMPARE(data.attributeType(MaterialAttribute::LayerFactorTexture), MaterialAttributeType::UnsignedInt);
+    CORRADE_COMPARE(data.attributeType("LayerFactorTexture"), MaterialAttributeType::UnsignedInt);
+
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(2)), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute(MaterialAttribute::LayerFactorTexture)), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.attribute("LayerFactorTexture")), 3);
+
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(2), 3);
+    CORRADE_COMPARE(data.attribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
+    CORRADE_COMPARE(data.attribute<UnsignedInt>("LayerFactorTexture"), 3);
+
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute(MaterialAttribute::LayerFactorTexture)), 3);
+    CORRADE_COMPARE(*static_cast<const UnsignedInt*>(data.tryAttribute("LayerFactorTexture")), 3);
+
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture), 3);
+    CORRADE_COMPARE(data.tryAttribute<UnsignedInt>("LayerFactorTexture"), 3);
+
+    CORRADE_COMPARE(data.attributeOr(MaterialAttribute::LayerFactorTexture, 5u), 3);
+    CORRADE_COMPARE(data.attributeOr("LayerFactorTexture", 5u), 3);
+}
+
+void MaterialDataTest::pbrClearCoatAccess() {
+    MaterialData base{MaterialType::PbrClearCoat, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 0.7f}
+    }, {0, 2}};
+
+    CORRADE_COMPARE(base.types(), MaterialType::PbrClearCoat);
+    const auto& data = base.as<PbrClearCoatMaterialData>();
+
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.roughness(), 0.7f);
+}
+
+void MaterialDataTest::pbrClearCoatAccessDefaults() {
+    MaterialData base{{}, {
+        /* Needs to have at least the layer name, otherwise the queries will
+           blow up */
+        {MaterialLayer::ClearCoat}
+    }, {0, 1}};
+
+    CORRADE_COMPARE(base.types(), MaterialTypes{});
+    const auto& data = base.as<PbrClearCoatMaterialData>();
+
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.layerFactor(), 1.0f);
+    CORRADE_COMPARE(data.roughness(), 0.0f);
+}
+
+void MaterialDataTest::pbrClearCoatAccessTextured() {
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::Roughness, 0.7f},
+        {MaterialAttribute::RoughnessTexture, 2u},
+        {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::A},
+        {MaterialAttribute::RoughnessTextureMatrix, Matrix3::translation({2.0f, 1.5f})},
+        {MaterialAttribute::RoughnessTextureCoordinates, 6u},
+        {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::B},
+        {MaterialAttribute::NormalTextureMatrix, Matrix3::translation({0.0f, 0.5f})},
+        {MaterialAttribute::NormalTextureCoordinates, 7u},
+    }, {0, 10}};
+
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.roughness(), 0.7f);
+    CORRADE_COMPARE(data.roughnessTexture(), 2u);
+    CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::A);
+    CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({2.0f, 1.5f}));
+    CORRADE_COMPARE(data.roughnessTextureCoordinates(), 6u);
+    CORRADE_COMPARE(data.normalTexture(), 3u);
+    CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::B);
+    CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessTexturedDefaults() {
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::RoughnessTexture, 2u},
+        {MaterialAttribute::NormalTexture, 3u},
+    }, {0, 3}};
+
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.roughness(), 0.0f);
+    CORRADE_COMPARE(data.roughnessTexture(), 2u);
+    CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::R);
+    CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0u);
+    CORRADE_COMPARE(data.normalTexture(), 3u);
+    CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
+    CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(data.normalTextureCoordinates(), 0u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessTexturedSingleMatrixCoordinates() {
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::RoughnessTexture, 2u},
+        {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.0f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u},
+    }, {0, 5}};
+
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.roughnessTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates() {
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.0f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u},
+
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::RoughnessTexture, 2u},
+        {MaterialAttribute::NormalTexture, 3u},
+    }, {2, 5}};
+
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.roughnessTextureCoordinates(), 7u);
+    CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessInvalidTextures() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+    }, {0, 1}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.roughnessTexture();
+    data.roughnessTextureSwizzle();
+    data.roughnessTextureMatrix();
+    data.roughnessTextureCoordinates();
+    data.normalTexture();
+    data.normalTextureSwizzle();
+    data.normalTextureMatrix();
+    data.normalTextureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialData::attribute(): attribute RoughnessTexture not found in layer ClearCoat\n"
+        "Trade::PbrClearCoatMaterialData::roughnessTextureSwizzle(): the layer doesn't have a roughness texture\n"
+        "Trade::PbrClearCoatMaterialData::roughnessTextureMatrix(): the layer doesn't have a roughness texture\n"
+        "Trade::PbrClearCoatMaterialData::roughnessTextureCoordinates(): the layer doesn't have a roughness texture\n"
+        "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer ClearCoat\n"
+        "Trade::PbrClearCoatMaterialData::normalTextureSwizzle(): the layer doesn't have a normal texture\n"
+        "Trade::PbrClearCoatMaterialData::normalTextureMatrix(): the layer doesn't have a normal texture\n"
+        "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture\n");
+}
+
+void MaterialDataTest::debugLayer() {
+    std::ostringstream out;
+
+    Debug{&out} << MaterialLayer::ClearCoat << MaterialLayer(0xfefe) << MaterialLayer{};
+    CORRADE_COMPARE(out.str(), "Trade::MaterialLayer::ClearCoat Trade::MaterialLayer(0xfefe) Trade::MaterialLayer(0x0)\n");
 }
 
 void MaterialDataTest::debugAttribute() {

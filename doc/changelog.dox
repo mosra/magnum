@@ -77,10 +77,10 @@ See also:
 -   A new, redesigned @ref Trade::MaterialData class allowing to store custom
     material attributes as well as more material types together in a single
     instance; plus new @ref Trade::FlatMaterialData,
-    @ref Trade::PbrMetallicRoughnessMaterialData and
-    @ref Trade::PbrSpecularGlossinessMaterialData convenience accessor APIs
-    similar to @ref Trade::PhongMaterialData. See
-    [mosra/magnum#459](https://github.com/mosra/magnum/pull/459).
+    @ref Trade::PbrMetallicRoughnessMaterialData,
+    @ref Trade::PbrSpecularGlossinessMaterialData and
+    @ref Trade::PbrClearCoatMaterialData convenience accessor APIs similar to
+    @ref Trade::PhongMaterialData. See [mosra/magnum#459](https://github.com/mosra/magnum/pull/459).
 -   Added @ref Trade::PhongMaterialData::hasSpecularTexture(),
     @ref Trade::PhongMaterialData::specularTextureSwizzle() and
     @ref Trade::PhongMaterialData::normalTextureSwizzle() to make new features

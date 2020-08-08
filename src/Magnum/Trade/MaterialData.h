@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Trade::MaterialData, @ref Magnum::Trade::MaterialAttributeData, enum @ref Magnum::Trade::MaterialAttribute, @ref Magnum::Trade::MaterialTextureSwizzle, @ref Magnum::Trade::MaterialAttributeType
+ * @brief Class @ref Magnum::Trade::MaterialData, @ref Magnum::Trade::MaterialAttributeData, enum @ref Magnum::Trade::MaterialLayer, @ref Magnum::Trade::MaterialAttribute, @ref Magnum::Trade::MaterialTextureSwizzle, @ref Magnum::Trade::MaterialAttributeType
  * @m_since_latest
  */
 
@@ -42,6 +42,48 @@
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
+
+/**
+@brief Material layer name
+@m_since_latest
+
+Convenience aliases to actual layer name strings. The alias is in the same form
+and capitalization --- so for example @ref MaterialLayer::ClearCoat is an alias
+for @cpp "ClearCoat" @ce. Each layer is expected to contain (a subset of) the
+@ref MaterialAttribute::LayerName, @ref MaterialAttribute::LayerFactor,
+@ref MaterialAttribute::LayerFactorTexture,
+@ref MaterialAttribute::LayerFactorTextureSwizzle,
+@ref MaterialAttribute::LayerFactorTextureMatrix,
+@ref MaterialAttribute::LayerFactorTextureCoordinates attributes in addition to
+what's specified for a particular named layer.
+@see @ref MaterialData, @ref MaterialData::layerName(), @ref MaterialLayerData
+*/
+enum class MaterialLayer: UnsignedInt {
+    /* Zero used for an invalid value */
+
+    /**
+     * Clear coat material layer.
+     *
+     * Expected to contain (a subset of) the
+     * @ref MaterialAttribute::Roughness,
+     * @ref MaterialAttribute::RoughnessTexture,
+     * @ref MaterialAttribute::RoughnessTextureSwizzle,
+     * @ref MaterialAttribute::RoughnessTextureMatrix,
+     * @ref MaterialAttribute::RoughnessTextureCoordinates,
+     * @ref MaterialAttribute::NormalTexture,
+     * @ref MaterialAttribute::NormalTextureSwizzle,
+     * @ref MaterialAttribute::NormalTextureMatrix and
+     * @ref MaterialAttribute::NormalTextureCoordinates attributes.
+     * @see @ref PbrClearCoatMaterialData
+     */
+    ClearCoat = 1,
+};
+
+/**
+@debugoperatorenum{MaterialLayer}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialLayer value);
 
 /**
 @brief Material attribute name
@@ -1055,6 +1097,16 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
          */
         /*implicit*/ MaterialAttributeData(MaterialAttribute name, MaterialAttributeType type, const void* value) noexcept;
 
+        /**
+         * @brief Construct a layer name attribute
+         * @param layerName Material layer name
+         *
+         * Equivalent to calling @ref MaterialAttributeData(MaterialAttribute, Containers::StringView)
+         * with @ref MaterialAttribute::LayerName and a string corresponding to
+         * @p layerName.
+         */
+        /*implicit*/ MaterialAttributeData(MaterialLayer layerName) noexcept;
+
         /** @brief Attribute type */
         MaterialAttributeType type() const { return _data.type; }
 
@@ -1232,7 +1284,13 @@ enum class MaterialType: UnsignedInt {
      * PBR specular/glossiness. Use @ref PbrSpecularGlossinessMaterialData for
      * convenience attribute access.
      */
-    PbrSpecularGlossiness = 1 << 3
+    PbrSpecularGlossiness = 1 << 3,
+
+    /**
+     * PBR clear coat layer. Use @ref PbrClearCoatMaterialData for convenience
+     * attribute access.
+     */
+    PbrClearCoat = 1 << 4
 };
 
 /** @debugoperatorenum{MaterialType} */
@@ -1516,6 +1574,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasAttribute()
          */
         bool hasLayer(Containers::StringView layer) const;
+        bool hasLayer(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief ID of a named layer
@@ -1524,6 +1583,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         UnsignedInt layerId(Containers::StringView layer) const;
+        UnsignedInt layerId(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Layer name
@@ -1564,6 +1624,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         Float layerFactor(Containers::StringView layer) const;
+        Float layerFactor(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Factor texture ID for given layer
@@ -1584,6 +1645,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         UnsignedInt layerFactorTexture(Containers::StringView layer) const;
+        UnsignedInt layerFactorTexture(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Factor texture swizzle for given layer
@@ -1607,6 +1669,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         MaterialTextureSwizzle layerFactorTextureSwizzle(Containers::StringView layer) const;
+        MaterialTextureSwizzle layerFactorTextureSwizzle(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Factor texture coordinate transformation matrix for given layer
@@ -1634,6 +1697,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         Matrix3 layerFactorTextureMatrix(Containers::StringView layer) const;
+        Matrix3 layerFactorTextureMatrix(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Factor texture coordinate set for given layer
@@ -1661,6 +1725,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer(), @ref hasAttribute()
          */
         UnsignedInt layerFactorTextureCoordinates(Containers::StringView layer) const;
+        UnsignedInt layerFactorTextureCoordinates(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Attribute count in given layer
@@ -1676,6 +1741,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         UnsignedInt attributeCount(Containers::StringView layer) const;
+        UnsignedInt attributeCount(MaterialLayer layer) const; /**< @overload */
 
         /**
          * @brief Attribute count in the base material
@@ -1702,6 +1768,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         bool hasAttribute(Containers::StringView layer, Containers::StringView name) const;
         bool hasAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        bool hasAttribute(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        bool hasAttribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Whether the base material has given attribute
@@ -1736,6 +1804,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         UnsignedInt attributeId(Containers::StringView layer, Containers::StringView name) const;
         UnsignedInt attributeId(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        UnsignedInt attributeId(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        UnsignedInt attributeId(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief ID of a named attribute in the base material
@@ -1769,6 +1839,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         Containers::StringView attributeName(Containers::StringView layer, UnsignedInt id) const;
+        Containers::StringView attributeName(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
 
         /**
          * @brief Name of an attribute in the base material
@@ -1809,6 +1880,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         MaterialAttributeType attributeType(Containers::StringView layer, UnsignedInt id) const;
+        MaterialAttributeType attributeType(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
 
         /**
          * @brief Type of a named attribute in a named material layer
@@ -1819,6 +1891,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         MaterialAttributeType attributeType(Containers::StringView layer, Containers::StringView name) const;
         MaterialAttributeType attributeType(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        MaterialAttributeType attributeType(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        MaterialAttributeType attributeType(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Type of an attribute in the base material
@@ -1900,6 +1974,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         const void* attribute(Containers::StringView layer, UnsignedInt id) const;
+        const void* attribute(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
 
         /**
          * @brief Type-erased value of a named attribute in a named material layer
@@ -1920,6 +1995,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         const void* attribute(Containers::StringView layer, Containers::StringView name) const;
         const void* attribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        const void* attribute(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        const void* attribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Type-erased value of an attribute in the base material
@@ -1984,6 +2061,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * @see @ref hasLayer()
          */
         template<class T> T attribute(Containers::StringView layer, UnsignedInt id) const;
+        template<class T> T attribute(MaterialLayer layer, UnsignedInt id) const; /**< @overload */
 
         /**
          * @brief Value of a named attribute in a named material layer
@@ -1998,6 +2076,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         template<class T> T attribute(Containers::StringView layer, Containers::StringView name) const;
         template<class T> T attribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        template<class T> T attribute(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        template<class T> T attribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Value of an attribute in the base material
@@ -2045,6 +2125,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         const void* tryAttribute(Containers::StringView layer, Containers::StringView name) const;
         const void* tryAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        const void* tryAttribute(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        const void* tryAttribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Value of a named attribute in given material layer, if exists
@@ -2071,6 +2153,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer, Containers::StringView name) const;
         template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer, MaterialAttribute name) const; /**< @overload */
+        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer, Containers::StringView name) const; /**< @overload */
+        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer, MaterialAttribute name) const; /**< @overload */
 
         /**
          * @brief Type-erased attribute value in the base material, if exists
@@ -2123,6 +2207,8 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          */
         template<class T> T attributeOr(Containers::StringView layer, Containers::StringView name, const T& defaultValue) const;
         template<class T> T attributeOr(Containers::StringView layer, MaterialAttribute name, const T& defaultValue) const; /**< @overload */
+        template<class T> T attributeOr(MaterialLayer layer, Containers::StringView name, const T& defaultValue) const; /**< @overload */
+        template<class T> T attributeOr(MaterialLayer layer, MaterialAttribute name, const T& defaultValue) const; /**< @overload */
 
         /**
          * @brief Value of a named attribute in the base material or a default
@@ -2225,6 +2311,7 @@ class MAGNUM_TRADE_EXPORT MaterialData {
            implementations. */
         friend AbstractImporter;
 
+        static Containers::StringView layerString(MaterialLayer name);
         static Containers::StringView attributeString(MaterialAttribute name);
         /* Internal helpers that don't assert, unlike layerId() / attributeId() */
         UnsignedInt layerFor(Containers::StringView layer) const;
@@ -2407,6 +2494,24 @@ template<class T> T MaterialData::attribute(const Containers::StringView layer, 
     return attribute<T>(layer, string);
 }
 
+template<class T> T MaterialData::attribute(const MaterialLayer layer, const UnsignedInt id) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
+    return attribute<T>(string, id);
+}
+
+template<class T> T MaterialData::attribute(const MaterialLayer layer, const Containers::StringView name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
+    return attribute<T>(string, name);
+}
+
+template<class T> T MaterialData::attribute(const MaterialLayer layer, const MaterialAttribute name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attribute(): invalid name" << layer, {});
+    return attribute<T>(string, name);
+}
+
 template<class T> Containers::Optional<T> MaterialData::tryAttribute(const UnsignedInt layer, const Containers::StringView name) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::tryAttribute(): index" << layer << "out of range for" << layerCount() << "layers", {});
@@ -2434,6 +2539,18 @@ template<class T> Containers::Optional<T> MaterialData::tryAttribute(const Conta
     return tryAttribute<T>(layer, string);
 }
 
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const MaterialLayer layer, const Containers::StringView name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
+    return tryAttribute<T>(string, name);
+}
+
+template<class T> Containers::Optional<T> MaterialData::tryAttribute(const MaterialLayer layer, const MaterialAttribute name) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::tryAttribute(): invalid name" << layer, {});
+    return tryAttribute<T>(string, name);
+}
+
 template<class T> T MaterialData::attributeOr(const UnsignedInt layer, const Containers::StringView name, const T& defaultValue) const {
     CORRADE_ASSERT(layer < layerCount(),
         "Trade::MaterialData::attributeOr(): index" << layer << "out of range for" << layerCount() << "layers", {});
@@ -2459,6 +2576,18 @@ template<class T> T MaterialData::attributeOr(const Containers::StringView layer
     const Containers::StringView string = attributeString(name);
     CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << name, {});
     return attributeOr<T>(layer, string, defaultValue);
+}
+
+template<class T> T MaterialData::attributeOr(const MaterialLayer layer, const Containers::StringView name, const T& defaultValue) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << layer, {});
+    return attributeOr<T>(string, name, defaultValue);
+}
+
+template<class T> T MaterialData::attributeOr(const MaterialLayer layer, const MaterialAttribute name, const T& defaultValue) const {
+    const Containers::StringView string = layerString(layer);
+    CORRADE_ASSERT(string.data(), "Trade::MaterialData::attributeOr(): invalid name" << layer, {});
+    return attributeOr<T>(string, name, defaultValue);
 }
 
 }}
