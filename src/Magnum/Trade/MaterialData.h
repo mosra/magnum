@@ -693,6 +693,60 @@ enum class MaterialAttribute: UnsignedInt {
     EmissiveTextureCoordinates,
 
     /**
+     * Layer intensity. @ref MaterialAttributeType::Float.
+     *
+     * Expected to be contained in additional layers, not the base material.
+     * The exact semantic of this attribute is layer-specific. If
+     * @ref MaterialAttribute::LayerFactorTexture is present as well, these two
+     * are multiplied together.
+     * @see @ref MaterialData::layerFactor()
+     */
+    LayerFactor,
+
+    /**
+     * Layer intensity texture, @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Expected to be contained in additional layers, not the base material.
+     * The exact semantic of this attribute is layer-specific. If
+     * @ref MaterialAttribute::LayerFactor is present as well, these two are
+     * multiplied together.
+     * @see @ref MaterialData::layerFactorTexture()
+     */
+    LayerFactorTexture,
+
+    /**
+     * Layer intensity texture swizzle, @ref MaterialAttributeType::TextureSwizzle.
+     *
+     * Can be used to express arbitrary packing together with other maps in a
+     * single texture. A single-channel swizzle value is expected. If not
+     * present, @ref MaterialTextureSwizzle::R is assumed.
+     * @see @ref MaterialData::layerFactorTextureSwizzle()
+     */
+    LayerFactorTextureSwizzle,
+
+    /**
+     * Layer intensity texture transformation matrix,
+     * @ref MaterialAttributeType::Matrix3x3.
+     *
+     * Expected to be contained in additional layers, not the base material.
+     * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
+     * present.
+     * @see @ref MaterialData::layerFactorTextureMatrix()
+     */
+    LayerFactorTextureMatrix,
+
+    /**
+     * Layer intensity texture coordinate set index,
+     * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Expected to be contained in additional layers, not the base material.
+     * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
+     * are present.
+     * @see @ref MaterialData::layerFactorTextureCoordinates()
+     */
+    LayerFactorTextureCoordinates,
+
+    /**
      * Common texture transformation matrix for all textures,
      * @ref MaterialAttributeType::Matrix3x3.
      *
@@ -704,7 +758,8 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::GlossinessTextureMatrix /
      * @ref MaterialAttribute::NormalTextureMatrix /
      * @ref MaterialAttribute::OcclusionTextureMatrix /
-     * @ref MaterialAttribute::EmissiveTextureMatrix have a precedence over
+     * @ref MaterialAttribute::EmissiveTextureMatrix /
+     * @ref MaterialAttribute::LayerFactorTextureMatrix have a precedence over
      * this attribute for given texture, if present.
      * @see @ref PhongMaterialData::textureMatrix(),
      *      @ref PbrMetallicRoughnessMaterialData::textureMatrix(),
@@ -724,7 +779,8 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::GlossinessTextureCoordinates /
      * @ref MaterialAttribute::NormalTextureCoordinates /
      * @ref MaterialAttribute::OcclusionTextureCoordinates /
-     * @ref MaterialAttribute::EmissiveTextureCoordinates have a precedence
+     * @ref MaterialAttribute::EmissiveTextureCoordinates /
+     * @ref MaterialAttribute::LayerFactorTextureCoordinates have a precedence
      * over this attribute for given texture, if present.
      * @see @ref PhongMaterialData::textureCoordinates(),
      *      @ref PbrMetallicRoughnessMaterialData::textureCoordinates(),
@@ -1483,6 +1539,128 @@ class MAGNUM_TRADE_EXPORT MaterialData {
          * for the first layer offset in the constructor.
          */
         Containers::StringView layerName(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor of given layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactor
+         * attribute. If not present, the default is @cpp 1.0f @ce. The
+         * @p layer is expected to be smaller than @ref layerCount() const.
+         *
+         * If the layer has @ref MaterialAttribute::LayerFactorTexture, the
+         * factor and texture is meant to be multiplied together.
+         */
+        Float layerFactor(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor of a named layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactor
+         * attribute. If not present, the default is @cpp 1.0f @ce. The
+         * @p layer is expected to exist.
+         *
+         * If the layer has @ref MaterialAttribute::LayerFactorTexture, the
+         * factor and texture is meant to be multiplied together.
+         * @see @ref hasLayer()
+         */
+        Float layerFactor(Containers::StringView layer) const;
+
+        /**
+         * @brief Factor texture ID for given layer
+         *
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. Meant to be multiplied with @ref layerFactor().
+         * The @p layer is expected to be smaller than @ref layerCount().
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTexture(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor texture ID for a named layer
+         *
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. Meant to be multiplied with @ref layerFactor().
+         * The @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTexture(Containers::StringView layer) const;
+
+        /**
+         * @brief Factor texture swizzle for given layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureSwizzle
+         * attribute. If not present, the default is @ref MaterialTextureSwizzle::R.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to be smaller than
+         * @ref layerCount().
+         * @see @ref hasAttribute()
+         */
+        MaterialTextureSwizzle layerFactorTextureSwizzle(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor texture swizzle for a named layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureSwizzle
+         * attribute. If not present, the default is @ref MaterialTextureSwizzle::R.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        MaterialTextureSwizzle layerFactorTextureSwizzle(Containers::StringView layer) const;
+
+        /**
+         * @brief Factor texture coordinate transformation matrix for given layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes in given layer or
+         * a @ref MaterialAttribute::TextureMatrix attribute in the base
+         * material. If neither is present, the default is an identity matrix.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to be smaller than
+         * @ref layerCount().
+         * @see @ref hasAttribute()
+         */
+        Matrix3 layerFactorTextureMatrix(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor texture coordinate transformation matrix for a named layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureMatrix
+         * / @ref MaterialAttribute::TextureMatrix attributes in given layer or
+         * a @ref MaterialAttribute::TextureMatrix attribute in the base
+         * material. If neither is present, the default is an identity matrix.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        Matrix3 layerFactorTextureMatrix(Containers::StringView layer) const;
+
+        /**
+         * @brief Factor texture coordinate set for given layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes in given
+         * layer or a @ref MaterialAttribute::TextureCoordinates attribute in
+         * the base material. If neither is present, the default is @cpp 0 @ce.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to be smaller than
+         * @ref layerCount().
+         * @see @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTextureCoordinates(UnsignedInt layer) const;
+
+        /**
+         * @brief Factor texture coordinate set for a named layer
+         *
+         * Convenience access to the @ref MaterialAttribute::LayerFactorTextureCoordinates
+         * / @ref MaterialAttribute::TextureCoordinates attributes in given
+         * layer or a @ref MaterialAttribute::TextureCoordinates attribute in
+         * the base material. If not present, the default is @cpp 0 @ce.
+         * Available only if the @ref MaterialAttribute::LayerFactorTexture
+         * attribute is present. The @p layer is expected to exist.
+         * @see @ref hasLayer(), @ref hasAttribute()
+         */
+        UnsignedInt layerFactorTextureCoordinates(Containers::StringView layer) const;
 
         /**
          * @brief Attribute count in given layer
