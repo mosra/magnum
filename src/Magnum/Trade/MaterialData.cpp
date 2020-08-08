@@ -648,6 +648,7 @@ Debug& operator<<(Debug& debug, const MaterialType value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case MaterialType::value: return debug << "::" #value;
+        _c(Flat)
         _c(Phong)
         _c(PbrMetallicRoughness)
         _c(PbrSpecularGlossiness)
@@ -660,6 +661,7 @@ Debug& operator<<(Debug& debug, const MaterialType value) {
 
 Debug& operator<<(Debug& debug, const MaterialTypes value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::MaterialTypes{}", {
+        MaterialType::Flat,
         MaterialType::Phong,
         MaterialType::PbrMetallicRoughness,
         MaterialType::PbrSpecularGlossiness

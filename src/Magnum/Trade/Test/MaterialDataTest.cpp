@@ -33,6 +33,7 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Trade/FlatMaterialData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/PbrMetallicRoughnessMaterialData.h"
 #include "Magnum/Trade/PbrSpecularGlossinessMaterialData.h"
@@ -160,6 +161,17 @@ class MaterialDataTest: public TestSuite::Tester {
         void phongAccessTexturedSingleMatrixCoordinates();
         void phongAccessTexturedImplicitPackedSpecularGlossiness();
         void phongAccessInvalidTextures();
+
+        void flatAccessBaseColor();
+        void flatAccessDiffuseColor();
+        void flatAccessDefaults();
+        void flatAccessTexturedBaseColor();
+        void flatAccessTexturedDiffuseColor();
+        void flatAccessTexturedDefaults();
+        void flatAccessTexturedBaseColorSingleMatrixCoordinates();
+        void flatAccessTexturedDiffuseColorSingleMatrixCoordinates();
+        void flatAccessTexturedMismatchedMatrixCoordinates();
+        void flatAccessInvalidTextures();
 
         void debugAttribute();
         void debugTextureSwizzle();
@@ -322,6 +334,17 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::phongAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::phongAccessTexturedImplicitPackedSpecularGlossiness,
               &MaterialDataTest::phongAccessInvalidTextures,
+
+              &MaterialDataTest::flatAccessBaseColor,
+              &MaterialDataTest::flatAccessDiffuseColor,
+              &MaterialDataTest::flatAccessDefaults,
+              &MaterialDataTest::flatAccessTexturedBaseColor,
+              &MaterialDataTest::flatAccessTexturedDiffuseColor,
+              &MaterialDataTest::flatAccessTexturedDefaults,
+              &MaterialDataTest::flatAccessTexturedBaseColorSingleMatrixCoordinates,
+              &MaterialDataTest::flatAccessTexturedDiffuseColorSingleMatrixCoordinates,
+              &MaterialDataTest::flatAccessTexturedMismatchedMatrixCoordinates,
+              &MaterialDataTest::flatAccessInvalidTextures,
 
               &MaterialDataTest::debugAttribute,
               &MaterialDataTest::debugTextureSwizzle,
@@ -3387,6 +3410,203 @@ void MaterialDataTest::phongAccessInvalidTextures() {
         "Trade::PhongMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
+}
+
+void MaterialDataTest::flatAccessBaseColor() {
+    MaterialData base{MaterialType::Flat, {
+        {MaterialAttribute::BaseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::DiffuseColor, 0x33556600_rgbaf}, /* Ignored */
+    }};
+
+    CORRADE_COMPARE(base.types(), MaterialType::Flat);
+    const auto& data = base.as<FlatMaterialData>();
+
+    CORRADE_VERIFY(!data.hasTexture());
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+}
+
+void MaterialDataTest::flatAccessDiffuseColor() {
+    MaterialData base{MaterialType::Flat, {
+        {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
+    }};
+
+    CORRADE_COMPARE(base.types(), MaterialType::Flat);
+    const auto& data = base.as<FlatMaterialData>();
+
+    CORRADE_VERIFY(!data.hasTexture());
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+}
+
+void MaterialDataTest::flatAccessDefaults() {
+    MaterialData base{{}, {}};
+
+    CORRADE_COMPARE(base.types(), MaterialTypes{});
+    /* Casting is fine even if the type doesn't include Flat */
+    const auto& data = base.as<FlatMaterialData>();
+
+    CORRADE_VERIFY(!data.hasTexture());
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
+}
+
+void MaterialDataTest::flatAccessTexturedBaseColor() {
+    FlatMaterialData data{{}, {
+        {MaterialAttribute::BaseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::BaseColorTexture, 5u},
+        {MaterialAttribute::BaseColorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+
+        /* All this is ignored */
+        {MaterialAttribute::DiffuseColor, 0x33556600_rgbaf},
+        {MaterialAttribute::DiffuseTexture, 6u},
+        {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasTexture());
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(data.texture(), 5);
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.textureCoordinates(), 2);
+}
+
+void MaterialDataTest::flatAccessTexturedDiffuseColor() {
+    FlatMaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::DiffuseTexture, 5u},
+        {MaterialAttribute::DiffuseTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+
+        /* Ignored, as we have a diffuse texture */
+        {MaterialAttribute::BaseColor, 0x33556600_rgbaf}
+    }};
+
+    CORRADE_VERIFY(data.hasTexture());
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(data.texture(), 5);
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.textureCoordinates(), 2);
+}
+
+void MaterialDataTest::flatAccessTexturedDefaults() {
+    FlatMaterialData data{{}, {
+        {MaterialAttribute::DiffuseTexture, 5u}
+    }};
+
+    CORRADE_VERIFY(data.hasTexture());
+    CORRADE_VERIFY(!data.hasTextureTransformation());
+    CORRADE_VERIFY(!data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
+    CORRADE_COMPARE(data.texture(), 5);
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+    CORRADE_COMPARE(data.textureCoordinates(), 0);
+}
+
+void MaterialDataTest::flatAccessTexturedBaseColorSingleMatrixCoordinates() {
+    FlatMaterialData data{{}, {
+        {MaterialAttribute::BaseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::BaseColorTexture, 5u},
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::TextureCoordinates, 2u},
+
+        /* This is ignored because it doesn't match the texture */
+        {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasTexture());
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(data.texture(), 5);
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.textureCoordinates(), 2);
+}
+
+void MaterialDataTest::flatAccessTexturedDiffuseColorSingleMatrixCoordinates() {
+    FlatMaterialData data{{}, {
+        {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
+        {MaterialAttribute::DiffuseTexture, 5u},
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::TextureCoordinates, 2u},
+
+        /* This is ignored because it doesn't match the texture */
+        {MaterialAttribute::BaseColorTextureMatrix, Matrix3::translation({0.5f, 1.0f})},
+        {MaterialAttribute::BaseColorTextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasTexture());
+    CORRADE_VERIFY(data.hasTextureTransformation());
+    CORRADE_VERIFY(data.hasTextureCoordinates());
+    CORRADE_COMPARE(data.color(), 0xccffbb_rgbf);
+    CORRADE_COMPARE(data.texture(), 5);
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_COMPARE(data.textureCoordinates(), 2);
+}
+
+void MaterialDataTest::flatAccessTexturedMismatchedMatrixCoordinates() {
+    {
+        FlatMaterialData data{{}, {
+            {MaterialAttribute::BaseColorTexture, 5u},
+
+            /* This is ignored because it doesn't match the texture */
+            {MaterialAttribute::DiffuseColor, 0x33556600_rgbaf},
+            {MaterialAttribute::DiffuseTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+            {MaterialAttribute::DiffuseTextureCoordinates, 2u},
+        }};
+
+        CORRADE_VERIFY(data.hasTexture());
+        CORRADE_VERIFY(!data.hasTextureTransformation());
+        CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
+        CORRADE_COMPARE(data.texture(), 5);
+        CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+        CORRADE_COMPARE(data.textureCoordinates(), 0);
+    } {
+        FlatMaterialData data{{}, {
+            {MaterialAttribute::DiffuseTexture, 5u},
+
+            /* This is ignored because it doesn't match the texture */
+            {MaterialAttribute::BaseColor, 0x33556600_rgbaf},
+            {MaterialAttribute::BaseColorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+            {MaterialAttribute::BaseColorTextureCoordinates, 2u},
+        }};
+
+        CORRADE_VERIFY(data.hasTexture());
+        CORRADE_VERIFY(!data.hasTextureTransformation());
+        CORRADE_VERIFY(!data.hasTextureCoordinates());
+        CORRADE_COMPARE(data.color(), 0xffffff_rgbf);
+        CORRADE_COMPARE(data.texture(), 5);
+        CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+        CORRADE_COMPARE(data.textureCoordinates(), 0);
+    }
+}
+
+void MaterialDataTest::flatAccessInvalidTextures() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    FlatMaterialData data{{}, {}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.texture();
+    data.textureMatrix();
+    data.textureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::FlatMaterialData::texture(): the material doesn't have a texture\n"
+        "Trade::FlatMaterialData::textureMatrix(): the material doesn't have a texture\n"
+        "Trade::FlatMaterialData::textureCoordinates(): the material doesn't have a texture\n");
 }
 
 void MaterialDataTest::debugAttribute() {

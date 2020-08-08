@@ -40,6 +40,7 @@ set(MagnumTrade_GracefulAssert_SRCS
     AbstractSceneConverter.cpp
     AnimationData.cpp
     CameraData.cpp
+    FlatMaterialData.cpp
     ImageData.cpp
     MaterialData.cpp
     MeshData.cpp
@@ -57,6 +58,7 @@ set(MagnumTrade_HEADERS
     ArrayAllocator.h
     CameraData.h
     Data.h
+    FlatMaterialData.h
     ImageData.h
     LightData.h
     MaterialData.h

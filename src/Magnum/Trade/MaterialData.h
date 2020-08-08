@@ -149,7 +149,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::DiffuseTexture is present as well, these two
      * are multiplied together.
-     * @see @ref PhongMaterialData::diffuseColor(),
+     * @see @ref FlatMaterialData::color(),
+     *      @ref PhongMaterialData::diffuseColor(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseColor()
      */
     DiffuseColor,
@@ -160,7 +161,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::DiffuseColor is present as well, these two
      * are multiplied together.
-     * @see @ref PhongMaterialData::diffuseTexture(),
+     * @see @ref FlatMaterialData::texture(),
+     *      @ref PhongMaterialData::diffuseTexture(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTexture()
      */
     DiffuseTexture,
@@ -171,7 +173,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
-     * @see @ref PhongMaterialData::diffuseTextureMatrix(),
+     * @see @ref FlatMaterialData::textureMatrix(),
+     *      @ref PhongMaterialData::diffuseTextureMatrix(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTextureMatrix()
      */
     DiffuseTextureMatrix,
@@ -182,7 +185,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
-     * @see @ref PhongMaterialData::diffuseTextureCoordinates(),
+     * @see @ref FlatMaterialData::textureCoordinates(),
+     *      @ref PhongMaterialData::diffuseTextureCoordinates(),
      *      @ref PbrSpecularGlossinessMaterialData::diffuseTextureCoordinates()
      */
     DiffuseTextureCoordinates,
@@ -267,7 +271,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::BaseColorTexture is present as well, these
      * two are multiplied together.
-     * @see @ref PbrMetallicRoughnessMaterialData::baseColor()
+     * @see @ref FlatMaterialData::color(),
+     *      @ref PbrMetallicRoughnessMaterialData::baseColor()
      */
     BaseColor,
 
@@ -277,7 +282,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::BaseColor is present as well, these two are
      * multiplied together.
-     * @see @ref PbrMetallicRoughnessMaterialData::baseColorTexture()
+     * @see @ref FlatMaterialData::texture(),
+     *      @ref PbrMetallicRoughnessMaterialData::baseColorTexture()
      */
     BaseColorTexture,
 
@@ -287,7 +293,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureMatrix if both are
      * present.
-     * @see @ref PbrMetallicRoughnessMaterialData::baseColorTextureMatrix()
+     * @see @ref FlatMaterialData::textureMatrix(),
+     *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureMatrix()
      */
     BaseColorTextureMatrix,
 
@@ -297,7 +304,8 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * Has a precedence over @ref MaterialAttribute::TextureCoordinates if both
      * are present.
-     * @see @ref PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates()
+     * @see @ref FlatMaterialData::textureCoordinates(),
+     *      @ref PbrMetallicRoughnessMaterialData::baseColorTextureCoordinates()
      */
     BaseColorTextureCoordinates,
 
@@ -1148,21 +1156,27 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
 */
 enum class MaterialType: UnsignedInt {
     /**
+     * Flat. Use @ref FlatMaterialData for convenience attribute access.
+     * Materials of this type are generally not combined with any other types.
+     */
+    Flat = 1 << 0,
+
+    /**
      * Phong. Use @ref PhongMaterialData for convenience attribute access.
      */
-    Phong = 1 << 0,
+    Phong = 1 << 1,
 
     /**
      * PBR metallic/roughness. Use @ref PbrMetallicRoughnessMaterialData for
      * convenience attribute access.
      */
-    PbrMetallicRoughness = 1 << 1,
+    PbrMetallicRoughness = 1 << 2,
 
     /**
      * PBR specular/glossiness. Use @ref PbrSpecularGlossinessMaterialData for
      * convenience attribute access.
      */
-    PbrSpecularGlossiness = 1 << 2
+    PbrSpecularGlossiness = 1 << 3
 };
 
 /** @debugoperatorenum{MaterialType} */

@@ -70,6 +70,8 @@ class CameraData;
 enum class DataFlag: UnsignedByte;
 typedef Containers::EnumSet<DataFlag> DataFlags;
 
+class FlatMaterialData;
+
 template<UnsignedInt> class ImageData;
 typedef ImageData<1> ImageData1D;
 typedef ImageData<2> ImageData2D;
