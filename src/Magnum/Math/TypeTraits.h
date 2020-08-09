@@ -66,31 +66,22 @@ for more headroom.
     CORRADE_DEPRECATED_MACRO(DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-14
 #endif
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Precision when testing long doubles for equality
 @m_deprecated_since{2020,06} Use @ref Magnum::Math::TypeTraits::epsilon()
     instead.
 
-They have "at least" 18 significant digits of precision, taking one digit less
-for more headroom.
-
-@attention On MSVC the precision is the same as for doubles, because they are
-    internally the same type (source: https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx).
-    The same is apparently for 32-bit @ref CORRADE_TARGET_ANDROID "Android"
-    (64-bit works as expected), but I couldn't find any source for that. This
-    macro (and everything else related to @cpp long double @ce types is not
-    available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as the max
-    supported floating-point precision there is 64 bits.
+They have "at least" 18 significant digits of precision on platforms where it
+is 80-bit, and 15 on platforms @ref CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE "where it is 64-bit",
+taking one digit less for more headroom.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
+#ifndef CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
 #define LONG_DOUBLE_EQUALITY_PRECISION \
     CORRADE_DEPRECATED_MACRO(LONG_DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-17l
 #else
 #define LONG_DOUBLE_EQUALITY_PRECISION \
     CORRADE_DEPRECATED_MACRO(LONG_DOUBLE_EQUALITY_PRECISION, "use Math::TypeTraits instead") 1.0e-14l
-#endif
 #endif
 #endif
 #endif
@@ -135,9 +126,7 @@ template<> struct IsScalar<unsigned long long>: std::true_type {};
 template<> struct IsScalar<float>: std::true_type {};
 template<> struct IsScalar<Half>: std::true_type {};
 template<> struct IsScalar<double>: std::true_type {};
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct IsScalar<long double>: std::true_type {};
-#endif
 template<template<class> class Derived, class T> struct IsScalar<Unit<Derived, T>>: std::true_type {};
 template<class T> struct IsScalar<Deg<T>>: std::true_type {};
 template<class T> struct IsScalar<Rad<T>>: std::true_type {};
@@ -227,9 +216,7 @@ template<class T> struct IsFloatingPoint
 template<> struct IsFloatingPoint<Float>: std::true_type {};
 template<> struct IsFloatingPoint<Half>: std::true_type {};
 template<> struct IsFloatingPoint<Double>: std::true_type {};
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct IsFloatingPoint<long double>: std::true_type {};
-#endif
 template<std::size_t size, class T> struct IsFloatingPoint<Vector<size, T>>: IsFloatingPoint<T> {};
 template<class T> struct IsFloatingPoint<Vector2<T>>: IsFloatingPoint<T> {};
 template<class T> struct IsFloatingPoint<Vector3<T>>: IsFloatingPoint<T> {};
@@ -434,10 +421,8 @@ namespace Implementation {
     _c(Short)
     _c(UnsignedInt)
     _c(Int)
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     _c(UnsignedLong)
     _c(Long)
-    #endif
     _c(Float)
     _c(Half)
     _c(Double)
@@ -469,14 +454,12 @@ template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<Un
 template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
     typedef Double FloatingPointType;
 };
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
     typedef long double FloatingPointType;
 };
 template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
     typedef long double FloatingPointType;
 };
-#endif
 
 /* Floating-point scalar types */
 namespace Implementation {
