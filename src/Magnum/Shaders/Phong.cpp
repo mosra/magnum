@@ -208,7 +208,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     setProjectionMatrix({});
     if(lightCount) {
         setDiffuseColor(Magnum::Color4{1.0f});
-        setSpecularColor(Magnum::Color4{1.0f});
+        setSpecularColor(Magnum::Color4{1.0f, 0.0f});
         setShininess(80.0f);
         setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
         /* Light position is zero by default */

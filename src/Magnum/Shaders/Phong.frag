@@ -93,7 +93,7 @@ layout(location = 6)
 #endif
 uniform lowp vec4 specularColor
     #ifndef GL_ES
-    = vec4(1.0)
+    = vec4(1.0, 1.0, 1.0, 0.0)
     #endif
     ;
 

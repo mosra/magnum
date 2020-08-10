@@ -80,6 +80,11 @@ working on the framebuffer, you need to enable
 @ref GL::Renderer::Feature::Blending and set up the blending function. See
 @ref GL::Renderer::setBlendFunction() for details.
 
+To avoid specular highlights on transparent areas, specular alpha should be
+always set to @cpp 0.0f @ce. On the other hand, non-zero specular alpha can be
+for example used to render transparent materials which are still expected to
+have specular highlights such as glass or soap bubbles.
+
 An alternative is to enable @ref Flag::AlphaMask and tune @ref setAlphaMask()
 for simple binary alpha-masked drawing that doesn't require depth sorting or
 blending enabled. Note that this feature is implemented using the GLSL
@@ -525,10 +530,10 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce. Color will be multiplied
+         * Initial value is @cpp 0xffffff00_rgbaf @ce. Color will be multiplied
          * with specular texture if @ref Flag::SpecularTexture is set. If you
          * want to have a fully diffuse material, set specular color to
-         * @cpp 0x000000ff_rgbaf @ce. If @ref lightCount() is zero, this
+         * @cpp 0x00000000_rgbaf @ce. If @ref lightCount() is zero, this
          * function is a no-op, as specular color doesn't contribute to the
          * output in that case.
          * @see @ref bindSpecularTexture()

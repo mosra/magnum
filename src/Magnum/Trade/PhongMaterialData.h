@@ -114,7 +114,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param diffuseTexture    Diffuse texture ID. Ignored if @p flags
          *      doesn't have @ref Flag::DiffuseTexture
          * @param specularColor     Specular color. Use
-         *      @cpp 0xffffffff_rgbaf @ce for a default value for both a
+         *      @cpp 0xffffff00_rgbaf @ce for a default value for both a
          *      non-textured and a textured material.
          * @param specularTexture   Specular texture ID. Ignored if @p flags
          *      doesn't have @ref Flag::SpecularTexture.
@@ -155,7 +155,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param diffuseTextureCoordinates Diffuse texture coordinate set.
          *      Ignored if @p flags doesn't have @ref Flag::DiffuseTexture
          * @param specularColor         Specular color. Use
-         *      @cpp 0xffffffff_rgbaf @ce for a default value for both a
+         *      @cpp 0xffffff00_rgbaf @ce for a default value for both a
          *      non-textured and a textured material.
          * @param specularTexture       Specular texture ID. Ignored if
          *      @p flags doesn't have @ref Flag::SpecularTexture.
