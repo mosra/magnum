@@ -821,11 +821,18 @@ void MaterialDataTest::constructAttributeTooLarge() {
     Error redirectError{&out};
     MaterialAttributeData{"attributeIsLong", Matrix3x4{}};
     /* Constexpr variant has the same assert, but in the header. It should have
-       the same output. */
+       the same output. Except on MSVC 2015, which is a crap thing and gets
+       lost when encountering T in there, so the assert is less useful. */
     /*constexpr*/ MaterialAttributeData{"attributeIsLong"_s, Matrix3x4{}};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
     CORRADE_COMPARE(out.str(),
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n"
         "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Trade::MaterialAttributeData: name attributeIsLong too long, expected at most 14 bytes for Trade::MaterialAttributeType::Matrix3x4 but got 15\n"
+        "Trade::MaterialAttributeData: name attributeIsLong too long, got 15 bytes\n");
+    #endif
 }
 
 void MaterialDataTest::constructAttributeTooLargeString() {

@@ -2636,7 +2636,17 @@ template<class T
     #ifndef DOXYGEN_GENERATING_OUTPUT
     , class
     #endif
-> constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const T& value) noexcept: _data{Implementation::MaterialAttributeTypeFor<T>::type(), (CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - sizeof(T) - 2 << "bytes for" << Implementation::MaterialAttributeTypeFor<T>::type() << "but got" << name.size()), name), value} {}
+> constexpr MaterialAttributeData::MaterialAttributeData(const Containers::StringView name, const T& value) noexcept:
+    _data{Implementation::MaterialAttributeTypeFor<T>::type(),
+        /* MSVC 2015 complains about "error C2065: 'T': undeclared identifier"
+           in the lambda inside this macro. Sorry, the assert will be less
+           useful on that stupid thing. */
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY
+        (CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, expected at most" << Implementation::MaterialAttributeDataSize - sizeof(T) - 2 << "bytes for" << Implementation::MaterialAttributeTypeFor<T>::type() << "but got" << name.size()), name)
+        #else
+        (CORRADE_CONSTEXPR_ASSERT(name.size() + sizeof(T) + 2 <= Implementation::MaterialAttributeDataSize, "Trade::MaterialAttributeData: name" << name << "too long, got" << name.size() << "bytes"), name)
+        #endif
+    , value} {}
 
 /* The 4 extra bytes are for a null byte after both the name and value, a type
    and a string size */
