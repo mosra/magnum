@@ -37,8 +37,6 @@
 #include "Magnum/Trade/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/PointerStl.h>
-
 #include "Magnum/FileCallback.h"
 #endif
 
