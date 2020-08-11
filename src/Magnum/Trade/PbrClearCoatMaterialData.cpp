@@ -81,6 +81,12 @@ UnsignedInt PbrClearCoatMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
 
+Float PbrClearCoatMaterialData::normalTextureScale() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PbrClearCoatMaterialData::normalTextureScale(): the layer doesn't have a normal texture", {});
+    return attributeOr(MaterialAttribute::NormalTextureScale, 1.0f);
+}
+
 MaterialTextureSwizzle PbrClearCoatMaterialData::normalTextureSwizzle() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrClearCoatMaterialData::normalTextureSwizzle(): the layer doesn't have a normal texture", {});

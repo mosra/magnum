@@ -227,6 +227,12 @@ UnsignedInt PbrMetallicRoughnessMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
 
+Float PbrMetallicRoughnessMaterialData::normalTextureScale() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::normalTextureScale(): the material doesn't have a normal texture", {});
+    return attributeOr(MaterialAttribute::NormalTextureScale, 1.0f);
+}
+
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::normalTextureSwizzle() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture", {});

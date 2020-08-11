@@ -297,6 +297,16 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt normalTexture() const;
 
         /**
+         * @brief Normal texture scale
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureScale
+         * attribute. If not present, the default is @cpp 1.0f @ce.
+         * Available only if @ref MaterialAttribute::NormalTexture is present.
+         * @see @ref hasAttribute()
+         */
+        Float normalTextureScale() const;
+
+        /**
          * @brief Normal texture swizzle
          *
          * Convenience access to the

@@ -481,6 +481,17 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
         UnsignedInt normalTexture() const;
 
         /**
+         * @brief Normal texture scale
+         * @m_since_latest
+         *
+         * Convenience access to the @ref MaterialAttribute::NormalTextureScale
+         * attribute. If not present, the default is @cpp 1.0f @ce.
+         * Available only if @ref MaterialAttribute::NormalTexture is present.
+         * @see @ref hasAttribute()
+         */
+        Float normalTextureScale() const;
+
+        /**
          * @brief Normal texture swizzle
          * @m_since_latest
          *

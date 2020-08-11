@@ -598,12 +598,26 @@ enum class MaterialAttribute: UnsignedInt {
     /**
      * Tangent-space normal map texture index,
      * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * If @ref MaterialAttribute::NormalTextureScale is present as well, these
+     * two are multiplied together.
      * @see @ref PhongMaterialData::normalTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTexture(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTexture()
      */
     NormalTexture,
+
+    /**
+     * Normal texture scale, @ref MaterialAttributeType::Float.
+     *
+     * Scales the texture defined by @ref MaterialAttribute::NormalTexture.
+     * @see @ref PhongMaterialData::normalTextureScale(),
+     *      @ref PbrMetallicRoughnessMaterialData::normalTextureScale(),
+     *      @ref PbrSpecularGlossinessMaterialData::normalTextureScale(),
+     *      @ref PbrClearCoatMaterialData::normalTextureScale()
+     */
+    NormalTextureScale,
 
     /**
      * Normal texture swizzle, @ref MaterialAttributeType::TextureSwizzle.

@@ -2731,6 +2731,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
         {MaterialAttribute::RoughnessTextureMatrix, Matrix3::scaling({1.0f, 1.0f})},
         {MaterialAttribute::RoughnessTextureCoordinates, 4u},
         {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::NormalTextureScale, 0.35f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::BA},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 5u},
@@ -2767,6 +2768,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 4);
     CORRADE_COMPARE(data.normalTexture(), 3);
+    CORRADE_COMPARE(data.normalTextureScale(), 0.35f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::BA);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
@@ -2816,6 +2818,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0);
     CORRADE_COMPARE(data.normalTexture(), 4);
+    CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
@@ -3246,6 +3249,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures() {
     data.roughnessTextureMatrix();
     data.roughnessTextureCoordinates();
     data.normalTexture();
+    data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
@@ -3269,6 +3273,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures() {
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureMatrix(): the material doesn't have a roughness texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureCoordinates(): the material doesn't have a roughness texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer 0\n"
+        "Trade::PbrMetallicRoughnessMaterialData::normalTextureScale(): the material doesn't have a normal texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n"
@@ -3336,6 +3341,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTextured() {
         {MaterialAttribute::GlossinessTextureMatrix, Matrix3::scaling({1.0f, 1.0f})},
         {MaterialAttribute::GlossinessTextureCoordinates, 4u},
         {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::NormalTextureScale, 0.35f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::BA},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 5u},
@@ -3369,6 +3375,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTextured() {
     CORRADE_COMPARE(data.glossinessTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.glossinessTextureCoordinates(), 4);
     CORRADE_COMPARE(data.normalTexture(), 3);
+    CORRADE_COMPARE(data.normalTextureScale(), 0.35f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::BA);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
@@ -3415,6 +3422,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.glossinessTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.glossinessTextureCoordinates(), 0);
     CORRADE_COMPARE(data.normalTexture(), 4);
+    CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
@@ -3628,6 +3636,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures() {
     data.glossinessTextureMatrix();
     data.glossinessTextureCoordinates();
     data.normalTexture();
+    data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
@@ -3651,6 +3660,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures() {
         "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureMatrix(): the material doesn't have a glossiness texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::glossinessTextureCoordinates(): the material doesn't have a glossiness texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer 0\n"
+        "Trade::PbrSpecularGlossinessMaterialData::normalTextureScale(): the material doesn't have a normal texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n"
@@ -3716,6 +3726,7 @@ void MaterialDataTest::phongAccessTextured() {
         {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({1.0f, 1.0f})},
         {MaterialAttribute::SpecularTextureCoordinates, 4u},
         {MaterialAttribute::NormalTexture, 0u},
+        {MaterialAttribute::NormalTextureScale, 0.5f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::GB},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 5u}
@@ -3738,6 +3749,7 @@ void MaterialDataTest::phongAccessTextured() {
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3::scaling({1.0f, 1.0f}));
     CORRADE_COMPARE(data.specularTextureCoordinates(), 4);
     CORRADE_COMPARE(data.normalTexture(), 0);
+    CORRADE_COMPARE(data.normalTextureScale(), 0.5f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::GB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
@@ -3771,6 +3783,7 @@ void MaterialDataTest::phongAccessTexturedDefaults() {
     CORRADE_COMPARE(data.specularTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.specularTextureCoordinates(), 0);
     CORRADE_COMPARE(data.normalTexture(), 1);
+    CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
@@ -3847,6 +3860,7 @@ void MaterialDataTest::phongAccessInvalidTextures() {
     data.specularTextureMatrix();
     data.specularTextureCoordinates();
     data.normalTexture();
+    data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
@@ -3862,6 +3876,7 @@ void MaterialDataTest::phongAccessInvalidTextures() {
         "Trade::PhongMaterialData::specularTextureMatrix(): the material doesn't have a specular texture\n"
         "Trade::PhongMaterialData::specularTextureCoordinates(): the material doesn't have a specular texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer 0\n"
+        "Trade::PhongMaterialData::normalTextureScale(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
@@ -4157,10 +4172,11 @@ void MaterialDataTest::pbrClearCoatAccessTextured() {
         {MaterialAttribute::RoughnessTextureMatrix, Matrix3::translation({2.0f, 1.5f})},
         {MaterialAttribute::RoughnessTextureCoordinates, 6u},
         {MaterialAttribute::NormalTexture, 3u},
+        {MaterialAttribute::NormalTextureScale, 0.5f},
         {MaterialAttribute::NormalTextureSwizzle, MaterialTextureSwizzle::B},
         {MaterialAttribute::NormalTextureMatrix, Matrix3::translation({0.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 7u},
-    }, {0, 10}};
+    }, {0, 11}};
 
     CORRADE_VERIFY(data.hasTextureTransformation());
     CORRADE_VERIFY(data.hasTextureCoordinates());
@@ -4170,6 +4186,7 @@ void MaterialDataTest::pbrClearCoatAccessTextured() {
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::translation({2.0f, 1.5f}));
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 6u);
     CORRADE_COMPARE(data.normalTexture(), 3u);
+    CORRADE_COMPARE(data.normalTextureScale(), 0.5f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::B);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
@@ -4190,6 +4207,7 @@ void MaterialDataTest::pbrClearCoatAccessTexturedDefaults() {
     CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0u);
     CORRADE_COMPARE(data.normalTexture(), 3u);
+    CORRADE_COMPARE(data.normalTextureScale(), 1.0f);
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0u);
@@ -4246,6 +4264,7 @@ void MaterialDataTest::pbrClearCoatAccessInvalidTextures() {
     data.roughnessTextureMatrix();
     data.roughnessTextureCoordinates();
     data.normalTexture();
+    data.normalTextureScale();
     data.normalTextureSwizzle();
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
@@ -4255,6 +4274,7 @@ void MaterialDataTest::pbrClearCoatAccessInvalidTextures() {
         "Trade::PbrClearCoatMaterialData::roughnessTextureMatrix(): the layer doesn't have a roughness texture\n"
         "Trade::PbrClearCoatMaterialData::roughnessTextureCoordinates(): the layer doesn't have a roughness texture\n"
         "Trade::MaterialData::attribute(): attribute NormalTexture not found in layer ClearCoat\n"
+        "Trade::PbrClearCoatMaterialData::normalTextureScale(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureSwizzle(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureMatrix(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture\n");

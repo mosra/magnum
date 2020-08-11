@@ -241,6 +241,12 @@ UnsignedInt PhongMaterialData::normalTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::NormalTexture);
 }
 
+Float PhongMaterialData::normalTextureScale() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
+        "Trade::PhongMaterialData::normalTextureScale(): the material doesn't have a normal texture", {});
+    return attributeOr(MaterialAttribute::NormalTextureScale, 1.0f);
+}
+
 MaterialTextureSwizzle PhongMaterialData::normalTextureSwizzle() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::NormalTexture),
         "Trade::PhongMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture", {});

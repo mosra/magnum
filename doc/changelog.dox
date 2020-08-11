@@ -82,7 +82,8 @@ See also:
     @ref Trade::PbrClearCoatMaterialData convenience accessor APIs similar to
     @ref Trade::PhongMaterialData. See [mosra/magnum#459](https://github.com/mosra/magnum/pull/459).
 -   Added @ref Trade::PhongMaterialData::hasSpecularTexture(),
-    @ref Trade::PhongMaterialData::specularTextureSwizzle() and
+    @ref Trade::PhongMaterialData::specularTextureSwizzle(),
+    @ref Trade::PhongMaterialData::normalTextureScale() and
     @ref Trade::PhongMaterialData::normalTextureSwizzle() to make new features
     added for PBR materials recognizable also in classic Phong workflows.
 
