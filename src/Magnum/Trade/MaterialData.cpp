@@ -65,6 +65,13 @@ constexpr struct {
 
 }
 
+UnsignedInt materialTextureSwizzleComponentCount(const MaterialTextureSwizzle swizzle) {
+    return (UnsignedInt(swizzle) & 0xff000000u ? 1 : 0) +
+           (UnsignedInt(swizzle) & 0x00ff0000u ? 1 : 0) +
+           (UnsignedInt(swizzle) & 0x0000ff00u ? 1 : 0) +
+           (UnsignedInt(swizzle) & 0x000000ffu ? 1 : 0);
+}
+
 std::size_t materialAttributeTypeSize(const MaterialAttributeType type) {
     switch(type) {
         case MaterialAttributeType::Bool:

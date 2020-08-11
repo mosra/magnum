@@ -613,10 +613,22 @@ enum class MaterialAttribute: UnsignedInt {
      * not present, @ref MaterialTextureSwizzle::RGB is assumed.
      *
      * If the texture is just two-component, the remaining component is
-     * implicit and calculated as @f$ z = \sqrt{1 - x^2 - y^2} @f$.
+     * implicit and calculated as @f$ z = \sqrt{1 - x^2 - y^2} @f$. In order to
+     * account for numeric issues and avoid negative values under the square
+     * root, it's commonly done as @f$ z = \sqrt{\max(0, 1 - x^2 - y^2)} @f$.
+     * Additionally, to mitigate artifacts when storing normal texture in a
+     * compressed format, @ref MaterialTextureSwizzle::GA may get used instead
+     * of @ref MaterialTextureSwizzle::RG.
+     *
+     * Shader code that is able to reconstruct a XYZ normal from both RG and GA
+     * variants assuming constant values in other channels ([source](https://github.com/KhronosGroup/glTF/issues/1682#issuecomment-557880407)):
+     *
+     * @snippet MagnumTrade.glsl unpackTwoChannelNormal
+     *
      * @see @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureSwizzle(),
-     *      @ref PbrSpecularGlossinessMaterialData::normalTextureSwizzle()
+     *      @ref PbrSpecularGlossinessMaterialData::normalTextureSwizzle(),
+     *      @ref materialTextureSwizzleComponentCount()
      */
     NormalTextureSwizzle,
 
@@ -842,6 +854,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialAttribute value);
 @m_since_latest
 
 See @ref MaterialData for more information.
+@see @ref materialTextureSwizzleComponentCount()
 */
 enum class MaterialTextureSwizzle: UnsignedInt {
     /** Red component */
@@ -862,6 +875,16 @@ enum class MaterialTextureSwizzle: UnsignedInt {
     /** Green and blue component */
     GB = Utility::Endianness::fourCC('G', 'B', '\0', '\0'),
 
+    /**
+     * Green and alpha component. May get used to mitigate artifacts when
+     * storing two independent channels (such as two-channel normal maps) in
+     * compressed texture formats --- these commonly have separately compressed
+     * RGB and alpha, with green channel having the most precision of the RGB
+     * triplet.
+     * @see @ref MaterialAttribute::NormalTextureSwizzle
+     */
+    GA = Utility::Endianness::fourCC('G', 'A', '\0', '\0'),
+
     /** Blue and alpha component */
     BA = Utility::Endianness::fourCC('B', 'A', '\0', '\0'),
 
@@ -874,6 +897,14 @@ enum class MaterialTextureSwizzle: UnsignedInt {
     /** RGBA components */
     RGBA = Utility::Endianness::fourCC('R', 'G', 'B', 'A'),
 };
+
+/**
+@brief Component count in a material texture swizzle
+@m_since_latest
+
+Returns for example @cpp 2 @ce for @ref MaterialTextureSwizzle::GA.
+*/
+MAGNUM_TRADE_EXPORT UnsignedInt materialTextureSwizzleComponentCount(MaterialTextureSwizzle swizzle);
 
 /**
 @debugoperatorenum{MaterialTextureSwizzle}

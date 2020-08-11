@@ -46,6 +46,7 @@ class MaterialDataTest: public TestSuite::Tester {
     public:
         explicit MaterialDataTest();
 
+        void textureSwizzleComponentCount();
         void attributeTypeSize();
         void attributeTypeSizeInvalid();
 
@@ -217,7 +218,9 @@ class MaterialDataTest: public TestSuite::Tester {
 };
 
 MaterialDataTest::MaterialDataTest() {
-    addTests({&MaterialDataTest::attributeTypeSize,
+    addTests({&MaterialDataTest::textureSwizzleComponentCount,
+
+              &MaterialDataTest::attributeTypeSize,
               &MaterialDataTest::attributeTypeSizeInvalid,
               &MaterialDataTest::attributeMap,
               &MaterialDataTest::layerMap,
@@ -416,6 +419,14 @@ MaterialDataTest::MaterialDataTest() {
 
 using namespace Containers::Literals;
 using namespace Math::Literals;
+
+void MaterialDataTest::textureSwizzleComponentCount() {
+    CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::B), 1);
+    CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::RG), 2);
+    CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::GA), 2);
+    CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::GBA), 3);
+    CORRADE_COMPARE(materialTextureSwizzleComponentCount(MaterialTextureSwizzle::RGBA), 4);
+}
 
 void MaterialDataTest::attributeTypeSize() {
     CORRADE_COMPARE(materialAttributeTypeSize(MaterialAttributeType::Bool), 1);
