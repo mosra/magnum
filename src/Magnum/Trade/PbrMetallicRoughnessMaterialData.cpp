@@ -34,22 +34,22 @@ using namespace Math::Literals;
 
 bool PbrMetallicRoughnessMaterialData::hasMetalnessTexture() const {
     return hasAttribute(MaterialAttribute::MetalnessTexture) ||
-           hasAttribute(MaterialAttribute::MetallicRoughnessTexture);
+           hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture);
 }
 
 bool PbrMetallicRoughnessMaterialData::hasRoughnessTexture() const {
     return hasAttribute(MaterialAttribute::RoughnessTexture) ||
-           hasAttribute(MaterialAttribute::MetallicRoughnessTexture);
+           hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture);
 }
 
-bool PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture() const {
-    return (hasAttribute(MaterialAttribute::MetallicRoughnessTexture) ||
+bool PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture() const {
+    return (hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture) ||
        (hasAttribute(MaterialAttribute::MetalnessTexture) &&
         hasAttribute(MaterialAttribute::RoughnessTexture) &&
-        metalnessTextureSwizzle() == MaterialTextureSwizzle::R &&
-        roughnessTextureSwizzle() == MaterialTextureSwizzle::G)) &&
-       metalnessTextureMatrix() == roughnessTextureMatrix() &&
-       metalnessTextureCoordinates() == roughnessTextureCoordinates();
+        roughnessTextureSwizzle() == MaterialTextureSwizzle::G &&
+        metalnessTextureSwizzle() == MaterialTextureSwizzle::B)) &&
+       roughnessTextureMatrix() == metalnessTextureMatrix() &&
+       roughnessTextureCoordinates() == metalnessTextureCoordinates();
 }
 
 bool PbrMetallicRoughnessMaterialData::hasRoughnessMetallicOcclusionTexture() const {
@@ -156,7 +156,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTexture() const {
        would be misleading as it can be also MetallicRoughnessTexture */
     CORRADE_ASSERT(hasMetalnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::metalnessTexture(): the material doesn't have a metalness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetallicRoughnessTexture))
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
     return attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture);
 }
@@ -164,8 +164,8 @@ UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTexture() const {
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::metalnessTextureSwizzle() const {
     CORRADE_ASSERT(hasMetalnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::metalnessTextureSwizzle(): the material doesn't have a metalness texture", {});
-    if(hasAttribute(MaterialAttribute::MetallicRoughnessTexture))
-        return MaterialTextureSwizzle::R;
+    if(hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture))
+        return MaterialTextureSwizzle::B;
     return attributeOr(MaterialAttribute::MetalnessTextureSwizzle, MaterialTextureSwizzle::R);
 }
 
@@ -194,7 +194,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTexture() const {
        would be misleading as it can be also MetallicRoughnessTexture */
     CORRADE_ASSERT(hasRoughnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTexture(): the material doesn't have a roughness texture", {});
-    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetallicRoughnessTexture))
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
     return attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture);
 }
@@ -202,7 +202,7 @@ UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTexture() const {
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::roughnessTextureSwizzle() const {
     CORRADE_ASSERT(hasRoughnessTexture(),
         "Trade::PbrMetallicRoughnessMaterialData::roughnessTextureSwizzle(): the material doesn't have a roughness texture", {});
-    if(hasAttribute(MaterialAttribute::MetallicRoughnessTexture))
+    if(hasAttribute(MaterialAttribute::NoneRoughnessMetallicTexture))
         return MaterialTextureSwizzle::G;
     return attributeOr(MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::R);
 }

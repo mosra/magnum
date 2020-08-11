@@ -310,24 +310,26 @@ if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
 
 {
 /* [MaterialData-usage-packing] */
-Trade::PbrMetallicRoughnessMaterialData data = DOXYGEN_IGNORE(Trade::PbrMetallicRoughnessMaterialData{{}, {}});
+Trade::PbrSpecularGlossinessMaterialData data = DOXYGEN_IGNORE(Trade::PbrSpecularGlossinessMaterialData{{}, {}});
 
 /* Use a shader that accepts a single packed metallic/roughness texture.
    Querying any texture attributes will give the same values for both metalness
    and roughness. */
-if(data.hasMetallicRoughnessTexture()) {
-    UnsignedInt metallicRoughness = data.metalnessTexture();
+if(data.hasSpecularGlossinessTexture()) {
+    UnsignedInt specularGlossiness = data.specularTexture();
 
-    DOXYGEN_IGNORE(static_cast<void>(metallicRoughness);)
+    DOXYGEN_IGNORE(static_cast<void>(specularGlossiness);)
 
 /* Supply texture channels separately */
 } else {
-    UnsignedInt metalness = data.metalnessTexture();
-    UnsignedInt roughness = data.roughnessTexture();
-    Trade::MaterialTextureSwizzle metalnessSwizzle = data.metalnessTextureSwizzle();
-    Trade::MaterialTextureSwizzle roughnessSwizzle = data.roughnessTextureSwizzle();
+    UnsignedInt specular = data.specularTexture();
+    UnsignedInt glossiness = data.glossinessTexture();
+    Trade::MaterialTextureSwizzle specularSwizzle =
+        data.specularTextureSwizzle();
+    Trade::MaterialTextureSwizzle glossinessSwizzle =
+        data.glossinessTextureSwizzle();
 
-    DOXYGEN_IGNORE(static_cast<void>(metalness), static_cast<void>(roughness), static_cast<void>(metalnessSwizzle), static_cast<void>(roughnessSwizzle);)
+    DOXYGEN_IGNORE(static_cast<void>(specular), static_cast<void>(glossiness), static_cast<void>(specularSwizzle), static_cast<void>(glossinessSwizzle);)
 }
 /* [MaterialData-usage-packing] */
 }
@@ -413,7 +415,7 @@ Trade::MaterialData data{
     Trade::MaterialType::PbrMetallicRoughness|Trade::MaterialType::PbrClearCoat,
     {
         {Trade::MaterialAttribute::BaseColor, 0xffcc33_srgbf},
-        {Trade::MaterialAttribute::MetallicRoughnessTexture, 0u},
+        {Trade::MaterialAttribute::NoneRoughnessMetallicTexture, 0u},
 
         {Trade::MaterialLayer::ClearCoat},
         {Trade::MaterialAttribute::LayerFactorTexture, 1u},

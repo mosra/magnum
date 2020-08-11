@@ -356,7 +356,7 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttributeType::Float.
      *
      * If @ref MaterialAttribute::MetalnessTexture or
-     * @ref MaterialAttribute::MetallicRoughnessTexture is present as well,
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present as well,
      * these two are multiplied together.
      * @see @ref PbrMetallicRoughnessMaterialData::metalness()
      */
@@ -368,9 +368,9 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::Metalness is present as well, these two are
      * multiplied together. Can be alternatively supplied as a packed
-     * @ref MaterialAttribute::MetallicRoughnessTexture.
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture.
      * @see @ref PbrMetallicRoughnessMaterialData::hasMetalnessTexture(),
-     *      @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture(),
+     *      @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
      *      @ref PbrMetallicRoughnessMaterialData::metalnessTexture()
@@ -385,9 +385,10 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::MetalnessTexture together with other maps in a
      * single texture. A single-channel swizzle value is expected. If not
      * present, @ref MaterialTextureSwizzle::R is assumed. Does not apply to
-     * @ref MaterialAttribute::MetallicRoughnessTexture --- in that case, the
-     * metalness is implicitly in the red channel regardless of this attribute.
-     * @see @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture(),
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in that case,
+     * the metalness is implicitly in the red channel regardless of this
+     * attribute.
+     * @see @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
      *      @ref PbrMetallicRoughnessMaterialData::metalnessTextureSwizzle()
@@ -419,7 +420,7 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttributeType::Float.
      *
      * If @ref MaterialAttribute::RoughnessTexture or
-     * @ref MaterialAttribute::MetallicRoughnessTexture is present as well,
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present as well,
      * these two are multiplied together.
      * @see @ref PbrMetallicRoughnessMaterialData::roughness()
      */
@@ -431,9 +432,9 @@ enum class MaterialAttribute: UnsignedInt {
      *
      * If @ref MaterialAttribute::Roughness is present as well, these two are
      * multiplied together. Can be alternatively supplied as a packed
-     * @ref MaterialAttribute::MetallicRoughnessTexture.
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture.
      * @see @ref PbrMetallicRoughnessMaterialData::hasRoughnessTexture(),
-     *      @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture(),
+     *      @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
      *      @ref PbrMetallicRoughnessMaterialData::roughnessTexture()
@@ -448,10 +449,10 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::RoughnessTexture together with other maps in a
      * single texture. A single-channel swizzle value is expected. If not
      * present, @ref MaterialTextureSwizzle::R is assumed. Does not apply to
-     * @ref MaterialAttribute::MetallicRoughnessTexture --- in that case, the
-     * metalness is implicitly in the green channel regardless of this
+     * @ref MaterialAttribute::NoneRoughnessMetallicTexture --- in that case,
+     * the metalness is implicitly in the green channel regardless of this
      * attribute.
-     * @see @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture(),
+     * @see @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
      *      @ref PbrMetallicRoughnessMaterialData::roughnessTextureSwizzle()
@@ -479,32 +480,36 @@ enum class MaterialAttribute: UnsignedInt {
     RoughnessTextureCoordinates,
 
     /**
-     * Combined metallic/roughness texture index for PBR metallic/roughness
-     * materials with metalness in the red channel and roughness in the green
+     * Combined roughness/metallic texture index for PBR metallic/roughness
+     * materials with metalness in the blue channel and roughness in the green
      * channel, @ref MaterialAttributeType::UnsignedInt.
      *
      * If @ref MaterialAttribute::Metalness / @ref MaterialAttribute::Roughness
-     * is present as well, these two are multiplied together. Can be
-     * alternatively specified as a pair of @ref MaterialAttribute::MetalnessTexture
-     * / @ref MaterialAttribute::RoughnessTexture attributes together with
-     * @ref MaterialAttribute::MetalnessTextureSwizzle set to
-     * @ref MaterialTextureSwizzle::R (or omitted, since that's the default)
-     * and @ref MaterialAttribute::RoughnessTextureSwizzle set to
-     * @ref MaterialTextureSwizzle::G. Texture transformation and coordinate
+     * is present as well, these two are multiplied together.
+     *
+     * This is a convenience alias to simplify representation of glTF and UE4
+     * materials, which is where this packing is used ([rationale](https://github.com/KhronosGroup/glTF/issues/857)).
+     * This packing (and other variants) can be alternatively specified as a
+     * pair of @ref MaterialAttribute::RoughnessTexture /
+     * @ref MaterialAttribute::MetalnessTexture attributes together with
+     * @ref MaterialAttribute::RoughnessTextureSwizzle set to
+     * @ref MaterialTextureSwizzle::G
+     * and @ref MaterialAttribute::MetalnessTextureSwizzle set to
+     * @ref MaterialTextureSwizzle::B. Texture transformation and coordinate
      * set, if needed, have to be specified either using the global
      * @ref MaterialAttribute::TextureMatrix and
      * @ref MaterialAttribute::TextureCoordinates attributes or the per-texture
-     * @ref MaterialAttribute::MetalnessTextureMatrix,
      * @ref MaterialAttribute::RoughnessTextureMatrix,
-     * @ref MaterialAttribute::MetalnessTextureCoordinates and
-     * @ref MaterialAttribute::RoughnessTextureCoordinates variants.
-     * @see @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture(),
+     * @ref MaterialAttribute::MetalnessTextureMatrix,
+     * @ref MaterialAttribute::RoughnessTextureCoordinates and
+     * @ref MaterialAttribute::MetalnessTextureCoordinates variants.
+     * @see @ref PbrMetallicRoughnessMaterialData::hasNoneRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture()
      *      @ref PbrMetallicRoughnessMaterialData::metalnessTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::roughnessTexture()
      */
-    MetallicRoughnessTexture,
+    NoneRoughnessMetallicTexture,
 
     /* DiffuseColor, DiffuseTexture, DiffuseTextureMatrix,
        DiffuseTextureCoordinates, SpecularColor, SpecularTexture,
@@ -1441,8 +1446,8 @@ various @ref MaterialTextureSwizzle attributes such as
 @ref MaterialAttribute::MetalnessTextureSwizzle. While this provides an almost
 endless variability, real-world textures are in just a few common packing
 schemes. For convenience these have dedicated attributes such as
-@ref MaterialAttribute::MetallicRoughnessTexture and can also be checked for
-with for example @ref PbrMetallicRoughnessMaterialData::hasMetallicRoughnessTexture():
+@ref MaterialAttribute::SpecularGlossinessTexture and can also be checked
+for with for example @ref PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture():
 
 @snippet MagnumTrade.cpp MaterialData-usage-packing
 

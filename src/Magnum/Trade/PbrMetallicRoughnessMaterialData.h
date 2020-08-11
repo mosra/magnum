@@ -60,9 +60,9 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          *
          * Returns @cpp true @ce if any of the
          * @ref MaterialAttribute::MetalnessTexture or
-         * @ref MaterialAttribute::MetallicRoughnessTexture attributes is
+         * @ref MaterialAttribute::NoneRoughnessMetallicTexture attributes is
          * present, @cpp false @ce otherwise.
-         * @see @ref hasRoughnessTexture(), @ref hasMetallicRoughnessTexture()
+         * @see @ref hasRoughnessTexture(), @ref hasNoneRoughnessMetallicTexture()
          */
         bool hasMetalnessTexture() const;
 
@@ -71,41 +71,48 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          *
          * Returns @cpp true @ce if any of the
          * @ref MaterialAttribute::RoughnessTexture or
-         * @ref MaterialAttribute::MetallicRoughnessTexture attributes is
+         * @ref MaterialAttribute::NoneRoughnessMetallicTexture attributes is
          * present, @cpp false @ce otherwise.
-         * @see @ref hasMetalnessTexture(), @ref hasMetallicRoughnessTexture()
+         * @see @ref hasMetalnessTexture(), @ref hasNoneRoughnessMetallicTexture()
          */
         bool hasRoughnessTexture() const;
 
         /**
-         * @brief Whether the material has a combined metallic/roughness texture
+         * @brief Whether the material has a combined roughness/metallic texture
          *
          * Returns @cpp true @ce if either the
-         * @ref MaterialAttribute::MetallicRoughnessTexture attribute is
-         * present or both @ref MaterialAttribute::MetalnessTexture and
-         * @ref MaterialAttribute::RoughnessTexture are present, point to
-         * the same texture ID, @ref MaterialAttribute::MetalnessTextureSwizzle
-         * is set to @ref MaterialTextureSwizzle::R (or omitted, in which case
-         * it's the default) and @ref MaterialAttribute::RoughnessTextureSwizzle
-         * is set to @ref MaterialTextureSwizzle::G, and ddditionally
-         * @ref MaterialAttribute::MetalnessTextureMatrix and
-         * @ref MaterialAttribute::RoughnessTextureMatrix are both either not
+         * @ref MaterialAttribute::NoneRoughnessMetallicTexture attribute is
+         * present or both @ref MaterialAttribute::RoughnessTexture and
+         * @ref MaterialAttribute::MetalnessTexture are present, point to the
+         * same texture ID, @ref MaterialAttribute::RoughnessTextureSwizzle is
+         * set to @ref MaterialTextureSwizzle::G and
+         * @ref MaterialAttribute::MetalnessTextureSwizzle is set to
+         * @ref MaterialTextureSwizzle::B, and ddditionally
+         * @ref MaterialAttribute::RoughnessTextureMatrix and
+         * @ref MaterialAttribute::MetalnessTextureMatrix are both either not
          * present or have the same value, and
-         * @ref MaterialAttribute::MetalnessTextureCoordinates and
-         * @ref MaterialAttribute::RoughnessTextureCoordinates are both either
+         * @ref MaterialAttribute::RoughnessTextureCoordinates and
+         * @ref MaterialAttribute::MetalnessTextureCoordinates are both either
          * not present or have the same value; @cpp false @ce otherwise.
          *
          * In other words, if this function returns @cpp true @ce,
-         * @ref metalnessTexture(), @ref metalnessTextureMatrix() and
-         * @ref metalnessTextureCoordinates() return values common for both
+         * @ref roughnessTexture(), @ref roughnessTextureMatrix() and
+         * @ref roughnessTextureCoordinates() return values common for both
          * metalness and roughness texture, and the two are packed together
-         * with metalness occupying the R channel and roughness the G channel.
+         * with roughness occupying the G channel and metalness the B channel.
+         * This packing is common in glTF metallic/roughness materials, which
+         * in turn is compatible with how UE4 assets are usually packed.
+         * Original rationale for this [can be seen here](https://github.com/KhronosGroup/glTF/issues/857).
+         *
+         * The red and alpha channels are ignored and can be repurposed for
+         * other maps such as occlusion or transmission. This check is a subset
+         * of @ref hasOcclusionRoughnessMetallicTexture() --- if that function
+         * returns @cpp true @ce, this will return @cpp true @ce as well.
          * @see @ref hasMetalnessTexture(), @ref hasRoughnessTexture(),
-         *      @ref hasOcclusionRoughnessMetallicTexture(),
          *      @ref hasRoughnessMetallicOcclusionTexture(),
          *      @ref hasNormalRoughnessMetallicTexture()
          */
-        bool hasMetallicRoughnessTexture() const;
+        bool hasNoneRoughnessMetallicTexture() const;
 
         /**
          * @brief Whether the material has a combined occlusion/roughness/metallic texture
@@ -133,9 +140,19 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref occlusionTextureCoordinates() return values common for
          * occlusion, roughness and metalness textures, and the three are
          * packed together with occlusion occupying the R channel, roughness
-         * the G channel and metalness the B channel.
+         * the G channel and metalness the B channel. This packing is common in
+         * glTF metallic/roughness materials, which in turn is compatible with
+         * how UE4 assets are usually packed. Original rationale for this [can
+         * be seen here](https://github.com/KhronosGroup/glTF/issues/857),
+         * there's also a [MSFT_packing_occlusionRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_occlusionRoughnessMetallic/README.md)
+         * glTF extension using this packing in a more explicit way.
+         *
+         * The alpha channel is ignored and can be repurposed for other maps
+         * such as transmission. This check is a superset of
+         * @ref hasNoneRoughnessMetallicTexture() --- if this function returns
+         * @cpp true @ce, that one will return @cpp true @ce as well.
          * @see @ref hasMetalnessTexture(), @ref hasRoughnessTexture(),
-         *      @ref hasMetallicRoughnessTexture(),
+         *      @ref hasNoneRoughnessMetallicTexture(),
          *      @ref hasRoughnessMetallicOcclusionTexture(),
          *      @ref hasNormalRoughnessMetallicTexture()
          */
@@ -167,9 +184,14 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref roughnessTextureCoordinates() return values common for
          * roughness, metalness and occlusion textures, and the three are
          * packed together with roughness occupying the R channel, metalness
-         * the G channel and occlusion the B channel.
+         * the G channel and occlusion the B channel. This check is present in
+         * order to provide support for the [MSFT_packing_occlusionRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_occlusionRoughnessMetallic/README.md)
+         * glTF extension.
+         *
+         * The alpha channel is ignored and can be repurposed for other maps
+         * such as transmission.
          * @see @ref hasMetalnessTexture(), @ref hasRoughnessTexture(),
-         *      @ref hasMetallicRoughnessTexture(),
+         *      @ref hasNoneRoughnessMetallicTexture(),
          *      @ref hasOcclusionRoughnessMetallicTexture(),
          *      @ref hasNormalRoughnessMetallicTexture()
          */
@@ -201,9 +223,12 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @ref normalTextureCoordinates() return values common for normal,
          * roughness and metalness textures, and the three are packed together
          * with normals occupying the RG channel, roughness the B channel and
-         * metalness the A channel.
+         * metalness the A channel. This check is present in order to provide
+         * support for the [MSFT_packing_normalRoughnessMetallic](https://github.com/KhronosGroup/glTF/blob/master/extensions/2.0/Vendor/MSFT_packing_normalRoughnessMetallic/README.md)
+         * glTF extension.
+         *
          * @see @ref hasMetalnessTexture(), @ref hasRoughnessTexture(),
-         *      @ref hasMetallicRoughnessTexture(),
+         *      @ref hasNoneRoughnessMetallicTexture(),
          *      @ref hasRoughnessMetallicOcclusionTexture(),
          *      @ref hasOcclusionRoughnessMetallicTexture()
          */
@@ -297,8 +322,8 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @brief Metalness texture ID
          *
          * Available only if either @ref MaterialAttribute::MetalnessTexture or
-         * @ref MaterialAttribute::MetallicRoughnessTexture is present. Meant
-         * to be multiplied with @ref metalness().
+         * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present.
+         * Meant to be multiplied with @ref metalness().
          * @see @ref hasMetalnessTexture(), @ref AbstractImporter::texture()
          */
         UnsignedInt metalnessTexture() const;
@@ -306,8 +331,8 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         /**
          * @brief Metalness texture swizzle
          *
-         * If @ref MaterialAttribute::MetallicRoughnessTexture is present,
-         * returns always @ref MaterialTextureSwizzle::R. Otherwise returns the
+         * If @ref MaterialAttribute::NoneRoughnessMetallicTexture is present,
+         * returns always @ref MaterialTextureSwizzle::B. Otherwise returns the
          * @ref MaterialAttribute::MetalnessTextureSwizzle attribute, or
          * @ref MaterialTextureSwizzle::R, if it's not present. Available only
          * if the material has a metalness texture.
@@ -353,7 +378,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
          * @brief Roughness texture ID
          *
          * Available only if either @ref MaterialAttribute::RoughnessTexture or
-         * @ref MaterialAttribute::MetallicRoughnessTexture is present. Meant
+         * @ref MaterialAttribute::NoneRoughnessMetallicTexture is present. Meant
          * to be multiplied with @ref roughness().
          * @see @ref hasRoughnessTexture(), @ref AbstractImporter::texture()
          */
@@ -362,7 +387,7 @@ class MAGNUM_TRADE_EXPORT PbrMetallicRoughnessMaterialData: public MaterialData 
         /**
          * @brief Roughness texture swizzle
          *
-         * If @ref MaterialAttribute::MetallicRoughnessTexture is present,
+         * If @ref MaterialAttribute::NoneRoughnessMetallicTexture is present,
          * returns always @ref MaterialTextureSwizzle::G. Otherwise returns the
          * @ref MaterialAttribute::RoughnessTextureSwizzle attribute, or
          * @ref MaterialTextureSwizzle::R, if it's not present. Available only
