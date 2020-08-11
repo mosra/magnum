@@ -51,23 +51,6 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
            desired convenience APIs easier (and simplifies testing) */
         using MaterialData::MaterialData;
 
-        /* Bring in all other overloads as well and override just the ones
-           with implicit layers */
-        using MaterialData::layerName;
-        using MaterialData::layerFactor;
-        using MaterialData::layerFactorTexture;
-        using MaterialData::layerFactorTextureSwizzle;
-        using MaterialData::layerFactorTextureMatrix;
-        using MaterialData::layerFactorTextureCoordinates;
-        using MaterialData::attributeCount;
-        using MaterialData::hasAttribute;
-        using MaterialData::attributeId;
-        using MaterialData::attributeName;
-        using MaterialData::attributeType;
-        using MaterialData::attribute;
-        using MaterialData::tryAttribute;
-        using MaterialData::attributeOr;
-
         /**
          * @brief Layer name
          *
@@ -249,6 +232,234 @@ template<MaterialLayer layer> class MaterialLayerData: public MaterialData {
         template<class T> T attributeOr(MaterialAttribute name, const T& defaultValue) const {
             return MaterialData::attributeOr<T>(layer, name, defaultValue);
         } /**< @overload */
+
+        /* Bring in all other overloads as well and override just the ones
+           with implicit layers */
+        using MaterialData::layerName;
+        using MaterialData::layerFactor;
+        using MaterialData::layerFactorTexture;
+        using MaterialData::layerFactorTextureSwizzle;
+        using MaterialData::layerFactorTextureMatrix;
+        using MaterialData::layerFactorTextureCoordinates;
+        /* MSVC is so damn unbelievably stupid it's setting my ass on fire.
+           https://en.cppreference.com/w/cpp/language/using_declaration says
+           that "If the derived class already has a member with the same name,
+           parameter list, and qualifications, the derived class member hides
+           or overrides (doesn't conflict with) the member that is introduced
+           from the base class." and EVERY COMPILER ON EARTH EXCEPT THIS DAMN
+           POOL OF GOO implements that correctly. So instead of a bunch of sane
+           using declarations I have to enumerate EACH AND EVERY overload and
+           explicitly pass them through LIKE A FUCKING SAVAGE. FFS. */
+        #if !defined(CORRADE_TARGET_MSVC) || defined(CORRADE_TARGET_CLANG_CL)
+        using MaterialData::attributeCount;
+        using MaterialData::hasAttribute;
+        using MaterialData::attributeId;
+        using MaterialData::attributeName;
+        using MaterialData::attributeType;
+        using MaterialData::attribute;
+        using MaterialData::tryAttribute;
+        using MaterialData::attributeOr;
+        #else
+        UnsignedInt attributeCount(UnsignedInt layer_) const {
+            return MaterialData::attributeCount(layer_);
+        }
+        UnsignedInt attributeCount(Containers::StringView layer_) const {
+            return MaterialData::attributeCount(layer_);
+        }
+        UnsignedInt attributeCount(MaterialLayer layer_) const {
+            return MaterialData::attributeCount(layer_);
+        }
+
+        bool hasAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+        bool hasAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+        bool hasAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+        bool hasAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+        bool hasAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+        bool hasAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::hasAttribute(layer_, name);
+        }
+
+        UnsignedInt attributeId(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+        UnsignedInt attributeId(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+        UnsignedInt attributeId(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+        UnsignedInt attributeId(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+        UnsignedInt attributeId(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+        UnsignedInt attributeId(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::attributeId(layer_, name);
+        }
+
+        Containers::StringView attributeName(UnsignedInt layer_, UnsignedInt id) const {
+            return MaterialData::attributeName(layer_, id);
+        }
+        Containers::StringView attributeName(Containers::StringView layer_, UnsignedInt id) const {
+            return MaterialData::attributeName(layer_, id);
+        }
+        Containers::StringView attributeName(MaterialLayer layer_, UnsignedInt id) const {
+            return MaterialData::attributeName(layer_, id);
+        }
+
+        MaterialAttributeType attributeType(UnsignedInt layer_, UnsignedInt id) const {
+            return MaterialData::attributeType(layer_, id);
+        }
+        MaterialAttributeType attributeType(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+        MaterialAttributeType attributeType(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+        MaterialAttributeType attributeType(Containers::StringView layer_, UnsignedInt id) const {
+            return MaterialData::attributeType(layer_, id);
+        }
+        MaterialAttributeType attributeType(MaterialLayer layer_, UnsignedInt id) const {
+            return MaterialData::attributeType(layer_, id);
+        }
+        MaterialAttributeType attributeType(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+        MaterialAttributeType attributeType(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+        MaterialAttributeType attributeType(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+        MaterialAttributeType attributeType(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::attributeType(layer_, name);
+        }
+
+        const void* attribute(UnsignedInt layer_, UnsignedInt id) const {
+            return MaterialData::attribute(layer_, id);
+        }
+        const void* attribute(Containers::StringView layer_, UnsignedInt id) const {
+            return MaterialData::attribute(layer_, id);
+        }
+        const void* attribute(MaterialLayer layer_, UnsignedInt id) const {
+            return MaterialData::attribute(layer_, id);
+        }
+        const void* attribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+        const void* attribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+        const void* attribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+        const void* attribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+        const void* attribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+        const void* attribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::attribute(layer_, name);
+        }
+
+        template<class T> T attribute(UnsignedInt layer_, UnsignedInt id) const {
+            return MaterialData::attribute<T>(layer_, id);
+        }
+        template<class T> T attribute(Containers::StringView layer_, UnsignedInt id) const {
+            return MaterialData::attribute<T>(layer_, id);
+        }
+        template<class T> T attribute(MaterialLayer layer_, UnsignedInt id) const {
+            return MaterialData::attribute<T>(layer_, id);
+        }
+        template<class T> T attribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+        template<class T> T attribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+        template<class T> T attribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+        template<class T> T attribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+        template<class T> T attribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+        template<class T> T attribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::attribute<T>(layer_, name);
+        }
+
+        const void* tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+        const void* tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+        const void* tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+        const void* tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+        const void* tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+        const void* tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute(layer_, name);
+        }
+
+        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> tryAttribute(UnsignedInt layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+
+        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> tryAttribute(Containers::StringView layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer_, Containers::StringView name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+        template<class T> Containers::Optional<T> tryAttribute(MaterialLayer layer_, MaterialAttribute name) const {
+            return MaterialData::tryAttribute<T>(layer_, name);
+        }
+
+        template<class T> T attributeOr(UnsignedInt layer_, Containers::StringView name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        template<class T> T attributeOr(UnsignedInt layer_, MaterialAttribute name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        template<class T> T attributeOr(Containers::StringView layer_, Containers::StringView name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        template<class T> T attributeOr(Containers::StringView layer_, MaterialAttribute name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        template<class T> T attributeOr(MaterialLayer layer_, Containers::StringView name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        template<class T> T attributeOr(MaterialLayer layer_, MaterialAttribute name, const T& defaultValue) const {
+            return MaterialData::attributeOr<T>(layer_, name, defaultValue);
+        }
+        #endif
 };
 
 }}
