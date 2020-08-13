@@ -1541,10 +1541,10 @@ data is treated as immutable, you *have to* ensure the list is sorted by name.
 @subsection Trade-MaterialData-populating-custom Custom material attributes
 
 While attribute names beginning with uppercase letters are reserved for builtin
-Magnum attributes, anything beginning with a lowercase letter can be a custom
-attribute. For greater flexibility, custom attributes can be also strings or
-pointers, allowing you to store arbitrary properties or direct texture pointers
-instead of IDs:
+Magnum attributes, anything beginning with a lowercase letter or a non-letter
+can be a custom attribute. For greater flexibility, custom attributes can be
+also strings or pointers, allowing you to store arbitrary properties or direct
+texture pointers instead of IDs:
 
 @snippet MagnumTrade.cpp MaterialData-populating-custom
 
