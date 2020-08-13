@@ -613,7 +613,12 @@ template<class T> void MaterialDataTest::constructAttributeStringConstexpr() {
     setTestCaseTemplateName(TypeName<T>::name());
 
     /* "templateAttrib" is 14 chars, which is the maximum for 48-bit types */
-    constexpr MaterialAttributeData attribute{"templateAttrib"_s, T(15)};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Unfortunately this doesn't always work, for example Vector3. Disabling
+       unconditionally, might revisit later. */
+    constexpr
+    #endif
+    MaterialAttributeData attribute{"templateAttrib"_s, T(15)};
     CORRADE_COMPARE(attribute.name(), "templateAttrib");
     CORRADE_COMPARE(attribute.name().flags(), Containers::StringViewFlag::NullTerminated);
     CORRADE_COMPARE(attribute.name()[attribute.name().size()], '\0');
