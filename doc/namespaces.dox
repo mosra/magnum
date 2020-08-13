@@ -631,6 +631,9 @@ See @ref building, @ref cmake and @ref vulkan for more information.
 /** @dir MagnumPlugins/AnyImageImporter
  * @brief Plugin @ref Magnum::Trade::AnyImageImporter
  */
+/** @dir MagnumPlugins/AnySceneConverter
+ * @brief Plugin @ref Magnum::Trade::AnySceneConverter
+ */
 /** @dir MagnumPlugins/AnySceneImporter
  * @brief Plugin @ref Magnum::Trade::AnySceneImporter
  */
