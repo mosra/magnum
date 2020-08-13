@@ -208,6 +208,12 @@ UnsignedInt PbrSpecularGlossinessMaterialData::occlusionTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::OcclusionTexture);
 }
 
+Float PbrSpecularGlossinessMaterialData::occlusionTextureStrength() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
+        "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureStrength(): the material doesn't have an occlusion texture", {});
+    return attributeOr(MaterialAttribute::OcclusionTextureStrength, 1.0f);
+}
+
 MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::occlusionTextureSwizzle() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureSwizzle(): the material doesn't have an occlusion texture", {});

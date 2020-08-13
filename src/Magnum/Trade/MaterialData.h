@@ -678,11 +678,35 @@ enum class MaterialAttribute: UnsignedInt {
     /**
      * Occlusion texture index,
      * @ref MaterialAttributeType::UnsignedInt.
+     *
+     * Single-channel texture that multiplies the resulting material color
+     * @f$ \boldsymbol{c} @f$: @f[
+     *      \boldsymbol{c}_o = o \boldsymbol{c}
+     * @f]
+     *
+     * If @ref MaterialAttribute::OcclusionTextureStrength is present as well,
+     * it's used as an interpolation factor @f$ \color{m-success} s @f$ between
+     * material color @f$ \boldsymbol{c} @f$ and color with occlusion applied
+     * @f$ o \boldsymbol{c} @f$: @f[
+     *      \boldsymbol{c}_o = \operatorname{lerp}(\boldsymbol{c}, o \boldsymbol{c}, {\color{m-success} s}) =
+     *      \boldsymbol{c} (1 - {\color{m-success} s}) + o \boldsymbol{c} {\color{m-success} s}
+     * @f]
      * @see @ref PbrMetallicRoughnessMaterialData::hasOcclusionRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::occlusionTexture(),
-     *      @ref PbrSpecularGlossinessMaterialData::occlusionTexture()
+     *      @ref PbrSpecularGlossinessMaterialData::occlusionTexture(),
+     *      @ref Math::lerp()
      */
     OcclusionTexture,
+
+    /**
+     * Occlusion texture strength, @ref MaterialAttributeType::Float.
+     *
+     * Affects the texture defined by @ref MaterialAttribute::OcclusionTexture,
+     * see above for details.
+     * @see @ref PbrMetallicRoughnessMaterialData::occlusionTextureStrength(),
+     *      @ref PbrSpecularGlossinessMaterialData::occlusionTextureStrength()
+     */
+    OcclusionTextureStrength,
 
     /**
      * Occlusion texture swizzle, @ref MaterialAttributeType::TextureSwizzle.

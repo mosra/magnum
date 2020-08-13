@@ -259,6 +259,12 @@ UnsignedInt PbrMetallicRoughnessMaterialData::occlusionTexture() const {
     return attribute<UnsignedInt>(MaterialAttribute::OcclusionTexture);
 }
 
+Float PbrMetallicRoughnessMaterialData::occlusionTextureStrength() const {
+    CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
+        "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureStrength(): the material doesn't have an occlusion texture", {});
+    return attributeOr(MaterialAttribute::OcclusionTextureStrength, 1.0f);
+}
+
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::occlusionTextureSwizzle() const {
     CORRADE_ASSERT(hasAttribute(MaterialAttribute::OcclusionTexture),
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureSwizzle(): the material doesn't have an occlusion texture", {});

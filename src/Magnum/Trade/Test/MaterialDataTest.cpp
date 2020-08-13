@@ -2748,6 +2748,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 5u},
         {MaterialAttribute::OcclusionTexture, 4u},
+        {MaterialAttribute::OcclusionTextureStrength, 0.66f},
         {MaterialAttribute::OcclusionTextureSwizzle, MaterialTextureSwizzle::B},
         {MaterialAttribute::OcclusionTextureMatrix, Matrix3::scaling({1.0f, 0.75f})},
         {MaterialAttribute::OcclusionTextureCoordinates, 6u},
@@ -2785,6 +2786,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
     CORRADE_COMPARE(data.occlusionTexture(), 4);
+    CORRADE_COMPARE(data.occlusionTextureStrength(), 0.66f);
     CORRADE_COMPARE(data.occlusionTextureMatrix(), Matrix3::scaling({1.0f, 0.75f}));
     CORRADE_COMPARE(data.occlusionTextureSwizzle(), MaterialTextureSwizzle::B);
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 6);
@@ -2835,6 +2837,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
     CORRADE_COMPARE(data.occlusionTexture(), 5);
+    CORRADE_COMPARE(data.occlusionTextureStrength(), 1.0f);
     CORRADE_COMPARE(data.occlusionTextureSwizzle(), MaterialTextureSwizzle::R);
     CORRADE_COMPARE(data.occlusionTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 0);
@@ -3278,6 +3281,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures() {
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
     data.occlusionTexture();
+    data.occlusionTextureStrength();
     data.occlusionTextureSwizzle();
     data.occlusionTextureMatrix();
     data.occlusionTextureCoordinates();
@@ -3302,6 +3306,7 @@ void MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures() {
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n"
         "Trade::MaterialData::attribute(): attribute OcclusionTexture not found in layer 0\n"
+        "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureStrength(): the material doesn't have an occlusion texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureSwizzle(): the material doesn't have an occlusion texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureMatrix(): the material doesn't have an occlusion texture\n"
         "Trade::PbrMetallicRoughnessMaterialData::occlusionTextureCoordinates(): the material doesn't have an occlusion texture\n"
@@ -3370,6 +3375,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTextured() {
         {MaterialAttribute::NormalTextureMatrix, Matrix3::scaling({1.0f, 0.5f})},
         {MaterialAttribute::NormalTextureCoordinates, 5u},
         {MaterialAttribute::OcclusionTexture, 4u},
+        {MaterialAttribute::OcclusionTextureStrength, 0.66f},
         {MaterialAttribute::OcclusionTextureSwizzle, MaterialTextureSwizzle::B},
         {MaterialAttribute::OcclusionTextureMatrix, Matrix3::scaling({1.0f, 0.75f})},
         {MaterialAttribute::OcclusionTextureCoordinates, 6u},
@@ -3404,6 +3410,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTextured() {
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
     CORRADE_COMPARE(data.occlusionTexture(), 4);
+    CORRADE_COMPARE(data.occlusionTextureStrength(), 0.66f);
     CORRADE_COMPARE(data.occlusionTextureMatrix(), Matrix3::scaling({1.0f, 0.75f}));
     CORRADE_COMPARE(data.occlusionTextureSwizzle(), MaterialTextureSwizzle::B);
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 6);
@@ -3451,6 +3458,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
     CORRADE_COMPARE(data.occlusionTexture(), 5);
+    CORRADE_COMPARE(data.occlusionTextureStrength(), 1.0f);
     CORRADE_COMPARE(data.occlusionTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.occlusionTextureSwizzle(), MaterialTextureSwizzle::R);
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 0);
@@ -3665,6 +3673,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures() {
     data.normalTextureMatrix();
     data.normalTextureCoordinates();
     data.occlusionTexture();
+    data.occlusionTextureStrength();
     data.occlusionTextureSwizzle();
     data.occlusionTextureMatrix();
     data.occlusionTextureCoordinates();
@@ -3689,6 +3698,7 @@ void MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures() {
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n"
         "Trade::MaterialData::attribute(): attribute OcclusionTexture not found in layer 0\n"
+        "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureStrength(): the material doesn't have an occlusion texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureSwizzle(): the material doesn't have an occlusion texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureMatrix(): the material doesn't have an occlusion texture\n"
         "Trade::PbrSpecularGlossinessMaterialData::occlusionTextureCoordinates(): the material doesn't have an occlusion texture\n"

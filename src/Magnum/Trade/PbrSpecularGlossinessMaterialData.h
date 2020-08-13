@@ -348,6 +348,17 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         UnsignedInt occlusionTexture() const;
 
         /**
+         * @brief Occlusion texture strength
+         *
+         * Convenience access to the @ref MaterialAttribute::OcclusionTextureStrength
+         * attribute. If not present, the default is @cpp 1.0f @ce.
+         * Available only if @ref MaterialAttribute::OcclusionTexture is
+         * present.
+         * @see @ref hasAttribute()
+         */
+        Float occlusionTextureStrength() const;
+
+        /**
          * @brief Occlusion texture swizzle
          *
          * Convenience access to the
