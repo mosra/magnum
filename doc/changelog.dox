@@ -66,6 +66,10 @@ See also:
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
 -   Added @ref Math::binomialCoefficient() (see [mosra/magnum#461](https://github.com/mosra/magnum/pull/461))
 
+@subsubsection changelog-latest-new-scenegraph SceneGraph library
+
+-   Added @ref SceneGraph::Object::move()
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-gl GL library

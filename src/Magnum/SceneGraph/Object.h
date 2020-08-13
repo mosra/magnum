@@ -157,6 +157,23 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
+        /**
+         * @brief Move a child object before another
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Doesn't have any effect on draw order, only on the child order when
+         * iterating through @ref children(). The @p child is expected to be a
+         * child of this object, @p before is either a child of this object or
+         * @cpp nullptr @ce in which case the @p child is moved to the last
+         * position in the child list.
+         * @see @ref Corrade::Containers::LinkedList::move()
+         */
+        Object<Transformation>& move(Object<Transformation>& child, Object<Transformation>* before) {
+            Containers::LinkedList<Object<Transformation>>::move(&child, before);
+            return *this;
+        }
+
         /** @brief Previous sibling object or `nullptr`, if this is the first object */
         Object<Transformation>* previousSibling() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();

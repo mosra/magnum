@@ -40,6 +40,7 @@ struct ObjectTest: TestSuite::Tester {
 
     void parenting();
     void addChild();
+    void move();
     void scene();
     void setParentKeepTransformation();
     void setParentKeepTransformationInvalid();
@@ -78,6 +79,7 @@ ObjectTest::ObjectTest() {
 
               &ObjectTest::parenting,
               &ObjectTest::addChild,
+              &ObjectTest::move,
               &ObjectTest::scene,
               &ObjectTest::setParentKeepTransformation,
               &ObjectTest::setParentKeepTransformationInvalid,
@@ -152,6 +154,27 @@ void ObjectTest::addChild() {
     MyObject& p = o.addChild<MyObject>(a, Containers::Pointer<int>{});
     CORRADE_VERIFY(!o.children().isEmpty());
     CORRADE_COMPARE(p.parent(), &o);
+}
+
+void ObjectTest::move() {
+    Scene3D scene;
+    Object3D* a = new Object3D{&scene};
+    Object3D* b = new Object3D{&scene};
+    Object3D* c = new Object3D{&scene};
+
+    CORRADE_COMPARE(a->nextSibling(), b);
+    CORRADE_COMPARE(b->nextSibling(), c);
+    CORRADE_COMPARE(c->nextSibling(), nullptr);
+
+    scene.move(*a, c);
+    CORRADE_COMPARE(b->nextSibling(), a);
+    CORRADE_COMPARE(a->nextSibling(), c);
+    CORRADE_COMPARE(c->nextSibling(), nullptr);
+
+    scene.move(*a, nullptr);
+    CORRADE_COMPARE(b->nextSibling(), c);
+    CORRADE_COMPARE(c->nextSibling(), a);
+    CORRADE_COMPARE(a->nextSibling(), nullptr);
 }
 
 void ObjectTest::scene() {
