@@ -99,6 +99,8 @@ See also:
 
 -   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",
     showing data ranges of known attributes
+-   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also materials
+    and textures in `--info`
 
 @subsubsection changelog-latest-changes-trade Trade library
 

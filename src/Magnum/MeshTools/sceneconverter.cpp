@@ -42,6 +42,7 @@
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
+#include "Magnum/Trade/TextureData.h"
 #include "Magnum/Trade/AbstractSceneConverter.h"
 #include "Magnum/Trade/Implementation/converterUtilities.h"
 
@@ -276,6 +277,13 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             std::string name;
         };
 
+        struct TextureInfo {
+            UnsignedInt texture;
+            UnsignedInt references;
+            Trade::TextureData data{{}, {}, {}, {}, {}, {}};
+            std::string name;
+        };
+
         struct MeshAttributeInfo {
             std::size_t offset;
             UnsignedInt stride, arraySize;
@@ -299,7 +307,8 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         /* Parse everything first to avoid errors interleaved with output */
 
         /* Scene properties. Currently just counting how much is each mesh /
-           material shared. */
+           material shared. Texture reference count is calculated when parsing
+           materials. */
         Containers::Array<UnsignedInt> materialReferenceCount{importer->materialCount()};
         Containers::Array<UnsignedInt> meshReferenceCount{importer->meshCount()};
         for(UnsignedInt i = 0; i != importer->object3DCount(); ++i) {
@@ -316,6 +325,7 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         /* Material properties */
         bool error = false;
         Containers::Array<MaterialInfo> materialInfos;
+        Containers::Array<UnsignedInt> textureReferenceCount{importer->textureCount()};
         for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
             Containers::Optional<Trade::MaterialData> material;
             {
@@ -323,6 +333,19 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                 if(!(material = importer->material(i))) {
                     error = true;
                     continue;
+                }
+            }
+
+            /* Calculate texture reference count for all properties that
+               look like a texture */
+            for(UnsignedInt j = 0; j != material->layerCount(); ++j) {
+                for(UnsignedInt k = 0; k != material->attributeCount(j); ++k) {
+                    if(material->attributeType(j, k) != Trade::MaterialAttributeType::UnsignedInt || !Utility::String::endsWith(material->attributeName(j, k), "Texture"))
+                        continue;
+
+                    const UnsignedInt texture = material->attribute<UnsignedInt>(j, k);
+                    if(texture < textureReferenceCount.size())
+                        ++textureReferenceCount[texture];
                 }
             }
 
@@ -417,6 +440,27 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
 
                 arrayAppend(meshInfos, std::move(info));
             }
+        }
+
+        /* Texture properties */
+        Containers::Array<TextureInfo> textureInfos;
+        for(UnsignedInt i = 0; i != importer->textureCount(); ++i) {
+            Containers::Optional<Trade::TextureData> texture;
+            {
+                Duration d{importTime};
+                if(!(texture = importer->texture(i))) {
+                    error = true;
+                    continue;
+                }
+            }
+
+            TextureInfo info{};
+            info.texture = i;
+            info.name = importer->textureName(i);
+            info.references = textureReferenceCount[i];
+            info.data = *std::move(texture);
+
+            arrayAppend(textureInfos, std::move(info));
         }
 
         /* In case the images have all just a single level and no names, write
@@ -544,6 +588,24 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
                     d << Debug::newline << "      bounds:" << attribute.bounds;
             }
         }
+
+        for(const TextureInfo& info: textureInfos) {
+            Debug d;
+            d << "Texture" << info.texture;
+            /* Print reference count only if there actually are some
+                materials, otherwise this information is useless */
+            if(importer->materialCount())
+                d << Utility::formatString("(referenced by {} materials)", info.references);
+            d << Debug::nospace << ":";
+            if(!info.name.empty()) d << info.name;
+            d << Debug::newline;
+            d << "  Type:" << info.data.type();
+            d << "\n  Minification:" << info.data.minificationFilter() << info.data.mipmapFilter();
+            d << "\n  Magnification:" << info.data.magnificationFilter();
+            d << "\n  Wrapping:" << info.data.wrapping();
+            d << "\n  Image:" << info.data.image();
+        }
+
         for(const Trade::Implementation::ImageInfo& info: imageInfos) {
             Debug d;
             if(info.level == 0) {
