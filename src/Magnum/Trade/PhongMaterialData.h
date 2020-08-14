@@ -253,8 +253,22 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * @ref MaterialAttribute::NormalTextureMatrix or
          * @ref MaterialAttribute::TextureMatrix attributes is present,
          * @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureTransformation()
          */
         bool hasTextureTransformation() const;
+
+        /**
+         * @brief Whether the material has a common transformation for all textures
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref ambientTextureMatrix(), @ref diffuseTextureMatrix(),
+         * @ref specularTextureMatrix() and @ref normalTextureMatrix() have the
+         * same value, @cpp false @ce otherwise. In particular, returns
+         * @cpp true @ce also if there's no texture transformation at all. Use
+         * @ref hasTextureTransformation() to distinguish that case.
+         */
+        bool hasCommonTextureTransformation() const;
 
         /**
          * @brief Whether the material uses extra texture coordinate sets
@@ -267,8 +281,23 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
          * @ref MaterialAttribute::NormalTextureCoordinates or
          * @ref MaterialAttribute::TextureCoordinates attributes is present and
          * has a non-zero value, @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureCoordinates()
          */
         bool hasTextureCoordinates() const;
+
+        /**
+         * @brief Whether the material has a common coordinate set for all textures
+         * @m_since_latest
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref ambientTextureCoordinates(), @ref diffuseTextureCoordinates(),
+         * @ref specularTextureCoordinates() and @ref normalTextureCoordinates()
+         * have the same value, @cpp false @ce otherwise. In particular,
+         * returns @cpp true @ce also if there's no extra texture coordinate
+         * set used at all. Use @ref hasTextureCoordinates() to distinguish
+         * that case.
+         */
+        bool hasCommonTextureCoordinates() const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -540,40 +569,43 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public MaterialData {
 
         /**
          * @brief Common texture coordinate transformation matrix for all textures
-         * @m_since{2020,06}
+         * @m_since_latest
          *
-         * Convenience access to the @ref MaterialAttribute::TextureMatrix
-         * attribute. If not present, the default is an identity matrix. Note
-         * that the material may also define per-texture transformation using
-         * the @ref MaterialAttribute::AmbientTextureMatrix,
-         * @ref MaterialAttribute::DiffuseTextureMatrix,
-         * @ref MaterialAttribute::SpecularTextureMatrix and
-         * @ref MaterialAttribute::NormalTextureMatrix attributes, which then
-         * take precedence over the common one.
-         * @see @ref hasAttribute(), @ref ambientTextureMatrix(),
-         *      @ref diffuseTextureMatrix(), @ref specularTextureMatrix(),
-         *      @ref normalTextureMatrix()
+         * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref ambientTextureMatrix(), @ref diffuseTextureMatrix(),
+         * @ref specularTextureMatrix() and @ref normalTextureMatrix() where a
+         * texture is present. If no texture is present, returns an identity
+         * matrix.
          */
-        Matrix3 textureMatrix() const;
+        Matrix3 commonTextureMatrix() const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Common texture coordinate transformation matrix for all textures
+         * @m_deprecated_since_latest Because the material may now also define
+         *      per-texture transformations, which take precedence over the
+         *      common one, this value is misleading. Use either
+         *      @ref commonTextureMatrix() or separate
+         *      @ref ambientTextureMatrix(), @ref diffuseTextureMatrix(),
+         *      @ref specularTextureMatrix() and @ref normalTextureMatrix()
+         *      accessors instead.
+         */
+        CORRADE_DEPRECATED("use commonTextureMatrix() or per-texture accessors instead") Matrix3 textureMatrix() const;
+        #endif
 
         /**
          * @brief Common texture coordinate set index for all textures
          * @m_since_latest
          *
-         * Convenience access to the @ref MaterialAttribute::TextureCoordinates
-         * attribute. If not present, the default is @cpp 0 @ce. Note that the
-         * material may also define per-texture coordinate set using the
-         * @ref MaterialAttribute::AmbientTextureCoordinates,
-         * @ref MaterialAttribute::DiffuseTextureCoordinates,
-         * @ref MaterialAttribute::SpecularTextureCoordinates and
-         * @ref MaterialAttribute::NormalTextureCoordinates attributes, which
-         * then take precedence over the common one.
-         * @see @ref hasAttribute(), @ref ambientTextureCoordinates(),
-         *      @ref diffuseTextureCoordinates(),
-         *      @ref specularTextureCoordinates(),
-         *      @ref normalTextureCoordinates()
+         * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref ambientTextureCoordinates(), @ref diffuseTextureCoordinates(),
+         * @ref specularTextureCoordinates() and @ref normalTextureCoordinates()
+         * where a texture is present. If no texture is present, returns
+         * @cpp 0 @ce.
          */
-        UnsignedInt textureCoordinates() const;
+        UnsignedInt commonTextureCoordinates() const;
 
         /**
          * @brief Shininess

@@ -80,6 +80,10 @@ class MAGNUM_TRADE_EXPORT FlatMaterialData: public MaterialData {
          */
         bool hasTextureTransformation() const;
 
+        /* Since there's just one texture, no need for any
+           hasCommonTextureTransformation(), hasCommonTextureCoordinates(),
+           commonTextureMatrix() or commonTextureCoordinates() APIs */
+
         /**
          * @brief Whether the material uses extra texture coordinate sets
          *

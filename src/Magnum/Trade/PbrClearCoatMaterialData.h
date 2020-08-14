@@ -70,6 +70,18 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
         bool hasTextureTransformation() const;
 
         /**
+         * @brief Whether the material has a common transformation for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref layerFactorTextureMatrix(), @ref roughnessTextureMatrix() and
+         * @ref normalTextureMatrix() have the same value, @cpp false @ce
+         * otherwise. In particular, returns @cpp true @ce also if there's no
+         * texture transformation at all. Use @ref hasTextureTransformation()
+         * to distinguish that case.
+         */
+        bool hasCommonTextureTransformation() const;
+
+        /**
          * @brief Whether the material uses extra texture coordinate sets
          *
          * Returns @cpp true @ce if any of the
@@ -81,6 +93,19 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * present in the base material, @cpp false @ce otherwise.
          */
         bool hasTextureCoordinates() const;
+
+        /**
+         * @brief Whether the material has a common coordinate set for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref layerFactorTextureCoordinates(),
+         * @ref roughnessTextureCoordinates() and
+         * @ref normalTextureCoordinates() have the same value, @cpp false @ce
+         * otherwise. In particular, returns @cpp true @ce also if there's no
+         * extra texture coordinate set used at all. Use
+         * @ref hasTextureCoordinates() to distinguish that case.
+         */
+        bool hasCommonTextureCoordinates() const;
 
         /**
          * @brief Roughness factor
@@ -199,6 +224,28 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
          * @see @ref hasAttribute()
          */
         UnsignedInt normalTextureCoordinates() const;
+
+        /**
+         * @brief Common texture coordinate transformation matrix for all textures
+         *
+         * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref layerFactorTextureMatrix(), @ref roughnessTextureMatrix() and
+         * @ref normalTextureMatrix() where a texture is present. If no texture
+         * is present, returns an identity matrix.
+         */
+        Matrix3 commonTextureMatrix() const;
+
+        /**
+         * @brief Common texture coordinate set index for all textures
+         *
+         * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref layerFactorTextureCoordinates(), @ref roughnessTextureCoordinates()
+         * and @ref normalTextureCoordinates() where a texture is present. If
+         * no texture is present, returns @cpp 0 @ce.
+         */
+        UnsignedInt commonTextureCoordinates() const;
 };
 
 }}

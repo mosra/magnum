@@ -309,29 +309,28 @@ if(data.types() & Trade::MaterialType::PbrSpecularGlossiness) {
 }
 
 {
-/* [MaterialData-usage-packing] */
+/* [MaterialData-usage-texture-complexity] */
 Trade::PbrSpecularGlossinessMaterialData data = DOXYGEN_IGNORE(Trade::PbrSpecularGlossinessMaterialData{{}, {}});
 
-/* Use a shader that accepts a single packed metallic/roughness texture.
-   Querying any texture attributes will give the same values for both metalness
-   and roughness. */
-if(data.hasSpecularGlossinessTexture()) {
+/* Simple case for diffuse + packed specular/glossiness texture, the default
+   coordinate set and a common coordinate transformation for all textures */
+if(data.hasAttribute(Trade::MaterialAttribute::DiffuseTexture) &&
+   data.hasSpecularGlossinessTexture() &&
+   data.hasCommonTextureTransformation() && !data.hasTextureCoordinates())
+{
+    UnsignedInt diffuse = data.diffuseTexture();
     UnsignedInt specularGlossiness = data.specularTexture();
+    Matrix3 textureMatrix = data.commonTextureMatrix();
 
-    DOXYGEN_IGNORE(static_cast<void>(specularGlossiness);)
+    DOXYGEN_IGNORE(static_cast<void>(diffuse), static_cast<void>(specularGlossiness), static_cast<void>(textureMatrix);)
 
-/* Supply texture channels separately */
-} else {
-    UnsignedInt specular = data.specularTexture();
-    UnsignedInt glossiness = data.glossinessTexture();
-    Trade::MaterialTextureSwizzle specularSwizzle =
-        data.specularTextureSwizzle();
-    Trade::MaterialTextureSwizzle glossinessSwizzle =
-        data.glossinessTextureSwizzle();
+/* Extra work needed when using a non-default texture coordinate set */
+} else if(data.hasTextureCoordinates() && data.hasCommonTextureCoordinates()) {
+    DOXYGEN_IGNORE()
 
-    DOXYGEN_IGNORE(static_cast<void>(specular), static_cast<void>(glossiness), static_cast<void>(specularSwizzle), static_cast<void>(glossinessSwizzle);)
-}
-/* [MaterialData-usage-packing] */
+/* Etc... */
+} else Fatal{} << "Material too complex, giving up";
+/* [MaterialData-usage-texture-complexity] */
 }
 
 {

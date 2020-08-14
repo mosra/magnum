@@ -35,12 +35,54 @@ bool PbrClearCoatMaterialData::hasTextureTransformation() const {
         hasAttribute(0, MaterialAttribute::TextureMatrix);
 }
 
+bool PbrClearCoatMaterialData::hasCommonTextureTransformation() const {
+    auto check = [](Containers::Optional<Matrix3>& transformation, Matrix3 current) {
+        if(!transformation) {
+            transformation = current;
+            return true;
+        }
+        return transformation == current;
+    };
+
+    Containers::Optional<Matrix3> transformation;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::LayerFactorTexture) && !check(transformation, layerFactorTextureMatrix()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasAttribute(MaterialAttribute::RoughnessTexture) && !check(transformation, roughnessTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(transformation, normalTextureMatrix()))
+        return false;
+
+    return true;
+}
+
 bool PbrClearCoatMaterialData::hasTextureCoordinates() const {
     return hasAttribute(MaterialAttribute::LayerFactorTextureCoordinates) ||
         hasAttribute(MaterialAttribute::RoughnessTextureCoordinates) ||
         hasAttribute(MaterialAttribute::NormalTextureCoordinates) ||
         hasAttribute(MaterialAttribute::TextureCoordinates) ||
         hasAttribute(0, MaterialAttribute::TextureCoordinates);
+}
+
+bool PbrClearCoatMaterialData::hasCommonTextureCoordinates() const {
+    auto check = [](Containers::Optional<UnsignedInt>& coordinates, UnsignedInt current) {
+        if(!coordinates) {
+            coordinates = current;
+            return true;
+        }
+        return coordinates == current;
+    };
+
+    Containers::Optional<UnsignedInt> coordinates;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::LayerFactorTexture) && !check(coordinates, layerFactorTextureCoordinates()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasAttribute(MaterialAttribute::RoughnessTexture) && !check(coordinates, roughnessTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(coordinates, normalTextureCoordinates()))
+        return false;
+
+    return true;
 }
 
 Float PbrClearCoatMaterialData::roughness() const {
@@ -108,6 +150,34 @@ UnsignedInt PbrClearCoatMaterialData::normalTextureCoordinates() const {
         "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NormalTextureCoordinates))
         return *value;
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::TextureCoordinates))
+        return *value;
+    return attributeOr(0, MaterialAttribute::TextureCoordinates, 0u);
+}
+
+Matrix3 PbrClearCoatMaterialData::commonTextureMatrix() const {
+    CORRADE_ASSERT(hasCommonTextureTransformation(),
+        "Trade::PbrClearCoatMaterialData::commonTextureMatrix(): the layer doesn't have a common texture coordinate transformation", {});
+    if(hasAttribute(MaterialAttribute::LayerFactorTexture))
+        return layerFactorTextureMatrix();
+    if(hasAttribute(MaterialAttribute::RoughnessTexture))
+        return roughnessTextureMatrix();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureMatrix();
+    if(Containers::Optional<Matrix3> value = tryAttribute<Matrix3>(MaterialAttribute::TextureMatrix))
+        return *value;
+    return attributeOr(0, MaterialAttribute::TextureMatrix, Matrix3{});
+}
+
+UnsignedInt PbrClearCoatMaterialData::commonTextureCoordinates() const {
+    CORRADE_ASSERT(hasCommonTextureCoordinates(),
+        "Trade::PbrClearCoatMaterialData::commonTextureCoordinates(): the layer doesn't have a common texture coordinate set", {});
+    if(hasAttribute(MaterialAttribute::LayerFactorTexture))
+        return layerFactorTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::RoughnessTexture))
+        return roughnessTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureCoordinates();
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::TextureCoordinates))
         return *value;
     return attributeOr(0, MaterialAttribute::TextureCoordinates, 0u);

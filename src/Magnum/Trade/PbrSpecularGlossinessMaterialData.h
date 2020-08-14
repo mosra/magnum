@@ -116,8 +116,22 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * @ref MaterialAttribute::EmissiveTextureMatrix or
          * @ref MaterialAttribute::TextureMatrix attributes is present,
          * @cpp false @ce otherwise.
+         * @see @ref hasCommonTextureTransformation()
          */
         bool hasTextureTransformation() const;
+
+        /**
+         * @brief Whether the material has a common transformation for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref diffuseTextureMatrix(), @ref specularTextureMatrix(),
+         * @ref glossinessTextureMatrix(), @ref normalTextureMatrix(),
+         * @ref occlusionTextureMatrix() and @ref emissiveTextureMatrix() have
+         * the same value, @cpp false @ce otherwise. In particular, returns
+         * @cpp true @ce also if there's no texture transformation at all. Use
+         * @ref hasTextureTransformation() to distinguish that case.
+         */
+        bool hasCommonTextureTransformation() const;
 
         /**
          * @brief Whether the material uses extra texture coordinate sets
@@ -133,6 +147,20 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
          * has a non-zero value, @cpp false @ce otherwise.
          */
         bool hasTextureCoordinates() const;
+
+        /**
+         * @brief Whether the material has a common coordinate set for all textures
+         *
+         * Returns @cpp true @ce if, for each texture that is present,
+         * @ref diffuseTextureCoordinates(), @ref specularTextureCoordinates(),
+         * @ref glossinessTextureCoordinates(), @ref normalTextureCoordinates(),
+         * @ref occlusionTextureCoordinates() and @ref emissiveTextureCoordinates()
+         * have the same value, @cpp false @ce otherwise. In particular,
+         * returns @cpp true @ce also if there's no extra texture coordinate
+         * set used at all. Use @ref hasTextureCoordinates() to distinguish
+         * that case.
+         */
+        bool hasCommonTextureCoordinates() const;
 
         /**
          * @brief Base color
@@ -439,44 +467,28 @@ class MAGNUM_TRADE_EXPORT PbrSpecularGlossinessMaterialData: public MaterialData
         /**
          * @brief Common texture coordinate transformation matrix for all textures
          *
-         * Convenience access to the @ref MaterialAttribute::TextureMatrix
-         * attribute. If not present, the default is an identity matrix. Note
-         * that the material may also define per-texture transformation using
-         * the @ref MaterialAttribute::DiffuseTextureMatrix,
-         * @ref MaterialAttribute::SpecularTextureMatrix,
-         * @ref MaterialAttribute::GlossinessTextureMatrix,
-         * @ref MaterialAttribute::NormalTextureMatrix,
-         * @ref MaterialAttribute::OcclusionTextureMatrix and
-         * @ref MaterialAttribute::EmissiveTextureMatrix attributes, which then
-         * take precedence over the common one.
-         * @see @ref hasAttribute(), @ref diffuseTextureMatrix(),
-         *      @ref specularTextureMatrix(), @ref glossinessTextureMatrix(),
-         *      @ref normalTextureMatrix(), @ref occlusionTextureMatrix(),
-         *      @ref emissiveTextureMatrix()
+         * Expects that @ref hasCommonTextureTransformation() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref diffuseTextureMatrix(), @ref specularTextureMatrix(),
+         * @ref glossinessTextureMatrix(), @ref normalTextureMatrix(),
+         * @ref occlusionTextureMatrix() and @ref emissiveTextureMatrix() where
+         * a texture is present. If no texture is present, returns an identity
+         * matrix.
          */
-        Matrix3 textureMatrix() const;
+        Matrix3 commonTextureMatrix() const;
 
         /**
          * @brief Common texture coordinate set index for all textures
          *
-         * Convenience access to the @ref MaterialAttribute::TextureCoordinates
-         * attribute. If not present, the default is @cpp 0 @ce. Note that the
-         * material may also define per-texture coordinate set using the
-         * @ref MaterialAttribute::DiffuseTextureCoordinates,
-         * @ref MaterialAttribute::SpecularTextureCoordinates,
-         * @ref MaterialAttribute::GlossinessTextureCoordinates,
-         * @ref MaterialAttribute::NormalTextureCoordinates,
-         * @ref MaterialAttribute::OcclusionTextureCoordinates and
-         * @ref MaterialAttribute::EmissiveTextureCoordinates attributes, which
-         * then take precedence over the common one.
-         * @see @ref hasAttribute(), @ref diffuseTextureCoordinates(),
-         *      @ref specularTextureCoordinates(),
-         *      @ref glossinessTextureCoordinates(),
-         *      @ref normalTextureCoordinates(),
-         *      @ref occlusionTextureCoordinates(),
-         *      @ref emissiveTextureCoordinates()
+         * Expects that @ref hasCommonTextureCoordinates() is @cpp true @ce;
+         * returns a coordinate set index that's the same for all of
+         * @ref diffuseTextureCoordinates(), @ref specularTextureCoordinates(),
+         * @ref glossinessTextureCoordinates(), @ref normalTextureCoordinates(),
+         * @ref occlusionTextureCoordinates() and @ref emissiveTextureCoordinates()
+         * where a texture is present. If no texture is present, returns
+         * @cpp 0 @ce.
          */
-        UnsignedInt textureCoordinates() const;
+        UnsignedInt commonTextureCoordinates() const;
 };
 
 }}

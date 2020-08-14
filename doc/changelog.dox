@@ -105,15 +105,17 @@ See also:
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"
--   Added @ref Trade::PhongMaterialData::ambientTextureMatrix(),
+-   Added @ref Trade::PhongMaterialData::hasCommonTextureTransformation(),
+    @ref Trade::PhongMaterialData::ambientTextureMatrix(),
     @ref Trade::PhongMaterialData::diffuseTextureMatrix(),
     @ref Trade::PhongMaterialData::specularTextureMatrix() and
     @ref Trade::PhongMaterialData::normalTextureMatrix() exposing also
     per-texture coordinate transformation, similarly to per-texture coordinate
     sets added in 2020.06
--   Added @ref Trade::PhongMaterialData::textureCoordinates() exposing a common
-    texture coordinate set as a complement to a per-texture property added in
-    2020.06
+-   Added @ref Trade::PhongMaterialData::hasCommonTextureCoordinates() and
+    @ref Trade::PhongMaterialData::commonTextureCoordinates() exposing a
+    common texture coordinate set as a complement to a per-texture property
+    added in 2020.06
 
 @subsection changelog-latest-buildsystem Build system
 
@@ -151,6 +153,10 @@ See also:
     and @ref Trade::PhongMaterialData::normalTextureCoordinates() "normalTextureCoordinates()"
 -   @ref Trade::PhongMaterialData constructor is deprecated as the designated
     way is to populate the @ref Trade::MaterialData class directly instead.
+-   @cpp Trade::PhongMaterialData::textureMatrix() @ce is deprecated in favor
+    of @ref Trade::PhongMaterialData::hasCommonTextureTransformation() and
+    @ref Trade::PhongMaterialData::commonTextureMatrix(), which do proper
+    checking and fallback in case a per-texture transformation is present
 -   @cpp Trade::MaterialData::type() @ce (coming from the original
     `AbstractMaterialData` class) is deprecated in favor of
     @ref Trade::MaterialData::types(), as a material data can now contain

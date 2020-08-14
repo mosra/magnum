@@ -858,9 +858,15 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::EmissiveTextureMatrix /
      * @ref MaterialAttribute::LayerFactorTextureMatrix have a precedence over
      * this attribute for given texture, if present.
-     * @see @ref PhongMaterialData::textureMatrix(),
-     *      @ref PbrMetallicRoughnessMaterialData::textureMatrix(),
-     *      @ref PbrSpecularGlossinessMaterialData::textureMatrix()
+     * @see @ref PhongMaterialData::hasCommonTextureTransformation(),
+     *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureTransformation(),
+     *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureTransformation(),
+     *      @ref PbrClearCoatMaterialData::hasCommonTextureTransformation(),
+     *      @ref PhongMaterialData::commonTextureMatrix(),
+     *      @ref PbrMetallicRoughnessMaterialData::commonTextureMatrix(),
+     *      @ref PbrSpecularGlossinessMaterialData::commonTextureMatrix(),
+     *      @ref PbrClearCoatMaterialData::commonTextureMatrix(),
+     *      @ref FlatMaterialData::textureMatrix()
      */
     TextureMatrix,
 
@@ -879,9 +885,15 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttribute::EmissiveTextureCoordinates /
      * @ref MaterialAttribute::LayerFactorTextureCoordinates have a precedence
      * over this attribute for given texture, if present.
-     * @see @ref PhongMaterialData::textureCoordinates(),
-     *      @ref PbrMetallicRoughnessMaterialData::textureCoordinates(),
-     *      @ref PbrSpecularGlossinessMaterialData::textureCoordinates()
+     * @see @ref PhongMaterialData::hasCommonTextureCoordinates(),
+     *      @ref PbrMetallicRoughnessMaterialData::hasCommonTextureCoordinates(),
+     *      @ref PbrSpecularGlossinessMaterialData::hasCommonTextureCoordinates(),
+     *      @ref PbrClearCoatMaterialData::hasCommonTextureCoordinates(),
+     *      @ref PhongMaterialData::commonTextureCoordinates(),
+     *      @ref PbrMetallicRoughnessMaterialData::commonTextureCoordinates(),
+     *      @ref PbrSpecularGlossinessMaterialData::commonTextureCoordinates(),
+     *      @ref PbrClearCoatMaterialData::commonTextureCoordinates(),
+     *      @ref FlatMaterialData::textureCoordinates()
      */
     TextureCoordinates,
 };
@@ -1462,18 +1474,21 @@ in multiple ways:
 Each @ref MaterialAttribute is exposed through one or more of those convenience
 APIs, see the documentation of of a particular enum value for more information.
 
-@subsection Trade-MaterialData-usage-packing Texture packing
+@subsection Trade-MaterialData-usage-texture-complexity Texture packing, coordinate transformation and coordinate sets
 
-Especially for single- and two-channel texture maps it's common to have more
-than one map packed into a single texture. Such packing is expressed through
-various @ref MaterialTextureSwizzle attributes such as
-@ref MaterialAttribute::MetalnessTextureSwizzle. While this provides an almost
-endless variability, real-world textures are in just a few common packing
-schemes. For convenience these have dedicated attributes such as
-@ref MaterialAttribute::SpecularGlossinessTexture and can also be checked
-for with for example @ref PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture():
+The material APIs allow for a lot of flexibility regarding --- texture maps may
+be arbitrarily packed together to efficiently use all four channels, each
+texture can be using a different set of texture coordinates and there can be
+a different coordinate transformation for each texture.
 
-@snippet MagnumTrade.cpp MaterialData-usage-packing
+In most cases, however, real-world textures fit into a few well-known packing
+schemes and usually have a common transformation and coordinate sets for all.
+Checking for all corner cases on the application side would be a headache, so
+there are queries like @ref PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture() or
+@ref PbrSpecularGlossinessMaterialData::hasCommonTextureTransformation() to
+help narrowing the options down:
+
+@snippet MagnumTrade.cpp MaterialData-usage-texture-complexity
 
 @subsection Trade-MaterialData-usage-layers Material layers
 

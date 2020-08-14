@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <sstream>
 #include <Corrade/Containers/StaticArray.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -159,6 +160,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void pbrMetallicRoughnessAccessTexturedExplicitPackedNormalRoughnessMetallic();
         void pbrMetallicRoughnessAccessTexturedSingleMatrixCoordinates();
         void pbrMetallicRoughnessAccessInvalidTextures();
+        void pbrMetallicRoughnessAccessCommonTransformationCoordinatesNoTextures();
+        void pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneTexture();
+        void pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneDifferentTexture();
+        void pbrMetallicRoughnessAccessNoCommonTransformationCoordinates();
 
         void pbrSpecularGlossinessAccess();
         void pbrSpecularGlossinessAccessDefaults();
@@ -168,6 +173,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void pbrSpecularGlossinessAccessTexturedExplicitPackedSpecularGlossiness();
         void pbrSpecularGlossinessAccessTexturedSingleMatrixCoordinates();
         void pbrSpecularGlossinessAccessInvalidTextures();
+        void pbrSpecularGlossinessAccessCommonTransformationCoordinatesNoTextures();
+        void pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneTexture();
+        void pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneDifferentTexture();
+        void pbrSpecularGlossinessAccessNoCommonTransformationCoordinates();
 
         void phongAccess();
         void phongAccessDefaults();
@@ -176,6 +185,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void phongAccessTexturedSingleMatrixCoordinates();
         void phongAccessTexturedImplicitPackedSpecularGlossiness();
         void phongAccessInvalidTextures();
+        void phongAccessCommonTransformationCoordinatesNoTextures();
+        void phongAccessCommonTransformationCoordinatesOneTexture();
+        void phongAccessCommonTransformationCoordinatesOneDifferentTexture();
+        void phongAccessNoCommonTransformationCoordinates();
 
         void flatAccessBaseColor();
         void flatAccessDiffuseColor();
@@ -197,6 +210,10 @@ class MaterialDataTest: public TestSuite::Tester {
         void pbrClearCoatAccessTexturedSingleMatrixCoordinates();
         void pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates();
         void pbrClearCoatAccessInvalidTextures();
+        void pbrClearCoatAccessCommonTransformationCoordinatesNoTextures();
+        void pbrClearCoatAccessCommonTransformationCoordinatesOneTexture();
+        void pbrClearCoatAccessCommonTransformationCoordinatesOneDifferentTexture();
+        void pbrClearCoatAccessNoCommonTransformationCoordinates();
 
         void debugLayer();
         void debugAttribute();
@@ -215,6 +232,37 @@ class MaterialDataTest: public TestSuite::Tester {
         void debugPhongFlag();
         void debugPhongFlags();
         #endif
+};
+
+const Containers::StringView PbrMetallicRoughnessTextureData[] {
+    "BaseColorTexture",
+    "MetalnessTexture",
+    "RoughnessTexture",
+    "NormalTexture",
+    "OcclusionTexture",
+    "EmissiveTexture"
+};
+
+const Containers::StringView PbrSpecularGlossinessTextureData[] {
+    "DiffuseTexture",
+    "SpecularTexture",
+    "GlossinessTexture",
+    "NormalTexture",
+    "OcclusionTexture",
+    "EmissiveTexture"
+};
+
+const Containers::StringView PhongTextureData[] {
+    "AmbientTexture",
+    "DiffuseTexture",
+    "SpecularTexture",
+    "NormalTexture"
+};
+
+const Containers::StringView PbrClearCoatTextureData[] {
+    "LayerFactorTexture",
+    "RoughnessTexture",
+    "NormalTexture"
 };
 
 MaterialDataTest::MaterialDataTest() {
@@ -358,6 +406,14 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::pbrMetallicRoughnessAccessTexturedExplicitPackedNormalRoughnessMetallic,
               &MaterialDataTest::pbrMetallicRoughnessAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures,
+              &MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesNoTextures});
+
+    addInstancedTests({
+        &MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneTexture,
+        &MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneDifferentTexture},
+        Containers::arraySize(PbrMetallicRoughnessTextureData));
+
+    addTests({&MaterialDataTest::pbrMetallicRoughnessAccessNoCommonTransformationCoordinates,
 
               &MaterialDataTest::pbrSpecularGlossinessAccess,
               &MaterialDataTest::pbrSpecularGlossinessAccessDefaults,
@@ -367,6 +423,14 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::pbrSpecularGlossinessAccessTexturedExplicitPackedSpecularGlossiness,
               &MaterialDataTest::pbrSpecularGlossinessAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures,
+              &MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesNoTextures});
+
+    addInstancedTests({
+        &MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneTexture,
+        &MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneDifferentTexture},
+        Containers::arraySize(PbrSpecularGlossinessTextureData));
+
+    addTests({&MaterialDataTest::pbrSpecularGlossinessAccessNoCommonTransformationCoordinates,
 
               &MaterialDataTest::phongAccess,
               &MaterialDataTest::phongAccessDefaults,
@@ -375,6 +439,14 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::phongAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::phongAccessTexturedImplicitPackedSpecularGlossiness,
               &MaterialDataTest::phongAccessInvalidTextures,
+              &MaterialDataTest::phongAccessCommonTransformationCoordinatesNoTextures});
+
+    addInstancedTests({
+        &MaterialDataTest::phongAccessCommonTransformationCoordinatesOneTexture,
+        &MaterialDataTest::phongAccessCommonTransformationCoordinatesOneDifferentTexture},
+        Containers::arraySize(PhongTextureData));
+
+    addTests({&MaterialDataTest::phongAccessNoCommonTransformationCoordinates,
 
               &MaterialDataTest::flatAccessBaseColor,
               &MaterialDataTest::flatAccessDiffuseColor,
@@ -396,6 +468,14 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::pbrClearCoatAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates,
               &MaterialDataTest::pbrClearCoatAccessInvalidTextures,
+              &MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesNoTextures});
+
+    addInstancedTests({
+        &MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesOneTexture,
+        &MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesOneDifferentTexture},
+        Containers::arraySize(PbrClearCoatTextureData));
+
+    addTests({&MaterialDataTest::pbrClearCoatAccessNoCommonTransformationCoordinates,
 
               &MaterialDataTest::debugLayer,
               &MaterialDataTest::debugAttribute,
@@ -2522,7 +2602,9 @@ void MaterialDataTest::constructPhongDeprecated() {
     CORRADE_COMPARE(data.ambientColor(), 0xccffbb_rgbf);
     CORRADE_COMPARE(data.diffuseColor(), 0xebefbf_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Mask);
     CORRADE_COMPARE(data.alphaMask(), 0.3f);
     CORRADE_COMPARE(data.shininess(), 80.0f);
@@ -2552,7 +2634,9 @@ void MaterialDataTest::constructPhongDeprecatedTextured() {
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.specularTexture(), 17);
     CORRADE_COMPARE(data.specularTextureCoordinates(), 0);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(data.alphaMask(), 0.37f);
     CORRADE_COMPARE(data.shininess(), 96.0f);
@@ -2581,7 +2665,9 @@ void MaterialDataTest::constructPhongDeprecatedTexturedTextureTransform() {
     CORRADE_COMPARE(data.diffuseTexture(), 42);
     CORRADE_COMPARE(data.specularColor(), 0xacabad_rgbf);
     CORRADE_COMPARE(data.normalTexture(), 17);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(data.textureMatrix(), Matrix3::rotation(90.0_degf));
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Mask);
     CORRADE_COMPARE(data.alphaMask(), 0.5f);
     CORRADE_COMPARE(data.shininess(), 96.0f);
@@ -2615,7 +2701,9 @@ void MaterialDataTest::constructPhongDeprecatedTexturedCoordinates() {
     CORRADE_COMPARE(data.specularTextureCoordinates(), 1);
     CORRADE_COMPARE(data.normalTexture(), 0);
     CORRADE_COMPARE(data.normalTextureCoordinates(), 8);
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(data.ambientTextureCoordinates(), 3);
     CORRADE_COMPARE(data.alphaMode(), MaterialAlphaMode::Blend);
     CORRADE_COMPARE(data.alphaMask(), 0.37f);
@@ -2722,8 +2810,6 @@ void MaterialDataTest::pbrMetallicRoughnessAccessDefaults() {
     CORRADE_COMPARE(data.metalness(), 1.0f);
     CORRADE_COMPARE(data.roughness(), 1.0f);
     CORRADE_COMPARE(data.emissiveColor(), 0x000000_rgbf);
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
@@ -2794,9 +2880,6 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTextured() {
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3::scaling({0.75f, 0.5f}));
     CORRADE_COMPARE(data.emissiveTexture(), 5);
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 7);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::pbrMetallicRoughnessAccessTexturedDefaults() {
@@ -2845,9 +2928,6 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.emissiveTexture(), 6);
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 0);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::pbrMetallicRoughnessAccessTexturedSingleMatrixCoordinates() {
@@ -2874,9 +2954,6 @@ void MaterialDataTest::pbrMetallicRoughnessAccessTexturedSingleMatrixCoordinates
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 7);
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 7);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
-    CORRADE_COMPARE(data.textureCoordinates(), 7);
 }
 
 void MaterialDataTest::pbrMetallicRoughnessAccessTexturedImplicitPackedMetallicRoughness() {
@@ -3315,6 +3392,94 @@ void MaterialDataTest::pbrMetallicRoughnessAccessInvalidTextures() {
         "Trade::PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates(): the material doesn't have an emissive texture\n");
 }
 
+void MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesNoTextures() {
+    PbrMetallicRoughnessMaterialData a{{}, {}};
+    CORRADE_VERIFY(a.hasCommonTextureTransformation());
+    CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+
+    PbrMetallicRoughnessMaterialData b{{}, {
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u}
+    }};
+    CORRADE_VERIFY(b.hasCommonTextureTransformation());
+    CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+}
+
+void MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneTexture() {
+    Containers::StringView textureName = PbrMetallicRoughnessTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrMetallicRoughnessMaterialData data{{}, {
+        {textureName, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These shouldn't affect the above */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasCommonTextureTransformation());
+    CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+}
+
+void MaterialDataTest::pbrMetallicRoughnessAccessCommonTransformationCoordinatesOneDifferentTexture() {
+    Containers::StringView textureName = PbrMetallicRoughnessTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrMetallicRoughnessMaterialData data{{}, {
+        {MaterialAttribute::BaseColorTexture, 2u},
+        {MaterialAttribute::MetalnessTexture, 3u},
+        {MaterialAttribute::RoughnessTexture, 4u},
+        {MaterialAttribute::NormalTexture, 5u},
+        {MaterialAttribute::OcclusionTexture, 6u},
+        {MaterialAttribute::EmissiveTexture, 7u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These are used by all textures except the one above, failing the
+           check */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void MaterialDataTest::pbrMetallicRoughnessAccessNoCommonTransformationCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PbrMetallicRoughnessMaterialData data{{}, {
+        {MaterialAttribute::BaseColorTexture, 3u},
+        {MaterialAttribute::BaseColorTextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::BaseColorTextureCoordinates, 3u},
+        {MaterialAttribute::MetalnessTexture, 4u},
+        {MaterialAttribute::MetalnessTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::RoughnessTexture, 5u},
+        {MaterialAttribute::RoughnessTextureCoordinates, 17u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.commonTextureMatrix();
+    data.commonTextureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::PbrMetallicRoughnessMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
+        "Trade::PbrMetallicRoughnessMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n");
+}
+
 void MaterialDataTest::pbrSpecularGlossinessAccess() {
     MaterialData base{MaterialType::PbrSpecularGlossiness, {
         {MaterialAttribute::DiffuseColor, 0xccffbbff_rgbaf},
@@ -3418,9 +3583,6 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTextured() {
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3::scaling({0.75f, 0.5f}));
     CORRADE_COMPARE(data.emissiveTexture(), 5);
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 7);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::pbrSpecularGlossinessAccessTexturedDefaults() {
@@ -3466,9 +3628,6 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTexturedDefaults() {
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.emissiveTexture(), 6);
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 0);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::pbrSpecularGlossinessAccessTexturedSingleMatrixCoordinates() {
@@ -3497,9 +3656,6 @@ void MaterialDataTest::pbrSpecularGlossinessAccessTexturedSingleMatrixCoordinate
     CORRADE_COMPARE(data.occlusionTextureCoordinates(), 7);
     CORRADE_COMPARE(data.emissiveTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(data.emissiveTextureCoordinates(), 7);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
-    CORRADE_COMPARE(data.textureCoordinates(), 7);
 }
 
 void MaterialDataTest::pbrSpecularGlossinessAccessTexturedImplicitPackedSpecularGlossiness() {
@@ -3707,6 +3863,94 @@ void MaterialDataTest::pbrSpecularGlossinessAccessInvalidTextures() {
         "Trade::PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates(): the material doesn't have an emissive texture\n");
 }
 
+void MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesNoTextures() {
+    PbrSpecularGlossinessMaterialData a{{}, {}};
+    CORRADE_VERIFY(a.hasCommonTextureTransformation());
+    CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+
+    PbrSpecularGlossinessMaterialData b{{}, {
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u}
+    }};
+    CORRADE_VERIFY(b.hasCommonTextureTransformation());
+    CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+}
+
+void MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneTexture() {
+    Containers::StringView textureName = PbrSpecularGlossinessTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrSpecularGlossinessMaterialData data{{}, {
+        {textureName, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These shouldn't affect the above */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasCommonTextureTransformation());
+    CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+}
+
+void MaterialDataTest::pbrSpecularGlossinessAccessCommonTransformationCoordinatesOneDifferentTexture() {
+    Containers::StringView textureName = PbrSpecularGlossinessTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrSpecularGlossinessMaterialData data{{}, {
+        {MaterialAttribute::DiffuseTexture, 2u},
+        {MaterialAttribute::SpecularTexture, 3u},
+        {MaterialAttribute::GlossinessTexture, 4u},
+        {MaterialAttribute::NormalTexture, 5u},
+        {MaterialAttribute::OcclusionTexture, 6u},
+        {MaterialAttribute::EmissiveTexture, 7u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These are used by all textures except the one above, failing the
+           check */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void MaterialDataTest::pbrSpecularGlossinessAccessNoCommonTransformationCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PbrSpecularGlossinessMaterialData data{{}, {
+        {MaterialAttribute::DiffuseTexture, 3u},
+        {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u},
+        {MaterialAttribute::SpecularTexture, 4u},
+        {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::OcclusionTexture, 5u},
+        {MaterialAttribute::OcclusionTextureCoordinates, 17u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.commonTextureMatrix();
+    data.commonTextureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::PbrSpecularGlossinessMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
+        "Trade::PbrSpecularGlossinessMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n");
+}
+
 void MaterialDataTest::phongAccess() {
     MaterialData base{MaterialType::Phong, {
         {MaterialAttribute::AmbientColor, 0xccffbbff_rgbaf},
@@ -3739,8 +3983,6 @@ void MaterialDataTest::phongAccessDefaults() {
     CORRADE_COMPARE(data.ambientColor(), 0x000000_rgbf);
     CORRADE_COMPARE(data.diffuseColor(), 0xffffff_rgbf);
     CORRADE_COMPARE(data.specularColor(), 0xffffff00_rgbaf);
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
     CORRADE_COMPARE(data.shininess(), 80.0f);
 }
 
@@ -3787,9 +4029,6 @@ void MaterialDataTest::phongAccessTextured() {
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::GB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::scaling({1.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 5);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::phongAccessTexturedDefaults() {
@@ -3821,9 +4060,6 @@ void MaterialDataTest::phongAccessTexturedDefaults() {
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3{});
-    CORRADE_COMPARE(data.textureCoordinates(), 0);
 }
 
 void MaterialDataTest::phongAccessTexturedSingleMatrixCoordinates() {
@@ -3846,9 +4082,6 @@ void MaterialDataTest::phongAccessTexturedSingleMatrixCoordinates() {
     CORRADE_COMPARE(data.specularTextureCoordinates(), 2);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.5f, 1.0f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 2);
-
-    CORRADE_COMPARE(data.textureMatrix(), Matrix3::translation({0.5f, 1.0f}));
-    CORRADE_COMPARE(data.textureCoordinates(), 2);
 }
 
 void MaterialDataTest::phongAccessTexturedImplicitPackedSpecularGlossiness() {
@@ -3914,6 +4147,92 @@ void MaterialDataTest::phongAccessInvalidTextures() {
         "Trade::PhongMaterialData::normalTextureSwizzle(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureMatrix(): the material doesn't have a normal texture\n"
         "Trade::PhongMaterialData::normalTextureCoordinates(): the material doesn't have a normal texture\n");
+}
+
+void MaterialDataTest::phongAccessCommonTransformationCoordinatesNoTextures() {
+    PhongMaterialData a{{}, {}};
+    CORRADE_VERIFY(a.hasCommonTextureTransformation());
+    CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+
+    PhongMaterialData b{{}, {
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u}
+    }};
+    CORRADE_VERIFY(b.hasCommonTextureTransformation());
+    CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+}
+
+void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneTexture() {
+    Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PhongMaterialData data{{}, {
+        {textureName, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These shouldn't affect the above */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(data.hasCommonTextureTransformation());
+    CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+}
+
+void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneDifferentTexture() {
+    Containers::StringView textureName = PhongTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PhongMaterialData data{{}, {
+        {MaterialAttribute::AmbientTexture, 2u},
+        {MaterialAttribute::DiffuseTexture, 3u},
+        {MaterialAttribute::SpecularTexture, 4u},
+        {MaterialAttribute::NormalTexture, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+
+        /* These are used by all textures except the one above, failing the
+           check */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void MaterialDataTest::phongAccessNoCommonTransformationCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PhongMaterialData data{{}, {
+        {MaterialAttribute::DiffuseTexture, 3u},
+        {MaterialAttribute::DiffuseTextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::DiffuseTextureCoordinates, 3u},
+        {MaterialAttribute::SpecularTexture, 4u},
+        {MaterialAttribute::SpecularTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::NormalTexture, 5u},
+        {MaterialAttribute::NormalTextureCoordinates, 17u}
+    }};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.commonTextureMatrix();
+    data.commonTextureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::PhongMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation\n"
+        "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set\n");
 }
 
 void MaterialDataTest::flatAccessBaseColor() {
@@ -4280,6 +4599,11 @@ void MaterialDataTest::pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates()
     CORRADE_COMPARE(data.roughnessTextureCoordinates(), 7u);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
     CORRADE_COMPARE(data.normalTextureCoordinates(), 7u);
+
+    CORRADE_VERIFY(data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::translation({0.0f, 0.5f}));
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 7);
 }
 
 void MaterialDataTest::pbrClearCoatAccessInvalidTextures() {
@@ -4312,6 +4636,108 @@ void MaterialDataTest::pbrClearCoatAccessInvalidTextures() {
         "Trade::PbrClearCoatMaterialData::normalTextureSwizzle(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureMatrix(): the layer doesn't have a normal texture\n"
         "Trade::PbrClearCoatMaterialData::normalTextureCoordinates(): the layer doesn't have a normal texture\n");
+}
+
+void MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesNoTextures() {
+    PbrClearCoatMaterialData a{{}, {
+        {MaterialLayer::ClearCoat},
+    }, {0, 1}};
+    CORRADE_VERIFY(a.hasCommonTextureTransformation());
+    CORRADE_VERIFY(a.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
+    CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
+
+    PbrClearCoatMaterialData b{{}, {
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u},
+
+        {MaterialLayer::ClearCoat}
+    }, {2, 3}};
+    CORRADE_VERIFY(b.hasCommonTextureTransformation());
+    CORRADE_VERIFY(b.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+
+    PbrClearCoatMaterialData c{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+        {MaterialAttribute::TextureCoordinates, 7u},
+    }, {0, 3}};
+    CORRADE_VERIFY(c.hasCommonTextureTransformation());
+    CORRADE_VERIFY(c.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(c.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_COMPARE(c.commonTextureCoordinates(), 7);
+}
+
+void MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesOneTexture() {
+    Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrClearCoatMaterialData data{{}, {
+        /* These shouldn't affect the below */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u},
+
+        {MaterialLayer::ClearCoat},
+        {textureName, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u},
+    }, {2, 6}};
+
+    CORRADE_VERIFY(data.hasCommonTextureTransformation());
+    CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_VERIFY(data.hasCommonTextureCoordinates());
+    CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessCommonTransformationCoordinatesOneDifferentTexture() {
+    Containers::StringView textureName = PbrClearCoatTextureData[testCaseInstanceId()];
+    setTestCaseDescription(textureName);
+
+    PbrClearCoatMaterialData data{{}, {
+        /* These are used by all textures except the one below, failing the
+           check */
+        {MaterialAttribute::TextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::TextureCoordinates, 3u},
+
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactorTexture, 2u},
+        {MaterialAttribute::RoughnessTexture, 3u},
+        {MaterialAttribute::NormalTexture, 5u},
+        {std::string{textureName} + "Matrix", Matrix3::scaling({0.5f, 1.0f})},
+        {std::string{textureName} + "Coordinates", 17u}
+    }, {2, 8}};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+}
+
+void MaterialDataTest::pbrClearCoatAccessNoCommonTransformationCoordinates() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PbrClearCoatMaterialData data{{}, {
+        {MaterialLayer::ClearCoat},
+        {MaterialAttribute::LayerFactorTexture, 3u},
+        {MaterialAttribute::LayerFactorTextureMatrix, Matrix3::translation({0.5f, 0.0f})},
+        {MaterialAttribute::LayerFactorTextureCoordinates, 3u},
+        {MaterialAttribute::RoughnessTexture, 4u},
+        {MaterialAttribute::RoughnessTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+        {MaterialAttribute::NormalTexture, 5u},
+        {MaterialAttribute::NormalTextureCoordinates, 17u}
+    }, {0, 8}};
+
+    CORRADE_VERIFY(!data.hasCommonTextureTransformation());
+    CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.commonTextureMatrix();
+    data.commonTextureCoordinates();
+    CORRADE_COMPARE(out.str(),
+        "Trade::PbrClearCoatMaterialData::commonTextureMatrix(): the layer doesn't have a common texture coordinate transformation\n"
+        "Trade::PbrClearCoatMaterialData::commonTextureCoordinates(): the layer doesn't have a common texture coordinate set\n");
 }
 
 void MaterialDataTest::debugLayer() {

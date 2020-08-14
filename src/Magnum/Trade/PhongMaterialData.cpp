@@ -142,12 +142,58 @@ bool PhongMaterialData::hasTextureTransformation() const {
         hasAttribute(MaterialAttribute::TextureMatrix);
 }
 
+bool PhongMaterialData::hasCommonTextureTransformation() const {
+    auto check = [](Containers::Optional<Matrix3>& transformation, Matrix3 current) {
+        if(!transformation) {
+            transformation = current;
+            return true;
+        }
+        return transformation == current;
+    };
+
+    Containers::Optional<Matrix3> transformation;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::AmbientTexture) && !check(transformation, ambientTextureMatrix()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(transformation, diffuseTextureMatrix()))
+        return false;
+    if(hasSpecularTexture() && !check(transformation, specularTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(transformation, normalTextureMatrix()))
+        return false;
+
+    return true;
+}
+
 bool PhongMaterialData::hasTextureCoordinates() const {
     return attributeOr(MaterialAttribute::AmbientTextureCoordinates, 0u) ||
         attributeOr(MaterialAttribute::DiffuseTextureCoordinates, 0u) ||
         attributeOr(MaterialAttribute::SpecularTextureCoordinates, 0u) ||
         attributeOr(MaterialAttribute::NormalTextureCoordinates, 0u) ||
         attributeOr(MaterialAttribute::TextureCoordinates, 0u);
+}
+
+bool PhongMaterialData::hasCommonTextureCoordinates() const {
+    auto check = [](Containers::Optional<UnsignedInt>& coordinates, UnsignedInt current) {
+        if(!coordinates) {
+            coordinates = current;
+            return true;
+        }
+        return coordinates == current;
+    };
+
+    Containers::Optional<UnsignedInt> coordinates;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::AmbientTexture) && !check(coordinates, ambientTextureCoordinates()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(coordinates, diffuseTextureCoordinates()))
+        return false;
+    if(hasSpecularTexture() && !check(coordinates, specularTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(coordinates, normalTextureCoordinates()))
+        return false;
+
+    return true;
 }
 
 Color4 PhongMaterialData::ambientColor() const {
@@ -269,11 +315,37 @@ UnsignedInt PhongMaterialData::normalTextureCoordinates() const {
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
-Matrix3 PhongMaterialData::textureMatrix() const {
+Matrix3 PhongMaterialData::commonTextureMatrix() const {
+    CORRADE_ASSERT(hasCommonTextureTransformation(),
+        "Trade::PhongMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation", {});
+    if(hasAttribute(MaterialAttribute::AmbientTexture))
+        return ambientTextureMatrix();
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureMatrix();
+    if(hasSpecularTexture())
+        return specularTextureMatrix();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureMatrix();
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
 
-UnsignedInt PhongMaterialData::textureCoordinates() const {
+#ifdef MAGNUM_BUILD_DEPRECATED
+Matrix3 PhongMaterialData::textureMatrix() const {
+    return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
+}
+#endif
+
+UnsignedInt PhongMaterialData::commonTextureCoordinates() const {
+    CORRADE_ASSERT(hasCommonTextureCoordinates(),
+        "Trade::PhongMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set", {});
+    if(hasAttribute(MaterialAttribute::AmbientTexture))
+        return ambientTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureCoordinates();
+    if(hasSpecularTexture())
+        return specularTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 

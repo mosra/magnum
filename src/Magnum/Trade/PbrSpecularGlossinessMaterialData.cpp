@@ -62,6 +62,33 @@ bool PbrSpecularGlossinessMaterialData::hasTextureTransformation() const {
         hasAttribute(MaterialAttribute::EmissiveTextureMatrix);
 }
 
+bool PbrSpecularGlossinessMaterialData::hasCommonTextureTransformation() const {
+    auto check = [](Containers::Optional<Matrix3>& transformation, Matrix3 current) {
+        if(!transformation) {
+            transformation = current;
+            return true;
+        }
+        return transformation == current;
+    };
+
+    Containers::Optional<Matrix3> transformation;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(transformation, diffuseTextureMatrix()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasSpecularTexture() && !check(transformation, specularTextureMatrix()))
+        return false;
+    if(hasGlossinessTexture() && !check(transformation, glossinessTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(transformation, normalTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(transformation, occlusionTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(transformation, emissiveTextureMatrix()))
+        return false;
+
+    return true;
+}
+
 bool PbrSpecularGlossinessMaterialData::hasTextureCoordinates() const {
     return hasAttribute(MaterialAttribute::TextureCoordinates) ||
         hasAttribute(MaterialAttribute::DiffuseTextureCoordinates) ||
@@ -70,6 +97,33 @@ bool PbrSpecularGlossinessMaterialData::hasTextureCoordinates() const {
         hasAttribute(MaterialAttribute::NormalTextureCoordinates) ||
         hasAttribute(MaterialAttribute::OcclusionTextureCoordinates) ||
         hasAttribute(MaterialAttribute::EmissiveTextureCoordinates);
+}
+
+bool PbrSpecularGlossinessMaterialData::hasCommonTextureCoordinates() const {
+    auto check = [](Containers::Optional<UnsignedInt>& coordinates, UnsignedInt current) {
+        if(!coordinates) {
+            coordinates = current;
+            return true;
+        }
+        return coordinates == current;
+    };
+
+    Containers::Optional<UnsignedInt> coordinates;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::DiffuseTexture) && !check(coordinates, diffuseTextureCoordinates()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasSpecularTexture() && !check(coordinates, specularTextureCoordinates()))
+        return false;
+    if(hasGlossinessTexture() && !check(coordinates, glossinessTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(coordinates, normalTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(coordinates, occlusionTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(coordinates, emissiveTextureCoordinates()))
+        return false;
+
+    return true;
 }
 
 Color4 PbrSpecularGlossinessMaterialData::diffuseColor() const {
@@ -260,11 +314,39 @@ UnsignedInt PbrSpecularGlossinessMaterialData::emissiveTextureCoordinates() cons
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
-Matrix3 PbrSpecularGlossinessMaterialData::textureMatrix() const {
+Matrix3 PbrSpecularGlossinessMaterialData::commonTextureMatrix() const {
+    CORRADE_ASSERT(hasCommonTextureTransformation(),
+        "Trade::PbrSpecularGlossinessMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation", {});
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureMatrix();
+    if(hasSpecularTexture())
+        return specularTextureMatrix();
+    if(hasGlossinessTexture())
+        return glossinessTextureMatrix();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureMatrix();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureMatrix();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureMatrix();
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
 
-UnsignedInt PbrSpecularGlossinessMaterialData::textureCoordinates() const {
+UnsignedInt PbrSpecularGlossinessMaterialData::commonTextureCoordinates() const {
+    CORRADE_ASSERT(hasCommonTextureCoordinates(),
+        "Trade::PbrSpecularGlossinessMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set", {});
+    if(hasAttribute(MaterialAttribute::DiffuseTexture))
+        return diffuseTextureCoordinates();
+    if(hasSpecularTexture())
+        return specularTextureCoordinates();
+    if(hasGlossinessTexture())
+        return glossinessTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 

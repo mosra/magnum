@@ -113,6 +113,33 @@ bool PbrMetallicRoughnessMaterialData::hasTextureTransformation() const {
         hasAttribute(MaterialAttribute::EmissiveTextureMatrix);;
 }
 
+bool PbrMetallicRoughnessMaterialData::hasCommonTextureTransformation() const {
+    auto check = [](Containers::Optional<Matrix3>& transformation, Matrix3 current) {
+        if(!transformation) {
+            transformation = current;
+            return true;
+        }
+        return transformation == current;
+    };
+
+    Containers::Optional<Matrix3> transformation;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::BaseColorTexture) && !check(transformation, baseColorTextureMatrix()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasMetalnessTexture() && !check(transformation, metalnessTextureMatrix()))
+        return false;
+    if(hasRoughnessTexture() && !check(transformation, roughnessTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(transformation, normalTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(transformation, occlusionTextureMatrix()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(transformation, emissiveTextureMatrix()))
+        return false;
+
+    return true;
+}
+
 bool PbrMetallicRoughnessMaterialData::hasTextureCoordinates() const {
     return hasAttribute(MaterialAttribute::TextureCoordinates) ||
         hasAttribute(MaterialAttribute::BaseColorTextureCoordinates) ||
@@ -121,6 +148,33 @@ bool PbrMetallicRoughnessMaterialData::hasTextureCoordinates() const {
         hasAttribute(MaterialAttribute::NormalTextureCoordinates) ||
         hasAttribute(MaterialAttribute::OcclusionTextureCoordinates) ||
         hasAttribute(MaterialAttribute::EmissiveTextureCoordinates);
+}
+
+bool PbrMetallicRoughnessMaterialData::hasCommonTextureCoordinates() const {
+    auto check = [](Containers::Optional<UnsignedInt>& coordinates, UnsignedInt current) {
+        if(!coordinates) {
+            coordinates = current;
+            return true;
+        }
+        return coordinates == current;
+    };
+
+    Containers::Optional<UnsignedInt> coordinates;
+    /* First one can't fail */
+    if(hasAttribute(MaterialAttribute::BaseColorTexture) && !check(coordinates, baseColorTextureCoordinates()))
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    if(hasMetalnessTexture() && !check(coordinates, metalnessTextureCoordinates()))
+        return false;
+    if(hasRoughnessTexture() && !check(coordinates, roughnessTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::NormalTexture) && !check(coordinates, normalTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::OcclusionTexture) && !check(coordinates, occlusionTextureCoordinates()))
+        return false;
+    if(hasAttribute(MaterialAttribute::EmissiveTexture) && !check(coordinates, emissiveTextureCoordinates()))
+        return false;
+
+    return true;
 }
 
 Color4 PbrMetallicRoughnessMaterialData::baseColor() const {
@@ -311,11 +365,39 @@ UnsignedInt PbrMetallicRoughnessMaterialData::emissiveTextureCoordinates() const
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
-Matrix3 PbrMetallicRoughnessMaterialData::textureMatrix() const {
+Matrix3 PbrMetallicRoughnessMaterialData::commonTextureMatrix() const {
+    CORRADE_ASSERT(hasCommonTextureTransformation(),
+        "Trade::PbrMetallicRoughnessMaterialData::commonTextureMatrix(): the material doesn't have a common texture coordinate transformation", {});
+    if(hasAttribute(MaterialAttribute::BaseColorTexture))
+        return baseColorTextureMatrix();
+    if(hasMetalnessTexture())
+        return metalnessTextureMatrix();
+    if(hasRoughnessTexture())
+        return roughnessTextureMatrix();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureMatrix();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureMatrix();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureMatrix();
     return attributeOr(MaterialAttribute::TextureMatrix, Matrix3{});
 }
 
-UnsignedInt PbrMetallicRoughnessMaterialData::textureCoordinates() const {
+UnsignedInt PbrMetallicRoughnessMaterialData::commonTextureCoordinates() const {
+    CORRADE_ASSERT(hasCommonTextureCoordinates(),
+        "Trade::PbrMetallicRoughnessMaterialData::commonTextureCoordinates(): the material doesn't have a common texture coordinate set", {});
+    if(hasAttribute(MaterialAttribute::BaseColorTexture))
+        return baseColorTextureCoordinates();
+    if(hasMetalnessTexture())
+        return metalnessTextureCoordinates();
+    if(hasRoughnessTexture())
+        return roughnessTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::NormalTexture))
+        return normalTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::OcclusionTexture))
+        return occlusionTextureCoordinates();
+    if(hasAttribute(MaterialAttribute::EmissiveTexture))
+        return emissiveTextureCoordinates();
     return attributeOr(MaterialAttribute::TextureCoordinates, 0u);
 }
 
