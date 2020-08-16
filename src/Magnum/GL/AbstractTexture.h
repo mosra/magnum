@@ -333,6 +333,12 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
+         * @brief OpenGL texture target
+         * @m_since_latest
+         */
+        GLenum target() const { return _target; }
+
+        /**
          * @brief Release OpenGL object
          *
          * Releases ownership of OpenGL texture object and returns its ID so it

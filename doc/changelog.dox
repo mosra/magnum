@@ -60,6 +60,8 @@ See also:
     @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
     extensions, however there's no Emscripten entrypoints for those yet which
     means these can'be implemented right now.
+-   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
+    with raw GL code
 
 @subsubsection changelog-latest-new-math Math library
 

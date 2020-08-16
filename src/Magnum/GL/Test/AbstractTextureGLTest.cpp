@@ -96,6 +96,7 @@ void AbstractTextureGLTest::construct() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
+        CORRADE_COMPARE(texture.target(), GL_TEXTURE_2D);
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
