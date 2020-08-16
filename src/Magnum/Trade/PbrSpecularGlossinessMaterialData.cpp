@@ -46,6 +46,7 @@ bool PbrSpecularGlossinessMaterialData::hasSpecularGlossinessTexture() const {
     return (hasAttribute(MaterialAttribute::SpecularGlossinessTexture) ||
        (hasAttribute(MaterialAttribute::SpecularTexture) &&
         hasAttribute(MaterialAttribute::GlossinessTexture) &&
+        attribute<UnsignedInt>(MaterialAttribute::SpecularTexture) == attribute<UnsignedInt>(MaterialAttribute::GlossinessTexture) &&
         specularTextureSwizzle() == MaterialTextureSwizzle::RGB &&
         glossinessTextureSwizzle() == MaterialTextureSwizzle::A)) &&
        specularTextureMatrix() == glossinessTextureMatrix() &&
