@@ -40,6 +40,7 @@
 #include <X11/Xutil.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef Always
+#undef Bool
 #undef Complex
 #undef Convex
 #undef None
@@ -50,6 +51,11 @@
 #undef Button3
 #undef Button4
 #undef Button5
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Unfortunately Xlib *needs* the Bool type, so provide a typedef instead */
+typedef int Bool;
+#endif
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"

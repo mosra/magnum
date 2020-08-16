@@ -37,11 +37,17 @@
 #include <EGL/eglext.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef Always
+#undef Bool
 #undef Complex
 #undef None
 #undef Status
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Unfortunately Xlib *needs* the Bool type, so provide a typedef instead */
+typedef int Bool;
+#endif
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
