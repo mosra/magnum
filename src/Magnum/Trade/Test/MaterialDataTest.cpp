@@ -4211,6 +4211,14 @@ void MaterialDataTest::phongAccessCommonTransformationCoordinatesNoTextures() {
     CORRADE_COMPARE(a.commonTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(a.commonTextureCoordinates(), 0);
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* textureMatrix() should return the common matrix, if possible, and
+       fall back to the global one if not */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(a.textureMatrix(), Matrix3{});
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
     PhongMaterialData b{{}, {
         {MaterialAttribute::TextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
         {MaterialAttribute::TextureCoordinates, 7u}
@@ -4219,6 +4227,14 @@ void MaterialDataTest::phongAccessCommonTransformationCoordinatesNoTextures() {
     CORRADE_VERIFY(b.hasCommonTextureCoordinates());
     CORRADE_COMPARE(b.commonTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
     CORRADE_COMPARE(b.commonTextureCoordinates(), 7);
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* textureMatrix() should return the common matrix, if possible, and
+       fall back to the global one if not */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(b.textureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneTexture() {
@@ -4239,6 +4255,14 @@ void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneTexture() {
     CORRADE_COMPARE(data.commonTextureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
     CORRADE_VERIFY(data.hasCommonTextureCoordinates());
     CORRADE_COMPARE(data.commonTextureCoordinates(), 17u);
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* textureMatrix() should return the common matrix, if possible, and
+       fall back to the global one if not */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::scaling({0.5f, 1.0f}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneDifferentTexture() {
@@ -4261,6 +4285,14 @@ void MaterialDataTest::phongAccessCommonTransformationCoordinatesOneDifferentTex
 
     CORRADE_VERIFY(!data.hasCommonTextureTransformation());
     CORRADE_VERIFY(!data.hasCommonTextureCoordinates());
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* textureMatrix() should return the common matrix, if possible, and
+       fall back to the global one if not */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    CORRADE_COMPARE(data.textureMatrix(), Matrix3::translation({0.5f, 0.0f}));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 void MaterialDataTest::phongAccessNoCommonTransformationCoordinates() {
