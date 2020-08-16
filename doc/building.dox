@@ -200,7 +200,7 @@ fail or take too long, pass `--nocheck` to `makepkg` to skip that.
 Once built, install the package using `pacman`:
 
 @code{.sh}
-sudo pacman -U magnum-*.pkg.tar.xz
+sudo pacman -U magnum-*.pkg.tar.zst
 @endcode
 
 Edit the PKGBUILDs if you want to pass additional flags to CMake or
