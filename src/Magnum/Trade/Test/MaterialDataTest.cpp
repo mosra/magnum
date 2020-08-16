@@ -207,6 +207,7 @@ class MaterialDataTest: public TestSuite::Tester {
         void pbrClearCoatAccessDefaults();
         void pbrClearCoatAccessTextured();
         void pbrClearCoatAccessTexturedDefaults();
+        void pbrClearCoatAccessTexturedExplicitPackedLayerFactorRoughness();
         void pbrClearCoatAccessTexturedSingleMatrixCoordinates();
         void pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates();
         void pbrClearCoatAccessInvalidTextures();
@@ -465,6 +466,7 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::pbrClearCoatAccessDefaults,
               &MaterialDataTest::pbrClearCoatAccessTextured,
               &MaterialDataTest::pbrClearCoatAccessTexturedDefaults,
+              &MaterialDataTest::pbrClearCoatAccessTexturedExplicitPackedLayerFactorRoughness,
               &MaterialDataTest::pbrClearCoatAccessTexturedSingleMatrixCoordinates,
               &MaterialDataTest::pbrClearCoatAccessTexturedBaseMaterialMatrixCoordinates,
               &MaterialDataTest::pbrClearCoatAccessInvalidTextures,
@@ -4617,6 +4619,101 @@ void MaterialDataTest::pbrClearCoatAccessTexturedDefaults() {
     CORRADE_COMPARE(data.normalTextureSwizzle(), MaterialTextureSwizzle::RGB);
     CORRADE_COMPARE(data.normalTextureMatrix(), Matrix3{});
     CORRADE_COMPARE(data.normalTextureCoordinates(), 0u);
+}
+
+void MaterialDataTest::pbrClearCoatAccessTexturedExplicitPackedLayerFactorRoughness() {
+    /* Just the texture ID and swizzles, the rest is implicit */
+    {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G}
+        }, {0, 4}};
+        CORRADE_VERIFY(data.hasLayerFactorRoughnessTexture());
+        CORRADE_COMPARE(data.layerFactorTexture(), 2);
+        CORRADE_COMPARE(data.layerFactorTextureMatrix(), Matrix3{});
+        CORRADE_COMPARE(data.layerFactorTextureCoordinates(), 0);
+        CORRADE_COMPARE(data.roughnessTexture(), 2);
+        CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::G);
+        CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3{});
+        CORRADE_COMPARE(data.roughnessTextureCoordinates(), 0);
+
+    /* Explicit parameters for everything, but all the same */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::LayerFactorTextureSwizzle, MaterialTextureSwizzle::R},
+            {MaterialAttribute::LayerFactorTextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+            {MaterialAttribute::LayerFactorTextureCoordinates, 3u},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
+            {MaterialAttribute::RoughnessTextureMatrix, Matrix3::scaling({0.5f, 0.5f})},
+            {MaterialAttribute::RoughnessTextureCoordinates, 3u}
+        }, {0, 9}};
+        CORRADE_VERIFY(data.hasLayerFactorRoughnessTexture());
+        CORRADE_COMPARE(data.layerFactorTexture(), 2);
+        CORRADE_COMPARE(data.layerFactorTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+        CORRADE_COMPARE(data.layerFactorTextureCoordinates(), 3);
+        CORRADE_COMPARE(data.roughnessTexture(), 2);
+        CORRADE_COMPARE(data.roughnessTextureSwizzle(), MaterialTextureSwizzle::G);
+        CORRADE_COMPARE(data.roughnessTextureMatrix(), Matrix3::scaling({0.5f, 0.5f}));
+        CORRADE_COMPARE(data.roughnessTextureCoordinates(), 3);
+
+    /* Different texture ID */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::RoughnessTexture, 3u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
+        }, {0, 4}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+
+    /* Unexpected swizzle 1 */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::LayerFactorTextureSwizzle, MaterialTextureSwizzle::B},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
+        }, {0, 5}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+
+    /* Unexpected swizzle 2 */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::B}
+        }, {0, 4}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+
+    /* Unexpected texture matrix */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::LayerFactorTextureMatrix, Matrix3::scaling({0.5f, 1.0f})},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G}
+        }, {0, 5}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+
+    /* Unexpected texture coordinates */
+    } {
+        PbrClearCoatMaterialData data{{}, {
+            {MaterialLayer::ClearCoat},
+            {MaterialAttribute::LayerFactorTexture, 2u},
+            {MaterialAttribute::RoughnessTexture, 2u},
+            {MaterialAttribute::RoughnessTextureSwizzle, MaterialTextureSwizzle::G},
+            {MaterialAttribute::RoughnessTextureCoordinates, 1u}
+        }, {0, 5}};
+        CORRADE_VERIFY(!data.hasLayerFactorRoughnessTexture());
+    }
 }
 
 void MaterialDataTest::pbrClearCoatAccessTexturedSingleMatrixCoordinates() {

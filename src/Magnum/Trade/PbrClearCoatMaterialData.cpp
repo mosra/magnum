@@ -27,6 +27,16 @@
 
 namespace Magnum { namespace Trade {
 
+bool PbrClearCoatMaterialData::hasLayerFactorRoughnessTexture() const {
+    return hasAttribute(MaterialAttribute::LayerFactorTexture) &&
+        hasAttribute(MaterialAttribute::RoughnessTexture) &&
+        attribute<UnsignedInt>(MaterialAttribute::LayerFactorTexture) == attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture) &&
+        layerFactorTextureSwizzle() == MaterialTextureSwizzle::R &&
+        roughnessTextureSwizzle() == MaterialTextureSwizzle::G &&
+        layerFactorTextureMatrix() == roughnessTextureMatrix() &&
+        layerFactorTextureCoordinates() == roughnessTextureCoordinates();
+}
+
 bool PbrClearCoatMaterialData::hasTextureTransformation() const {
     return hasAttribute(MaterialAttribute::LayerFactorTextureMatrix) ||
         hasAttribute(MaterialAttribute::RoughnessTextureMatrix) ||

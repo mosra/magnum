@@ -57,6 +57,36 @@ class MAGNUM_TRADE_EXPORT PbrClearCoatMaterialData: public MaterialLayerData<Mat
         #endif
 
         /**
+         * @brief Whether the material has a combined layer factor / roughness texture
+         *
+         * Returns @cpp true @ce if both
+         * @ref MaterialAttribute::LayerFactorTexture and
+         * @ref MaterialAttribute::RoughnessTexture attributes are present,
+         * point to the same texture ID,
+         * @ref MaterialAttribute::LayerFactorTextureSwizzle is either not
+         * present or set to @ref MaterialTextureSwizzle::R and
+         * @ref MaterialAttribute::RoughnessTextureSwizzle is set to
+         * @ref MaterialTextureSwizzle::G, and additionally
+         * @ref MaterialAttribute::LayerFactorTextureMatrix and
+         * @ref MaterialAttribute::RoughnessTextureMatrix are both either not
+         * present or have the same value, and
+         * @ref MaterialAttribute::LayerFactorTextureCoordinates and
+         * @ref MaterialAttribute::RoughnessTextureCoordinates are both either
+         * not present or have the smae value; @cpp false @ce otherwise.
+         *
+         * In other words, if this function returns @cpp true @ce,
+         * @ref layerFactorTexture(), @ref layerFactorTextureMatrix() and
+         * @ref layerFactorTextureCoordinates() return values common for both
+         * layer factor and roughness texture, and the two are packed together
+         * with layer factor occupying the R channel and roughness the G
+         * channel. This check is present in order to provide support for the
+         * [KHR_materials_clearcoat](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_clearcoat/README.md)
+         * glTF extension.
+         * @see @ref hasAttribute()
+         */
+        bool hasLayerFactorRoughnessTexture() const;
+
+        /**
          * @brief Whether the material has texture transformation
          *
          * Returns @cpp true @ce if any of the
