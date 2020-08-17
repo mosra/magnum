@@ -377,9 +377,9 @@ Trade::MaterialData data{Trade::MaterialType::PbrMetallicRoughness, {
 using namespace Containers::Literals;
 
 constexpr Trade::MaterialAttributeData attributes[]{
-    {"DoubleSided"_s, true},
     {"BaseColor"_s, Color4{0.043735f, 0.64448f, 0.135633f, 1.0f}},
     {"BaseColorTexture"_s, 5u},
+    {"DoubleSided"_s, true},
     {"TextureMatrix"_s, Matrix3{{0.5f, 0.0f, 0.0f},
                                 {0.0f, 1.0f, 0.0f},
                                 {0.0f, 0.0f, 1.0f}}}

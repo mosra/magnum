@@ -1450,7 +1450,7 @@ It's also possible to iterate through all attributes using @ref attributeName(),
 @ref attributeType() and @ref attribute() taking indices instead of names, with
 @ref attributeCount() returning the total attribute count.
 
-@subsection Trade-MaterialData-usage-types Material types and cnvenience accessors
+@subsection Trade-MaterialData-usage-types Material types and convenience accessors
 
 A material usually consists of a set of attributes for a particular rendering
 workflow --- PBR metallic/roughness, Phong or for example flat-shaded
@@ -1478,8 +1478,8 @@ APIs, see the documentation of of a particular enum value for more information.
 
 The material APIs allow for a lot of flexibility regarding --- texture maps may
 be arbitrarily packed together to efficiently use all four channels, each
-texture can be using a different set of texture coordinates and there can be
-a different coordinate transformation for each texture.
+texture can use a different set of texture coordinates and there can be a
+different coordinate transformation for each texture.
 
 In most cases, however, real-world textures fit into a few well-known packing
 schemes and usually have a common transformation and coordinate sets for all.
@@ -1567,7 +1567,7 @@ texture pointers instead of IDs:
 
 Material layers are internally represented as ranges of the attribute array and
 by default the whole attribute array is treated as a base material. The actual
-split into layers can be described using an additionaly offset array passed to
+split into layers can be described using an additional offset array passed to
 @ref MaterialData(MaterialTypes, Containers::Array<MaterialAttributeData>&&, Containers::Array<UnsignedInt>&&, const void*),
 where entry *i* specifies the end offset of layer *i* --- in the following
 snippet we have two layers (one base material and one clear coat layer), the
