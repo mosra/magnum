@@ -243,8 +243,8 @@ dependency on the importer instance and neither on the dynamic plugin module.
 In other words, you don't need to keep the importer instance (or the plugin
 manager instance) around in order to have the `*Data` instances valid.
 Moreover, all @ref Corrade::Containers::Array instances returned through
-@ref ImageData, @ref AnimationData and @ref MeshData are only allowed to have
-default deleters (or be non-owning instances created from
+@ref ImageData, @ref AnimationData, @ref MaterialData and @ref MeshData are
+only allowed to have default deleters (or be non-owning instances created from
 @ref Corrade::Containers::ArrayView) --- this is to avoid potential dangling
 function pointer calls when destructing such instances after the plugin module
 has been unloaded.
@@ -741,8 +741,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Two-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * If no object for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref object2DName(), @ref object2D(const std::string&)
          */
         Int object2DForName(const std::string& name);
@@ -773,7 +773,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * A convenience API combining @ref object2DForName() and
          * @ref object2D(UnsignedInt). If @ref object2DForName() returns
          * @cpp -1 @ce, prints an error message and returns
-         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @cpp nullptr @ce, otherwise propagates the result from
          * @ref object2D(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<ObjectData2D> object2D(const std::string& name);
@@ -788,8 +788,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Three-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
-         * a file is opened.
+         * If no object for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref object3DName(), @ref object3D(const std::string&)
          */
         Int object3DForName(const std::string& name);
@@ -820,7 +820,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * A convenience API combining @ref object3DForName() and
          * @ref object3D(UnsignedInt). If @ref object3DForName() returns
          * @cpp -1 @ce, prints an error message and returns
-         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @cpp nullptr @ce, otherwise propagates the result from
          * @ref object3D(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<ObjectData3D> object3D(const std::string& name);
