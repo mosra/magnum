@@ -99,6 +99,10 @@ class PbrSpecularGlossinessMaterialData;
 class PhongMaterialData;
 class TextureData;
 class SceneData;
+
+template<UnsignedInt> class SkinData;
+typedef SkinData<2> SkinData2D;
+typedef SkinData<3> SkinData3D;
 #endif
 
 }}

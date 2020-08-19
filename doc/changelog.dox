@@ -91,6 +91,7 @@ See also:
     @ref Trade::PhongMaterialData::normalTextureScale() and
     @ref Trade::PhongMaterialData::normalTextureSwizzle() to make new features
     added for PBR materials recognizable also in classic Phong workflows.
+-   New @ref Trade::SkinData class for skin import
 
 @subsection changelog-latest-changes Changes and improvements
 

@@ -49,7 +49,8 @@ set(MagnumTrade_GracefulAssert_SRCS
     PbrClearCoatMaterialData.cpp
     PbrMetallicRoughnessMaterialData.cpp
     PbrSpecularGlossinessMaterialData.cpp
-    PhongMaterialData.cpp)
+    PhongMaterialData.cpp
+    SkinData.cpp)
 
 set(MagnumTrade_HEADERS
     AbstractImporter.h
@@ -74,6 +75,7 @@ set(MagnumTrade_HEADERS
     PbrSpecularGlossinessMaterialData.h
     PhongMaterialData.h
     SceneData.h
+    SkinData.h
     TextureData.h
     Trade.h
 
