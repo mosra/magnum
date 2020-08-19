@@ -669,8 +669,8 @@ void ImageDataTest::constructCompressedInvalidSize() {
 }
 
 void ImageDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Trade::ImageData2D, const Trade::ImageData2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Trade::ImageData2D, const Trade::ImageData2D&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<ImageData2D, const ImageData2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<ImageData2D, const ImageData2D&>{}));
 }
 
 void ImageDataTest::constructMoveGeneric() {

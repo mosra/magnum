@@ -1378,15 +1378,15 @@ void AbstractImporterTest::scene() {
         UnsignedInt doSceneCount() const override { return 8; }
         Int doSceneForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doSceneName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<SceneData> doScene(UnsignedInt id) override {
             if(id == 7) return SceneData{{}, {}, &state};
-            else return SceneData{{}, {}};
+            return SceneData{{}, {}};
         }
     } importer;
 
@@ -1486,11 +1486,11 @@ void AbstractImporterTest::animation() {
         UnsignedInt doAnimationCount() const override { return 8; }
         Int doAnimationForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doAnimationName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
             /* Verify that initializer list is converted to an array with
@@ -1499,7 +1499,7 @@ void AbstractImporterTest::animation() {
                 AnimationTrackData{AnimationTrackType::Vector3,
                     AnimationTrackTargetType::Scaling3D, 0, {}}
                 }, &state};
-            else return AnimationData{{}, {}};
+            return AnimationData{{}, {}};
         }
     } importer;
 
@@ -1694,15 +1694,15 @@ void AbstractImporterTest::light() {
         UnsignedInt doLightCount() const override { return 8; }
         Int doLightForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doLightName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<LightData> doLight(UnsignedInt id) override {
             if(id == 7) return LightData{{}, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -1802,15 +1802,15 @@ void AbstractImporterTest::camera() {
         UnsignedInt doCameraCount() const override { return 8; }
         Int doCameraForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doCameraName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
             if(id == 7) return CameraData{{}, Vector2{}, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -1910,15 +1910,15 @@ void AbstractImporterTest::object2D() {
         UnsignedInt doObject2DCount() const override { return 8; }
         Int doObject2DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doObject2DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id) override {
             if(id == 7) return Containers::pointer(new ObjectData2D{{}, {}, &state});
-            else return {};
+            return {};
         }
     } importer;
 
@@ -2018,15 +2018,15 @@ void AbstractImporterTest::object3D() {
         UnsignedInt doObject3DCount() const override { return 8; }
         Int doObject3DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doObject3DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id) override {
             if(id == 7) return Containers::pointer(new ObjectData3D{{}, {}, &state});
-            else return {};
+            return {};
         }
     } importer;
 
@@ -2126,21 +2126,21 @@ void AbstractImporterTest::mesh() {
         UnsignedInt doMeshCount() const override { return 8; }
         UnsignedInt doMeshLevelCount(UnsignedInt id) override {
             if(id == 7) return 3;
-            else return {};
+            return {};
         }
         Int doMeshForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doMeshName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
             /* Verify that initializer list is converted to an array with
                the default deleter and not something disallowed */
             if(id == 7 && level == 2) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, MeshData::ImplicitVertexCount, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -2169,15 +2169,15 @@ void AbstractImporterTest::meshDeprecatedFallback() {
         UnsignedInt doMeshCount() const override { return 8; }
         Int doMeshForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doMeshName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<MeshData> doMesh(UnsignedInt id, UnsignedInt level) override {
             if(id == 7 && level == 0) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, MeshData::ImplicitVertexCount, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -2557,16 +2557,16 @@ void AbstractImporterTest::mesh2D() {
         UnsignedInt doMesh2DCount() const override { return 8; }
         Int doMesh2DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doMesh2DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Optional<MeshData2D> doMesh2D(UnsignedInt id) override {
             if(id == 7) return MeshData2D{{}, {}, {{}}, {}, {}, &state};
-            else return {};
+            return {};
         }
         CORRADE_IGNORE_DEPRECATED_POP
     } importer;
@@ -2775,16 +2775,16 @@ void AbstractImporterTest::mesh3D() {
         UnsignedInt doMesh3DCount() const override { return 8; }
         Int doMesh3DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doMesh3DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id) override {
             if(id == 7) return MeshData3D{{}, {}, {{}}, {}, {}, {}, &state};
-            else return {};
+            return {};
         }
         CORRADE_IGNORE_DEPRECATED_POP
     } importer;
@@ -2996,15 +2996,15 @@ void AbstractImporterTest::material() {
         UnsignedInt doMaterialCount() const override { return 8; }
         Int doMaterialForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doMaterialName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<MaterialData> doMaterial(UnsignedInt id) override {
             if(id == 7) return Containers::optional<MaterialData>(MaterialTypes{}, nullptr, &state);
-            else return {};
+            return {};
         }
     } importer;
 
@@ -3229,15 +3229,15 @@ void AbstractImporterTest::texture() {
         UnsignedInt doTextureCount() const override { return 8; }
         Int doTextureForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doTextureName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<TextureData> doTexture(UnsignedInt id) override {
             if(id == 7) return TextureData{{}, {}, {}, {}, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -3337,19 +3337,19 @@ void AbstractImporterTest::image1D() {
         UnsignedInt doImage1DCount() const override { return 8; }
         UnsignedInt doImage1DLevelCount(UnsignedInt id) override {
             if(id == 7) return 3;
-            else return {};
+            return {};
         }
         Int doImage1DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doImage1DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt id, UnsignedInt level) override {
             if(id == 7 && level == 2) return ImageData1D{PixelFormat::RGBA8Unorm, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -3598,19 +3598,19 @@ void AbstractImporterTest::image2D() {
         UnsignedInt doImage2DCount() const override { return 8; }
         UnsignedInt doImage2DLevelCount(UnsignedInt id) override {
             if(id == 7) return 3;
-            else return {};
+            return {};
         }
         Int doImage2DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doImage2DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt id, UnsignedInt level) override {
             if(id == 7 && level == 2) return ImageData2D{PixelFormat::RGBA8Unorm, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
@@ -3859,19 +3859,19 @@ void AbstractImporterTest::image3D() {
         UnsignedInt doImage3DCount() const override { return 8; }
         UnsignedInt doImage3DLevelCount(UnsignedInt id) override {
             if(id == 7) return 3;
-            else return {};
+            return {};
         }
         Int doImage3DForName(const std::string& name) override {
             if(name == "eighth") return 7;
-            else return -1;
+            return -1;
         }
         std::string doImage3DName(UnsignedInt id) override {
             if(id == 7) return "eighth";
-            else return {};
+            return {};
         }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt id, UnsignedInt level) override {
             if(id == 7 && level == 2) return ImageData3D{PixelFormat::RGBA8Unorm, {}, {}, &state};
-            else return {};
+            return {};
         }
     } importer;
 
