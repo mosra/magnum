@@ -127,6 +127,11 @@ template<UnsignedInt dimensions> class SkinData {
         const void* importerState() const { return _importerState; }
 
     private:
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        friend AbstractImporter;
+
         /** @todo skeleton object ID? gltf has that but the use is unclear */
         Containers::Array<UnsignedInt> _jointData;
         Containers::Array<MatrixTypeFor<dimensions, Float>> _inverseBindMatrixData;

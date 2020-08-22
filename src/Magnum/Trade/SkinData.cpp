@@ -28,6 +28,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Trade/Data.h"
+#include "Magnum/Trade/Implementation/arrayUtilities.h"
 
 namespace Magnum { namespace Trade {
 
@@ -36,7 +37,7 @@ template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(Containers::Arra
         "Trade::SkinData: joint and inverse bind matrix arrays have different size, got" << _jointData.size() << "and" << _inverseBindMatrixData.size(), );
 }
 
-template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(const std::initializer_list<UnsignedInt> joints, const std::initializer_list<MatrixTypeFor<dimensions, Float>> inverseBindMatrices, const void* const importerState): SkinData{Containers::array(joints), Containers::array(inverseBindMatrices), importerState} {}
+template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(const std::initializer_list<UnsignedInt> joints, const std::initializer_list<MatrixTypeFor<dimensions, Float>> inverseBindMatrices, const void* const importerState): SkinData{Implementation::initializerListToArrayWithDefaultDeleter(joints), Implementation::initializerListToArrayWithDefaultDeleter(inverseBindMatrices), importerState} {}
 
 template<UnsignedInt dimensions> SkinData<dimensions>::SkinData(DataFlags, const Containers::ArrayView<const UnsignedInt> jointData, DataFlags, const Containers::ArrayView<const MatrixTypeFor<dimensions, Float>> inverseBindMatrixData, const void* const importerState) noexcept: SkinData<dimensions>{Containers::Array<UnsignedInt>{const_cast<UnsignedInt*>(jointData.data()), jointData.size(), reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}, Containers::Array<MatrixTypeFor<dimensions, Float>>{const_cast<MatrixTypeFor<dimensions, Float>*>(inverseBindMatrixData.data()), inverseBindMatrixData.size(), reinterpret_cast<void(*)(MatrixTypeFor<dimensions, Float>*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}, importerState} {}
 

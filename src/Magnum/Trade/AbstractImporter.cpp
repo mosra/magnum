@@ -501,7 +501,12 @@ std::string AbstractImporter::doSkin2DName(UnsignedInt) { return {}; }
 Containers::Optional<SkinData2D> AbstractImporter::skin2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
     CORRADE_ASSERT(id < doSkin2DCount(), "Trade::AbstractImporter::skin2D(): index" << id << "out of range for" << doSkin2DCount() << "entries", {});
-    return doSkin2D(id);
+    Containers::Optional<SkinData2D> skin = doSkin2D(id);
+    CORRADE_ASSERT(!skin || (
+        (!skin->_jointData.deleter() || skin->_jointData.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == reinterpret_cast<void(*)(Matrix3*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter", {});
+    return skin;
 }
 
 Containers::Optional<SkinData2D> AbstractImporter::doSkin2D(UnsignedInt) {
@@ -543,7 +548,12 @@ std::string AbstractImporter::doSkin3DName(UnsignedInt) { return {}; }
 Containers::Optional<SkinData3D> AbstractImporter::skin3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
     CORRADE_ASSERT(id < doSkin3DCount(), "Trade::AbstractImporter::skin3D(): index" << id << "out of range for" << doSkin3DCount() << "entries", {});
-    return doSkin3D(id);
+    Containers::Optional<SkinData3D> skin = doSkin3D(id);
+    CORRADE_ASSERT(!skin || (
+        (!skin->_jointData.deleter() || skin->_jointData.deleter() == reinterpret_cast<void(*)(UnsignedInt*, std::size_t)>(Implementation::nonOwnedArrayDeleter)) &&
+        (!skin->_inverseBindMatrixData.deleter() || skin->_inverseBindMatrixData.deleter() == reinterpret_cast<void(*)(Matrix4*, std::size_t)>(Implementation::nonOwnedArrayDeleter))),
+        "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter", {});
+    return skin;
 }
 
 Containers::Optional<SkinData3D> AbstractImporter::doSkin3D(UnsignedInt) {

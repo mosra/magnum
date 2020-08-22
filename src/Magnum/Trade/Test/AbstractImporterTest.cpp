@@ -147,12 +147,18 @@ struct AbstractImporterTest: TestSuite::Tester {
     void skin2DNameOutOfRange();
     void skin2DNotImplemented();
     void skin2DOutOfRange();
+    void skin2DNonOwningDeleters();
+    void skin2DCustomJointDataDeleter();
+    void skin2DCustomInverseBindMatrixDataDeleter();
 
     void skin3D();
     void skin3DNameNotImplemented();
     void skin3DNameOutOfRange();
     void skin3DNotImplemented();
     void skin3DOutOfRange();
+    void skin3DNonOwningDeleters();
+    void skin3DCustomJointDataDeleter();
+    void skin3DCustomInverseBindMatrixDataDeleter();
 
     void mesh();
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -367,12 +373,18 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::skin2DNameOutOfRange,
               &AbstractImporterTest::skin2DNotImplemented,
               &AbstractImporterTest::skin2DOutOfRange,
+              &AbstractImporterTest::skin2DNonOwningDeleters,
+              &AbstractImporterTest::skin2DCustomJointDataDeleter,
+              &AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter,
 
               &AbstractImporterTest::skin3D,
               &AbstractImporterTest::skin3DNameNotImplemented,
               &AbstractImporterTest::skin3DNameOutOfRange,
               &AbstractImporterTest::skin3DNotImplemented,
               &AbstractImporterTest::skin3DOutOfRange,
+              &AbstractImporterTest::skin3DNonOwningDeleters,
+              &AbstractImporterTest::skin3DCustomJointDataDeleter,
+              &AbstractImporterTest::skin3DCustomInverseBindMatrixDataDeleter,
 
               &AbstractImporterTest::mesh,
               #ifdef MAGNUM_BUILD_DEPRECATED
@@ -2201,7 +2213,9 @@ void AbstractImporterTest::skin2D() {
             return {};
         }
         Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
-            if(id == 7) return SkinData2D{{}, {}, &state};
+            /* Verify that initializer list is converted to an array with
+               the default deleter and not something disallowed */
+            if(id == 7) return SkinData2D{{1}, {{}}, &state};
             return {};
         }
     } importer;
@@ -2293,6 +2307,88 @@ void AbstractImporterTest::skin2DOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin2D(): index 8 out of range for 8 entries\n");
 }
 
+void AbstractImporterTest::skin2DNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 1; }
+        Int doSkin2DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return SkinData2D{{}, jointData, {}, inverseBindMatrixData};
+        }
+
+        UnsignedInt jointData[1]{};
+        Matrix3 inverseBindMatrixData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    auto data = importer.skin2D(0);
+    CORRADE_COMPARE(data->joints(), importer.jointData);
+    CORRADE_COMPARE(data->inverseBindMatrices(), importer.inverseBindMatrixData);
+}
+
+void AbstractImporterTest::skin2DCustomJointDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 1; }
+        Int doSkin2DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return SkinData2D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix3>{1}};
+        }
+
+        UnsignedInt jointData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin2D(0);
+    importer.skin2D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::skin2DCustomInverseBindMatrixDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 1; }
+        Int doSkin2DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt) override {
+            return SkinData2D{Containers::Array<UnsignedInt>{1}, Containers::Array<Matrix3>{inverseBindMatrixData, 1, [](Matrix3*, std::size_t){}}};
+        }
+
+        Matrix3 inverseBindMatrixData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin2D(0);
+    importer.skin2D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::skin2D(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 void AbstractImporterTest::skin3D() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2309,7 +2405,9 @@ void AbstractImporterTest::skin3D() {
             return {};
         }
         Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
-            if(id == 7) return SkinData3D{{}, {}, &state};
+            /* Verify that initializer list is converted to an array with
+               the default deleter and not something disallowed */
+            if(id == 7) return SkinData3D{{1}, {{}}, &state};
             return {};
         }
     } importer;
@@ -2399,6 +2497,88 @@ void AbstractImporterTest::skin3DOutOfRange() {
 
     importer.skin3D(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin3D(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::skin3DNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 1; }
+        Int doSkin3DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return SkinData3D{{}, jointData, {}, inverseBindMatrixData};
+        }
+
+        UnsignedInt jointData[1]{};
+        Matrix4 inverseBindMatrixData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    auto data = importer.skin3D(0);
+    CORRADE_COMPARE(data->joints(), importer.jointData);
+    CORRADE_COMPARE(data->inverseBindMatrices(), importer.inverseBindMatrixData);
+}
+
+void AbstractImporterTest::skin3DCustomJointDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 1; }
+        Int doSkin3DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return SkinData3D{Containers::Array<UnsignedInt>{jointData, 1, [](UnsignedInt*, std::size_t){}}, Containers::Array<Matrix4>{1}};
+        }
+
+        UnsignedInt jointData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3D(0);
+    importer.skin3D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::skin3DCustomInverseBindMatrixDataDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 1; }
+        Int doSkin3DForName(const std::string&) override { return 0; }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt) override {
+            return SkinData3D{Containers::Array<UnsignedInt>{1}, Containers::Array<Matrix4>{inverseBindMatrixData, 1, [](Matrix4*, std::size_t){}}};
+        }
+
+        Matrix4 inverseBindMatrixData[1]{};
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3D(0);
+    importer.skin3D("");
+    CORRADE_COMPARE(out.str(),
+        "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter\n"
+        "Trade::AbstractImporter::skin3D(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::mesh() {
