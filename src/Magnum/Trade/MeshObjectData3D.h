@@ -47,11 +47,20 @@ class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID or `-1`
+         * @param skin              Skin ID or `-1`
          * @param importerState     Importer-specific state
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr);
+        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, Int material, Int skin, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief MeshObjectData3D(std::vector<UnsignedInt>, const Matrix4&, UnsignedInt, Int, Int, const void*)
+         * @m_deprecated_since_latest Use @ref MeshObjectData3D(std::vector<UnsignedInt>, const Matrix4&, UnsignedInt, Int, Int, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use MeshObjectData3D(std::vector<UnsignedInt>, const Matrix4&, UnsignedInt, Int, Int, const void*) instead") MeshObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr): MeshObjectData3D{std::move(children), transformation, instance, material, -1, importerState} {}
+        #endif
 
         /**
          * @brief Construct with separate transformations
@@ -61,11 +70,20 @@ class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
          * @param scaling           Scaling (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID or `-1`
+         * @param skin              Skin ID or `-1`
          * @param importerState     Importer-specific state
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, UnsignedInt instance, Int material, const void* importerState = nullptr);
+        explicit MeshObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, UnsignedInt instance, Int material, Int skin, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief MeshObjectData3D(std::vector<UnsignedInt>, const Vector3&, const Quaternion&, const Vector3&, UnsignedInt, Int, Int, const void*)
+         * @m_deprecated_since_latest Use @ref MeshObjectData3D(std::vector<UnsignedInt>, const Vector3&, const Quaternion&, const Vector3&, UnsignedInt, Int, Int, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use MeshObjectData3D(std::vector<UnsignedInt>, const Vector3&, const Quaternion&, const Vector3&, UnsignedInt, Int, Int, const void*) instead") MeshObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, UnsignedInt instance, Int material, const void* importerState = nullptr): MeshObjectData3D{std::move(children), translation, rotation, scaling, instance, material, -1, importerState} {}
+        #endif
 
         /** @brief Copying is not allowed */
         MeshObjectData3D(const MeshObjectData3D&) = delete;
@@ -97,11 +115,21 @@ class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
          * @brief Material ID
          *
          * Returns `-1` if the object has no material assigned.
+         * @see @ref AbstractImporter::material()
          */
         Int material() const { return _material; }
 
+        /**
+         * @brief Skin ID
+         * @m_since_latest
+         *
+         * Returns `-1` if the object has no skin assigned.
+         * @see @ref AbstractImporter::skin3D()
+         */
+        Int skin() const { return _skin; }
+
     private:
-        Int _material;
+        Int _material, _skin;
 };
 
 }}

@@ -104,7 +104,7 @@ void ObjectData3DTest::constructEmptyTransformations() {
 
 void ObjectData3DTest::constructMesh() {
     const int a{};
-    const MeshObjectData3D data{{1, 3}, Matrix4::translation(Vector3::yAxis(5.0f)), 13, 42, &a};
+    const MeshObjectData3D data{{1, 3}, Matrix4::translation(Vector3::yAxis(5.0f)), 13, 42, 5, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{1, 3}));
     CORRADE_COMPARE(data.flags(), ObjectFlags3D{});
@@ -112,12 +112,13 @@ void ObjectData3DTest::constructMesh() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.skin(), 5);
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructMeshTransformations() {
     const int a{};
-    const MeshObjectData3D data{{1, 3}, Vector3::xAxis(-4.0f), Quaternion::rotation(32.5_degf, Vector3::zAxis()), Vector3::yScale(1.5f), 13, 42, &a};
+    const MeshObjectData3D data{{1, 3}, Vector3::xAxis(-4.0f), Quaternion::rotation(32.5_degf, Vector3::zAxis()), Vector3::yScale(1.5f), 13, 42, 5, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{1, 3}));
     CORRADE_COMPARE(data.flags(), ObjectFlag3D::HasTranslationRotationScaling);
@@ -131,6 +132,7 @@ void ObjectData3DTest::constructMeshTransformations() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.skin(), 5);
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
@@ -208,7 +210,7 @@ void ObjectData3DTest::constructMoveTransformations() {
 
 void ObjectData3DTest::constructMoveMesh() {
     const int a{};
-    MeshObjectData3D data{{1, 3}, Matrix4::translation(Vector3::yAxis(5.0f)), 13, 42, &a};
+    MeshObjectData3D data{{1, 3}, Matrix4::translation(Vector3::yAxis(5.0f)), 13, 42, 5, &a};
 
     MeshObjectData3D b{std::move(data)};
 
@@ -218,10 +220,11 @@ void ObjectData3DTest::constructMoveMesh() {
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(b.instance(), 13);
     CORRADE_COMPARE(b.material(), 42);
+    CORRADE_COMPARE(b.skin(), 5);
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
-    MeshObjectData3D d{{0, 1}, {}, 27, -1, &c};
+    MeshObjectData3D d{{0, 1}, {}, 27, -1, -1, &c};
 
     d = std::move(b);
 
@@ -231,6 +234,7 @@ void ObjectData3DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
+    CORRADE_COMPARE(d.skin(), 5);
     CORRADE_COMPARE(d.importerState(), &a);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<MeshObjectData3D>::value);

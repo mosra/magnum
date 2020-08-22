@@ -47,11 +47,20 @@ class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID or `-1`
+         * @param skin              Skin ID or `-1`
          * @param importerState     Importer-specific state
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr);
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material, Int skin, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief MeshObjectData2D(std::vector<UnsignedInt>, const Matrix3&, UnsignedInt, Int, Int, const void*)
+         * @m_deprecated_since_latest Use @ref MeshObjectData2D(std::vector<UnsignedInt>, const Matrix3&, UnsignedInt, Int, Int, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use MeshObjectData2D(std::vector<UnsignedInt>, const Matrix4&, UnsignedInt, Int, Int, const void*) instead") MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr): MeshObjectData2D{std::move(children), transformation, instance, material, -1, importerState} {}
+        #endif
 
         /**
          * @brief Construct with separate transformations
@@ -61,11 +70,20 @@ class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
          * @param scaling           Scaling (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID or `-1`
+         * @param skin              Skin ID or `-1`
          * @param importerState     Importer-specific state
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, UnsignedInt instance, Int material, const void* importerState = nullptr);
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, UnsignedInt instance, Int material, Int skin, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief MeshObjectData2D(std::vector<UnsignedInt>, const Vector2&, const Complex&, const Vector2&, UnsignedInt, Int, Int, const void*)
+         * @m_deprecated_since_latest Use @ref MeshObjectData2D(std::vector<UnsignedInt>, const Vector2&, const Complex&, const Vector2&, UnsignedInt, Int, Int, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use MeshObjectData2D(std::vector<UnsignedInt>, const Vector2&, const Complex&, const Vector2&, UnsignedInt, Int, Int, const void*) instead") MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, UnsignedInt instance, Int material, const void* importerState = nullptr): MeshObjectData2D{std::move(children), translation, rotation, scaling, instance, material, -1, importerState} {}
+        #endif
 
         /** @brief Copying is not allowed */
         MeshObjectData2D(const MeshObjectData2D&) = delete;
@@ -97,11 +115,21 @@ class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
          * @brief Material ID
          *
          * Returns `-1` if the object has no material assigned.
+         * @see @ref AbstractImporter::material()
          */
         Int material() const { return _material; }
 
+        /**
+         * @brief Skin ID
+         * @m_since_latest
+         *
+         * Returns `-1` if the object has no skin assigned.
+         * @see @ref AbstractImporter::skin2D()
+         */
+        Int skin() const { return _skin; }
+
     private:
-        Int _material;
+        Int _material, _skin;
 };
 
 }}

@@ -102,7 +102,7 @@ void ObjectData2DTest::constructEmptyTransformations() {
 
 void ObjectData2DTest::constructMesh() {
     const int a{};
-    const MeshObjectData2D data{{1, 3}, Matrix3::translation(Vector2::yAxis(5.0f)), 13, 42, &a};
+    const MeshObjectData2D data{{1, 3}, Matrix3::translation(Vector2::yAxis(5.0f)), 13, 42, 5, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{1, 3}));
     CORRADE_COMPARE(data.flags(), ObjectFlags2D{});
@@ -110,12 +110,13 @@ void ObjectData2DTest::constructMesh() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.skin(), 5);
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructMeshTransformations() {
     const int a{};
-    const MeshObjectData2D data{{0, 2, 3}, Vector2::xAxis(-4.0f), Complex::rotation(32.5_degf), Vector2::yScale(1.5f), 13, 42, &a};
+    const MeshObjectData2D data{{0, 2, 3}, Vector2::xAxis(-4.0f), Complex::rotation(32.5_degf), Vector2::yScale(1.5f), 13, 42, 5, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{0, 2, 3}));
     CORRADE_COMPARE(data.flags(), ObjectFlag2D::HasTranslationRotationScaling);
@@ -129,6 +130,7 @@ void ObjectData2DTest::constructMeshTransformations() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.skin(), 5);
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
@@ -194,7 +196,7 @@ void ObjectData2DTest::constructMoveTransformations() {
 
 void ObjectData2DTest::constructMoveMesh() {
     const int a{};
-    MeshObjectData2D data{{1, 3}, Matrix3::translation(Vector2::yAxis(5.0f)), 13, 42, &a};
+    MeshObjectData2D data{{1, 3}, Matrix3::translation(Vector2::yAxis(5.0f)), 13, 42, 5, &a};
 
     MeshObjectData2D b{std::move(data)};
 
@@ -204,10 +206,11 @@ void ObjectData2DTest::constructMoveMesh() {
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(b.instance(), 13);
     CORRADE_COMPARE(b.material(), 42);
+    CORRADE_COMPARE(b.skin(), 5);
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
-    MeshObjectData2D d{{0, 1}, {}, 27, -1, &c};
+    MeshObjectData2D d{{0, 1}, {}, 27, -1, -1, &c};
 
     d = std::move(b);
 
@@ -217,6 +220,7 @@ void ObjectData2DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
+    CORRADE_COMPARE(d.skin(), 5);
     CORRADE_COMPARE(d.importerState(), &a);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<MeshObjectData2D>::value);

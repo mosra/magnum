@@ -27,8 +27,8 @@
 
 namespace Magnum { namespace Trade {
 
-MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const UnsignedInt instance, const Int material, const void* const importerState): ObjectData2D{std::move(children), transformation, ObjectInstanceType2D::Mesh, instance, importerState}, _material{material} {}
+MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const UnsignedInt instance, const Int material, const Int skin, const void* const importerState): ObjectData2D{std::move(children), transformation, ObjectInstanceType2D::Mesh, instance, importerState}, _material{material}, _skin{skin} {}
 
-MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const UnsignedInt instance, const Int material, const void* const importerState): ObjectData2D{std::move(children), translation, rotation, scaling, ObjectInstanceType2D::Mesh, instance, importerState}, _material{material} {}
+MeshObjectData2D::MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const UnsignedInt instance, const Int material, const Int skin, const void* const importerState): ObjectData2D{std::move(children), translation, rotation, scaling, ObjectInstanceType2D::Mesh, instance, importerState}, _material{material}, _skin{skin} {}
 
 }}
