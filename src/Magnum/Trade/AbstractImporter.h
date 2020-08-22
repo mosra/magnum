@@ -214,6 +214,8 @@ expose internal state through various accessors:
     imported by @ref object2D() or @ref object3D()
 -   @ref SceneData::importerState() can expose importer state for a scene
     imported by @ref scene()
+-   @ref SkinData::importerState() can expose importer state for a scene
+    imported by @ref skin2D() or @ref skin3D()
 -   @ref TextureData::importerState() can expose importer state for a texture
     imported by @ref texture()
 
@@ -822,6 +824,108 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref object3D(UnsignedInt). Expects that a file is opened.
          */
         Containers::Pointer<ObjectData3D> object3D(const std::string& name);
+
+        /**
+         * @brief Two-dimensional skin count
+         * @m_since_latest
+         *
+         * Expects that a file is opened.
+         */
+        UnsignedInt skin2DCount() const;
+
+        /**
+         * @brief Two-dimensional skin ID for given name
+         * @m_since_latest
+         *
+         * If no skin for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
+         * @see @ref skin2DName(), @ref skin2D(const std::string&)
+         */
+        Int skin2DForName(const std::string& name);
+
+        /**
+         * @brief Two-dimensional skin name
+         * @param id        Skin ID, from range [0, @ref skin2DCount()).
+         * @m_since_latest
+         *
+         * Expects that a file is opened.
+         * @see @ref skin2DForName()
+         */
+        std::string skin2DName(UnsignedInt id);
+
+        /**
+         * @brief Two-dimensional skin
+         * @param id        Skin ID, from range [0, @ref skin2DCount()).
+         * @m_since_latest
+         *
+         * Returns given skin or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
+         * @see @ref skin2D(const std::string&)
+         */
+        Containers::Optional<SkinData2D> skin2D(UnsignedInt id);
+
+        /**
+         * @brief Two-dimensional skin for given name
+         * @m_since_latest
+         *
+         * A convenience API combining @ref skin2DForName() and
+         * @ref skin2D(UnsignedInt). If @ref skin2DForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref skin2D(UnsignedInt). Expects that a file is opened.
+         */
+        Containers::Optional<SkinData2D> skin2D(const std::string& name);
+
+        /**
+         * @brief Three-dimensional skin count
+         * @m_since_latest
+         *
+         * Expects that a file is opened.
+         */
+        UnsignedInt skin3DCount() const;
+
+        /**
+         * @brief Three-dimensional skin ID for given name
+         * @m_since_latest
+         *
+         * If no skin for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
+         * @see @ref skin3DName(), @ref skin3D(const std::string&)
+         */
+        Int skin3DForName(const std::string& name);
+
+        /**
+         * @brief Three-dimensional skin name
+         * @param id        Skin ID, from range [0, @ref skin3DCount()).
+         * @m_since_latest
+         *
+         * Expects that a file is opened.
+         * @see @ref skin3DForName()
+         */
+        std::string skin3DName(UnsignedInt id);
+
+        /**
+         * @brief Three-dimensional skin
+         * @param id        Skin ID, from range [0, @ref skin3DCount()).
+         * @m_since_latest
+         *
+         * Returns given skin or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
+         * @see @ref skin3D(const std::string&)
+         */
+        Containers::Optional<SkinData3D> skin3D(UnsignedInt id);
+
+        /**
+         * @brief Three-dimensional object for given name
+         * @m_since_latest
+         *
+         * A convenience API combining @ref skin3DForName() and
+         * @ref skin3D(UnsignedInt). If @ref skin3DForName() returns
+         * @cpp -1 @ce, prints an error message and returns
+         * @ref Containers::NullOpt, otherwise propagates the result from
+         * @ref skin3D(UnsignedInt). Expects that a file is opened.
+         */
+        Containers::Optional<SkinData3D> skin3D(const std::string& name);
 
         /**
          * @brief Mesh count
@@ -1518,6 +1622,66 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Implementation for @ref object3D() */
         virtual Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref skin2DCount()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp 0 @ce.
+         */
+        virtual UnsignedInt doSkin2DCount() const;
+
+        /**
+         * @brief Implementation for @ref skin2DForName()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp -1 @ce.
+         */
+        virtual Int doSkin2DForName(const std::string& name);
+
+        /**
+         * @brief Implementation for @ref skin2DName()
+         * @m_since_latest
+         *
+         * Default implementation returns empty string.
+         */
+        virtual std::string doSkin2DName(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref skin2D()
+         * @m_since_latest
+         */
+        virtual Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref skin3DCount()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp 0 @ce.
+         */
+        virtual UnsignedInt doSkin3DCount() const;
+
+        /**
+         * @brief Implementation for @ref skin3DForName()
+         * @m_since_latest
+         *
+         * Default implementation returns @cpp -1 @ce.
+         */
+        virtual Int doSkin3DForName(const std::string& name);
+
+        /**
+         * @brief Implementation for @ref skin3DName()
+         * @m_since_latest
+         *
+         * Default implementation returns empty string.
+         */
+        virtual std::string doSkin3DName(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref skin3D()
+         * @m_since_latest
+         */
+        virtual Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref meshCount()

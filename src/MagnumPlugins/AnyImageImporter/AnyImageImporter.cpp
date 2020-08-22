@@ -239,4 +239,4 @@ Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt 
 }}
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3.2")
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3.3")

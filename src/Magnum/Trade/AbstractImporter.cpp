@@ -43,6 +43,7 @@
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -61,7 +62,7 @@ namespace Magnum { namespace Trade {
 std::string AbstractImporter::pluginInterface() {
     return
 /* [interface] */
-"cz.mosra.magnum.Trade.AbstractImporter/0.3.2"
+"cz.mosra.magnum.Trade.AbstractImporter/0.3.3"
 /* [interface] */
     ;
 }
@@ -473,6 +474,90 @@ Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const std::string& 
         return {};
     }
     return object3D(id); /* not doObject3D(), so we get the range checks also */
+}
+
+UnsignedInt AbstractImporter::skin2DCount() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DCount(): no file opened", {});
+    return doSkin2DCount();
+}
+
+UnsignedInt AbstractImporter::doSkin2DCount() const { return 0; }
+
+Int AbstractImporter::skin2DForName(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DForName(): no file opened", {});
+    return doSkin2DForName(name);
+}
+
+Int AbstractImporter::doSkin2DForName(const std::string&) { return -1; }
+
+std::string AbstractImporter::skin2DName(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2DName(): no file opened", {});
+    CORRADE_ASSERT(id < doSkin2DCount(), "Trade::AbstractImporter::skin2DName(): index" << id << "out of range for" << doSkin2DCount() << "entries", {});
+    return doSkin2DName(id);
+}
+
+std::string AbstractImporter::doSkin2DName(UnsignedInt) { return {}; }
+
+Containers::Optional<SkinData2D> AbstractImporter::skin2D(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
+    CORRADE_ASSERT(id < doSkin2DCount(), "Trade::AbstractImporter::skin2D(): index" << id << "out of range for" << doSkin2DCount() << "entries", {});
+    return doSkin2D(id);
+}
+
+Containers::Optional<SkinData2D> AbstractImporter::doSkin2D(UnsignedInt) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::skin2D(): not implemented", {});
+}
+
+Containers::Optional<SkinData2D> AbstractImporter::skin2D(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin2D(): no file opened", {});
+    const Int id = doSkin2DForName(name);
+    if(id == -1) {
+        Error{} << "Trade::AbstractImporter::skin2D(): skin" << name << "not found";
+        return {};
+    }
+    return skin2D(id); /* not doSkin2D(), so we get the range checks also */
+}
+
+UnsignedInt AbstractImporter::skin3DCount() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3DCount(): no file opened", {});
+    return doSkin3DCount();
+}
+
+UnsignedInt AbstractImporter::doSkin3DCount() const { return 0; }
+
+Int AbstractImporter::skin3DForName(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3DForName(): no file opened", {});
+    return doSkin3DForName(name);
+}
+
+Int AbstractImporter::doSkin3DForName(const std::string&) { return -1; }
+
+std::string AbstractImporter::skin3DName(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3DName(): no file opened", {});
+    CORRADE_ASSERT(id < doSkin3DCount(), "Trade::AbstractImporter::skin3DName(): index" << id << "out of range for" << doSkin3DCount() << "entries", {});
+    return doSkin3DName(id);
+}
+
+std::string AbstractImporter::doSkin3DName(UnsignedInt) { return {}; }
+
+Containers::Optional<SkinData3D> AbstractImporter::skin3D(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
+    CORRADE_ASSERT(id < doSkin3DCount(), "Trade::AbstractImporter::skin3D(): index" << id << "out of range for" << doSkin3DCount() << "entries", {});
+    return doSkin3D(id);
+}
+
+Containers::Optional<SkinData3D> AbstractImporter::doSkin3D(UnsignedInt) {
+    CORRADE_ASSERT_UNREACHABLE("Trade::AbstractImporter::skin3D(): not implemented", {});
+}
+
+Containers::Optional<SkinData3D> AbstractImporter::skin3D(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::skin3D(): no file opened", {});
+    const Int id = doSkin3DForName(name);
+    if(id == -1) {
+        Error{} << "Trade::AbstractImporter::skin3D(): skin" << name << "not found";
+        return {};
+    }
+    return skin3D(id); /* not doSkin3D(), so we get the range checks also */
 }
 
 UnsignedInt AbstractImporter::meshCount() const {

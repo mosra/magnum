@@ -44,6 +44,7 @@
 #include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -140,6 +141,18 @@ struct AbstractImporterTest: TestSuite::Tester {
     void object3DNameOutOfRange();
     void object3DNotImplemented();
     void object3DOutOfRange();
+
+    void skin2D();
+    void skin2DNameNotImplemented();
+    void skin2DNameOutOfRange();
+    void skin2DNotImplemented();
+    void skin2DOutOfRange();
+
+    void skin3D();
+    void skin3DNameNotImplemented();
+    void skin3DNameOutOfRange();
+    void skin3DNotImplemented();
+    void skin3DOutOfRange();
 
     void mesh();
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -348,6 +361,18 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::object3DNameOutOfRange,
               &AbstractImporterTest::object3DNotImplemented,
               &AbstractImporterTest::object3DOutOfRange,
+
+              &AbstractImporterTest::skin2D,
+              &AbstractImporterTest::skin2DNameNotImplemented,
+              &AbstractImporterTest::skin2DNameOutOfRange,
+              &AbstractImporterTest::skin2DNotImplemented,
+              &AbstractImporterTest::skin2DOutOfRange,
+
+              &AbstractImporterTest::skin3D,
+              &AbstractImporterTest::skin3DNameNotImplemented,
+              &AbstractImporterTest::skin3DNameOutOfRange,
+              &AbstractImporterTest::skin3DNotImplemented,
+              &AbstractImporterTest::skin3DOutOfRange,
 
               &AbstractImporterTest::mesh,
               #ifdef MAGNUM_BUILD_DEPRECATED
@@ -1033,6 +1058,9 @@ void AbstractImporterTest::thingCountNotImplemented() {
     CORRADE_COMPARE(importer.object2DCount(), 0);
     CORRADE_COMPARE(importer.object3DCount(), 0);
 
+    CORRADE_COMPARE(importer.skin2DCount(), 0);
+    CORRADE_COMPARE(importer.skin3DCount(), 0);
+
     CORRADE_COMPARE(importer.meshCount(), 0);
     CORRADE_COMPARE(importer.materialCount(), 0);
     CORRADE_COMPARE(importer.textureCount(), 0);
@@ -1064,6 +1092,9 @@ void AbstractImporterTest::thingCountNoFile() {
     importer.object2DCount();
     importer.object3DCount();
 
+    importer.skin2DCount();
+    importer.skin3DCount();
+
     importer.meshCount();
     importer.meshLevelCount(7);
     importer.materialCount();
@@ -1081,12 +1112,16 @@ void AbstractImporterTest::thingCountNoFile() {
         "Trade::AbstractImporter::animationCount(): no file opened\n"
         "Trade::AbstractImporter::lightCount(): no file opened\n"
         "Trade::AbstractImporter::cameraCount(): no file opened\n"
+
         "Trade::AbstractImporter::object2DCount(): no file opened\n"
         "Trade::AbstractImporter::object3DCount(): no file opened\n"
+
+        "Trade::AbstractImporter::skin2DCount(): no file opened\n"
+        "Trade::AbstractImporter::skin3DCount(): no file opened\n"
+
         "Trade::AbstractImporter::meshCount(): no file opened\n"
         "Trade::AbstractImporter::meshLevelCount(): no file opened\n"
         "Trade::AbstractImporter::materialCount(): no file opened\n"
-
         "Trade::AbstractImporter::textureCount(): no file opened\n"
 
         "Trade::AbstractImporter::image1DCount(): no file opened\n"
@@ -1111,6 +1146,9 @@ void AbstractImporterTest::thingForNameNotImplemented() {
 
     CORRADE_COMPARE(importer.object2DForName(""), -1);
     CORRADE_COMPARE(importer.object3DForName(""), -1);
+
+    CORRADE_COMPARE(importer.skin2DForName(""), -1);
+    CORRADE_COMPARE(importer.skin3DForName(""), -1);
 
     CORRADE_COMPARE(importer.meshForName(""), -1);
     CORRADE_COMPARE(importer.materialForName(""), -1);
@@ -1143,6 +1181,9 @@ void AbstractImporterTest::thingForNameNoFile() {
     importer.object2DForName("");
     importer.object3DForName("");
 
+    importer.skin2DForName("");
+    importer.skin3DForName("");
+
     importer.meshForName("");
     importer.materialForName("");
     importer.textureForName("");
@@ -1159,6 +1200,9 @@ void AbstractImporterTest::thingForNameNoFile() {
 
         "Trade::AbstractImporter::object2DForName(): no file opened\n"
         "Trade::AbstractImporter::object3DForName(): no file opened\n"
+
+        "Trade::AbstractImporter::skin2DForName(): no file opened\n"
+        "Trade::AbstractImporter::skin3DForName(): no file opened\n"
 
         "Trade::AbstractImporter::meshForName(): no file opened\n"
         "Trade::AbstractImporter::materialForName(): no file opened\n"
@@ -1192,6 +1236,9 @@ void AbstractImporterTest::thingByNameNotFound() {
         CORRADE_VERIFY(!importer.object2D("foobar"));
         CORRADE_VERIFY(!importer.object3D("foobar"));
 
+        CORRADE_VERIFY(!importer.skin2D("foobar"));
+        CORRADE_VERIFY(!importer.skin3D("foobar"));
+
         CORRADE_VERIFY(!importer.mesh("foobar"));
         CORRADE_VERIFY(!importer.material("foobar"));
         CORRADE_VERIFY(!importer.texture("foobar"));
@@ -1210,6 +1257,9 @@ void AbstractImporterTest::thingByNameNotFound() {
 
             "Trade::AbstractImporter::object2D(): object foobar not found\n"
             "Trade::AbstractImporter::object3D(): object foobar not found\n"
+
+            "Trade::AbstractImporter::skin2D(): skin foobar not found\n"
+            "Trade::AbstractImporter::skin3D(): skin foobar not found\n"
 
             "Trade::AbstractImporter::mesh(): mesh foobar not found\n"
             "Trade::AbstractImporter::material(): material foobar not found\n"
@@ -1243,6 +1293,9 @@ void AbstractImporterTest::thingNameNoFile() {
     importer.object2DName(42);
     importer.object3DName(42);
 
+    importer.skin2DName(42);
+    importer.skin3DName(42);
+
     importer.meshName(42);
     importer.materialName(42);
     importer.textureName(42);
@@ -1256,8 +1309,13 @@ void AbstractImporterTest::thingNameNoFile() {
         "Trade::AbstractImporter::animationName(): no file opened\n"
         "Trade::AbstractImporter::lightName(): no file opened\n"
         "Trade::AbstractImporter::cameraName(): no file opened\n"
+
         "Trade::AbstractImporter::object2DName(): no file opened\n"
         "Trade::AbstractImporter::object3DName(): no file opened\n"
+
+        "Trade::AbstractImporter::skin2DName(): no file opened\n"
+        "Trade::AbstractImporter::skin3DName(): no file opened\n"
+
         "Trade::AbstractImporter::meshName(): no file opened\n"
         "Trade::AbstractImporter::materialName(): no file opened\n"
         "Trade::AbstractImporter::textureName(): no file opened\n"
@@ -1296,6 +1354,11 @@ void AbstractImporterTest::thingNoFile() {
     importer.object3D(42);
     importer.object3D("foo");
 
+    importer.skin2D(42);
+    importer.skin2D("foo");
+    importer.skin3D(42);
+    importer.skin3D("foo");
+
     importer.mesh(42);
     importer.mesh("foo");
     importer.material(42);
@@ -1327,6 +1390,11 @@ void AbstractImporterTest::thingNoFile() {
         "Trade::AbstractImporter::object2D(): no file opened\n"
         "Trade::AbstractImporter::object3D(): no file opened\n"
         "Trade::AbstractImporter::object3D(): no file opened\n"
+
+        "Trade::AbstractImporter::skin2D(): no file opened\n"
+        "Trade::AbstractImporter::skin2D(): no file opened\n"
+        "Trade::AbstractImporter::skin3D(): no file opened\n"
+        "Trade::AbstractImporter::skin3D(): no file opened\n"
 
         "Trade::AbstractImporter::mesh(): no file opened\n"
         "Trade::AbstractImporter::mesh(): no file opened\n"
@@ -2115,6 +2183,222 @@ void AbstractImporterTest::object3DOutOfRange() {
 
     importer.object3D(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::object3D(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::skin2D() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+        Int doSkin2DForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            return -1;
+        }
+        std::string doSkin2DName(UnsignedInt id) override {
+            if(id == 7) return "eighth";
+            return {};
+        }
+        Containers::Optional<SkinData2D> doSkin2D(UnsignedInt id) override {
+            if(id == 7) return SkinData2D{{}, {}, &state};
+            return {};
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.skin2DCount(), 8);
+    CORRADE_COMPARE(importer.skin2DForName("eighth"), 7);
+    CORRADE_COMPARE(importer.skin2DName(7), "eighth");
+
+    {
+        auto data = importer.skin2D(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.skin2D("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    }
+}
+
+void AbstractImporterTest::skin2DNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+    } importer;
+
+    CORRADE_COMPARE(importer.skin2DName(7), "");
+}
+
+void AbstractImporterTest::skin2DNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin2DName(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin2DName(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::skin2DNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin2D(7);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin2D(): not implemented\n");
+}
+
+void AbstractImporterTest::skin2DOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin2DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin2D(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin2D(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::skin3D() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+        Int doSkin3DForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            return -1;
+        }
+        std::string doSkin3DName(UnsignedInt id) override {
+            if(id == 7) return "eighth";
+            return {};
+        }
+        Containers::Optional<SkinData3D> doSkin3D(UnsignedInt id) override {
+            if(id == 7) return SkinData3D{{}, {}, &state};
+            return {};
+        }
+    } importer;
+
+    CORRADE_COMPARE(importer.skin3DCount(), 8);
+    CORRADE_COMPARE(importer.skin3DForName("eighth"), 7);
+    CORRADE_COMPARE(importer.skin3DName(7), "eighth");
+
+    {
+        auto data = importer.skin3D(7);
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    } {
+        auto data = importer.skin3D("eighth");
+        CORRADE_VERIFY(data);
+        CORRADE_COMPARE(data->importerState(), &state);
+    }
+}
+
+void AbstractImporterTest::skin3DNameNotImplemented() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+    } importer;
+
+    CORRADE_COMPARE(importer.skin3DName(7), "");
+}
+
+void AbstractImporterTest::skin3DNameOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3DName(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin3DName(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::skin3DNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3D(7);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin3D(): not implemented\n");
+}
+
+void AbstractImporterTest::skin3DOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doSkin3DCount() const override { return 8; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.skin3D(8);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::skin3D(): index 8 out of range for 8 entries\n");
 }
 
 void AbstractImporterTest::mesh() {
