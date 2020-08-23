@@ -68,6 +68,11 @@ See also:
 -   Added @ref Math::fmod() (see [mosra/magnum#454](https://github.com/mosra/magnum/pull/454))
 -   Added @ref Math::binomialCoefficient() (see [mosra/magnum#461](https://github.com/mosra/magnum/pull/461))
 
+@subsubsection changelog-latest-new-meshtools MeshTools library
+
+-   Added @ref MeshTools::generateQuadIndices() for quad triangulation
+    including non-convex and non-planar quads
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::Object::move()

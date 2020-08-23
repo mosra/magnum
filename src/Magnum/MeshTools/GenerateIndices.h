@@ -145,6 +145,69 @@ least @cpp 3 @ce, the @p indices array is expected to have a size of
 MAGNUM_MESHTOOLS_EXPORT void generateTriangleFanIndicesInto(UnsignedInt vertexCount, const Containers::StridedArrayView1D<UnsignedInt>& into);
 
 /**
+@brief Create a triangle index buffer for quad primitives
+@m_since_latest
+
+@htmlinclude triangulate.svg
+
+For each quad `ABCD` gives a pair of triangles that is either `ABC ACD` or
+`DAB DBC`, correctly handling cases of non-convex quads and avoiding thin
+triangles where possible. Loosely based on [this SO question](https://stackoverflow.com/q/12239876):
+
+1.  If normals of triangles `ABC` and `ACD` point in opposite direction and
+    `DAB DBC` not (which is equivalent to points `D` and `B` being on the same
+    side of a diagonal `AC` in a two-dimensional case), split as `DAB DBC`
+2.  Otherwise, if normals of triangles `DAB` and `DBC` point in opposite
+    direction and `ABC ACD` not (which is equivalent to points `A` and `C`
+    being on the same side of a diagonal `DB` in a two-dimensional case), split
+    as `ABC ACD`
+3.  Otherwise the normals either point in the same direction in both cases or
+    the quad is non-planar and ambiguous, pick the case where the diagonal is
+    shorter
+
+Size of @p quads is expected to be divisible by @cpp 4 @ce and all indices
+being in bounds of the @p positions view.
+@see @ref generateQuadIndicesInto(), \n
+    @ref Math::cross(const Vector3<T>&, const Vector3<T>&), \n
+    @ref Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+*/
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads);
+
+/**
+@brief Create a triangle index buffer for quad primitives into an existing array
+@m_since_latest
+
+A variant of @ref generateQuadIndices() that fills existing memory instead of
+allocating a new array. Size of @p quads is expected to be divisible by @cpp 4 @ce
+and @p into should have a size that's @cpp quads.size()*6/4 @ce.
+*/
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& into);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& into);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& into);
+
+/**
 @brief Convert a mesh to plain indexed lines or triangles
 @m_since{2020,06}
 

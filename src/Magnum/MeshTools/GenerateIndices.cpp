@@ -29,6 +29,7 @@
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace MeshTools {
@@ -166,6 +167,106 @@ Containers::Array<UnsignedInt> generateTriangleFanIndices(const UnsignedInt vert
     Containers::Array<UnsignedInt> indices{Containers::NoInit, 3*(vertexCount - 2)};
     generateTriangleFanIndicesInto(vertexCount, indices);
     return indices;
+}
+
+namespace {
+
+template<class T> inline void generateQuadIndicesIntoImplementation(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const T>& quads, const Containers::StridedArrayView1D<T>& into) {
+    CORRADE_ASSERT(quads.size() % 4 == 0,
+        "MeshTools::generateQuadIndicesInto(): quad index count" << quads.size() << "not divisible by 4", );
+    CORRADE_ASSERT(quads.size()*6/4 == into.size(),
+        "MeshTools::generateQuadIndicesInto(): bad output size, expected" << quads.size()*6/4 << "but got" << into.size(), );
+
+    for(std::size_t i = 0, max = quads.size()/4; i != max; ++i) {
+        auto get = [&](UnsignedInt j) -> const Vector3& {
+            UnsignedInt index = quads[4*i + j];
+            CORRADE_ASSERT(index < positions.size(),
+                "MeshTools::generateQuadIndicesInto(): index" << index << "out of bounds for" << positions.size() << "elements", positions[0]);
+            return positions[index];
+        };
+        const Vector3& a = get(0);
+        const Vector3& b = get(1);
+        const Vector3& c = get(2);
+        const Vector3& d = get(3);
+
+        constexpr UnsignedInt SplitAbcAcd[] { 0, 1, 2, 0, 2, 3 };
+        constexpr UnsignedInt SplitDabDbc[] { 3, 0, 1, 3, 1, 2 };
+        const UnsignedInt* split;
+        const bool abcAcdOppositeDirection = Math::dot(Math::cross(c - b, a - b), Math::cross(d - c, a - c)) < 0.0f;
+        const bool dabDbcOppositeDirection = Math::dot(Math::cross(d - b, a - b), Math::cross(c - b, d - b)) < 0.0f;
+
+        /* If normals of ABC and ACD point in opposite direction and DAB DBC
+           point in the same direction, split as DAB DBC; and vice versa. */
+        if(abcAcdOppositeDirection != dabDbcOppositeDirection)
+            split = abcAcdOppositeDirection ? SplitDabDbc : SplitAbcAcd;
+
+        /* Otherwise the normals of both cases point in the same direction or
+           it's a pathological case where both cases point in the opposite.
+           Pick the shorter diagonal. If both are the same, pick the "obvious"
+           ABC ACD. */
+        else split = (b - d).dot() < (c - a).dot() ? SplitDabDbc : SplitAbcAcd;
+
+        /* Assign the two triangles */
+        for(std::size_t j = 0; j != 6; ++j)
+            into[6*i + j] = quads[4*i + split[j]];
+    }
+}
+
+}
+
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads) {
+    /* We can skip zero-initialization here */
+    Containers::Array<UnsignedInt> out{Containers::NoInit, quads.size()*6/4};
+    generateQuadIndicesIntoImplementation(positions, quads, Containers::stridedArrayView(out));
+    return out;
+}
+
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads) {
+    /* Explicitly ensure we have the unused bytes zeroed out */
+    Containers::Array<UnsignedInt> out{Containers::ValueInit, quads.size()*6/4};
+    generateQuadIndicesIntoImplementation(positions, quads,
+        /* Could be just arrayCast<UnsignedShort>(stridedArrayView(out) on LE,
+           but I want to be sure as much as possible that this compiles on BE
+           as well. Hmm, now I get why LE won. */
+        Containers::StridedArrayView1D<UnsignedShort>{
+            Containers::arrayCast<UnsignedShort>(out),
+            reinterpret_cast<UnsignedShort*>(out.data())
+                #ifdef CORRADE_BIG_ENDIAN
+                + 1
+                #endif
+            , out.size(), 4}
+    );
+    return out;
+}
+
+Containers::Array<UnsignedInt> generateQuadIndices(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads) {
+    /* Explicitly ensure we have the unused bytes zeroed out */
+    Containers::Array<UnsignedInt> out{Containers::ValueInit, quads.size()*6/4};
+    generateQuadIndicesIntoImplementation(positions, quads,
+        /* Could be just arrayCast<UnsignedShort>(stridedArrayView(out) on LE,
+           but I want to be sure as much as possible that this compiles on BE
+           as well. Hmm, now I get why LE won. */
+        Containers::StridedArrayView1D<UnsignedByte>{
+            Containers::arrayCast<UnsignedByte>(out),
+            reinterpret_cast<UnsignedByte*>(out.data())
+                #ifdef CORRADE_BIG_ENDIAN
+                + 3
+                #endif
+            , out.size(), 4}
+    );
+    return out;
+}
+
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedInt>& quads, const Containers::StridedArrayView1D<UnsignedInt>& into) {
+    return generateQuadIndicesIntoImplementation(positions, quads, into);
+}
+
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedShort>& quads, const Containers::StridedArrayView1D<UnsignedShort>& into) {
+    return generateQuadIndicesIntoImplementation(positions, quads, into);
+}
+
+void generateQuadIndicesInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<const UnsignedByte>& quads, const Containers::StridedArrayView1D<UnsignedByte>& into) {
+    return generateQuadIndicesIntoImplementation(positions, quads, into);
 }
 
 Trade::MeshData generateIndices(Trade::MeshData&& data) {

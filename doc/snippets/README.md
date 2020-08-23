@@ -13,3 +13,12 @@ smaller file sizes:
 
 The output printed by the application can be used to update the example output
 in `doc/getting-started.dox`.
+
+### triangulate.svg
+
+Created by Inkscape from `doc/triangulate.svg` by saving as Optimized SVG and:
+
+-   cleaning up the `<svg>` header
+-   converting to a `style=""`, *keeping* `viewBox`
+-   adding `class="m-image"`
+-   removing metadata and the background layer

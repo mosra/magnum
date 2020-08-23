@@ -30,7 +30,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/GenerateIndices.h"
 #include "Magnum/Trade/MeshData.h"
 
@@ -58,10 +58,75 @@ struct GenerateIndicesTest: TestSuite::Tester {
     void generateTriangleFanIndicesWrongVertexCount();
     void generateTriangleFanIndicesIntoWrongSize();
 
+    template<class T> void generateQuadIndices();
+    template<class T> void generateQuadIndicesInto();
+    void generateQuadIndicesWrongIndexCount();
+    void generateQuadIndicesIndexOutOfBounds();
+    void generateQuadIndicesIntoWrongSize();
+
     void generateIndicesMeshData();
     void generateIndicesMeshDataMove();
     void generateIndicesMeshDataIndexed();
     void generateIndicesMeshDataInvalidPrimitive();
+};
+
+using namespace Math::Literals;
+
+const struct {
+    const char* name;
+    Matrix4 transformation;
+    UnsignedInt remap[4];
+    UnsignedInt expected[6*5];
+} QuadData[] {
+    {"", {}, {0, 1, 2, 3}, {
+        0, 2, 3, 0, 3, 4,           // ABC ACD
+        9, 5, 6, 9, 6, 7,           // DAB DBC
+        10, 11, 14, 10, 14, 15,     // ABC ACD
+        19, 16, 17, 19, 17, 18,     // DAB DBC
+        20, 21, 22, 20, 22, 23      // ABC ACD
+    }},
+    {"rotated indices 1", {}, {1, 2, 3, 0}, {
+        2, 3, 4, 2, 4, 0,           // BCD BDA (both splits are fine)
+        6, 7, 9, 6, 9, 5,           // BCD BDA
+        10, 11, 14, 10, 14, 15,     // ABC ACD
+        17, 18, 19, 17, 19, 16,     // BCD BDA
+        20, 21, 22, 20, 22, 23      // ABC ACD
+    }},
+    {"rotated indices 2", {}, {2, 3, 0, 1}, {
+        3, 4, 0, 3, 0, 2,           // CDA CAB
+        6, 7, 9, 6, 9, 5,           // BCD BDA
+        14, 15, 10, 14, 10, 11,     // CDA CAB
+        17, 18, 19, 17, 19, 16,     // BCD BDA
+        22, 23, 20, 22, 20, 21      // CDA CAB
+    }},
+    {"rotated indices 3", {}, {3, 0, 1, 2}, {
+        4, 0, 2, 4, 2, 3,           // DAB DBC (both splits are fine)
+        9, 5, 6, 9, 6, 7,           // DAB DBC
+        14, 15, 10, 14, 10, 11,     // CDA CAB
+        19, 16, 17, 19, 17, 18,     // DAB DBC
+        22, 23, 20, 22, 20, 21      // CDA CAB
+    }},
+    {"reversed indices", {}, {3, 2, 1, 0}, {
+        4, 3, 2, 4, 2, 0,           // DCB DBA (both splits are fine)
+        9, 7, 6, 9, 6, 5,           // DCB DBA
+        10, 15, 14, 10, 14, 11,     // ADC ACB
+        19, 18, 17, 19, 17, 16,     // DCB DBA
+        20, 23, 22, 20, 22, 21      // ADC ACB
+    }},
+    {"rotated positions", Matrix4::rotation(130.0_degf, Vector3{1.0f/Constants::sqrt3()}), {0, 1, 2, 3}, {
+        0, 2, 3, 0, 3, 4,           // ABC ACD
+        9, 5, 6, 9, 6, 7,           // DAB DBC
+        10, 11, 14, 10, 14, 15,     // ABC ACD
+        19, 16, 17, 19, 17, 18,     // DAB DBC
+        20, 21, 22, 20, 22, 23      // ABC ACD
+    }},
+    {"mirrored positions", Matrix4::scaling(Vector3::xScale(-1.0f)), {0, 1, 2, 3}, {
+        0, 2, 3, 0, 3, 4,           // ABC ACD
+        9, 5, 6, 9, 6, 7,           // DAB DBC
+        10, 11, 14, 10, 14, 15,     // ABC ACD
+        19, 16, 17, 19, 17, 18,     // DAB DBC
+        20, 21, 22, 20, 22, 23      // ABC ACD
+    }}
 };
 
 const struct {
@@ -112,6 +177,19 @@ GenerateIndicesTest::GenerateIndicesTest() {
               &GenerateIndicesTest::generateTriangleFanIndices,
               &GenerateIndicesTest::generateTriangleFanIndicesWrongVertexCount,
               &GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize});
+
+    addInstancedTests<GenerateIndicesTest>({
+        &GenerateIndicesTest::generateQuadIndices<UnsignedInt>,
+        &GenerateIndicesTest::generateQuadIndices<UnsignedShort>,
+        &GenerateIndicesTest::generateQuadIndices<UnsignedByte>},
+        Containers::arraySize(QuadData));
+
+    addTests({&GenerateIndicesTest::generateQuadIndicesInto<UnsignedInt>,
+              &GenerateIndicesTest::generateQuadIndicesInto<UnsignedShort>,
+              &GenerateIndicesTest::generateQuadIndicesInto<UnsignedByte>,
+              &GenerateIndicesTest::generateQuadIndicesWrongIndexCount,
+              &GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds,
+              &GenerateIndicesTest::generateQuadIndicesIntoWrongSize});
 
     addInstancedTests({&GenerateIndicesTest::generateIndicesMeshData},
         Containers::arraySize(MeshDataData));
@@ -377,6 +455,152 @@ void GenerateIndicesTest::generateTriangleFanIndicesIntoWrongSize() {
     MeshTools::generateTriangleFanIndicesInto(5, indices);
     CORRADE_COMPARE(out.str(),
         "MeshTools::generateTriangleFanIndicesInto(): bad output size, expected 9 but got 8\n");
+}
+
+constexpr Vector3 QuadPositions[] {
+    /*
+        D    C
+                        -> ABC ACD (trivial case)
+        A    B
+    */
+    {0.0f, 0.0f, 0.0f}, {},     // 0
+    {1.0f, 0.0f, 0.0f},         // 2
+    {1.0f, 1.0f, 0.0f},         // 3
+    {0.0f, 1.0f, 0.0f},         // 4
+
+    /*
+             D
+        A         C     -> DAB DBC (shorter diagonal)
+             B
+    */
+    { 0.0f, 0.0f, 1.0f},        // 5
+    { 5.0f, 0.0f, 0.0f},        // 6
+    {10.0f, 0.0f, 1.0f}, {},    // 7
+    { 5.0f, 0.0f, 2.0f},        // 9
+
+    /*
+                D
+        A     C         -> ABC ACD (concave)
+                B
+    */
+    {0.0f, 0.5f, 0.0f},         // 10
+    {5.0f, 0.0f, 0.0f}, {}, {}, // 11
+    {4.0f, 0.5f, 0.0f},         // 14
+    {5.0f, 1.0f, 0.0f},         // 15
+
+    /*
+                C
+        D     B         -> DAB DBC (concave, non-planar)
+                A
+    */
+    {5.0f, 0.0f, 0.5f},         // 16
+    {4.0f, 0.5f, 1.0f},         // 17
+    {5.0f, 1.0f, 0.5f},         // 18
+    {0.0f, 0.5f, 1.0f},         // 19
+
+    /*
+                C
+        D     B         -> ABC ACD (concave, non-planar, ambiguous -> picking
+                A                   shorter diagonal)
+    */
+    {5.0f, 0.0f, 0.5f},         // 20
+    {4.0f, 0.5f, 2.0f},         // 21
+    {5.0f, 1.0f, 0.5f},         // 22
+    {0.0f, 0.5f, 1.0f},         // 23
+};
+
+constexpr UnsignedInt QuadIndices[] {
+    0, 2, 3, 4,
+    5, 6, 7, 9,
+    10, 11, 14, 15,
+    16, 17, 18, 19,
+    20, 21, 22, 23
+};
+
+template<class T> void GenerateIndicesTest::generateQuadIndices() {
+    auto&& data = QuadData[testCaseInstanceId()];
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+    setTestCaseDescription(data.name);
+
+    Vector3 transformedPositions[Containers::arraySize(QuadPositions)];
+    for(std::size_t i = 0; i != Containers::arraySize(QuadPositions); ++i)
+        transformedPositions[i] = data.transformation.transformPoint(QuadPositions[i]);
+
+    T remappedIndices[Containers::arraySize(QuadIndices)];
+    for(std::size_t i = 0; i != Containers::arraySize(QuadIndices)/4; ++i)
+        for(std::size_t j = 0; j != 4; ++j)
+            remappedIndices[i*4 + j] = QuadIndices[i*4 + data.remap[j]];
+
+    Containers::Array<UnsignedInt> triangleIndices =
+    MeshTools::generateQuadIndices(transformedPositions, remappedIndices);
+
+    CORRADE_COMPARE_AS(Containers::arrayView(triangleIndices), Containers::arrayView(data.expected), TestSuite::Compare::Container);
+}
+
+template<class T> void GenerateIndicesTest::generateQuadIndicesInto() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    /* Simpler variant of the above w/o data transformations just to verify
+       everything is passed through as expected */
+
+    T indices[Containers::arraySize(QuadIndices)];
+    for(std::size_t i = 0; i != Containers::arraySize(QuadIndices); ++i)
+        indices[i] = QuadIndices[i];
+
+    T triangleIndices[Containers::arraySize(QuadIndices)*6/4];
+    MeshTools::generateQuadIndicesInto(QuadPositions, indices, triangleIndices);
+
+    CORRADE_COMPARE_AS(Containers::arrayView(triangleIndices), Containers::arrayView<T>({
+        0, 2, 3, 0, 3, 4,           // ABC ACD
+        9, 5, 6, 9, 6, 7,           // DAB DBC
+        10, 11, 14, 10, 14, 15,     // ABC ACD
+        19, 16, 17, 19, 17, 18,     // DAB DBC
+        20, 21, 22, 20, 22, 23      // ABC ACD
+    }), TestSuite::Compare::Container);
+}
+
+void GenerateIndicesTest::generateQuadIndicesWrongIndexCount() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    UnsignedInt quads[13];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateQuadIndices({}, quads);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateQuadIndicesInto(): quad index count 13 not divisible by 4\n");
+}
+
+void GenerateIndicesTest::generateQuadIndicesIndexOutOfBounds() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    UnsignedInt quads[]{5, 4, 6, 7};
+    Vector3 positions[7];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateQuadIndices(positions, quads);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateQuadIndicesInto(): index 7 out of bounds for 7 elements\n");
+}
+
+void GenerateIndicesTest::generateQuadIndicesIntoWrongSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    UnsignedInt quads[12];
+    UnsignedInt output[19];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::generateQuadIndicesInto({}, quads, output);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::generateQuadIndicesInto(): bad output size, expected 18 but got 19\n");
 }
 
 void GenerateIndicesTest::generateIndicesMeshData() {
