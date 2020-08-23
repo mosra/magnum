@@ -41,6 +41,11 @@ parallel or antiparallel and length of @cpp 1 @ce when two *normalized* vectors
 are perpendicular. @f[
     \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
 @f]
+
+If @f$ \boldsymbol{a} @f$, @f$ \boldsymbol{b} @f$ and @f$ \boldsymbol{c} @f$
+are corners of a triangle in a counterclockwise order,
+@f$ (\boldsymbol{c} - \boldsymbol{b}) \times (\boldsymbol{a} - \boldsymbol{b}) @f$
+gives the direction of its normal.
 @see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
