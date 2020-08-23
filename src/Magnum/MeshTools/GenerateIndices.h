@@ -213,8 +213,11 @@ MAGNUM_MESHTOOLS_EXPORT void generateQuadIndicesInto(const Containers::StridedAr
 
 Expects that @p mesh is not indexed and is one of
 @ref MeshPrimitive::LineStrip, @ref MeshPrimitive::LineLoop,
-@ref MeshPrimitive::TriangleStrip, @ref MeshPrimitive::TriangleFan primitives.
-If your mesh is indexed, call @ref duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
+@ref MeshPrimitive::TriangleStrip, @ref MeshPrimitive::TriangleFan primitives,
+calling one of @ref generateLineStripIndices(), @ref generateLineLoopIndices(),
+@ref generateTriangleStripIndices() or @ref generateTriangleFanIndices()
+functions to generate the index buffer. If your mesh is indexed, call
+@ref duplicate(const Trade::MeshData& data, Containers::ArrayView<const Trade::MeshAttributeData>)
 on it first.
 
 The resulting mesh always has @ref MeshIndexType::UnsignedInt, call

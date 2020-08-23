@@ -54,7 +54,8 @@ Example usage:
 @snippet MagnumMeshTools.cpp generateFlatNormals
 
 @see @ref generateFlatNormalsInto(), @ref generateSmoothNormals(),
-    @ref MeshTools::CompileFlag::GenerateFlatNormals
+    @ref MeshTools::CompileFlag::GenerateFlatNormals,
+    @ref Math::cross(const Vector3<T>&, const Vector3<T>&)
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions);
 
