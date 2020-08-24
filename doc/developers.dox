@@ -244,6 +244,23 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 In order to remove a plugin interface, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first".
 
+@section developers-plugin-interface-updating Checklist for updating a plugin interface
+
+When updating a plugin interface, the interface string (and thus also the
+interface string in all plugin implementations) should be updated if any of the
+following cases apply:
+
+-   Bump major version if the plugin usage changes significantly (and thus most
+    user code changes as well), for example when renaming a "open file" method
+-   Bump only the minor version if signature of some methods change,
+    potentially requiring changes in user code, for example when porting from
+    @ref std::string to @ref Containers::StringView
+-   Bump only the patch version if the change doesn't affect existing user code
+    but breaks ABI, for example when adding a new virtual function --- this is
+    mainly to prevent crashes when loading of plugins built against an older
+    interface. A rather exhaustive list of ABI-affecting changes is in the KDE
+    Community Wiki: https://community.kde.org/Policies/Binary_Compatibility_Issues_With_C%2B%2B
+
 @section developers-tool Checklist for adding / removing a tool
 
 @todoc write
