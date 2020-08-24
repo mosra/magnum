@@ -206,9 +206,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         /**
          * @brief Plugin interface
          *
-         * @code{.cpp}
-         * "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"
-         * @endcode
+         * @snippet Magnum/Trade/AbstractImageConverter.cpp interface
          */
         static std::string pluginInterface();
 

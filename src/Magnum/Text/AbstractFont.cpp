@@ -43,7 +43,11 @@
 namespace Magnum { namespace Text {
 
 std::string AbstractFont::pluginInterface() {
-    return "cz.mosra.magnum.Text.AbstractFont/0.3";
+    return
+/* [interface] */
+"cz.mosra.magnum.Text.AbstractFont/0.3"
+/* [interface] */
+    ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

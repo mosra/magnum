@@ -123,9 +123,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Plugin interface
          *
-         * @code{.cpp}
-         * "cz.mosra.magnum.Audio.AbstractImporter/0.1"
-         * @endcode
+         * @snippet Magnum/Audio/AbstractImporter.cpp interface
          */
         static std::string pluginInterface();
 

@@ -336,9 +336,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Plugin interface
          *
-         * @code{.cpp}
-         * "cz.mosra.magnum.Trade.AbstractImporter/0.3.2"
-         * @endcode
+         * @snippet Magnum/Trade/AbstractImporter.cpp interface
          */
         static std::string pluginInterface();
 

@@ -41,7 +41,11 @@
 namespace Magnum { namespace Trade {
 
 std::string AbstractSceneConverter::pluginInterface() {
-    return "cz.mosra.magnum.Trade.AbstractSceneConverter/0.1";
+    return
+/* [interface] */
+"cz.mosra.magnum.Trade.AbstractSceneConverter/0.1"
+/* [interface] */
+    ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

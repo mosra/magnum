@@ -180,9 +180,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
         /**
          * @brief Plugin interface
          *
-         * @code{.cpp}
-         * "cz.mosra.magnum.Trade.AbstractSceneConverter/0.1"
-         * @endcode
+         * @snippet Magnum/Trade/AbstractSceneConverter.cpp interface
          */
         static std::string pluginInterface();
 

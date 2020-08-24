@@ -43,7 +43,11 @@
 namespace Magnum { namespace Trade {
 
 std::string AbstractImageConverter::pluginInterface() {
-    return "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1";
+    return
+/* [interface] */
+"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"
+/* [interface] */
+    ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

@@ -58,7 +58,11 @@ std::u32string uniqueUnicode(const std::string& characters)
 }
 
 std::string AbstractFontConverter::pluginInterface() {
-    return "cz.mosra.magnum.Text.AbstractFontConverter/0.2";
+    return
+/* [interface] */
+"cz.mosra.magnum.Text.AbstractFontConverter/0.2"
+/* [interface] */
+    ;
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

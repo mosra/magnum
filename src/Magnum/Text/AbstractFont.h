@@ -184,9 +184,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Plugin interface
          *
-         * @code{.cpp}
-         * "cz.mosra.magnum.Text.AbstractFont/0.3"
-         * @endcode
+         * @snippet Magnum/Text/AbstractFont.cpp interface
          */
         static std::string pluginInterface();
 
