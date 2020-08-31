@@ -1051,7 +1051,8 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref vertexCount() which returns count of elements in every
          * @ref attribute() array, and @ref attributeCount() which returns
          * count of different per-vertex attribute arrays.
-         * @see @ref isIndexed(), @ref indexType()
+         * @see @ref isIndexed(), @ref indexType(),
+         *      @ref MeshTools::primitiveCount(MeshPrimitive, UnsignedInt)
          */
         UnsignedInt indexCount() const;
 
@@ -1127,6 +1128,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * count of elements in the @ref indices() array, and
          * @ref attributeCount() which returns count of different per-vertex
          * attribute arrays.
+         * @see @ref MeshTools::primitiveCount(MeshPrimitive, UnsignedInt)
          */
         UnsignedInt vertexCount() const { return _vertexCount; }
 

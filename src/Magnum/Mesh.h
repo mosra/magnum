@@ -57,6 +57,8 @@ presence.
 For D3D, corresponds to @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY](https://docs.microsoft.com/en-us/windows/win32/api/d3dcommon/ne-d3dcommon-d3d_primitive_topology);
 for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://developer.apple.com/documentation/metal/mtlprimitivetype?language=objc).
 See documentation of each value for more information about the mapping.
+
+@see @ref MeshTools::primitiveCount(MeshPrimitive, UnsignedInt)
 */
 enum class MeshPrimitive: UnsignedInt {
     /* Zero reserved for an invalid type (but not being a named value) */
