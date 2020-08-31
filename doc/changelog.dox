@@ -248,6 +248,12 @@ See also:
     @cpp Trade::AbstractMaterialData @ce aliases to, doesn't have a
     @cpp virtual @ce destructor as subclasses with extra data members aren't a
     desired use case anymore.
+-   @ref Trade::AbstractImporter::doDefaultScene() is now @cpp const @ce ---
+    since the function is not expected to fail, no kind of complex lazy
+    population can be done anyway. This is now consistent with `do*Count()`
+    interfaces, which are also @cpp const @ce and can't fail. Documentation of
+    each function was expanded to suggest a recommended place for potential
+    error handling.
 
 @section changelog-2020-06 2020.06
 

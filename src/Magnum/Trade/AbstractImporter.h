@@ -537,11 +537,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * When there is more than one scene, returns ID of the default one.
          * If there is no default scene, returns @cpp -1 @ce. Expects that a
          * file is opened.
-         *
-         * @note The function is not const, because the value will probably
-         *      be lazy-populated.
          */
-        Int defaultScene();
+        Int defaultScene() const;
 
         /**
          * @brief Scene count
@@ -1475,9 +1472,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref defaultScene()
          *
-         * Default implementation returns @cpp -1 @ce.
+         * Default implementation returns @cpp -1 @ce. This function isn't
+         * expected to fail --- if an import error occus (for example because
+         * the default scene index is out of bounds), it should be handled
+         * already during file opening.
          */
-        virtual Int doDefaultScene();
+        virtual Int doDefaultScene() const;
 
         /**
          * @brief Implementation for @ref sceneCount()

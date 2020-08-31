@@ -165,7 +165,7 @@ Int AnySceneImporter::doAnimationForName(const std::string& name) { return _in->
 std::string AnySceneImporter::doAnimationName(const UnsignedInt id) { return _in->animationName(id); }
 Containers::Optional<AnimationData> AnySceneImporter::doAnimation(const UnsignedInt id) { return _in->animation(id); }
 
-Int AnySceneImporter::doDefaultScene() { return _in->defaultScene(); }
+Int AnySceneImporter::doDefaultScene() const { return _in->defaultScene(); }
 
 UnsignedInt AnySceneImporter::doSceneCount() const { return _in->sceneCount(); }
 Int AnySceneImporter::doSceneForName(const std::string& name) { return _in->sceneForName(name); }

@@ -1431,7 +1431,7 @@ void AbstractImporterTest::defaultScene() {
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
-        Int doDefaultScene() override { return 42; }
+        Int doDefaultScene() const override { return 42; }
     } importer;
 
     CORRADE_COMPARE(importer.defaultScene(), 42);
