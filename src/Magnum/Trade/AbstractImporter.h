@@ -1482,7 +1482,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref sceneCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doScene() (with correct scene count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doSceneCount() const;
 
@@ -1506,7 +1509,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref animationCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doAnimation() (with correct animation count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doAnimationCount() const;
 
@@ -1530,7 +1536,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref lightCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doLight() (with correct light count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doLightCount() const;
 
@@ -1554,7 +1563,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref cameraCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doCamera() (with correct camera count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doCameraCount() const;
 
@@ -1578,7 +1590,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref object2DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doObject2D() (with correct object count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doObject2DCount() const;
 
@@ -1602,7 +1617,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref object3DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doObject3D() (with correct object count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doObject3DCount() const;
 
@@ -1627,7 +1645,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref skin2DCount()
          * @m_since_latest
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doSkin2D() (with correct skin count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doSkin2DCount() const;
 
@@ -1657,7 +1678,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref skin3DCount()
          * @m_since_latest
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doSkin3D() (with correct skin count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doSkin3DCount() const;
 
@@ -1687,7 +1711,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref meshCount()
          * @m_since{2020,06}
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doMesh() (with correct mesh count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doMeshCount() const;
 
@@ -1860,7 +1887,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref materialCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doMaterial() (with correct material count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doMaterialCount() const;
 
@@ -1884,7 +1914,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref textureCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doTexture() (with correct texture count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doTextureCount() const;
 
@@ -1908,7 +1941,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image1DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doImage1D() (with correct image count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doImage1DCount() const;
 
@@ -1941,7 +1977,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image2DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doImage2D() (with correct image count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doImage2DCount() const;
 
@@ -1982,7 +2021,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref image3DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. This function isn't
+         * expected to fail --- if an import error occus, it should be handled
+         * preferrably during @ref doImage3D() (with correct image count
+         * reported), and if not possible, already during file opening.
          */
         virtual UnsignedInt doImage3DCount() const;
 
