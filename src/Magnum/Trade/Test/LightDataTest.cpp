@@ -59,12 +59,18 @@ const struct {
     Rad outerConeAngle;
     const char* message;
 } ConstructInvalidData[] {
+    {"invalid ambient attenuation", LightData::Type::Ambient,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
+        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(0, 0, 1)"},
     {"invalid directional attenuation", LightData::Type::Directional,
         {0.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
-        "attenuation has to be (1, 0, 0) for a directional light but got Vector(0, 0, 1)"},
+        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(0, 0, 1)"},
+    {"invalid ambient range", LightData::Type::Ambient,
+        {1.0f, 0.0f, 0.0f}, 2.0f, 360.0_degf, 360.0_degf,
+        "range has to be infinity for an ambient or directional light but got 2"},
     {"invalid directional range", LightData::Type::Directional,
         {1.0f, 0.0f, 0.0f}, 2.0f, 360.0_degf, 360.0_degf,
-        "range has to be infinity for a directional light but got 2"},
+        "range has to be infinity for an ambient or directional light but got 2"},
     {"invalid point angles", LightData::Type::Point,
         {0.0f, 0.0f, 1.0f}, Constants::inf(), 15.0_degf, 90.0_degf,
         "cone angles have to be 360° for lights that aren't spot but got Deg(15) and Deg(90)"},
@@ -256,6 +262,23 @@ void LightDataTest::constructRange() {
         CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
         CORRADE_COMPARE(data.importerState(), &a);
 
+    /* Implicit attenuation for an ambient + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Ambient,
+            0xccff33_rgbf, 0.8f,
+            Constants::inf(),
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Ambient);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 0.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
     /* Implicit attenuation for a directional + non-spot angles */
     } {
         int a;
@@ -320,6 +343,22 @@ void LightDataTest::constructNone() {
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
         CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation for an ambient + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Ambient,
+            0xccff33_rgbf, 0.8f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Ambient);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 0.0f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
