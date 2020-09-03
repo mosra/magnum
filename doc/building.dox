@@ -1024,7 +1024,7 @@ to make it available to depending projects.
     and more information about building your projects for iOS.
     @endparblock
 
-@subsection building-cross-android Crosscompiling for Android
+@subsection building-cross-android Cross-compiling for Android
 
 You will need [Android NDK](https://developer.android.com/ndk/) installed and
 configured and @ref building-corrade-cross-android "Corrade built for Android".
@@ -1032,7 +1032,7 @@ The guide assumes NDK r19+ with unified Clang toolchain, which in turn requires
 at least CMake 3.16.
 
 Create a build directory and run `cmake` and the build command in it. Set
-`CMAKE_SYSTEM_NAME` to `Android` to enable the crosscompilation,
+`CMAKE_SYSTEM_NAME` to `Android` to enable the cross-compilation,
 `CMAKE_ANDROID_STL_TYPE` to use libc++, `CMAKE_SYSTEM_VERSION` to minimal API version level you wish to use and `CMAKE_ANDROID_ARCH_ABI` to target platform
 ABI. Check the [CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
 for further information. You can omit specifying `CORRADE_RC_EXECUTABLE` if
