@@ -103,6 +103,7 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderObjectId();
     #endif
 
+    void renderLowLightAngle();
     void renderZeroLights();
 
     void renderInstanced();
@@ -379,7 +380,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderObjectIdTeardown);
     #endif
 
-    addTests({&PhongGLTest::renderZeroLights},
+    addTests({&PhongGLTest::renderLowLightAngle,
+              &PhongGLTest::renderZeroLights},
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown
@@ -1326,6 +1328,47 @@ void PhongGLTest::renderObjectId() {
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], data.expected);
 }
 #endif
+
+void PhongGLTest::renderLowLightAngle() {
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
+
+    Matrix4 transformation =
+        Matrix4::translation({0.0f, 0.0f, -2.0f})*
+        Matrix4::rotationX(-75.0_degf)*
+        Matrix4::scaling(Vector3::yScale(10.0f));
+
+    /* The light position is at the camera location, so the most light should
+       be there and not at some other place. This is a repro case for a bug
+       where lightDirection = normalize(lightPosition - transformedPosition)
+       in the vertex shader, where the incorrect normalization caused the
+       fragment-interpolated light direction being incorrect, most visible with
+       long polygons and low light angles. */
+    Phong{{}, 1}
+        .setLightPosition({0.0f, 0.1f, 0.0f})
+        .setShininess(200)
+        .setTransformationMatrix(transformation)
+        .setNormalMatrix(transformation.normalMatrix())
+        .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
+        .draw(plane);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(_testDir, "PhongTestFiles/low-light-angle.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
 
 void PhongGLTest::renderZeroLights() {
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);

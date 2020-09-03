@@ -221,6 +221,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/defaults.tga
             PhongTestFiles/instanced.tga
             PhongTestFiles/instanced-normal.tga
+            PhongTestFiles/low-light-angle.tga
             PhongTestFiles/shininess-black-specular.tga
             PhongTestFiles/shininess0-overflow.tga
             PhongTestFiles/shininess0.tga
