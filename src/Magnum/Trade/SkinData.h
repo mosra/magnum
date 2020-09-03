@@ -132,7 +132,8 @@ template<UnsignedInt dimensions> class SkinData {
            implementations. */
         friend AbstractImporter;
 
-        /** @todo skeleton object ID? gltf has that but the use is unclear */
+        /** @todo skeleton object ID? gltf has that but the use is unclear,
+            this might help: https://github.com/KhronosGroup/glTF/pull/1747 */
         Containers::Array<UnsignedInt> _jointData;
         Containers::Array<MatrixTypeFor<dimensions, Float>> _inverseBindMatrixData;
         const void* _importerState;
