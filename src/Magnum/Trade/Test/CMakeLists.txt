@@ -50,7 +50,7 @@ corrade_add_test(TradeAnimationDataTest AnimationDataTest.cpp LIBRARIES MagnumTr
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeDataTest DataTest.cpp LIBRARIES MagnumTrade)
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTradeTestLib)
-corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeMeshDataTest MeshDataTest.cpp LIBRARIES MagnumTradeTestLib)
 corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTradeTestLib)

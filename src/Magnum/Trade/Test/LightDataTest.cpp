@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Trade/LightData.h"
 
@@ -35,62 +36,363 @@ struct LightDataTest: TestSuite::Tester {
     explicit LightDataTest();
 
     void construct();
+    void constructAttenuation();
+    void constructRange();
+    void constructNone();
+
+    void constructInvalid();
+
     void constructCopy();
     void constructMove();
 
     void debugType();
 };
 
+using namespace Math::Literals;
+
+const struct {
+    const char* name;
+    LightData::Type type;
+    Vector3 attenuation;
+    Float range;
+    Rad innerConeAngle;
+    Rad outerConeAngle;
+    const char* message;
+} ConstructInvalidData[] {
+    {"invalid directional attenuation", LightData::Type::Directional,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
+        "attenuation has to be (1, 0, 0) for a directional light but got Vector(0, 0, 1)"},
+    {"invalid directional range", LightData::Type::Directional,
+        {1.0f, 0.0f, 0.0f}, 2.0f, 360.0_degf, 360.0_degf,
+        "range has to be infinity for a directional light but got 2"},
+    {"invalid point angles", LightData::Type::Point,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), 15.0_degf, 90.0_degf,
+        "cone angles have to be 360° for lights that aren't spot but got Deg(15) and Deg(90)"},
+    {"negative inner spot angle", LightData::Type::Spot,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), -1.0_degf, 90.0_degf,
+        "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(-1) and Deg(90)"},
+    {"too big outer spot angle", LightData::Type::Spot,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), 0.0_degf, 361.0_degf,
+        "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(0) and Deg(361)"},
+    {"inner spot angle larger than outer", LightData::Type::Spot,
+        {0.0f, 0.0f, 1.0f}, Constants::inf(), 35.0_degf, 30.0_degf,
+        "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(35) and Deg(30)"}
+};
+
 LightDataTest::LightDataTest() {
     addTests({&LightDataTest::construct,
-              &LightDataTest::constructCopy,
+              &LightDataTest::constructAttenuation,
+              &LightDataTest::constructRange,
+              &LightDataTest::constructNone});
+
+    addInstancedTests({&LightDataTest::constructInvalid},
+        Containers::arraySize(ConstructInvalidData));
+
+    addTests({&LightDataTest::constructCopy,
               &LightDataTest::constructMove,
 
               &LightDataTest::debugType});
 }
 
 void LightDataTest::construct() {
-    using namespace Math::Literals;
-    const int a{};
-    LightData data{LightData::Type::Infinite, 0xccff33_rgbf, 0.8f, &a};
+    {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f}, 15.0f,
+            15.0_degf, 35.0_degf,
+            &a};
 
-    CORRADE_COMPARE(data.type(), LightData::Type::Infinite);
-    CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
-    CORRADE_COMPARE(data.intensity(), 0.8f);
-    CORRADE_COMPARE(data.importerState(), &a);
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f}, 15.0f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Point,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f}, 15.0f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Point);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+    }
+}
+
+void LightDataTest::constructAttenuation() {
+    /* Implicit range */
+    {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f},
+            15.0_degf, 35.0_degf,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit range + spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f},
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit range + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Point,
+            0xccff33_rgbf, 0.8f,
+            {0.1f, 0.5f, 0.7f},
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Point);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+    }
+}
+
+void LightDataTest::constructRange() {
+    /* Implicit attenuation for a spot */
+    {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            15.0f,
+            15.0_degf, 35.0_degf,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation for a spot + spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            15.0f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation for a point + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Point,
+            0xccff33_rgbf, 0.8f,
+            15.0f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Point);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), 15.0f);
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation for a directional + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Directional,
+            0xccff33_rgbf, 0.8f,
+            Constants::inf(),
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Directional);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 0.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+    }
+}
+
+void LightDataTest::constructNone() {
+    /* Implicit attenuation + range for a spot */
+    {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            15.0_degf, 35.0_degf,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation + range for a spot + spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Spot,
+            0xccff33_rgbf, 0.8f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Spot);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation + range for a point + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Point,
+            0xccff33_rgbf, 0.8f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Point);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+
+    /* Implicit attenuation for a directional + non-spot angles */
+    } {
+        int a;
+        LightData data{LightData::Type::Directional,
+            0xccff33_rgbf, 0.8f,
+            &a};
+
+        CORRADE_COMPARE(data.type(), LightData::Type::Directional);
+        CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
+        CORRADE_COMPARE(data.intensity(), 0.8f);
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 0.0f}));
+        CORRADE_COMPARE(data.range(), Constants::inf());
+        CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
+        CORRADE_COMPARE(data.importerState(), &a);
+    }
+}
+
+void LightDataTest::constructInvalid() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    auto&& data = ConstructInvalidData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    LightData{data.type, {}, {}, data.attenuation, data.range, data.innerConeAngle, data.outerConeAngle};
+    CORRADE_COMPARE(out.str(), Utility::formatString("Trade::LightData: {}\n", data.message));
 }
 
 void LightDataTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<LightData, const LightData&>{}));
     CORRADE_VERIFY(!(std::is_assignable<LightData, const LightData&>{}));
-
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<LightData>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<LightData>::value);
 }
 
 void LightDataTest::constructMove() {
-    using namespace Math::Literals;
-    const int a{};
-    LightData data{LightData::Type::Infinite, 0xccff33_rgbf, 0.8f, &a};
+    int state;
+    LightData a{LightData::Type::Spot,
+        0xccff33_rgbf, 0.8f,
+        {0.1f, 0.5f, 0.7f}, 15.0f,
+        15.0_degf, 35.0_degf,
+        &state};
 
-    CORRADE_COMPARE(data.type(), LightData::Type::Infinite);
-    CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
-    CORRADE_COMPARE(data.intensity(), 0.8f);
-    CORRADE_COMPARE(data.importerState(), &a);
-
-    LightData b{std::move(data)};
-    CORRADE_COMPARE(b.type(), LightData::Type::Infinite);
+    LightData b{std::move(a)};
+    CORRADE_COMPARE(b.type(), LightData::Type::Spot);
     CORRADE_COMPARE(b.color(), 0xccff33_rgbf);
     CORRADE_COMPARE(b.intensity(), 0.8f);
-    CORRADE_COMPARE(b.importerState(), &a);
+    CORRADE_COMPARE(b.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+    CORRADE_COMPARE(b.range(), 15.0f);
+    CORRADE_COMPARE(b.innerConeAngle(), 15.0_degf);
+    CORRADE_COMPARE(b.outerConeAngle(), 35.0_degf);
+    CORRADE_COMPARE(b.importerState(), &state);
 
-    const int c{};
-    LightData d{LightData::Type::Point, 0xdead00_rgbf, 1.6f, &c};
-    d = std::move(b);
-    CORRADE_COMPARE(d.type(), LightData::Type::Infinite);
-    CORRADE_COMPARE(d.color(), 0xccff33_rgbf);
-    CORRADE_COMPARE(d.intensity(), 0.8f);
-    CORRADE_COMPARE(d.importerState(), &a);
+    LightData c{{}, {}, {}};
+    c = std::move(a);
+    CORRADE_COMPARE(c.type(), LightData::Type::Spot);
+    CORRADE_COMPARE(c.color(), 0xccff33_rgbf);
+    CORRADE_COMPARE(c.intensity(), 0.8f);
+    CORRADE_COMPARE(c.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
+    CORRADE_COMPARE(c.range(), 15.0f);
+    CORRADE_COMPARE(c.innerConeAngle(), 15.0_degf);
+    CORRADE_COMPARE(c.outerConeAngle(), 35.0_degf);
+    CORRADE_COMPARE(c.importerState(), &state);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<LightData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<LightData>::value);
 }
 
 void LightDataTest::debugType() {

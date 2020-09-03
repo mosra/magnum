@@ -27,6 +27,40 @@
 
 namespace Magnum { namespace Trade {
 
+using namespace Math::Literals;
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const Float range, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: _type{type}, _color{color}, _intensity{intensity}, _attenuation{attenuation}, _range{range}, _innerConeAngle{innerConeAngle}, _outerConeAngle{outerConeAngle}, _importerState{importerState} {
+    CORRADE_ASSERT(_type != Type::Spot || (Deg(_innerConeAngle) >= 0.0_degf && _innerConeAngle <= _outerConeAngle && Deg(_outerConeAngle) <= 360.0_degf),
+        "Trade::LightData: spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got" << Deg(_innerConeAngle) << "and" << Deg(_outerConeAngle), );
+    CORRADE_ASSERT(_type == Type::Spot || (Math::equal(Deg(_innerConeAngle),360.0_degf) && Math::equal(Deg(_outerConeAngle), 360.0_degf)),
+        "Trade::LightData: cone angles have to be 360° for lights that aren't spot but got" << Deg(_innerConeAngle) << "and" << Deg(_outerConeAngle), );
+    CORRADE_ASSERT(_type != Type::Directional || (_attenuation == Vector3{1.0f, 0.0f, 0.0f}),
+        "Trade::LightData: attenuation has to be (1, 0, 0) for a directional light but got" << _attenuation, );
+    CORRADE_ASSERT(_type != Type::Directional || _range == Constants::inf(),
+        "Trade::LightData: range has to be infinity for a directional light but got" << _range, );
+}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const Float range, const void* const importerState) noexcept: LightData{type, color, intensity, attenuation, range,
+    type == Type::Spot ? 0.0_degf : 360.0_degf,
+    type == Type::Spot ? 45.0_degf : 360.0_degf,
+    importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity, attenuation, Constants::inf(), innerConeAngle, outerConeAngle, importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const void* const importerState) noexcept: LightData{type, color, intensity, attenuation, Constants::inf(), importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Float range, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity,
+    type == Type::Directional ? Vector3{1.0f, 0.0f, 0.0f} : Vector3{0.0f, 0.0f, 1.0f},
+    range, innerConeAngle, outerConeAngle, importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Float range, const void* const importerState) noexcept: LightData{type, color, intensity,
+    type == Type::Directional ? Vector3{1.0f, 0.0f, 0.0f} : Vector3{0.0f, 0.0f, 1.0f},
+    range, importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), innerConeAngle, outerConeAngle, importerState} {}
+
+LightData::LightData(const Type type, const Color3& color, const Float intensity, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), importerState} {}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const LightData::Type value) {
     debug << "Trade::LightData::Type" << Debug::nospace;
@@ -34,7 +68,7 @@ Debug& operator<<(Debug& debug, const LightData::Type value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case LightData::Type::value: return debug << "::" #value;
-        _c(Infinite)
+        _c(Directional)
         _c(Point)
         _c(Spot)
         #undef _c

@@ -99,6 +99,8 @@ See also:
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
     @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
+-   @ref Trade::LightData got extended to support light attenuation and range
+    parameters as well and spot light inner and outer angle
 
 @subsection changelog-latest-changes Changes and improvements
 
@@ -283,6 +285,10 @@ See also:
     interfaces, which are also @cpp const @ce and can't fail. Documentation of
     each function was expanded to suggest a recommended place for potential
     error handling.
+-   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
+    OpenGEX specification, is deprecated in favor of
+    @ref Trade::LightData::Type::Directional as that's the more commonly used
+    term
 
 @section changelog-2020-06 2020.06
 

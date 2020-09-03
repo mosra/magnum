@@ -40,6 +40,7 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
@@ -252,6 +253,30 @@ for(auto&& row: data.mutablePixels<Color3ub>())
     for(Color3ub& pixel: row)
         pixel = Math::gather<'b', 'g', 'r'>(pixel);
 /* [ImageData-usage-mutable] */
+}
+
+{
+/* [LightData-populating-range] */
+Trade::LightData data{Trade::LightData::Type::Point,
+    0xfff3d6_srgbf, 1.0f,
+    15.0f};
+/* [LightData-populating-range] */
+}
+
+{
+/* [LightData-populating-attenuation] */
+Trade::LightData data{Trade::LightData::Type::Spot,
+    0xf3d6ff_srgbf, 10.0f,
+    {0.01f, 0.5f, 2.0f},
+    25.0_degf, 55.0_degf};
+/* [LightData-populating-attenuation] */
+}
+
+{
+/* [LightData-populating-none] */
+Trade::LightData data{Trade::LightData::Type::Directional,
+    0xd6fff3_srgbf, 0.25f};
+/* [LightData-populating-none] */
 }
 
 {
