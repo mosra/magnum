@@ -257,8 +257,8 @@ for(auto&& row: data.mutablePixels<Color3ub>())
 {
 /* [MaterialAttributeData-name] */
 Trade::MaterialAttributeData a{
-    Trade::MaterialAttribute::DiffuseColor, 0x3bd267ff_rgbaf};
-Trade::MaterialAttributeData b{"DiffuseColor", 0x3bd267ff_rgbaf};
+    Trade::MaterialAttribute::DiffuseColor, 0x3bd267ff_srgbaf};
+Trade::MaterialAttributeData b{"DiffuseColor", 0x3bd267ff_srgbaf};
 /* [MaterialAttributeData-name] */
 }
 
@@ -271,7 +271,7 @@ Float roughness = data.attribute<Float>(Trade::MaterialAttribute::Roughness);
 
 // Optional access
 Color4 color = data.attributeOr(Trade::MaterialAttribute::BaseColor,
-                                0x3bd267ff_rgbaf);
+                                0x3bd267ff_srgbaf);
 if(Containers::Optional<UnsignedInt> texture =
    data.tryAttribute<UnsignedInt>(Trade::MaterialAttribute::BaseColorTexture))
 {
