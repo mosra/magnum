@@ -180,7 +180,7 @@ void main() {
 
     /* Direction to the light */
     for(int i = 0; i < LIGHT_COUNT; ++i)
-        lightDirections[i] = normalize(lightPositions[i] - transformedPosition);
+        lightDirections[i] = lightPositions[i] - transformedPosition;
 
     /* Direction to the camera */
     cameraDirection = -transformedPosition;
