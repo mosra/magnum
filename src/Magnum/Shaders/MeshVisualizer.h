@@ -527,7 +527,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer3D: public Implementation::MeshVisuali
          * @m_since{2020,06}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent4
+         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
          * attribute. Used only if @ref Flag::BitangentDirection is enabled.
          */
         typedef typename Generic3D::Bitangent Bitangent;
