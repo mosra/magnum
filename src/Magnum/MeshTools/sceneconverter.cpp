@@ -39,6 +39,7 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MaterialData.h"
 #include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
@@ -108,8 +109,8 @@ Arguments:
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 -   `--profile` --- measure import and conversion time
 
-If `--info` is given, the utility will print information about all meshes
-and images present in the file.
+If `--info` is given, the utility will print information about all lights,
+materials, meshes, images and textures present in the file.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -222,8 +223,8 @@ int main(int argc, char** argv) {
         })
         .setGlobalHelp(R"(Converts scenes of different formats.
 
-If --info is given, the utility will print information about all meshes and
-images present in the file.
+If --info is given, the utility will print information about all all lights,
+materials, meshes, images and textures present in the file.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -270,6 +271,13 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
             return 0;
         }
 
+        struct LightInfo {
+            UnsignedInt light;
+            UnsignedInt references;
+            Trade::LightData data{{}, {}, {}};
+            std::string name;
+        };
+
         struct MaterialInfo {
             UnsignedInt material;
             UnsignedInt references;
@@ -307,23 +315,49 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         /* Parse everything first to avoid errors interleaved with output */
 
         /* Scene properties. Currently just counting how much is each mesh /
-           material shared. Texture reference count is calculated when parsing
-           materials. */
+           light / material shared. Texture reference count is calculated when
+           parsing materials. */
         Containers::Array<UnsignedInt> materialReferenceCount{importer->materialCount()};
+        Containers::Array<UnsignedInt> lightReferenceCount{importer->lightCount()};
         Containers::Array<UnsignedInt> meshReferenceCount{importer->meshCount()};
         for(UnsignedInt i = 0; i != importer->object3DCount(); ++i) {
             Containers::Pointer<Trade::ObjectData3D> object = importer->object3D(i);
-            if(object && object->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
+            if(!object) continue;
+            if(object->instanceType() == Trade::ObjectInstanceType3D::Mesh) {
                 auto& meshObject = static_cast<Trade::MeshObjectData3D&>(*object);
                 if(std::size_t(meshObject.instance()) < meshReferenceCount.size())
                     ++meshReferenceCount[meshObject.instance()];
                 if(std::size_t(meshObject.material()) < materialReferenceCount.size())
                     ++materialReferenceCount[meshObject.material()];
+            } else if(object->instanceType() == Trade::ObjectInstanceType3D::Light) {
+                if(std::size_t(object->instance()) < lightReferenceCount.size())
+                    ++lightReferenceCount[object->instance()];
             }
         }
 
-        /* Material properties */
+        /* Light properties */
         bool error = false;
+        Containers::Array<LightInfo> lightInfos;
+        for(UnsignedInt i = 0; i != importer->lightCount(); ++i) {
+            Containers::Optional<Trade::LightData> light;
+            {
+                Duration d{importTime};
+                if(!(light = importer->light(i))) {
+                    error = true;
+                    continue;
+                }
+            }
+
+            LightInfo info{};
+            info.light = i;
+            info.name = importer->lightName(i);
+            info.references = lightReferenceCount[i];
+            info.data = *std::move(light);
+
+            arrayAppend(lightInfos, std::move(info));
+        }
+
+        /* Material properties */
         Containers::Array<MaterialInfo> materialInfos;
         Containers::Array<UnsignedInt> textureReferenceCount{importer->textureCount()};
         for(UnsignedInt i = 0; i != importer->materialCount(); ++i) {
@@ -468,6 +502,25 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         bool compactImages = false;
         Containers::Array<Trade::Implementation::ImageInfo> imageInfos =
             Trade::Implementation::imageInfo(*importer, error, compactImages);
+
+        for(const LightInfo& info: lightInfos) {
+            Debug d;
+            d << "Light" << info.light;
+            /* Print reference count only if there actually is a scene,
+               otherwise this information is useless */
+            if(importer->object3DCount())
+                d << Utility::formatString("(referenced by {} objects)", info.references);
+            d << Debug::nospace << ":";
+            if(!info.name.empty()) d << info.name;
+
+            d << Debug::newline << "  Type:" << info.data.type();
+            d << Debug::newline << "  Color:" << info.data.color();
+            d << Debug::newline << "  Intensity:" << info.data.intensity();
+            d << Debug::newline << "  Attenuation:" << info.data.attenuation();
+            d << Debug::newline << "  Range:" << info.data.range();
+            if(info.data.type() == Trade::LightData::Type::Spot)
+                d << Debug::newline << "  Cone angles:" << Deg(info.data.innerConeAngle()) << Deg(info.data.outerConeAngle());
+        }
 
         for(const MaterialInfo& info: materialInfos) {
             Debug d;
