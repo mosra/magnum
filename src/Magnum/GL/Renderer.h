@@ -395,7 +395,9 @@ class MAGNUM_GL_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_WEBGL
             /**
-             * Offset lines
+             * Offset lines. Note that this affects only filled polygons
+             * rendered with @ref setPolygonMode() set to
+             * @ref PolygonMode::Line, not actual line primitives.
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
              * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
@@ -409,7 +411,9 @@ class MAGNUM_GL_EXPORT Renderer {
             #endif
 
             /**
-             * Offset points
+             * Offset points. Note that this affects only filled polygons
+             * rendered with @ref setPolygonMode() set to
+             * @ref PolygonMode::Point, not actual point primitives.
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
              * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
