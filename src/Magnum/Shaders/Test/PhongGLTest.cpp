@@ -676,7 +676,7 @@ void PhongGLTest::renderColored() {
         .setSpecularColor(0x6666ff_rgbf)
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f))*
                                  Matrix4::rotationY(data.rotation))
-        .setNormalMatrix(Matrix4::rotationY(data.rotation).rotationScaling())
+        .setNormalMatrix(Matrix4::rotationY(data.rotation).normalMatrix())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .draw(sphere);
 
@@ -864,9 +864,8 @@ void PhongGLTest::renderTextured() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        /** @todo use normalMatrix() instead */
         .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).rotationScaling())
+            Matrix4::rotationX(15.0_degf)).normalMatrix())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .draw(sphere);
 
@@ -926,10 +925,9 @@ void PhongGLTest::renderTexturedNormal() {
             Matrix4::rotationZ(data.rotation)*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        /** @todo use normalMatrix() instead */
         .setNormalMatrix((Matrix4::rotationZ(data.rotation)*
             Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).rotationScaling())
+            Matrix4::rotationX(15.0_degf)).normalMatrix())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .setDiffuseColor(0x999999_rgbf);
 
@@ -1012,9 +1010,8 @@ template<class T> void PhongGLTest::renderVertexColor() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        /** @todo use normalMatrix() instead */
         .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).rotationScaling())
+            Matrix4::rotationX(15.0_degf)).normalMatrix())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .setAmbientColor(0x111111_rgbf)
         .setDiffuseColor(0x9999ff_rgbf)
@@ -1185,9 +1182,8 @@ void PhongGLTest::renderAlpha() {
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf))
-        /** @todo use normalMatrix() instead */
         .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
-            Matrix4::rotationX(15.0_degf)).rotationScaling())
+            Matrix4::rotationX(15.0_degf)).normalMatrix())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .setAmbientColor(data.ambientColor)
         .setDiffuseColor(data.diffuseColor)
