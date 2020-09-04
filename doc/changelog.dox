@@ -237,7 +237,7 @@ See also:
     / @ref std::vector to @ref Corrade::Containers::Pointer /
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
-    @ref Audio, @ref Trade and @ref Text librariess
+    @ref Audio, @ref Trade and @ref Text libraries
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
