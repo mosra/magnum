@@ -605,7 +605,17 @@ enum class MaterialAttribute: UnsignedInt {
      * @ref MaterialAttributeType::UnsignedInt.
      *
      * If @ref MaterialAttribute::NormalTextureScale is present as well, these
-     * two are multiplied together.
+     * two are multiplied together, affecting strength of the effect. The scale
+     * @f$ s @f$ multiplies the XY channels of a normal @f$ \boldsymbol{n}' @f$
+     * fetched from (usually) an unsigned normal texture
+     * @f$ \boldsymbol{t}_n @f$. The result is renormalized again after to form
+     * the final normal @f$ \boldsymbol{n} @f$: @f[
+     *      \begin{array}{rcl}
+     *          \boldsymbol{n}' & = & (2 \boldsymbol{t}_n - \boldsymbol{1}) (s, s, 1)^T \\
+     *          \boldsymbol{n}\phantom{'} & = & \frac{\boldsymbol{n}'}{|\boldsymbol{n}'|}
+     *      \end{array}
+     * @f]
+     *
      * @see @ref PhongMaterialData::normalTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::hasNormalRoughnessMetallicTexture(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTexture(),
@@ -616,7 +626,8 @@ enum class MaterialAttribute: UnsignedInt {
     /**
      * Normal texture scale, @ref MaterialAttributeType::Float.
      *
-     * Scales the texture defined by @ref MaterialAttribute::NormalTexture.
+     * Scales the texture defined by @ref MaterialAttribute::NormalTexture, see
+     * above for details.
      * @see @ref PhongMaterialData::normalTextureScale(),
      *      @ref PbrMetallicRoughnessMaterialData::normalTextureScale(),
      *      @ref PbrSpecularGlossinessMaterialData::normalTextureScale(),
