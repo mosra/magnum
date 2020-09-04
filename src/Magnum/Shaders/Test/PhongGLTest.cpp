@@ -314,10 +314,10 @@ constexpr struct {
     {"diffuse + normal", "instanced-normal.tga", Phong::Flag::NormalTexture,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* AMD has one off pixel, llvmpipe more */
-        94.0f, 0.333f,
+        94.5f, 0.333f,
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage */
-        94.0f, 0.132f,
+        94.5f, 0.132f,
         #endif
         }
 };
@@ -1126,7 +1126,7 @@ void PhongGLTest::renderShininess() {
             Utility::Directory::join({_testDir, "PhongTestFiles", "shininess0-overflow.tga"}),
             /* The threshold = 0.001 case has a slight reddish tone on
                SwiftShader; ARM Mali has one pixel off */
-            (DebugTools::CompareImageToFile{_manager, 255.0f, 1.475f}));
+            (DebugTools::CompareImageToFile{_manager, 255.0f, 1.476f}));
     }
 }
 
@@ -1364,10 +1364,10 @@ void PhongGLTest::renderLowLightAngle() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    const Float maxThreshold = 63.0f, meanThreshold = 0.36f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    const Float maxThreshold = 63.0f, meanThreshold = 0.36f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */

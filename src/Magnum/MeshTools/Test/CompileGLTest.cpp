@@ -762,7 +762,7 @@ template<class T> void CompileGLTest::threeDimensions() {
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-flat.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.25f, 0.0079f}));
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0079f}));
     } else if(data.flags & Flag::GeneratedSmoothNormals) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
