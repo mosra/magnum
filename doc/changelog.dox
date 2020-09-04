@@ -73,6 +73,11 @@ See also:
 -   Added @ref MeshTools::generateQuadIndices() for quad triangulation
     including non-convex and non-planar quads
 
+@subsubsection changelog-latest-new-shaders Shaders library
+
+-   Added @ref Shaders::Phong::setNormalTextureScale(), consuming the recently
+    added @ref Trade::MaterialAttribute::NormalTextureScale material attribute
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::Object::move()
@@ -148,6 +153,9 @@ See also:
 -   @ref Shaders::Phong was normalizing light direction in vertex shader,
     causing the fragment-interpolated direction being incorrect with visible
     artifacts on long polygons under low light angle
+-   @ref Shaders::Phong wasn't normalizing normals coming from normal textures,
+    which may have caused slight artifacts due to limited precision of 8-bit
+    pixel formats
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

@@ -514,6 +514,24 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Phong& bindDiffuseTexture(GL::Texture2D& texture);
 
         /**
+         * @brief Set normal texture scale
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Affects strength of the normal mapping. Initial value is
+         * @cpp 1.0f @ce, meaning the normal texture is not changed in any way;
+         * a value of @cpp 0.0f @ce disables the normal texture effect
+         * altogether.
+         *
+         * Expects that the shader was created with @ref Flag::NormalTexture
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * normals don't contribute to the output in that case.
+         * @see @ref bindNormalTexture(),
+         *      @ref Trade::MaterialAttribute::NormalTextureScale
+         */
+        Phong& setNormalTextureScale(Float scale);
+
+        /**
          * @brief Bind a normal texture
          * @return Reference to self (for method chaining)
          * @m_since{2019,10}
@@ -521,8 +539,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::NormalTexture
          * enabled and the @ref Tangent attribute was supplied. If
          * @ref lightCount() is zero, this function is a no-op, as normals
-         * dosn't contribute to the output in that case.
-         * @see @ref bindTextures()
+         * don't contribute to the output in that case.
+         * @see @ref bindTextures(), @ref setNormalTextureScale()
          */
         Phong& bindNormalTexture(GL::Texture2D& texture);
 
@@ -743,12 +761,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             _diffuseColorUniform{5},
             _specularColorUniform{6},
             _shininessUniform{7},
-            _alphaMaskUniform{8};
+            _normalTextureScaleUniform{8},
+            _alphaMaskUniform{9};
             #ifndef MAGNUM_TARGET_GLES2
-            Int _objectIdUniform{9};
+            Int _objectIdUniform{10};
             #endif
-        Int _lightPositionsUniform{10},
-            _lightColorsUniform; /* 10 + lightCount, set in the constructor */
+        Int _lightPositionsUniform{11},
+            _lightColorsUniform; /* 11 + lightCount, set in the constructor */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */

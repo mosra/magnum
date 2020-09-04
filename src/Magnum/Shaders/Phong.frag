@@ -107,9 +107,20 @@ uniform mediump float shininess
     ;
 #endif
 
-#ifdef ALPHA_MASK
+#ifdef NORMAL_TEXTURE
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 8)
+#endif
+uniform mediump float normalTextureScale
+    #ifndef GL_ES
+    = 1.0
+    #endif
+    ;
+#endif
+
+#ifdef ALPHA_MASK
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 9)
 #endif
 uniform lowp float alphaMask
     #ifndef GL_ES
@@ -120,16 +131,16 @@ uniform lowp float alphaMask
 
 #ifdef OBJECT_ID
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 /* mediump is just 2^10, which might not be enough, this is 2^16 */
 uniform highp uint objectId; /* defaults to zero */
 #endif
 
 #if LIGHT_COUNT
-/* Needs to be last because it uses locations 10 + LIGHT_COUNT to
-   10 + 2*LIGHT_COUNT - 1. Location 10 is lightPositions. Also it can't be
-   specified as 10 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
+/* Needs to be last because it uses locations 11 + LIGHT_COUNT to
+   11 + 2*LIGHT_COUNT - 1. Location 11 is lightPositions. Also it can't be
+   specified as 11 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
 #endif
@@ -214,7 +225,7 @@ void main() {
                         normalizedTransformedTangent)),
         normalizedTransformedNormal
     );
-    normalizedTransformedNormal = tbn*(texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0));
+    normalizedTransformedNormal = tbn*(normalize((texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0))*vec3(normalTextureScale, normalTextureScale, 1.0)));
     #endif
 
     /* Add diffuse color for each light */

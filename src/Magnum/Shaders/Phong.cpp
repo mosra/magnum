@@ -178,6 +178,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
             _diffuseColorUniform = uniformLocation("diffuseColor");
             _specularColorUniform = uniformLocation("specularColor");
             _shininessUniform = uniformLocation("shininess");
+            if(flags & Flag::NormalTexture)
+                _normalTextureScaleUniform = uniformLocation("normalTextureScale");
             _lightPositionsUniform = uniformLocation("lightPositions");
             _lightColorsUniform = uniformLocation("lightColors");
         }
@@ -210,6 +212,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         setDiffuseColor(Magnum::Color4{1.0f});
         setSpecularColor(Magnum::Color4{1.0f, 0.0f});
         setShininess(80.0f);
+        if(flags & Flag::NormalTexture)
+            setNormalTextureScale(1.0f);
         setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
         /* Light position is zero by default */
         setNormalMatrix({});
@@ -272,6 +276,13 @@ Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::T
 
 Phong& Phong::setShininess(Float shininess) {
     if(_lightCount) setUniform(_shininessUniform, shininess);
+    return *this;
+}
+
+Phong& Phong::setNormalTextureScale(const Float scale) {
+    CORRADE_ASSERT(_flags & Flag::NormalTexture,
+        "Shaders::Phong::setNormalTextureScale(): the shader was not created with normal texture enabled", *this);
+    if(_lightCount) setUniform(_normalTextureScaleUniform, scale);
     return *this;
 }
 

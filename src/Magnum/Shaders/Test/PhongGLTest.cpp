@@ -206,13 +206,17 @@ const struct {
 /* MSVC 2015 doesn't like constexpr here due to the angles */
 const struct {
     const char* name;
+    const char* expected;
     bool multiBind;
     Deg rotation;
+    Float scale;
 } RenderTexturedNormalData[]{
-    {"", false, {}},
-    {"multi bind", true, {}},
-    {"rotated 90°", false, 90.0_degf},
-    {"rotated -90°", false, -90.0_degf}
+    {"", "textured-normal.tga", false, {}, 1.0f},
+    {"multi bind", "textured-normal.tga", true, {}, 1.0f},
+    {"rotated 90°", "textured-normal.tga", false, 90.0_degf, 1.0f},
+    {"rotated -90°", "textured-normal.tga", false, -90.0_degf, 1.0f},
+    {"0.5 scale", "textured-normal0.5.tga", false, {}, 0.5f},
+    {"0.0 scale", "textured-normal0.0.tga", false, {}, 0.0f}
 };
 
 const struct {
@@ -490,6 +494,7 @@ void PhongGLTest::bindTexturesNotEnabled() {
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
           .bindNormalTexture(texture)
+          .setNormalTextureScale(0.5f)
           .bindTextures(&texture, &texture, &texture, &texture);
 
     CORRADE_COMPARE(out.str(),
@@ -497,6 +502,7 @@ void PhongGLTest::bindTexturesNotEnabled() {
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
         "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled\n"
+        "Shaders::Phong::setNormalTextureScale(): the shader was not created with normal texture enabled\n"
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
 }
 
@@ -931,6 +937,10 @@ void PhongGLTest::renderTexturedNormal() {
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         .setDiffuseColor(0x999999_rgbf);
 
+    /* Verify the default is working properly */
+    if(data.scale != 1.0f)
+        shader.setNormalTextureScale(data.scale);
+
     if(data.multiBind)
         shader.bindTextures(nullptr, nullptr, nullptr, &normal);
     else
@@ -965,7 +975,7 @@ void PhongGLTest::renderTexturedNormal() {
     const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
-        Utility::Directory::join(_testDir, "PhongTestFiles/textured-normal.tga"),
+        Utility::Directory::join({_testDir, "PhongTestFiles", data.expected}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -1377,7 +1387,7 @@ void PhongGLTest::renderZeroLights() {
         Primitives::UVSphereFlag::TextureCoordinates));
 
     /* Enable also Object ID, if supported */
-    Phong::Flags flags = Phong::Flag::AmbientTexture|Phong::Flag::AlphaMask;
+    Phong::Flags flags = Phong::Flag::AmbientTexture|Phong::Flag::NormalTexture|Phong::Flag::AlphaMask;
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
@@ -1419,7 +1429,8 @@ void PhongGLTest::renderZeroLights() {
         .setNormalMatrix(Matrix3x3{Math::ZeroInit})
         .setDiffuseColor(0xfa9922_rgbf)
         .setSpecularColor(0xfa9922_rgbf)
-        .setShininess(0.2f);
+        .setShininess(0.2f)
+        .setNormalTextureScale(-0.3f);
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES

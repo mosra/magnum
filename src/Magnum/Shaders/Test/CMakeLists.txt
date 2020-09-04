@@ -234,6 +234,8 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/textured-diffuse.tga
             PhongTestFiles/textured-diffuse-transformed.tga
             PhongTestFiles/textured-normal.tga
+            PhongTestFiles/textured-normal0.0.tga
+            PhongTestFiles/textured-normal0.5.tga
             PhongTestFiles/textured-specular.tga
             PhongTestFiles/textured.tga
             PhongTestFiles/vertexColor.tga
