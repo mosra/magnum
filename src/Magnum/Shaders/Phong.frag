@@ -154,7 +154,12 @@ uniform lowp vec4 lightColors[LIGHT_COUNT]
 #if LIGHT_COUNT
 in mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
+#ifndef BITANGENT
+in mediump vec4 transformedTangent;
+#else
 in mediump vec3 transformedTangent;
+in mediump vec3 transformedBitangent;
+#endif
 #endif
 in highp vec3 lightDirections[LIGHT_COUNT];
 in highp vec3 cameraDirection;
@@ -218,11 +223,20 @@ void main() {
     /* Normal */
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
     #ifdef NORMAL_TEXTURE
+    #ifndef BITANGENT
+    mediump vec3 normalizedTransformedTangent = normalize(transformedTangent.xyz);
+    #else
     mediump vec3 normalizedTransformedTangent = normalize(transformedTangent);
+    mediump vec3 normalizedTransformedBitangent = normalize(transformedBitangent);
+    #endif
     mediump mat3 tbn = mat3(
         normalizedTransformedTangent,
+        #ifndef BITANGENT
         normalize(cross(normalizedTransformedNormal,
-                        normalizedTransformedTangent)),
+                        normalizedTransformedTangent)*transformedTangent.w),
+        #else
+        normalizedTransformedBitangent,
+        #endif
         normalizedTransformedNormal
     );
     normalizedTransformedNormal = tbn*(normalize((texture(normalTexture, interpolatedTextureCoordinates).rgb*2.0 - vec3(1.0))*vec3(normalTextureScale, normalTextureScale, 1.0)));

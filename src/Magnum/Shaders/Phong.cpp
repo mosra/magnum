@@ -98,6 +98,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
 
     vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture) ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+        .addSource(flags & Flag::Bitangent ? "#define BITANGENT\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::TextureTransformation ? "#define TEXTURE_TRANSFORMATION\n" : "")
         .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
@@ -112,6 +113,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+        .addSource(flags & Flag::Bitangent ? "#define BITANGENT\n" : "")
         .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
@@ -141,8 +143,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         bindAttributeLocation(Position::Location, "position");
         if(lightCount)
             bindAttributeLocation(Normal::Location, "normal");
-        if((flags & Flag::NormalTexture) && lightCount)
+        if((flags & Flag::NormalTexture) && lightCount) {
             bindAttributeLocation(Tangent::Location, "tangent");
+            if(flags & Flag::Bitangent)
+                bindAttributeLocation(Bitangent::Location, "bitangent");
+        }
         if(flags & Flag::VertexColor)
             bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
@@ -374,6 +379,7 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         _c(DiffuseTexture)
         _c(SpecularTexture)
         _c(NormalTexture)
+        _c(Bitangent)
         _c(AlphaMask)
         _c(VertexColor)
         _c(TextureTransformation)
@@ -396,6 +402,7 @@ Debug& operator<<(Debug& debug, const Phong::Flags value) {
         Phong::Flag::DiffuseTexture,
         Phong::Flag::SpecularTexture,
         Phong::Flag::NormalTexture,
+        Phong::Flag::Bitangent,
         Phong::Flag::AlphaMask,
         Phong::Flag::VertexColor,
         Phong::Flag::InstancedTextureOffset, /* Superset of TextureTransformation */

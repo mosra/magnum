@@ -95,7 +95,20 @@ in mediump vec3 normal;
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TANGENT_ATTRIBUTE_LOCATION)
 #endif
-in mediump vec3 tangent;
+in mediump
+    #ifndef BITANGENT
+    vec4
+    #else
+    vec3
+    #endif
+    tangent;
+#endif
+
+#ifdef BITANGENT
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = BITANGENT_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec3 bitangent;
 #endif
 #endif
 
@@ -148,7 +161,12 @@ in mediump vec2 instancedTextureOffset;
 #if LIGHT_COUNT
 out mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
+#ifndef BITANGENT
+out mediump vec4 transformedTangent;
+#else
 out mediump vec3 transformedTangent;
+out mediump vec3 transformedBitangent;
+#endif
 #endif
 out highp vec3 lightDirections[LIGHT_COUNT];
 out highp vec3 cameraDirection;
@@ -171,11 +189,24 @@ void main() {
         #endif
         normal;
     #ifdef NORMAL_TEXTURE
+    #ifndef BITANGENT
+    transformedTangent = vec4(normalMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedNormalMatrix*
+        #endif
+        tangent.xyz, tangent.w);
+    #else
     transformedTangent = normalMatrix*
         #ifdef INSTANCED_TRANSFORMATION
         instancedNormalMatrix*
         #endif
         tangent;
+    transformedBitangent = normalMatrix*
+        #ifdef INSTANCED_TRANSFORMATION
+        instancedNormalMatrix*
+        #endif
+        bitangent;
+    #endif
     #endif
 
     /* Direction to the light */

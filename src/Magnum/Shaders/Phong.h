@@ -100,6 +100,35 @@ diffuse part and then separate the alpha like this:
 
 @snippet MagnumShaders.cpp Phong-usage-alpha
 
+@section Shaders-Phong-normal-mapping Normal mapping
+
+If you want to use normal textures, enable @ref Flag::NormalTexture and call
+@ref bindNormalTexture(). In addition you need to supply per-vertex tangent and
+bitangent direction:
+
+-   either using a four-component @ref Tangent4 attribute, where the sign of
+    the fourth component defines handedness of tangent basis, as described in
+    @ref Trade::MeshAttribute::Tangent;
+-   or a using pair of three-component @ref Tangent and @ref Bitangent
+    attributes together with enabling @ref Flag::Bitangent
+
+If you supply just a three-component @ref Tangent attribute and no bitangents,
+the shader will implicitly assume the fourth component to be @cpp 1.0f @ce,
+forming a right-handed tangent space. This is a valid optimization when you
+have full control over the bitangent orientation, but won't work with general
+meshes.
+
+@m_class{m-note m-success}
+
+@par
+    You can also use the @ref MeshVisualizer3D shader to visualize and debug
+    per-vertex normal, tangent and binormal direction, among other things.
+
+The strength of the effect can be controlled by
+@ref setNormalTextureScale(). See
+@ref Trade::MaterialAttribute::NormalTextureScale for a description of the
+factor is used.
+
 @section Shaders-Phong-object-id Object ID output
 
 The shader supports writing object ID to the framebuffer for object picking or
@@ -177,10 +206,39 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute",
-         * @ref Magnum::Vector3 "Vector3", used only if
-         * @ref Flag::NormalTexture is set.
+         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * attribute. If only a three-component attribute is used and
+         * @ref Flag::Bitangent is not enabled, it's the same as if
+         * @ref Tangent4 was specified with the fourth component always being
+         * @cpp 1.0f @ce. Used only if @ref Flag::NormalTexture is set.
+         * @see @ref Shaders-Phong-normal-mapping
          */
         typedef Generic3D::Tangent Tangent;
+
+        /**
+         * @brief Tangent direction with a bitangent sign
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector4 "Vector4". Use either this or the @ref Tangent
+         * attribute. If @ref Flag::Bitangent is set, the fourth component is
+         * ignored and bitangents are taken from the @ref Bitangent attribute
+         * instead. Used only if @ref Flag::NormalTexture is set.
+         * @see @ref Shaders-Phong-normal-mapping
+         */
+        typedef typename Generic3D::Tangent4 Tangent4;
+
+        /**
+         * @brief Bitangent direction
+         * @m_since_latest
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3". Use either this or the @ref Tangent4
+         * attribute. Used only if both @ref Flag::NormalTexture and
+         * @ref Flag::Bitangent are set.
+         * @see @ref Shaders-Phong-normal-mapping
+         */
+        typedef typename Generic3D::Bitangent Bitangent;
 
         /**
          * @brief 2D texture coordinates
@@ -347,6 +405,15 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @m_since{2019,10}
              */
             VertexColor = 1 << 5,
+
+            /**
+             * Use the separate @ref Bitangent attribute for retrieving vertex
+             * bitangents. If this flag is not present, the last component of
+             * @ref Tangent4 is used to calculate bitangent direction. See
+             * @ref Shaders-Phong-normal-mapping for more information.
+             * @m_since_latest
+             */
+            Bitangent = 1 << 11,
 
             /**
              * Enable texture coordinate transformation. If this flag is set,

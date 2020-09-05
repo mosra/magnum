@@ -114,6 +114,16 @@ See also:
 -   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also materials
     and textures in `--info`
 
+@subsubsection changelog-latest-changes-shaders Shaders library
+
+-   In the original implementation of normal mapping in @ref Shaders::Phong,
+    there shader didn't provide a way to supply bitangent direction, forcing
+    users to patch normal maps. This is now possible using newly added
+    @ref Shaders::Phong::Tangent4, @ref Shaders::Phong::Bitangent attributes
+    and a @ref Shaders::Phong::Flag::Bitangent flag, implementing support for
+    both four-component tangents (used by glTF, for example) and separate
+    tangent and bitangent direction (used by Assimp).
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   Recognizing TIFF file header magic in @ref Trade::AnyImageImporter "AnyImageImporter"

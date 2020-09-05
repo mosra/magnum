@@ -145,6 +145,8 @@ constexpr struct {
     {"diffuse texture + texture transform", Phong::Flag::DiffuseTexture|Phong::Flag::TextureTransformation, 1},
     {"specular texture", Phong::Flag::SpecularTexture, 1},
     {"normal texture", Phong::Flag::NormalTexture, 1},
+    {"normal texture + separate bitangents", Phong::Flag::NormalTexture|Phong::Flag::Bitangent, 1},
+    {"separate bitangents alone", Phong::Flag::Bitangent, 1},
     {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 1},
     {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture, 1},
     {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
@@ -210,13 +212,52 @@ const struct {
     bool multiBind;
     Deg rotation;
     Float scale;
+    Vector4 tangent;
+    Vector3 bitangent;
+    Shaders::Phong::Tangent4::Components tangentComponents;
+    bool flipNormalY;
+    Shaders::Phong::Flags flags;
 } RenderTexturedNormalData[]{
-    {"", "textured-normal.tga", false, {}, 1.0f},
-    {"multi bind", "textured-normal.tga", true, {}, 1.0f},
-    {"rotated 90°", "textured-normal.tga", false, 90.0_degf, 1.0f},
-    {"rotated -90°", "textured-normal.tga", false, -90.0_degf, 1.0f},
-    {"0.5 scale", "textured-normal0.5.tga", false, {}, 0.5f},
-    {"0.0 scale", "textured-normal0.0.tga", false, {}, 0.0f}
+    {"", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"multi bind", "textured-normal.tga", true, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"rotated 90°", "textured-normal.tga", false, 90.0_degf, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"rotated -90°", "textured-normal.tga", false, -90.0_degf, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"0.5 scale", "textured-normal0.5.tga", false, {}, 0.5f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"0.0 scale", "textured-normal0.0.tga", false, {}, 0.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    /* The fourth component, if missing, gets automatically filled up to 1,
+       so this should work */
+    {"implicit bitangent direction", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 0.0f}, {},
+        Shaders::Phong::Tangent4::Components::Three, false, {}},
+    {"separate bitangents", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f},
+        Shaders::Phong::Tangent4::Components::Three, false,
+        Shaders::Phong::Flag::Bitangent},
+    {"right-handed, flipped Y", "textured-normal-left.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, true, {}},
+    {"left-handed", "textured-normal-left.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, -1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, false, {}},
+    {"left-handed, separate bitangents", "textured-normal-left.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
+        Shaders::Phong::Tangent4::Components::Three, false,
+        Shaders::Phong::Flag::Bitangent},
+    {"left-handed, flipped Y", "textured-normal.tga", false, {}, 1.0f,
+        {1.0f, 0.0f, 0.0f, -1.0f}, {},
+        Shaders::Phong::Tangent4::Components::Four, true, {}}
 };
 
 const struct {
@@ -903,9 +944,14 @@ void PhongGLTest::renderTexturedNormal() {
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
 
-    GL::Texture2D normal;
+    /* Normal texture. Flip normal Y, if requested */
     Containers::Optional<Trade::ImageData2D> image;
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "TestFiles/normal-texture.tga")) && (image = importer->image2D(0)));
+    if(data.flipNormalY) for(auto row: image->mutablePixels<Color3ub>())
+        for(Color3ub& pixel: row)
+            pixel.y() = 255 - pixel.y();
+
+    GL::Texture2D normal;
     normal.setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setWrapping(GL::SamplerWrapping::ClampToEdge)
@@ -914,16 +960,24 @@ void PhongGLTest::renderTexturedNormal() {
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid( Primitives::PlaneFlag::TextureCoordinates));
 
-    /* Add hardcoded tangents */
-    /** @todo remove once MeshData is sane */
+    /* Add tangents / bitangents of desired component count. Unused components
+       are set to zero to ensure the shader doesn't use them. */
+    const struct TangentBitangent {
+        Vector4 tangent;
+        Vector3 bitangent;
+    } tangentBitangent{data.tangent, data.bitangent};
     GL::Buffer tangents;
-    tangents.setData(Containers::Array<Vector3>{Containers::DirectInit, 4, Vector3::xAxis()});
-    plane.addVertexBuffer(std::move(tangents), 0, Shaders::Phong::Tangent{});
+    tangents.setData(Containers::Array<TangentBitangent>{Containers::DirectInit, 4, tangentBitangent});
+    plane.addVertexBuffer(tangents, 0, sizeof(TangentBitangent),
+        GL::DynamicAttribute{Shaders::Phong::Tangent4{data.tangentComponents}});
+    plane.addVertexBuffer(std::move(tangents), sizeof(Vector4),
+        sizeof(TangentBitangent),
+        GL::DynamicAttribute{Shaders::Phong::Bitangent{}});
 
     /* Rotating the view a few times (together with light positions). If the
        tangent transformation in the shader is correct, it should result in
        exactly the same images. */
-    Phong shader{Phong::Flag::NormalTexture, 2};
+    Phong shader{Phong::Flag::NormalTexture|data.flags, 2};
     shader.setLightPositions({
             Matrix4::rotationZ(data.rotation).transformPoint({-3.0f, -3.0f, 0.0f}),
             Matrix4::rotationZ(data.rotation).transformPoint({ 3.0f, -3.0f, 0.0f})})
