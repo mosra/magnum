@@ -30,6 +30,7 @@
 #endif
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -77,18 +78,16 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #ifndef MAGNUM_TARGET_GLES
     std::string lightInitializer;
     if(lightCount) {
+        using namespace Containers::Literals;
+
         /* Initializer for the light color array -- we need a list of vec4(1.0)
            joined by commas. For GLES we'll simply upload the values directly. */
-        constexpr const char lightInitializerPreamble[] = "#define LIGHT_COLOR_INITIALIZER ";
-        constexpr std::size_t lightInitializerPreambleSize =
-            Containers::arraySize(lightInitializerPreamble) - 1;
-        constexpr const char lightInitializerItem[] = "vec4(1.0), ";
-        constexpr std::size_t lightInitializerItemSize =
-            Containers::arraySize(lightInitializerItem) - 1;
-        lightInitializer.reserve(Containers::arraySize(lightInitializerPreamble) - 1 + lightCount*lightInitializerItemSize);
-        lightInitializer.append(lightInitializerPreamble, lightInitializerPreambleSize);
+        constexpr Containers::StringView lightInitializerPreamble = "#define LIGHT_COLOR_INITIALIZER "_s;
+        constexpr Containers::StringView lightInitializerItem = "vec4(1.0), "_s;
+        lightInitializer.reserve(lightInitializerPreamble.size() + lightCount*lightInitializerItem.size());
+        lightInitializer.append(lightInitializerPreamble.data(), lightInitializerPreamble.size());
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializer.append(lightInitializerItem, lightInitializerItemSize);
+            lightInitializer.append(lightInitializerItem.data(), lightInitializerItem.size());
 
         /* Drop the last comma and add a newline at the end */
         lightInitializer[lightInitializer.size() - 2] = '\n';
