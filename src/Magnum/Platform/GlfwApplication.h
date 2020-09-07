@@ -481,6 +481,8 @@ class GlfwApplication {
          * @note Available since GLFW 3.2. The function has no effect on macOS
          *      / Wayland, see @m_class{m-doc-external} [glfwSetWindowIcon()](https://www.glfw.org/docs/latest/group__window.html#gadd7ccd39fe7a7d1f0904666ae5932dc5)
          *      for more information.
+         * @see @ref platform-windows-icon "Excecutable icon on Windows",
+         *      @ref Trade::IcoImporter "IcoImporter"
          */
         void setWindowIcon(std::initializer_list<ImageView2D> images);
 

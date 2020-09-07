@@ -787,6 +787,8 @@ class Sdl2Application {
          *      have no effect on macOS / Wayland, similarly to how
          *      @ref GlfwApplication::setWindowIcon() behaves on those
          *      platforms.
+         * @see @ref platform-windows-icon "Excecutable icon on Windows",
+         *      @ref Trade::IcoImporter "IcoImporter"
          */
         void setWindowIcon(const ImageView2D& image);
         #endif
