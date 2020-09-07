@@ -73,6 +73,82 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Phong-usage-texture2
 
+@section Shaders-Phong-lights Light specification
+
+By default, the shader provides a single directional "fill" light, coming from
+the center of the camera. Using the @p lightCount parameter in constructor, you
+can specify how many lights you want, and then control light parameters using
+the following @ref setLightPositions(), @ref setLightColors() and
+@ref setLightRanges(). Light positions are specified as four-component vectors,
+the last component distinguishing between directional and point lights.
+
+<ul><li>
+Point lights are specified with camera-relative position and the last component
+set to @cpp 1.0f @ce together with @ref setLightRanges() describing the
+attenuation. The range corresponds to the @ref Trade::LightData::range() and
+the attenuation is calculated as the following --- see
+@ref Trade-LightData-attenuation for more information: @f[
+    F_{att} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{1 + d^2}
+@f]
+
+If you use @ref Constants::inf() as a range (which is also the default), the
+equation reduces down to a simple inverse square: @f[
+    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{1 + d^2} = \frac{1}{1 + d^2}
+@f]
+</li><li>
+Directional lights are specified with a camera-relative direction *to* the
+light with the last component set to @cpp 0.0f @ce --- which effectively makes
+@f$ d = 0 @f$ --- and are not affected by values from @ref setLightRanges() in
+any way: @f[
+    F_{att} = \lim_{d \to 0} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{1 \mathbin{\color{m-dim} +} {\color{m-dim} d^2}} = 1
+@f]
+</li></ul>
+
+Light color and intensity, corresponding to @ref Trade::LightData::color() and
+@ref Trade::LightData::intensity(), is meant to be multiplied together and
+passed to @ref setLightColors().
+
+The following example shows a three-light setup with one dim directional light
+shining from the top and two stronger but range-limited point lights:
+
+@snippet MagnumShaders.cpp Phong-usage-lights
+
+@subsection Shaders-Phong-lights-ambient Ambient lights
+
+In order to avoid redundant uniform inputs, there's no dedicated way to specify
+ambient lights. Instead, they are handled by the ambient color input, as the
+math for ambient color and lights is equivalent. Add the ambient colors
+together and reuse the diffuse texture in the @ref bindAmbientTexture() slot to
+have it affected by the ambient as well:
+
+@snippet MagnumShaders.cpp Phong-usage-lights-ambient
+
+@subsection Shaders-Phong-lights-zero Zero lights
+
+As a special case, creating this shader with zero lights makes its output
+equivalent to the @ref Flat3D shader --- only @ref setAmbientColor() and
+@ref bindAmbientTexture() (if @ref Flag::AmbientTexture is enabled) are taken
+into account, which corresponds to @ref Flat::setColor() and
+@ref Flat::bindTexture(). This is useful to reduce complexity in apps that
+render models with pre-baked lights. For instanced workflows using zero lights
+means the @ref NormalMatrix instance attribute doesn't need to be supplied
+either. In addition, enabling @ref Flag::VertexColor and using a default
+ambient color with no texturing makes this shader equivalent to
+@ref VertexColor.
+
+@see @ref Trade::MaterialType::Flat
+
+<b></b>
+
+@m_class{m-note m-dim}
+
+@par
+    Attenuation based on constant/linear/quadratic factors (the
+    @ref Trade::LightData::attenuation() property) and spot lights
+    (@ref Trade::LightData::innerConeAngle(),
+    @ref Trade::LightData::outerConeAngle() "outerConeAngle()") are not
+    implemented at the moment.
+
 @section Shaders-Phong-alpha Alpha blending and masking
 
 Alpha / transparency is supported by the shader implicitly, but to have it
@@ -168,18 +244,6 @@ well to ensure lighting works:
     in OpenGL ES 2.0.
 @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays} in WebGL
     1.0.
-
-@section Shaders-Phong-zero-lights Zero lights
-
-Creating this shader with zero lights makes its output equivalent to the
-@ref Flat3D shader --- only @ref setAmbientColor() and @ref bindAmbientTexture()
-(if @ref Flag::AmbientTexture is enabled) are taken into account, which
-correspond to @ref Flat::setColor() and @ref Flat::bindTexture(). This is
-useful to reduce complexity in apps that render models with pre-baked lights.
-For instanced workflows using zero lights means the @ref NormalMatrix instance
-attribute doesn't need to be supplied either. In addition, enabling
-@ref Flag::VertexColor and using a default ambient color with no texturing
-makes this shader equivalent to @ref VertexColor.
 
 @see @ref shaders
 */
@@ -544,7 +608,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * If @ref Flag::AmbientTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
-         * @see @ref bindAmbientTexture()
+         * @see @ref bindAmbientTexture(), @ref Shaders-Phong-lights-ambient
          */
         Phong& setAmbientColor(const Magnum::Color4& color);
 
@@ -554,7 +618,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * Expects that the shader was created with @ref Flag::AmbientTexture
          * enabled.
-         * @see @ref bindTextures(), @ref setAmbientColor()
+         * @see @ref bindTextures(), @ref setAmbientColor(),
+         *      @ref Shaders-Phong-lights-ambient
          */
         Phong& bindAmbientTexture(GL::Texture2D& texture);
 
@@ -740,40 +805,77 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Set light positions
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Initial values are zero vectors --- that will in most cases cause
-         * the object to be rendered black (or in the ambient color), as the
-         * lights are is inside of it. Expects that the size of the @p lights
-         * array is the same as @ref lightCount().
-         * @see @ref setLightPosition(UnsignedInt, const Vector3&),
-         *      @ref setLightPosition(const Vector3&)
+         * Depending on the fourth component, the value is treated as either a
+         *camera-relative position of a point light, if the fourth component is
+         * @cpp 1.0f @ce; or a direction *to* a directional light, if the
+         * fourth component is @cpp 0.0f @ce. Expects that the size of the
+         * @p positions array is the same as @ref lightCount(). Initial values
+         * are @cpp {0.0f, 0.0f, 1.0f, 0.0f} @ce --- a directional "fill" light
+         * coming from the camera.
+         * @see @ref Shaders-Phong-lights, @ref setLightPosition()
          */
-        Phong& setLightPositions(Containers::ArrayView<const Vector3> lights);
+        Phong& setLightPositions(Containers::ArrayView<const Vector4> positions);
 
-        /** @overload */
-        Phong& setLightPositions(std::initializer_list<Vector3> lights);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        Phong& setLightPositions(std::initializer_list<Vector4> positions);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setLightPositions(Containers::ArrayView<const Vector4>)
+         * @m_deprecated_since_latest Use @ref setLightPositions(Containers::ArrayView<const Vector4>)
+         *      instead. This function sets the fourth component to
+         *      @cpp 0.0f @ce to preserve the original behavior as close as
+         *      possible.
+         */
+        CORRADE_DEPRECATED("use setLightPositions(Containers::ArrayView<const Vector4>) instead") Phong& setLightPositions(Containers::ArrayView<const Vector3> positions);
+
+        /**
+         * @brief @copybrief setLightPositions(std::initializer_list<Vector4>)
+         * @m_deprecated_since_latest Use @ref setLightPositions(std::initializer_list<Vector4>)
+         *      instead. This function sets the fourth component to
+         *      @cpp 0.0f @ce to preserve the original behavior as close as
+         *      possible.
+         */
+        CORRADE_DEPRECATED("use setLightPositions(std::initializer_list<Vector4>) instead") Phong& setLightPositions(std::initializer_list<Vector3> positions);
+        #endif
 
         /**
          * @brief Set position for given light
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Unlike @ref setLightPosition() updates just a single light position.
-         * Expects that @p id is less than @ref lightCount().
-         * @see @ref setLightPosition(const Vector3&)
+         * Unlike @ref setLightPositions() updates just a single light
+         * position. If updating more than one light, prefer the batch function
+         * instead to reduce the count of GL API calls. Expects that @p id is
+         * less than @ref lightCount().
          */
-        Phong& setLightPosition(UnsignedInt id, const Vector3& position);
+        Phong& setLightPosition(UnsignedInt id, const Vector4& position);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setLightPosition(UnsignedInt, const Vector4&)
+         * @m_deprecated_since_latest Use @ref setLightPosition(UnsignedInt, const Vector4&)
+         *      instead. This function sets the fourth component to
+         *      @cpp 0.0f @ce to preserve the original behavior as close as
+         *      possible.
+         */
+        CORRADE_DEPRECATED("use setLightPosition(UnsignedInt, const Vector4&) instead") Phong& setLightPosition(UnsignedInt id, const Vector3& position);
 
         /**
          * @brief Set light position
-         * @return Reference to self (for method chaining)
-         *
-         * Convenience alternative to @ref setLightPositions() when there is
-         * just one light.
-         * @see @ref setLightPosition(UnsignedInt, const Vector3&)
+         * @m_deprecated_since_latest Use @ref setLightPositions(std::initializer_list<Vector4>)
+         *      with a single item instead --- it's short enough to not warrant
+         *      the existence of a dedicated overload. This function sets the
+         *      fourth component to @cpp 0.0f @ce to preserve the original
+         *      behavior as close as possible.
          */
-        Phong& setLightPosition(const Vector3& position) {
-            return setLightPositions({&position, 1});
-        }
+        CORRADE_DEPRECATED("use setLightPositions(std::initializer_list<Vector4>) instead") Phong& setLightPosition(const Vector3& position);
+        #endif
 
         /**
          * @brief Set light colors
@@ -809,6 +911,35 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             return setLightColors({&color, 1});
         }
 
+        /**
+         * @brief Set light attenuation ranges
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Initial values are @ref Constants::inf(). Expects that the size of
+         * the @p ranges array is the same as @ref lightCount().
+         * @see @ref Shaders-Phong-lights, @ref setLightRange()
+         */
+        Phong& setLightRanges(Containers::ArrayView<const Float> ranges);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        Phong& setLightRanges(std::initializer_list<Float> ranges);
+
+        /**
+         * @brief Set attenuation range for given light
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setLightRanges() updates just a single light range. If
+         * updating more than one light, prefer the batch function instead to
+         * reduce the count of GL API calls. Expects that @p id is less than
+         * @ref lightCount().
+         */
+        Phong& setLightRange(UnsignedInt id, Float range);
+
     private:
         /* Prevent accidentally calling irrelevant functions */
         #ifndef MAGNUM_TARGET_GLES
@@ -834,7 +965,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             Int _objectIdUniform{10};
             #endif
         Int _lightPositionsUniform{11},
-            _lightColorsUniform; /* 11 + lightCount, set in the constructor */
+            _lightColorsUniform, /* 11 + lightCount, set in the constructor */
+            _lightRangesUniform; /* 11 + 2*lightCount, set in the constructor */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */

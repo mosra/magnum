@@ -25,7 +25,7 @@
 
 #include "Phong.h"
 
-#ifdef MAGNUM_TARGET_GLES
+#if defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_BUILD_DEPRECATED)
 #include <Corrade/Containers/Array.h>
 #endif
 #include <Corrade/Containers/EnumSet.hpp>
@@ -55,7 +55,7 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)} {
+Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _lightRangesUniform{_lightPositionsUniform + 2*Int(lightCount)} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Shaders::Phong: texture transformation enabled but the shader is not textured", );
 
@@ -76,22 +76,53 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     #ifndef MAGNUM_TARGET_GLES
-    std::string lightInitializer;
+    std::string lightInitializerVertex, lightInitializerFragment;
     if(lightCount) {
         using namespace Containers::Literals;
 
-        /* Initializer for the light color array -- we need a list of vec4(1.0)
-           joined by commas. For GLES we'll simply upload the values directly. */
-        constexpr Containers::StringView lightInitializerPreamble = "#define LIGHT_COLOR_INITIALIZER "_s;
-        constexpr Containers::StringView lightInitializerItem = "vec4(1.0), "_s;
-        lightInitializer.reserve(lightInitializerPreamble.size() + lightCount*lightInitializerItem.size());
-        lightInitializer.append(lightInitializerPreamble.data(), lightInitializerPreamble.size());
+        /* Initializer for the light color / position / range arrays -- we need
+           a list of initializers joined by commas. For GLES we'll simply
+           upload the values directly. */
+        constexpr Containers::StringView lightPositionInitializerPreamble = "#define LIGHT_POSITION_INITIALIZER "_s;
+        constexpr Containers::StringView lightColorInitializerPreamble = "#define LIGHT_COLOR_INITIALIZER "_s;
+        constexpr Containers::StringView lightRangeInitializerPreamble = "#define LIGHT_RANGE_INITIALIZER "_s;
+        constexpr Containers::StringView lightPositionInitializerItem = "vec4(0.0, 0.0, 1.0, 0.0), "_s;
+        constexpr Containers::StringView lightColorInitializerItem = "vec4(1.0), "_s;
+        constexpr Containers::StringView lightRangeInitializerItem = "1.0/0.0, "_s;
+
+        lightInitializerVertex.reserve(
+            lightPositionInitializerPreamble.size() +
+            lightCount*(lightPositionInitializerItem.size()));
+
+        lightInitializerVertex.append(lightPositionInitializerPreamble.data(), lightPositionInitializerPreamble.size());
         for(std::size_t i = 0; i != lightCount; ++i)
-            lightInitializer.append(lightInitializerItem.data(), lightInitializerItem.size());
+            lightInitializerVertex.append(lightPositionInitializerItem.data(), lightPositionInitializerItem.size());
 
         /* Drop the last comma and add a newline at the end */
-        lightInitializer[lightInitializer.size() - 2] = '\n';
-        lightInitializer.resize(lightInitializer.size() - 1);
+        lightInitializerVertex[lightInitializerVertex.size() - 2] = '\n';
+        lightInitializerVertex.resize(lightInitializerVertex.size() - 1);
+
+        lightInitializerFragment.reserve(
+            lightColorInitializerPreamble.size() +
+            lightRangeInitializerPreamble.size() +
+            lightCount*(lightColorInitializerItem.size() +
+                        lightRangeInitializerItem.size()));
+
+        lightInitializerFragment.append(lightColorInitializerPreamble.data(), lightColorInitializerPreamble.size());
+        for(std::size_t i = 0; i != lightCount; ++i)
+            lightInitializerFragment.append(lightColorInitializerItem.data(), lightColorInitializerItem.size());
+
+        /* Drop the last comma and add a newline at the end */
+        lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
+        lightInitializerFragment.resize(lightInitializerFragment.size() - 1);
+
+        lightInitializerFragment.append(lightRangeInitializerPreamble.data(), lightRangeInitializerPreamble.size());
+        for(std::size_t i = 0; i != lightCount; ++i)
+            lightInitializerFragment.append(lightRangeInitializerItem.data(), lightRangeInitializerItem.size());
+
+        /* Drop the last comma and add a newline at the end */
+        lightInitializerFragment[lightInitializerFragment.size() - 2] = '\n';
+        lightInitializerFragment.resize(lightInitializerFragment.size() - 1);
     }
     #endif
 
@@ -105,8 +136,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags >= Flag::InstancedObjectId ? "#define INSTANCED_OBJECT_ID\n" : "")
         #endif
         .addSource(flags & Flag::InstancedTransformation ? "#define INSTANCED_TRANSFORMATION\n" : "")
-        .addSource(flags >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "")
-        .addSource(rs.get("generic.glsl"))
+        .addSource(flags >= Flag::InstancedTextureOffset ? "#define INSTANCED_TEXTURE_OFFSET\n" : "");
+    #ifndef MAGNUM_TARGET_GLES
+    if(lightCount) vert.addSource(std::move(lightInitializerVertex));
+    #endif
+    vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
@@ -121,9 +155,13 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         #endif
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
-            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightPositionsUniform + lightCount));
+            "#define LIGHT_COLORS_LOCATION {}\n"
+            "#define LIGHT_RANGES_LOCATION {}\n",
+            lightCount,
+            _lightPositionsUniform + lightCount,
+            _lightPositionsUniform + 2*lightCount));
     #ifndef MAGNUM_TARGET_GLES
-    if(lightCount) frag.addSource(std::move(lightInitializer));
+    if(lightCount) frag.addSource(std::move(lightInitializerFragment));
     #endif
     frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.frag"));
@@ -186,6 +224,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
                 _normalTextureScaleUniform = uniformLocation("normalTextureScale");
             _lightPositionsUniform = uniformLocation("lightPositions");
             _lightColorsUniform = uniformLocation("lightColors");
+            _lightRangesUniform = uniformLocation("lightRanges");
         }
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
         #ifndef MAGNUM_TARGET_GLES2
@@ -218,7 +257,9 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         setShininess(80.0f);
         if(flags & Flag::NormalTexture)
             setNormalTextureScale(1.0f);
+        setLightPositions(Containers::Array<Vector4>{Containers::DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
         setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
+        setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
         setNormalMatrix({});
     }
@@ -328,25 +369,52 @@ Phong& Phong::setTextureMatrix(const Matrix3& matrix) {
     return *this;
 }
 
-Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
+Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector4> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
     if(_lightCount) setUniform(_lightPositionsUniform, positions);
     return *this;
 }
 
-Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
+/* It's light, but can't be in the header because MSVC needs to know the size
+   of Vector3 for the initializer list use */
+Phong& Phong::setLightPositions(const std::initializer_list<Vector4> positions) {
+    return setLightPositions(Containers::arrayView(positions));
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
+    Containers::Array<Vector4> fourComponent{Containers::NoInit, positions.size()};
+    for(std::size_t i = 0; i != positions.size(); ++i)
+        fourComponent[i] = Vector4{positions[i], 0.0f};
+    setLightPositions(fourComponent);
+    return *this;
+}
+
+Phong& Phong::setLightPositions(const std::initializer_list<Vector3> positions) {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return setLightPositions(Containers::arrayView(positions));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
+Phong& Phong::setLightPosition(const UnsignedInt id, const Vector4& position) {
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::Phong::setLightPosition(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightPositionsUniform + id, position);
     return *this;
 }
 
-/* It's light, but can't be in the header because MSVC needs to know the size
-   of Vector3 for the initializer list use */
-Phong& Phong::setLightPositions(std::initializer_list<Vector3> lights) {
-    return setLightPositions({lights.begin(), lights.size()});
+#ifdef MAGNUM_BUILD_DEPRECATED
+Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
+    return setLightPosition(id, Vector4{position, 0.0f});
 }
+
+Phong& Phong::setLightPosition(const Vector3& position) {
+    /* Use the list variant to check the shader really has just one light */
+    return setLightPositions({Vector4{position, 0.0f}});
+}
+#endif
 
 Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
@@ -357,14 +425,32 @@ Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> c
 
 /* It's light, but can't be in the header because MSVC needs to know the size
    of Color for the initializer list use */
-Phong& Phong::setLightColors(std::initializer_list<Magnum::Color4> colors) {
-    return setLightColors({colors.begin(), colors.size()});
+Phong& Phong::setLightColors(const std::initializer_list<Magnum::Color4> colors) {
+    return setLightColors(Containers::arrayView(colors));
 }
 
-Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
+Phong& Phong::setLightColor(const UnsignedInt id, const Magnum::Color4& color) {
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
+    return *this;
+}
+
+Phong& Phong::setLightRanges(const Containers::ArrayView<const Float> ranges) {
+    CORRADE_ASSERT(_lightCount == ranges.size(),
+        "Shaders::Phong::setLightRanges(): expected" << _lightCount << "items but got" << ranges.size(), *this);
+    if(_lightCount) setUniform(_lightRangesUniform, ranges);
+    return *this;
+}
+
+Phong& Phong::setLightRanges(const std::initializer_list<Float> ranges) {
+    return setLightRanges(Containers::arrayView(ranges));
+}
+
+Phong& Phong::setLightRange(const UnsignedInt id, const Float range) {
+    CORRADE_ASSERT(id < _lightCount,
+        "Shaders::Phong::setLightRange(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+    setUniform(_lightRangesUniform + id, range);
     return *this;
 }
 

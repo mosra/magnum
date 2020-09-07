@@ -303,6 +303,12 @@ CompileGLTest::CompileGLTest() {
             #endif
             {4, 4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, ImageData});
+    /* Use a point light instead of a directional light to better highlight the
+       difference in normals; disable specular as that only causes unnecessary
+       rounding errors across GPUs */
+    _phong.setLightPositions({{0.0f, 0.0f, -0.0f, 1.0f}})
+        .setLightColors({0xffffff_rgbf*9.0f})
+        .setSpecularColor(0x00000000_rgbaf);
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
@@ -762,7 +768,7 @@ template<class T> void CompileGLTest::threeDimensions() {
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-flat.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0079f}));
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.012f}));
     } else if(data.flags & Flag::GeneratedSmoothNormals) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
@@ -777,7 +783,7 @@ template<class T> void CompileGLTest::threeDimensions() {
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-smooth.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.25f, 0.0059f}));
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0088f}));
     }
 
     /* Check with the colored shader, if we have colors */

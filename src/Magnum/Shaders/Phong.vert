@@ -77,7 +77,11 @@ uniform mediump mat3 textureMatrix
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 11)
 #endif
-uniform highp vec3 lightPositions[LIGHT_COUNT]; /* defaults to zero */
+uniform highp vec4 lightPositions[LIGHT_COUNT]
+    #ifndef GL_ES
+    = vec4[](LIGHT_POSITION_INITIALIZER);
+    #endif
+    ;
 #endif
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
@@ -168,7 +172,7 @@ out mediump vec3 transformedTangent;
 out mediump vec3 transformedBitangent;
 #endif
 #endif
-out highp vec3 lightDirections[LIGHT_COUNT];
+out highp vec4 lightDirections[LIGHT_COUNT];
 out highp vec3 cameraDirection;
 #endif
 
@@ -209,9 +213,10 @@ void main() {
     #endif
     #endif
 
-    /* Direction to the light */
+    /* Direction to the light. Directional lights have the last component set
+       to 0, which gets used to ignore the transformed position. */
     for(int i = 0; i < LIGHT_COUNT; ++i)
-        lightDirections[i] = lightPositions[i] - transformedPosition;
+        lightDirections[i] = vec4(lightPositions[i].xyz - transformedPosition*lightPositions[i].w, lightPositions[i].w);
 
     /* Direction to the camera */
     cameraDirection = -transformedPosition;

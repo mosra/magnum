@@ -149,6 +149,15 @@ uniform lowp vec4 lightColors[LIGHT_COUNT]
     = vec4[](LIGHT_COLOR_INITIALIZER)
     #endif
     ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = LIGHT_RANGES_LOCATION)
+#endif
+uniform lowp float lightRanges[LIGHT_COUNT]
+    #ifndef GL_ES
+    = float[](LIGHT_RANGE_INITIALIZER)
+    #endif
+    ;
 #endif
 
 #if LIGHT_COUNT
@@ -161,7 +170,7 @@ in mediump vec3 transformedTangent;
 in mediump vec3 transformedBitangent;
 #endif
 #endif
-in highp vec3 lightDirections[LIGHT_COUNT];
+in highp vec4 lightDirections[LIGHT_COUNT];
 in highp vec3 cameraDirection;
 #endif
 
@@ -244,14 +253,25 @@ void main() {
 
     /* Add diffuse color for each light */
     for(int i = 0; i < LIGHT_COUNT; ++i) {
-        highp vec3 normalizedLightDirection = normalize(lightDirections[i]);
-        lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
+        /* Attenuation. Directional lights have the .w component set to 0, use
+           that to make the distance zero -- which will then ensure the
+           attenuation is always 1.0 */
+        highp float dist = length(lightDirections[i].xyz)*lightDirections[i].w;
+        /* If range is 0 for whatever reason, clamp it to a small value to
+           avoid a NaN when dist is 0 as well (which is the case for
+           directional lights). */
+        highp float attenuation = clamp(1.0 - pow(dist/max(lightRanges[i], 0.0001), 4.0), 0.0, 1.0)/(1.0 + dist);
+        attenuation = attenuation*attenuation;
+
+        highp vec3 normalizedLightDirection = normalize(lightDirections[i].xyz);
+        lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
         fragmentColor += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a/float(LIGHT_COUNT));
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
-            mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0);
+            /* Use attenuation for the specularity as well */
+            mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0)*attenuation;
             fragmentColor += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }

@@ -90,7 +90,7 @@ Common rendering setup:
 For coloring the texture based on intensity you can use the @ref Vector shader.
 The 3D version of this shader is equivalent to @ref Phong with zero lights,
 however this implementation is much simpler and thus likely also faster. See
-@ref Shaders-Phong-zero-lights "its documentation" for more information.
+@ref Shaders-Phong-lights-zero "its documentation" for more information.
 Conversely, enabling @ref Flag::VertexColor and using a default color with no
 texturing makes this shader equivalent to @ref VertexColor.
 

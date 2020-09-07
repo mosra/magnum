@@ -103,8 +103,6 @@ class RedCubeDrawable: public SceneGraph::Drawable3D {
             using namespace Math::Literals;
 
             _shader.setDiffuseColor(0xa5c9ea_rgbf)
-                .setLightPosition(camera.cameraMatrix().transformPoint(
-                    {5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
                 .setNormalMatrix(transformationMatrix.normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix())
@@ -185,7 +183,8 @@ struct MyApplication: Platform::Application {
 
     SceneGraph::Object<SceneGraph::MatrixTransformation2D>* _cameraObject;
     SceneGraph::Camera3D* _camera;
-    Vector3 _lightPositionRelativeToCamera, _lightColor, _ambientColor;
+    Vector4 _lightPositionRelativeToCamera;
+    Vector3 _lightColor, _ambientColor;
 /* [Drawable-multiple-groups] */
     // ...
 
@@ -195,8 +194,8 @@ struct MyApplication: Platform::Application {
 
 void MyApplication::drawEvent() {
     _shader.setProjectionMatrix(_camera->projectionMatrix())
-           .setLightPosition(_lightPositionRelativeToCamera)
-           .setLightColor(_lightColor)
+           .setLightPositions({_lightPositionRelativeToCamera})
+           .setLightColors({_lightColor})
            .setAmbientColor(_ambientColor);
 
     /* Each drawable sets only unique properties such as transformation matrix

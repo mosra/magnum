@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -103,6 +104,7 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderObjectId();
     #endif
 
+    void renderLights();
     void renderLowLightAngle();
     void renderZeroLights();
 
@@ -337,6 +339,93 @@ constexpr struct {
 };
 #endif
 
+const struct {
+    const char* name;
+    const char* file;
+    Vector4 position;
+    Float intensity;
+    Float range;
+    Containers::Array<std::pair<Vector2i, Color3ub>> picks;
+} RenderLightsData[] {
+    {"directional", "light-directional.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, Constants::inf(),
+        {Containers::InPlaceInit, {
+            /* Ambient isn't affected by light direction, otherwise it's a
+               dot product of a normalized direction */
+            {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())},
+            /* and it's the same across the whole surface */
+            {{70, 70}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())},
+        }}},
+    /* These two should produce the same output as the *normalized* dot product
+       is the same */
+    {"directional, from the other side", "light-directional.tga",
+        {-1.0f, 1.5f, 0.5f, 0.0f}, 1.0f, Constants::inf(), {}},
+    {"directional, scaled direction", "light-directional.tga",
+        {10.0f, -15.0f, 5.0f, 0.0f}, 1.0f, Constants::inf(), {}},
+    /* Range should have no effect either, especially zero range should not
+       cause any NaNs */
+    {"directional, range=0.1", "light-directional.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, 1.0f, {}},
+    {"directional, range=0", "light-directional.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, 1.0f, {}},
+    /* Light from the other side doesn't contribute anything */
+    {"directional, from back", "light-none.tga",
+        {-1.0f, 1.5f, -0.5f, 0.0f}, 1.0f, Constants::inf(),
+        {Containers::InPlaceInit, {
+            /* Only ambient color left */
+            {{40, 40}, 0x222222_rgb}
+        }}},
+    /* This is the same as above, except that twice the intensity causes it to
+       be 2x brighter */
+    {"directional, intensity=2", "light-directional-intensity2.tga",
+        {1.0f, -1.5f, 0.5f, 0.0f}, 2.0f, 1.0f,
+        {Containers::InPlaceInit, {
+            {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())*2.0f}
+        }}},
+    {"point", "light-point.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, Constants::inf(),
+        {Containers::InPlaceInit, {
+            /* The range is inf, so it doesn't get fully ambient even at the
+               edge */
+            {{8, 71}, 0x242324_rgb},
+            /* Closest to the light. TODO figure out the equation, sigh */
+            {{63, 16}, 0xc57474_rgb /*0x222222_rgb + 0xff8080_rgb/(1 + 0.25f*0.25f)*/},
+            /* Specular highlight */
+            {{60, 19}, 0xfefefe_rgb}
+        }}},
+    {"point, attenuated specular", "light-point-attenuated-specular.tga",
+        {1.0f, -1.0f, -0.25f, 1.0f}, 1.0f, 2.5f,
+        {Containers::InPlaceInit, {
+            /* Specular highlight shouldn't be brighter than the attenuated
+               intensity */
+            {{57, 22}, 0x665656_rgb}
+        }}},
+    {"point, range=1.5", "light-point-range1.5.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 1.5f,
+        {Containers::InPlaceInit, {
+            /* Color goes back to ambient at distance = 1.5 */
+            {{59, 60}, 0x222222_rgb},
+            {{29, 50}, 0x222222_rgb},
+            {{19, 14}, 0x222222_rgb},
+            /* But the center and specular stays ~ the same */
+            {{63, 16}, 0xc57474_rgb},
+            {{60, 19}, 0xfefcfc_rgb}
+        }}},
+    {"point, intensity=10, range=0.5", "light-point-intensity10-range0.5.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 10.0f, 0.5f, {}},
+    /* Range ends right at the surface, so no contribution */
+    {"point, range=0.25", "light-none.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.25f, {}},
+    /* Zero range should not cause any NaNs, so the ambient contribution is
+       still there */
+    {"point, range=0.0", "light-none.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.0f, {}},
+    /* Distance is 0, which means the direction is always prependicular and
+       thus contributes nothing */
+    {"point, distance=0", "light-none.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.0f, {}}
+};
+
 constexpr struct {
     const char* name;
     const char* file;
@@ -346,19 +435,19 @@ constexpr struct {
     {"diffuse", "instanced.tga", {},
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* AMD has one off pixel; SwiftShader a bit more */
-        93.67f, 0.106f,
+        96.34f, 0.113f,
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage */
-        93.67f, 0.106f,
+        96.34f, 0.113f,
         #endif
         },
     {"diffuse + normal", "instanced-normal.tga", Phong::Flag::NormalTexture,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* AMD has one off pixel, llvmpipe more */
-        94.5f, 0.333f,
+        96.0f, 0.333f,
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage */
-        94.5f, 0.132f,
+        96.0f, 0.333f,
         #endif
         }
 };
@@ -424,6 +513,11 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
     #endif
+
+    addInstancedTests({&PhongGLTest::renderLights},
+        Containers::arraySize(RenderLightsData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
 
     addTests({&PhongGLTest::renderLowLightAngle,
               &PhongGLTest::renderZeroLights},
@@ -606,17 +700,20 @@ void PhongGLTest::setWrongLightCount() {
 
     /* This is okay */
     shader.setLightColors({{}, {}, {}, {}, {}})
-        .setLightPositions({{}, {}, {}, {}, {}});
+        .setLightPositions(Containers::arrayView<const Vector4>({{}, {}, {}, {}, {}}))
+        .setLightRanges({0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* This is not */
-    shader.setLightColor({})
-        .setLightPosition({});
+    shader.setLightColors({Color3{}})
+        .setLightPositions({Vector4{}})
+        .setLightRanges({0.0f});
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setLightColors(): expected 5 items but got 1\n"
-        "Shaders::Phong::setLightPositions(): expected 5 items but got 1\n");
+        "Shaders::Phong::setLightPositions(): expected 5 items but got 1\n"
+        "Shaders::Phong::setLightRanges(): expected 5 items but got 1\n");
 }
 
 void PhongGLTest::setWrongLightId() {
@@ -631,17 +728,20 @@ void PhongGLTest::setWrongLightId() {
 
     /* This is okay */
     shader.setLightColor(2, {})
-        .setLightPosition(2, {});
+        .setLightPosition(2, Vector4{})
+        .setLightRange(2, 0.0f);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* This is not */
     shader.setLightColor(3, {})
-        .setLightPosition(3, {});
+        .setLightPosition(3, Vector4{})
+        .setLightRange(3, 0.0f);
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
-        "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n");
+        "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n"
+        "Shaders::Phong::setLightRange(): light ID 3 is out of bounds for 3 lights\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};
@@ -673,16 +773,7 @@ void PhongGLTest::renderTeardown() {
 }
 
 void PhongGLTest::renderDefaults() {
-    /* The light is at the center by default, so we scale the sphere to half
-       and  move the vertices back a bit to avoid a fully-black render but
-       still have the thing in the default [-1; 1] cube */
-    Trade::MeshData meshData = Primitives::uvSphereSolid(16, 32);
-    Matrix4 transformation =
-        Matrix4::translation(Vector3::zAxis(-1.0f))*Matrix4::scaling(Vector3(1.0f, 1.0f, 0.25f));
-    MeshTools::transformPointsInPlace(transformation, meshData.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
-    /** @todo use Matrix4::normalMatrix() */
-    MeshTools::transformVectorsInPlace(transformation.inverted().transposed(), meshData.mutableAttribute<Vector3>(Trade::MeshAttribute::Normal));
-    GL::Mesh sphere = MeshTools::compile(meshData);
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
     Phong{}
         .draw(sphere);
@@ -716,8 +807,8 @@ void PhongGLTest::renderColored() {
 
     Phong{{}, 2}
         .setLightColors({data.lightColor1, data.lightColor2})
-        .setLightPositions({{data.lightPosition1, -3.0f, 0.0f},
-                            {data.lightPosition2, -3.0f, 0.0f}})
+        .setLightPositions({{data.lightPosition1, -3.0f, 2.0f, 0.0f},
+                            {data.lightPosition2, -3.0f, 2.0f, 0.0f}})
         .setAmbientColor(0x330033_rgbf)
         .setDiffuseColor(0xccffcc_rgbf)
         .setSpecularColor(0x6666ff_rgbf)
@@ -799,8 +890,8 @@ void PhongGLTest::renderSinglePixelTextured() {
 
     Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 2};
     shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
-        .setLightPositions({{-3.0f, -3.0f, 0.0f},
-                            { 3.0f, -3.0f, 0.0f}})
+        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                            { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f));
 
@@ -905,8 +996,8 @@ void PhongGLTest::renderTextured() {
 
     /* Using default (white) light colors to have the texture data visible
        better */
-    shader.setLightPositions({{-3.0f, -3.0f, 0.0f},
-                              { 3.0f, -3.0f, 0.0f}})
+    shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                              { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
@@ -921,10 +1012,10 @@ void PhongGLTest::renderTextured() {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has few rounding errors at the edges (giving a large max
        error), but that's basically it. Apple A8 has more. */
-    const Float maxThreshold = 210.4f, meanThreshold = 0.202f;
+    const Float maxThreshold = 227.0f, meanThreshold = 0.202f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's a bit worse */
-    const Float maxThreshold = 210.4f, meanThreshold = 3.434f;
+    const Float maxThreshold = 227.0f, meanThreshold = 3.434f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
@@ -979,8 +1070,8 @@ void PhongGLTest::renderTexturedNormal() {
        exactly the same images. */
     Phong shader{Phong::Flag::NormalTexture|data.flags, 2};
     shader.setLightPositions({
-            Matrix4::rotationZ(data.rotation).transformPoint({-3.0f, -3.0f, 0.0f}),
-            Matrix4::rotationZ(data.rotation).transformPoint({ 3.0f, -3.0f, 0.0f})})
+            Matrix4::rotationZ(data.rotation)*Vector4{-3.0f, -3.0f, 2.0f, 0.0f},
+            Matrix4::rotationZ(data.rotation)*Vector4{ 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.35f))*
             Matrix4::rotationZ(data.rotation)*
             Matrix4::rotationY(-15.0_degf)*
@@ -1068,8 +1159,8 @@ template<class T> void PhongGLTest::renderVertexColor() {
         .setSubImage(0, {}, *image);
 
     Phong{Phong::Flag::DiffuseTexture|Phong::Flag::VertexColor, 2}
-        .setLightPositions({{-3.0f, -3.0f, 0.0f},
-                            { 3.0f, -3.0f, 0.0f}})
+        .setLightPositions({{-3.0f, -3.0f, 0.0f, 0.0f},
+                            { 3.0f, -3.0f, 0.0f, 0.0f}})
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
@@ -1106,7 +1197,7 @@ void PhongGLTest::renderShininess() {
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
 
     Phong{}
-        .setLightPosition({-3.0f, -3.0f, 0.0f})
+        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f}})
         .setDiffuseColor(0xff3333_rgbf)
         .setSpecularColor(data.specular)
         .setShininess(data.shininess)
@@ -1180,7 +1271,7 @@ void PhongGLTest::renderShininess() {
             Utility::Directory::join({_testDir, "PhongTestFiles", "shininess0-overflow.tga"}),
             /* The threshold = 0.001 case has a slight reddish tone on
                SwiftShader; ARM Mali has one pixel off */
-            (DebugTools::CompareImageToFile{_manager, 255.0f, 1.476f}));
+            (DebugTools::CompareImageToFile{_manager, 255.0f, 23.1f}));
     }
 }
 
@@ -1240,8 +1331,8 @@ void PhongGLTest::renderAlpha() {
         Primitives::UVSphereFlag::TextureCoordinates));
 
     Phong shader{data.flags, 2};
-    shader.setLightPositions({{-3.0f, -3.0f, 0.0f},
-                              { 3.0f, -3.0f, 0.0f}})
+    shader.setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                              { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-2.15f))*
             Matrix4::rotationY(-15.0_degf)*
@@ -1272,10 +1363,10 @@ void PhongGLTest::renderAlpha() {
        That's okay, as we have only 8bit texture precision. SwiftShader has
        additionally a few minor rounding errors at the edges, Apple A8 a bit
        more. */
-    const Float maxThreshold = 172.667f, meanThreshold = 0.385f;
+    const Float maxThreshold = 189.4f, meanThreshold = 0.385f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 172.667f, meanThreshold = 4.736f;
+    const Float maxThreshold = 189.4f, meanThreshold = 4.736f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
@@ -1343,8 +1434,8 @@ void PhongGLTest::renderObjectId() {
 
     Phong{data.flags, 2}
         .setLightColors({0x993366_rgbf, 0x669933_rgbf})
-        .setLightPositions({{-3.0f, -3.0f, 0.0f},
-                            { 3.0f, -3.0f, 0.0f}})
+        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                            { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setAmbientColor(0x330033_rgbf)
         .setDiffuseColor(0xccffcc_rgbf)
         .setSpecularColor(0x6666ff_rgbf)
@@ -1389,6 +1480,58 @@ void PhongGLTest::renderObjectId() {
 }
 #endif
 
+void PhongGLTest::renderLights() {
+    auto&& data = RenderLightsData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
+
+    Matrix4 transformation =
+        Matrix4::translation({0.0f, 0.0f, -1.5f});
+
+    Phong{{}, 1}
+        /* Set non-black ambient to catch accidental NaNs -- the render should
+           never be fully black */
+        .setAmbientColor(0x222222_rgbf)
+        .setLightPositions({data.position})
+        .setLightColors({0xff8080_rgbf*data.intensity})
+        .setLightRanges({data.range})
+        .setShininess(60.0f)
+        .setTransformationMatrix(transformation)
+        .setNormalMatrix(transformation.normalMatrix())
+        .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
+        .draw(plane);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
+    /* Analytical output check. Comment this out when image comparison fails
+       for easier debugging. */
+    for(const auto& pick: data.picks) {
+        CORRADE_ITERATION(pick.first);
+        CORRADE_COMPARE_WITH(
+            image.pixels<Color4ub>()[pick.first.y()][pick.first.x()].xyz(),
+            pick.second, TestSuite::Compare::around(0x010101_rgb));
+    }
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
 void PhongGLTest::renderLowLightAngle() {
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
 
@@ -1404,7 +1547,7 @@ void PhongGLTest::renderLowLightAngle() {
        fragment-interpolated light direction being incorrect, most visible with
        long polygons and low light angles. */
     Phong{{}, 1}
-        .setLightPosition({0.0f, 0.1f, 0.0f})
+        .setLightPositions({{0.0f, 0.1f, 0.0f, 1.0f}})
         .setShininess(200)
         .setTransformationMatrix(transformation)
         .setNormalMatrix(transformation.normalMatrix())
@@ -1476,7 +1619,7 @@ void PhongGLTest::renderZeroLights() {
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
         /* Keep alpha mask at the default 0.5 to test the default */
         /* Passing a zero-sized light position / color array, shouldn't assert */
-        .setLightPositions({})
+        .setLightPositions(Containers::ArrayView<const Vector4>{})
         .setLightColors({})
         /* Using a bogus normal matrix -- it's not used so it should be okay.
            Same for all other unused values, they should get ignored. */
@@ -1622,8 +1765,8 @@ void PhongGLTest::renderInstanced() {
           Phong::Flag::InstancedTransformation|
           Phong::Flag::InstancedTextureOffset|data.flags, 2};
     shader
-        .setLightPositions({{-3.0f, -3.0f, 0.0f},
-                            { 3.0f, -3.0f, 0.0f}})
+        .setLightPositions({{-3.0f, -3.0f, 2.0f, 0.0f},
+                            { 3.0f, -3.0f, 2.0f, 0.0f}})
         .setTransformationMatrix(
             Matrix4::translation(Vector3::zAxis(-1.75f))*
             Matrix4::rotationY(-15.0_degf)*

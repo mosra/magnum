@@ -77,6 +77,9 @@ See also:
 
 -   Added @ref Shaders::Phong::setNormalTextureScale(), consuming the recently
     added @ref Trade::MaterialAttribute::NormalTextureScale material attribute
+-   @ref Shaders::Phong was reworked to support directional and
+    range-attenuated point lights to follow the additions to
+    @ref Trade::LightData
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
@@ -179,6 +182,13 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   @ref Shaders::Phong::setLightPositions() and
+    @ref Shaders::Phong::setLightPosition() taking three-component vectors are
+    deprecated in favor of variants taking four-component vectors, where the
+    last component distinguishes between directional and point lights
+-   @cpp Shaders::Phong::setLightPosition(const Vector3&) @ce is deprecated in
+    favor of @ref Shaders::Phong::setLightPositions() with a single item ---
+    it's short enough to not warrant the existence of a dedicated overload
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
@@ -264,6 +274,11 @@ See also:
     afterwards. This can cause compilation breakages in case the type
     constructor has the parent parameter non-optional, pass the parent
     explicitly in that case.
+-   Due to the rework of @ref Shaders::Phong to support directional and
+    attenuated point lights, the original behavior of unattenuated point lights
+    isn't available anymore. For backwards compatibility, light positions
+    supplied through three-component vectors are now represented as directional
+    lights, which is close, but not exactly the same as before.
 -   Mutable access to @ref Trade::PhongMaterialData color and texture
     information, deprecated in 2020.06, is now removed, as it's impossible to
     implement through the redesigned @ref Trade::MaterialData APIs. However
@@ -1499,7 +1514,7 @@ Released 2019-10-24, tagged as
 -   @ref Shaders::Phong now clamps the specular factor to minimize artifacts
     when shininess is near zero
 -   @ref Shaders::Phong can now handle zero lights, in which case its output is
-    equivalent to @ref Shaders::Flat3D. See @ref Shaders-Phong-zero-lights for
+    equivalent to @ref Shaders::Flat3D. See @ref Shaders-Phong-lights-zero for
     more information.
 -   @ref Shaders::MeshVisualizer is fixed to work properly on Intel Windows
     drivers, adding a new

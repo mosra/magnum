@@ -240,6 +240,13 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/textured-specular.tga
             PhongTestFiles/textured.tga
             PhongTestFiles/vertexColor.tga
+            PhongTestFiles/light-directional-intensity2.tga
+            PhongTestFiles/light-directional.tga
+            PhongTestFiles/light-none.tga
+            PhongTestFiles/light-point-attenuated-specular.tga
+            PhongTestFiles/light-point-intensity10-range0.5.tga
+            PhongTestFiles/light-point-range1.5.tga
+            PhongTestFiles/light-point.tga
 
             # For zero lights test (equivalency to Flat3D)
             FlatTestFiles/textured3D-alpha-mask0.5.tga)

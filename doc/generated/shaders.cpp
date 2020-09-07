@@ -165,7 +165,7 @@ std::string ShaderVisualizer::phong() {
         .setAmbientColor(0x22272e_srgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
-        .setLightPosition({5.0f, 5.0f, 7.0f})
+        .setLightPositions({{5.0f, 5.0f, 7.0f, 0.0f}})
         .setProjectionMatrix(Projection)
         .setTransformationMatrix(Transformation)
         .setNormalMatrix(Transformation.normalMatrix())

@@ -52,6 +52,9 @@
 #include "Magnum/Shaders/Phong.h"
 #include "Magnum/Shaders/Vector.h"
 #include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Trade/LightData.h"
+
+#define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -90,7 +93,6 @@ GL::Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture};
 shader.bindDiffuseTexture(diffuseTexture)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix)
@@ -489,7 +491,6 @@ Matrix4 projectionMatrix =
 Shaders::Phong shader;
 shader.setDiffuseColor(0x2f83cc_rgbf)
     .setShininess(200.0f)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix)
@@ -525,7 +526,6 @@ GL::Texture2D diffuseTexture, specularTexture;
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture|
                       Shaders::Phong::Flag::SpecularTexture};
 shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix)
@@ -533,6 +533,38 @@ shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
 /* [Phong-usage-texture2] */
 }
 #endif
+
+{
+/* [Phong-usage-lights] */
+Matrix4 directionalLight, pointLight1, pointLight2; // camera-relative
+
+Shaders::Phong shader{{}, 3}; // 3 lights
+shader
+    .setLightPositions({Vector4{directionalLight.up(), 0.0f},
+                        Vector4{pointLight1.translation(), 1.0f},
+                        Vector4{pointLight2.translation(), 1.0f}})
+    .setLightColors({0xf0f0ff_srgbf*0.1f,
+                     0xff8080_srgbf*10.0f,
+                     0x80ff80_srgbf*10.0f})
+    .setLightRanges({Constants::inf(),
+                     2.0f,
+                     2.0f});
+/* [Phong-usage-lights] */
+}
+
+{
+Color3 ambientColor;
+GL::Texture2D diffuseTexture;
+/* [Phong-usage-lights-ambient] */
+Trade::LightData ambientLight = DOXYGEN_IGNORE(Trade::LightData{{}, {}, {}});
+
+Shaders::Phong shader{Shaders::Phong::Flag::AmbientTexture|DOXYGEN_IGNORE(Shaders::Phong::Flag::DiffuseTexture), DOXYGEN_IGNORE(3)};
+shader
+    .setAmbientColor(ambientColor + ambientLight.color()*ambientLight.intensity())
+    .bindAmbientTexture(diffuseTexture)
+    .bindDiffuseTexture(diffuseTexture);
+/* [Phong-usage-lights-ambient] */
+}
 
 {
 GL::Texture2D diffuseAlphaTexture;
