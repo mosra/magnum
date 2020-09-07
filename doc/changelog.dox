@@ -97,7 +97,8 @@ See also:
     @ref Trade::PhongMaterialData::normalTextureSwizzle() to make new features
     added for PBR materials recognizable also in classic Phong workflows.
 -   New @ref Trade::SkinData class and @ref Trade::AbstractImporter::skin2D() /
-    @ref Trade::AbstractImporter::skin3D() family of APIs for skin import
+    @ref Trade::AbstractImporter::skin3D() family of APIs for skin import, as
+    well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
 
 @subsection changelog-latest-changes Changes and improvements
 

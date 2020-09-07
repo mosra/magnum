@@ -41,6 +41,7 @@
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
+#include "Magnum/Trade/SkinData.h"
 #include "Magnum/Trade/TextureData.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -191,6 +192,16 @@ UnsignedInt AnySceneImporter::doObject3DCount() const { return _in->object3DCoun
 Int AnySceneImporter::doObject3DForName(const std::string& name) { return _in->object3DForName(name); }
 std::string AnySceneImporter::doObject3DName(const UnsignedInt id) { return _in->object3DName(id); }
 Containers::Pointer<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id) { return _in->object3D(id); }
+
+UnsignedInt AnySceneImporter::doSkin2DCount() const { return _in->skin2DCount(); }
+Int AnySceneImporter::doSkin2DForName(const std::string& name) { return _in->skin2DForName(name); }
+std::string AnySceneImporter::doSkin2DName(const UnsignedInt id) { return _in->skin2DName(id); }
+Containers::Optional<SkinData2D> AnySceneImporter::doSkin2D(const UnsignedInt id) { return _in->skin2D(id); }
+
+UnsignedInt AnySceneImporter::doSkin3DCount() const { return _in->skin3DCount(); }
+Int AnySceneImporter::doSkin3DForName(const std::string& name) { return _in->skin3DForName(name); }
+std::string AnySceneImporter::doSkin3DName(const UnsignedInt id) { return _in->skin3DName(id); }
+Containers::Optional<SkinData3D> AnySceneImporter::doSkin3D(const UnsignedInt id) { return _in->skin3D(id); }
 
 UnsignedInt AnySceneImporter::doMeshCount() const { return _in->meshCount(); }
 Int AnySceneImporter::doMeshForName(const std::string& name) { return _in->meshForName(name); }
