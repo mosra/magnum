@@ -115,6 +115,11 @@ See also:
 -   @ref magnum-sceneconverter "magnum-sceneconverter" now lists also materials
     and textures in `--info`
 
+@subsubsection changelog-latest-changes-platform Platform libraries
+
+-   Added a @ref Platform::GlfwApplication::setWindowIcon() overload taking a
+    @ref Corrade::Containers::ArrayView in addition to @ref std::initializer_list
+
 @subsubsection changelog-latest-changes-shaders Shaders library
 
 -   In the original implementation of normal mapping in @ref Shaders::Phong,

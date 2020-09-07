@@ -248,7 +248,7 @@ void GlfwApplication::setWindowTitle(const std::string& title) {
 
 #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 void GlfwApplication::setWindowIcon(const ImageView2D& image) {
-    setWindowIcon({image});
+    setWindowIcon({&image, 1});
 }
 
 namespace {
@@ -261,7 +261,7 @@ template<class T> inline void packPixels(const Containers::StridedArrayView2D<co
 
 }
 
-void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
+void GlfwApplication::setWindowIcon(const Containers::ArrayView<const ImageView2D> images) {
     /* Calculate the total size needed to allocate first so we don't allocate
        a ton of tiny arrays */
     std::size_t size = 0;
@@ -301,6 +301,10 @@ void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
     }
 
     glfwSetWindowIcon(_window, glfwImages.size(), glfwImages);
+}
+
+void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
+    setWindowIcon(Containers::arrayView(images));
 }
 #endif
 

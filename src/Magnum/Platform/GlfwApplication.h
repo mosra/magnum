@@ -470,7 +470,7 @@ class GlfwApplication {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window icon
-         * @m_since{2020,06}
+         * @m_since_latest
          *
          * The @p images are expected to be with origin at bottom left (which
          * is the default for imported images) and in one of
@@ -483,6 +483,12 @@ class GlfwApplication {
          *      for more information.
          * @see @ref platform-windows-icon "Excecutable icon on Windows",
          *      @ref Trade::IcoImporter "IcoImporter"
+         */
+        void setWindowIcon(Containers::ArrayView<const ImageView2D> images);
+
+        /**
+         * @overload
+         * @m_since{2020,06}
          */
         void setWindowIcon(std::initializer_list<ImageView2D> images);
 
