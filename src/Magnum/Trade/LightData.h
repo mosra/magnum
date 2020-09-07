@@ -82,7 +82,7 @@ approach. The classic constant/linear/quadratic equation allows for most
 control, but because the attenuated intensity never really reaches zero, it
 makes light culling optimizations hard to perform. In this case the
 @ref range() is set to @ref Constants::inf(): @f[
-    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(}1 {\color{m-dim}- (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-success} K_l} d + {\color{m-success} K_q} d^2} = \frac{1}{{\color{m-success} K_c} + {\color{m-success} K_l} d + {\color{m-success} K_q} d^2}
+    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(}1 \mathbin{\color{m-dim}-} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-success} K_l} d + {\color{m-success} K_q} d^2} = \frac{1}{{\color{m-success} K_c} + {\color{m-success} K_l} d + {\color{m-success} K_q} d^2}
 @f]
 
 The range-based equation approaches zero when @f$ {\color{m-info} R} = d @f$
@@ -92,18 +92,18 @@ extension, which in turn is based on the [UE4 implementation](https://github.com
 In this case, @ref attenuation() is set to
 @cpp {1.0f, 0.0f, 1.0f} @ce, the constant factor is present in order to prevent
 the function from exploding to infinity when @f$ d \to \infty @f$. @f[
-    F_{att} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{{\color{m-success} K_c} + {\color{m-dim} K_l d +} {\color{m-success} K_q} d^2} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{1 + d^2}
+    F_{att} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{{\color{m-success} K_c} + {\color{m-dim} K_l d} \mathbin{\color{m-dim} +} {\color{m-success} K_q} d^2} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{1 + d^2}
 @f]
 
 If @f$ {\color{m-info} R} \to \infty @f$ as well, the equation reduces down to
 a simple inverse square: @f[
-    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 {\color{m-dim} - (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-dim} K_l d +} {\color{m-success} K_q} d^2} = \frac{1}{1 + d^2}
+    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-dim} K_l d} \mathbin{\color{m-dim} +} {\color{m-success} K_q} d^2} = \frac{1}{1 + d^2}
 @f]
 
 As a special case, a @ref Type::Directional light is defined by
 @ref attenuation() set to @cpp {1.0f, 0.0f, 0.0f} @ce and @ref range() to
 @ref Constants::inf() --- thus without any attenuation: @f[
-    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 {\color{m-dim} - (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} {\color{m-dim} + K_l d + K_q d^2}} = 1
+    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 \mathbin{\color{m-dim} -} {\color{m-dim} (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} \mathbin{\color{m-dim} +} {\color{m-dim} K_l d + K_q d^2}} = 1
 @f]
 
 @section Trade-LightData-units Units
