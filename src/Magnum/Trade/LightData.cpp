@@ -51,12 +51,12 @@ LightData::LightData(const Type type, const Color3& color, const Float intensity
 
 LightData::LightData(const Type type, const Color3& color, const Float intensity, const Float range, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity,
     type == Type::Ambient || type == Type::Directional ?
-        Vector3{1.0f, 0.0f, 0.0f} : Vector3{0.0f, 0.0f, 1.0f},
+        Vector3{1.0f, 0.0f, 0.0f} : Vector3{1.0f, 0.0f, 1.0f},
     range, innerConeAngle, outerConeAngle, importerState} {}
 
 LightData::LightData(const Type type, const Color3& color, const Float intensity, const Float range, const void* const importerState) noexcept: LightData{type, color, intensity,
     type == Type::Ambient || type == Type::Directional ?
-        Vector3{1.0f, 0.0f, 0.0f} : Vector3{0.0f, 0.0f, 1.0f},
+        Vector3{1.0f, 0.0f, 0.0f} : Vector3{1.0f, 0.0f, 1.0f},
     range, importerState} {}
 
 LightData::LightData(const Type type, const Color3& color, const Float intensity, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity, Constants::inf(), innerConeAngle, outerConeAngle, importerState} {}

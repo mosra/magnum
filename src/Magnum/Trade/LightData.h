@@ -51,7 +51,7 @@ everything except spotlights.
 You can choose a constructor overload that matches the subset of input
 parameters and let the class set the rest implicitly. For example, a
 @ref Type::Point light constructed using a range will have @ref attenuation()
-implicitly set to @cpp {0.0f, 0.0f, 1.0f} @ce and cone angles to
+implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce and cone angles to
 @cpp 360.0_degf @ce:
 
 @snippet MagnumTrade.cpp LightData-populating-range
@@ -90,13 +90,14 @@ and provides a good tradeoff for performance while staying mostly
 physically-based. This is modelled after the glTF [KHR_lights_punctual](https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_lights_punctual#range-property)
 extension, which in turn is based on the [UE4 implementation](https://github.com/KhronosGroup/glTF/pull/1223#issuecomment-387956919).
 In this case, @ref attenuation() is set to
-@cpp {0.0f, 0.0f, 1.0f} @ce: @f[
-    F_{att} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{{\color{m-dim} K_c + K_l d + K_q} d^2} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{d^2}
+@cpp {1.0f, 0.0f, 1.0f} @ce, the constant factor is present in order to prevent
+the function from exploding to infinity when @f$ d \to \infty @f$. @f[
+    F_{att} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{{\color{m-success} K_c} + {\color{m-dim} K_l d +} {\color{m-success} K_q} d^2} = \frac{\operatorname{clamp}(1 - (\frac{d}{\color{m-info} R})^4, 0, 1)^2}{1 + d^2}
 @f]
 
 If @f$ {\color{m-info} R} \to \infty @f$ as well, the equation reduces down to
 a simple inverse square: @f[
-    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 {\color{m-dim} - (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-dim} K_c + K_l d + K_q} d^2} = \frac{1}{d^2}
+    F_{att} = \lim_{{\color{m-info} R} \to \infty} \frac{{\color{m-dim} \operatorname{clamp}(} 1 {\color{m-dim} - (\frac{d}{R})^4, 0, 1)^2}}{{\color{m-success} K_c} + {\color{m-dim} K_l d +} {\color{m-success} K_q} d^2} = \frac{1}{1 + d^2}
 @f]
 
 As a special case, a @ref Type::Directional light is defined by
@@ -306,7 +307,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * The @ref attenuation() is implicitly set to @cpp {0.0f, 0.0f, 1.0f} @ce
+         * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
          * for a @ref Type::Point and @ref Type::Spot light and to
          * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
          * @ref Type::Directional light. See @ref Trade-LightData-attenuation
@@ -329,7 +330,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * The @ref attenuation() is implicitly set to @cpp {0.0f, 0.0f, 1.0f} @ce
+         * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
          * for a @ref Type::Point and @ref Type::Spot light and to
          * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
          * @ref Type::Directional light. See @ref Trade-LightData-attenuation
@@ -359,7 +360,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param importerState     Importer-specific state
          * @m_since_latest
          *
-         * The @ref attenuation() is implicitly set to @cpp {0.0f, 0.0f, 1.0f} @ce
+         * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
          * for a @ref Type::Point and @ref Type::Spot light and to
          * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
          * @ref Type::Directional light; @ref range() is always
@@ -378,7 +379,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @param intensity         Light intensity
          * @param importerState     Importer-specific state
          *
-         * The @ref attenuation() is implicitly set to @cpp {0.0f, 0.0f, 1.0f} @ce
+         * The @ref attenuation() is implicitly set to @cpp {1.0f, 0.0f, 1.0f} @ce
          * for a @ref Type::Point and @ref Type::Spot light and to
          * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
          * @ref Type::Directional light; @ref range() is always
@@ -428,10 +429,10 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @f$ \color{m-success} K_l @f$ and @f$ \color{m-success} K_q @f$ in
          * the @ref Trade-LightData-attenuation "attenuation equation". Always
          * @cpp {1.0f, 0.0f, 0.0f} @ce for an @ref Type::Ambient and
-         * @ref Type::Directional light, set to @cpp {0.0f, 0.0f, 1.0f} @ce for
+         * @ref Type::Directional light, set to @cpp {1.0f, 0.0f, 1.0f} @ce for
          * range-based attenuation --- and if @ref range() is
          * @ref Constants::inf() as well, the attenuation equation is simply
-         * @f$ F_{att} = \frac{1}{d^2} @f$.
+         * @f$ F_{att} = \frac{1}{1 + d^2} @f$.
          */
         Vector3 attenuation() const { return _attenuation; }
 
@@ -443,8 +444,8 @@ class MAGNUM_TRADE_EXPORT LightData {
          * the @ref Trade-LightData-attenuation "attenuation equation". If set
          * to @ref Constants::inf(), then:
          *
-         * -    if @ref attenuation() is @cpp {0.0f, 0.0f, 1.0f} @ce, the
-         *      attenuation equation is @f$ F_{att} = \frac{1}{d^2} @f$;
+         * -    if @ref attenuation() is @cpp {1.0f, 0.0f, 1.0f} @ce, the
+         *      attenuation equation is @f$ F_{att} = \frac{1}{1 + d^2} @f$;
          * -    if @ref attenuation() is @cpp {1.0f, 0.0f, 0.0f} @ce, the
          *      attenuation equation is @f$ F_{att} = 1 @f$.
          *

@@ -60,11 +60,11 @@ const struct {
     const char* message;
 } ConstructInvalidData[] {
     {"invalid ambient attenuation", LightData::Type::Ambient,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
-        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(0, 0, 1)"},
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
+        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(1, 0, 1)"},
     {"invalid directional attenuation", LightData::Type::Directional,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
-        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(0, 0, 1)"},
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), 360.0_degf, 360.0_degf,
+        "attenuation has to be (1, 0, 0) for an ambient or directional light but got Vector(1, 0, 1)"},
     {"invalid ambient range", LightData::Type::Ambient,
         {1.0f, 0.0f, 0.0f}, 2.0f, 360.0_degf, 360.0_degf,
         "range has to be infinity for an ambient or directional light but got 2"},
@@ -72,16 +72,16 @@ const struct {
         {1.0f, 0.0f, 0.0f}, 2.0f, 360.0_degf, 360.0_degf,
         "range has to be infinity for an ambient or directional light but got 2"},
     {"invalid point angles", LightData::Type::Point,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), 15.0_degf, 90.0_degf,
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), 15.0_degf, 90.0_degf,
         "cone angles have to be 360° for lights that aren't spot but got Deg(15) and Deg(90)"},
     {"negative inner spot angle", LightData::Type::Spot,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), -1.0_degf, 90.0_degf,
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), -1.0_degf, 90.0_degf,
         "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(-1) and Deg(90)"},
     {"too big outer spot angle", LightData::Type::Spot,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), 0.0_degf, 361.0_degf,
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), 0.0_degf, 361.0_degf,
         "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(0) and Deg(361)"},
     {"inner spot angle larger than outer", LightData::Type::Spot,
-        {0.0f, 0.0f, 1.0f}, Constants::inf(), 35.0_degf, 30.0_degf,
+        {1.0f, 0.0f, 1.0f}, Constants::inf(), 35.0_degf, 30.0_degf,
         "spot light inner and outer cone angles have to be in range [0°, 360°] and inner not larger than outer but got Deg(35) and Deg(30)"}
 };
 
@@ -222,7 +222,7 @@ void LightDataTest::constructRange() {
         CORRADE_COMPARE(data.type(), LightData::Type::Spot);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), 15.0f);
         CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
@@ -239,7 +239,7 @@ void LightDataTest::constructRange() {
         CORRADE_COMPARE(data.type(), LightData::Type::Spot);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), 15.0f);
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
@@ -256,7 +256,7 @@ void LightDataTest::constructRange() {
         CORRADE_COMPARE(data.type(), LightData::Type::Point);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), 15.0f);
         CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
@@ -310,7 +310,7 @@ void LightDataTest::constructNone() {
         CORRADE_COMPARE(data.type(), LightData::Type::Spot);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 15.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 35.0_degf);
@@ -326,7 +326,7 @@ void LightDataTest::constructNone() {
         CORRADE_COMPARE(data.type(), LightData::Type::Spot);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
@@ -342,7 +342,7 @@ void LightDataTest::constructNone() {
         CORRADE_COMPARE(data.type(), LightData::Type::Point);
         CORRADE_COMPARE(data.color(), 0xccff33_rgbf);
         CORRADE_COMPARE(data.intensity(), 0.8f);
-        CORRADE_COMPARE(data.attenuation(), (Vector3{0.0f, 0.0f, 1.0f}));
+        CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 360.0_degf);
         CORRADE_COMPARE(data.outerConeAngle(), 360.0_degf);
