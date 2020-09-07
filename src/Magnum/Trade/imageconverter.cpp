@@ -64,8 +64,9 @@ information.
 @section magnum-imageconverter-usage Usage
 
 @code{.sh}
-magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
-    [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
+magnum-imageconverter [-h|--help] [-I|--importer IMPORTER]
+    [-C|--converter CONVERTER] [--plugin-dir DIR]
+    [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [--image IMAGE]
     [--level LEVEL] [--in-place] [--info] [-v|--verbose] [--] input output
 @endcode
@@ -75,9 +76,9 @@ Arguments:
 -   `input` --- input image
 -   `output` --- output image, ignored if `--in-place` is present
 -   `-h`, `--help` --- display this help message and exit
--   `--importer IMPORTER` --- image importer plugin (default:
+-   `-I`, `--importer IMPORTER` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
--   `--converter CONVERTER` --- image converter plugin (default:
+-   `-C`, `--converter CONVERTER` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
@@ -144,8 +145,8 @@ int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image, ignored if --in-place or --info is present")
-        .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
-        .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
+        .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
+        .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
