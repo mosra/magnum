@@ -139,6 +139,8 @@ See also:
     @ref Trade::PhongMaterialData::commonTextureCoordinates() exposing a
     common texture coordinate set as a complement to a per-texture property
     added in 2020.06
+-   @ref magnum-imageconverter "magnum-imageconverter" has a new `--in-place`
+    option for converting images in-place
 
 @subsection changelog-latest-buildsystem Build system
 

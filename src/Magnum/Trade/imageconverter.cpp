@@ -67,13 +67,13 @@ information.
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
     [--plugin-dir DIR] [-i|--importer-options key=val,key2=val2,…]
     [-c|--converter-options key=val,key2=val2,…] [--image IMAGE]
-    [--level LEVEL][--info] [-v|--verbose] [--] input output
+    [--level LEVEL] [--in-place] [--info] [-v|--verbose] [--] input output
 @endcode
 
 Arguments:
 
 -   `input` --- input image
--   `output` --- output image
+-   `output` --- output image, ignored if `--in-place` is present
 -   `-h`, `--help` --- display this help message and exit
 -   `--importer IMPORTER` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
@@ -86,6 +86,7 @@ Arguments:
     to pass to the converter
 -   `--image IMAGE` --- image to import (default: `0`)
 -   `--level LEVEL` --- image level to import (default: `0`)
+-   `--in-place` --- overwrite the input image with the output
 -   `--info` --- print info about the input file and exit
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 
@@ -142,7 +143,7 @@ using namespace Magnum;
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input image")
-        .addArgument("output").setHelp("output", "output image")
+        .addArgument("output").setHelp("output", "output image, ignored if --in-place or --info is present")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
@@ -150,12 +151,15 @@ int main(int argc, char** argv) {
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .addOption("image", "0").setHelp("image", "image to import")
         .addOption("level", "0").setHelp("level", "image level to import")
+        .addBooleanOption("in-place").setHelp("in-place", "overwrite the input image with the output")
         .addBooleanOption("info").setHelp("info", "print info about the input file and exit")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from importer and converter plugins")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
-            /* If --info is passed, we don't need the output argument */
+            /* If --in-place or --info is passed, we don't need the output
+               argument */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-               key == "output" && args.isSet("info")) return true;
+               key == "output" && (args.isSet("in-place") || args.isSet("info")))
+                return true;
 
             /* Handle all other errors as usual */
             return false;
@@ -276,6 +280,8 @@ key=true; configuration subgroups are delimited with /.)")
         }
     }
 
+    const std::string output = args.value(args.isSet("in-place") ? "input" : "output");
+
     {
         Debug d;
         if(args.value("converter") == "raw")
@@ -285,12 +291,12 @@ key=true; configuration subgroups are delimited with /.)")
         d << image->size() << "and format";
         if(image->isCompressed()) d << image->compressedFormat();
         else d << image->format();
-        d << "to" << args.value("output");
+        d << "to" << output;
     }
 
     /* Save raw data, if requested */
     if(args.value("converter") == "raw") {
-        Utility::Directory::write(args.value("output"), image->data());
+        Utility::Directory::write(output, image->data());
         return 0;
     }
 
@@ -309,8 +315,8 @@ key=true; configuration subgroups are delimited with /.)")
     Trade::Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
-    if(!converter->exportToFile(*image, args.value("output"))) {
-        Error() << "Cannot save file" << args.value("output");
+    if(!converter->exportToFile(*image, output)) {
+        Error() << "Cannot save file" << output;
         return 5;
     }
 }
