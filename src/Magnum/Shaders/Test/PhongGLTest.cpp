@@ -105,6 +105,7 @@ struct PhongGLTest: GL::OpenGLTester {
     #endif
 
     void renderLights();
+    void renderLightsSetOneByOne();
     void renderLowLightAngle();
     void renderZeroLights();
 
@@ -519,7 +520,8 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({&PhongGLTest::renderLowLightAngle},
+    addTests({&PhongGLTest::renderLightsSetOneByOne,
+              &PhongGLTest::renderLowLightAngle},
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
@@ -698,21 +700,10 @@ void PhongGLTest::setWrongLightCount() {
 
     std::ostringstream out;
     Error redirectError{&out};
-
-    Phong shader{{}, 5};
-
-    /* This is okay */
-    shader.setLightColors({{}, {}, {}, {}, {}})
-        .setLightPositions(Containers::arrayView<const Vector4>({{}, {}, {}, {}, {}}))
-        .setLightRanges({0.0f, 0.0f, 0.0f, 0.0f, 0.0f});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    /* This is not */
-    shader.setLightColors({Color3{}})
+    Phong{{}, 5}
+        .setLightColors({Color3{}})
         .setLightPositions({Vector4{}})
         .setLightRanges({0.0f});
-
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setLightColors(): expected 5 items but got 1\n"
         "Shaders::Phong::setLightPositions(): expected 5 items but got 1\n"
@@ -726,21 +717,10 @@ void PhongGLTest::setWrongLightId() {
 
     std::ostringstream out;
     Error redirectError{&out};
-
-    Phong shader{{}, 3};
-
-    /* This is okay */
-    shader.setLightColor(2, {})
-        .setLightPosition(2, Vector4{})
-        .setLightRange(2, 0.0f);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    /* This is not */
-    shader.setLightColor(3, {})
+    Phong{{}, 3}
+        .setLightColor(3, {})
         .setLightPosition(3, Vector4{})
         .setLightRange(3, 0.0f);
-
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
         "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n"
@@ -1532,6 +1512,51 @@ void PhongGLTest::renderLights() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
         Utility::Directory::join({_testDir, "PhongTestFiles", data.file}),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+void PhongGLTest::renderLightsSetOneByOne() {
+    GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
+
+    Matrix4 transformation =
+        Matrix4::translation({0.0f, 0.0f, -1.5f});
+
+    Phong{{}, 2}
+        /* Set non-black ambient to catch accidental NaNs -- the render should
+           never be fully black */
+        .setAmbientColor(0x222222_rgbf)
+        /* First light is directional, from back, so it shouldn't affect the
+           output at all -- we only want to test that the ID is used properly */
+        .setLightPosition(0, {-1.0f, 1.5f, -0.5f, 0.0f})
+        .setLightPosition(1, {0.75f, -0.75f, -1.25f, 1.0f})
+        .setLightColor(0, 0x00ffff_rgbf)
+        .setLightColor(1, 0xff8080_rgbf)
+        .setLightRange(0, Constants::inf())
+        .setLightRange(1, 1.5f)
+        .setShininess(60.0f)
+        .setTransformationMatrix(transformation)
+        .setNormalMatrix(transformation.normalMatrix())
+        .setProjectionMatrix(Matrix4::perspectiveProjection(80.0_degf, 1.0f, 0.1f, 20.0f))
+        .draw(plane);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<const Color3ub>(image.pixels<Color4ub>()),
+        Utility::Directory::join({_testDir, "PhongTestFiles/light-point-range1.5.tga"}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
