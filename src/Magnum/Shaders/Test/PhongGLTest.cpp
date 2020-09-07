@@ -519,8 +519,11 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
-    addTests({&PhongGLTest::renderLowLightAngle,
-              &PhongGLTest::renderZeroLights},
+    addTests({&PhongGLTest::renderLowLightAngle},
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+
+    addTests({&PhongGLTest::renderZeroLights},
         #ifndef MAGNUM_TARGET_GLES2
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown
