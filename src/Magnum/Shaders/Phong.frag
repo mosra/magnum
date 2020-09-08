@@ -144,9 +144,9 @@ uniform highp uint objectId; /* defaults to zero */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
 #endif
-uniform lowp vec4 lightColors[LIGHT_COUNT]
+uniform lowp vec3 lightColors[LIGHT_COUNT]
     #ifndef GL_ES
-    = vec4[](LIGHT_COLOR_INITIALIZER)
+    = vec3[](LIGHT_COLOR_INITIALIZER)
     #endif
     ;
 
@@ -265,7 +265,7 @@ void main() {
 
         highp vec3 normalizedLightDirection = normalize(lightDirections[i].xyz);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
-        fragmentColor += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a/float(LIGHT_COUNT));
+        fragmentColor += vec4(finalDiffuseColor.rgb*lightColors[i]*intensity, finalDiffuseColor.a/float(LIGHT_COUNT));
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {

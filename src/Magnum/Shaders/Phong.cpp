@@ -87,7 +87,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         constexpr Containers::StringView lightColorInitializerPreamble = "#define LIGHT_COLOR_INITIALIZER "_s;
         constexpr Containers::StringView lightRangeInitializerPreamble = "#define LIGHT_RANGE_INITIALIZER "_s;
         constexpr Containers::StringView lightPositionInitializerItem = "vec4(0.0, 0.0, 1.0, 0.0), "_s;
-        constexpr Containers::StringView lightColorInitializerItem = "vec4(1.0), "_s;
+        constexpr Containers::StringView lightColorInitializerItem = "vec3(1.0), "_s;
         constexpr Containers::StringView lightRangeInitializerItem = "1.0/0.0, "_s;
 
         lightInitializerVertex.reserve(
@@ -258,7 +258,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         if(flags & Flag::NormalTexture)
             setNormalTextureScale(1.0f);
         setLightPositions(Containers::Array<Vector4>{Containers::DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
-        setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
+        setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}});
         setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
         setNormalMatrix({});
@@ -416,25 +416,50 @@ Phong& Phong::setLightPosition(const Vector3& position) {
 }
 #endif
 
-Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
+Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color3> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     if(_lightCount) setUniform(_lightColorsUniform, colors);
     return *this;
 }
 
-/* It's light, but can't be in the header because MSVC needs to know the size
-   of Color for the initializer list use */
+#ifdef MAGNUM_BUILD_DEPRECATED
+Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
+    Containers::Array<Magnum::Color3> threeComponent{Containers::NoInit, colors.size()};
+    for(std::size_t i = 0; i != colors.size(); ++i)
+        threeComponent[i] = colors[i].rgb();
+    setLightColors(threeComponent);
+    return *this;
+}
+
 Phong& Phong::setLightColors(const std::initializer_list<Magnum::Color4> colors) {
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    return setLightColors(Containers::arrayView(colors));
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
+Phong& Phong::setLightColors(const std::initializer_list<Magnum::Color3> colors) {
     return setLightColors(Containers::arrayView(colors));
 }
 
-Phong& Phong::setLightColor(const UnsignedInt id, const Magnum::Color4& color) {
+Phong& Phong::setLightColor(const UnsignedInt id, const Magnum::Color3& color) {
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
     return *this;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
+    return setLightColor(id, color.rgb());
+}
+
+Phong& Phong::setLightColor(const Magnum::Color4& color) {
+    /* Use the list variant to check the shader really has just one light */
+    return setLightColors({color.rgb()});
+}
+#endif
 
 Phong& Phong::setLightRanges(const Containers::ArrayView<const Float> ranges) {
     CORRADE_ASSERT(_lightCount == ranges.size(),

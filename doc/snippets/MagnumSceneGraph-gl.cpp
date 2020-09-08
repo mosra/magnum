@@ -184,7 +184,7 @@ struct MyApplication: Platform::Application {
     SceneGraph::Object<SceneGraph::MatrixTransformation2D>* _cameraObject;
     SceneGraph::Camera3D* _camera;
     Vector4 _lightPositionRelativeToCamera;
-    Vector3 _lightColor, _ambientColor;
+    Color3 _lightColor, _ambientColor;
 /* [Drawable-multiple-groups] */
     // ...
 

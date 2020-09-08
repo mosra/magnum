@@ -189,6 +189,13 @@ See also:
 -   @cpp Shaders::Phong::setLightPosition(const Vector3&) @ce is deprecated in
     favor of @ref Shaders::Phong::setLightPositions() with a single item ---
     it's short enough to not warrant the existence of a dedicated overload
+-   @ref Shaders::Phong::setLightColors() and
+    @ref Shaders::Phong::setLightColor() taking four-component colors are
+    deprecated in favor of variants taking just three-component colors, as the
+    alpha had no meaningful use anyway.
+-   @cpp Shaders::Phong::setLightColor(const Magnum::Color4&) @ce is deprecated
+    in favor of @ref Shaders::Phong::setLightColors() with a single item ---
+    it's short enough to not warrant the existence of a dedicated overload
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.

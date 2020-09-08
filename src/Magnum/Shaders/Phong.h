@@ -880,36 +880,65 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Set light colors
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Initial values are @cpp 0xffffffff_rgbaf @ce. Expects that the size
+         * Initial values are @cpp 0xffffff_rgbf @ce. Expects that the size
          * of the @p colors array is the same as @ref lightCount().
+         * @see @ref Shaders-Phong-lights, @ref setLightColor()
          */
-        Phong& setLightColors(Containers::ArrayView<const Magnum::Color4> colors);
+        Phong& setLightColors(Containers::ArrayView<const Magnum::Color3> colors);
 
-        /** @overload */
-        Phong& setLightColors(std::initializer_list<Magnum::Color4> colors);
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        Phong& setLightColors(std::initializer_list<Magnum::Color3> colors);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setLightColors(Containers::ArrayView<const Magnum::Color3>)
+         * @m_deprecated_since_latest Use @ref setLightColors(Containers::ArrayView<const Magnum::Color3>)
+         *      instead. The alpha channel isn't used in any way.
+         */
+        CORRADE_DEPRECATED("use setLightColors(Containers::ArrayView<const Magnum::Color3>) instead") Phong& setLightColors(Containers::ArrayView<const Magnum::Color4> colors);
+
+        /**
+         * @brief @copybrief setLightColors(std::initializer_list<Magnum::Color3>)
+         * @m_deprecated_since_latest Use @ref setLightColors(std::initializer_list<Magnum::Color3>)
+         *      instead. The alpha channel isn't used in any way.
+         */
+        CORRADE_DEPRECATED("use setLightColors(std::initializer_list<Magnum::Color3>) instead") Phong& setLightColors(std::initializer_list<Magnum::Color4> colors);
+        #endif
 
         /**
          * @brief Set position for given light
          * @return Reference to self (for method chaining)
+         * @m_since_latest
          *
-         * Unlike @ref setLightColors() updates just a single light color.
-         * Expects that @p id is less than @ref lightCount().
-         * @see @ref setLightColor(const Magnum::Color4&)
+         * Unlike @ref setLightColors() updates just a single light color. If
+         * updating more than one light, prefer the batch function instead to
+         * reduce the count of GL API calls. Expects that @p id is less than
+         * @ref lightCount().
          */
-        Phong& setLightColor(UnsignedInt id, const Magnum::Color4& color);
+        Phong& setLightColor(UnsignedInt id, const Magnum::Color3& color);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief setLightColor(UnsignedInt, const Magnum::Color3&)
+         * @m_deprecated_since_latest Use @ref setLightColor(UnsignedInt, const Magnum::Color3&)
+         *      instead. The alpha channel isn't used in any way.
+         */
+        CORRADE_DEPRECATED("use setLightColor(UnsignedInt, const Magnum::Color3&) instead") Phong& setLightColor(UnsignedInt id, const Magnum::Color4& color);
 
         /**
          * @brief Set light color
-         * @return Reference to self (for method chaining)
-         *
-         * Convenience alternative to @ref setLightColors() when there is just
-         * one light.
-         * @see @ref setLightColor(UnsignedInt, const Magnum::Color4&)
+         * @m_deprecated_since_latest Use @ref setLightColors(std::initializer_list<Magnum::Color3>)
+         *      with a single item instead --- it's short enough to not warrant
+         *      the existence of a dedicated overload. The alpha channel isn't
+         *      used in any way.
          */
-        Phong& setLightColor(const Magnum::Color4& color) {
-            return setLightColors({&color, 1});
-        }
+        CORRADE_DEPRECATED("use setLightColor(std::initializer_list<Color3>) instead") Phong& setLightColor(const Magnum::Color4& color);
+        #endif
 
         /**
          * @brief Set light attenuation ranges

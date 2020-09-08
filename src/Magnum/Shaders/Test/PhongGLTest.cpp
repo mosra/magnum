@@ -176,7 +176,7 @@ using namespace Math::Literals;
 const struct {
     const char* name;
     Deg rotation;
-    Color4 lightColor1, lightColor2;
+    Color3 lightColor1, lightColor2;
     Float lightPosition1, lightPosition2;
 } RenderColoredData[]{
     {"", {}, 0x993366_rgbf, 0x669933_rgbf, -3.0f, 3.0f},
@@ -718,7 +718,7 @@ void PhongGLTest::setWrongLightId() {
     std::ostringstream out;
     Error redirectError{&out};
     Phong{{}, 3}
-        .setLightColor(3, {})
+        .setLightColor(3, Color3{})
         .setLightPosition(3, Vector4{})
         .setLightRange(3, 0.0f);
     CORRADE_COMPARE(out.str(),
@@ -1648,7 +1648,7 @@ void PhongGLTest::renderZeroLights() {
         /* Keep alpha mask at the default 0.5 to test the default */
         /* Passing a zero-sized light position / color array, shouldn't assert */
         .setLightPositions(Containers::ArrayView<const Vector4>{})
-        .setLightColors({})
+        .setLightColors(Containers::ArrayView<const Color3>{})
         /* Using a bogus normal matrix -- it's not used so it should be okay.
            Same for all other unused values, they should get ignored. */
         .setNormalMatrix(Matrix3x3{Math::ZeroInit})
