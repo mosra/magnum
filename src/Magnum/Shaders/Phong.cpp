@@ -258,7 +258,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         if(flags & Flag::NormalTexture)
             setNormalTextureScale(1.0f);
         setLightPositions(Containers::Array<Vector4>{Containers::DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
-        setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}});
+        setLightColors(Containers::Array<Magnum::Color3>{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}});
         setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
         setNormalMatrix({});
