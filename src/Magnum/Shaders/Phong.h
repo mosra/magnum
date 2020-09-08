@@ -658,7 +658,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * Expects that the shader was created with @ref Flag::NormalTexture
          * enabled. If @ref lightCount() is zero, this function is a no-op, as
          * normals don't contribute to the output in that case.
-         * @see @ref bindNormalTexture(),
+         * @see @ref Shaders-Phong-normal-mapping, @ref bindNormalTexture(),
          *      @ref Trade::MaterialAttribute::NormalTextureScale
          */
         Phong& setNormalTextureScale(Float scale);
@@ -672,7 +672,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * enabled and the @ref Tangent attribute was supplied. If
          * @ref lightCount() is zero, this function is a no-op, as normals
          * don't contribute to the output in that case.
-         * @see @ref bindTextures(), @ref setNormalTextureScale()
+         * @see @ref Shaders-Phong-normal-mapping,
+         *      @ref bindTextures(), @ref setNormalTextureScale()
          */
         Phong& bindNormalTexture(GL::Texture2D& texture);
 
