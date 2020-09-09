@@ -142,7 +142,10 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
 
 InstanceCreateInfo::InstanceCreateInfo(NoInitT) noexcept {}
 
-InstanceCreateInfo::InstanceCreateInfo(const VkInstanceCreateInfo& info): _info{info} {}
+InstanceCreateInfo::InstanceCreateInfo(const VkInstanceCreateInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
 
 InstanceCreateInfo::~InstanceCreateInfo() = default;
 
@@ -300,7 +303,13 @@ Instance::Instance(const InstanceCreateInfo& info): _flags{HandleFlag::DestroyOn
 
 Instance::Instance(NoCreateT): _handle{}, _functionPointers{} {}
 
-Instance::Instance(Instance&& other) noexcept: _handle{other._handle}, _flags{other._flags}, _version{other._version}, _extensionStatus{other._extensionStatus}, _state{std::move(other._state)}, _functionPointers{other._functionPointers} {
+Instance::Instance(Instance&& other) noexcept: _handle{other._handle},
+    _flags{other._flags}, _version{other._version},
+    _extensionStatus{other._extensionStatus}, _state{std::move(other._state)},
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _functionPointers(other._functionPointers)
+{
     other._handle = nullptr;
     other._functionPointers = {};
 }

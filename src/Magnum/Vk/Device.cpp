@@ -119,7 +119,10 @@ DeviceCreateInfo::DeviceCreateInfo(Instance& instance, const Flags flags): Devic
 
 DeviceCreateInfo::DeviceCreateInfo(NoInitT) noexcept {}
 
-DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo& info): _physicalDevice{physicalDevice}, _info{info} {}
+DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo& info): _physicalDevice{physicalDevice},
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
 
 DeviceCreateInfo::~DeviceCreateInfo() = default;
 
@@ -308,7 +311,13 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info):
 
 Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
 
-Device::Device(Device&& other) noexcept: _handle{other._handle}, _flags{other._flags}, _version{other._version}, _extensionStatus{other._extensionStatus}, _state{std::move(other._state)}, _functionPointers{other._functionPointers} {
+Device::Device(Device&& other) noexcept: _handle{other._handle},
+    _flags{other._flags}, _version{other._version},
+    _extensionStatus{other._extensionStatus}, _state{std::move(other._state)},
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _functionPointers(other._functionPointers)
+{
     other._handle = nullptr;
     other._functionPointers = {};
 }
