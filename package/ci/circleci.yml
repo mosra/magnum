@@ -13,9 +13,15 @@ executors:
   ubuntu-16_04:
     docker:
     - image: ubuntu:xenial-20201014
-  xcode-9_4:
+  ubuntu-18_04:
+    docker:
+    - image: ubuntu:bionic-20200921
+  xcode-10_3:
     macos:
-      xcode: 9.4.1
+      xcode: 10.3.0
+  xcode-11_6:
+    macos:
+      xcode: 11.6.0
   emscripten:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -119,6 +125,9 @@ commands:
           source $BASH_ENV && cmake --version | grep 3.4
 
   install-swiftshader-gles:
+    parameters:
+      build:
+        type: string
     steps:
     - run:
         name: Install SwiftShader GLES
@@ -126,10 +135,39 @@ commands:
         # self-hosted because GH Actions would make it too simple for people if
         # you could just download the artifacts directly, right? RIGHT?
         command: |
-          apt install -y wget unzip
           mkdir -p $HOME/swiftshader && cd $HOME/swiftshader
-          wget https://ci.magnum.graphics/swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip
-          unzip swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip
+          wget https://ci.magnum.graphics/swiftshader-gles-r5464.a6940c8e6e-<< parameters.build >>.zip
+          unzip swiftshader-gles-r5464.a6940c8e6e-<< parameters.build >>.zip
+
+  install-swiftshader-vulkan:
+    parameters:
+      build:
+        type: string
+    steps:
+    - run:
+        name: Install SwiftShader Vulkan
+        # Zip from https://github.com/mosra/magnum-ci/tree/swiftshader and
+        # self-hosted because GH Actions would make it too simple for people if
+        # you could just download the artifacts directly, right? RIGHT?
+        command: |
+          mkdir -p $HOME/swiftshader && cd $HOME/swiftshader
+          wget https://ci.magnum.graphics/swiftshader-vulkan-r5464.a6940c8e6e-<< parameters.build >>.zip
+          unzip swiftshader-vulkan-r5464.a6940c8e6e-<< parameters.build >>.zip
+
+  install-vulkan-loader:
+    parameters:
+      build:
+        type: string
+    steps:
+    - run:
+        name: Install Vulkan Loader
+        # Zip from https://github.com/mosra/magnum-ci/tree/vulkan-loader and
+        # self-hosted because GH Actions would make it too simple for people if
+        # you could just download the artifacts directly, right? RIGHT?
+        command: |
+          mkdir -p $HOME/vulkan-loader && cd $HOME/vulkan-loader
+          wget https://ci.magnum.graphics/vulkan-loader-1.2.153-<< parameters.build >>.zip
+          unzip vulkan-loader-1.2.153-<< parameters.build >>.zip
 
   setup-null-openal-driver:
     steps:
@@ -176,7 +214,7 @@ jobs:
       PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
+        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -184,15 +222,19 @@ jobs:
         script: unix-desktop.sh
     - lcov
 
+  # vulkan-loader is broken on 16.04 and swiftshader vulkan needs GCC 7 to
+  # compile, so using 18.04 for Vulkan tests instead. Compile tests with GCC
+  # 4.8 are still done on 16.04
   linux-vulkan:
-    executor: ubuntu-16_04
-    # Using default GCC and CMake version here
+    executor: ubuntu-18_04
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
     steps:
     - install-base-linux:
-        extra: cmake libsdl2-dev libglfw3-dev
+        extra: cmake libsdl2-dev libglfw3-dev libvulkan-dev wget unzip
+    - install-swiftshader-vulkan:
+        build: ubuntu-18.04
     - build:
         script: unix-desktop-vulkan.sh
     - lcov
@@ -208,10 +250,11 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux:
-        extra: libsdl2-dev libglfw3-dev
+        extra: libsdl2-dev libglfw3-dev wget unzip
     - install-gcc-4_8
     - install-cmake-3_4
-    - install-swiftshader-gles
+    - install-swiftshader-gles:
+        build: ubuntu-16.04
     - build:
         script: unix-desktop-gles.sh
     - lcov
@@ -227,10 +270,11 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-linux:
-        extra: libsdl2-dev libglfw3-dev
+        extra: libsdl2-dev libglfw3-dev wget unzip
     - install-gcc-4_8
     - install-cmake-3_4
-    - install-swiftshader-gles
+    - install-swiftshader-gles:
+        build: ubuntu-16.04
     - build:
         script: unix-desktop-gles.sh
     - lcov
@@ -247,7 +291,7 @@ jobs:
       PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
+        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -265,7 +309,7 @@ jobs:
       PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
+        extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -284,7 +328,7 @@ jobs:
       PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libopenal-dev
+        extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang-3_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -303,7 +347,7 @@ jobs:
       PLATFORM_GL_API: GLX
     steps:
     - install-base-linux:
-        extra: libgl1-mesa-dev libopenal-dev
+        extra: libgl1-mesa-dev libopenal-dev libvulkan-dev
     - install-clang-3_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -311,20 +355,42 @@ jobs:
         script: unix-desktop.sh
 
   macos-gl:
-    executor: xcode-9_4
+    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
+    # have to use 10.3 instead
+    executor: xcode-10_3
     environment:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
       PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
-        extra: sdl2 glfw
+        extra: sdl2 glfw molten-vk
     - build:
         script: unix-desktop.sh
     - lcov
 
+  macos-vulkan:
+    # SwiftShader is built on 10.15 and can't be used on older versions due to
+    # dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
+    executor: xcode-11_6
+    environment:
+      CMAKE_CXX_FLAGS: --coverage
+      CONFIGURATION: Debug
+    steps:
+    - install-base-macos:
+        extra: sdl2 glfw wget
+    - install-swiftshader-vulkan:
+        build: macos-10.15
+    - install-vulkan-loader:
+        build: macos-10.15
+    - build:
+        script: unix-desktop-vulkan.sh
+    - lcov
+
   macos-static:
-    executor: xcode-9_4
+    # Molten-vk isn't in (non-updated) Homebrew on the 9.4 or 10.0/1/2 image,
+    # have to use 10.3 instead
+    executor: xcode-10_3
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       BUILD_STATIC: "ON"
@@ -333,7 +399,7 @@ jobs:
       PLATFORM_GL_API: CGL
     steps:
     - install-base-macos:
-        extra: sdl2 glfw
+        extra: sdl2 glfw molten-vk
     - build:
         script: unix-desktop.sh
     - lcov
@@ -371,6 +437,7 @@ workflows:
     - linux-sanitizers
     - linux-threadsanitizer
     - macos-gl
+    - macos-vulkan
     - macos-static
     - emscripten-webgl1
     - emscripten-webgl2

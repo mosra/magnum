@@ -8,6 +8,7 @@ addons:
     - libsdl2-dev
     - libglfw3-dev
     - libopenal-dev
+    - libvulkan-dev
 
 matrix:
   # The commented-out jobs are currently handled on Circle CI
@@ -52,6 +53,7 @@ matrix:
         #- libsdl2-dev
         #- libglfw3-dev
         #- libopenal-dev
+        #- libvulkan-dev
   #- language: cpp
     #os: linux
     #dist: xenial
@@ -72,9 +74,10 @@ matrix:
         #- libsdl2-dev
         #- libglfw3-dev
         #- libopenal-dev
+        #- libvulkan-dev
   #- language: cpp
     #os: linux
-    #dist: xenial
+    #dist: bionic
     #compiler: gcc
     #env:
     #- JOBID=linux-vulkan
@@ -87,6 +90,7 @@ matrix:
         #- lcov
         #- libsdl2-dev
         #- libglfw3-dev
+        #- libvulkan-dev
   #- language: cpp
     #os: linux
     #dist: xenial
@@ -108,6 +112,17 @@ matrix:
     #- TARGET_GLES2=ON
     #- CMAKE_CXX_FLAGS="--coverage"
     #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
+    #addons:
+      #apt:
+        #packages:
+        #- libgl1-mesa-dev
+        #- g++-4.8
+        #- ninja-build
+        #- lcov
+        #- libsdl2-dev
+        #- libglfw3-dev
+        #- libopenal-dev
+        ## We don't need Vulkan here
   #- language: cpp
     #os: linux
     #dist: xenial
@@ -120,16 +135,9 @@ matrix:
     #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
   #- language: cpp
     #os: osx
-    ## The new plugin testing workflow is dynamically loading and unloading them
-    ## in the tests. When that's combined with coverage and LLVM < 5.0.1, all
-    ## such tests crash on exit: https://bugs.llvm.org/show_bug.cgi?id=27224
-    ## But only in some cases (for example not at all in tests for Corrade
-    ## PluginManager itself). The commit fixing it is from Jan 3 2018 and all
-    ## Xcode versions before Xcode 9.3 beta (released on Jan 24) are affected.
-    ## https://github.com/llvm-mirror/compiler-rt/commit/860d7953a6f36980f406bfbff76f3c00f15eed57
-    ## Xcode 9.3 beta has broken git clone ("unknown protocol version 2") since
-    ## Feb 16 2019, so using version 9.3 now.
-    #osx_image: xcode9.3
+    ## This is currently (Sep 2020) the Travis default, 9.3 didn't have
+    ## molten-vk in (non-updated) Homebrew.
+    #osx_image: xcode9.4
     #compiler: clang
     #env:
     #- JOBID=macos-gl
@@ -139,13 +147,24 @@ matrix:
   #- language: cpp
     #os: osx
     ## See above
-    #osx_image: xcode9.3
+    #osx_image: xcode9.4
     #compiler: clang
     #env:
     #- JOBID=macos-static
     #- TARGET=desktop
     #- CMAKE_CXX_FLAGS="--coverage"
     #- BUILD_STATIC=ON
+    #- CONFIGURATION=Debug
+  #- language: cpp
+    #os: osx
+    ## SwiftShader is built on 10.15 and can't be used on older versions due to
+    ## dyld: lazy symbol binding failed: Symbol not found: ____chkstk_darwin
+    #osx_image: xcode11.6
+    #compiler: clang
+    #env:
+    #- JOBID=macos-vulkan
+    #- TARGET=desktop-vulkan
+    #- CMAKE_CXX_FLAGS="--coverage"
     #- CONFIGURATION=Debug
   - language: cpp
     os: osx
@@ -260,18 +279,26 @@ install:
 # GLFW (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-vulkan" ] ); then HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw; fi
 
-# SwiftShader on Linux GLES (16.04). Zip from
+# SwiftShader on Linux GLES (16.04) and Vulkan (18.04) (cached). Zip from
 # https://github.com/mosra/magnum-ci/tree/swiftshader and self-hosted because
 # GH Actions would make it too simple for people if you could just download the
 # artifacts directly, right? RIGHT?
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ] && [ ! -e "$HOME/swiftshader/lib/libGLESv2.so" ]; then cd $HOME ; wget https://ci.magnum.graphics/swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip && mkdir -p swiftshader && cd swiftshader && unzip ../swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip && cd $TRAVIS_BUILD_DIR ; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ] && [ ! -e "$HOME/swiftshader/lib/libvk_swiftshader.so" ]; then cd $HOME ; wget https://ci.magnum.graphics/swiftshader-vulkan-r5464.a6940c8e6e-ubuntu-18.04.zip && mkdir -p swiftshader && cd swiftshader && unzip ../swiftshader-vulkan-r5464.a6940c8e6e-ubuntu-18.04.zip && cd $TRAVIS_BUILD_DIR ; fi
+
+# MoltenVk on macOS for the general desktop build (we just need to link against
+# something as the tests aren't run anyway, desktop-vulkan uses Vulkan-Loader
+# so this is an opportunity to test both)
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install molten-vk; fi
+
+# SwiftShader on Mac, also self-hosted from GH Actions. We also need Vulkan
+# loader there.
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop-vulkan" ] && [ ! -e "$HOME/swiftshader/lib/libvk_swiftshader.dylib" ]; then cd $HOME ; wget https://ci.magnum.graphics/swiftshader-r5464.a6940c8e6e-macos-10.15.zip && mkdir -p swiftshader && cd swiftshader && unzip ../swiftshader-r5464.a6940c8e6e-macos-10.15.zip && cd $TRAVIS_BUILD_DIR ; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop-vulkan" ] && [ ! -e "$HOME/vulkan-loader/lib/libvulkan.dylib" ]; then cd $HOME ; wget https://ci.magnum.graphics/vulkan-loader-1.2.153-macos-10.15.zip && mkdir -p vulkan-loader && cd vulkan-loader && unzip ../vulkan-loader-1.2.153-macos-10.15.zip && cd $TRAVIS_BUILD_DIR ; fi
 
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ); then ./package/ci/travis-desktop.sh; fi
-# Vulkan needs to be in a separate build, because it needs new CMake (for the
-# Find module) and in the future also C++14. Unfortunately that means we can't
-# apply the sanitizer or non-deprecated build on it.
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then ./package/ci/travis-desktop-vulkan.sh; fi
+- if [ "$TARGET" == "desktop-vulkan" ]; then ./package/ci/travis-desktop-vulkan.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/travis-desktop-gles.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then ./package/ci/travis-android-arm.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi

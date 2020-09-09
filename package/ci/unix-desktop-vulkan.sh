@@ -17,20 +17,20 @@ cmake .. \
 ninja install
 cd ../..
 
-# The fastest Vulkan driver ever. See travis.yml for why we have a separate
-# Vulkan build.
-g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so
-
 # Enabling only stuff that's directly affected by Vulkan (which means also
 # parts of Platform, which need Trade for icon import in tests), disabling
-# everything else.
+# everything else. On Linux this uses a newer GCC because SwiftShader doesn't
+# compile on 4.8; building of Vulkan Magnum code on GCC 4.8 is tested in the
+# combined GL + Vulkan job.
+#
+# Not using CXXFLAGS in order to avoid affecting dependencies.
 mkdir build && cd build
-# Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    `# Vulkan Loader is custom-built on Mac` \
+    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/vulkan-loader" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DVulkan_LIBRARY=$HOME/libvulkan.so \
     -DWITH_AUDIO=OFF \
     -DWITH_DEBUGTOOLS=OFF \
     -DWITH_GL=OFF \
@@ -70,7 +70,13 @@ cmake .. \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -G Ninja
 ninja
-ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$TRAVIS_BUILD_DIR/package/ci/leaksanitizer.conf" CORRADE_TEST_COLOR=ON ctest -V -E "(GL|Vk)Test"
+
+export VK_ICD_FILENAMES=$HOME/swiftshader/share/vulkan/icd.d/vk_swiftshader_icd.json
+export CORRADE_TEST_COLOR=ON
+
+ctest -V
+MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
+MAGNUM_DISABLE_EXTENSIONS=VK_KHR_get_physical_device_properties2 MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON ctest -V -R VkTest
 
 # Test install, after running the tests as for them it shouldn't be needed
 ninja install
