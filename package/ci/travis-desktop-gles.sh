@@ -21,10 +21,10 @@ cmake .. \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DEGL_LIBRARY=$HOME/swiftshader/libEGL.so \
-    -DOPENGLES2_LIBRARY=$HOME/swiftshader/libGLESv2.so \
-    -DOPENGLES3_LIBRARY=$HOME/swiftshader/libGLESv2.so \
-    -DCMAKE_INSTALL_RPATH=$HOME/swiftshader \
+    -DEGL_LIBRARY=$HOME/swiftshader/lib/libEGL.so \
+    -DOPENGLES2_LIBRARY=$HOME/swiftshader/lib/libGLESv2.so \
+    -DOPENGLES3_LIBRARY=$HOME/swiftshader/lib/libGLESv2.so \
+    -DCMAKE_INSTALL_RPATH=$HOME/swiftshader/lib \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DWITH_AUDIO=ON \

@@ -228,8 +228,6 @@ notifications:
 cache:
   directories:
   - $HOME/sdl2
-  - $HOME/swiftshader
-  - $HOME/cmake
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ] && [ ! "$TARGET" == "android" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export CXX=g++-4.8; fi
@@ -266,9 +264,11 @@ install:
 # GLFW (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-vulkan" ] ); then HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw; fi
 
-# SwiftShader on Linux (cached). Taken from Chromium snapshot 587878
-# (swiftshader-bin Arch package).
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ] && [ ! -e "$HOME/swiftshader/libEGL.so" ]; then cd $HOME ; wget https://ci.magnum.graphics/swiftshader-chromium-587878.tar.gz && mkdir -p swiftshader && cd swiftshader && tar -xzf ../swiftshader-chromium-587878.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
+# SwiftShader on Linux GLES (16.04). Zip from
+# https://github.com/mosra/magnum-ci/tree/swiftshader and self-hosted because
+# GH Actions would make it too simple for people if you could just download the
+# artifacts directly, right? RIGHT?
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ] && [ ! -e "$HOME/swiftshader/lib/libGLESv2.so" ]; then cd $HOME ; wget https://ci.magnum.graphics/swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip && mkdir -p swiftshader && cd swiftshader && unzip ../swiftshader-gles-r5464.a6940c8e6e-ubuntu-16.04.zip && cd $TRAVIS_BUILD_DIR ; fi
 
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ); then ./package/ci/travis-desktop.sh; fi
