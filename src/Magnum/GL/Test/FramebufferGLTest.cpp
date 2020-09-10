@@ -1304,6 +1304,14 @@ void FramebufferGLTest::clearStencil() {
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
+
+        #ifdef MAGNUM_TARGET_GLES
+        /* If you're bored -- here's the code in question, I have no idea where
+           to look for the error: https://github.com/google/swiftshader/commit/d1ed57e6942ec88e2c925d602b3830c7dc3bf213 */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+            "SwiftShader has buggy NV_read_stencil.");
+        #endif
+
         CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(stencilImage.data())[0], 67);
     }
     #endif
@@ -1515,6 +1523,14 @@ void FramebufferGLTest::read() {
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
+
+        #ifdef MAGNUM_TARGET_GLES
+        /* If you're bored -- here's the code in question, I have no idea where
+           to look for the error: https://github.com/google/swiftshader/commit/d1ed57e6942ec88e2c925d602b3830c7dc3bf213 */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+            "SwiftShader has buggy NV_read_stencil.");
+        #endif
+
         CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(stencilImage.data())[0], 67);
     }
 
