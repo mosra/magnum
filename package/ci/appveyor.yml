@@ -8,24 +8,21 @@ environment:
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     APPVEYOR_JOB_NAME: windows-msvc2015
     CONFIGURATION: Debug
+    ENABLE_VULKAN: OFF
   - TARGET: desktop
     COMPILER: msvc
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-msvc2017
     CONFIGURATION: Debug
+    ENABLE_VULKAN: OFF
   - TARGET: desktop
     COMPILER: msvc
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-msvc2019
     CONFIGURATION: Debug
-  - TARGET: desktop-vulkan
-    COMPILER: msvc
-    PLATFORM: x64
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-    APPVEYOR_JOB_NAME: windows-vulkan-msvc2019
-    CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
   - TARGET: desktop
     COMPILER: msvc
     PLATFORM: x64
@@ -33,12 +30,14 @@ environment:
     APPVEYOR_JOB_NAME: windows-static-msvc2019
     CONFIGURATION: Debug
     BUILD_STATIC: ON
+    ENABLE_VULKAN: ON
   - TARGET: desktop
     COMPILER: msvc-clang
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     APPVEYOR_JOB_NAME: windows-msvc2019-clang
     CONFIGURATION: Debug
+    ENABLE_VULKAN: ON
   # Build at least one 32bit Release build, so we catch things that are not a
   # problem on either 64bit or Debug.
   - TARGET: desktop
@@ -52,6 +51,7 @@ environment:
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-mingw
+    ENABLE_VULKAN: ON
   - TARGET: desktop-gles
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -105,7 +105,6 @@ install:
 # Build apps on both GL and Vulkan to verify these can build w/o GL as well.
 # Not on GLES, as there's not much GLES-dependent.
 - IF "%TARGET%" == "desktop" set BUILD_APPLICATIONS=YES
-- IF "%TARGET%" == "desktop-vulkan" set BUILD_APPLICATIONS=YES
 - IF "%TARGET%" == "desktop-gles" set BUILD_APPLICATIONS=NO
 
 # SDL2
@@ -122,6 +121,13 @@ install:
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER:~0,4%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
 - IF "%BUILD_APPLICATIONS%" == "YES" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
 
+# SwiftShader for Vulkan + Vulkan loader
+# TODO: re-enable SwiftShader when we figure out why vkCreateInstance fails
+#- IF "%ENABLE_VULKAN%" == "ON" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\swiftshader-vulkan-r5464.a6940c8e6e-windows-2019.zip appveyor DownloadFile https://ci.magnum.graphics/swiftshader-vulkan-r5464.a6940c8e6e-windows-2019.zip
+- IF "%ENABLE_VULKAN%" == "ON" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\vulkan-loader-1.2.153-windows-2019.zip appveyor DownloadFile https://ci.magnum.graphics/vulkan-loader-1.2.153-windows-2019.zip
+#- IF "%ENABLE_VULKAN%" == "ON" 7z x swiftshader-vulkan-r5464.a6940c8e6e-windows-2019.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+- IF "%ENABLE_VULKAN%" == "ON" 7z x vulkan-loader-1.2.153-windows-2019.zip -o%APPVEYOR_BUILD_FOLDER%\deps
+
 # Angle for WinRT. Zip from https://github.com/mosra/magnum-ci/tree/angle and
 # self-hosted because GH Actions would make it too simple for people if you
 # could just download the artifacts directly, right? RIGHT?
@@ -132,10 +138,6 @@ build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER:~0,4%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
-# Vulkan needs to be in a separate build, because in the future it'll need
-# C++14 and building it together with C++11 code would harm verifiability of
-# C++11 compatibility.
-- IF "%TARGET%" == "desktop-vulkan" call package\ci\appveyor-desktop-vulkan.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:

@@ -27,6 +27,7 @@ cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" ^
     -DWITH_AUDIO=ON ^
+    -DWITH_VK=ON ^
     -DWITH_SDL2APPLICATION=ON ^
     -DWITH_WINDOWLESSWGLAPPLICATION=ON ^
     -DWITH_WGLCONTEXT=ON ^
@@ -49,15 +50,17 @@ cmake .. ^
     -DWITH_SCENECONVERTER=ON ^
     -DWITH_SHADERCONVERTER=ON ^
     -DWITH_GL_INFO=ON ^
+    -DWITH_VK_INFO=ON ^
     -DWITH_AL_INFO=ON ^
     -DBUILD_TESTS=ON ^
     -DBUILD_GL_TESTS=ON ^
+    -DBUILD_VK_TESTS=ON ^
     -G Ninja || exit /b
 cmake --build . || exit /b
 
 rem Test
 set CORRADE_TEST_COLOR=ON
-ctest -V -E GLTest || exit /b
+ctest -V -E "(GL|Vk)Test" || exit /b
 
 rem Test install, after running the tests as for them it shouldn't be needed
 cmake --build . --target install || exit /b
