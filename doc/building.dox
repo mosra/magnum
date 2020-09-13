@@ -565,6 +565,8 @@ code:
 -   `WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Requires
     `TARGET_GL` to be enabled; enables building of one of the windowless
     application libraries based on the target platform.
+-   `WITH_VULKANTESTER` --- The @ref Vk::VulkanTester class. Requires
+    `TARGET_VK` to be enabled.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in a separate plugin repository,

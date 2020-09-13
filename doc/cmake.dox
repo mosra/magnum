@@ -231,6 +231,7 @@ There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
 -   `OpenGLTester` --- @ref GL::OpenGLTester class
+-   `VulkanTester` --- @ref Vk::VulkanTester class
 
 The library also contains a set of plugins for importing essential file
 formats. Additional plugins are provided in separate plugin repository, see

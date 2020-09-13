@@ -217,8 +217,10 @@ if(BUILD_TESTS)
     endif()
 endif()
 
-# OpenGLTester library, built by default only if GL tests are enabled
+# OpenGLTester / VulkanTester libraries, built by default only if GL / VK tests
+# are enabled
 cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
+cmake_dependent_option(WITH_VULKANTESTER "Build VulkanTester library" OFF "NOT BUILD_VK_TESTS" ON)
 
 # Dynamic linking is meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)

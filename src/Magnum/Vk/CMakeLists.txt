@@ -125,6 +125,37 @@ if(WITH_VK_INFO)
     add_executable(Magnum::vk-info ALIAS magnum-vk-info)
 endif()
 
+if(WITH_VULKANTESTER)
+    if(NOT TARGET_VK)
+        message(SEND_ERROR "VulkanTester is available only if TARGET_VK is enabled")
+    endif()
+
+    find_package(Corrade REQUIRED TestSuite)
+
+    set(MagnumVulkanTester_SRCS VulkanTester.cpp)
+    set(MagnumVulkanTester_HEADERS VulkanTester.h)
+
+    # Unlike with OpenGLTester, we shouldn't need a separate library that links
+    # exclusively to MagnumVkTestLib as there is no global state that could
+    # cause problems on Windows.
+    add_library(MagnumVulkanTester STATIC
+        ${MagnumVulkanTester_SRCS}
+        ${MagnumVulkanTester_HEADERS})
+    set_target_properties(MagnumVulkanTester PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Vk")
+    target_link_libraries(MagnumVulkanTester PUBLIC MagnumVk Corrade::TestSuite)
+
+    install(FILES ${MagnumVulkanTester_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
+    install(TARGETS MagnumVulkanTester
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Magnum VulkanTester target alias for superprojects
+    add_library(Magnum::VulkanTester ALIAS MagnumVulkanTester)
+endif()
+
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumVkTestLib ${SHARED_OR_STATIC}
