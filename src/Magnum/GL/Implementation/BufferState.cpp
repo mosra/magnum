@@ -100,6 +100,9 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
         createImplementation = &Buffer::createImplementationDSA;
         copyImplementation = &Buffer::copyImplementationDSA;
+        #ifndef MAGNUM_TARGET_GLES
+        storageImplementation = &Buffer::storageImplementationDSA;
+        #endif
         getParameterImplementation = &Buffer::getParameterImplementationDSA;
         getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
         dataImplementation = &Buffer::dataImplementationDSA;
@@ -114,6 +117,9 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         createImplementation = &Buffer::createImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES2
         copyImplementation = &Buffer::copyImplementationDefault;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        storageImplementation = &Buffer::storageImplementationDefault;
         #endif
         getParameterImplementation = &Buffer::getParameterImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES

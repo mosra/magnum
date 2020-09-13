@@ -305,6 +305,13 @@ Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+Buffer& Buffer::setStorage(const Containers::ArrayView<const void> data, const StorageFlags flags) {
+    (this->*Context::current().state().buffer->storageImplementation)(data, flags);
+    return *this;
+}
+#endif
+
 Int Buffer::size() {
     /**
      * @todo there is something like glGetBufferParameteri64v in 3.2 (I
@@ -432,6 +439,16 @@ void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr r
     glCopyNamedBufferSubData(read._id, write._id, readOffset, writeOffset, size);
 }
 #endif
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Buffer::storageImplementationDefault(Containers::ArrayView<const void> data, StorageFlags flags) {
+    glBufferStorage(GLenum(bindSomewhereInternal(_targetHint)), data.size(), data.data(), GLbitfield(flags));
+}
+
+void Buffer::storageImplementationDSA(Containers::ArrayView<const void> data, const StorageFlags flags) {
+    glNamedBufferStorage(_id, data.size(), data.data(), GLbitfield(flags));
+}
 #endif
 
 void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const data) {

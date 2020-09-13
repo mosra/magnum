@@ -196,19 +196,20 @@ and index buffers in WebGL.
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl_keyword{BindBuffer}. If the buffer is already bound to some target,
-functions @ref copy(), @ref setData(), @ref setSubData(), @ref map(),
-@ref mapRead(), @ref flushMappedRange() and @ref unmap() use that target
-instead of binding the buffer to some specific target. You can also use
+functions @ref copy(), @ref setStorage(), @ref setData(), @ref setSubData(),
+@ref map(), @ref mapRead(), @ref flushMappedRange() and @ref unmap() use that
+target instead of binding the buffer to some specific target. You can also use
 @ref setTargetHint() to possibly reduce unnecessary rebinding. Buffer limits
 and implementation-defined values (such as @ref maxUniformBindings()) are
 cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::Buffers.
 
 If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
-functions @ref copy(), @ref size(), @ref data(), @ref subData(), @ref setData(),
-@ref setSubData(), @ref map(), @ref mapRead(), @ref flushMappedRange() and
-@ref unmap() use DSA functions to avoid unnecessary calls to @fn_gl{BindBuffer}.
-See their respective documentation for more information.
+functions @ref copy(), @ref setStorage(), @ref size(), @ref data(),
+@ref subData(), @ref setData(), @ref setSubData(), @ref map(), @ref mapRead(),
+@ref flushMappedRange() and @ref unmap() use DSA functions to avoid unnecessary
+calls to @fn_gl{BindBuffer}. See their respective documentation for more
+information.
 
 You can use functions @ref invalidateData() and @ref invalidateSubData() if you
 don't need buffer data anymore to avoid unnecessary memory operations performed
@@ -489,9 +490,30 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
              * before mapping.
              */
             #ifndef MAGNUM_TARGET_GLES2
-            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT
+            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT,
             #else
-            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT_EXT
+            Unsynchronized = GL_MAP_UNSYNCHRONIZED_BIT_EXT,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Allow reading from or writing to the buffer while it is mapped.
+             * @m_since_latest
+             * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+             * @requires_gl Buffer storage is not available in OpenGL ES and
+             *      WebGL, use @ref setData() instead.
+             */
+            Persistent = GL_MAP_PERSISTENT_BIT,
+
+            /**
+             * Shared access to buffer that's both mapped and used will be
+             * coherent.
+             * @m_since_latest
+             * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+             * @requires_gl Buffer storage is not available in OpenGL ES and
+             *      WebGL, use @ref setData() instead.
+             */
+            Coherent = GL_MAP_COHERENT_BIT
             #endif
         };
 
@@ -505,6 +527,53 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @requires_gles Buffer mapping is not available in WebGL.
          */
         typedef Containers::EnumSet<MapFlag> MapFlags;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Buffer storage flag
+         * @m_since_latest
+         *
+         * @see @ref StorageFlags, @ref setStorage()
+         * @m_enum_values_as_keywords
+         * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
+         *      use @ref setData() instead.
+         */
+        enum class StorageFlag: GLbitfield {
+            /** Allow the buffer to be mapped with @ref MapFlag::Read. */
+            MapRead = GL_MAP_READ_BIT,
+
+            /** Allow the buffer to be mapped with @ref MapFlag::Write. */
+            MapWrite = GL_MAP_WRITE_BIT,
+
+            /** Allow the buffer to be mapped with @ref MapFlag::Persistent. */
+            MapPersistent = GL_MAP_PERSISTENT_BIT,
+
+            /** Allow the buffer to be mapped with @ref MapFlag::Coherent. */
+            MapCoherent = GL_MAP_COHERENT_BIT,
+
+            /**
+             * Allow the buffer to be updated with @ref setSubData(). Note that
+             * the buffer can still be updated through @ref copy() even without
+             * this flag present.
+             */
+            DynamicStorage = GL_DYNAMIC_STORAGE_BIT,
+
+            /** Prefer to allocate the memory in client memory space. */
+            ClientStorage = GL_CLIENT_STORAGE_BIT
+        };
+
+        /**
+         * @brief Buffer storage flags
+         * @m_since_latest
+         *
+         * @see @ref setStorage()
+         * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
+         *      use @ref setData() instead.
+         */
+        typedef Containers::EnumSet<StorageFlag> StorageFlags;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -963,6 +1032,40 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& bind(Target target, UnsignedInt index);
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set storage
+         * @param data      Data
+         * @param flags     Storage flags
+         * @m_since_latest
+         *
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
+         * @see @ref setTargetHint(),
+         *      @fn_gl2_keyword{NamedBufferStorage,BufferStorage}, eventually
+         *      @fn_gl{BindBuffer} and @fn_gl_keyword{BufferStorage}
+         * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
+         *      use @ref setData() instead.
+         */
+        Buffer& setStorage(Containers::ArrayView<const void> data, StorageFlags flags);
+
+        /**
+         * @brief Set storage
+         * @param size      Size in bytes
+         * @param flags     Storage flags
+         * @m_since_latest
+         *
+         * Equivalent to calling @ref setStorage(Containers::ArrayView<const void>, StorageFlags)
+         * with a @cpp nullptr @ce view of @p size bytes.
+         * @requires_gl44 Extension @gl_extension{ARB,buffer_storage}
+         * @requires_gl Buffer storage is not available in OpenGL ES and WebGL,
+         *      use @ref setData() instead.
+         */
+        Buffer& setStorage(std::size_t size, StorageFlags flags);
+        #endif
+
         /**
          * @brief Buffer size in bytes
          *
@@ -1236,6 +1339,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_GL_LOCAL storageImplementationDefault(Containers::ArrayView<const void> data, StorageFlags flags);
+        void MAGNUM_GL_LOCAL storageImplementationDSA(Containers::ArrayView<const void> data, StorageFlags flags);
+        #endif
+
         void MAGNUM_GL_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
@@ -1321,6 +1429,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
 #ifndef MAGNUM_TARGET_WEBGL
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+CORRADE_ENUMSET_OPERATORS(Buffer::StorageFlags)
 #endif
 
 /** @debugoperatorclassenum{Buffer,Buffer::TargetHint} */

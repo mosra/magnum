@@ -229,7 +229,7 @@ Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.40                                   | done
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}           | |
-@gl_extension{ARB,buffer_storage}           | |
+@gl_extension{ARB,buffer_storage}           | done
 @gl_extension{ARB,clear_texture}            | |
 @gl_extension{ARB,enhanced_layouts}         | done (shading language only)
 @gl_extension{ARB,multi_bind}               | missing sampler and vertex buffer binding

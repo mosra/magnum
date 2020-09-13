@@ -62,6 +62,9 @@ See also:
     means these can'be implemented right now.
 -   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
     with raw GL code
+-   Exposed @gl_extension{ARB,buffer_storage} as
+    @ref GL::Buffer::setStorage() together with additions to
+    @ref GL::Buffer::MapFlag
 
 @subsubsection changelog-latest-new-math Math library
 

@@ -85,7 +85,7 @@ OpenGL function                         | Matching API
 @fn_gl{BlitFramebuffer}, \n `glBlitNamedFramebuffer()` | @ref GL::AbstractFramebuffer::blit()
 @fn_gl{BufferData}, \n `glNamedBufferData()` | @ref GL::Buffer::setData()
 @fn_gl_extension{BufferPageCommitment,ARB,sparse_buffer}, \n `glNamedBufferPageCommitmentEXT()`, \n `glNamedBufferPageCommitmentARB()` | |
-@fn_gl{BufferStorage}, \n `glNamedBufferStorage()` | |
+@fn_gl{BufferStorage}, \n `glNamedBufferStorage()` | @ref GL::Buffer::setStorage()
 @fn_gl{BufferSubData}, \n `glNamedBufferSubData()` | @ref GL::Buffer::setSubData()
 
 @subsection opengl-mapping-functions-c C
