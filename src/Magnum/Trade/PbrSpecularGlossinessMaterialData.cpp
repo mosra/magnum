@@ -156,13 +156,14 @@ Color4 PbrSpecularGlossinessMaterialData::specularColor() const {
 }
 
 UnsignedInt PbrSpecularGlossinessMaterialData::specularTexture() const {
-    /* Explicit assertion because printing that SpecularTexture isn't found
-       would be misleading as it can be also SpecularGlossinessTexture */
-    CORRADE_ASSERT(hasSpecularTexture(),
-        "Trade::PbrSpecularGlossinessMaterialData::specularTexture(): the material doesn't have a specular texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    return attribute<UnsignedInt>(MaterialAttribute::SpecularTexture);
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
+        return *value;
+
+    /* Explicit assertion because printing that SpecularTexture isn't found
+       would be misleading as it can be also SpecularGlossinessTexture */
+    CORRADE_ASSERT_UNREACHABLE("Trade::PbrSpecularGlossinessMaterialData::specularTexture(): the material doesn't have a specular texture", {});
 }
 
 MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::specularTextureSwizzle() const {
@@ -194,13 +195,14 @@ Float PbrSpecularGlossinessMaterialData::glossiness() const {
 }
 
 UnsignedInt PbrSpecularGlossinessMaterialData::glossinessTexture() const {
-    /* Explicit assertion because printing that GlossinessTexture isn't found
-       would be misleading as it can be also SpecularGlossinessTexture */
-    CORRADE_ASSERT(hasGlossinessTexture(),
-        "Trade::PbrSpecularGlossinessMaterialData::glossinessTexture(): the material doesn't have a glossiness texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    return attribute<UnsignedInt>(MaterialAttribute::GlossinessTexture);
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::GlossinessTexture))
+        return *value;
+
+    /* Explicit assertion because printing that GlossinessTexture isn't found
+       would be misleading as it can be also SpecularGlossinessTexture */
+    CORRADE_ASSERT_UNREACHABLE("Trade::PbrSpecularGlossinessMaterialData::glossinessTexture(): the material doesn't have a glossiness texture", {});
 }
 
 MaterialTextureSwizzle PbrSpecularGlossinessMaterialData::glossinessTextureSwizzle() const {

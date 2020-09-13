@@ -250,13 +250,14 @@ Color4 PhongMaterialData::specularColor() const {
 }
 
 UnsignedInt PhongMaterialData::specularTexture() const {
-    /* Explicit assertion because printing that SpecularTexture isn't found
-       would be misleading as it can be also SpecularGlossinessTexture */
-    CORRADE_ASSERT(hasSpecularTexture(),
-        "Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularGlossinessTexture))
         return *value;
-    return attribute<UnsignedInt>(MaterialAttribute::SpecularTexture);
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::SpecularTexture))
+        return *value;
+
+    /* Explicit assertion because printing that SpecularTexture isn't found
+       would be misleading as it can be also SpecularGlossinessTexture */
+    CORRADE_ASSERT_UNREACHABLE("Trade::PhongMaterialData::specularTexture(): the material doesn't have a specular texture", {});
 }
 
 MaterialTextureSwizzle PhongMaterialData::specularTextureSwizzle() const {

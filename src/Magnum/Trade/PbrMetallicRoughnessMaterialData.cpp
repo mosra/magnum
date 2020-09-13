@@ -222,13 +222,14 @@ Float PbrMetallicRoughnessMaterialData::metalness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::metalnessTexture() const {
-    /* Explicit assertion because printing  that MetalnessTexture isn't found
-       would be misleading as it can be also MetallicRoughnessTexture */
-    CORRADE_ASSERT(hasMetalnessTexture(),
-        "Trade::PbrMetallicRoughnessMaterialData::metalnessTexture(): the material doesn't have a metalness texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
-    return attribute<UnsignedInt>(MaterialAttribute::MetalnessTexture);
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::MetalnessTexture))
+        return *value;
+
+    /* Explicit assertion because printing  that MetalnessTexture isn't found
+       would be misleading as it can be also MetallicRoughnessTexture */
+    CORRADE_ASSERT_UNREACHABLE("Trade::PbrMetallicRoughnessMaterialData::metalnessTexture(): the material doesn't have a metalness texture", {});
 }
 
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::metalnessTextureSwizzle() const {
@@ -260,13 +261,14 @@ Float PbrMetallicRoughnessMaterialData::roughness() const {
 }
 
 UnsignedInt PbrMetallicRoughnessMaterialData::roughnessTexture() const {
-    /* Explicit assertion because printing that RoughnessTexture isn't found
-       would be misleading as it can be also MetallicRoughnessTexture */
-    CORRADE_ASSERT(hasRoughnessTexture(),
-        "Trade::PbrMetallicRoughnessMaterialData::roughnessTexture(): the material doesn't have a roughness texture", {});
     if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::NoneRoughnessMetallicTexture))
         return *value;
-    return attribute<UnsignedInt>(MaterialAttribute::RoughnessTexture);
+    if(Containers::Optional<UnsignedInt> value = tryAttribute<UnsignedInt>(MaterialAttribute::RoughnessTexture))
+        return *value;
+
+    /* Explicit assertion because printing that RoughnessTexture isn't found
+       would be misleading as it can be also MetallicRoughnessTexture */
+    CORRADE_ASSERT_UNREACHABLE("Trade::PbrMetallicRoughnessMaterialData::roughnessTexture(): the material doesn't have a roughness texture", {});
 }
 
 MaterialTextureSwizzle PbrMetallicRoughnessMaterialData::roughnessTextureSwizzle() const {
