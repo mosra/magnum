@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,39 +23,46 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "CommandBuffer.h"
 
-#include <Corrade/Containers/Containers.h>
-
-#include "Magnum/Magnum.h"
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Handle.h"
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class CommandBuffer;
-class CommandPool;
-class Device;
-class DeviceCreateInfo;
-class DeviceProperties;
-enum class DeviceType: Int;
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-class Queue;
-enum class QueueFlag: UnsignedInt;
-typedef Containers::EnumSet<QueueFlag> QueueFlags;
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+CommandBuffer CommandBuffer::wrap(Device& device, const VkCommandPool pool, const VkCommandBuffer handle, const HandleFlags flags) {
+    CommandBuffer out{NoCreate};
+    out._device = &device;
+    out._pool = pool;
+    out._handle = handle;
+    out._flags = flags;
+    return out;
+}
+
+CommandBuffer::CommandBuffer(NoCreateT) noexcept: _device{}, _pool{}, _handle{} {}
+
+CommandBuffer::CommandBuffer(CommandBuffer&& other) noexcept: _device{other._device}, _pool{other._pool}, _handle{other._handle}, _flags{other._flags} {
+    other._handle = nullptr;
+}
+
+CommandBuffer::~CommandBuffer() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        (**_device).FreeCommandBuffers(*_device, _pool, 1, &_handle);
+}
+
+CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept {
+    using std::swap;
+    swap(other._device, _device);
+    swap(other._pool, _pool);
+    swap(other._handle, _handle);
+    swap(other._flags, _flags);
+    return *this;
+}
+
+VkCommandBuffer CommandBuffer::release() {
+    const VkCommandBuffer handle = _handle;
+    _handle = nullptr;
+    return handle;
+}
 
 }}
-
-#endif

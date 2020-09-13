@@ -32,84 +32,79 @@
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
-struct CommandPoolVkTest: VulkanTester {
-    explicit CommandPoolVkTest();
+struct CommandBufferVkTest: VulkanTester {
+    explicit CommandBufferVkTest();
 
     void construct();
     void constructMove();
     void wrap();
-
-    void allocate();
 };
 
-CommandPoolVkTest::CommandPoolVkTest() {
-    addTests({&CommandPoolVkTest::construct,
-              &CommandPoolVkTest::constructMove,
-              &CommandPoolVkTest::wrap,
-
-              &CommandPoolVkTest::allocate});
+CommandBufferVkTest::CommandBufferVkTest() {
+    addTests({&CommandBufferVkTest::construct,
+              &CommandBufferVkTest::constructMove,
+              &CommandBufferVkTest::wrap});
 }
 
-void CommandPoolVkTest::construct() {
+void CommandBufferVkTest::construct() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
+
     {
-        CommandPool pool{device(), CommandPoolCreateInfo{
-            deviceProperties().pickQueueFamily(QueueFlag::Graphics),
-            CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
-        CORRADE_VERIFY(pool.handle());
-        CORRADE_COMPARE(pool.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CommandBuffer buffer = pool.allocate();
+        CORRADE_VERIFY(buffer.handle());
+        CORRADE_COMPARE(buffer.handleFlags(), HandleFlag::DestroyOnDestruction);
     }
 
     /* Shouldn't crash or anything */
     CORRADE_VERIFY(true);
 }
 
-void CommandPoolVkTest::constructMove() {
-    CommandPool a{device(), CommandPoolCreateInfo{
-        deviceProperties().pickQueueFamily(QueueFlag::Graphics),
-        CommandPoolCreateInfo::Flag::Transient}};
-    VkCommandPool handle = a.handle();
+void CommandBufferVkTest::constructMove() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
 
-    CommandPool b = std::move(a);
+    CommandBuffer a = pool.allocate();
+    VkCommandBuffer handle = a.handle();
+
+    CommandBuffer b = std::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
 
-    CommandPool c{NoCreate};
+    CommandBuffer c{NoCreate};
     c = std::move(b);
     CORRADE_VERIFY(!b.handle());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
 
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<CommandPool>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<CommandPool>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<CommandBuffer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<CommandBuffer>::value);
 }
 
-void CommandPoolVkTest::wrap() {
-    VkCommandPool pool{};
-    CORRADE_COMPARE(Result(device()->CreateCommandPool(device(),
-        CommandPoolCreateInfo{
-            deviceProperties().pickQueueFamily(QueueFlag::Graphics)},
-        nullptr, &pool)), Result::Success);
-    CORRADE_VERIFY(pool);
-
-    auto wrapped = CommandPool::wrap(device(), pool, HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(wrapped.handle(), pool);
-
-    /* Release the handle again, destroy by hand */
-    CORRADE_COMPARE(wrapped.release(), pool);
-    CORRADE_VERIFY(!wrapped.handle());
-    device()->DestroyCommandPool(device(), pool, nullptr);
-}
-
-void CommandPoolVkTest::allocate() {
+void CommandBufferVkTest::wrap() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
 
-    CommandBuffer a = pool.allocate(CommandBufferLevel::Secondary);
-    CORRADE_VERIFY(a.handle());
+    VkCommandBuffer buffer{};
+    VkCommandBufferAllocateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    info.commandPool = pool;
+    info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    info.commandBufferCount = 1;
+    CORRADE_COMPARE(Result(device()->AllocateCommandBuffers(device(), &info, &buffer)), Result::Success);
+    CORRADE_VERIFY(buffer);
+
+    auto wrapped = CommandBuffer::wrap(device(), pool, buffer, HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(wrapped.handle(), buffer);
+
+    /* Release the handle again, destroy by hand */
+    CORRADE_COMPARE(wrapped.release(), buffer);
+    CORRADE_VERIFY(!wrapped.handle());
+    device()->FreeCommandBuffers(device(), pool, 1, &buffer);
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Vk::Test::CommandPoolVkTest)
+CORRADE_TEST_MAIN(Magnum::Vk::Test::CommandBufferVkTest)

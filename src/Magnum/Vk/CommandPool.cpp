@@ -25,6 +25,7 @@
 
 #include "CommandPool.h"
 
+#include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Result.h"
@@ -73,6 +74,22 @@ CommandPool& CommandPool::operator=(CommandPool&& other) noexcept {
     swap(other._handle, _handle);
     swap(other._flags, _flags);
     return *this;
+}
+
+CommandBuffer CommandPool::allocate(const CommandBufferLevel level) {
+    CommandBuffer out{NoCreate};
+    out._device = _device;
+    out._pool = _handle;
+    out._flags = HandleFlag::DestroyOnDestruction;
+
+    VkCommandBufferAllocateInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    info.commandPool = _handle;
+    info.commandBufferCount = 1;
+    info.level = VkCommandBufferLevel(level);
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).AllocateCommandBuffers(*_device, &info, &out._handle));
+
+    return out;
 }
 
 VkCommandPool CommandPool::release() {

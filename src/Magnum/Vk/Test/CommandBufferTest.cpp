@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,39 +23,40 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include <new>
+#include <Corrade/TestSuite/Tester.h>
 
-#include <Corrade/Containers/Containers.h>
+#include "Magnum/Vk/CommandBuffer.h"
 
-#include "Magnum/Magnum.h"
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
-namespace Magnum { namespace Vk {
+struct CommandBufferTest: TestSuite::Tester {
+    explicit CommandBufferTest();
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class CommandBuffer;
-class CommandPool;
-class Device;
-class DeviceCreateInfo;
-class DeviceProperties;
-enum class DeviceType: Int;
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-class Queue;
-enum class QueueFlag: UnsignedInt;
-typedef Containers::EnumSet<QueueFlag> QueueFlags;
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+    void constructNoCreate();
+    void constructCopy();
+};
 
-}}
+CommandBufferTest::CommandBufferTest() {
+    addTests({&CommandBufferTest::constructNoCreate,
+              &CommandBufferTest::constructCopy});
+}
 
-#endif
+void CommandBufferTest::constructNoCreate() {
+    {
+        CommandBuffer buffer{NoCreate};
+        CORRADE_VERIFY(!buffer.handle());
+    }
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, CommandBuffer>::value));
+}
+
+void CommandBufferTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<CommandBuffer, const CommandBuffer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<CommandBuffer, const CommandBuffer&>{}));
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Vk::Test::CommandBufferTest)

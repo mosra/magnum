@@ -51,7 +51,7 @@ Legend:
 
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
-@fn_vk{AllocateCommandBuffers}, \n @fn_vk{FreeCommandBuffers} | |
+@fn_vk{AllocateCommandBuffers}, \n @fn_vk{FreeCommandBuffers} | @ref CommandPool::allocate(), @ref CommandBuffer destructor
 @fn_vk{AllocateDescriptorSets}, \n @fn_vk{FreeDescriptorSets} | |
 @fn_vk{AllocateMemory}, \n @fn_vk{FreeMemory} | |
 
@@ -310,6 +310,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{CommandBufferAllocateInfo}     | not exposed, internal to @ref CommandPool::allocate()
 @type_vk{CommandPoolCreateInfo}         | @ref CommandPoolCreateInfo
 
 @subsection vulkan-mapping-structures-d D
