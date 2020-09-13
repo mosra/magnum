@@ -36,6 +36,7 @@
 namespace Magnum { namespace Vk {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+class CommandPool;
 class Device;
 class DeviceCreateInfo;
 class DeviceProperties;

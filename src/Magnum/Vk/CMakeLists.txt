@@ -27,6 +27,7 @@
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
+    CommandPool.cpp
     Extensions.cpp
     Handle.cpp
     Instance.cpp
@@ -45,6 +46,7 @@ set(MagnumVk_GracefulAssert_SRCS
     LayerProperties.cpp)
 
 set(MagnumVk_HEADERS
+    CommandPool.h
     Device.h
     DeviceProperties.h
     Enums.h

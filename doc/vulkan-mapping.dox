@@ -123,7 +123,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdWriteTimestamp}               | |
 @fn_vk{CreateBuffer}, \n @fn_vk{DestroyBuffer} | |
 @fn_vk{CreateBufferView}, \n @fn_vk{DestroyBufferView} | |
-@fn_vk{CreateCommandPool}, \n @fn_vk{DestroyCommandPool} | |
+@fn_vk{CreateCommandPool}, \n @fn_vk{DestroyCommandPool} | @ref CommandPool constructor and destructor
 @fn_vk{CreateComputePipelines}, \n @fn_vk{DestroyComputePipelines} | |
 @fn_vk{CreateDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
@@ -303,6 +303,14 @@ Vulkan function                         | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{ApplicationInfo}               | @ref InstanceCreateInfo
+
+@subsection vulkan-mapping-structures-c C
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{CommandPoolCreateInfo}         | @ref CommandPoolCreateInfo
 
 @subsection vulkan-mapping-structures-d D
 
