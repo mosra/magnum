@@ -246,6 +246,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/light-point-attenuated-specular.tga
             PhongTestFiles/light-point-intensity10-range0.5.tga
             PhongTestFiles/light-point-range1.5.tga
+            PhongTestFiles/light-point-specular-color.tga
             PhongTestFiles/light-point.tga
 
             # For zero lights test (equivalency to Flat3D)

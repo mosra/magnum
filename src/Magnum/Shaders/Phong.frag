@@ -140,11 +140,21 @@ uniform highp uint objectId; /* defaults to zero */
 #if LIGHT_COUNT
 /* Needs to be last because it uses locations 11 + LIGHT_COUNT to
    11 + 2*LIGHT_COUNT - 1. Location 11 is lightPositions. Also it can't be
-   specified as 11 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
+   specified as 11 + LIGHT_COUNT because that requires ARB_enhanced_layouts.
+   Same for lightSpecularColors and lightRanges below. */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
 #endif
 uniform lowp vec3 lightColors[LIGHT_COUNT]
+    #ifndef GL_ES
+    = vec3[](LIGHT_COLOR_INITIALIZER)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = LIGHT_SPECULAR_COLORS_LOCATION)
+#endif
+uniform lowp vec3 lightSpecularColors[LIGHT_COUNT]
     #ifndef GL_ES
     = vec3[](LIGHT_COLOR_INITIALIZER)
     #endif
@@ -272,7 +282,7 @@ void main() {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
             /* Use attenuation for the specularity as well */
             mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0)*attenuation;
-            fragmentColor += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
+            fragmentColor += vec4(finalSpecularColor.rgb*lightSpecularColors[i].rgb*specularity, finalSpecularColor.a);
         }
     }
     #endif

@@ -83,6 +83,8 @@ See also:
 -   @ref Shaders::Phong was reworked to support directional and
     range-attenuated point lights to follow the additions to
     @ref Trade::LightData
+-   Added @ref Shaders::Phong::setLightSpecularColors() for better control over
+    speculat highlights
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

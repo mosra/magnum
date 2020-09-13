@@ -344,12 +344,14 @@ const struct {
     const char* name;
     const char* file;
     Vector4 position;
+    Color3 specularColor, lightSpecularColor;
     Float intensity;
     Float range;
     Containers::Array<std::pair<Vector2i, Color3ub>> picks;
 } RenderLightsData[] {
     {"directional", "light-directional.tga",
-        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, Constants::inf(),
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* Ambient isn't affected by light direction, otherwise it's a
                dot product of a normalized direction */
@@ -360,18 +362,23 @@ const struct {
     /* These two should produce the same output as the *normalized* dot product
        is the same */
     {"directional, from the other side", "light-directional.tga",
-        {-1.0f, 1.5f, 0.5f, 0.0f}, 1.0f, Constants::inf(), {}},
+        {-1.0f, 1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(), {}},
     {"directional, scaled direction", "light-directional.tga",
-        {10.0f, -15.0f, 5.0f, 0.0f}, 1.0f, Constants::inf(), {}},
+        {10.0f, -15.0f, 5.0f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(), {}},
     /* Range should have no effect either, especially zero range should not
        cause any NaNs */
     {"directional, range=0.1", "light-directional.tga",
-        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, 1.0f, {}},
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 1.0f, {}},
     {"directional, range=0", "light-directional.tga",
-        {1.0f, -1.5f, 0.5f, 0.0f}, 1.0f, 1.0f, {}},
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 1.0f, {}},
     /* Light from the other side doesn't contribute anything */
     {"directional, from back", "light-none.tga",
-        {-1.0f, 1.5f, -0.5f, 0.0f}, 1.0f, Constants::inf(),
+        {-1.0f, 1.5f, -0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* Only ambient color left */
             {{40, 40}, 0x222222_rgb}
@@ -379,12 +386,14 @@ const struct {
     /* This is the same as above, except that twice the intensity causes it to
        be 2x brighter */
     {"directional, intensity=2", "light-directional-intensity2.tga",
-        {1.0f, -1.5f, 0.5f, 0.0f}, 2.0f, 1.0f,
+        {1.0f, -1.5f, 0.5f, 0.0f}, Color3{1.0f}, Color3{1.0f},
+        2.0f, 1.0f,
         {Containers::InPlaceInit, {
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())*2.0f}
         }}},
     {"point", "light-point.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, Constants::inf(),
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* The range is inf, so it doesn't get fully ambient even at the
                edge */
@@ -394,15 +403,31 @@ const struct {
             /* Specular highlight */
             {{60, 19}, 0xfefefe_rgb}
         }}},
+    {"point, specular material color", "light-point-specular-color.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, 0x80ff80_rgbf, Color3{1.0f},
+        1.0f, Constants::inf(),
+        {Containers::InPlaceInit, {
+            /* Colored specular highlight */
+            {{60, 19}, 0xf2fcb0_rgb}
+        }}},
+    {"point, specular light color", "light-point-specular-color.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
+        1.0f, Constants::inf(),
+        {Containers::InPlaceInit, {
+            /* Colored specular highlight */
+            {{60, 19}, 0xf2fcb0_rgb}
+        }}},
     {"point, attenuated specular", "light-point-attenuated-specular.tga",
-        {1.0f, -1.0f, -0.25f, 1.0f}, 1.0f, 2.5f,
+        {1.0f, -1.0f, -0.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 2.5f,
         {Containers::InPlaceInit, {
             /* Specular highlight shouldn't be brighter than the attenuated
                intensity */
             {{57, 22}, 0x665656_rgb}
         }}},
-    {"point, range=1.5", "light-point-range1.5.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 1.5f,
+    {"point, range=1.5, specular color", "light-point-range1.5.tga",
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
+        1.0f, 1.5f,
         {Containers::InPlaceInit, {
             /* Color goes back to ambient at distance = 1.5 */
             {{59, 60}, 0x222222_rgb},
@@ -410,21 +435,25 @@ const struct {
             {{19, 14}, 0x222222_rgb},
             /* But the center and specular stays ~ the same */
             {{63, 16}, 0xc57474_rgb},
-            {{60, 19}, 0xfefcfc_rgb}
+            {{60, 19}, 0xf2fcb0_rgb}
         }}},
     {"point, intensity=10, range=0.5", "light-point-intensity10-range0.5.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 10.0f, 0.5f, {}},
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        10.0f, 0.5f, {}},
     /* Range ends right at the surface, so no contribution */
     {"point, range=0.25", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.25f, {}},
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 0.25f, {}},
     /* Zero range should not cause any NaNs, so the ambient contribution is
        still there */
     {"point, range=0.0", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.0f, {}},
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 0.0f, {}},
     /* Distance is 0, which means the direction is always prependicular and
        thus contributes nothing */
     {"point, distance=0", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 1.0f, 0.0f, {}}
+        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 0.0f, {}}
 };
 
 constexpr struct {
@@ -1476,8 +1505,10 @@ void PhongGLTest::renderLights() {
         /* Set non-black ambient to catch accidental NaNs -- the render should
            never be fully black */
         .setAmbientColor(0x222222_rgbf)
+        .setSpecularColor(data.specularColor)
         .setLightPositions({data.position})
         .setLightColors({0xff8080_rgbf*data.intensity})
+        .setLightSpecularColors({data.lightSpecularColor})
         .setLightRanges({data.range})
         .setShininess(60.0f)
         .setTransformationMatrix(transformation)
@@ -1531,6 +1562,8 @@ void PhongGLTest::renderLightsSetOneByOne() {
         .setLightPosition(1, {0.75f, -0.75f, -1.25f, 1.0f})
         .setLightColor(0, 0x00ffff_rgbf)
         .setLightColor(1, 0xff8080_rgbf)
+        .setLightSpecularColor(0, 0x0000ff_rgbf)
+        .setLightSpecularColor(1, 0x80ff80_rgbf)
         .setLightRange(0, Constants::inf())
         .setLightRange(1, 1.5f)
         .setShininess(60.0f)

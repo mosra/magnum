@@ -55,7 +55,7 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _lightRangesUniform{_lightPositionsUniform + 2*Int(lightCount)} {
+Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{_lightPositionsUniform + Int(lightCount)}, _lightSpecularColorsUniform{_lightPositionsUniform + 2*Int(lightCount)}, _lightRangesUniform{_lightPositionsUniform + 3*Int(lightCount)} {
     CORRADE_ASSERT(!(flags & Flag::TextureTransformation) || (flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture)),
         "Shaders::Phong: texture transformation enabled but the shader is not textured", );
 
@@ -156,10 +156,12 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
             "#define LIGHT_COLORS_LOCATION {}\n"
+            "#define LIGHT_SPECULAR_COLORS_LOCATION {}\n"
             "#define LIGHT_RANGES_LOCATION {}\n",
             lightCount,
             _lightPositionsUniform + lightCount,
-            _lightPositionsUniform + 2*lightCount));
+            _lightPositionsUniform + 2*lightCount,
+            _lightPositionsUniform + 3*lightCount));
     #ifndef MAGNUM_TARGET_GLES
     if(lightCount) frag.addSource(std::move(lightInitializerFragment));
     #endif
@@ -224,6 +226,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
                 _normalTextureScaleUniform = uniformLocation("normalTextureScale");
             _lightPositionsUniform = uniformLocation("lightPositions");
             _lightColorsUniform = uniformLocation("lightColors");
+            _lightSpecularColorsUniform = uniformLocation("lightSpecularColors");
             _lightRangesUniform = uniformLocation("lightRanges");
         }
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
@@ -258,7 +261,9 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         if(flags & Flag::NormalTexture)
             setNormalTextureScale(1.0f);
         setLightPositions(Containers::Array<Vector4>{Containers::DirectInit, lightCount, Vector4{0.0f, 0.0f, 1.0f, 0.0f}});
-        setLightColors(Containers::Array<Magnum::Color3>{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}});
+        Containers::Array<Magnum::Color3> colors{Containers::DirectInit, lightCount, Magnum::Color3{1.0f}};
+        setLightColors(colors);
+        setLightSpecularColors(colors);
         setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
         setNormalMatrix({});
@@ -460,6 +465,24 @@ Phong& Phong::setLightColor(const Magnum::Color4& color) {
     return setLightColors({color.rgb()});
 }
 #endif
+
+Phong& Phong::setLightSpecularColors(const Containers::ArrayView<const Magnum::Color3> colors) {
+    CORRADE_ASSERT(_lightCount == colors.size(),
+        "Shaders::Phong::setLightSpecularColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
+    if(_lightCount) setUniform(_lightSpecularColorsUniform, colors);
+    return *this;
+}
+
+Phong& Phong::setLightSpecularColors(const std::initializer_list<Magnum::Color3> colors) {
+    return setLightSpecularColors(Containers::arrayView(colors));
+}
+
+Phong& Phong::setLightSpecularColor(const UnsignedInt id, const Magnum::Color3& color) {
+    CORRADE_ASSERT(id < _lightCount,
+        "Shaders::Phong::setLightSpecularColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+    setUniform(_lightSpecularColorsUniform + id, color);
+    return *this;
+}
 
 Phong& Phong::setLightRanges(const Containers::ArrayView<const Float> ranges) {
     CORRADE_ASSERT(_lightCount == ranges.size(),

@@ -546,6 +546,7 @@ shader
     .setLightColors({0xf0f0ff_srgbf*0.1f,
                      0xff8080_srgbf*10.0f,
                      0x80ff80_srgbf*10.0f})
+    .setLightColors(DOXYGEN_IGNORE({0xf0f0ff_srgbf}))
     .setLightRanges({Constants::inf(),
                      2.0f,
                      2.0f});

@@ -78,9 +78,10 @@ Common rendering setup:
 By default, the shader provides a single directional "fill" light, coming from
 the center of the camera. Using the @p lightCount parameter in constructor, you
 can specify how many lights you want, and then control light parameters using
-the following @ref setLightPositions(), @ref setLightColors() and
-@ref setLightRanges(). Light positions are specified as four-component vectors,
-the last component distinguishing between directional and point lights.
+@ref setLightPositions(), @ref setLightColors(), @ref setLightSpecularColors()
+and @ref setLightRanges(). Light positions are specified as four-component
+vectors, the last component distinguishing between directional and point
+lights.
 
 <ul><li>
 Point lights are specified with camera-relative position and the last component
@@ -106,7 +107,7 @@ any way: @f[
 
 Light color and intensity, corresponding to @ref Trade::LightData::color() and
 @ref Trade::LightData::intensity(), is meant to be multiplied together and
-passed to @ref setLightColors().
+passed to @ref setLightColors() and @ref setLightSpecularColors().
 
 The following example shows a three-light setup with one dim directional light
 shining from the top and two stronger but range-limited point lights:
@@ -942,6 +943,38 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         #endif
 
         /**
+         * @brief Set light specular colors
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Usually you'd set this value to the same as @ref setLightColors(),
+         * but it allows for greater flexibility such as disabling specular
+         * highlights on certain lights. Initial values are
+         * @cpp 0xffffff_rgbf @ce. Expects that the size of the @p colors array
+         * is the same as @ref lightCount().
+         * @see @ref Shaders-Phong-lights, @ref setLightColor()
+         */
+        Phong& setLightSpecularColors(Containers::ArrayView<const Magnum::Color3> colors);
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        Phong& setLightSpecularColors(std::initializer_list<Magnum::Color3> colors);
+
+        /**
+         * @brief Set position for given light
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setLightSpecularColors() updates just a single light
+         * color. If updating more than one light, prefer the batch function
+         * instead to reduce the count of GL API calls. Expects that @p id is
+         * less than @ref lightCount().
+         */
+        Phong& setLightSpecularColor(UnsignedInt id, const Magnum::Color3& color);
+
+        /**
          * @brief Set light attenuation ranges
          * @return Reference to self (for method chaining)
          * @m_since_latest
@@ -996,7 +1029,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             #endif
         Int _lightPositionsUniform{11},
             _lightColorsUniform, /* 11 + lightCount, set in the constructor */
-            _lightRangesUniform; /* 11 + 2*lightCount, set in the constructor */
+            _lightSpecularColorsUniform, /* 11 + 2*lightCount */
+            _lightRangesUniform; /* 11 + 3*lightCount */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */
