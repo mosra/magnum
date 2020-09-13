@@ -32,7 +32,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumVk_EXPORTS
+    #if defined(MagnumVk_EXPORTS) || defined(MagnumVkObjects_EXPORTS)
         #define MAGNUM_VK_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_VK_EXPORT CORRADE_VISIBILITY_IMPORT
@@ -47,4 +47,3 @@
 #endif
 
 #endif
-
