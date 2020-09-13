@@ -28,7 +28,6 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/Containers/StringView.h>
-#include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -40,10 +39,11 @@
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
+#include "Magnum/Vk/VulkanTester.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
-struct DevicePropertiesVkTest: TestSuite::Tester {
+struct DevicePropertiesVkTest: VulkanTester {
     explicit DevicePropertiesVkTest();
 
     void enumerate();
@@ -69,8 +69,6 @@ struct DevicePropertiesVkTest: TestSuite::Tester {
     void pickDeviceIndex();
     void pickDeviceType();
     void pickDeviceError();
-
-    Instance _instance;
 };
 
 const struct {
@@ -86,7 +84,7 @@ const struct {
         "Vk::tryPickDevice(): unknown Vulkan device type FAST\n"}
 };
 
-DevicePropertiesVkTest::DevicePropertiesVkTest(): _instance{InstanceCreateInfo{arguments().first, arguments().second}} {
+DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
     addTests({&DevicePropertiesVkTest::enumerate,
               &DevicePropertiesVkTest::constructMove,
               &DevicePropertiesVkTest::wrap,
@@ -113,7 +111,7 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): _instance{InstanceCreateInfo{a
 }
 
 void DevicePropertiesVkTest::enumerate() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     Debug{} << "Found" << devices.size() << "devices";
     CORRADE_VERIFY(!devices.empty());
 
@@ -131,7 +129,7 @@ void DevicePropertiesVkTest::enumerate() {
 }
 
 void DevicePropertiesVkTest::constructMove() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
     VkPhysicalDevice handle = devices[0].handle();
     Containers::StringView name = devices[0].name();
@@ -140,7 +138,7 @@ void DevicePropertiesVkTest::constructMove() {
     CORRADE_COMPARE(a.handle(), handle);
     CORRADE_COMPARE(a.name(), name);
 
-    DeviceProperties b = DeviceProperties::wrap(_instance, nullptr);
+    DeviceProperties b = DeviceProperties::wrap(instance(), nullptr);
     b = std::move(a);
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.name(), name);
@@ -152,22 +150,22 @@ void DevicePropertiesVkTest::constructMove() {
 void DevicePropertiesVkTest::wrap() {
     VkPhysicalDevice handle;
     UnsignedInt count = 1;
-    auto result = Result(_instance->EnumeratePhysicalDevices(_instance, &count, &handle));
+    auto result = Result(instance()->EnumeratePhysicalDevices(instance(), &count, &handle));
     {
         /** @todo clean up once Compare::AnyOf exists */
         CORRADE_ITERATION(result);
         CORRADE_VERIFY(result == Result::Success || result == Result::Incomplete);
     }
 
-    DeviceProperties wrapped = DeviceProperties::wrap(_instance, handle);
+    DeviceProperties wrapped = DeviceProperties::wrap(instance(), handle);
     CORRADE_VERIFY(wrapped.handle());
 
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_COMPARE(wrapped.name(), devices[0].name());
 }
 
 void DevicePropertiesVkTest::enumerateExtensions() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
@@ -188,7 +186,7 @@ void DevicePropertiesVkTest::enumerateExtensionsWithKhronosValidationLayer() {
     if(!enumerateLayerProperties().isSupported("VK_LAYER_KHRONOS_validation"))
         CORRADE_SKIP("VK_LAYER_KHRONOS_validation not supported, can't test");
 
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     /* There should be more extensions with this layer enabled */
@@ -213,7 +211,7 @@ void DevicePropertiesVkTest::enumerateExtensionsNonexistentLayer() {
 }
 
 void DevicePropertiesVkTest::extensionConstructMove() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     ExtensionProperties a = devices[0].enumerateExtensionProperties();
@@ -232,7 +230,7 @@ void DevicePropertiesVkTest::extensionConstructMove() {
 }
 
 void DevicePropertiesVkTest::extensionIsSupported() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
@@ -247,7 +245,7 @@ void DevicePropertiesVkTest::extensionIsSupported() {
 }
 
 void DevicePropertiesVkTest::extensionNamedRevision() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     ExtensionProperties properties = devices[0].enumerateExtensionProperties();
@@ -265,7 +263,7 @@ void DevicePropertiesVkTest::extensionNamedRevision() {
 }
 
 void DevicePropertiesVkTest::queueFamilies() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     Debug{} << "Available queue family count:" << devices[0].queueFamilyCount();
@@ -287,7 +285,7 @@ void DevicePropertiesVkTest::queueFamilies() {
 }
 
 void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     const UnsignedInt count = devices[0].queueFamilyCount();
@@ -302,7 +300,7 @@ void DevicePropertiesVkTest::queueFamiliesOutOfRange() {
 }
 
 void DevicePropertiesVkTest::queueFamiliesPick() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     Containers::Optional<UnsignedInt> id = devices[0].tryPickQueueFamily(QueueFlag::Compute|QueueFlag::Graphics);
@@ -317,7 +315,7 @@ void DevicePropertiesVkTest::queueFamiliesPick() {
 }
 
 void DevicePropertiesVkTest::queueFamiliesPickFailed() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     std::ostringstream out;
@@ -329,12 +327,12 @@ void DevicePropertiesVkTest::queueFamiliesPickFailed() {
 
 void DevicePropertiesVkTest::pickDevice() {
     /* Default behavior */
-    Containers::Optional<DeviceProperties> device = tryPickDevice(_instance);
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
     CORRADE_VERIFY(device);
 }
 
 void DevicePropertiesVkTest::pickDeviceIndex() {
-    Containers::Array<DeviceProperties> devices = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_VERIFY(!devices.empty());
 
     /* Pick the last one */
@@ -353,9 +351,9 @@ void DevicePropertiesVkTest::pickDeviceType() {
     const char* argv[] {"", "--magnum-device", "cpu"};
 
     /* Creating a dedicated instance so we can pass custom args */
-    Instance instance{InstanceCreateInfo{Int(Containers::arraySize(argv)), argv}};
+    Instance instance2{InstanceCreateInfo{Int(Containers::arraySize(argv)), argv}};
 
-    Containers::Optional<DeviceProperties> device = tryPickDevice(instance);
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance2);
     if(!device) CORRADE_SKIP("No CPU device found.");
 
     CORRADE_VERIFY(device->type() == DeviceType::Cpu);
@@ -366,12 +364,12 @@ void DevicePropertiesVkTest::pickDeviceError() {
     setTestCaseDescription(data.name);
 
     /* Creating a dedicated instance so we can pass custom args */
-    Instance instance{InstanceCreateInfo{Int(data.args.size()), const_cast<const char**>(data.args.data())}};
+    Instance instance2{InstanceCreateInfo{Int(data.args.size()), const_cast<const char**>(data.args.data())}};
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!tryPickDevice(instance));
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.message, enumerateDevices(_instance).size()));
+    CORRADE_VERIFY(!tryPickDevice(instance2));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.message, enumerateDevices(instance2).size()));
 }
 
 }}}}

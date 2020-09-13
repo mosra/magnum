@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/Containers/StringStl.h>
-#include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
@@ -40,12 +39,13 @@
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
+#include "Magnum/Vk/VulkanTester.h"
 
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
-struct DeviceVkTest: TestSuite::Tester {
+struct DeviceVkTest: VulkanTester {
     explicit DeviceVkTest();
 
     void createInfoConstruct();
@@ -67,8 +67,6 @@ struct DeviceVkTest: TestSuite::Tester {
     void constructNoQueue();
     void wrap();
     void populateGlobalFunctionPointers();
-
-    Instance _instance;
 };
 
 struct {
@@ -122,7 +120,7 @@ struct {
         "Device version: Vulkan {}.{}{}\n"},
 };
 
-DeviceVkTest::DeviceVkTest(): _instance{InstanceCreateInfo{arguments().first, arguments().second}} {
+DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
     addTests({&DeviceVkTest::createInfoConstruct,
               &DeviceVkTest::createInfoConstructImplicitDevice,
               &DeviceVkTest::createInfoConstructNoImplicitExtensions,
@@ -152,21 +150,21 @@ DeviceVkTest::DeviceVkTest(): _instance{InstanceCreateInfo{arguments().first, ar
 using namespace Containers::Literals;
 
 void DeviceVkTest::createInfoConstruct() {
-    DeviceCreateInfo info{pickDevice(_instance)};
+    DeviceCreateInfo info{pickDevice(instance())};
     CORRADE_VERIFY(info->sType);
     CORRADE_VERIFY(!info->pNext);
     /* Extensions might or might not be enabled */
 }
 
 void DeviceVkTest::createInfoConstructImplicitDevice() {
-    DeviceCreateInfo info{_instance};
+    DeviceCreateInfo info{instance()};
     CORRADE_VERIFY(info->sType);
     CORRADE_VERIFY(!info->pNext);
     /* Extensions might or might not be enabled */
 }
 
 void DeviceVkTest::createInfoConstructNoImplicitExtensions() {
-    DeviceCreateInfo info{_instance, DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
     CORRADE_VERIFY(info->sType);
     CORRADE_VERIFY(!info->pNext);
     /* No extensions enabled as we explicitly disabled that */
@@ -178,7 +176,7 @@ void DeviceVkTest::createInfoExtensions() {
     if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
         CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
 
-    DeviceCreateInfo info{_instance, DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
     CORRADE_VERIFY(!info->ppEnabledExtensionNames);
     CORRADE_COMPARE(info->enabledExtensionCount, 0);
 
@@ -207,7 +205,7 @@ void DeviceVkTest::createInfoCopiedStrings() {
     Containers::StringView globalButNotNullTerminated = "VK_KHR_maintenance25"_s.except(1);
     Containers::String localButNullTerminated = Extensions::KHR::draw_indirect_count::string();
 
-    DeviceCreateInfo info{_instance, DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
     info.addEnabledExtensions({
         globalButNotNullTerminated,
         localButNullTerminated
@@ -228,7 +226,7 @@ void DeviceVkTest::createInfoNoQueuePriorities() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DeviceCreateInfo{_instance}.addQueues(0, {}, {});
+    DeviceCreateInfo{instance()}.addQueues(0, {}, {});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified\n");
 }
 
@@ -240,7 +238,7 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
     std::ostringstream out;
     Error redirectError{&out};
     Queue a{NoCreate}, b{NoCreate};
-    DeviceCreateInfo{_instance}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
+    DeviceCreateInfo{instance()}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
 }
 
@@ -249,9 +247,9 @@ void DeviceVkTest::construct() {
         CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
 
     {
-        DeviceProperties deviceProperties = pickDevice(_instance);
+        DeviceProperties deviceProperties = pickDevice(instance());
         Queue queue{NoCreate};
-        Device device{_instance, DeviceCreateInfo{deviceProperties}
+        Device device{instance(), DeviceCreateInfo{deviceProperties}
             .addQueues(0, {0.0f}, {queue})
         };
         CORRADE_VERIFY(device.handle());
@@ -330,13 +328,13 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
 
     /* Creating a dedicated instance so we can pass custom args and enable
        layers independently */
-    Instance instance{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable}
+    Instance instance2{InstanceCreateInfo{Int(data.argsDisable.size()), data.argsDisable}
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"})
         /* Needed by VK_EXT_debug_marker */
         .addEnabledExtensions<Extensions::EXT::debug_report>()
     };
 
-    DeviceProperties deviceProperties = pickDevice(instance);
+    DeviceProperties deviceProperties = pickDevice(instance2);
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties({"VK_LAYER_KHRONOS_validation"});
     if(!extensions.isSupported<Extensions::EXT::debug_marker>())
         CORRADE_SKIP("VK_EXT_debug_marker not supported, can't test");
@@ -346,7 +344,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     std::ostringstream out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
-    Device device{instance, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
+    Device device{instance2, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
         .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions<
             Extensions::EXT::debug_marker,
@@ -386,13 +384,13 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
 
     /* Creating a dedicated instance so we can pass custom args and enable
        layers independently */
-    Instance instance{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable}
+    Instance instance2{InstanceCreateInfo{Int(data.argsEnable.size()), data.argsEnable}
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"})
         /* Needed by VK_EXT_debug_marker */
         .addEnabledExtensions<Extensions::EXT::debug_report>()
     };
 
-    DeviceProperties deviceProperties = pickDevice(instance);
+    DeviceProperties deviceProperties = pickDevice(instance2);
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties({"VK_LAYER_KHRONOS_validation"});
     if(!extensions.isSupported<Extensions::EXT::debug_marker>())
         CORRADE_SKIP("VK_EXT_debug_marker not supported, can't test");
@@ -402,7 +400,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     std::ostringstream out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
-    Device device{instance, DeviceCreateInfo{instance, DeviceCreateInfo::Flag::NoImplicitExtensions}
+    Device device{instance2, DeviceCreateInfo{instance2, DeviceCreateInfo::Flag::NoImplicitExtensions}
         .addQueues(0, {0.0f}, {queue})
         /* Nothing enabled by the application */
     };
@@ -427,7 +425,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
 void DeviceVkTest::constructMultipleQueues() {
     /* Find a GPU that has at least two queue families and at least four
        queues in one family */
-    Containers::Array<DeviceProperties> deviceProperties = enumerateDevices(_instance);
+    Containers::Array<DeviceProperties> deviceProperties = enumerateDevices(instance());
 
     DeviceProperties* deviceWithMultipleQueues = nullptr;
     UnsignedInt largeFamily = ~UnsignedInt{};
@@ -456,7 +454,7 @@ void DeviceVkTest::constructMultipleQueues() {
     rawQueueInfo.queueCount = 1;
 
     Queue a{NoCreate}, b{NoCreate}, c{NoCreate};
-    Device device{_instance, DeviceCreateInfo{*deviceWithMultipleQueues}
+    Device device{instance(), DeviceCreateInfo{*deviceWithMultipleQueues}
         /* Request a raw queue in the middle of it all to test we skip it when
            populating the outputs, and correctly offset the next IDs. According
            to the spec we can request each family only once, which makes the
@@ -497,7 +495,7 @@ void DeviceVkTest::constructRawQueue() {
     rawQueueInfo.pQueuePriorities = &zero;
     rawQueueInfo.queueFamilyIndex = 0;
     rawQueueInfo.queueCount = 1;
-    Device device{_instance, DeviceCreateInfo{_instance}
+    Device device{instance(), DeviceCreateInfo{instance()}
         .addQueues(rawQueueInfo)};
 
     /* Fetch the raw queue */
@@ -507,13 +505,13 @@ void DeviceVkTest::constructRawQueue() {
 }
 
 void DeviceVkTest::constructMove() {
-    DeviceProperties deviceProperties = pickDevice(_instance);
+    DeviceProperties deviceProperties = pickDevice(instance());
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties();
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
         CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
 
     Queue queue{NoCreate};
-    Device a{_instance, DeviceCreateInfo{deviceProperties}
+    Device a{instance(), DeviceCreateInfo{deviceProperties}
         .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions<Extensions::KHR::maintenance1>()
     };
@@ -555,7 +553,7 @@ void DeviceVkTest::constructUnknownExtension() {
     std::ostringstream out;
     Error redirectError{&out};
     Queue queue{NoCreate};
-    Device device{_instance, DeviceCreateInfo{_instance}
+    Device device{instance(), DeviceCreateInfo{instance()}
         .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions({"VK_this_doesnt_exist"_s})};
     CORRADE_COMPARE(out.str(), "TODO");
@@ -568,7 +566,7 @@ void DeviceVkTest::constructNoQueue() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Device device{_instance, DeviceCreateInfo{_instance}};
+    Device device{instance(), DeviceCreateInfo{instance()}};
     CORRADE_COMPARE(out.str(), "Vk::Device: needs to be created with at least one queue\n");
 }
 
@@ -584,13 +582,13 @@ void DeviceVkTest::wrap() {
         CORRADE_SKIP("VK_LAYER_KHRONOS_validation not supported, can't test");
 
     /* Creating a dedicated instance so we can enable layers independently */
-    Instance instance{InstanceCreateInfo{}
+    Instance instance2{InstanceCreateInfo{}
         .addEnabledLayers({"VK_LAYER_KHRONOS_validation"})
         /* Needed by VK_EXT_debug_marker */
         .addEnabledExtensions<Extensions::EXT::debug_report>()
     };
 
-    DeviceProperties deviceProperties = pickDevice(instance);
+    DeviceProperties deviceProperties = pickDevice(instance2);
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties({"VK_LAYER_KHRONOS_validation"});
     if(!extensions.isSupported<Extensions::EXT::debug_marker>())
         CORRADE_SKIP("VK_EXT_debug_marker not supported, can't test");
@@ -599,8 +597,8 @@ void DeviceVkTest::wrap() {
 
     VkDevice device;
     Queue queue{NoCreate};
-    CORRADE_COMPARE(Result(instance->CreateDevice(deviceProperties,
-        DeviceCreateInfo{instance}
+    CORRADE_COMPARE(Result(instance2->CreateDevice(deviceProperties,
+        DeviceCreateInfo{instance2}
             .addQueues(0, {0.0f}, {queue})
             .addEnabledExtensions<
                 Extensions::EXT::debug_marker,
@@ -614,7 +612,7 @@ void DeviceVkTest::wrap() {
 
     {
         /* Wrapping should load the basic function pointers */
-        auto wrapped = Device::wrap(instance, device, Version::Vk11, {
+        auto wrapped = Device::wrap(instance2, device, Version::Vk11, {
             Extensions::EXT::debug_marker::string()
         }, HandleFlag::DestroyOnDestruction);
         CORRADE_VERIFY(wrapped->DestroyDevice);
@@ -639,7 +637,7 @@ void DeviceVkTest::wrap() {
     }
 
     /* ...so we can wrap it again, non-owned, and then destroy it manually */
-    auto wrapped = Device::wrap(instance, device, Version::Vk10, {});
+    auto wrapped = Device::wrap(instance2, device, Version::Vk10, {});
     CORRADE_VERIFY(wrapped->DestroyDevice);
     wrapped->DestroyDevice(device, nullptr);
 }
@@ -648,7 +646,7 @@ void DeviceVkTest::populateGlobalFunctionPointers() {
     vkDestroyDevice = nullptr;
 
     Queue queue{NoCreate};
-    Device device{_instance, DeviceCreateInfo{_instance}
+    Device device{instance(), DeviceCreateInfo{instance()}
         .addQueues(0, {0.0f}, {queue})
     };
     CORRADE_VERIFY(!vkDestroyDevice);
