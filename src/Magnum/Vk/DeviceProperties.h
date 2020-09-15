@@ -135,7 +135,11 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, QueueFlags value);
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
 properties such as @type_vk_keyword{PhysicalDeviceProperties2} and
 @type_vk_keyword{GetPhysicalDeviceQueueFamilyProperties2}.
-@see @ref enumerateDevices()
+
+See the @ref Vk-Device-usage "Device class docs" for an example of using this
+class for enumerating available devices and picking one of them.
+
+@see @ref pickDevice(), @ref enumerateDevices()
 */
 class MAGNUM_VK_EXPORT DeviceProperties {
     public:
@@ -339,6 +343,9 @@ class MAGNUM_VK_EXPORT DeviceProperties {
 @brief Enumerate physical devices
 @m_since_latest
 
+Returns a list of all devices present on the system. See @ref pickDevice() for
+an alternative that pick just a single appropriate device. See @ref Device for
+general usage information.
 @see @fn_vk_keyword{EnumeratePhysicalDevices}
 */
 MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance& instance);
@@ -348,9 +355,9 @@ MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance& 
 @m_since_latest
 
 Calls @ref enumerateDevices() and selects a device based on preferences
-specified through command-line parameters or the environment. If a device is
-not found, exits. See @ref tryPickDevice() for an alternative that doesn't exit
-on failure.
+specified through the `--magnum-device` @ref Vk-Instance-command-line "command-line option".
+If a device is not found, exits. See @ref tryPickDevice() for an alternative
+that doesn't exit on failure. See @ref Device for general usage information.
 */
 MAGNUM_VK_EXPORT DeviceProperties pickDevice(Instance& instance);
 

@@ -39,6 +39,7 @@ necessary to read through everything, pick only what you need.
 -   @subpage plugins --- @copybrief plugins
 -   @subpage file-formats --- @copybrief file-formats
 -   @subpage opengl-wrapping --- @copybrief opengl-wrapping
+-   @subpage vulkan-wrapping --- @copybrief vulkan-wrapping
 -   @subpage shaders --- @copybrief shaders
 -   @subpage scenegraph --- @copybrief scenegraph
 -   @subpage debug-tools --- @copybrief debug-tools

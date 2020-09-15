@@ -47,7 +47,13 @@ namespace Magnum { namespace Vk {
 
 Provides a searchable container of Vulkan device extensions enumerated with
 @ref DeviceProperties::enumerateExtensionProperties().
-@see @ref InstanceExtensionProperties, @type_vk_keyword{ExtensionProperties}
+
+See the @ref Vk-Device-usage "Device class docs" for an example of using this
+class for checking available extensions before enabling them on a device. See
+@ref Vk-Instance-usage "Instance class docs" for the same but using
+@ref InstanceExtensionProperties.
+
+@see @type_vk_keyword{ExtensionProperties}
 */
 class MAGNUM_VK_EXPORT ExtensionProperties {
     public:

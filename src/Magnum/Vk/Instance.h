@@ -52,8 +52,7 @@ namespace Implementation {
 @m_since_latest
 
 Wraps a @type_vk_keyword{InstanceCreateInfo} and
-@type_vk_keyword{ApplicationInfo}.
-@see @ref Instance
+@type_vk_keyword{ApplicationInfo}. See @ref Instance for usage information.
 */
 class MAGNUM_VK_EXPORT InstanceCreateInfo {
     public:
@@ -156,6 +155,10 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *
          * Use the @ref version() helper to create the @p version value. The
          * name is @cpp nullptr @ce by default.
+         *
+         * The function makes copies of string views that are not owning or
+         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
+         * literal to prevent that where possible.
          */
         InstanceCreateInfo& setApplicationInfo(Containers::StringView name, Version version);
 
@@ -164,7 +167,10 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @return Reference to self (for method chaining)
          *
          * All listed layers are expected be supported, use
-         * @ref LayerProperties::isSupported() to check for their presence.
+         * @ref LayerProperties::isSupported() to check for their presence. If
+         * a particular layer is listed among `--magnum-disable-layers` in
+         * @ref Vk-Instance-command-line "command-line options", it's not
+         * added.
          *
          * The function makes copies of string views that are not owning or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
@@ -181,7 +187,10 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * All listed extensions are expected to be supported either globally
          * or in at least one of the enabled layers, use
          * @ref InstanceExtensionProperties::isSupported() to check for their
-         * presence.
+         * presence. If a particular extension is listed among
+         * `--magnum-disable-extensions` in
+         * @ref Vk-Instance-command-line "command-line options", it's not
+         * added.
          *
          * The function makes copies of string views that are not owning or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
@@ -228,7 +237,121 @@ CORRADE_ENUMSET_OPERATORS(InstanceCreateInfo::Flags)
 
 Wraps a @type_vk_keyword{Instance} and stores instance-specific Vulkan function
 pointers.
-@see @ref vulkan-wrapping
+
+@section Vk-Instance-usage Usage
+
+While an @ref Instance can be default-constructed without much fuss, it's
+recommended to pass a @ref InstanceCreateInfo with at least the `argc` / `argv`
+pair, which allows you to use various `--magnum-*`
+@ref Vk-Instance-command-line "command-line options" listed below. Setting
+application info may be beneficial for the driver, but it's not required
+either.
+
+@snippet MagnumVk.cpp Instance-usage
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par
+    The above code uses the @link Containers::Literals::operator""_s() @endlink
+    literal, which lets the library know that given string is global and
+    null-terminated. Such strings then don't need to be copied internally to
+    keep them in scope until they're consumed by Vulkan APIs. The same is
+    recommended to do for extension and layer names where possible.
+
+The above won't enable any additional layers or extensions except for what the
+engine itself needs or what's supplied on the command line. Use
+@ref InstanceCreateInfo::addEnabledLayers() and
+@ref InstanceCreateInfo::addEnabledExtensions() to enable them, you can use
+both string names as well as predefined *instance* extensions from the
+@ref Extensions namespace. Later on, presence of predefined extensions can be
+checked with @ref isExtensionEnabled().
+
+@snippet MagnumVk.cpp Instance-usage-layers-extensions
+
+However, with the above approach, if any layer or extension isn't available,
+the instance creation will abort. The recommended workflow is thus first
+checking layer and extension availability using @ref enumerateLayerProperties()
+and @ref enumerateInstanceExtensionProperties(). The @ref InstanceCreateInfo
+class uses these properties internally as well, pass them in the constructor
+to avoid querying those again internally:
+
+@snippet MagnumVk.cpp Instance-usage-check-supported
+
+Next step after creating a Vulkan instance is picking and creating a
+@ref Device.
+
+@section Vk-Instance-command-line Command-line options
+
+The @ref Instance is configurable through command-line options that are passed
+through the @ref InstanceCreateInfo `argc` / `argv` parameters. If those are
+not passed, only the environment variables are used. A subset of these options
+is reused by a subsequently created @ref Device as well.
+
+@code{.sh}
+<application> [--magnum-help]
+    [--magnum-disable-layers LIST]
+    [--magnum-disable-extensions LIST]
+    [--magnum-enable-layers LIST]
+    [--magnum-enable-instance-extensions LIST]
+    [--magnum-enable-extensions LIST]
+    [--magnum-vulkan-version X.Y]
+    [--magnum-log default|quiet|verbose]
+    [--magnum-device ID|integrated|discrete|virtual|cpu] ...
+@endcode
+
+Arguments:
+
+-   `...` --- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` --- display this help message and exit
+-   `--magnum-disable-layers LIST` --- Vulkan layers to disable, meaning
+    @ref InstanceCreateInfo::addEnabledLayers() will skip them (environment:
+    `MAGNUM_DISABLE_LAYERS`)
+-   `--magnum-disable-extensions LIST` --- Vulkan instance or device extensions
+    to disable, meaning @ref InstanceCreateInfo::addEnabledExtensions() and
+    @ref DeviceCreateInfo::addEnabledExtensions() will skip them (environment:
+    `MAGNUM_DISABLE_EXTENSIONS`)
+-   `--magnum-enable-layers LIST` --- Vulkan layers to enable in addition to
+    @ref InstanceCreateInfo defaults and what the application requests
+    (environment: `MAGNUM_ENABLE_LAYERS`)
+-   `--magnum-enable-instance-extensions LIST` --- Vulkan instance extensions
+    to enable in addition to @ref InstanceCreateInfo defaults and what the
+    application requests (environment: `MAGNUM_ENABLE_INSTANCE_EXTENSIONS`)
+-   `--magnum-enable-extensions LIST` --- Vulkan device extensions to enable in
+    addition to @ref DeviceCreateInfo defaults and what the application
+    requests (environment: `MAGNUM_ENABLE_EXTENSIONS`)
+-   `--magnum-vulkan-version X.Y` --- force @ref Instance and @ref Device
+    Vulkan version instead of using what the instance / device reports as
+    supported, affecting what entrypoints and extensions get used (environment:
+    `MAGNUM_VULKAN_VERSION`)
+-   `--magnum-log default|quiet|verbose` --- console logging (environment:
+    `MAGNUM_LOG`) (default: `default`)
+-   `--magnum-device ID|integrated|discrete|virtual|cpu` --- device ID or kind
+    to pick in @ref pickDevice(); if a device is selected through
+    @ref enumerateDevices() or any other way, this option has no effect
+    (environment: `MAGNUM_DEVICE`)
+
+@section Vk-Instance-raw Interaction with raw Vulkan code
+
+In addition to the common properties explained in @ref vulkan-wrapping-raw, the
+@ref Instance contains instance-level Vulkan function pointers, accessible
+through @ref operator->():
+
+@snippet MagnumVk.cpp Instance-function-pointers
+
+These functions are by default not accessible globally (and neither there is a
+global "current instance"), which is done in order to avoid multiple
+independent instances affecting each other. Sometimes it is however desirable
+to have global function pointers --- for example when a 3rd party code needs to
+operate on the same instance, or when writing quick prototype code --- and then
+it's possible to populate those using @ref populateGlobalFunctionPointers().
+Compared to the above, the same custom code would then look like this:
+
+@snippet MagnumVk.cpp Instance-global-function-pointers
+
+Similarly you can use @ref Device::populateGlobalFunctionPointers() to populate
+device-level global function pointers.
 */
 class MAGNUM_VK_EXPORT Instance {
     public:
@@ -247,6 +370,11 @@ class MAGNUM_VK_EXPORT Instance {
          * @ref isVersionSupported() and @ref isExtensionEnabled(), among other
          * things. If @p enabledExtensions empty, the instance will behave as
          * if no extensions were enabled.
+         *
+         * Note that this function retrieves all instance-specific Vulkan
+         * function pointers, which is a relatively costly operation. It's thus
+         * not recommended to call this function repeatedly for creating
+         * short-lived instances, even though it's technically correct.
          *
          * Unlike an instance created using a constructor, the Vulkan instance
          * is by default not deleted on destruction, use @p flags for different
@@ -360,12 +488,9 @@ class MAGNUM_VK_EXPORT Instance {
          * @brief Populate global instance-level function pointers to be used with third-party code
          *
          * Populates instance-level global function pointers so third-party
-         * code is able to call global instance-level `vk*` functions:
+         * code is able to call global instance-level `vk*` functions. See
+         * @ref Vk-Instance-raw for more information.
          *
-         * @snippet MagnumVk.cpp Instance-global-function-pointers
-         *
-         * Use @ref Device::populateGlobalFunctionPointers() to populate
-         * device-level global function pointers.
          * @attention This operation is changing global state. You need to
          *      ensure that this function is not called simultaenously from
          *      multiple threads and code using those function points is

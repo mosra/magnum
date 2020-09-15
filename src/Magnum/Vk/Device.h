@@ -53,8 +53,8 @@ namespace Implementation {
 @brief Device creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{DeviceCreateInfo}.
-@see @ref Device
+Wraps a @type_vk_keyword{DeviceCreateInfo}. See @ref Device for usage
+information.
 */
 class MAGNUM_VK_EXPORT DeviceCreateInfo {
     public:
@@ -213,8 +213,99 @@ CORRADE_ENUMSET_OPERATORS(DeviceCreateInfo::Flags)
 @brief Device
 @m_since_latest
 
-Wraps a @type_vk_keyword{Device} and stores all device-specific function
+Wraps a @type_vk_keyword{Device} and stores device-specific Vulkan function
 pointers.
+
+@section Vk-Device-usage Usage
+
+With an @ref Instance ready, a device has to be picked first. Commonly it's
+done by calling @ref pickDevice() and letting the library choose. This
+selection is affected by the `--magnum-device`
+@ref Vk-Device-command-line "command-line option", giving the end users an
+ability to pick a particular device, choose a discrete or integrated GPU or
+even a software implementation. If the application needs something specific,
+you can use @ref enumerateDevices() instead, pick a device from the list
+manually, provide the users with a list to choose from etc.
+
+@snippet MagnumVk.cpp Device-usage-pick
+
+After a device is picked, a @ref Device can be created using
+@ref DeviceCreateInfo. At the very least you'll need to set up queues, as every
+Vulkan device needs at least one. That's done by creating an empty @ref Queue
+instance and then referencing it from @ref DeviceCreateInfo::addQueues(). After
+the device is constructed, the queue gets populated and is ready to be used.
+
+@snippet MagnumVk.cpp Device-usage-construct-queue
+
+In the above snippet, we requested a graphics queue --- the
+@ref DeviceProperties instance we made earlier acts as knowledge base for a
+particular device, providing info about available queues, extensions, features,
+memory heaps and implementation limits --- and we used a convenience API to
+pick the first available graphics queue. As with device picking, you can
+also iterate through all @ref DeviceProperties::queueFamilyCount() and choose
+one manually.
+
+Same as with @ref Instance, the above won't enable any additional extensions
+except for what the engine itself needs or what's supplied on the command line. Use @ref DeviceCreateInfo::addEnabledExtensions() to enable them, you can use
+both string names as well as predefined *device* extensions from the
+@ref Extensions namespace. Later on, presence of predefined extensions can be
+checked with @ref isExtensionEnabled().
+
+@snippet MagnumVk.cpp Device-usage-extensions
+
+Usually you'll be first checking for extension availability instead, which is
+again accessible through the @ref DeviceProperties instance. Similarly to
+@ref Instance, as the extension list is used internally as well, pass it in the
+constructor to avoid querying them again internally:
+
+@snippet MagnumVk.cpp Device-usage-check-supported
+
+With both @ref Instance and @ref Device created, you can proceed to setting up
+a @ref CommandPool.
+
+@section Vk-Device-command-line Command-line options
+
+The @ref Device inherits a subset of the
+@ref Vk-Instance-command-line "Instance command-line options", in particular
+the following. If the @ref Instance didn't get `argc` / `argv` passed, only the
+environment variables are used.
+
+-   `--magnum-disable-extensions LIST` --- Vulkan instance or device extensions
+    to disable, meaning @ref DeviceCreateInfo::addEnabledExtensions() will skip
+    them (environment: `MAGNUM_DISABLE_EXTENSIONS`)
+-   `--magnum-enable-extensions LIST` --- Vulkan device extensions to enable in
+    addition to @ref DeviceCreateInfo defaults and what the application
+    requests (environment: `MAGNUM_ENABLE_EXTENSIONS`)
+-   `--magnum-vulkan-version X.Y` --- force @ref Device Vulkan version instead
+    of using what the device reports as supported, affecting what entrypoints
+    and extensions get used (environment: `MAGNUM_VULKAN_VERSION`)
+-   `--magnum-log default|quiet|verbose` --- console logging (environment:
+    `MAGNUM_LOG`) (default: `default`)
+-   `--magnum-device ID|integrated|discrete|virtual|cpu` --- device ID or kind
+    to pick in @ref pickDevice(); if a device is selected through
+    @ref enumerateDevices() or any other way, this option has no effect
+    (environment: `MAGNUM_DEVICE`)
+
+@section Vk-Device-raw Interaction with raw Vulkan code
+
+In addition to the common properties explained in @ref vulkan-wrapping-raw,
+the @ref Device contains device-level Vulkan function pointers, accessible
+through @ref operator->():
+
+@snippet MagnumVk.cpp Device-function-pointers
+
+These functions are by default not accessible globally (and neither there is a
+global "current instance"), which is done in order to avoid multiple
+independent instances affecting each other. Sometimes it is however desirable
+to have global function pointers --- for example when a 3rd party code needs to
+operate on the same instance, or when writing quick prototype code --- and then
+it's possible to populate those using @ref populateGlobalFunctionPointers().
+Compared to the above, the same custom code would then look like this:
+
+@snippet MagnumVk.cpp Device-global-function-pointers
+
+Similarly you can use @ref Instance::populateGlobalFunctionPointers() to
+populate instance-level global function pointers.
 */
 class MAGNUM_VK_EXPORT Device {
     public:
@@ -234,6 +325,11 @@ class MAGNUM_VK_EXPORT Device {
          * @ref isVersionSupported() and @ref isExtensionEnabled(), among other
          * things. If @p enabledExtensions is empty, the device will behave as
          * if no extensions were enabled.
+         *
+         * Note that this function retrieves all device-specific Vulkan
+         * function pointers, which is a relatively costly operation. It's thus
+         * not recommended to call this function repeatedly for creating
+         * short-lived device instances, even though it's technically correct.
          *
          * Unlike a device created using a constructor, the Vulkan device is by
          * default not deleted on destruction, use @p flags for different
@@ -352,12 +448,9 @@ class MAGNUM_VK_EXPORT Device {
          * @brief Populate global device-level function pointers to be used with third-party code
          *
          * Populates device-level global function pointers so third-party
-         * code is able to call global device-level `vk*` functions:
+         * code is able to call global device-level `vk*` functions. See
+         * @ref Vk-Device-raw for more information.
          *
-         * @snippet MagnumVk.cpp Device-global-function-pointers
-         *
-         * Use @ref Instance::populateGlobalFunctionPointers() to populate
-         * instance-level global function pointers.
          * @attention This operation is changing global state. You need to
          *      ensure that this function is not called simultaenously from
          *      multiple threads and code using those function points is

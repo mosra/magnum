@@ -71,7 +71,8 @@ CORRADE_ENUMSET_OPERATORS(CommandBufferResetFlags)
 @brief Command buffer
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandBuffer}.
+Wraps a @type_vk_keyword{CommandBuffer}. A command buffer instance is usually
+allocated from a @ref CommandPool, see its documentation for usage information.
 */
 class MAGNUM_VK_EXPORT CommandBuffer {
     public:

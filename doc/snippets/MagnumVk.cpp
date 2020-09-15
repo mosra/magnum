@@ -27,10 +27,16 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Vk/CommandBuffer.h"
+#include "Magnum/Vk/CommandPool.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/Queue.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 using namespace Magnum;
@@ -38,6 +44,113 @@ using namespace Magnum;
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
 int main() {
+
+{
+/* [wrapping-extending-create-info] */
+Vk::InstanceCreateInfo info{DOXYGEN_IGNORE()};
+
+/* Add a custom validation features setup */
+VkValidationFeaturesEXT validationFeatures{};
+validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+validationFeatures.enabledValidationFeatureCount = 1;
+constexpr auto bestPractices = VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT;
+validationFeatures.pEnabledValidationFeatures = &bestPractices;
+CORRADE_INTERNAL_ASSERT(!info->pNext); // or find the end of the pNext chain
+info->pNext = &validationFeatures;
+/* [wrapping-extending-create-info] */
+}
+
+{
+Vk::Instance instance;
+/* [CommandPool-usage] */
+Vk::DeviceProperties props = DOXYGEN_IGNORE(pickDevice(instance));
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::CommandPool graphicsCommandPool{device, Vk::CommandPoolCreateInfo{
+    props.pickQueueFamily(Vk::QueueFlag::Graphics)
+}};
+/* [CommandPool-usage] */
+
+/* [CommandPool-usage-allocate] */
+Vk::CommandBuffer commandBuffer = graphicsCommandPool.allocate();
+
+// fill the buffer, submit …
+/* [CommandPool-usage-allocate] */
+}
+
+{
+Vk::Instance instance;
+/* [Device-usage-pick] */
+Vk::DeviceProperties props = Vk::pickDevice(instance);
+/* [Device-usage-pick] */
+
+/* [Device-usage-construct-queue] */
+Vk::Queue queue{NoCreate};
+Vk::Device device{instance, Vk::DeviceCreateInfo{props}
+    .addQueues(props.pickQueueFamily(Vk::QueueFlag::Graphics), {0.0f}, {queue})
+};
+/* [Device-usage-construct-queue] */
+}
+
+{
+Vk::Instance instance;
+Vk::DeviceProperties props{NoCreate};
+using namespace Containers::Literals;
+/* [Device-usage-extensions] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{props}
+    DOXYGEN_IGNORE()
+    .addEnabledExtensions<                         // predefined extensions
+        Vk::Extensions::EXT::index_type_uint8,
+        Vk::Extensions::KHR::device_group>()
+    .addEnabledExtensions({"VK_NV_mesh_shader"_s}) // can be plain strings too
+};
+/* [Device-usage-extensions] */
+}
+
+{
+Vk::Instance instance;
+Vk::DeviceProperties props{NoCreate};
+using namespace Containers::Literals;
+/* [Device-usage-check-supported] */
+Vk::ExtensionProperties extensions = props.enumerateExtensionProperties();
+
+Vk::DeviceCreateInfo info{props};
+if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
+    info.addEnabledExtensions<Vk::Extensions::EXT::index_type_uint8>();
+if(extensions.isSupported("VK_NV_mesh_shader"_s))
+    info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
+DOXYGEN_IGNORE()
+/* [Device-usage-check-supported] */
+}
+
+{
+Vk::Instance instance;
+VkQueryPool pool{};
+/* [Device-function-pointers] */
+Vk::Device device{DOXYGEN_IGNORE(instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)})};
+
+// ...
+device->ResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
+/* [Device-function-pointers] */
+}
+
+{
+VkQueryPool pool{};
+/* Header included again inside a function, but it's fine as the guards will
+   make it empty */
+/* [Device-global-function-pointers] */
+#include <MagnumExternal/Vulkan/flextVkGlobal.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+device.populateGlobalFunctionPointers();
+
+DOXYGEN_IGNORE()
+vkResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
+/* [Device-global-function-pointers] */
+}
+
 {
 Vk::Device device{NoCreate};
 /* [Device-isExtensionEnabled] */
@@ -50,21 +163,81 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 }
 
 {
+int argc{};
+const char** argv{};
+/* [Instance-usage] */
+using namespace Containers::Literals;
+
+Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
+    .setApplicationInfo("My Vulkan Application"_s, Vk::version(1, 2, 3))
+};
+/* [Instance-usage] */
+}
+
+{
+int argc{};
+const char** argv{};
+using namespace Containers::Literals;
+/* [Instance-usage-layers-extensions] */
+Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
+    DOXYGEN_IGNORE()
+    .addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s})
+    .addEnabledExtensions<                          // predefined extensions
+        Vk::Extensions::EXT::debug_report,
+        Vk::Extensions::KHR::external_fence_capabilities>()
+    .addEnabledExtensions({"VK_KHR_xcb_surface"_s}) // can be plain strings too
+};
+/* [Instance-usage-layers-extensions] */
+}
+
+{
+int argc{};
+const char** argv{};
+using namespace Containers::Literals;
+/* [Instance-usage-check-supported] */
+/* Query layer and extension support */
+Vk::LayerProperties layers = Vk::enumerateLayerProperties();
+Vk::InstanceExtensionProperties extensions =
+    /* ... including extensions exposed only by the extra layers */
+    Vk::enumerateInstanceExtensionProperties(layers.names());
+
+/* Enable only those that are supported */
+Vk::InstanceCreateInfo info{argc, argv, &layers, &extensions};
+if(layers.isSupported("VK_LAYER_KHRONOS_validation"_s))
+    info.addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s});
+if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())
+    info.addEnabledExtensions<Vk::Extensions::EXT::debug_report>();
+DOXYGEN_IGNORE()
+
+Vk::Instance instance{info};
+/* [Instance-usage-check-supported] */
+}
+
+{
+/* [Instance-function-pointers] */
+Vk::Instance instance{DOXYGEN_IGNORE()};
+
+VkPhysicalDeviceGroupPropertiesKHR properties[10];
+UnsignedInt count = Containers::arraySize(properties);
+instance->EnumeratePhysicalDeviceGroupsKHR(instance, &count, properties);
+/* [Instance-function-pointers] */
+}
+
+{
+Vk::Instance instance;
 /* Header included again inside a function, but it's fine as the guards will
    make it empty */
-/* [Device-global-function-pointers] */
+/* [Instance-global-function-pointers] */
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
-// …
+DOXYGEN_IGNORE()
 
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-device.populateGlobalFunctionPointers();
+instance.populateGlobalFunctionPointers();
 
-VkCommandPool commandPool;
-VkCommandPoolCreateInfo info{};
-// …
-vkCreateCommandPool(device, &info, nullptr, &commandPool);
-/* [Device-global-function-pointers] */
+VkPhysicalDeviceGroupPropertiesKHR properties[10];
+UnsignedInt count = Containers::arraySize(properties);
+vkEnumeratePhysicalDeviceGroupsKHR(instance, &count, properties);
+/* [Instance-global-function-pointers] */
 }
 
 {
@@ -81,23 +254,6 @@ if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
 }
 
 {
-/* Header included again inside a function, but it's fine as the guards will
-   make it empty */
-/* [Instance-global-function-pointers] */
-#include <MagnumExternal/Vulkan/flextVkGlobal.h>
-
-// …
-
-Vk::Instance instance;
-instance.populateGlobalFunctionPointers();
-
-VkPhysicalDeviceGroupProperties properties[10];
-UnsignedInt count = Containers::arraySize(properties);
-vkEnumeratePhysicalDeviceGroupsKHR(instance, &count, properties);
-/* [Instance-global-function-pointers] */
-}
-
-{
 /* [Integration] */
 VkOffset2D a{64, 32};
 Vector2i b(a);
@@ -108,4 +264,5 @@ VkClearColorValue c = VkClearColorValue(0xff9391_srgbf);
 static_cast<void>(b);
 static_cast<void>(c);
 }
+
 }

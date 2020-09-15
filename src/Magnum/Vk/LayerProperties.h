@@ -50,6 +50,10 @@ layers are [deprecated since Vulkan 1.0.13](https://github.com/KhronosGroup/Vulk
 and the assumption is that no drivers currently use rely on these anymore. See
 [§ 37.3.1](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap38.html#extendingvulkan-layers-devicelayerdeprecation)
 for more information.
+
+See the @ref Vk-Instance-usage "Instance class docs" for an example of using
+this class for checking available layers before enabling them on an instance.
+
 @see @ref ExtensionProperties, @ref enumerateInstanceExtensionProperties(),
     @type_vk_keyword{LayerProperties}
 */
