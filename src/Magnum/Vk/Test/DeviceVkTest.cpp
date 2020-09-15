@@ -49,7 +49,6 @@ struct DeviceVkTest: VulkanTester {
     explicit DeviceVkTest();
 
     void createInfoConstruct();
-    void createInfoConstructImplicitDevice();
     void createInfoConstructNoImplicitExtensions();
     void createInfoExtensions();
     void createInfoCopiedStrings();
@@ -122,7 +121,6 @@ struct {
 
 DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
     addTests({&DeviceVkTest::createInfoConstruct,
-              &DeviceVkTest::createInfoConstructImplicitDevice,
               &DeviceVkTest::createInfoConstructNoImplicitExtensions,
               &DeviceVkTest::createInfoExtensions,
               &DeviceVkTest::createInfoCopiedStrings,
@@ -156,15 +154,8 @@ void DeviceVkTest::createInfoConstruct() {
     /* Extensions might or might not be enabled */
 }
 
-void DeviceVkTest::createInfoConstructImplicitDevice() {
-    DeviceCreateInfo info{instance()};
-    CORRADE_VERIFY(info->sType);
-    CORRADE_VERIFY(!info->pNext);
-    /* Extensions might or might not be enabled */
-}
-
 void DeviceVkTest::createInfoConstructNoImplicitExtensions() {
-    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{pickDevice(instance()), DeviceCreateInfo::Flag::NoImplicitExtensions};
     CORRADE_VERIFY(info->sType);
     CORRADE_VERIFY(!info->pNext);
     /* No extensions enabled as we explicitly disabled that */
@@ -176,7 +167,7 @@ void DeviceVkTest::createInfoExtensions() {
     if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
         CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
 
-    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{pickDevice(instance()), DeviceCreateInfo::Flag::NoImplicitExtensions};
     CORRADE_VERIFY(!info->ppEnabledExtensionNames);
     CORRADE_COMPARE(info->enabledExtensionCount, 0);
 
@@ -205,7 +196,7 @@ void DeviceVkTest::createInfoCopiedStrings() {
     Containers::StringView globalButNotNullTerminated = "VK_KHR_maintenance25"_s.except(1);
     Containers::String localButNullTerminated = Extensions::KHR::draw_indirect_count::string();
 
-    DeviceCreateInfo info{instance(), DeviceCreateInfo::Flag::NoImplicitExtensions};
+    DeviceCreateInfo info{pickDevice(instance()), DeviceCreateInfo::Flag::NoImplicitExtensions};
     info.addEnabledExtensions({
         globalButNotNullTerminated,
         localButNullTerminated
@@ -226,7 +217,7 @@ void DeviceVkTest::createInfoNoQueuePriorities() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    DeviceCreateInfo{instance()}.addQueues(0, {}, {});
+    DeviceCreateInfo{pickDevice(instance())}.addQueues(0, {}, {});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified\n");
 }
 
@@ -238,7 +229,7 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
     std::ostringstream out;
     Error redirectError{&out};
     Queue a{NoCreate}, b{NoCreate};
-    DeviceCreateInfo{instance()}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
+    DeviceCreateInfo{pickDevice(instance())}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
 }
 
@@ -400,7 +391,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     std::ostringstream out;
     Debug redirectOutput{&out};
     Queue queue{NoCreate};
-    Device device{instance2, DeviceCreateInfo{instance2, DeviceCreateInfo::Flag::NoImplicitExtensions}
+    Device device{instance2, DeviceCreateInfo{pickDevice(instance2), DeviceCreateInfo::Flag::NoImplicitExtensions}
         .addQueues(0, {0.0f}, {queue})
         /* Nothing enabled by the application */
     };
@@ -495,7 +486,7 @@ void DeviceVkTest::constructRawQueue() {
     rawQueueInfo.pQueuePriorities = &zero;
     rawQueueInfo.queueFamilyIndex = 0;
     rawQueueInfo.queueCount = 1;
-    Device device{instance(), DeviceCreateInfo{instance()}
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
         .addQueues(rawQueueInfo)};
 
     /* Fetch the raw queue */
@@ -553,7 +544,7 @@ void DeviceVkTest::constructUnknownExtension() {
     std::ostringstream out;
     Error redirectError{&out};
     Queue queue{NoCreate};
-    Device device{instance(), DeviceCreateInfo{instance()}
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
         .addQueues(0, {0.0f}, {queue})
         .addEnabledExtensions({"VK_this_doesnt_exist"_s})};
     CORRADE_COMPARE(out.str(), "TODO");
@@ -566,7 +557,7 @@ void DeviceVkTest::constructNoQueue() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Device device{instance(), DeviceCreateInfo{instance()}};
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}};
     CORRADE_COMPARE(out.str(), "Vk::Device: needs to be created with at least one queue\n");
 }
 
@@ -598,7 +589,7 @@ void DeviceVkTest::wrap() {
     VkDevice device;
     Queue queue{NoCreate};
     CORRADE_COMPARE(Result(instance2->CreateDevice(deviceProperties,
-        DeviceCreateInfo{instance2}
+        DeviceCreateInfo{pickDevice(instance2)}
             .addQueues(0, {0.0f}, {queue})
             .addEnabledExtensions<
                 Extensions::EXT::debug_marker,
@@ -646,7 +637,7 @@ void DeviceVkTest::populateGlobalFunctionPointers() {
     vkDestroyDevice = nullptr;
 
     Queue queue{NoCreate};
-    Device device{instance(), DeviceCreateInfo{instance()}
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
         .addQueues(0, {0.0f}, {queue})
     };
     CORRADE_VERIFY(!vkDestroyDevice);

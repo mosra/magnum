@@ -115,8 +115,6 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
     }
 }
 
-DeviceCreateInfo::DeviceCreateInfo(Instance& instance, const Flags flags): DeviceCreateInfo{pickDevice(instance), flags} {}
-
 DeviceCreateInfo::DeviceCreateInfo(NoInitT) noexcept {}
 
 DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo& info): _physicalDevice{physicalDevice},

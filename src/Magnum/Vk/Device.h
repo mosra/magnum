@@ -117,14 +117,6 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
         explicit DeviceCreateInfo(DeviceProperties&& deviceProperties, Flags flags = {}): DeviceCreateInfo{std::move(deviceProperties), nullptr, flags} {}
 
         /**
-         * @brief Construct for an implicitly picked device
-         *
-         * Calls @ref DeviceCreateInfo(DeviceProperties&, const ExtensionProperties*, Flags)
-         * with a device picked from @p instance using @ref pickDevice().
-         */
-        explicit DeviceCreateInfo(Instance& instance, Flags flags = {});
-
-        /**
          * @brief Construct without initializing the contents
          *
          * Note that not even the `sType` field is set --- the structure has to

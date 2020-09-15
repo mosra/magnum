@@ -50,7 +50,6 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 }
 
 {
-Vk::Instance instance;
 /* Header included again inside a function, but it's fine as the guards will
    make it empty */
 /* [Device-global-function-pointers] */
@@ -58,7 +57,7 @@ Vk::Instance instance;
 
 // …
 
-Vk::Device device{DOXYGEN_IGNORE(instance, Vk::DeviceCreateInfo{instance})};
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 device.populateGlobalFunctionPointers();
 
 VkCommandPool commandPool;
