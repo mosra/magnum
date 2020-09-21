@@ -451,6 +451,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         }
         #else
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        /* Force EGL on Windows and non-desktop GLES -- needed by ANGLE:
+           https://stackoverflow.com/a/58904181/4084782 . Might be useful on
+           other platforms as well (Mac?), not tested yet. */
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
         glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
         #endif
@@ -478,6 +481,9 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         #endif
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        /* Force EGL on Windows and non-desktop GLES -- needed by ANGLE:
+           https://stackoverflow.com/a/58904181/4084782 . Might be useful on
+           other platforms as well (Mac?), not tested yet. */
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
         glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
         #endif

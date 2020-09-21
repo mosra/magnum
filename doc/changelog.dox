@@ -129,6 +129,9 @@ See also:
 
 -   Added a @ref Platform::GlfwApplication::setWindowIcon() overload taking a
     @ref Corrade::Containers::ArrayView in addition to @ref std::initializer_list
+-   @ref Platform::GlfwApplication now defaults to EGL on
+    @ref MAGNUM_TARGET_DESKTOP_GLES "non-desktop"
+    @ref MAGNUM_TARGET_GLES "GLES builds" (see [mosra/magnum#470](https://github.com/mosra/magnum/pull/470))
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
