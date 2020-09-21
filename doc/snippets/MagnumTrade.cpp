@@ -51,6 +51,7 @@
 #include "Magnum/Trade/PhongMaterialData.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Shaders/Phong.h"
@@ -232,7 +233,8 @@ Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
 if(!image) Fatal{} << "Oopsie!";
 
 GL::Texture2D texture;
-// ...
+DOXYGEN_IGNORE()
+texture.setStorage(1, GL::textureFormat(image->format()), image->size());
 if(!image->isCompressed())
     texture.setSubImage(0, {}, *image);
 else
