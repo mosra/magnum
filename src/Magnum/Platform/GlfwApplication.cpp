@@ -475,6 +475,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         #endif
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
         #endif
     }
 
