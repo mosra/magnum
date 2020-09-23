@@ -79,7 +79,7 @@ layout(location = 11)
 #endif
 uniform highp vec4 lightPositions[LIGHT_COUNT]
     #ifndef GL_ES
-    = vec4[](LIGHT_POSITION_INITIALIZER);
+    = vec4[](LIGHT_POSITION_INITIALIZER)
     #endif
     ;
 #endif
