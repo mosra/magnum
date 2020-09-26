@@ -26,7 +26,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Functions.h"
@@ -85,9 +84,6 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void trigonometric();
     void trigonometricWithBase();
     template<class T> void sincos();
-
-    void sinCosSeparateBenchmark();
-    void sinCosCombinedBenchmark();
 };
 
 using namespace Literals;
@@ -156,9 +152,6 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::sincos<long double>,
               #endif
               });
-
-    addBenchmarks({&FunctionsTest::sinCosSeparateBenchmark,
-                   &FunctionsTest::sinCosCombinedBenchmark}, 100);
 }
 
 void FunctionsTest::powIntegral() {
@@ -603,29 +596,6 @@ template<class T> void FunctionsTest::sincos() {
        correct */
     CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).first, T(0.5));
     CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second, T(0.866025403784438647l));
-}
-
-void FunctionsTest::sinCosSeparateBenchmark() {
-    Float sin{}, cos{}, a{};
-    CORRADE_BENCHMARK(1000) {
-        sin += Math::sin(Rad(a));
-        cos += Math::cos(Rad(a));
-        a += 0.1f;
-    }
-
-    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
-}
-
-void FunctionsTest::sinCosCombinedBenchmark() {
-    Float sin{}, cos{}, a{};
-    CORRADE_BENCHMARK(1000) {
-        auto sincos = Math::sincos(Rad(a));
-        sin += sincos.first;
-        cos += sincos.second;
-        a += 0.1f;
-    }
-
-    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
 }
 
 }}}}

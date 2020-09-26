@@ -45,6 +45,9 @@ struct FunctionsBenchmark: Corrade::TestSuite::Tester {
     void sqrtSseFromInverted();
     void sqrtInvertedSse();
     #endif
+
+    void sinCosSeparate();
+    void sinCosCombined();
 };
 
 FunctionsBenchmark::FunctionsBenchmark() {
@@ -60,9 +63,14 @@ FunctionsBenchmark::FunctionsBenchmark() {
         &FunctionsBenchmark::sqrtInvertedSse,
         #endif
     }, 500);
+
+    addBenchmarks({&FunctionsBenchmark::sinCosSeparate,
+                   &FunctionsBenchmark::sinCosCombined}, 100);
 }
 
 typedef Math::Constants<Float> Constants;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
 
 enum: std::size_t { Repeats = 100000 };
 
@@ -182,8 +190,31 @@ void FunctionsBenchmark::sqrtInvertedSse() {
     CORRADE_COMPARE_WITH(a, 1.0f,
         Corrade::TestSuite::Compare::around(0.0003f));
 }
-
 #endif
+
+void FunctionsBenchmark::sinCosSeparate() {
+    Float sin{}, cos{}, a{};
+    CORRADE_BENCHMARK(1000) {
+        sin += Math::sin(Rad(a));
+        cos += Math::cos(Rad(a));
+        a += 0.1f;
+    }
+
+    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+}
+
+void FunctionsBenchmark::sinCosCombined() {
+    Float sin{}, cos{}, a{};
+    CORRADE_BENCHMARK(1000) {
+        auto sincos = Math::sincos(Rad(a));
+        sin += sincos.first;
+        cos += sincos.second;
+        a += 0.1f;
+    }
+
+    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+}
+
 
 }}}}
 
