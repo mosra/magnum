@@ -80,6 +80,20 @@ template<class Integral> inline std::pair<Integral, Integral> div(Integral x, In
 }
 
 /**
+@brief [Binomial coefficient](https://en.wikipedia.org/wiki/Binomial_coefficient).
+@m_since_latest
+
+Returns the number of combinations of @f$ n @f$ things taken @f$ k @f$ at a
+time, with @f$ n \ge k \ge 0 @f$: @f[
+    \begin{pmatrix} n \\ k \end{pmatrix} =
+        \frac{n! (n - k)!}{k!} =
+        \frac{n (n - 1) (n - 2) ~ \cdots ~ (n - (k - 1))}{k (k - 1) ~ \cdots ~ 1} =
+        \prod_{i=1}^k \frac{n + 1 - i}{i}
+@f]
+*/
+UnsignedLong MAGNUM_EXPORT binomialCoefficient(UnsignedInt n, UnsignedInt k);
+
+/**
 @{ @name Trigonometric functions
 
 Unlike @ref std::sin() and friends, those take or return strongly-typed units
@@ -410,20 +424,6 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
         out[i] = Math::ceil(a[i]);
     return out;
 }
-
-/**
-@brief [Binomial coefficient](https://en.wikipedia.org/wiki/Binomial_coefficient).
-@m_since_latest
-
-Returns the number of combinations of @f$ n @f$ things taken @f$ k @f$ at a
-time, with @f$ n \ge k \ge 0 @f$: @f[
-    \begin{pmatrix} n \\ k \end{pmatrix} =
-        \frac{n! (n - k)!}{k!} =
-        \frac{n (n - 1) (n - 2) ~ \cdots ~ (n - (k - 1))}{k (k - 1) ~ \cdots ~ 1} =
-        \prod_{i=1}^k \frac{n + 1 - i}{i}
-@f]
-*/
-UnsignedLong MAGNUM_EXPORT binomialCoefficient(UnsignedInt n, UnsignedInt k);
 
 /**
 @brief Floating point division remainder
