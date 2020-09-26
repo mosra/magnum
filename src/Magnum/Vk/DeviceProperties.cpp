@@ -43,6 +43,7 @@ namespace Magnum { namespace Vk {
 
 struct DeviceProperties::State {
     VkPhysicalDeviceProperties2 properties{};
+    VkPhysicalDeviceMemoryProperties2 memoryProperties{};
     Containers::Array<VkQueueFamilyProperties2> queueFamilyProperties;
 };
 
@@ -176,6 +177,65 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickQueueFamily(const Que
     return {};
 }
 
+const VkPhysicalDeviceMemoryProperties2& DeviceProperties::memoryProperties() {
+    if(!_state) _state.emplace();
+
+    if(!_state->memoryProperties.sType) {
+        _state->memoryProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
+        _instance->state().getPhysicalDeviceMemoryPropertiesImplementation(*this, _state->memoryProperties);
+    }
+
+    return _state->memoryProperties;
+}
+
+void DeviceProperties::getMemoryPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties) {
+    return (**self._instance).GetPhysicalDeviceMemoryProperties(self._handle, &properties.memoryProperties);
+}
+
+void DeviceProperties::getMemoryPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties) {
+    return (**self._instance).GetPhysicalDeviceMemoryProperties2KHR(self._handle, &properties);
+}
+
+void DeviceProperties::getMemoryPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties) {
+    return (**self._instance).GetPhysicalDeviceMemoryProperties2(self._handle, &properties);
+}
+
+UnsignedInt DeviceProperties::memoryHeapCount() {
+    return memoryProperties().memoryProperties.memoryHeapCount;
+}
+
+UnsignedLong DeviceProperties::memoryHeapSize(const UnsignedInt heap) {
+    const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
+    CORRADE_ASSERT(heap < properties.memoryHeapCount,
+        "Vk::DeviceProperties::memoryHeapSize(): index" << heap << "out of range for" << properties.memoryHeapCount << "memory heaps", {});
+    return properties.memoryHeaps[heap].size;
+}
+
+MemoryHeapFlags DeviceProperties::memoryHeapFlags(const UnsignedInt heap) {
+    const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
+    CORRADE_ASSERT(heap < properties.memoryHeapCount,
+        "Vk::DeviceProperties::memoryHeapFlags(): index" << heap << "out of range for" << properties.memoryHeapCount << "memory heaps", {});
+    return MemoryHeapFlag(properties.memoryHeaps[heap].flags);
+}
+
+UnsignedInt DeviceProperties::memoryCount() {
+    return memoryProperties().memoryProperties.memoryTypeCount;
+}
+
+MemoryFlags DeviceProperties::memoryFlags(const UnsignedInt memory) {
+    const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
+    CORRADE_ASSERT(memory < properties.memoryTypeCount,
+        "Vk::DeviceProperties::memoryFlags(): index" << memory << "out of range for" << properties.memoryTypeCount << "memory types", {});
+    return MemoryFlag(properties.memoryTypes[memory].propertyFlags);
+}
+
+UnsignedInt DeviceProperties::memoryHeapIndex(const UnsignedInt memory) {
+    const VkPhysicalDeviceMemoryProperties& properties = memoryProperties().memoryProperties;
+    CORRADE_ASSERT(memory < properties.memoryTypeCount,
+        "Vk::DeviceProperties::memoryHeapIndex(): index" << memory << "out of range for" << properties.memoryTypeCount << "memory types", {});
+    return properties.memoryTypes[memory].heapIndex;
+}
+
 Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
     /* Retrieve total device count */
     UnsignedInt count;
@@ -295,6 +355,26 @@ Debug& operator<<(Debug& debug, const QueueFlags value) {
         Vk::QueueFlag::Transfer,
         Vk::QueueFlag::SparseBinding,
         Vk::QueueFlag::Protected});
+}
+
+Debug& operator<<(Debug& debug, const MemoryHeapFlag value) {
+    debug << "Vk::MemoryHeapFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::MemoryHeapFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(DeviceLocal)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MemoryHeapFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryHeapFlags{}", {
+        Vk::MemoryHeapFlag::DeviceLocal});
 }
 
 }}

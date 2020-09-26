@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, @ref Magnum::Vk::QueueFlag, enum set @ref Magnum::Vk::QueueFlags, function @ref Magnum::Vk::enumerateDevices(), @ref Magnum::Vk::pickDevice(), @ref Magnum::Vk::tryPickDevice()
+ * @brief Class @ref Magnum::Vk::DeviceProperties, enum @ref Magnum::Vk::DeviceType, @ref Magnum::Vk::QueueFlag, @ref Magnum::Vk::MemoryHeapFlag, enum set @ref Magnum::Vk::QueueFlags, @ref Magnum::Vk::MemoryHeapFlags, function @ref Magnum::Vk::enumerateDevices(), @ref Magnum::Vk::pickDevice(), @ref Magnum::Vk::tryPickDevice()
  * @m_since_latest
  */
 
@@ -127,6 +127,47 @@ CORRADE_ENUMSET_OPERATORS(QueueFlags)
 @m_since_latest
 */
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, QueueFlags value);
+
+/**
+@brief Memory heap flag
+@m_since_latest
+
+Wraps a @type_vk_keyword{MemoryHeapFlagBits}.
+@see @ref QueueFlags, @ref DeviceProperties::queueFamilyFlags()
+@m_enum_values_as_keywords
+*/
+enum class MemoryHeapFlag: UnsignedInt {
+    /** Corresponds to device-local memory */
+    DeviceLocal = VK_MEMORY_HEAP_DEVICE_LOCAL_BIT,
+
+    /** @todo MultiInstance, Vk 1.1 */
+};
+
+/**
+@debugoperatorclassenum{DeviceProperties,MemoryHeapFlag}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryHeapFlag value);
+
+/**
+@brief Memory heap flags
+@m_since_latest
+
+Type-safe wrapper for @type_vk_keyword{MemoryHeapFlags}.
+@see @ref DeviceProperties::memoryHeapFlags(), @ref MemoryFlags
+*/
+typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
+
+CORRADE_ENUMSET_OPERATORS(MemoryHeapFlags)
+
+/**
+@debugoperatorclassenum{DeviceProperties,MemoryHeapFlags}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryHeapFlags value);
+
+/* MemoryFlag/MemoryFlags are in Memory.h since those are used mainly in
+   contexts where DeviceProperties isn't present */
 
 /**
 @brief Physical device properties
@@ -311,6 +352,75 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          */
         Containers::Optional<UnsignedInt> tryPickQueueFamily(QueueFlags flags);
 
+        /**
+         * @brief Device memory properties
+         *
+         * Populated lazily on first request. If Vulkan 1.1 or the
+         * @vk_extension{KHR,get_physical_device_properties2} extension is not
+         * enabled on the originating instance, only the Vulkan 1.0 subset of
+         * device properties is queried.
+         * @see @fn_vk_keyword{GetPhysicalDeviceMemoryProperties2},
+         *      @fn_vk_keyword{GetPhysicalDeviceMemoryProperties}
+         */
+        const VkPhysicalDeviceMemoryProperties2& memoryProperties();
+
+        /**
+         * @brief Memory heap count
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        UnsignedInt memoryHeapCount();
+
+        /**
+         * @brief Memory heap size
+         * @param heap   Memory heap index, expected to be smaller than
+         *      @ref memoryHeapCount()
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        UnsignedLong memoryHeapSize(UnsignedInt heap);
+
+        /**
+         * @brief Memory heap size
+         * @param heap   Memory heap index, expected to be smaller than
+         *      @ref memoryHeapCount()
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        MemoryHeapFlags memoryHeapFlags(UnsignedInt heap);
+
+        /**
+         * @brief Memory type count
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        UnsignedInt memoryCount();
+
+        /**
+         * @brief Memory type flags
+         * @param memory    Memory type index, expected to be smaller than
+         *      @ref memoryCount()
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        MemoryFlags memoryFlags(UnsignedInt memory);
+
+        /**
+         * @brief Memory heap index
+         * @param memory    Memory type index, expected to be smaller than
+         *      @ref memoryCount()
+         * @return Memory heap index, always smaller than @ref memoryHeapCount()
+         *
+         * Convenience access to @ref memoryProperties() internals, populated
+         * lazily on first request.
+         */
+        UnsignedInt memoryHeapIndex(UnsignedInt memory);
+
     private:
         friend Implementation::InstanceState;
 
@@ -330,6 +440,10 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationDefault(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
         MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationKHR(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
         MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementation11(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
+
+        MAGNUM_VK_LOCAL static void getMemoryPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties);
+        MAGNUM_VK_LOCAL static void getMemoryPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties);
+        MAGNUM_VK_LOCAL static void getMemoryPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceMemoryProperties2& properties);
 
         /* Can't be a reference because of the NoCreate constructor */
         Instance* _instance;

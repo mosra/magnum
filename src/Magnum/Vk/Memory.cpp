@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,43 +23,39 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include "Memory.h"
 
-#include <Corrade/Containers/Containers.h>
-
-#include "Magnum/Magnum.h"
+#include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Vk {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class CommandBuffer;
-class CommandPool;
-class Device;
-class DeviceCreateInfo;
-class DeviceProperties;
-enum class DeviceType: Int;
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-enum class MemoryFlag: UnsignedInt;
-typedef Containers::EnumSet<MemoryFlag> MemoryFlags;
-enum class MemoryHeapFlag: UnsignedInt;
-typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
-class Queue;
-enum class QueueFlag: UnsignedInt;
-typedef Containers::EnumSet<QueueFlag> QueueFlags;
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+Debug& operator<<(Debug& debug, const MemoryFlag value) {
+    debug << "Vk::MemoryFlag" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::MemoryFlag::value: return debug << "::" << Debug::nospace << #value;
+        _c(DeviceLocal)
+        _c(HostVisible)
+        _c(HostCoherent)
+        _c(HostCached)
+        _c(LazilyAllocated)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MemoryFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::MemoryFlags{}", {
+        Vk::MemoryFlag::DeviceLocal,
+        Vk::MemoryFlag::HostVisible,
+        Vk::MemoryFlag::HostCoherent,
+        Vk::MemoryFlag::HostCached,
+        Vk::MemoryFlag::LazilyAllocated});
+}
 
 }}
-
-#endif

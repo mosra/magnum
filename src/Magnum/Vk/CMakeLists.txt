@@ -32,6 +32,7 @@ set(MagnumVk_SRCS
     Extensions.cpp
     Handle.cpp
     Instance.cpp
+    Memory.cpp
     Result.cpp
     Version.cpp
 
@@ -58,6 +59,7 @@ set(MagnumVk_HEADERS
     Instance.h
     Integration.h
     LayerProperties.h
+    Memory.h
     Queue.h
     Result.h
     TypeTraits.h

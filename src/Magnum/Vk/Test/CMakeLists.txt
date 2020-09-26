@@ -35,6 +35,7 @@ corrade_add_test(VkHandleTest HandleTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkInstanceTest InstanceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 

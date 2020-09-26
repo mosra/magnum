@@ -38,6 +38,7 @@ struct InstanceState {
 
     void(*getPhysicalDevicePropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceProperties2&);
     void(*getPhysicalDeviceQueueFamilyPropertiesImplementation)(DeviceProperties&, UnsignedInt&, VkQueueFamilyProperties2*);
+    void(*getPhysicalDeviceMemoryPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceMemoryProperties2&);
 };
 
 }}}

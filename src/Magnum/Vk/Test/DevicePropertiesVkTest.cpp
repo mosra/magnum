@@ -37,6 +37,7 @@
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/VulkanTester.h"
@@ -64,6 +65,12 @@ struct DevicePropertiesVkTest: VulkanTester {
     void queueFamiliesOutOfRange();
     void queueFamiliesPick();
     void queueFamiliesPickFailed();
+
+    void memoryHeaps();
+    void memoryHeapOutOfRange();
+
+    void memoryTypes();
+    void memoryTypeOutOfRange();
 
     void pickDevice();
     void pickDeviceIndex();
@@ -101,6 +108,12 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
               &DevicePropertiesVkTest::queueFamiliesOutOfRange,
               &DevicePropertiesVkTest::queueFamiliesPick,
               &DevicePropertiesVkTest::queueFamiliesPickFailed,
+
+              &DevicePropertiesVkTest::memoryHeaps,
+              &DevicePropertiesVkTest::memoryHeapOutOfRange,
+
+              &DevicePropertiesVkTest::memoryTypes,
+              &DevicePropertiesVkTest::memoryTypeOutOfRange,
 
               &DevicePropertiesVkTest::pickDevice,
               &DevicePropertiesVkTest::pickDeviceIndex,
@@ -323,6 +336,95 @@ void DevicePropertiesVkTest::queueFamiliesPickFailed() {
     CORRADE_VERIFY(!devices[0].tryPickQueueFamily(QueueFlag(0xc0ffeee0)));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Vk::DeviceProperties::tryPickQueueFamily(): no Vk::QueueFlag(0xc0ffeee0) found among {} queue families\n", devices[0].queueFamilyCount()));
+}
+
+void DevicePropertiesVkTest::memoryHeaps() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    Debug{} << "Available memory heap count:" << devices[0].memoryHeapCount();
+
+    CORRADE_COMPARE_AS(devices[0].memoryHeapCount(), 0,
+        TestSuite::Compare::Greater);
+
+    bool atLeastOneDeviceLocal = false;
+    for(std::size_t i = 0; i != devices[0].memoryHeapCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_ITERATION(devices[0].memoryHeapFlags(i));
+
+        if(devices[0].memoryHeapFlags(i) & MemoryHeapFlag::DeviceLocal)
+            atLeastOneDeviceLocal = true;
+
+        /* A heap should have at least 64 MB (more like at least 512 MB
+           nowadays but let's be conservative) */
+        CORRADE_COMPARE_AS(devices[0].memoryHeapSize(i), std::size_t{1024*1024*64},
+            TestSuite::Compare::Greater);
+    }
+
+    CORRADE_VERIFY(atLeastOneDeviceLocal);
+}
+
+void DevicePropertiesVkTest::memoryHeapOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    const UnsignedInt count = devices[0].memoryHeapCount();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    devices[0].memoryHeapSize(count);
+    devices[0].memoryHeapFlags(count);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Vk::DeviceProperties::memoryHeapSize(): index {0} out of range for {0} memory heaps\n"
+        "Vk::DeviceProperties::memoryHeapFlags(): index {0} out of range for {0} memory heaps\n", count));
+}
+
+void DevicePropertiesVkTest::memoryTypes() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    Debug{} << "Available memory type count:" << devices[0].memoryCount();
+
+    CORRADE_COMPARE_AS(devices[0].memoryCount(), 0,
+        TestSuite::Compare::Greater);
+
+    bool atLeastOneDeviceLocal = false;
+    for(std::size_t i = 0; i != devices[0].memoryCount(); ++i) {
+        CORRADE_ITERATION(i);
+        CORRADE_ITERATION(devices[0].memoryFlags(i));
+
+        if(devices[0].memoryFlags(i) & MemoryFlag::DeviceLocal)
+            atLeastOneDeviceLocal = true;
+
+        /* Heap index should be in range */
+        CORRADE_COMPARE_AS(devices[0].memoryHeapIndex(i), devices[0].memoryHeapCount(),
+            TestSuite::Compare::Less);
+    }
+
+    CORRADE_VERIFY(atLeastOneDeviceLocal);
+}
+
+void DevicePropertiesVkTest::memoryTypeOutOfRange() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    const UnsignedInt count = devices[0].memoryCount();
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    devices[0].memoryFlags(count);
+    devices[0].memoryHeapIndex(count);
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Vk::DeviceProperties::memoryFlags(): index {0} out of range for {0} memory types\n"
+        "Vk::DeviceProperties::memoryHeapIndex(): index {0} out of range for {0} memory types\n", count));
 }
 
 void DevicePropertiesVkTest::pickDevice() {

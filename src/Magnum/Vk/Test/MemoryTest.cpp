@@ -1,5 +1,3 @@
-#ifndef Magnum_Vk_Vk_h
-#define Magnum_Vk_Vk_h
 /*
     This file is part of Magnum.
 
@@ -25,43 +23,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Vk namespace
- */
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
-#include <Corrade/Containers/Containers.h>
+#include "Magnum/Vk/Memory.h"
 
-#include "Magnum/Magnum.h"
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
-namespace Magnum { namespace Vk {
+struct MemoryTest: TestSuite::Tester {
+    explicit MemoryTest();
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class CommandBuffer;
-class CommandPool;
-class Device;
-class DeviceCreateInfo;
-class DeviceProperties;
-enum class DeviceType: Int;
-class Extension;
-class ExtensionProperties;
-enum class HandleFlag: UnsignedByte;
-typedef Containers::EnumSet<HandleFlag> HandleFlags;
-class Instance;
-class InstanceCreateInfo;
-class InstanceExtension;
-class InstanceExtensionProperties;
-class LayerProperties;
-enum class MemoryFlag: UnsignedInt;
-typedef Containers::EnumSet<MemoryFlag> MemoryFlags;
-enum class MemoryHeapFlag: UnsignedInt;
-typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
-class Queue;
-enum class QueueFlag: UnsignedInt;
-typedef Containers::EnumSet<QueueFlag> QueueFlags;
-enum class Result: Int;
-enum class Version: UnsignedInt;
-#endif
+    void debugMemoryFlag();
+    void debugMemoryFlags();
+};
 
-}}
+MemoryTest::MemoryTest() {
+    addTests({&MemoryTest::debugMemoryFlag,
+              &MemoryTest::debugMemoryFlags});
+}
 
-#endif
+void MemoryTest::debugMemoryFlag() {
+    std::ostringstream out;
+    Debug{&out} << MemoryFlag::HostCached << MemoryFlag(0xdeadcafe);
+    CORRADE_COMPARE(out.str(), "Vk::MemoryFlag::HostCached Vk::MemoryFlag(0xdeadcafe)\n");
+}
+
+void MemoryTest::debugMemoryFlags() {
+    std::ostringstream out;
+    Debug{&out} << (MemoryFlag::HostCached|MemoryFlag::LazilyAllocated) << MemoryFlags{};
+    CORRADE_COMPARE(out.str(), "Vk::MemoryFlag::HostCached|Vk::MemoryFlag::LazilyAllocated Vk::MemoryFlags{}\n");
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::Vk::Test::MemoryTest)

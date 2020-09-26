@@ -40,6 +40,8 @@ struct DevicePropertiesTest: TestSuite::Tester {
     void debugDeviceType();
     void debugQueueFamilyPropertiesFlag();
     void debugQueueFamilyPropertiesFlags();
+    void debugMemoryHeapFlag();
+    void debugMemoryHeapFlags();
 };
 
 DevicePropertiesTest::DevicePropertiesTest() {
@@ -48,7 +50,9 @@ DevicePropertiesTest::DevicePropertiesTest() {
 
               &DevicePropertiesTest::debugDeviceType,
               &DevicePropertiesTest::debugQueueFamilyPropertiesFlag,
-              &DevicePropertiesTest::debugQueueFamilyPropertiesFlags});
+              &DevicePropertiesTest::debugQueueFamilyPropertiesFlags,
+              &DevicePropertiesTest::debugMemoryHeapFlag,
+              &DevicePropertiesTest::debugMemoryHeapFlags});
 }
 
 void DevicePropertiesTest::constructNoCreate() {
@@ -82,6 +86,18 @@ void DevicePropertiesTest::debugQueueFamilyPropertiesFlags() {
     std::ostringstream out;
     Debug{&out} << (QueueFlag::Compute|QueueFlag::Graphics) << QueueFlags{};
     CORRADE_COMPARE(out.str(), "Vk::QueueFlag::Graphics|Vk::QueueFlag::Compute Vk::QueueFlags{}\n");
+}
+
+void DevicePropertiesTest::debugMemoryHeapFlag() {
+    std::ostringstream out;
+    Debug{&out} << MemoryHeapFlag::DeviceLocal << MemoryHeapFlag(0xdeadcafe);
+    CORRADE_COMPARE(out.str(), "Vk::MemoryHeapFlag::DeviceLocal Vk::MemoryHeapFlag(0xdeadcafe)\n");
+}
+
+void DevicePropertiesTest::debugMemoryHeapFlags() {
+    std::ostringstream out;
+    Debug{&out} << (MemoryHeapFlag::DeviceLocal|MemoryHeapFlag(0xf0)) << MemoryHeapFlags{};
+    CORRADE_COMPARE(out.str(), "Vk::MemoryHeapFlag::DeviceLocal|Vk::MemoryHeapFlag(0xf0) Vk::MemoryHeapFlags{}\n");
 }
 
 }}}}
