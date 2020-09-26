@@ -709,6 +709,12 @@ template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Ve
     return Vector<size, T>(T(1))/Math::sqrt(a);
 }
 
+/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
+   FFS. */
+/**
+ * @}
+ */
+
 /**
 @brief Reflect a vector
 @m_since{2020,06}
@@ -760,12 +766,6 @@ template<std::size_t size, class T> inline Vector<size, T> refract(const Vector<
     if(k < T(0.0)) return {};
     return eta*vector - (eta*dot + std::sqrt(k))*normal;
 }
-
-/* Since 1.8.17, the original short-hand group closing doesn't work anymore.
-   FFS. */
-/**
- * @}
- */
 
 }}
 
