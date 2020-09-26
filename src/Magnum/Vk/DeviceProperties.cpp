@@ -32,9 +32,11 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
@@ -234,6 +236,45 @@ UnsignedInt DeviceProperties::memoryHeapIndex(const UnsignedInt memory) {
     CORRADE_ASSERT(memory < properties.memoryTypeCount,
         "Vk::DeviceProperties::memoryHeapIndex(): index" << memory << "out of range for" << properties.memoryTypeCount << "memory types", {});
     return properties.memoryTypes[memory].heapIndex;
+}
+
+UnsignedInt DeviceProperties::pickMemory(const MemoryFlags requiredFlags, const MemoryFlags preferredFlags, const UnsignedInt memories) {
+    Containers::Optional<UnsignedInt> id = tryPickMemory(requiredFlags, preferredFlags, memories);
+    if(id) return *id;
+    std::exit(1); /* LCOV_EXCL_LINE */
+}
+
+Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFlags requiredFlags, const MemoryFlags preferredFlags, const UnsignedInt memories) {
+    const VkPhysicalDeviceMemoryProperties properties = memoryProperties().memoryProperties;
+
+    /* The picking strategy is basically equivalent to vmaFindMemoryTypeIndex()
+       from AMD's Vulkan Memory Allocator -- choosing the one that has the most
+       bits set. */
+    Int maxPreferredBitCount = -1;
+    UnsignedInt maxPreferredBitCountMemory = ~UnsignedInt{};
+    UnsignedInt bit = 1;
+    for(UnsignedInt i = 0; i != properties.memoryTypeCount; ++i, bit <<= 1) {
+        /* Not among considered memory types, skip */
+        if(!(memories & bit))
+            continue;
+
+        /* Not all required flags present, skip */
+        if(!(MemoryFlag(properties.memoryTypes[i].propertyFlags) >= requiredFlags))
+            continue;
+
+        /* Check how many of the preferred flags are present and use the one
+           with highest count */
+        const Int preferredBitCount = Math::popcount(properties.memoryTypes[i].propertyFlags & UnsignedInt(preferredFlags));
+        if(preferredBitCount > maxPreferredBitCount) {
+            maxPreferredBitCount = preferredBitCount;
+            maxPreferredBitCountMemory = i;
+        }
+    }
+
+    if(maxPreferredBitCount >= 0) return maxPreferredBitCountMemory;
+
+    Error{} << "Vk::DeviceProperties::tryPickMemory(): no" << requiredFlags << "found among" << Math::popcount(memories & ((1 << properties.memoryTypeCount) - 1)) << "considered memory types";
+    return {};
 }
 
 Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {

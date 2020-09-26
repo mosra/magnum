@@ -71,6 +71,9 @@ struct DevicePropertiesVkTest: VulkanTester {
 
     void memoryTypes();
     void memoryTypeOutOfRange();
+    void memoryTypesPick();
+    void memoryTypesPickIgnoreSomePreferred();
+    void memoryTypesPickFailed();
 
     void pickDevice();
     void pickDeviceIndex();
@@ -114,6 +117,9 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
 
               &DevicePropertiesVkTest::memoryTypes,
               &DevicePropertiesVkTest::memoryTypeOutOfRange,
+              &DevicePropertiesVkTest::memoryTypesPick,
+              &DevicePropertiesVkTest::memoryTypesPickIgnoreSomePreferred,
+              &DevicePropertiesVkTest::memoryTypesPickFailed,
 
               &DevicePropertiesVkTest::pickDevice,
               &DevicePropertiesVkTest::pickDeviceIndex,
@@ -425,6 +431,60 @@ void DevicePropertiesVkTest::memoryTypeOutOfRange() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Vk::DeviceProperties::memoryFlags(): index {0} out of range for {0} memory types\n"
         "Vk::DeviceProperties::memoryHeapIndex(): index {0} out of range for {0} memory types\n", count));
+}
+
+void DevicePropertiesVkTest::memoryTypesPick() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    Containers::Optional<UnsignedInt> id = devices[0].tryPickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent);
+    CORRADE_VERIFY(id);
+    CORRADE_COMPARE_AS(*id, devices[0].memoryCount(), TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(devices[0].memoryFlags(*id),
+        MemoryFlag::HostVisible|MemoryFlag::HostCoherent,
+        TestSuite::Compare::GreaterOrEqual);
+
+    /* Pick should return the same ID, and shouldn't exit */
+    CORRADE_COMPARE(devices[0].pickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent), id);
+
+    /* If we put the same into preferred flags and leave the required empty, it
+       should pick the same (the first one as well) */
+    Containers::Optional<UnsignedInt> idPreferred = devices[0].tryPickMemory({}, MemoryFlag::HostVisible|MemoryFlag::HostCoherent);
+    CORRADE_COMPARE(idPreferred, id);
+}
+
+void DevicePropertiesVkTest::memoryTypesPickIgnoreSomePreferred() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    Containers::Optional<UnsignedInt> id = devices[0].tryPickMemory({}, MemoryFlag::HostVisible|MemoryFlag::HostCoherent|MemoryFlag(0xcafe0000u));
+    CORRADE_VERIFY(id);
+    CORRADE_COMPARE_AS(*id, devices[0].memoryCount(), TestSuite::Compare::Less);
+    /* Should pick all what makes sense and ignore what doesn't */
+    CORRADE_COMPARE_AS(devices[0].memoryFlags(*id),
+        MemoryFlag::HostVisible|MemoryFlag::HostCoherent,
+        TestSuite::Compare::GreaterOrEqual);
+
+    /* And should be the same as picking the same required or halfway */
+    CORRADE_COMPARE(id, devices[0].tryPickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent));
+    CORRADE_COMPARE(id, devices[0].tryPickMemory(MemoryFlag::HostVisible, MemoryFlag::HostCoherent));
+}
+
+void DevicePropertiesVkTest::memoryTypesPickFailed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!devices[0].tryPickMemory(MemoryFlag(0xc0ffeee0)));
+    CORRADE_VERIFY(!devices[0].tryPickMemory({}, {}, 0));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlag(0xc0ffeee0) found among {} considered memory types\n"
+        "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlags{{}} found among 0 considered memory types\n", devices[0].memoryCount()));
 }
 
 void DevicePropertiesVkTest::pickDevice() {

@@ -421,6 +421,49 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          */
         UnsignedInt memoryHeapIndex(UnsignedInt memory);
 
+        /**
+         * @brief Pick a memory type satisfying given flags
+         * @param requiredFlags     Memory flags that should be present in
+         *      picked memory type. Can be an empty set, but picking such
+         *      memory is probably not very useful.
+         * @param preferredFlags    If there's more than one memory type
+         *      matching @p requiredFlags, prefer one that has most of these
+         *      as well. Defaults to an empty set.
+         * @param memories          Bits indicating which memory types should
+         *      be considered (bit @cpp 0 @ce indicates memory type @cpp 0 @ce
+         *      should be considered etc.). Expected to have at least one bit
+         *      of the first @ref memoryCount() bits set, otherwise the
+         *      function will always fail. Defaults to all bits set, meaning
+         *      all memory types are considered. Corresponds to the
+         *       `memoryTypeBits` field of @type_vk{MemoryRequirements}.
+         *
+         * Queries memory properties using @ref memoryProperties() and out of
+         * memory types set in @p memoryBits tries to find one that contains
+         * all @p requiredFlags and most of @p optionalFlags. If it is not
+         * found, exits. See @ref tryPickMemory() for an alternative that
+         * doesn't exit on failure.
+         *
+         * @m_class{m-note m-success}
+         *
+         * @par
+         *      The @p preferredFlags can be used for example to ask for a
+         *      @ref MemoryFlag::HostVisible bit on a
+         *      @ref MemoryFlag::DeviceLocal memory --- on discrete GPUs this
+         *      combination is usually not possible so you get just a
+         *      device-only memory, but on integrated GPUs it can be used to
+         *      avoid a need for a copy through a temporary staging buffer.
+         */
+        UnsignedInt pickMemory(MemoryFlags requiredFlags, MemoryFlags preferredFlags = {}, UnsignedInt memories = ~UnsignedInt{});
+
+        /**
+         * @brief Try to pick a memory type satisfying given flags
+         *
+         * Compared to @ref pickMemory() the function returns
+         * @ref Containers::NullOpt if a desired memory type isn't found
+         * instead of exiting.
+         */
+        Containers::Optional<UnsignedInt> tryPickMemory(MemoryFlags requiredFlags, MemoryFlags preferredFlags = {}, UnsignedInt memories = ~UnsignedInt{});
+
     private:
         friend Implementation::InstanceState;
 
