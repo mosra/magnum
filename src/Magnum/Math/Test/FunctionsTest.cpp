@@ -36,6 +36,8 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 struct FunctionsTest: Corrade::TestSuite::Tester {
     explicit FunctionsTest();
 
+    template<class T> void popcount();
+
     void powIntegral();
     void pow();
 
@@ -99,6 +101,10 @@ typedef Math::Vector3<Byte> Vector3b;
 typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
+    addRepeatedTests<FunctionsTest>({
+        &FunctionsTest::popcount<UnsignedInt>,
+        &FunctionsTest::popcount<UnsignedLong>}, 8);
+
     addTests({&FunctionsTest::powIntegral,
               &FunctionsTest::pow,
 
@@ -152,6 +158,17 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::sincos<long double>,
               #endif
               });
+}
+
+template<class T> void FunctionsTest::popcount() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    /* Trivial cases */
+    CORRADE_COMPARE(Math::popcount(T(0)), 0);
+    CORRADE_COMPARE(Math::popcount(~T{}), sizeof(T)*8);
+
+    /* 0x101101011101000110010100 */
+    CORRADE_COMPARE(Math::popcount(T(0xb5d194) << testCaseRepeatId()), 12);
 }
 
 void FunctionsTest::powIntegral() {

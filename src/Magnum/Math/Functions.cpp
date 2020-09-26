@@ -30,6 +30,30 @@
 
 namespace Magnum { namespace Math {
 
+#if !defined(CORRADE_TARGET_GCC) && !defined(CORRADE_TARGET_CLANG)
+namespace {
+
+/* https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+   there's also https://stackoverflow.com/a/109025 which mostly just copies
+   parts of this together with a lot of noise and syntax errors. */
+template<class T> inline UnsignedInt popcountImplementation(T v) {
+    v = v - ((v >> 1) & ~T(0)/3);
+    v = (v & ~T(0)/15*3) + ((v >> 2) & ~T(0)/15*3);
+    v = (v + (v >> 4)) & ~T(0)/255*15;
+    return (v*(~T(0)/255)) >> (sizeof(T) - 1)*8;
+}
+
+}
+
+UnsignedInt popcount(UnsignedInt number) {
+    return popcountImplementation(number);
+}
+
+UnsignedInt popcount(UnsignedLong number) {
+    return popcountImplementation(number);
+}
+#endif
+
 UnsignedInt log(UnsignedInt base, UnsignedInt number) {
     UnsignedInt log = 0;
     while(number /= base)

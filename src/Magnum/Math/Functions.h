@@ -94,6 +94,36 @@ time, with @f$ n \ge k \ge 0 @f$: @f[
 UnsignedLong MAGNUM_EXPORT binomialCoefficient(UnsignedInt n, UnsignedInt k);
 
 /**
+@brief Count of bits set in a number
+@m_since_latest
+
+Expands to `__builtin_popcount` / `__builtin_popcountll` on GCC and Clang, uses
+the [Counting bits set, in parallel](https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel)
+implementation from Sean Eron Anderson Bit Twiddling Hacks page on MSVC and
+elsewhere.
+*/
+/* Explicitly checking for Clang in addition to GCC to catch also clang-cl */
+#if defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG)
+inline UnsignedInt popcount(UnsignedInt number) {
+    return __builtin_popcount(number);
+}
+#else
+MAGNUM_EXPORT UnsignedInt popcount(UnsignedInt number);
+#endif
+
+/**
+@overload
+@m_since_latest
+*/
+#if defined(CORRADE_TARGET_GCC) || defined(CORRADE_TARGET_CLANG)
+inline UnsignedInt popcount(UnsignedLong number) {
+    return __builtin_popcountll(number);
+}
+#else
+MAGNUM_EXPORT UnsignedInt popcount(UnsignedLong number);
+#endif
+
+/**
 @{ @name Trigonometric functions
 
 Unlike @ref std::sin() and friends, those take or return strongly-typed units
