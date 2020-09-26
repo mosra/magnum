@@ -29,6 +29,7 @@
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Version.h"
 
@@ -288,5 +289,17 @@ int main(int argc, char** argv) {
     for(UnsignedInt i = 0; i != device.queueFamilyCount(); ++i) {
         Debug{} << "   " << i << Debug::nospace << ":" << device.queueFamilyFlags(i);
         Debug{} << "     " << device.queueFamilySize(i) << "queues";
+    }
+
+    Debug{} << "Memory heaps:";
+    for(UnsignedInt i = 0; i != device.memoryHeapCount(); ++i) {
+        Debug{} << "   " << i << Debug::nospace << ":" << device.memoryHeapFlags(i);
+        Debug{} << "      size:" << device.memoryHeapSize(i)/1024/1024 << "MB";
+    }
+
+    Debug{} << "Memory types:";
+    for(UnsignedInt i = 0; i != device.memoryCount(); ++i) {
+        Debug{} << "   " << i << Debug::nospace << ":" << device.memoryFlags(i);
+        Debug{} << "      heap index:" << device.memoryHeapIndex(i);
     }
 }
