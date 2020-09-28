@@ -27,6 +27,7 @@
 
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Result.h"
 
 namespace Magnum { namespace Vk {
 
@@ -57,6 +58,10 @@ CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept {
     swap(other._handle, _handle);
     swap(other._flags, _flags);
     return *this;
+}
+
+void CommandBuffer::reset(const CommandBufferResetFlags flags) {
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).ResetCommandBuffer(_handle, VkCommandBufferResetFlags(flags)));
 }
 
 VkCommandBuffer CommandBuffer::release() {

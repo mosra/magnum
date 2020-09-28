@@ -251,8 +251,8 @@ Vulkan function                         | Matching API
 
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
-@fn_vk{ResetCommandBuffer}              | |
-@fn_vk{ResetCommandPool}                | |
+@fn_vk{ResetCommandBuffer}              | @ref CommandBuffer::reset()
+@fn_vk{ResetCommandPool}                | @ref CommandPool::reset()
 @fn_vk{ResetDescriptorPool}             | |
 @fn_vk{ResetFences}                     | |
 @fn_vk{ResetQueryPool} @m_class{m-label m-flat m-success} **EXT, 1.2** | |

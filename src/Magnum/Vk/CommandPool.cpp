@@ -92,6 +92,10 @@ CommandBuffer CommandPool::allocate(const CommandBufferLevel level) {
     return out;
 }
 
+void CommandPool::reset(const CommandPoolResetFlags flags) {
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).ResetCommandPool(*_device, _handle, VkCommandPoolResetFlags(flags)));
+}
+
 VkCommandPool CommandPool::release() {
     const VkCommandPool handle = _handle;
     _handle = {};

@@ -39,6 +39,7 @@ struct CommandPoolVkTest: VulkanTester {
     void constructMove();
     void wrap();
 
+    void reset();
     void allocate();
 };
 
@@ -47,6 +48,7 @@ CommandPoolVkTest::CommandPoolVkTest() {
               &CommandPoolVkTest::constructMove,
               &CommandPoolVkTest::wrap,
 
+              &CommandPoolVkTest::reset,
               &CommandPoolVkTest::allocate});
 }
 
@@ -100,6 +102,16 @@ void CommandPoolVkTest::wrap() {
     CORRADE_COMPARE(wrapped.release(), pool);
     CORRADE_VERIFY(!wrapped.handle());
     device()->DestroyCommandPool(device(), pool, nullptr);
+}
+
+void CommandPoolVkTest::reset() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    pool.reset(CommandPoolResetFlag::ReleaseResources);
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
 }
 
 void CommandPoolVkTest::allocate() {

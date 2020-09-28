@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::CommandBuffer
+ * @brief Class @ref Magnum::Vk::CommandBuffer, enum @ref Magnum::Vk::CommandPoolResetFlag, enum set @ref Magnum::Vk::CommandPoolResetFlags
  * @m_since_latest
  */
 
@@ -40,6 +40,32 @@
 #include "Magnum/Vk/visibility.h"
 
 namespace Magnum { namespace Vk {
+
+/**
+@brief Command buffer reset flag
+@m_since_latest
+
+Wraps @type_vk_keyword{CommandBufferResetFlagBits}.
+@m_enum_values_as_keywords
+@see @ref CommandBufferResetFlags, @ref CommandBuffer::reset(),
+    @ref CommandPoolResetFlag, @ref CommandPool::reset()
+*/
+enum class CommandBufferResetFlag: UnsignedInt {
+    /** Recycle all resources from the command pool back to the system */
+    ReleaseResources = VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT
+};
+
+/**
+@brief Command buffer reset flags
+@m_since_latest
+
+Wraps @type_vk_keyword{CommandBufferResetFlags}.
+@see @ref CommandBuffer::reset(), @ref CommandPoolResetFlags,
+    @ref CommandPool::reset()
+*/
+typedef Containers::EnumSet<CommandBufferResetFlag> CommandBufferResetFlags;
+
+CORRADE_ENUMSET_OPERATORS(CommandBufferResetFlags)
 
 /**
 @brief Command buffer
@@ -102,6 +128,17 @@ class MAGNUM_VK_EXPORT CommandBuffer {
 
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Reset the command buffer
+         *
+         * This operation is allowed only if the originating @ref CommandPool
+         * was created with @ref CommandPoolCreateInfo::Flag::ResetCommandBuffer.
+         * If not, the only way to reset is to reset the whole command pool
+         * using @ref CommandPool::reset().
+         * @see @fn_vk_keyword{ResetCommandBuffer}
+         */
+        void reset(CommandBufferResetFlags flags = {});
 
         /**
          * @brief Release the underlying Vulkan command buffer

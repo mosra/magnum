@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::CommandPoolCreateInfo, @ref Magnum::Vk::CommandPool, enum @ref Magnum::Vk::CommandBufferLevel
+ * @brief Class @ref Magnum::Vk::CommandPoolCreateInfo, @ref Magnum::Vk::CommandPool, enum @ref Magnum::Vk::CommandBufferLevel, @ref Magnum::Vk::CommandPoolResetFlag, enum set @ref Magnum::Vk::CommandPoolResetFlags
  * @m_since_latest
  */
 
@@ -44,8 +44,8 @@ namespace Magnum { namespace Vk {
 @brief Command pool creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandPoolCreateInfo}.
-@see @ref CommandPool
+Wraps a @type_vk_keyword{CommandPoolCreateInfo}. See @ref CommandPool for usage
+information.
 */
 class MAGNUM_VK_EXPORT CommandPoolCreateInfo {
     public:
@@ -62,7 +62,8 @@ class MAGNUM_VK_EXPORT CommandPoolCreateInfo {
 
             /**
              * Allow individual command buffers to be reset to initial state
-             * instead of just the whole pool.
+             * using @ref CommandBuffer::reset() instead of just the whole pool
+             * using @ref CommandPool::reset().
              *
              * @m_class{m-note m-success}
              *
@@ -147,6 +148,32 @@ enum class CommandBufferLevel: Int {
 };
 
 /**
+@brief Command buffer reset flag
+@m_since_latest
+
+Wraps @type_vk_keyword{CommandPoolResetFlagBits}.
+@m_enum_values_as_keywords
+@see @ref CommandPoolResetFlags, @ref CommandPool::reset(),
+    @ref CommandBufferResetFlag, @ref CommandBuffer::reset()
+*/
+enum class CommandPoolResetFlag: UnsignedInt {
+    /** Recycle all resources from the command pool back to the system */
+    ReleaseResources = VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT
+};
+
+/**
+@brief Command pool reset flags
+@m_since_latest
+
+Wraps @type_vk_keyword{CommandPoolResetFlags}.
+@see @ref CommandPool::reset(), @ref CommandBufferResetFlags,
+    @ref CommandBuffer::reset()
+*/
+typedef Containers::EnumSet<CommandPoolResetFlag> CommandPoolResetFlags;
+
+CORRADE_ENUMSET_OPERATORS(CommandPoolResetFlags)
+
+/**
 @brief Command pool
 @m_since_latest
 
@@ -221,6 +248,16 @@ class MAGNUM_VK_EXPORT CommandPool {
          * @see @fn_vk_keyword{AllocateCommandBuffers}
          */
         CommandBuffer allocate(CommandBufferLevel level = CommandBufferLevel::Primary);
+
+        /**
+         * @brief Reset the command pool
+         *
+         * All command buffers allocated from this command pool are reset as
+         * well. See @ref CommandBuffer::reset() for a way to reset a single
+         * command buffer.
+         * @see @fn_vk_keyword{ResetCommandPool}
+         */
+        void reset(CommandPoolResetFlags flags = {});
 
         /**
          * @brief Release the underlying Vulkan command pool
