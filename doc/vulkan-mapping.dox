@@ -53,7 +53,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{AllocateCommandBuffers}, \n @fn_vk{FreeCommandBuffers} | @ref CommandPool::allocate(), @ref CommandBuffer destructor
 @fn_vk{AllocateDescriptorSets}, \n @fn_vk{FreeDescriptorSets} | |
-@fn_vk{AllocateMemory}, \n @fn_vk{FreeMemory} | |
+@fn_vk{AllocateMemory}, \n @fn_vk{FreeMemory} | @ref Memory constructor and destructor
 
 @subsection vulkan-mapping-functions-b B
 
@@ -331,6 +331,14 @@ Vulkan structure                        | Matching API
 @type_vk{ImageCreateInfo}               | @ref ImageCreateInfo
 @type_vk{ImageMemoryRequirementsInfo}   | not exposed, internal to @ref Image::memoryRequirements()
 @type_vk{InstanceCreateInfo}            | @ref InstanceCreateInfo
+
+@subsection vulkan-mapping-structures-m M
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{MemoryAllocateInfo}            | @ref MemoryAllocateInfo
 
 */
 

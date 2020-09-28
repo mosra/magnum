@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::MemoryRequirements, enum @ref Magnum::Vk::MemoryFlag, enum set @ref Magnum::Vk::MemoryFlags
+ * @brief Class @ref Magnum::Vk::MemoryRequirements, @ref Magnum::Vk::MemoryAllocateInfo, @ref Magnum::Vk::Memory, enum @ref Magnum::Vk::MemoryFlag, enum set @ref Magnum::Vk::MemoryFlags
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -172,6 +172,153 @@ class MAGNUM_VK_EXPORT MemoryRequirements {
         explicit MemoryRequirements();
 
         VkMemoryRequirements2 _requirements;
+};
+
+/**
+@brief Memory allocation info
+@m_since_latest
+
+Wraps a @type_vk_keyword{MemoryAllocateInfo}. See @ref Memory for usage
+information.
+*/
+class MAGNUM_VK_EXPORT MemoryAllocateInfo {
+    public:
+        /** @todo Flags, in VkMemoryAllocateFlagsInfo (1.1) */
+
+        /**
+         * @brief Constructor
+         * @param size      Allocation size in bytes
+         * @param memory    Memory index, smaller than
+         *      @ref DeviceProperties::memoryCount()
+         *
+         * The following @type_vk{MemoryAllocateInfo} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `allocationSize` to @p size
+         * -    `memoryTypeIndex` to @p memory
+         *
+         * @see @ref DeviceProperties::pickMemory()
+         */
+        explicit MemoryAllocateInfo(UnsignedLong size, UnsignedInt memory);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit MemoryAllocateInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit MemoryAllocateInfo(const VkMemoryAllocateInfo& info);
+
+        /** @brief Underlying @type_vk{MemoryAllocateInfo} structure */
+        VkMemoryAllocateInfo& operator*() { return _info; }
+        /** @overload */
+        const VkMemoryAllocateInfo& operator*() const { return _info; }
+        /** @overload */
+        VkMemoryAllocateInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkMemoryAllocateInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkMemoryAllocateInfo*() const { return &_info; }
+
+    private:
+        VkMemoryAllocateInfo _info;
+};
+
+/**
+@brief Device memory
+@m_since_latest
+
+Wraps a @type_vk_keyword{DeviceMemory}.
+*/
+class MAGNUM_VK_EXPORT Memory {
+    public:
+        /**
+         * @brief Wrap existing Vulkan handle
+         * @param device    Vulkan device the memory is allocated on
+         * @param handle    The @type_vk{DeviceMemory} handle
+         * @param flags     Handle flags
+         *
+         * The @p handle is expected to be originating from @p device. Unlike
+         * a memory allocated using a constructor, the Vulkan memory is by
+         * default not freed on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static Memory wrap(Device& device, VkDeviceMemory handle, HandleFlags flags = {});
+
+        /**
+         * @brief Constructor
+         * @param device    Vulkan device to allocate the memory on
+         * @param info      Memory allocation info
+         *
+         * @see @fn_vk_keyword{AllocateMemory}
+         */
+        explicit Memory(Device& device, const MemoryAllocateInfo& info);
+
+        /**
+         * @brief Construct without allocating the memory
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         */
+        explicit Memory(NoCreateT);
+
+        /** @brief Copying is not allowed */
+        Memory(const Memory&) = delete;
+
+        /** @brief Move constructor */
+        Memory(Memory&& other) noexcept;
+
+        /**
+         * @brief Destructor
+         *
+         * Frees associated @type_vk{DeviceMemory} handle, unless the instance
+         * was created using @ref wrap() without @ref HandleFlag::DestroyOnDestruction
+         * specified.
+         * @see @fn_vk_keyword{FreeMemory}, @ref release()
+         */
+        ~Memory();
+
+        /** @brief Copying is not allowed */
+        Memory& operator=(const Memory&) = delete;
+
+        /** @brief Move assignment */
+        Memory& operator=(Memory&& other) noexcept;
+
+        /** @brief Underlying @type_vk{DeviceMemory} handle */
+        VkDeviceMemory handle() { return _handle; }
+        /** @overload */
+        operator VkDeviceMemory() { return _handle; }
+
+        /** @brief Handle flags */
+        HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Release the underlying Vulkan memory
+         *
+         * Releases ownership of the Vulkan memory and returns its handle so
+         * @fn_vk{FreeMemory} is not called on destruction. The internal state
+         * is then equivalent to moved-from state.
+         * @see @ref wrap()
+         */
+        VkDeviceMemory release();
+
+    private:
+        /* Can't be a reference because of the NoCreate constructor */
+        Device* _device;
+
+        VkDeviceMemory _handle;
+        HandleFlags _flags;
 };
 
 }}

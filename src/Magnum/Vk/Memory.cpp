@@ -28,6 +28,10 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Result.h"
+
 namespace Magnum { namespace Vk {
 
 MemoryRequirements::MemoryRequirements(): _requirements{} {
@@ -40,6 +44,56 @@ MemoryRequirements::MemoryRequirements(const VkMemoryRequirements2& requirements
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _requirements(requirements) {}
+
+MemoryAllocateInfo::MemoryAllocateInfo(UnsignedLong size, UnsignedInt memory): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    _info.allocationSize = size;
+    _info.memoryTypeIndex = memory;
+}
+
+MemoryAllocateInfo::MemoryAllocateInfo(NoInitT) noexcept {}
+
+MemoryAllocateInfo::MemoryAllocateInfo(const VkMemoryAllocateInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+Memory Memory::wrap(Device& device, const VkDeviceMemory handle, const HandleFlags flags) {
+    Memory out{NoCreate};
+    out._device = &device;
+    out._handle = handle;
+    out._flags = flags;
+    return out;
+}
+
+Memory::Memory(Device& device, const MemoryAllocateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT(device->AllocateMemory(device, info, nullptr, &_handle));
+}
+
+Memory::Memory(NoCreateT): _device{}, _handle{} {}
+
+Memory::Memory(Memory&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+    other._handle = {};
+}
+
+Memory::~Memory() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        (**_device).FreeMemory(*_device, _handle, nullptr);
+}
+
+Memory& Memory::operator=(Memory&& other) noexcept {
+    using std::swap;
+    swap(other._device, _device);
+    swap(other._handle, _handle);
+    swap(other._flags, _flags);
+    return *this;
+}
+
+VkDeviceMemory Memory::release() {
+    const VkDeviceMemory handle = _handle;
+    _handle = {};
+    return handle;
+}
 
 Debug& operator<<(Debug& debug, const MemoryFlag value) {
     debug << "Vk::MemoryFlag" << Debug::nospace;
