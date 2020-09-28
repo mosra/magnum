@@ -134,7 +134,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
 @fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | |
 @fn_vk{CreateFramebuffer}, \n @fn_vk{DestroyFramebuffer} | |
-@fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | |
+@fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | @ref Image constructor and destructor
 @fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | |
 @fn_vk{CreateInstance}, \n @fn_vk{DestroyInstance} | @ref Instance constructor and destructor
 @fn_vk{CreatePipeline}, \n @fn_vk{DestroyPipeline} | |
@@ -328,6 +328,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{ImageCreateInfo}               | @ref ImageCreateInfo
 @type_vk{InstanceCreateInfo}            | @ref InstanceCreateInfo
 
 */

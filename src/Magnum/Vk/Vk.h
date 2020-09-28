@@ -46,6 +46,7 @@ class Extension;
 class ExtensionProperties;
 enum class HandleFlag: UnsignedByte;
 typedef Containers::EnumSet<HandleFlag> HandleFlags;
+class Image;
 class Instance;
 class InstanceCreateInfo;
 class InstanceExtension;

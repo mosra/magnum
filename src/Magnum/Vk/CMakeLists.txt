@@ -31,6 +31,7 @@ set(MagnumVk_SRCS
     CommandPool.cpp
     Extensions.cpp
     Handle.cpp
+    Image.cpp
     Instance.cpp
     Memory.cpp
     Result.cpp
@@ -56,6 +57,7 @@ set(MagnumVk_HEADERS
     Extensions.h
     ExtensionProperties.h
     Handle.h
+    Image.h
     Instance.h
     Integration.h
     LayerProperties.h
