@@ -53,7 +53,8 @@ void FramebufferTest::constructNoCreate() {
         CORRADE_COMPARE(framebuffer.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Framebuffer>::value));
 }
 
 void FramebufferTest::constructCopy() {

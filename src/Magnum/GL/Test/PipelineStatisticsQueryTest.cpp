@@ -47,7 +47,8 @@ void PipelineStatisticsQueryTest::constructNoCreate() {
         CORRADE_COMPARE(query.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, PipelineStatisticsQuery>::value));
 }
 
 void PipelineStatisticsQueryTest::constructCopy() {

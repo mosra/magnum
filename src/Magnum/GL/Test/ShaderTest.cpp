@@ -51,7 +51,8 @@ void ShaderTest::constructNoCreate() {
         CORRADE_COMPARE(shader.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Shader>::value));
 }
 
 void ShaderTest::constructCopy() {

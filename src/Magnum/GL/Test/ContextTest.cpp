@@ -78,6 +78,9 @@ void ContextTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Context>::value));
 }
 
 void ContextTest::constructCopyMove() {

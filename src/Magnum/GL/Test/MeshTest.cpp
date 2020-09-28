@@ -89,7 +89,8 @@ void MeshTest::constructNoCreate() {
         CORRADE_COMPARE(mesh.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Mesh>::value));
 }
 
 void MeshTest::constructViewNoCreate() {
@@ -99,7 +100,8 @@ void MeshTest::constructViewNoCreate() {
         CORRADE_COMPARE(&view.mesh(), &mesh);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, MeshView>::value));
 }
 
 void MeshTest::constructCopy() {

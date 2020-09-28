@@ -47,7 +47,8 @@ void TransformFeedbackTest::constructNoCreate() {
         CORRADE_COMPARE(xfb.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, TransformFeedback>::value));
 }
 
 void TransformFeedbackTest::constructCopy() {

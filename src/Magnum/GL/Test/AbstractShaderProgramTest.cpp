@@ -50,7 +50,8 @@ void AbstractShaderProgramTest::constructNoCreate() {
         CORRADE_COMPARE(shader.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, AbstractShaderProgram>::value));
 }
 
 void AbstractShaderProgramTest::constructCopy() {

@@ -76,7 +76,8 @@ void TextureTest::construct1DNoCreate() {
         CORRADE_COMPARE(texture.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Texture1D>::value));
 }
 #endif
 
@@ -86,7 +87,8 @@ void TextureTest::construct2DNoCreate() {
         CORRADE_COMPARE(texture.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Texture2D>::value));
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -96,7 +98,8 @@ void TextureTest::construct3DNoCreate() {
         CORRADE_COMPARE(texture.id(), 0);
     }
 
-    CORRADE_VERIFY(true);
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Texture3D>::value));
 }
 #endif
 
