@@ -66,6 +66,7 @@ available, each namespace has its own:
 -   @ref Magnum/Text/Text.h
 -   @ref Magnum/Trade/Trade.h
 -   @ref Magnum/Ui/Ui.h
+-   @ref Magnum/Vk/Vk.h
 
 @section compilation-speedup-templates Templates
 

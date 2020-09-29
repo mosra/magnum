@@ -54,7 +54,7 @@ In case @ref isMeshPrimitiveImplementationSpecific() returns @cpp false @ce for
 @p primitive, maps it to a corresponding Vulkan primitive topology. In case
 @ref isMeshPrimitiveImplementationSpecific() returns @cpp true @ce, assumes
 @p primitive stores a Vulkan-specific primitive topology and returns
-@ref meshPrimitiveUnwrap() cast to @type_vk{VkPrimitiveTopology}.
+@ref meshPrimitiveUnwrap() cast to @type_vk{PrimitiveTopology}.
 
 Not all generic mesh primitives are available in Vulkan and this function
 expects that given primitive is available. Use @ref hasVkPrimitiveTopology() to
