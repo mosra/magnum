@@ -95,9 +95,9 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, SceneConverterFeatures value
 */
 enum class SceneConverterFlag: UnsignedByte {
     /**
-     * Print verbose diagnostic during import. By default the importer only
-     * prints messages on error or when some operation might cause unexpected
-     * data modification or loss.
+     * Print verbose diagnostic during conversion. By default the converter
+     * only prints messages on error or when some operation might cause
+     * unexpected data modification or loss.
      */
     Verbose = 1 << 0
 
@@ -108,7 +108,7 @@ enum class SceneConverterFlag: UnsignedByte {
 @brief Scene converter flags
 @m_since{2020,06}
 
-@see @ref AbstractImporter::setFlags()
+@see @ref AbstractSceneConverter::setFlags()
 */
 typedef Containers::EnumSet<SceneConverterFlag> SceneConverterFlags;
 
@@ -138,9 +138,9 @@ various formats or performing optimizations and other operations on them. See
 @section Trade-AbstractSceneConverter-data-dependency Data dependency
 
 The instances returned from various functions *by design* have no dependency on
-the importer instance and neither on the dynamic plugin module. In other words,
-you don't need to keep the importer instance (or the plugin manager instance)
-around in order to have the `*Data` instances valid. Moreover, all
+the converter instance and neither on the dynamic plugin module. In other
+words, you don't need to keep the converter instance (or the plugin manager
+instance) around in order to have the `*Data` instances valid. Moreover, all
 @ref Corrade::Containers::Array instances returned through @ref MeshData and
 others are only allowed to have default deleters --- this is to avoid potential
 dangling function pointer calls when destructing such instances after the
@@ -274,7 +274,7 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
 
     private:
         /**
-         * @brief Implementation of @ref features()
+         * @brief Implementation for @ref features()
          *
          * The implementation is expected to support at least one feature.
          */
@@ -295,17 +295,17 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          */
         virtual void doSetFlags(SceneConverterFlags flags);
 
-        /** @brief Implementation of @ref convert(const MeshData&) */
+        /** @brief Implementation for @ref convert(const MeshData&) */
         virtual Containers::Optional<MeshData> doConvert(const MeshData& mesh);
 
-        /** @brief Implementation of @ref convertInPlace(MeshData&) */
+        /** @brief Implementation for @ref convertInPlace(MeshData&) */
         virtual bool doConvertInPlace(MeshData& mesh);
 
-        /** @brief Implementation of @ref convertToData(const MeshData&) */
+        /** @brief Implementation for @ref convertToData(const MeshData&) */
         virtual Containers::Array<char> doConvertToData(const MeshData& mesh);
 
         /**
-         * @brief Implementation of @ref convertToFile(const std::string&, const MeshData&)
+         * @brief Implementation for @ref convertToFile(const std::string&, const MeshData&)
          *
          * If @ref SceneConverterFeature::ConvertMeshToData is supported,
          * default implementation calls @ref doConvertToData(const MeshData&)

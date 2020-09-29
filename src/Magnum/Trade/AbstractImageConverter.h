@@ -107,9 +107,9 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImageConverterFeatures value
 */
 enum class ImageConverterFlag: UnsignedByte {
     /**
-     * Print verbose diagnostic during import. By default the importer only
-     * prints messages on error or when some operation might cause unexpected
-     * data modification or loss.
+     * Print verbose diagnostic during conversion. By default the converter
+     * only prints messages on error or when some operation might cause
+     * unexpected data modification or loss.
      */
     Verbose = 1 << 0
 
@@ -120,7 +120,7 @@ enum class ImageConverterFlag: UnsignedByte {
 @brief Image converter flags
 @m_since{2020,06}
 
-@see @ref AbstractImporter::setFlags()
+@see @ref AbstractImageConverter::setFlags()
 */
 typedef Containers::EnumSet<ImageConverterFlag> ImageConverterFlags;
 
@@ -148,13 +148,14 @@ classes in @ref Trade namespace for available image converter plugins.
 @section Trade-AbstractImageConverter-data-dependency Data dependency
 
 The instances returned from various functions *by design* have no dependency on
-the importer instance and neither on the dynamic plugin module. In other words,
-you don't need to keep the importer instance (or the plugin manager instance)
-around in order to have the `*Data` instances valid. Moreover, all
+the converter instance and neither on the dynamic plugin module. In other
+words, you don't need to keep the converter instance (or the plugin manager
+instance) around in order to have the `*Data` instances valid. Moreover, all
 @ref Corrade::Containers::Array instances returned through @ref Image,
-@ref CompressedImage and others are only allowed to have default deleters ---
-this is to avoid potential dangling function pointer calls when destructing
-such instances after the plugin module has been unloaded.
+@ref CompressedImage, @ref MeshData, @ref MaterialData, @ref AnimationData and
+others are only allowed to have default deleters --- this is to avoid potential
+dangling function pointer calls when destructing such instances after the
+plugin module has been unloaded.
 
 @section Trade-AbstractImageConverter-subclassing Subclassing
 
@@ -338,7 +339,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         bool exportToFile(const ImageData2D& image, const std::string& filename);
 
     private:
-        /** @brief Implementation of @ref features() */
+        /** @brief Implementation for @ref features() */
         virtual ImageConverterFeatures doFeatures() const = 0;
 
         /**
@@ -356,20 +357,20 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         virtual void doSetFlags(ImageConverterFlags flags);
 
-        /** @brief Implementation of @ref exportToImage() */
+        /** @brief Implementation for @ref exportToImage() */
         virtual Containers::Optional<Image2D> doExportToImage(const ImageView2D& image);
 
-        /** @brief Implementation of @ref exportToCompressedImage() */
+        /** @brief Implementation for @ref exportToCompressedImage() */
         virtual Containers::Optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D& image);
 
-        /** @brief Implementation of @ref exportToData(const ImageView2D&) */
+        /** @brief Implementation for @ref exportToData(const ImageView2D&) */
         virtual Containers::Array<char> doExportToData(const ImageView2D& image);
 
-        /** @brief Implementation of @ref exportToData(const CompressedImageView2D&) */
+        /** @brief Implementation for @ref exportToData(const CompressedImageView2D&) */
         virtual Containers::Array<char> doExportToData(const CompressedImageView2D& image);
 
         /**
-         * @brief Implementation of @ref exportToFile(const ImageView2D&, const std::string&)
+         * @brief Implementation for @ref exportToFile(const ImageView2D&, const std::string&)
          *
          * If @ref ImageConverterFeature::ConvertData is supported, default
          * implementation calls @ref doExportToData(const ImageView2D&) and
@@ -378,7 +379,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
         virtual bool doExportToFile(const ImageView2D& image, const std::string& filename);
 
         /**
-         * @brief Implementation of @ref exportToFile(const CompressedImageView2D&, const std::string&)
+         * @brief Implementation for @ref exportToFile(const CompressedImageView2D&, const std::string&)
          *
          * If @ref ImageConverterFeature::ConvertCompressedData is supported,
          * default implementation calls @ref doExportToData(const CompressedImageView2D&)

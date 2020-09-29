@@ -1487,10 +1487,10 @@ APIs, see the documentation of of a particular enum value for more information.
 
 @subsection Trade-MaterialData-usage-texture-complexity Texture packing, coordinate transformation and coordinate sets
 
-The material APIs allow for a lot of flexibility regarding --- texture maps may
-be arbitrarily packed together to efficiently use all four channels, each
-texture can use a different set of texture coordinates and there can be a
-different coordinate transformation for each texture.
+The material APIs allow for a lot of flexibility --- texture maps may be
+arbitrarily packed together to efficiently use all four channels, each texture
+can use a different set of texture coordinates and there can be a different
+coordinate transformation for each texture.
 
 In most cases, however, real-world textures fit into a few well-known packing
 schemes and usually have a common transformation and coordinate sets for all.

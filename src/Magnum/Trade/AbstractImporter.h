@@ -58,7 +58,7 @@ enum class ImporterFeature: UnsignedByte {
     /**
      * Specifying callbacks for loading additional files referenced
      * from the main file using @ref AbstractImporter::setFileCallback(). If
-     * the importer * doesn't expose this feature, the format is either
+     * the importer doesn't expose this feature, the format is either
      * single-file or loading via callbacks is not supported.
      *
      * See @ref Trade-AbstractImporter-usage-callbacks and particular importer
@@ -162,7 +162,7 @@ See @ref plugins for more information about general plugin usage and
 
 Besides loading data directly from the filesystem using @ref openFile() like
 shown above, it's possible to use @ref openData() to import data from memory.
-Note that the particular importer implementation must support
+Note that the particular importer implementation has to support
 @ref ImporterFeature::OpenData for this method to work.
 
 Complex scene files often reference other files such as images and in that case
