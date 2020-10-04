@@ -449,7 +449,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const Magnum::Trade::MeshData & mesh) override {
+        Containers::Array<char> doConvertToData(const MeshData& mesh) override {
             return Containers::array({char(mesh.vertexCount())});
         }
     } converter;
@@ -470,7 +470,7 @@ void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {
     struct: AbstractSceneConverter {
         SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
 
-        Containers::Array<char> doConvertToData(const Magnum::Trade::MeshData & mesh) override {
+        Containers::Array<char> doConvertToData(const MeshData& mesh) override {
             return Containers::array({char(mesh.vertexCount())});
         }
     } converter;
