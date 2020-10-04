@@ -67,6 +67,7 @@ struct AbstractSceneConverterTest: TestSuite::Tester {
 
     void convertMeshToFile();
     void convertMeshToFileThroughData();
+    void convertMeshToFileThroughDataFailed();
     void convertMeshToFileThroughDataNotWritable();
     void convertMeshToFileNotImplemented();
 
@@ -101,6 +102,7 @@ AbstractSceneConverterTest::AbstractSceneConverterTest() {
 
               &AbstractSceneConverterTest::convertMeshToFile,
               &AbstractSceneConverterTest::convertMeshToFileThroughData,
+              &AbstractSceneConverterTest::convertMeshToFileThroughDataFailed,
               &AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable,
               &AbstractSceneConverterTest::convertMeshToFileNotImplemented,
 
@@ -464,6 +466,30 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
     CORRADE_VERIFY(converter.convertToFile(filename, MeshData{MeshPrimitive::Triangles, 0xef}));
     CORRADE_COMPARE_AS(filename,
         "\xef", TestSuite::Compare::FileToString);
+}
+
+void AbstractSceneConverterTest::convertMeshToFileThroughDataFailed() {
+    struct: AbstractSceneConverter {
+        SceneConverterFeatures doFeatures() const override { return SceneConverterFeature::ConvertMeshToData; }
+
+        Containers::Array<char> doConvertToData(const MeshData&) override {
+            return {};
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* Function should fail, no file should get written and no error output
+       should be printed (the base implementation assumes the plugin does it) */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.convertToFile(filename, MeshData{MeshPrimitive::Triangles, 0xef}));
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractSceneConverterTest::convertMeshToFileThroughDataNotWritable() {

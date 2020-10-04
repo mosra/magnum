@@ -73,11 +73,13 @@ struct AbstractImageConverterTest: TestSuite::Tester {
 
     void exportToFile();
     void exportToFileThroughData();
+    void exportToFileThroughDataFailed();
     void exportToFileThroughDataNotWritable();
     void exportToFileNotImplemented();
 
     void exportCompressedToFile();
     void exportCompressedToFileThroughData();
+    void exportCompressedToFileThroughDataFailed();
     void exportCompressedToFileThroughDataNotWritable();
     void exportCompressedToFileNotImplemented();
 
@@ -118,11 +120,13 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
 
               &AbstractImageConverterTest::exportToFile,
               &AbstractImageConverterTest::exportToFileThroughData,
+              &AbstractImageConverterTest::exportToFileThroughDataFailed,
               &AbstractImageConverterTest::exportToFileThroughDataNotWritable,
               &AbstractImageConverterTest::exportToFileNotImplemented,
 
               &AbstractImageConverterTest::exportCompressedToFile,
               &AbstractImageConverterTest::exportCompressedToFileThroughData,
+              &AbstractImageConverterTest::exportCompressedToFileThroughDataFailed,
               &AbstractImageConverterTest::exportCompressedToFileThroughDataNotWritable,
               &AbstractImageConverterTest::exportCompressedToFileNotImplemented,
 
@@ -469,6 +473,30 @@ void AbstractImageConverterTest::exportToFileThroughData() {
         "\xfe\xed", TestSuite::Compare::FileToString);
 }
 
+void AbstractImageConverterTest::exportToFileThroughDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData; }
+
+        Containers::Array<char> doExportToData(const ImageView2D&) override {
+            return {};
+        };
+    } converter;
+
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* Function should fail, no file should get written and no error output
+       should be printed (the base implementation assumes the plugin does it) */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportToFile(ImageView2D(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4}), filename));
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void AbstractImageConverterTest::exportToFileThroughDataNotWritable() {
     struct: AbstractImageConverter {
         ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertData; }
@@ -540,6 +568,30 @@ void AbstractImageConverterTest::exportCompressedToFileThroughData() {
     CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}}, filename));
     CORRADE_COMPARE_AS(filename,
         "\xb0\xd9", TestSuite::Compare::FileToString);
+}
+
+void AbstractImageConverterTest::exportCompressedToFileThroughDataFailed() {
+    struct: AbstractImageConverter {
+        ImageConverterFeatures doFeatures() const override { return ImageConverterFeature::ConvertCompressedData; }
+
+        Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
+            return {};
+        };
+    } converter;
+
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* Function should fail, no file should get written and no error output
+       should be printed (the base implementation assumes the plugin does it) */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}}, filename));
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "");
 }
 
 void AbstractImageConverterTest::exportCompressedToFileThroughDataNotWritable() {
