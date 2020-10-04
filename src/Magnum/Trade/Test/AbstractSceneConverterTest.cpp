@@ -434,11 +434,14 @@ void AbstractSceneConverterTest::convertMeshToFile() {
         }
     } converter;
 
-    /* Remove previous file */
-    Utility::Directory::rm(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
 
-    CORRADE_VERIFY(converter.convertToFile(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"), MeshData{MeshPrimitive::Triangles, 0xef}));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"),
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.convertToFile(filename, MeshData{MeshPrimitive::Triangles, 0xef}));
+    CORRADE_COMPARE_AS(filename,
         "\xef", TestSuite::Compare::FileToString);
 }
 
@@ -451,11 +454,15 @@ void AbstractSceneConverterTest::convertMeshToFileThroughData() {
         }
     } converter;
 
-    /* Remove previous file */
-    Utility::Directory::rm(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"));
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out");
 
-    CORRADE_VERIFY(converter.convertToFile(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"), MeshData{MeshPrimitive::Triangles, 0xef}));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "mesh.out"),
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* doConvertToFile() should call doConvertToData() */
+    CORRADE_VERIFY(converter.convertToFile(filename, MeshData{MeshPrimitive::Triangles, 0xef}));
+    CORRADE_COMPARE_AS(filename,
         "\xef", TestSuite::Compare::FileToString);
 }
 

@@ -437,11 +437,14 @@ void AbstractImageConverterTest::exportToFile() {
         }
     } converter;
 
-    /* Remove previous file */
-    Utility::Directory::rm(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
 
-    CORRADE_VERIFY(converter.exportToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d}, {nullptr, 0xf0*0x0d*4}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.exportToFile(ImageView2D{PixelFormat::RGBA8Unorm, {0xf0, 0x0d}, {nullptr, 0xf0*0x0d*4}}, filename));
+    CORRADE_COMPARE_AS(filename,
         "\xf0\x0d", TestSuite::Compare::FileToString);
 }
 
@@ -454,13 +457,15 @@ void AbstractImageConverterTest::exportToFileThroughData() {
         };
     } converter;
 
-    /* Remove previous file */
-    Utility::Directory::rm(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doExportToFile() should call doExportToData() */
-    ImageView2D image(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4});
-    CORRADE_VERIFY(converter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+    CORRADE_VERIFY(converter.exportToFile(ImageView2D(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4}), filename));
+    CORRADE_COMPARE_AS(filename,
         "\xfe\xed", TestSuite::Compare::FileToString);
 }
 
@@ -505,8 +510,14 @@ void AbstractImageConverterTest::exportCompressedToFile() {
         }
     } converter;
 
-    CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d}, {nullptr, 64}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xd0, 0x0d}, {nullptr, 64}}, filename));
+    CORRADE_COMPARE_AS(filename,
         "\xd0\x0d", TestSuite::Compare::FileToString);
 }
 
@@ -519,12 +530,15 @@ void AbstractImageConverterTest::exportCompressedToFileThroughData() {
         };
     } converter;
 
-    /* Remove previous file */
-    Utility::Directory::rm(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"));
+    const std::string filename = Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
 
     /* doExportToFile() should call doExportToData() */
-    CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}}, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
-    CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+    CORRADE_VERIFY(converter.exportToFile(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {0xb0, 0xd9}, {nullptr, 64}}, filename));
+    CORRADE_COMPARE_AS(filename,
         "\xb0\xd9", TestSuite::Compare::FileToString);
 }
 
