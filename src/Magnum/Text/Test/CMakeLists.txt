@@ -39,7 +39,7 @@ corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp
     FILES data.bin)
 target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
-    LIBRARIES Magnum MagnumText
+    LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp LIBRARIES MagnumTextTestLib)

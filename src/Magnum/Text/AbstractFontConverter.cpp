@@ -129,7 +129,7 @@ bool AbstractFontConverter::exportFontToFile(AbstractFont& font, AbstractGlyphCa
 
 bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
     CORRADE_ASSERT(features() & FontConverterFeature::ConvertData,
-        "Text::AbstractFontConverter::exportFontToFile(): not implemented", false);
+        "Text::AbstractFontConverter::exportFontToFile(): feature advertised but not implemented", {});
 
     /* Export all data */
     const auto data = doExportFontToData(font, cache, filename, characters);
@@ -181,7 +181,7 @@ bool AbstractFontConverter::exportGlyphCacheToFile(AbstractGlyphCache& cache, co
 
 bool AbstractFontConverter::doExportGlyphCacheToFile(AbstractGlyphCache& cache, const std::string& filename) const {
     CORRADE_ASSERT(features() & FontConverterFeature::ConvertData,
-        "Text::AbstractFontConverter::exportGlyphCacheToFile(): not implemented", false);
+        "Text::AbstractFontConverter::exportGlyphCacheToFile(): feature advertised but not implemented", {});
 
     /* Export all data */
     const auto data = doExportGlyphCacheToData(cache, filename);
@@ -235,7 +235,7 @@ Containers::Pointer<AbstractGlyphCache> AbstractFontConverter::importGlyphCacheF
 
 Containers::Pointer<AbstractGlyphCache> AbstractFontConverter::doImportGlyphCacheFromFile(const std::string& filename) const {
     CORRADE_ASSERT(features() & FontConverterFeature::ConvertData && !(features() & FontConverterFeature::MultiFile),
-        "Text::AbstractFontConverter::importGlyphCacheFromFile(): not implemented", nullptr);
+        "Text::AbstractFontConverter::importGlyphCacheFromFile(): feature advertised but not implemented", {});
 
     /* Open file */
     if(!Utility::Directory::exists(filename)) {

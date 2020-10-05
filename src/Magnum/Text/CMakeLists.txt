@@ -26,12 +26,12 @@
 find_package(Corrade REQUIRED PluginManager)
 
 # Files shared between main library and unit test library
-set(MagnumText_SRCS
-    AbstractFontConverter.cpp)
+set(MagnumText_SRCS )
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumText_GracefulAssert_SRCS
     AbstractFont.cpp
+    AbstractFontConverter.cpp
     AbstractGlyphCache.cpp)
 
 set(MagnumText_HEADERS
@@ -52,6 +52,9 @@ if(TARGET_GL)
         DistanceFieldGlyphCache.h
         GlyphCache.h
         Renderer.h)
+else()
+    # So MagnumTextObjects has at least something
+    list(APPEND MagnumText_SRCS ${PROJECT_SOURCE_DIR}/src/dummy.cpp)
 endif()
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
