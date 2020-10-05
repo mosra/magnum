@@ -421,7 +421,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param translation       Translation part (first three elements of
          *      fourth column)
          *
-         * @see @ref rotationScaling(), @ref translation() const
+         * @see @ref rotationScaling(), @ref translation() const,
+         *      @ref Matrix3::from(const Matrix2x2<T>&, const Vector2<T>&),
+         *      @ref DualComplex::from(const Complex<T>&, const Vector2<T>&),
+         *      @ref DualQuaternion::from(const Quaternion<T>&, const Vector3<T>&)
          */
         constexpr static Matrix4<T> from(const Matrix3x3<T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
