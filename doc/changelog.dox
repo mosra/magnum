@@ -188,6 +188,11 @@ See also:
 -   @ref Shaders::Phong wasn't normalizing normals coming from normal textures,
     which may have caused slight artifacts due to limited precision of 8-bit
     pixel formats
+-   @ref Text::AbstractFontConverter::exportFontToData() and
+    @ref Text::AbstractFontConverter::exportGlyphCacheToData() didn't correctly
+    propagate errors when delegating to
+    @ref Text::AbstractFontConverter::exportFontToSingleData() /
+    @ref Text::AbstractFontConverter::exportGlyphCacheToSingleData()
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
