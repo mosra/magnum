@@ -107,6 +107,22 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
+         * @brief Create dual complext from rotation complex and translation vector
+         *
+         * @f[
+         *      \hat c = r + \epsilon (v_x + iv_y)
+         * @f]
+         *
+         * @see @ref translation(), @ref rotation()
+         *      @ref Matrix3::from(const Matrix2x2<T>&, const Vector2<T>&),
+         *      @ref Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&),
+         *      @ref DualQuaternion::from(const Quaternion<T>&, const Vector3<T>&)
+         */
+        static DualComplex<T> from(const Complex<T>& rotation, const Vector2<T>& translation) {
+            return {rotation, Complex<T>{translation}};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Equivalent to @ref DualComplex(IdentityInitT).

@@ -247,6 +247,22 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
+         * @brief Create dual quaternion from rotation quaternion and translation vector
+         *
+         * @f[
+         *      \hat q = r + \epsilon [\frac{\boldsymbol t}{2}, 0] r
+         * @f]
+         *
+         * @see @ref translation(), @ref rotation(),
+         *      @ref Matrix3::from(const Matrix2x2<T>&, const Vector2<T>&),
+         *      @ref Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&),
+         *      @ref DualComplex::from(const Complex<T>&, const Vector2<T>&)
+         */
+        static DualQuaternion<T> from(const Quaternion<T>& rotation, const Vector3<T>& translation) {
+            return {rotation, Quaternion<T>{translation/T(2)}*rotation};
+        }
+
+        /**
          * @brief Default constructor
          *
          * Equivalent to @ref DualQuaternion(IdentityInitT).

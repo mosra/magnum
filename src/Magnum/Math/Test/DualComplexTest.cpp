@@ -88,6 +88,8 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void rotation();
     void translation();
     void combinedTransformParts();
+
+    void fromParts();
     void matrix();
     void matrixNotOrthogonal();
     void transformVector();
@@ -146,6 +148,8 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::rotation,
               &DualComplexTest::translation,
               &DualComplexTest::combinedTransformParts,
+
+              &DualComplexTest::fromParts,
               &DualComplexTest::matrix,
               &DualComplexTest::matrixNotOrthogonal,
               &DualComplexTest::transformVector,
@@ -412,6 +416,16 @@ void DualComplexTest::translation() {
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({}, {1.5f, -3.5f}));
     CORRADE_COMPARE(a.translation(), vec);
+}
+
+void DualComplexTest::fromParts() {
+    Complex r = Complex::rotation(120.0_degf);
+
+    Vector2 vec{1.0f, -3.5f};
+    DualComplex t = DualComplex::translation(vec);
+
+    DualComplex rt = t*DualComplex{r};
+    CORRADE_COMPARE(DualComplex::from(r, vec), rt);
 }
 
 void DualComplexTest::combinedTransformParts() {

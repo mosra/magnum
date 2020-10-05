@@ -90,6 +90,8 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void rotationNotNormalized();
     void translation();
     void combinedTransformParts();
+
+    void fromParts();
     void matrix();
     void matrixNotOrthogonal();
     void transformVector();
@@ -155,6 +157,8 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::rotationNotNormalized,
               &DualQuaternionTest::translation,
               &DualQuaternionTest::combinedTransformParts,
+
+              &DualQuaternionTest::fromParts,
               &DualQuaternionTest::matrix,
               &DualQuaternionTest::matrixNotOrthogonal,
               &DualQuaternionTest::transformVector,
@@ -481,6 +485,17 @@ void DualQuaternionTest::combinedTransformParts() {
 
     CORRADE_COMPARE(a.translation(), translation);
     CORRADE_COMPARE(b.translation(), Quaternion::rotation(23.0_degf, Vector3::xAxis()).transformVector(translation));
+}
+
+void DualQuaternionTest::fromParts() {
+    Vector3 axis(1.0f/Constants<Float>::sqrt3());
+    Quaternion r = Quaternion::rotation(120.0_degf, axis);
+
+    Vector3 vec(1.0f, -3.5f, 0.5f);
+    DualQuaternion t = DualQuaternion::translation(vec);
+
+    DualQuaternion rt = t*DualQuaternion{r};
+    CORRADE_COMPARE(DualQuaternion::from(r, vec), rt);
 }
 
 void DualQuaternionTest::matrix() {
