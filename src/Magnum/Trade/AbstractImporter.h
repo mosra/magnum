@@ -457,7 +457,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Equivalent to calling the above with a lambda wrapper that casts
          * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
-         * pass it to @p callback. Example usage:
+         * pass it to @p callback. Example usage --- this reuses an existing
+         * @ref Corrade::Utility::Resource instance to avoid a potentially slow
+         * resource group lookup every time:
          *
          * @snippet MagnumTrade.cpp AbstractImporter-setFileCallback-template
          *

@@ -142,7 +142,7 @@ Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback] */
 importer->setFileCallback([](const std::string& filename,
     InputFileCallbackPolicy, void*) {
-        Utility::Resource rs("data");
+        Utility::Resource rs{"data"};
         return Containers::optional(rs.getRaw(filename));
     });
 /* [AbstractImporter-setFileCallback] */
@@ -151,22 +151,11 @@ importer->setFileCallback([](const std::string& filename,
 {
 Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback-template] */
-struct Data {
-    std::unordered_map<std::string, Containers::Array<char>> files;
-} data;
-
+const Utility::Resource rs{"data"};
 importer->setFileCallback([](const std::string& filename,
-    InputFileCallbackPolicy, Data& data)
-        -> Containers::Optional<Containers::ArrayView<const char>>
-    {
-        auto found = data.files.find(filename);
-        if(found == data.files.end()) {
-            if(!Utility::Directory::exists(filename))
-                return Containers::NullOpt;
-            found = data.files.emplace(filename, Utility::Directory::read(filename)).first;
-        }
-        return Containers::ArrayView<const char>{found->second};
-    }, data);
+    InputFileCallbackPolicy, const Utility::Resource& rs) {
+        return Containers::optional(rs.getRaw(filename));
+    }, rs);
 /* [AbstractImporter-setFileCallback-template] */
 }
 
