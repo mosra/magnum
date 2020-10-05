@@ -62,6 +62,7 @@ available, each namespace has its own:
 -   @ref Magnum/OvrIntegration/OvrIntegration.h
 -   @ref Magnum/Platform/Platform.h
 -   @ref Magnum/SceneGraph/SceneGraph.h
+-   @ref Magnum/ShaderTools/ShaderTools.h
 -   @ref Magnum/Shaders/Shaders.h
 -   @ref Magnum/Text/Text.h
 -   @ref Magnum/Trade/Trade.h

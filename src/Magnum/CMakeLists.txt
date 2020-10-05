@@ -215,6 +215,10 @@ if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
+if(WITH_SHADERTOOLS)
+    add_subdirectory(ShaderTools)
+endif()
+
 if(WITH_TEXT)
     add_subdirectory(Text)
 endif()

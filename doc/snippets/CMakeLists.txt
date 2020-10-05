@@ -100,6 +100,13 @@ if(WITH_MESHTOOLS)
     set_target_properties(snippets-MagnumMeshTools PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
+if(WITH_SHADERTOOLS)
+    add_library(snippets-MagnumShaderTools STATIC
+        MagnumShaderTools.cpp)
+    target_link_libraries(snippets-MagnumShaderTools PRIVATE MagnumShaderTools)
+    set_target_properties(snippets-MagnumShaderTools PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
+
 if(WITH_TRADE)
     add_library(snippets-MagnumTrade STATIC
         plugins.cpp

@@ -45,6 +45,7 @@ digraph "Magnum library dependency order" {
     MagnumPrimitives [label="Magnum\nPrimitives" class="m-info"]
     MagnumSceneGraph [label="Magnum\nSceneGraph" class="m-info"]
     MagnumShaders [label="Magnum\nShaders" class="m-info"]
+    MagnumShaderTools [label="Magnum\nShaderTools" class="m-info"]
     MagnumText [label="Magnum\nText" class="m-info"]
     MagnumTextureTools [label="Magnum\nTextureTools" class="m-info"]
     MagnumTrade [label="Magnum\nTrade" class="m-info"]
@@ -85,6 +86,7 @@ digraph "Magnum library dependency order" {
     MagnumSceneGraph -> Magnum
 
     MagnumShaders -> MagnumGL
+    MagnumShaderTools -> Magnum
 
     MagnumText -> MagnumTextureTools
     MagnumText -> MagnumGL [style=dotted]

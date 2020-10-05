@@ -197,6 +197,7 @@ the components. The optional components are:
 -   `Primitives` --- @ref Primitives library
 -   `SceneGraph` --- @ref SceneGraph library
 -   `Shaders` --- @ref Shaders library
+-   `ShaderTools` --- @ref ShaderTools library
 -   `Text` --- @ref Text library
 -   `TextureTools` --- @ref TextureTools library
 -   `Trade` --- @ref Trade library

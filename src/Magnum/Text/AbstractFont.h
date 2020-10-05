@@ -145,8 +145,9 @@ loaded data through to @ref openData(), in case the importer supports at least
 @ref FontFeature::FileCallback nor @ref FontFeature::OpenData,
 @ref setFileCallback() doesn't allow the callbacks to be set.
 
-The input file callback signature is the same for @ref Text::AbstractFont and
-@ref Trade::AbstractImporter to allow code reuse.
+The input file callback signature is the same for @ref Text::AbstractFont,
+@ref ShaderTools::AbstractConverter and @ref Trade::AbstractImporter to allow
+code reuse.
 
 @section Text-AbstractFont-subclassing Subclassing
 

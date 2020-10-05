@@ -87,6 +87,12 @@ See also:
 -   Added @ref Shaders::Phong::setLightSpecularColors() for better control over
     speculat highlights
 
+@subsubsection changelog-latest-new-shadertools ShaderTools library
+
+-   New @ref ShaderTools library that provides a
+    @ref ShaderTools::AbstractConverter plugin interface for shader validation,
+    conversion, compilation and optimization
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::Object::move()

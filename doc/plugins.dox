@@ -75,6 +75,9 @@ of given type. Magnum provides these plugin interfaces:
 -   @ref Audio::AbstractImporter --- importers for audio formats. See
     `*Importer` classes in the @ref Audio namespace for available audio
     importer plugins.
+-   @ref ShaderTools::AbstractConverter --- shader conversion, compilation,
+    optimization and validation. See `*Converter` classes in the
+    @ref ShaderTools namespace for available shader converter plugins.
 
 @section plugins-loading Loading and instantiating plugins
 

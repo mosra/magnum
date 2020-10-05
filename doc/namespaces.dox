@@ -493,6 +493,32 @@ See @ref building, @ref cmake and @ref shaders for more information.
 
 */
 
+/** @dir Magnum/ShaderTools
+ * @brief Namespace @ref Magnum::ShaderTools
+ * @m_since_latest
+ */
+/** @namespace Magnum::ShaderTools
+@brief Shader tools
+@m_since_latest
+
+Shader validation, conversion, compilation and reflection.
+
+This library is built if `WITH_SHADERTOOLS` is enabled when building Magnum. To
+use this library with CMake, request the `ShaderTools` component of the
+`Magnum` package and link to the `Magnum::ShaderTools` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED ShaderTools)
+
+# ...
+target_link_libraries(your-app PRIVATE Magnum::ShaderTools)
+@endcode
+
+Additional plugins and utilities are built separately. See particular
+`*Converter` class documentation, @ref building, @ref building-plugins,
+@ref cmake, @ref cmake-plugins and @ref plugins for more information.
+*/
+
 /** @dir Magnum/Text
  * @brief Namespace @ref Magnum::Text
  */

@@ -490,6 +490,7 @@ specify which parts will be built and which not:
 -   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library
 -   `WITH_SHADERS` --- Build the @ref Shaders library. Enables also building of
     the GL library.
+-   `WITH_SHADERTOOLS` --- Build the @ref ShaderTools library
 -   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
     the TextureTools library.
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
