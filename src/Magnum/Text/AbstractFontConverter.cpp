@@ -239,7 +239,7 @@ Containers::Pointer<AbstractGlyphCache> AbstractFontConverter::doImportGlyphCach
 
     /* Open file */
     if(!Utility::Directory::exists(filename)) {
-        Error() << "Trade::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file" << filename;
+        Error() << "Text::AbstractFontConverter::importGlyphCacheFromFile(): cannot open file" << filename;
         return nullptr;
     }
 
