@@ -309,7 +309,14 @@ void AbstractConverterTest::validateDataCustomStringDeleter() {
         }
 
         std::pair<bool, Containers::String> doValidateData(Stage, const Containers::ArrayView<const char>) override {
-            return {{}, Containers::String{"", 0, [](char*, std::size_t){}}};
+            /* libc++ and MSVC STL is STUPID and doing
+                `return {{}, Containers::String{...}};`
+               will do a COPY, even though not needed. That then of course
+               discards the custom deleter and makes the test fail. Oh C++, do
+               I really have to reimplement even std::pair, FFS?! */
+            std::pair<bool, Containers::String> out;
+            out.second = Containers::String{"", 0, [](char*, std::size_t){}};
+            return out;
         }
     } converter;
 
@@ -416,7 +423,14 @@ void AbstractConverterTest::validateFileCustomStringDeleter() {
         }
 
         std::pair<bool, Containers::String> doValidateFile(Stage, Containers::StringView) override {
-            return {{}, Containers::String{"", 0, [](char*, std::size_t){}}};
+            /* libc++ and MSVC STL is STUPID and doing
+                `return {{}, Containers::String{...}};`
+               will do a COPY, even though not needed. That then of course
+               discards the custom deleter and makes the test fail. Oh C++, do
+               I really have to reimplement even std::pair, FFS?! */
+            std::pair<bool, Containers::String> out;
+            out.second = Containers::String{"", 0, [](char*, std::size_t){}};
+            return out;
         }
     } converter;
 
