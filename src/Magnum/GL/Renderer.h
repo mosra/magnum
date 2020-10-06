@@ -1638,7 +1638,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
-         * @brief Set blend equation for given draw buffer
+         * @brief Set blend equation for given draw buffer separately for RGB and alpha components
          * @param drawBuffer    Draw buffer index
          * @param rgb           Blend equation for RGB components
          * @param alpha         Blend equation for the alpha component
@@ -1716,7 +1716,7 @@ class MAGNUM_GL_EXPORT Renderer {
         static void setBlendFunction(BlendFunction sourceRgb, BlendFunction destinationRgb, BlendFunction sourceAlpha, BlendFunction destinationAlpha);
 
         /**
-         * @brief Set blend function separately for RGB and alpha components for given draw buffer
+         * @brief Set blend function for given draw buffer separately for RGB and alpha components
          * @param drawBuffer        Draw buffer index
          * @param sourceRgb         How the source blending factor is computed
          *      from pixel value for RGB components
