@@ -620,7 +620,11 @@ There are also a few command-line utilities, also all disabled by default:
     `TARGET_GL` to be enabled; enables building of one of the windowless
     application libraries based on the target platform.
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
-    executable for converting images of different formats.
+    executable for converting images of different formats. Enables also
+    building of the @ref Trade library.
+-   `WITH_SCENECONVERTER` --- Build the @ref magnum-shaderconverter "magnum-sceneconverter"
+    executable for converting scenes of different formats. Enables also
+    building of the @ref MeshTools library.
 
 Options controlling the build:
 

@@ -75,7 +75,7 @@ magnum-imageconverter [-h|--help] [-I|--importer IMPORTER]
 Arguments:
 
 -   `input` --- input image
--   `output` --- output image, ignored if `--in-place` is present
+-   `output` --- output image, ignored if `--in-place` or `--info` is present
 -   `-h`, `--help` --- display this help message and exit
 -   `-I`, `--importer IMPORTER` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
@@ -93,7 +93,7 @@ Arguments:
 -   `-v`, `--verbose` --- verbose output from importer and converter plugins
 
 Specifying `--importer raw:&lt;format&gt;` will treat the input as a raw
-tightly-packed square of pixels in given @ref PixelFormat. Specifying
+tightly-packed square of pixels in given @ref PixelFormat. Specifying `-C` /
 `--converter raw` will save raw imported data instead of using a converter
 plugin.
 
@@ -169,8 +169,8 @@ int main(int argc, char** argv) {
         .setGlobalHelp(R"(Converts images of different formats.
 
 Specifying --importer raw:<format> will treat the input as a raw tightly-packed
-square of pixels in given pixel format. Specifying --converter raw will save
-raw imported data instead of using a converter plugin.
+square of pixels in given pixel format. Specifying -C / --converter raw will
+save raw imported data instead of using a converter plugin.
 
 If --info is given, the utility will print information about all images present
 in the file. In this case no conversion is done and output file doesn't need to

@@ -86,7 +86,7 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
 Arguments:
 
 -   `input` --- input file
--   `output` --- output file
+-   `output` --- output file, ignored if `--info` is present
 -   `-h`, `--help` --- display this help message and exit
 -   `-I`, `--importer IMPORTER` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
@@ -119,16 +119,16 @@ converter plugin configuration. If the `=` character is omitted, it's
 equivalent to saying `key=true`; configuration subgroups are delimited with
 `/`.
 
-It's possible to specify the `--converter` option (and correspondingly also
-`-c` / `--converter-options`) multiple times in order to chain more converters
-together. All converters in the chain have to support the
+It's possible to specify the `-C` / `--converter` option (and correspondingly
+also `-c` / `--converter-options`) multiple times in order to chain more
+converters together. All converters in the chain have to support the
 @ref Trade::SceneConverterFeature::ConvertMesh feature,
 the last converter either @ref Trade::SceneConverterFeature::ConvertMesh or
 @ref Trade::SceneConverterFeature::ConvertMeshToFile. If the last converter
 doesn't support conversion to a file,
 @ref Trade::AnySceneConverter "AnySceneConverter" is used to save its output;
-if no `--converter` is specified, @ref Trade::AnySceneConverter "AnySceneConverter"
-is used.
+if no `-C` / `--converter` is specified,
+@ref Trade::AnySceneConverter "AnySceneConverter" is used.
 
 @section magnum-sceneconverter-example Example usage
 
@@ -199,7 +199,7 @@ UnsignedInt namedAttributeId(const Trade::MeshData& mesh, UnsignedInt id) {
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input file")
-        .addArgument("output").setHelp("output", "output file")
+        .addArgument("output").setHelp("output", "output file, ignored if --info is present")
         .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
@@ -232,12 +232,13 @@ comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
 key=true; configuration subgroups are delimited with /.
 
-It's possible to specify the --converter option (and correspondingly also
+It's possible to specify the -C / --converter option (and correspondingly also
 -c / --converter-options) multiple times in order to chain more converters
 together. All converters in the chain have to support the ConvertMesh feature,
 the last converter either ConvertMesh or ConvertMeshToFile. If the last
 converter doesn't support conversion to a file, AnySceneConverter is used to
-save its output; if no --converter is specified, AnySceneConverter is used.)")
+save its output; if no -C / --converter is specified, AnySceneConverter is
+used.)")
         .parse(argc, argv);
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
