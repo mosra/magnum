@@ -97,6 +97,7 @@ set(Magnum_HEADERS
 set(Magnum_PRIVATE_HEADERS
     Implementation/ImageProperties.h
 
+    Implementation/converterUtilities.h
     Implementation/meshIndexTypeMapping.hpp
     Implementation/meshPrimitiveMapping.hpp
     Implementation/compressedPixelFormatMapping.hpp

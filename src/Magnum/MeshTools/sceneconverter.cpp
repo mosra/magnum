@@ -35,6 +35,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -251,7 +252,7 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
 
     /* Set options, if passed */
     if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
-    Trade::Implementation::setOptions(*importer, args.value("importer-options"));
+    Implementation::setOptions(*importer, args.value("importer-options"));
 
     std::chrono::high_resolution_clock::duration importTime;
 
@@ -757,7 +758,7 @@ save its output; if no --converter is specified, AnySceneConverter is used.)")
         /* Set options, if passed */
         if(args.isSet("verbose")) converter->setFlags(Trade::SceneConverterFlag::Verbose);
         if(i < args.arrayValueCount("converter-options"))
-            Trade::Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
+            Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
 
         /* This is the last --converter (or the implicit AnySceneConverter at
            the end), output to a file and exit the loop */

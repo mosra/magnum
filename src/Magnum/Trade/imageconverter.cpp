@@ -34,6 +34,7 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -229,7 +230,7 @@ key=true; configuration subgroups are delimited with /.)")
 
         /* Set options, if passed */
         if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
-        Trade::Implementation::setOptions(*importer, args.value("importer-options"));
+        Implementation::setOptions(*importer, args.value("importer-options"));
 
         /* Print image info, if requested */
         if(args.isSet("info")) {
@@ -313,7 +314,7 @@ key=true; configuration subgroups are delimited with /.)")
 
     /* Set options, if passed */
     if(args.isSet("verbose")) converter->setFlags(Trade::ImageConverterFlag::Verbose);
-    Trade::Implementation::setOptions(*converter, args.value("converter-options"));
+    Implementation::setOptions(*converter, args.value("converter-options"));
 
     /* Save output file */
     if(!converter->exportToFile(*image, output)) {

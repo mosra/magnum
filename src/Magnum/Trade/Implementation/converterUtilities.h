@@ -26,11 +26,6 @@
 */
 
 #include <Corrade/Containers/GrowableArray.h>
-#include <Corrade/Containers/StaticArray.h>
-#include <Corrade/PluginManager/AbstractPlugin.h>
-#include <Corrade/Utility/ConfigurationGroup.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -39,43 +34,6 @@ namespace Magnum { namespace Trade { namespace Implementation {
 
 /* Used only in executables where we don't want it to be exported */
 namespace {
-
-void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& options) {
-    for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ',')) {
-        auto keyValue = Utility::String::partition(option, '=');
-        Utility::String::trimInPlace(keyValue[0]);
-        Utility::String::trimInPlace(keyValue[2]);
-
-        std::vector<std::string> keyParts = Utility::String::split(keyValue[0], '/');
-        CORRADE_INTERNAL_ASSERT(!keyParts.empty());
-        Utility::ConfigurationGroup* group = &plugin.configuration();
-        bool groupNotRecognized = false;
-        for(std::size_t i = 0; i != keyParts.size() - 1; ++i) {
-            Utility::ConfigurationGroup* subgroup = group->group(keyParts[i]);
-            if(!subgroup) {
-                groupNotRecognized = true;
-                subgroup = group->addGroup(keyParts[i]);
-            }
-            group = subgroup;
-        }
-
-        /* Provide a warning message in case the plugin doesn't define given
-           option in its default config. The plugin is not *required* to have
-           those tho (could be backward compatibility entries, for example), so
-           not an error. */
-        if(groupNotRecognized || !group->hasValue(keyParts.back())) {
-            Warning{} << "Option" << keyValue[0] << "not recognized by" << plugin.plugin();
-        }
-
-        /* If the option doesn't have an =, treat it as a boolean flag that's
-           set to true. While there's no similar way to do an inverse, it's
-           still nicer than causing a fatal error with those. */
-        if(keyValue[1].empty())
-            group->setValue(keyParts.back(), true);
-        else
-            group->setValue(keyParts.back(), keyValue[2]);
-    }
-}
 
 struct ImageInfo {
     UnsignedInt image, level;
