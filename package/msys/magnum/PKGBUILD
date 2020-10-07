@@ -56,6 +56,7 @@ build() {
             -DWITH_FONTCONVERTER=ON \
             -DWITH_GL_INFO=ON \
             -DWITH_GLFWAPPLICATION=ON \
+            -DWITH_SCENECONVERTER=ON \
             -DWITH_SDL2APPLICATION=ON \
             -DWITH_TGAIMAGECONVERTER=ON \
             -DWITH_TGAIMPORTER=ON \
