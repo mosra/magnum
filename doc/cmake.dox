@@ -272,6 +272,8 @@ Lastly, a few utility executables are available:
     executable
 -   `sceneconverter` --- @ref magnum-sceneconverter "magnum-imageconverter"
     executable
+-   `shaderconverter` --- @ref magnum-shaderconverter "magnum-shaderconverter"
+    executable
 -   `gl-info` --- @ref magnum-gl-info "magnum-gl-info" executable
 -   `al-info` --- @ref magnum-al-info "magnum-al-info" executable
 

@@ -96,6 +96,7 @@
 #  fontconverter                - magnum-fontconverter executable
 #  imageconverter               - magnum-imageconverter executable
 #  sceneconverterter            - magnum-sceneconverter executable
+#  shaderconverterter           - magnum-shaderconverter executable
 #  gl-info                      - magnum-gl-info executable
 #  al-info                      - magnum-al-info executable
 #
@@ -373,8 +374,8 @@ set(_MAGNUM_PLUGIN_COMPONENT_LIST
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
     TgaImageConverter TgaImporter WavAudioImporter)
 set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
-    distancefieldconverter fontconverter imageconverter sceneconverter gl-info
-    al-info)
+    distancefieldconverter fontconverter imageconverter sceneconverter
+    shaderconverter gl-info al-info)
 
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )

@@ -59,6 +59,7 @@ build() {
             -DWITH_GLFWAPPLICATION=ON \
             -DWITH_SCENECONVERTER=ON \
             -DWITH_SDL2APPLICATION=ON \
+            -DWITH_SHADERCONVERTER=ON \
             -DWITH_TGAIMAGECONVERTER=ON \
             -DWITH_TGAIMPORTER=ON \
             -DWITH_VK=ON \

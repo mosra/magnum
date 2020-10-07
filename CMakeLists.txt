@@ -72,6 +72,7 @@ endif()
 # API-independent utilities
 option(WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
 option(WITH_SCENECONVERTER "Build magnum-sceneconverter utility" OFF)
+option(WITH_SHADERCONVERTER "Build magnum-shaderconverter utility" OFF)
 
 # Magnum AL Info
 option(WITH_AL_INFO "Build magnum-al-info utility" OFF)
@@ -96,7 +97,7 @@ option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
 cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_OBJIMPORTER;NOT WITH_SCENECONVERTER" ON)
 option(WITH_SCENEGRAPH "Build SceneGraph library" ON)
 option(WITH_SHADERS "Build Shaders library" ON)
-option(WITH_SHADERTOOLS "Build ShaderTools library" ON)
+cmake_dependent_option(WITH_SHADERTOOLS "Build ShaderTools library" ON "NOT WITH_SHADERCONVERTER" ON)
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_FONTCONVERTER;NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 cmake_dependent_option(WITH_TRADE "Build Trade library" ON "NOT WITH_MESHTOOLS;NOT WITH_PRIMITIVES;NOT WITH_IMAGECONVERTER;NOT WITH_ANYIMAGEIMPORTER;NOT WITH_ANYIMAGECONVERTER;NOT WITH_ANYSCENEIMPORTER;NOT WITH_OBJIMPORTER;NOT WITH_TGAIMAGECONVERTER;NOT WITH_TGAIMPORTER" ON)

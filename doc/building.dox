@@ -628,6 +628,9 @@ There are also a few command-line utilities, also all disabled by default:
 -   `WITH_SCENECONVERTER` --- Build the @ref magnum-sceneconverter "magnum-sceneconverter"
     executable for converting scenes of different formats. Enables also
     building of the @ref MeshTools library.
+-   `WITH_SHADERCONVERTER` --- Build the @ref magnum-shaderconverter "magnum-shaderconverter"
+    executable for converting scenes of different formats. Enables also
+    building of the @ref ShaderTools library.
 
 Options controlling the build:
 

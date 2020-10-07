@@ -40,6 +40,7 @@ class Magnum < Formula
         "-DWITH_FONTCONVERTER=ON",
         "-DWITH_IMAGECONVERTER=ON",
         "-DWITH_SCENECONVERTER=ON",
+        "-DWITH_SHADERCONVERTER=ON",
         "-DWITH_GL_INFO=ON",
         "-DWITH_AL_INFO=ON",
         ".."

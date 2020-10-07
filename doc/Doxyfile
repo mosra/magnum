@@ -921,6 +921,7 @@ INPUT                  = ../src/Magnum \
                          ../src/Magnum/Audio/al-info.cpp \
                          ../src/Magnum/MeshTools/sceneconverter.cpp \
                          ../src/Magnum/Platform/gl-info.cpp \
+                         ../src/Magnum/ShaderTools/shaderconverter.cpp \
                          ../src/Magnum/Text/fontconverter.cpp \
                          ../src/Magnum/TextureTools/distancefieldconverter.cpp \
                          ../src/Magnum/Trade/imageconverter.cpp \

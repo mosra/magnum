@@ -55,6 +55,7 @@ namespace Magnum {
 -   @subpage magnum-fontconverter --- @copybrief magnum-fontconverter
 -   @subpage magnum-imageconverter --- @copybrief magnum-imageconverter
 -   @subpage magnum-sceneconverter --- @copybrief magnum-sceneconverter
+-   @subpage magnum-shaderconverter --- @copybrief magnum-shaderconverter
 
 */
 }

@@ -78,6 +78,19 @@ install(TARGETS MagnumShaderTools
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumShaderTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/ShaderTools)
 
+if(WITH_SHADERCONVERTER)
+    add_executable(magnum-shaderconverter shaderconverter.cpp)
+    target_link_libraries(magnum-shaderconverter PRIVATE
+        Magnum
+        MagnumShaderTools)
+    set_target_properties(magnum-shaderconverter PROPERTIES FOLDER "Magnum/ShaderTools")
+
+    install(TARGETS magnum-shaderconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    # Magnum shaderconverter target alias for superprojects
+    add_executable(Magnum::shaderconverter ALIAS magnum-shaderconverter)
+endif()
+
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumShaderToolsTestLib ${SHARED_OR_STATIC}
