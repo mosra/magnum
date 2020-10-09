@@ -91,7 +91,8 @@ See also:
 
 -   New @ref ShaderTools library that provides a
     @ref ShaderTools::AbstractConverter plugin interface for shader validation,
-    conversion, compilation and optimization
+    conversion, compilation and optimization; together with a
+    @ref ShaderTools::AnyConverter "AnyShaderConverter" plugin
 
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 

@@ -54,6 +54,10 @@ if(WITH_ANYSCENEIMPORTER)
     add_subdirectory(AnySceneImporter)
 endif()
 
+if(WITH_ANYSHADERCONVERTER)
+    add_subdirectory(AnyShaderConverter)
+endif()
+
 if(WITH_MAGNUMFONT)
     add_subdirectory(MagnumFont)
 endif()

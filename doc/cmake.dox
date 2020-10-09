@@ -251,6 +251,8 @@ dependencies, you need to find the dependency and then link to it.
     plugin
 -   `AnySceneImporter` --- @ref Trade::AnySceneImporter "AnySceneImporter"
     plugin
+-   `AnyShaderConverter` --- @ref ShaderTools::AnyConverter "AnyShaderConverter"
+    plugin
 -   `MagnumFont` --- @ref Text::MagnumFont "MagnumFont" plugin
 -   `MagnumFontConverter` --- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin

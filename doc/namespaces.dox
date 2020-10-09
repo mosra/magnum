@@ -663,6 +663,9 @@ See @ref building, @ref cmake and @ref vulkan for more information.
 /** @dir MagnumPlugins/AnySceneImporter
  * @brief Plugin @ref Magnum::Trade::AnySceneImporter
  */
+/** @dir MagnumPlugins/AnyShaderConverter
+ * @brief Plugin @ref Magnum::ShaderTools::AnyConverter
+ */
 /** @dir MagnumPlugins/MagnumFont
  * @brief Plugin @ref Magnum::Text::MagnumFont
  */

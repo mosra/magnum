@@ -582,6 +582,8 @@ default.
     plugin. Enables also building of the @ref Trade library.
 -   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
     plugin. Enables also building of the @ref Trade library.
+-   `WITH_ANYSHADERCONVERTER` --- Build the @ref ShaderTools::AnyConverter "AnyShaderConverter"
+    plugin. Enables also building of the @ref ShaderTools library.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
     Enables also building of the @ref Text library and the
     @ref Trade::TgaImporter "TgaImporter" plugin. Requires `TARGET_GL` to be
