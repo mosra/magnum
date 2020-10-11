@@ -58,6 +58,14 @@ struct AbstractConverterTest: TestSuite::Tester {
     void setDefinitionsNotSupported();
     void setDefinitionsNotImplemented();
 
+    void setOptimizationLevel();
+    void setOptimizationLevelNotSupported();
+    void setOptimizationLevelNotImplemented();
+
+    void setDebugInfoLevel();
+    void setDebugInfoLevelNotSupported();
+    void setDebugInfoLevelNotImplemented();
+
     void validateData();
     void validateDataNotSupported();
     void validateDataNotImplemented();
@@ -184,6 +192,14 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::setDefinitionsNotSupported,
               &AbstractConverterTest::setDefinitionsNotImplemented,
 
+              &AbstractConverterTest::setOptimizationLevel,
+              &AbstractConverterTest::setOptimizationLevelNotSupported,
+              &AbstractConverterTest::setOptimizationLevelNotImplemented,
+
+              &AbstractConverterTest::setDebugInfoLevel,
+              &AbstractConverterTest::setDebugInfoLevelNotSupported,
+              &AbstractConverterTest::setDebugInfoLevelNotImplemented,
+
               &AbstractConverterTest::validateData,
               &AbstractConverterTest::validateDataNotSupported,
               &AbstractConverterTest::validateDataNotImplemented,
@@ -306,7 +322,7 @@ void AbstractConverterTest::featuresNone() {
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
             /* These aren't real features, so it should still complain */
-            return ConverterFeature::InputFileCallback|ConverterFeature::Preprocess;
+            return ConverterFeature::InputFileCallback|ConverterFeature::Preprocess|ConverterFeature::Optimize|ConverterFeature::DebugInfo;
         }
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
@@ -516,6 +532,120 @@ void AbstractConverterTest::setDefinitionsNotImplemented() {
     Error redirectError{&out};
     converter.setDefinitions({});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::setOptimizationLevel() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::Optimize|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        void doSetOptimizationLevel(Containers::StringView level) override {
+            optimization = level;
+        }
+
+        Containers::StringView optimization;
+    } converter;
+
+    converter.setOptimizationLevel("2");
+    CORRADE_COMPARE(converter.optimization, "2");
+}
+
+void AbstractConverterTest::setOptimizationLevelNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setOptimizationLevel({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setOptimizationLevel(): feature not supported\n");
+}
+
+void AbstractConverterTest::setOptimizationLevelNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::Optimize|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setOptimizationLevel({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setOptimizationLevel(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::setDebugInfoLevel() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::DebugInfo|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        void doSetDebugInfoLevel(Containers::StringView level) override {
+            debugInfo = level;
+        }
+
+        Containers::StringView debugInfo;
+    } converter;
+
+    converter.setDebugInfoLevel("0");
+    CORRADE_COMPARE(converter.debugInfo, "0");
+}
+
+void AbstractConverterTest::setDebugInfoLevelNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setDebugInfoLevel({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature not supported\n");
+}
+
+void AbstractConverterTest::setDebugInfoLevelNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::DebugInfo|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setDebugInfoLevel({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::validateData() {

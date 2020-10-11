@@ -100,7 +100,19 @@ enum class ConverterFeature: UnsignedInt {
      * Set preprocess definitions using @ref AbstractConverter::setDefinitions()
      * and the @ref ConverterFlag::PreprocessOnly flag.
      */
-    Preprocess = 1 << 7
+    Preprocess = 1 << 7,
+
+    /**
+     * Control code optimization using
+     * @ref AbstractConverter::setOptimizationLevel()
+     */
+    Optimize = 1 << 8,
+
+    /**
+     * Control amount of debug info present in the output using
+     * @ref AbstractConverter::setDebugInfoLevel()
+     */
+    DebugInfo = 1 << 9
 };
 
 /**
@@ -609,6 +621,32 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         void setDefinitions(std::initializer_list<std::pair<Containers::StringView, Containers::StringView>> definitions);
 
         /**
+         * @brief Set optimization level
+         *
+         * Available only if @ref ConverterFeature::Optimize is supported.
+         * Interpreted in a plugin-specific way, if it's not recognized the
+         * following @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() call will fail.
+         * @see @ref setDebugInfoLevel()
+         */
+        void setOptimizationLevel(Containers::StringView level);
+
+        /**
+         * @brief Set debug info level
+         *
+         * Available only if @ref ConverterFeature::DebugInfo is supported.
+         * Interpreted in a plugin-specific way, if it's not recognized the
+         * following @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() call will fail.
+         * @see @ref setOptimizationLevel()
+         */
+        void setDebugInfoLevel(Containers::StringView level);
+
+        /**
          * @brief Validate a shader
          *
          * Available only if @ref ConverterFeature::ValidateData is
@@ -911,6 +949,32 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * supported. This function isn't expected to fail.
          */
         virtual void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
+
+        /**
+         * @brief Implementation for @ref setOptimizationLevel()
+         *
+         * Has to be implemented if @ref ConverterFeature::Optimize is
+         * supported. To simplify error handling on user side, this function
+         * isn't expected to fail --- if the level isn't recognized, the
+         * following @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() should fail instead.
+         */
+        virtual void doSetOptimizationLevel(Containers::StringView level);
+
+        /**
+         * @brief Implementation for @ref setDebugInfoLevel()
+         *
+         * Has to be implemented if @ref ConverterFeature::DebugInfo is
+         * supported. To simplify error handling on user side, this function
+         * isn't expected to fail --- if the level isn't recognized, the
+         * following @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() should fail instead.
+         */
+        virtual void doSetDebugInfoLevel(Containers::StringView level);
 
         /**
          * @brief Implementation for @ref validateData()

@@ -79,7 +79,7 @@ AbstractConverter::AbstractConverter(PluginManager::AbstractManager& manager, co
 
 ConverterFeatures AbstractConverter::features() const {
     const ConverterFeatures features = doFeatures();
-    CORRADE_ASSERT(features & ~(ConverterFeature::InputFileCallback|ConverterFeature::Preprocess),
+    CORRADE_ASSERT(features & ~(ConverterFeature::InputFileCallback|ConverterFeature::Preprocess|ConverterFeature::Optimize|ConverterFeature::DebugInfo),
         "ShaderTools::AbstractConverter::features(): implementation reported no features", {});
     return features;
 }
@@ -137,6 +137,26 @@ void AbstractConverter::setDefinitions(std::initializer_list<std::pair<Container
 
 void AbstractConverter::doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>>) {
     CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented", );
+}
+
+void AbstractConverter::setOptimizationLevel(const Containers::StringView level) {
+    CORRADE_ASSERT(features() & ConverterFeature::Optimize,
+        "ShaderTools::AbstractConverter::setOptimizationLevel(): feature not supported", );
+    doSetOptimizationLevel(level);
+}
+
+void AbstractConverter::doSetOptimizationLevel(Containers::StringView) {
+    CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::setOptimizationLevel(): feature advertised but not implemented", );
+}
+
+void AbstractConverter::setDebugInfoLevel(const Containers::StringView level) {
+    CORRADE_ASSERT(features() & ConverterFeature::DebugInfo,
+        "ShaderTools::AbstractConverter::setDebugInfoLevel(): feature not supported", );
+    doSetDebugInfoLevel(level);
+}
+
+void AbstractConverter::doSetDebugInfoLevel(Containers::StringView) {
+    CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::setDebugInfoLevel(): feature advertised but not implemented", );
 }
 
 std::pair<bool, Containers::String> AbstractConverter::validateData(const Stage stage, const Containers::ArrayView<const void> data) {
@@ -643,6 +663,8 @@ Debug& operator<<(Debug& debug, const ConverterFeature value) {
         _c(LinkFile)
         _c(InputFileCallback)
         _c(Preprocess)
+        _c(Optimize)
+        _c(DebugInfo)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -662,7 +684,9 @@ Debug& operator<<(Debug& debug, const ConverterFeatures value) {
         /* Implied by LinkData, has to be after */
         ConverterFeature::LinkFile,
         ConverterFeature::InputFileCallback,
-        ConverterFeature::Preprocess
+        ConverterFeature::Preprocess,
+        ConverterFeature::Optimize,
+        ConverterFeature::DebugInfo
     });
 }
 
