@@ -94,7 +94,13 @@ enum class ConverterFeature: UnsignedInt {
      * See @ref ShaderTools-AbstractConverter-usage-callbacks and particular
      * converter documentation for more information.
      */
-    InputFileCallback = 1 << 6
+    InputFileCallback = 1 << 6,
+
+    /**
+     * Set preprocess definitions using @ref AbstractConverter::setDefinitions()
+     * and the @ref ConverterFlag::PreprocessOnly flag.
+     */
+    Preprocess = 1 << 7
 };
 
 /**
@@ -144,7 +150,17 @@ enum class ConverterFlag: UnsignedInt {
      * validation or conversion succeeds. With this flag set, it fails.
      * @see @ref ConverterFlag::Quiet
      */
-    WarningAsError = 1 << 2
+    WarningAsError = 1 << 2,
+
+    /**
+     * Only run the preprocessor. Available only if the converter supports
+     * @ref ConverterFeature::Preprocess, not allowed in combination with
+     * @ref AbstractConverter::linkDataToData(),
+     * @ref AbstractConverter::linkDataToFile(),
+     * @ref AbstractConverter::linkFilesToFile() or
+     * @ref AbstractConverter::linkFilesToData().
+     */
+    PreprocessOnly = 1 << 3
 };
 
 /**
@@ -575,6 +591,24 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #endif
 
         /**
+         * @brief Set preprocessor definitions
+         *
+         * Available only if @ref ConverterFeature::Preprocess is supported.
+         * First string is macro name, second its value. If the second string
+         * is empty (but not @cpp nullptr @ce), it's the same as
+         * @cpp #define @ce without a value; if the second string is
+         * @cpp nullptr @ce, it's the same as @cpp #undef @ce.
+         *
+         * Calling this function replaces the previous set, calling it with an
+         * empty list will reset the definitions back to initial state.
+         * @see @ref ConverterFlag::PreprocessOnly
+         */
+        void setDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
+
+        /** @overload */
+        void setDefinitions(std::initializer_list<std::pair<Containers::StringView, Containers::StringView>> definitions);
+
+        /**
          * @brief Validate a shader
          *
          * Available only if @ref ConverterFeature::ValidateData is
@@ -662,7 +696,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * failure the function prints an error message and returns
-         * @cpp nullptr @ce.
+         * @cpp nullptr @ce. Can't be called if
+         * @ref ConverterFlag::PreprocessOnly is set --- in that case
+         * @ref convertDataToData() has to be used instead.
          * @see @ref features() @ref linkDataToFile(), @ref linkFilesToFile()
          */
         Containers::Array<char> linkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data);
@@ -675,7 +711,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported. On
          * Returns @cpp true @ce on success, prints an error message and
-         * returns @cpp false @ce otherwise.
+         * returns @cpp false @ce otherwise. Can't be called if
+         * @ref ConverterFlag::PreprocessOnly is set --- in that case
+         * @ref convertDataToFile() has to be used instead.
          * @see @ref features(), @ref linkFilesToFile(),
          *      @ref linkFilesToData(), @ref linkDataToData()
          */
@@ -690,7 +728,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * Available only if @ref ConverterFeature::LinkFile or
          * @ref ConverterFeature::LinkData is supported. Returns @cpp true @ce
          * on success, prints an error message and returns @cpp false @ce
-         * otherwise.
+         * otherwise. Can't be called if @ref ConverterFlag::PreprocessOnly is
+         * set --- in that case  @ref convertFileToFile() has to be used
+         * instead.
          * @see @ref features(), @ref linkFilesToData(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
@@ -704,7 +744,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Available only if @ref ConverterFeature::LinkData is supported, On
          * failure the function prints an error message and returns
-         * @cpp nullptr @ce.
+         * @cpp nullptr @ce. Can't be called if
+         * @ref ConverterFlag::PreprocessOnly is set --- in that case
+         * @ref convertFileToData() has to be used instead.
          * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */
@@ -861,6 +903,14 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref linkFilesToData() should fail instead.
          */
         virtual void doSetOutputFormat(Format format, Containers::StringView version) = 0;
+
+        /**
+         * @brief Implementation for @ref setDefinitions()
+         *
+         * Has to be implemented if @ref ConverterFeature::Preprocess is
+         * supported. This function isn't expected to fail.
+         */
+        virtual void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
 
         /**
          * @brief Implementation for @ref validateData()

@@ -79,13 +79,16 @@ AbstractConverter::AbstractConverter(PluginManager::AbstractManager& manager, co
 
 ConverterFeatures AbstractConverter::features() const {
     const ConverterFeatures features = doFeatures();
-    CORRADE_ASSERT(features & ~ConverterFeature::InputFileCallback, "ShaderTools::AbstractConverter::features(): implementation reported no features", {});
+    CORRADE_ASSERT(features & ~(ConverterFeature::InputFileCallback|ConverterFeature::Preprocess),
+        "ShaderTools::AbstractConverter::features(): implementation reported no features", {});
     return features;
 }
 
 void AbstractConverter::setFlags(const ConverterFlags flags) {
-    CORRADE_ASSERT(!(flags & ConverterFlag::Quiet) != !(flags & ConverterFlag::Verbose),
-        "ShaderTools::AbstractConverter::setFeatures(): can't have both Quiet and Verbose set", );
+    CORRADE_ASSERT(!(flags >= (ConverterFlag::Quiet|ConverterFlag::Verbose)),
+        "ShaderTools::AbstractConverter::setFlags(): can't have both Quiet and Verbose set", );
+    CORRADE_ASSERT((features() & ConverterFeature::Preprocess) || !(flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::setFlags(): PreprocessOnly not supported by the implementation", );
     _flags = flags;
     doSetFlags(flags);
 }
@@ -120,6 +123,20 @@ void AbstractConverter::setOutputFormat(const Format format, const Containers::S
 
 void AbstractConverter::setOutputFormat(const Format format) {
     return setOutputFormat(format, {});
+}
+
+void AbstractConverter::setDefinitions(const Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) {
+    CORRADE_ASSERT(features() & ConverterFeature::Preprocess,
+        "ShaderTools::AbstractConverter::setDefinitions(): feature not supported", );
+    doSetDefinitions(definitions);
+}
+
+void AbstractConverter::setDefinitions(std::initializer_list<std::pair<Containers::StringView, Containers::StringView>> definitions) {
+    return setDefinitions(Containers::arrayView(definitions));
+}
+
+void AbstractConverter::doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>>) {
+    CORRADE_ASSERT_UNREACHABLE("ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented", );
 }
 
 std::pair<bool, Containers::String> AbstractConverter::validateData(const Stage stage, const Containers::ArrayView<const void> data) {
@@ -371,6 +388,8 @@ Containers::Array<char> AbstractConverter::doConvertFileToData(const Stage stage
 Containers::Array<char> AbstractConverter::linkDataToData(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkDataToData(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking", {});
     CORRADE_ASSERT(!data.empty(),
         "ShaderTools::AbstractConverter::linkDataToData(): no data passed", {});
 
@@ -392,6 +411,8 @@ Containers::Array<char> AbstractConverter::doLinkDataToData(Containers::ArrayVie
 bool AbstractConverter::linkDataToFile(const Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, const Containers::StringView to) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking", {});
     CORRADE_ASSERT(!data.empty(),
         "ShaderTools::AbstractConverter::linkDataToFile(): no data passed", {});
 
@@ -451,6 +472,8 @@ Containers::Array<char> AbstractConverter::linkDataToDataUsingInputFileCallbacks
 bool AbstractConverter::linkFilesToFile(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, const Containers::StringView to) {
     CORRADE_ASSERT(features() & (ConverterFeature::LinkFile|ConverterFeature::LinkData),
         "ShaderTools::AbstractConverter::linkFilesToFile(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking", {});
     CORRADE_ASSERT(!from.empty(),
         "ShaderTools::AbstractConverter::linkFilesToFile(): no files passed", {});
 
@@ -539,6 +562,8 @@ bool AbstractConverter::doLinkFilesToFile(const Containers::ArrayView<const std:
 Containers::Array<char> AbstractConverter::linkFilesToData(const Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) {
     CORRADE_ASSERT(features() >= ConverterFeature::LinkData,
         "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking", {});
     CORRADE_ASSERT(!from.empty(),
         "ShaderTools::AbstractConverter::linkFilesToData(): no files passed", {});
 
@@ -617,6 +642,7 @@ Debug& operator<<(Debug& debug, const ConverterFeature value) {
         _c(LinkData)
         _c(LinkFile)
         _c(InputFileCallback)
+        _c(Preprocess)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -635,7 +661,9 @@ Debug& operator<<(Debug& debug, const ConverterFeatures value) {
         ConverterFeature::LinkData,
         /* Implied by LinkData, has to be after */
         ConverterFeature::LinkFile,
-        ConverterFeature::InputFileCallback});
+        ConverterFeature::InputFileCallback,
+        ConverterFeature::Preprocess
+    });
 }
 
 Debug& operator<<(Debug& debug, const ConverterFlag value) {
@@ -647,6 +675,7 @@ Debug& operator<<(Debug& debug, const ConverterFlag value) {
         _c(Quiet)
         _c(Verbose)
         _c(WarningAsError)
+        _c(PreprocessOnly)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -658,7 +687,8 @@ Debug& operator<<(Debug& debug, const ConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFlags{}", {
         ConverterFlag::Quiet,
         ConverterFlag::Verbose,
-        ConverterFlag::WarningAsError
+        ConverterFlag::WarningAsError,
+        ConverterFlag::PreprocessOnly
     });
 }
 

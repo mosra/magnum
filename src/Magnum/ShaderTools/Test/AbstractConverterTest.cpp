@@ -48,9 +48,15 @@ struct AbstractConverterTest: TestSuite::Tester {
 
     void setFlags();
     void setFlagsBothQuietAndVerbose();
+    void setFlagsPreprocessNotSupported();
+    void setFlagsPreprocessOnlyNotAllowed();
     void setFlagsNotImplemented();
 
     void setInputOutputFormat();
+
+    void setDefinitions();
+    void setDefinitionsNotSupported();
+    void setDefinitionsNotImplemented();
 
     void validateData();
     void validateDataNotSupported();
@@ -168,9 +174,15 @@ AbstractConverterTest::AbstractConverterTest() {
 
               &AbstractConverterTest::setFlags,
               &AbstractConverterTest::setFlagsBothQuietAndVerbose,
+              &AbstractConverterTest::setFlagsPreprocessNotSupported,
+              &AbstractConverterTest::setFlagsPreprocessOnlyNotAllowed,
               &AbstractConverterTest::setFlagsNotImplemented,
 
               &AbstractConverterTest::setInputOutputFormat,
+
+              &AbstractConverterTest::setDefinitions,
+              &AbstractConverterTest::setDefinitionsNotSupported,
+              &AbstractConverterTest::setDefinitionsNotImplemented,
 
               &AbstractConverterTest::validateData,
               &AbstractConverterTest::validateDataNotSupported,
@@ -294,7 +306,7 @@ void AbstractConverterTest::featuresNone() {
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
             /* These aren't real features, so it should still complain */
-            return ConverterFeature::InputFileCallback;
+            return ConverterFeature::InputFileCallback|ConverterFeature::Preprocess;
         }
         void doSetInputFormat(Format, Containers::StringView) override {}
         void doSetOutputFormat(Format, Containers::StringView) override {}
@@ -347,6 +359,55 @@ void AbstractConverterTest::setFlagsBothQuietAndVerbose() {
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setFlags(): can't have both Quiet and Verbose set\n");
 }
 
+void AbstractConverterTest::setFlagsPreprocessNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setFlags(): PreprocessOnly not supported by the implementation\n");
+}
+
+void AbstractConverterTest::setFlagsPreprocessOnlyNotAllowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            /** @todo should Validate/Convert be enforced when Preprocess is
+                present? */
+            return ConverterFeature::Preprocess|ConverterFeature::LinkData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToData({});
+    converter.linkDataToFile({}, {});
+    converter.linkFilesToFile({}, {});
+    converter.linkFilesToData({});
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking\n"
+        "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking\n"
+        "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking\n"
+        "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking\n");
+}
+
 void AbstractConverterTest::setFlagsNotImplemented() {
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
@@ -394,6 +455,67 @@ void AbstractConverterTest::setInputOutputFormat() {
     CORRADE_COMPARE(converter.inputVersion, "");
     CORRADE_COMPARE(converter.outputFormat, Format::Dxil);
     CORRADE_COMPARE(converter.outputVersion, "");
+}
+
+void AbstractConverterTest::setDefinitions() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::Preprocess|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
+        void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) override {
+            howManyIsThere = definitions.size();
+        }
+
+        std::size_t howManyIsThere = 0;
+    } converter;
+
+    converter.setDefinitions({
+        {"VULKAN", ""},
+        {"LIGHT_COUNT", "3"},
+        {"GL_ES", nullptr}
+    });
+    CORRADE_COMPARE(converter.howManyIsThere, 3);
+}
+
+void AbstractConverterTest::setDefinitionsNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setDefinitions({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDefinitions(): feature not supported\n");
+}
+
+void AbstractConverterTest::setDefinitionsNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::Preprocess|ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setDefinitions({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setDefinitions(): feature advertised but not implemented\n");
 }
 
 void AbstractConverterTest::validateData() {
