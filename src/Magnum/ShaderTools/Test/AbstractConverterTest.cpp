@@ -47,6 +47,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void featuresNone();
 
     void setFlags();
+    void setFlagsBothQuietAndVerbose();
     void setFlagsNotImplemented();
 
     void setInputOutputFormat();
@@ -166,6 +167,7 @@ AbstractConverterTest::AbstractConverterTest() {
     addTests({&AbstractConverterTest::featuresNone,
 
               &AbstractConverterTest::setFlags,
+              &AbstractConverterTest::setFlagsBothQuietAndVerbose,
               &AbstractConverterTest::setFlagsNotImplemented,
 
               &AbstractConverterTest::setInputOutputFormat,
@@ -324,6 +326,25 @@ void AbstractConverterTest::setFlags() {
     converter.setFlags(ConverterFlag::Verbose);
     CORRADE_COMPARE(converter.flags(), ConverterFlag::Verbose);
     CORRADE_COMPARE(converter._flags, ConverterFlag::Verbose);
+}
+
+void AbstractConverterTest::setFlagsBothQuietAndVerbose() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::Quiet|ConverterFlag::Verbose);
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::setFlags(): can't have both Quiet and Verbose set\n");
 }
 
 void AbstractConverterTest::setFlagsNotImplemented() {

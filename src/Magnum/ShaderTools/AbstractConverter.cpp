@@ -84,6 +84,8 @@ ConverterFeatures AbstractConverter::features() const {
 }
 
 void AbstractConverter::setFlags(const ConverterFlags flags) {
+    CORRADE_ASSERT(!(flags & ConverterFlag::Quiet) != !(flags & ConverterFlag::Verbose),
+        "ShaderTools::AbstractConverter::setFeatures(): can't have both Quiet and Verbose set", );
     _flags = flags;
     doSetFlags(flags);
 }
@@ -642,7 +644,9 @@ Debug& operator<<(Debug& debug, const ConverterFlag value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(v) case ConverterFlag::v: return debug << "::" #v;
+        _c(Quiet)
         _c(Verbose)
+        _c(WarningAsError)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -652,7 +656,10 @@ Debug& operator<<(Debug& debug, const ConverterFlag value) {
 
 Debug& operator<<(Debug& debug, const ConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFlags{}", {
-        ConverterFlag::Verbose});
+        ConverterFlag::Quiet,
+        ConverterFlag::Verbose,
+        ConverterFlag::WarningAsError
+    });
 }
 
 Debug& operator<<(Debug& debug, const Format value) {

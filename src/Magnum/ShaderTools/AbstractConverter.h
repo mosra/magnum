@@ -127,10 +127,24 @@ MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, ConverterFeatures valu
 */
 enum class ConverterFlag: UnsignedInt {
     /**
+     * Suppress warnings, print just errors. By default the converter prints
+     * both warnings and errors.
+     * @see @ref ConverterFlag::WarningAsError
+     */
+    Quiet = 1 << 0,
+
+    /**
      * Print verbose diagnostic. By default the converter only prints warnings
      * and errors.
      */
-    Verbose = 1 << 0
+    Verbose = 1 << 1,
+
+    /**
+     * Treat warnings as error. By default, if a warning occurs,
+     * validation or conversion succeeds. With this flag set, it fails.
+     * @see @ref ConverterFlag::Quiet
+     */
+    WarningAsError = 1 << 2
 };
 
 /**
