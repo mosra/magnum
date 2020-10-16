@@ -51,13 +51,7 @@ Used to distinguish construction without creating the underlying OpenGL /
 Vulkan / ... object.
 @see @ref NoCreate
 */
-/* Explicit constructor to avoid ambiguous calls when using {} */
-struct NoCreateT {
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    struct Init{};
-    constexpr explicit NoCreateT(Init) {}
-    #endif
-};
+typedef Corrade::Containers::NoCreateT NoCreateT;
 
 /**
 @brief No initialization tag
@@ -66,7 +60,6 @@ struct NoCreateT {
 Use for construction with no initialization at all.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/* Explicit constructor to avoid ambiguous calls when using {} */
 constexpr NoInitT NoInit{};
 #else
 using Corrade::Containers::NoInit;
@@ -81,7 +74,11 @@ object. Note that calling anything on objects created this way is not defined
 delayed object creation with safety checks (however with some extra memory
 overhead), wrap the objects in an @ref Corrade::Containers::Optional.
 */
-constexpr NoCreateT NoCreate{NoCreateT::Init{}};
+#ifdef DOXYGEN_GENERATING_OUTPUT
+constexpr NoCreateT NoCreate{};
+#else
+using Corrade::Containers::NoCreate;
+#endif
 
 }
 
