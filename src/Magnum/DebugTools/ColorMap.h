@@ -114,6 +114,30 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @endparblock
 
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@image html colormap-cool-warm-smooth.png width=100%
+@m_enddiv
+
+@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmSmooth() @m_enddiv
+
+@endparblock
+
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@image html colormap-cool-warm-bent.png width=100%
+@m_enddiv
+
+@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmBent() @m_enddiv
+
+@endparblock
+
 For all color maps the returned data is the sRGB colorspace. Desired usage is
 by uploading to a texture with linear filtering, depending on the use case with
 either clamp or repeat wrapping. For a sRGB workflow don't forget to set the
@@ -203,6 +227,44 @@ MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> infer
     ([choosealicense.com](https://choosealicense.com/licenses/cc0-1.0/)).
 */
 MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> viridis();
+
+/**
+@brief Smooth Cool-Warm colormap
+@m_since_latest
+
+@image html colormap-cool-warm-smooth.png width=100%
+
+It is a diverging (double-ended) color map with a smooth transition in the
+middle to prevent artifacts at the midpoint. Although not isoluminant, this
+color map avoids dark colors to allow shading cues throughout.
+
+@m_class{m-block m-success}
+
+@thirdparty Created by [Kenneth Moreland](https://www.kennethmoreland.com/color-advice/),
+    released under a @m_class{m-label m-success} **BSD 3-clause** license as
+    part of Paraview ([license text](https://www.paraview.org/paraview-license/),
+    [choosealicense.com](https://choosealicense.com/licenses/bsd-3-clause/)).
+*/
+MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> coolWarmSmooth();
+
+/**
+@brief Bent Cool-Warm colormap
+@m_since_latest
+
+@image html colormap-cool-warm-bent.png width=100%
+
+This color map is similar @ref coolWarmSmooth() except that the luminance is
+interpolated linearly with a sharp bend in the middle. This makes for less
+washed out colors in the middle, but also creates an artifact at the midpoint.
+
+@m_class{m-block m-success}
+
+@thirdparty Created by [Kenneth Moreland](https://www.kennethmoreland.com/color-advice/),
+    released under a @m_class{m-label m-success} **BSD 3-clause** license as
+    part of Paraview ([license text](https://www.paraview.org/paraview-license/),
+    [choosealicense.com](https://choosealicense.com/licenses/bsd-3-clause/)).
+*/
+MAGNUM_DEBUGTOOLS_EXPORT Containers::StaticArrayView<256, const Vector3ub> coolWarmBent();
 
 }
 
