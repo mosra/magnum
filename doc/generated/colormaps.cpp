@@ -48,7 +48,9 @@ int main() {
         std::make_pair(DebugTools::ColorMap::magma(), "colormap-magma.png"),
         std::make_pair(DebugTools::ColorMap::plasma(), "colormap-plasma.png"),
         std::make_pair(DebugTools::ColorMap::inferno(), "colormap-inferno.png"),
-        std::make_pair(DebugTools::ColorMap::viridis(), "colormap-viridis.png")
+        std::make_pair(DebugTools::ColorMap::viridis(), "colormap-viridis.png"),
+        std::make_pair(DebugTools::ColorMap::coolWarmSmooth(), "colormap-cool-warm-smooth.png"),
+        std::make_pair(DebugTools::ColorMap::coolWarmBent(), "colormap-cool-warm-bent.png")
     }) {
         constexpr Vector2i OutputSize{256, 12};
         CORRADE_INTERNAL_ASSERT(image.first.size() == std::size_t(OutputSize.x()));
