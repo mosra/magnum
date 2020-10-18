@@ -392,30 +392,30 @@ const struct {
             {{40, 40}, 0x222222_rgb + 0xff8080_rgb*dot(Vector3{1.0f, -1.5f, 0.5f}.normalized(), Vector3::zAxis())*2.0f}
         }}},
     {"point", "light-point.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* The range is inf, so it doesn't get fully ambient even at the
                edge */
-            {{8, 71}, 0x242324_rgb},
-            /* Closest to the light. TODO figure out the equation, sigh */
-            {{63, 16}, 0xc57474_rgb /*0x222222_rgb + 0xff8080_rgb/(1 + 0.25f*0.25f)*/},
+            {{8, 71}, 0x2c2727_rgb},
+            /* Closest to the light */
+            {{63, 16}, 0x222222_rgb + 0xff8080_rgb/(1 + 0.75f*0.75f)},
             /* Specular highlight */
-            {{60, 19}, 0xfefefe_rgb}
+            {{60, 19}, 0xc47575_rgb}
         }}},
     {"point, specular material color", "light-point-specular-color.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, 0x80ff80_rgbf, Color3{1.0f},
+        {0.75f, -0.75f, -0.75f, 1.0f}, 0x80ff80_rgbf, Color3{1.0f},
         1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* Colored specular highlight */
-            {{60, 19}, 0xf2fcb0_rgb}
+            {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, specular light color", "light-point-specular-color.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, Constants::inf(),
         {Containers::InPlaceInit, {
             /* Colored specular highlight */
-            {{60, 19}, 0xf2fcb0_rgb}
+            {{60, 19}, 0xc27573_rgb}
         }}},
     {"point, attenuated specular", "light-point-attenuated-specular.tga",
         {1.0f, -1.0f, -0.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
@@ -423,10 +423,10 @@ const struct {
         {Containers::InPlaceInit, {
             /* Specular highlight shouldn't be brighter than the attenuated
                intensity */
-            {{57, 22}, 0x665656_rgb}
+            {{57, 22}, 0xa68787_rgb}
         }}},
     {"point, range=1.5, specular color", "light-point-range1.5.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, 0x80ff80_rgbf,
         1.0f, 1.5f,
         {Containers::InPlaceInit, {
             /* Color goes back to ambient at distance = 1.5 */
@@ -434,25 +434,25 @@ const struct {
             {{29, 50}, 0x222222_rgb},
             {{19, 14}, 0x222222_rgb},
             /* But the center and specular stays ~ the same */
-            {{63, 16}, 0xc57474_rgb},
-            {{60, 19}, 0xf2fcb0_rgb}
+            {{63, 16}, 0xb16a6a_rgb},
+            {{60, 19}, 0xad6a69_rgb}
         }}},
-    {"point, intensity=10, range=0.5", "light-point-intensity10-range0.5.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
-        10.0f, 0.5f, {}},
+    {"point, intensity=10, range=1.0", "light-point-intensity10-range1.0.tga",
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        10.0f, 1.0f, {}},
     /* Range ends right at the surface, so no contribution */
-    {"point, range=0.25", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
-        1.0f, 0.25f, {}},
+    {"point, range=0.75", "light-none.tga",
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        1.0f, 0.75f, {}},
     /* Zero range should not cause any NaNs, so the ambient contribution is
        still there */
     {"point, range=0.0", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 0.0f, {}},
     /* Distance is 0, which means the direction is always prependicular and
        thus contributes nothing */
     {"point, distance=0", "light-none.tga",
-        {0.75f, -0.75f, -1.25f, 1.0f}, Color3{1.0f}, Color3{1.0f},
+        {0.75f, -0.75f, -0.75f, 1.0f}, Color3{1.0f}, Color3{1.0f},
         1.0f, 0.0f, {}}
 };
 
@@ -1559,7 +1559,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
         /* First light is directional, from back, so it shouldn't affect the
            output at all -- we only want to test that the ID is used properly */
         .setLightPosition(0, {-1.0f, 1.5f, -0.5f, 0.0f})
-        .setLightPosition(1, {0.75f, -0.75f, -1.25f, 1.0f})
+        .setLightPosition(1, {0.75f, -0.75f, -0.75f, 1.0f})
         .setLightColor(0, 0x00ffff_rgbf)
         .setLightColor(1, 0xff8080_rgbf)
         .setLightSpecularColor(0, 0x0000ff_rgbf)

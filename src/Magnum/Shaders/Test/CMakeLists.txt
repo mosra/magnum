@@ -244,7 +244,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/light-directional.tga
             PhongTestFiles/light-none.tga
             PhongTestFiles/light-point-attenuated-specular.tga
-            PhongTestFiles/light-point-intensity10-range0.5.tga
+            PhongTestFiles/light-point-intensity10-range1.0.tga
             PhongTestFiles/light-point-range1.5.tga
             PhongTestFiles/light-point-specular-color.tga
             PhongTestFiles/light-point.tga

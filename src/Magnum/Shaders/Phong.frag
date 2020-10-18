@@ -270,8 +270,8 @@ void main() {
         /* If range is 0 for whatever reason, clamp it to a small value to
            avoid a NaN when dist is 0 as well (which is the case for
            directional lights). */
-        highp float attenuation = clamp(1.0 - pow(dist/max(lightRanges[i], 0.0001), 4.0), 0.0, 1.0)/(1.0 + dist);
-        attenuation = attenuation*attenuation;
+        highp float attenuation = clamp(1.0 - pow(dist/max(lightRanges[i], 0.0001), 4.0), 0.0, 1.0);
+        attenuation = attenuation*attenuation/(1.0 + dist*dist);
 
         highp vec3 normalizedLightDirection = normalize(lightDirections[i].xyz);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection))*attenuation;
