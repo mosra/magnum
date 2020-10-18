@@ -36,6 +36,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_test(ShaderToolsAbstractConverterTest AbstractConverterTest.cpp
     LIBRARIES MagnumShaderToolsTestLib
-    FILES file.dat)
+    FILES file.dat another.dat)
 
 target_include_directories(ShaderToolsAbstractConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

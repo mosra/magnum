@@ -85,6 +85,34 @@ struct AbstractConverterTest: TestSuite::Tester {
     void convertFileToDataNotImplemented();
     void convertFileToDataCustomDeleter();
 
+    void linkDataToData();
+    void linkDataToDataNotSupported();
+    void linkDataToDataNotImplemented();
+    void linkDataToDataNoData();
+    void linkDataToDataCustomDeleter();
+    void linkDataToFileThroughData();
+    void linkDataToFileThroughDataFailed();
+    void linkDataToFileThroughDataNotWritable();
+    void linkDataToFileNotSupported();
+    void linkDataToFileNotImplemented();
+    void linkDataToFileNoData();
+
+    void linkFilesToFile();
+    void linkFilesToFileThroughData();
+    void linkFilesToFileThroughDataNotFound();
+    void linkFilesToFileThroughDataFailed();
+    void linkFilesToFileThroughDataNotWritable();
+    void linkFilesToFileNotSupported();
+    void linkFilesToFileNotImplemented();
+    void linkFilesToFileNoFile();
+    void linkFilesToData();
+    void linkFilesToDataAsData();
+    void linkFilesToDataAsDataNotFound();
+    void linkFilesToDataNotSupported();
+    void linkFilesToDataNotImplemented();
+    void linkFilesToDataNoFile();
+    void linkFilesToDataCustomDeleter();
+
     void setInputFileCallback();
     void setInputFileCallbackTemplate();
     void setInputFileCallbackTemplateNull();
@@ -110,6 +138,19 @@ struct AbstractConverterTest: TestSuite::Tester {
     void setInputFileCallbackConvertFileToDataThroughBaseImplementationFailed();
     void setInputFileCallbackConvertFileToDataAsData();
     void setInputFileCallbackConvertFileToDataAsDataFailed();
+
+    void setInputFileCallbackLinkFilesToFileDirectly();
+    void setInputFileCallbackLinkFilesToFileThroughBaseImplementation();
+    void setInputFileCallbackLinkFilesToFileThroughBaseImplementationFailed();
+    void setInputFileCallbackLinkFilesToFileAsData();
+    void setInputFileCallbackLinkFilesToFileAsDataFailed();
+    void setInputFileCallbackLinkFilesToFileAsDataNotWritable();
+
+    void setInputFileCallbackLinkFilesToDataDirectly();
+    void setInputFileCallbackLinkFilesToDataThroughBaseImplementation();
+    void setInputFileCallbackLinkFilesToDataThroughBaseImplementationFailed();
+    void setInputFileCallbackLinkFilesToDataAsData();
+    void setInputFileCallbackLinkFilesToDataAsDataFailed();
 
     void debugFeature();
     void debugFeatures();
@@ -160,6 +201,34 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::convertFileToDataNotImplemented,
               &AbstractConverterTest::convertFileToDataCustomDeleter,
 
+              &AbstractConverterTest::linkDataToData,
+              &AbstractConverterTest::linkDataToDataNotSupported,
+              &AbstractConverterTest::linkDataToDataNotImplemented,
+              &AbstractConverterTest::linkDataToDataNoData,
+              &AbstractConverterTest::linkDataToDataCustomDeleter,
+              &AbstractConverterTest::linkDataToFileThroughData,
+              &AbstractConverterTest::linkDataToFileThroughDataFailed,
+              &AbstractConverterTest::linkDataToFileThroughDataNotWritable,
+              &AbstractConverterTest::linkDataToFileNotSupported,
+              &AbstractConverterTest::linkDataToFileNotImplemented,
+              &AbstractConverterTest::linkDataToFileNoData,
+
+              &AbstractConverterTest::linkFilesToFile,
+              &AbstractConverterTest::linkFilesToFileThroughData,
+              &AbstractConverterTest::linkFilesToFileThroughDataNotFound,
+              &AbstractConverterTest::linkFilesToFileThroughDataFailed,
+              &AbstractConverterTest::linkFilesToFileThroughDataNotWritable,
+              &AbstractConverterTest::linkFilesToFileNotSupported,
+              &AbstractConverterTest::linkFilesToFileNotImplemented,
+              &AbstractConverterTest::linkFilesToFileNoFile,
+              &AbstractConverterTest::linkFilesToData,
+              &AbstractConverterTest::linkFilesToDataAsData,
+              &AbstractConverterTest::linkFilesToDataAsDataNotFound,
+              &AbstractConverterTest::linkFilesToDataNotSupported,
+              &AbstractConverterTest::linkFilesToDataNotImplemented,
+              &AbstractConverterTest::linkFilesToDataNoFile,
+              &AbstractConverterTest::linkFilesToDataCustomDeleter,
+
               &AbstractConverterTest::setInputFileCallback,
               &AbstractConverterTest::setInputFileCallbackTemplate,
               &AbstractConverterTest::setInputFileCallbackTemplateNull,
@@ -185,6 +254,19 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::setInputFileCallbackConvertFileToDataThroughBaseImplementationFailed,
               &AbstractConverterTest::setInputFileCallbackConvertFileToDataAsData,
               &AbstractConverterTest::setInputFileCallbackConvertFileToDataAsDataFailed,
+
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplementation,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplementationFailed,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable,
+
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementation,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementationFailed,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData,
+              &AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed,
 
               &AbstractConverterTest::debugFeature,
               &AbstractConverterTest::debugFeatures,
@@ -848,6 +930,559 @@ void AbstractConverterTest::convertFileToDataCustomDeleter() {
     Error redirectError{&out};
     converter.convertFileToData({}, {});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractConverterTest::linkDataToData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    CORRADE_VERIFY(true); /* so it picks up correct test case name */
+
+    Containers::Array<char> out = converter.linkDataToData({
+        {Stage::Vertex, Containers::arrayView({'V', 'E'})},
+        {Stage::Fragment, Containers::arrayView({'S', 'A'})}
+    });
+    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+        TestSuite::Compare::Container);
+}
+
+void AbstractConverterTest::linkDataToDataNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature not supported\n");
+}
+
+void AbstractConverterTest::linkDataToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToData({{}});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkDataToDataNoData() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): no data passed\n");
+}
+
+void AbstractConverterTest::linkDataToDataCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToData({{}});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractConverterTest::linkDataToFileThroughData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.linkDataToFile({
+        {Stage::Vertex, Containers::arrayView({'V', 'E'})},
+        {Stage::Fragment, Containers::arrayView({'S', 'A'})}
+    }, filename));
+    CORRADE_COMPARE_AS(filename, "VS",
+        TestSuite::Compare::FileToString);
+}
+
+void AbstractConverterTest::linkDataToFileThroughDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return {};
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* Function should fail, no file should get written and no error output
+       should be printed (the base implementation assumes the plugin does it) */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkDataToFile({{}}, filename));
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return Containers::Array<char>{1};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkDataToFile({{}}, "/some/path/that/does/not/exist"));
+    CORRADE_COMPARE(out.str(),
+        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
+        "ShaderTools::AbstractConverter::linkDataToFile(): cannot write to file /some/path/that/does/not/exist\n");
+}
+
+void AbstractConverterTest::linkDataToFileNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToFile({}, "file.dat");
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): feature not supported\n");
+}
+
+void AbstractConverterTest::linkDataToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToFile({{}}, "file.dat");
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkDataToFileNoData() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkDataToFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): no data passed\n");
+}
+
+void AbstractConverterTest::linkFilesToFile() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+            CORRADE_COMPARE(from.size(), 2);
+            Containers::Array<char> first = Utility::Directory::read(from[0].second);
+            Containers::Array<char> second = Utility::Directory::read(from[1].second);
+            CORRADE_VERIFY(first);
+            CORRADE_VERIFY(second);
+            return Utility::Directory::write(to, Containers::array({
+                from[0].first == Stage::Vertex ? first[0] : ' ',
+                from[1].first == Stage::Fragment ? second[0] : ' '
+            }));
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.linkFilesToFile({
+        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    }, filename));
+    CORRADE_COMPARE_AS(filename, "VS",
+        TestSuite::Compare::FileToString);
+}
+
+void AbstractConverterTest::linkFilesToFileThroughData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.linkFilesToFile({
+        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    }, filename));
+    CORRADE_COMPARE_AS(filename, "VS",
+        TestSuite::Compare::FileToString);
+}
+
+void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {{}, "nonexistent.bin"}
+    }, "file.dat"));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file nonexistent.bin\n");
+}
+
+void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return {};
+        }
+    } converter;
+
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.dat");
+
+    /* Remove previous file, if any */
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    /* Function should fail, no file should get written and no error output
+       should be printed (the base implementation assumes the plugin does it) */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    }, filename));
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return Containers::Array<char>{1};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    }, "/some/path/that/does/not/exist"));
+    CORRADE_COMPARE(out.str(),
+        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
+        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n");
+}
+
+void AbstractConverterTest::linkFilesToFileNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature not supported\n");
+}
+
+void AbstractConverterTest::linkFilesToFileNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToFile({{}}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkFilesToFileNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): no files passed\n");
+}
+
+void AbstractConverterTest::linkFilesToData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+            CORRADE_COMPARE(from.size(), 2);
+            Containers::Array<char> first = Utility::Directory::read(from[0].second);
+            Containers::Array<char> second = Utility::Directory::read(from[1].second);
+            CORRADE_VERIFY(first);
+            CORRADE_VERIFY(second);
+            return Containers::array({
+                from[0].first == Stage::Vertex ? first[0] : ' ',
+                from[1].first == Stage::Fragment ? second[0] : ' '
+            });
+        }
+    } converter;
+
+    CORRADE_VERIFY(true); /* so it picks up correct test case name */
+
+    Containers::Array<char> out = converter.linkFilesToData({
+        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    });
+    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+        TestSuite::Compare::Container);
+}
+
+void AbstractConverterTest::linkFilesToDataAsData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    Containers::Array<char> out = converter.linkFilesToData({
+        {Stage::Vertex, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "another.dat")},
+        {Stage::Fragment, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    });
+    CORRADE_COMPARE_AS(out, Containers::arrayView({'V', 'S'}),
+        TestSuite::Compare::Container);
+}
+
+void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkFilesToData({
+        {{}, "nonexistent.bin"}
+    }));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file nonexistent.bin\n");
+}
+
+void AbstractConverterTest::linkFilesToDataNotSupported() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): feature not supported\n");
+}
+
+void AbstractConverterTest::linkFilesToDataNotImplemented() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToData({
+        {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
+    });
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkFilesToDataNoFile() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): no files passed\n");
+}
+
+void AbstractConverterTest::linkFilesToDataCustomDeleter() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+            return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
+        }
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.linkFilesToData({
+        {{}, "file.dat"}
+    });
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractConverterTest::setInputFileCallback() {
@@ -1544,6 +2179,568 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsDataFailed() 
 
     CORRADE_VERIFY(!converter.convertFileToData({}, "file.dat"));
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::convertFileToData(): cannot open file file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile|ConverterFeature::InputFileCallback;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+            return from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && to == "file.out" && inputFileCallback() && inputFileCallbackUserData();
+        }
+
+        Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
+            CORRADE_VERIFY(!"this should not be reached");
+            return {};
+        }
+    } converter;
+
+    int a{};
+    converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+        CORRADE_VERIFY(!"this should not be reached");
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    }, &a);
+
+    CORRADE_VERIFY(converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, "file.out"));
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplementation() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+            linkFilesToFileCalled = true;
+
+            if(from.size() != 2 || from[0].first != Stage::Vertex || from[0].second != "another.dat" || from[1].first != Stage::Fragment || from[1].second != "file.dat" || !to.hasSuffix("file.out") || !inputFileCallback() || !inputFileCallbackUserData())
+                return {};
+
+            return AbstractConverter::doLinkFilesToFile(from, to);
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+
+        bool linkFilesToFileCalled = false;
+    } converter;
+
+    struct State {
+        const char first[2]{'V', 'E'};
+        const char second[2]{'S', 'A'};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.first);
+            if(filename == "file.dat")
+                return Containers::arrayView(state.second);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    /* Remove previous file, if any */
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, filename));
+    CORRADE_VERIFY(converter.linkFilesToFileCalled);
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n"
+        "closed another.dat\n"
+        "closed file.dat\n");
+    CORRADE_COMPARE_AS(filename, "VS", TestSuite::Compare::FileToString);
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplementationFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
+            linkFilesToFileCalled = true;
+            return AbstractConverter::doLinkFilesToFile(from, to);
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            CORRADE_VERIFY(!"this shouldn't be called");
+            return {};
+        }
+
+        bool linkFilesToFileCalled = false;
+    } converter;
+
+    struct State {
+        const char data[1]{};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.data);
+            /* This deliberately fails */
+            if(filename == "file.dat") return {};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, "/some/path/that/does/not/exist"));
+    CORRADE_VERIFY(converter.linkFilesToFileCalled);
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n" /* this fails */
+        "closed another.dat\n");
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    struct State {
+        const char first[2]{'V', 'E'};
+        const char second[2]{'S', 'A'};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.first);
+            if(filename == "file.dat")
+                return Containers::arrayView(state.second);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    /* Remove previous file, if any */
+    const std::string filename = Utility::Directory::join(SHADERTOOLS_TEST_OUTPUT_DIR, "file.out");
+    Utility::Directory::rm(filename);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
+
+    CORRADE_VERIFY(converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, filename));
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n"
+        "closed another.dat\n"
+        "closed file.dat\n");
+    CORRADE_COMPARE_AS(filename, "VS", TestSuite::Compare::FileToString);
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+    } converter;
+
+    struct State {
+        const char data[1]{};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.data);
+            /* This deliberately fails */
+            if(filename == "file.dat") return {};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, "/some/path/that/does/not/exist"));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): cannot open file file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            return Containers::Array<char>{1};
+        }
+    } converter;
+
+    struct State {
+        const char first[2]{'V', 'E'};
+        const char second[2]{'S', 'A'};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.first);
+            if(filename == "file.dat")
+                return Containers::arrayView(state.second);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter.linkFilesToFile({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }, "/some/path/that/does/not/exist"));
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n"
+        "closed another.dat\n"
+        "closed file.dat\n");
+    CORRADE_COMPARE(out.str(),
+        "Utility::Directory::write(): can't open /some/path/that/does/not/exist\n"
+        "ShaderTools::AbstractConverter::linkFilesToFile(): cannot write to file /some/path/that/does/not/exist\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+            if(from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && inputFileCallback() && inputFileCallbackUserData())
+                return Containers::array({'y', 'e', 'p'});
+            return {};
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
+            CORRADE_VERIFY(!"this should not be reached");
+            return {};
+        }
+    } converter;
+
+    int a{};
+    converter.setInputFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+        CORRADE_VERIFY(!"this should not be reached");
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    }, &a);
+
+    CORRADE_COMPARE_AS(converter.linkFilesToData({
+            {Stage::Vertex, "another.dat"},
+            {Stage::Fragment, "file.dat"}
+        }), Containers::arrayView({'y', 'e', 'p'}),
+        TestSuite::Compare::Container);
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementation() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+            linkFilesToDataCalled = true;
+
+            if(from.size() != 2 || from[0].first != Stage::Vertex || from[0].second != "another.dat" || from[1].first != Stage::Fragment || from[1].second != "file.dat" || !inputFileCallback() || !inputFileCallbackUserData())
+                return {};
+
+            return AbstractConverter::doLinkFilesToData(from);
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+
+        bool linkFilesToDataCalled = false;
+    } converter;
+
+    struct State {
+        const char first[2]{'V', 'E'};
+        const char second[2]{'S', 'A'};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.first);
+            if(filename == "file.dat")
+                return Containers::arrayView(state.second);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    CORRADE_COMPARE_AS(converter.linkFilesToData({
+            {Stage::Vertex, "another.dat"},
+            {Stage::Fragment, "file.dat"}
+        }), Containers::arrayView({'V', 'S'}),
+        TestSuite::Compare::Container);
+    CORRADE_VERIFY(converter.linkFilesToDataCalled);
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n"
+        "closed another.dat\n"
+        "closed file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplementationFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
+            linkFilesToDataCalled = true;
+            return AbstractConverter::doLinkFilesToData(from);
+        }
+
+        bool linkFilesToDataCalled = false;
+    } converter;
+
+    struct State {
+        const char data[1]{};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.data);
+            /* This deliberately fails */
+            if(filename == "file.dat") return {};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!converter.linkFilesToData({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }));
+    CORRADE_VERIFY(converter.linkFilesToDataCalled);
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n" /* this fails */
+        "closed another.dat\n");
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+
+        Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
+            CORRADE_COMPARE(data.size(), 2);
+            return Containers::array({
+                data[0].first == Stage::Vertex ? data[0].second[0] : ' ',
+                data[1].first == Stage::Fragment ? data[1].second[0] : ' '
+            });
+        }
+    } converter;
+
+    struct State {
+        const char first[2]{'V', 'E'};
+        const char second[2]{'S', 'A'};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.first);
+            if(filename == "file.dat")
+                return Containers::arrayView(state.second);
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    CORRADE_COMPARE_AS(converter.linkFilesToData({
+            {Stage::Vertex, "another.dat"},
+            {Stage::Fragment, "file.dat"}
+        }), Containers::arrayView({'V', 'S'}),
+        TestSuite::Compare::Container);
+    CORRADE_COMPARE(state.operations,
+        "loaded another.dat\n"
+        "loaded file.dat\n"
+        "closed another.dat\n"
+        "closed file.dat\n");
+}
+
+void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData;
+        }
+
+        Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
+            CORRADE_VERIFY(!"this shouldn't be reached");
+            return {};
+        }
+    } converter;
+
+    struct State {
+        const char data[1]{};
+        std::string operations;
+    } state;
+
+    converter.setInputFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.operations += "loaded " + filename + "\n";
+            if(filename == "another.dat")
+                return Containers::arrayView(state.data);
+            /* This deliberately fails */
+            if(filename == "file.dat") return {};
+        }
+
+        if(policy == InputFileCallbackPolicy::Close) {
+            state.operations += "closed " + filename + "\n";
+            return {};
+        }
+
+        CORRADE_VERIFY(!"this shouldn't be reached");
+        return {};
+    }, state);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!converter.linkFilesToData({
+        {Stage::Vertex, "another.dat"},
+        {Stage::Fragment, "file.dat"}
+    }));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): cannot open file file.dat\n");
 }
 
 void AbstractConverterTest::debugFeature() {

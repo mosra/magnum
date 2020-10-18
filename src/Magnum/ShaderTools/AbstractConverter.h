@@ -71,6 +71,21 @@ enum class ConverterFeature: UnsignedInt {
     ConvertData = ConvertFile|(1 << 3),
 
     /**
+     * Link shader files together and output a file with
+     * @ref AbstractConverter::linkFilesToFile()
+     */
+    LinkFile = 1 << 4,
+
+    /**
+     * Link shader data together and output a data with
+     * @ref AbstractConverter::linkDataToData() or any of the other
+     * @ref AbstractConverter::linkDataToFile(),
+     * @ref AbstractConverter::linkFilesToData() combinations. Implies
+     * @ref ConverterFeature::LinkFile.
+     */
+    LinkData = LinkFile|(1 << 5),
+
+    /**
      * Specifying input file callbacks for additional files referenced from the
      * main file using @ref AbstractConverter::setInputFileCallback(). If the
      * converter doesn't expose this feature, the format is either single-file
@@ -79,7 +94,7 @@ enum class ConverterFeature: UnsignedInt {
      * See @ref ShaderTools-AbstractConverter-usage-callbacks and particular
      * converter documentation for more information.
      */
-    InputFileCallback = 1 << 4
+    InputFileCallback = 1 << 6
 };
 
 /**
@@ -151,7 +166,9 @@ enum class Stage: UnsignedInt {
      * Unspecified stage. When used in the
      * @ref AbstractConverter::validateFile(),
      * @ref AbstractConverter::convertFileToFile() "convertFileToFile()",
-     * @ref AbstractConverter::convertFileToData() "convertFileToData()" APIs,
+     * @ref AbstractConverter::convertFileToData() "convertFileToData()",
+     * @ref AbstractConverter::linkFilesToFile() "linkFilesToFile()" or
+     * @ref AbstractConverter::linkFilesToData() "linkFilesToData()" APIs,
      * particular plugins may attempt to detect the stage from filename, the
      * shader stage might also be encoded directly in certain formats. Leaving
      * the stage unspecified might limit validation and conversion
@@ -204,16 +221,17 @@ linking.
 
 @subsection ShaderTools-AbstractConverter-usage-validation Shader validation
 
-@subsection ShaderTools-AbstractConverter-usage-conversion Shader conversion
+@subsection ShaderTools-AbstractConverter-usage-conversion Shader conversion and linking
 
 @subsection ShaderTools-AbstractConverter-usage-callbacks Loading shaders from memory, using file callbacks
 
 Besides loading shaders directly from the filesystem using @ref validateFile()
-/ @ref convertFileToFile() like shown above, it's possible to use
-@ref validateData(), @ref convertDataToData() and variants to load data from
-memory. Note that the particular converter implementation has to support
-@ref ConverterFeature::ValidateData / @ref ConverterFeature::ConvertData for
-this method to work.
+/ @ref convertFileToFile() / @ref linkFilesToFile() like shown above, it's
+possible to use @ref validateData(), @ref convertDataToData(),
+@ref linkDataToData() and variants to load data from memory. Note that the
+particular converter implementation has to support
+@ref ConverterFeature::ValidateData / @ref ConverterFeature::ConvertData /
+@ref ConverterFeature::LinkData for this method to work.
 
 Textual shader sources sometimes @cpp #include @ce other sources and in that
 case you may want to intercept those references and load them in a custom way
@@ -225,22 +243,25 @@ non-owning view on the loaded data or a
 @ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
 loading failed. For example, validating a shader from compiled-in resources
 could look like below. Note that the input file callback affects
-@ref validateFile() / @ref convertFileToFile() / @ref convertFileToData() as
-well --- you don't have to load the top-level file manually and pass it to
-@ref validateData() / @ref convertDataToData(), any converter supporting the
+@ref validateFile() / @ref convertFileToFile() / @ref convertFileToData() /
+@ref linkFilesToFile() / @ref linkFilesToData() as well --- you don't have to
+load the top-level file manually and pass it to @ref validateData() /
+@ref convertDataToData() / @ref linkDataToData(), any converter supporting the
 callback feature handles that correctly.
 
 @snippet MagnumShaderTools.cpp AbstractConverter-usage-callbacks
 
 For converters that don't support @ref ConverterFeature::InputFileCallback
 directly, the base @ref validateFile() / @ref convertFileToFile() /
-@ref convertFileToData() implementations will use the file callback to pass
-the loaded data through to @ref validateData() / @ref convertDataToData(), in
-case the converter supports at least @ref ConverterFeature::ValidateData
-/ @ref ConverterFeature::ConvertData. If the converter supports none of
-@ref ConverterFeature::InputFileCallback, @ref ConverterFeature::ValidateData
-or @ref ConverterFeature::ConvertData, @ref setInputFileCallback() doesn't
-allow the callbacks to be set.
+@ref convertFileToData() / @ref linkFilesToFile() / @ref linkFilesToData()
+implementations will use the file callback to pass the loaded data through to
+@ref validateData() / @ref convertDataToData() / @ref linkDataToData(), in case
+the converter supports at least @ref ConverterFeature::ValidateData
+/ @ref ConverterFeature::ConvertData / @ref ConverterFeature::LinkData. If the
+converter supports none of @ref ConverterFeature::InputFileCallback,
+@ref ConverterFeature::ValidateData, @ref ConverterFeature::ConvertData or
+@ref ConverterFeature::LinkData, @ref setInputFileCallback() doesn't allow the
+callbacks to be set.
 
 The input file callback signature is the same for
 @ref ShaderTools::AbstractConverter, @ref Trade::AbstractImporter and
@@ -261,8 +282,9 @@ plugin module has been unloaded.
 
 The plugin needs to implement the @ref doFeatures() function and one or more of
 @ref doValidateData(), @ref doValidateFile(), @ref doConvertDataToData(),
-@ref doConvertFileToData(), or @ref doConvertFileToFile() functions based on
-what features are supported.
+@ref doConvertFileToData(), @ref doConvertFileToFile(),
+@ref doLinkDataToData(), @ref doLinkFilesToData() or @ref doLinkFilesToFile()
+functions based on what features are supported.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
@@ -275,6 +297,13 @@ checked by the implementation:
     called only if @ref ConverterFeature::ConvertData is supported.
 -   The function @ref doConvertFileToFile() is called only if
     @ref ConverterFeature::ConvertFile is supported.
+-   Functions @ref doLinkDataToData() and @ref doLinkFilesToData() are
+    called only if @ref ConverterFeature::LinkData is supported.
+-   The function @ref doLinkFilesToFile() is called only if
+    @ref ConverterFeature::LinkFile is supported.
+-   Functions @ref doLinkDataToData(), @ref doLinkFilesToData() and
+    @ref doLinkFilesToFile() are called only if the data / file list passed is
+    non-empty.
 
 @m_class{m-block m-warning}
 
@@ -355,11 +384,12 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @brief Set input file callback
          *
          * In case the converter supports @ref ConverterFeature::InputFileCallback,
-         * files opened through @ref validateFile(), @ref convertFileToData()
-         * and @ref convertFileToFile() will be loaded through the provided
-         * callback. Besides that, all external files referenced by the
-         * top-level file will be loaded through the callback function as well,
-         * usually on demand. The callback function gets a filename,
+         * files opened through @ref validateFile(), @ref convertFileToData(),
+         * @ref convertFileToFile(), @ref linkFilesToData() and
+         * @ref linkFilesToFile() will be loaded through the provided callback.
+         * Besides that, all external files referenced by the top-level file
+         * will be loaded through the callback function as well, usually on
+         * demand. The callback function gets a filename,
          * @ref InputFileCallbackPolicy and the @p userData pointer as input
          * and returns a non-owning view on the loaded data as output or a
          * @ref Corrade::Containers::NullOpt if loading failed --- because
@@ -369,26 +399,31 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * In case the converter doesn't support
          * @ref ConverterFeature::InputFileCallback but supports at least
          * @ref ConverterFeature::ValidateData /
-         * @ref ConverterFeature::ConvertData, a file opened through
-         * @ref validateFile(), @ref convertFileToData() or
-         * @ref convertFileToFile() will be internally loaded through the
-         * provided callback and then passed to @ref validateData() or
-         * @ref convertDataToData(). First the file is loaded with
-         * @ref InputFileCallbackPolicy::LoadTemporary passed to the callback,
-         * then the returned memory view is passed to @ref validateData() /
-         * @ref convertDataToData() (sidestepping the potential
-         * @ref validateFile() / @ref convertFileToFile() implementation of
-         * that particular converter) and after that the callback is called
-         * again with @ref InputFileCallbackPolicy::Close. In case you need a
-         * different behavior, use @ref validateData() /
-         * @ref convertDataToData() directly.
+         * @ref ConverterFeature::ConvertData /
+         * @ref ConverterFeature::LinkData, a file opened through
+         * @ref validateFile(), @ref convertFileToData(),
+         * @ref convertFileToFile(), @ref linkFilesToData() or
+         * @ref linkFilesToFile() will be internally loaded through the
+         * provided callback and then passed to @ref validateData(),
+         * @ref convertDataToData() or @ref linkDataToData(). First the file is
+         * loaded with @ref InputFileCallbackPolicy::LoadTemporary passed to
+         * the callback, then the returned memory view is passed to
+         * @ref validateData() / @ref convertDataToData() /
+         * @ref linkDataToData() (sidestepping the potential
+         * @ref validateFile() / @ref convertFileToFile() /
+         * @ref convertFileToData() / @ref linkFilesToFile() /
+         * @ref linkFilesToData() implementation of that particular converter)
+         * and after that the callback is called again with
+         * @ref InputFileCallbackPolicy::Close. In case you need a different
+         * behavior, use @ref validateData() / @ref convertDataToData() /
+         * @ref linkDataToData() directly.
          *
          * In case @p callback is @cpp nullptr @ce, the current callback (if
          * any) is reset. This function expects that the converter supports
          * either @ref ConverterFeature::InputFileCallback or at least one of
          * @ref ConverterFeature::ValidateData,
-         * @ref ConverterFeature::ConvertData. If a converter supports neither,
-         * callbacks can't be used.
+         * @ref ConverterFeature::ConvertData, @ref ConverterFeature::LinkData.
+         * If a converter supports neither, callbacks can't be used.
          *
          * Following is an example of setting up an input file callback for
          * fetching compiled-in resources from @ref Corrade::Utility::Resource.
@@ -507,6 +542,62 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          */
         Containers::Array<char> convertFileToData(Stage stage, const Containers::StringView from);
 
+        /**
+         * @brief Link shader data together to a data
+         *
+         * Available only if @ref ConverterFeature::LinkData is supported. On
+         * failure the function prints an error message and returns
+         * @cpp nullptr @ce.
+         * @see @ref features() @ref linkDataToFile(), @ref linkFilesToFile()
+         */
+        Containers::Array<char> linkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data);
+
+        /** @overload */
+        Containers::Array<char> linkDataToData(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data);
+
+        /**
+         * @brief Link shader data together to a file
+         *
+         * Available only if @ref ConverterFeature::LinkData is supported. On
+         * Returns @cpp true @ce on success, prints an error message and
+         * returns @cpp false @ce otherwise.
+         * @see @ref features(), @ref linkFilesToFile(),
+         *      @ref linkFilesToData(), @ref linkDataToData()
+         */
+        bool linkDataToFile(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+
+        /** @overload */
+        bool linkDataToFile(std::initializer_list<std::pair<Stage, Containers::ArrayView<const void>>> data, Containers::StringView to);
+
+        /**
+         * @brief Link shader files together to a file
+         *
+         * Available only if @ref ConverterFeature::LinkFile or
+         * @ref ConverterFeature::LinkData is supported. Returns @cpp true @ce
+         * on success, prints an error message and returns @cpp false @ce
+         * otherwise.
+         * @see @ref features(), @ref linkFilesToData(), @ref linkDataToFile(),
+         *      @ref linkDataToData()
+         */
+        bool linkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+
+        /** @overload */
+        bool linkFilesToFile(std::initializer_list<std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+
+        /**
+         * @brief Link shader files together to a data
+         *
+         * Available only if @ref ConverterFeature::LinkData is supported, On
+         * failure the function prints an error message and returns
+         * @cpp nullptr @ce.
+         * @see @ref features(), @ref linkFilesToFile(), @ref linkDataToFile(),
+         *      @ref linkDataToData()
+         */
+        Containers::Array<char> linkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+
+        /** @overload */
+        Containers::Array<char> linkFilesToData(std::initializer_list<std::pair<Stage, Containers::StringView>> from);
+
     protected:
         /**
          * @brief Implementation for @ref validateFile()
@@ -558,6 +649,40 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * data passed through to @ref doConvertDataToData().
          */
         virtual Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from);
+
+        /**
+         * @brief Implementation for @ref linkFilesToFile()
+         *
+         * If @ref ConverterFeature::LinkData is supported, default
+         * implementation opens all files and calls @ref linkDataToData() with
+         * their contents It is allowed to call this function from your
+         * @ref doLinkFilesToFile() implementation --- in particular, this
+         * implementation will also correctly handle callbacks set through
+         * @ref setInputFileCallback().
+         *
+         * This function is not called when file callbacks are set through
+         * @ref setInputFileCallback() and @ref ConverterFeature::InputFileCallback
+         * is not supported --- instead, file is loaded though the callback and
+         * data passed through to @ref doLinkDataToData().
+         */
+        virtual bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to);
+
+        /**
+         * @brief Implementation for @ref linkFilesToData()
+         *
+         * Default implementation opens all files and calls
+         * @ref doLinkDataToData() with their contents --- you only need to
+         * implement this if you need to do extra work with file inputs. It is
+         * allowed to call this function from your @ref doLinkFilesToData()
+         * implementation --- in particular, this implementation will also
+         * correctly handle callbacks set through @ref setInputFileCallback().
+         *
+         * This function is not called when file callbacks are set through
+         * @ref setInputFileCallback() and @ref ConverterFeature::InputFileCallback
+         * is not supported --- instead, file is loaded though the callback and
+         * data passed through to @ref doConvertDataToData().
+         */
+        virtual Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
 
     private:
         /**
@@ -617,6 +742,20 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @cpp char @ce for more convenience.
          */
         virtual Containers::Array<char> doConvertDataToData(Stage stage, Containers::ArrayView<const char> data);
+
+        /* Used by linkFilesToFile(), doLinkFilesToFile(), linkFilesToData()
+           and doLinkFilesToData() */
+        MAGNUM_SHADERTOOLS_LOCAL Containers::Array<char> linkDataToDataUsingInputFileCallbacks(const char* prefix, Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from);
+
+        /**
+         * @brief Implementation for @ref linkDataToData()
+         *
+         * Has to be implemented if @ref ConverterFeature::LinkData is
+         * supported. While @ref linkDataToData() uses a @cpp void @ce view in
+         * order to accept any type, this function gets it cast to
+         * @cpp char @ce for more convenience.
+         */
+        virtual Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data);
 
         ConverterFlags _flags;
 
