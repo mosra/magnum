@@ -155,7 +155,17 @@ bool isWindowsAppDpiAware() {
        need. */
     HMODULE const shcore = GetModuleHandleA("Shcore.dll");
     if(shcore) {
+        /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra,
+           which causes this line to emit a warning on MinGW. We know what
+           we're doing, so suppress that. */
+        #if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 8
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wcast-function-type"
+        #endif
         auto* const getProcessDpiAwareness = reinterpret_cast<HRESULT(WINAPI *)(HANDLE, PROCESS_DPI_AWARENESS*)>(GetProcAddress(shcore, "GetProcessDpiAwareness"));
+        #if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 8
+        #pragma GCC diagnostic pop
+        #endif
         PROCESS_DPI_AWARENESS result{};
         return getProcessDpiAwareness && getProcessDpiAwareness(nullptr, &result) == S_OK && result != PROCESS_DPI_UNAWARE;
     }
@@ -166,7 +176,17 @@ bool isWindowsAppDpiAware() {
        correctly. */
     HMODULE const user32 = GetModuleHandleA("User32.dll");
     CORRADE_INTERNAL_ASSERT(user32);
+    /* GCC 8 adds -Wcast-function-type, enabled by default with -Wextra, which
+       causes this line to emit a warning on MinGW. We know what we're doing,
+       so suppress that. */
+    #if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 8
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-function-type"
+    #endif
     auto const isProcessDPIAware = reinterpret_cast<BOOL(WINAPI *)()>(GetProcAddress(user32, "IsProcessDPIAware"));
+    #if defined(CORRADE_TARGET_GCC) && __GNUC__ >= 8
+    #pragma GCC diagnostic pop
+    #endif
     CORRADE_INTERNAL_ASSERT(isProcessDPIAware);
     return isProcessDPIAware();
 }
