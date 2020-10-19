@@ -622,7 +622,7 @@ There are also a few command-line utilities, also all disabled by default:
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats. Enables also
     building of the @ref Trade library.
--   `WITH_SCENECONVERTER` --- Build the @ref magnum-shaderconverter "magnum-sceneconverter"
+-   `WITH_SCENECONVERTER` --- Build the @ref magnum-sceneconverter "magnum-sceneconverter"
     executable for converting scenes of different formats. Enables also
     building of the @ref MeshTools library.
 
