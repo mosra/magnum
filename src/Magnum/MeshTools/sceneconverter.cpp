@@ -764,6 +764,7 @@ used.)")
         /* This is the last --converter (or the implicit AnySceneConverter at
            the end), output to a file and exit the loop */
         if(i + 1 >= converterCount && (converter->features() & Trade::SceneConverterFeature::ConvertMeshToFile)) {
+            /* No verbose output for just one converter */
             if(converterCount > 1 && args.isSet("verbose"))
                 Debug{} << "Saving output with" << converterName << Debug::nospace << "...";
 
