@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::ShaderTools::AbstractConverter, enum @ref Magnum::ShaderTools::ConverterFeature, @ref Magnum::ShaderTools::ConverterFlag, @ref Magnum::ShaderTools::Stage, enum set @ref Magnum::ShaderTools::ConverterFeatures, @ref Magnum::ShaderTools::ConverterFlags
+ * @brief Class @ref Magnum::ShaderTools::AbstractConverter, enum @ref Magnum::ShaderTools::ConverterFeature, @ref Magnum::ShaderTools::ConverterFlag, @ref Magnum::ShaderTools::Format, @ref Magnum::ShaderTools::Stage, enum set @ref Magnum::ShaderTools::ConverterFeatures, @ref Magnum::ShaderTools::ConverterFlags
  * @m_since_latest
  */
 
@@ -156,6 +156,67 @@ MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, ConverterFlag value);
 MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, ConverterFlags value);
 
 /**
+@brief Shader format
+@m_since_latest
+
+Describes input and output shader format.
+@see @ref AbstractConverter::setInputFormat(),
+    @ref AbstractConverter::setOutputFormat()
+*/
+enum class Format: UnsignedInt {
+    /**
+     * Either leaves format detection up to the implementation or describes a
+     * format not fitting into any other categories. This includes various
+     * application-specific languages and language flavors, compressed or
+     * encrypted data and other.
+     *
+     * This value is guaranteed to be @cpp 0 @ce, which means you're encouraged
+     * to simply use @cpp {} @ce in function calls and elsewhere.
+     */
+    Unspecified = 0,
+
+    /** [GLSL](https://en.wikipedia.org/wiki/OpenGL_Shading_Language) */
+    Glsl,
+
+    /** [SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation#SPIR-V) */
+    Spirv,
+
+    /**
+     * Textual representation of [SPIR-V](https://en.wikipedia.org/wiki/Standard_Portable_Intermediate_Representation#SPIR-V).
+     */
+    SpirvAssembly,
+
+    /**
+     * [HLSL](https://en.wikipedia.org/wiki/High-Level_Shading_Language)
+     * (High-Level Shading Language), used in D3D
+     */
+    Hlsl,
+
+    /**
+     * [MSL](https://en.wikipedia.org/wiki/Metal_(API)) (Metal Shading
+     * Language)
+     */
+    Msl,
+
+    /**
+     * [WGSL](https://en.wikipedia.org/wiki/WebGPU) (WebGPU Shading Language)
+     */
+    Wgsl,
+
+    /**
+     * DXIL (DirectX Intermediate Language), produced by
+     * [DirectX Shader Compiler](https://github.com/microsoft/DirectXShaderCompiler)
+     */
+    Dxil
+};
+
+/**
+@debugoperatorenum{Format}
+@m_since_latest
+*/
+MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, Format value);
+
+/**
 @brief Shader stage
 @m_since_latest
 
@@ -170,10 +231,10 @@ enum class Stage: UnsignedInt {
      * @ref AbstractConverter::linkFilesToFile() "linkFilesToFile()" or
      * @ref AbstractConverter::linkFilesToData() "linkFilesToData()" APIs,
      * particular plugins may attempt to detect the stage from filename, the
-     * shader stage might also be encoded directly in certain formats. Leaving
-     * the stage unspecified might limit validation and conversion
-     * capabilities, see documentation of a particular converter for concrete
-     * behavior.
+     * shader stage might also be encoded directly in certain
+     * @ref Format "Format"s. Leaving the stage unspecified might limit
+     * validation and conversion capabilities, see documentation of a
+     * particular converter for concrete behavior.
      *
      * This value is guaranteed to be @cpp 0 @ce, which means you're encouraged
      * to simply use @cpp {} @ce in function calls and elsewhere.
@@ -460,6 +521,46 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
         #endif
 
         /**
+         * @brief Set input format version
+         *
+         * @ref Format::Unspecified and an empty version is always accepted,
+         * other values are interpreted in a plugin-specific way. If a
+         * format/version combination is not supported or recognized, the
+         * following @ref validateData(), @ref validateFile(),
+         * @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() call will fail.
+         * @see @ref setOutputFormat()
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void setInputFormat(Format format, Containers::StringView version = {});
+        #else /* To avoid including StringView */
+        void setInputFormat(Format format, Containers::StringView version);
+        void setInputFormat(Format format);
+        #endif
+
+        /**
+         * @brief Set output format version
+         *
+         * @ref Format::Unspecified and an empty version is always accepted,
+         * other values are interpreted in a plugin-specific way. If a
+         * format/version combination is not supported or recognized, the
+         * following @ref validateData(), @ref validateFile(),
+         * @ref convertDataToData(), @ref convertDataToFile(),
+         * @ref convertFileToFile(), @ref convertFileToData(),
+         * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
+         * or @ref linkFilesToData() call will fail.
+         * @see @ref setInputFormat()
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void setOutputFormat(Format format, Containers::StringView version = {});
+        #else /* To avoid including StringView */
+        void setOutputFormat(Format format, Containers::StringView version);
+        void setOutputFormat(Format format);
+        #endif
+
+        /**
          * @brief Validate a shader
          *
          * Available only if @ref ConverterFeature::ValidateData is
@@ -718,6 +819,34 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * and @ref inputFileCallbackUserData().
          */
         virtual void doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData);
+
+        /**
+         * @brief Implementation for @ref setInputFormat()
+         *
+         * Has to be implemented always. To simplify error handling on user
+         * side, this function isn't expected to fail --- if the format/version
+         * combination isn't recognized, the following @ref validateData(),
+         * @ref validateFile(), @ref convertDataToData(),
+         * @ref convertDataToFile(), @ref convertFileToFile(),
+         * @ref convertFileToData(), @ref linkDataToData(),
+         * @ref linkDataToFile(), @ref linkFilesToFile() or
+         * @ref linkFilesToData() should fail instead.
+         */
+        virtual void doSetInputFormat(Format format, Containers::StringView version) = 0;
+
+        /**
+         * @brief Implementation for @ref setOutputFormat()
+         *
+         * Has to be implemented always. To simplify error handling on user
+         * side, this function isn't expected to fail --- if the format/version
+         * combination isn't recognized, the following @ref validateData(),
+         * @ref validateFile(), @ref convertDataToData(),
+         * @ref convertDataToFile(), @ref convertFileToFile(),
+         * @ref convertFileToData(), @ref linkDataToData(),
+         * @ref linkDataToFile(), @ref linkFilesToFile() or
+         * @ref linkFilesToData() should fail instead.
+         */
+        virtual void doSetOutputFormat(Format format, Containers::StringView version) = 0;
 
         /**
          * @brief Implementation for @ref validateData()

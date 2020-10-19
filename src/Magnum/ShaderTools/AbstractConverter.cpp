@@ -104,6 +104,22 @@ void AbstractConverter::setInputFileCallback(Containers::Optional<Containers::Ar
 
 void AbstractConverter::doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
+void AbstractConverter::setInputFormat(const Format format, const Containers::StringView version) {
+    return doSetInputFormat(format, version);
+}
+
+void AbstractConverter::setInputFormat(const Format format) {
+    return setInputFormat(format, {});
+}
+
+void AbstractConverter::setOutputFormat(const Format format, const Containers::StringView version) {
+    return doSetOutputFormat(format, version);
+}
+
+void AbstractConverter::setOutputFormat(const Format format) {
+    return setOutputFormat(format, {});
+}
+
 std::pair<bool, Containers::String> AbstractConverter::validateData(const Stage stage, const Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(features() & ConverterFeature::ValidateData,
         "ShaderTools::AbstractConverter::validateData(): feature not supported", {});
@@ -637,6 +653,27 @@ Debug& operator<<(Debug& debug, const ConverterFlag value) {
 Debug& operator<<(Debug& debug, const ConverterFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "ShaderTools::ConverterFlags{}", {
         ConverterFlag::Verbose});
+}
+
+Debug& operator<<(Debug& debug, const Format value) {
+    debug << "ShaderTools::Format" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case Format::v: return debug << "::" #v;
+        _c(Unspecified)
+        _c(Glsl)
+        _c(Spirv)
+        _c(SpirvAssembly)
+        _c(Hlsl)
+        _c(Msl)
+        _c(Wgsl)
+        _c(Dxil)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Stage value) {

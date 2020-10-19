@@ -49,6 +49,8 @@ struct AbstractConverterTest: TestSuite::Tester {
     void setFlags();
     void setFlagsNotImplemented();
 
+    void setInputOutputFormat();
+
     void validateData();
     void validateDataNotSupported();
     void validateDataNotImplemented();
@@ -156,6 +158,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void debugFeatures();
     void debugFlag();
     void debugFlags();
+    void debugFormat();
     void debugStage();
 };
 
@@ -164,6 +167,8 @@ AbstractConverterTest::AbstractConverterTest() {
 
               &AbstractConverterTest::setFlags,
               &AbstractConverterTest::setFlagsNotImplemented,
+
+              &AbstractConverterTest::setInputOutputFormat,
 
               &AbstractConverterTest::validateData,
               &AbstractConverterTest::validateDataNotSupported,
@@ -272,6 +277,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::debugFeatures,
               &AbstractConverterTest::debugFlag,
               &AbstractConverterTest::debugFlags,
+              &AbstractConverterTest::debugFormat,
               &AbstractConverterTest::debugStage});
 
     /* Create testing dir */
@@ -288,6 +294,8 @@ void AbstractConverterTest::featuresNone() {
             /* These aren't real features, so it should still complain */
             return ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -302,6 +310,8 @@ void AbstractConverterTest::setFlags() {
             /* Assuming this bit is unused */
             return ConverterFeature(1 << 15);
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
         void doSetFlags(ConverterFlags flags) override {
             _flags = flags;
         }
@@ -322,6 +332,8 @@ void AbstractConverterTest::setFlagsNotImplemented() {
             /* Assuming this bit is unused */
             return ConverterFeature(1 << 15);
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     CORRADE_COMPARE(converter.flags(), ConverterFlags{});
@@ -330,11 +342,46 @@ void AbstractConverterTest::setFlagsNotImplemented() {
     /* Should just work, no need to implement the function */
 }
 
+void AbstractConverterTest::setInputOutputFormat() {
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ConvertData;
+        }
+        void doSetInputFormat(Format format, Containers::StringView version) override {
+            inputFormat = format;
+            inputVersion = version;
+        }
+        void doSetOutputFormat(Format format, Containers::StringView version) override {
+            outputFormat = format;
+            outputVersion = version;
+        }
+
+        Format inputFormat, outputFormat;
+        Containers::StringView inputVersion, outputVersion;
+    } converter;
+
+    converter.setInputFormat(Format::Glsl, "4.5");
+    converter.setOutputFormat(Format::SpirvAssembly, "1.5");
+    CORRADE_COMPARE(converter.inputFormat, Format::Glsl);
+    CORRADE_COMPARE(converter.inputVersion, "4.5");
+    CORRADE_COMPARE(converter.outputFormat, Format::SpirvAssembly);
+    CORRADE_COMPARE(converter.outputVersion, "1.5");
+
+    converter.setInputFormat(Format::Msl);
+    converter.setOutputFormat(Format::Dxil);
+    CORRADE_COMPARE(converter.inputFormat, Format::Msl);
+    CORRADE_COMPARE(converter.inputVersion, "");
+    CORRADE_COMPARE(converter.outputFormat, Format::Dxil);
+    CORRADE_COMPARE(converter.outputVersion, "");
+}
+
 void AbstractConverterTest::validateData() {
     struct: AbstractConverter {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
             return {data.size() == 5*4 && stage == Stage::MeshTask, "Yes, this is valid"};
@@ -355,6 +402,8 @@ void AbstractConverterTest::validateDataNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -372,6 +421,8 @@ void AbstractConverterTest::validateDataNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -389,6 +440,8 @@ void AbstractConverterTest::validateDataCustomStringDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateData(Stage, const Containers::ArrayView<const char>) override {
             /* libc++ and MSVC STL is STUPID and doing
@@ -413,6 +466,8 @@ void AbstractConverterTest::validateFile() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(const Stage stage, const Containers::StringView filename) override {
             return {stage == Stage::Vertex && filename.size() == 8, "Yes, this is valid"};
@@ -429,6 +484,8 @@ void AbstractConverterTest::validateFileAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateData(const Stage stage, const Containers::ArrayView<const char> data) override {
             return {stage == Stage::Compute && data.size() == 5, "Yes, this is valid"};
@@ -445,6 +502,8 @@ void AbstractConverterTest::validateFileAsDataNotFound() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateData(Stage, Containers::ArrayView<const char>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -469,6 +528,8 @@ void AbstractConverterTest::validateFileNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -486,6 +547,8 @@ void AbstractConverterTest::validateFileNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -503,6 +566,8 @@ void AbstractConverterTest::validateFileCustomStringDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage, Containers::StringView) override {
             /* libc++ and MSVC STL is STUPID and doing
@@ -527,6 +592,9 @@ void AbstractConverterTest::convertDataToData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char> data) override {
             return Containers::array({data.back(), data.front()});
         }
@@ -547,6 +615,8 @@ void AbstractConverterTest::convertDataToDataNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -564,6 +634,9 @@ void AbstractConverterTest::convertDataToDataNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
     } converter;
 
     std::ostringstream out;
@@ -581,6 +654,8 @@ void AbstractConverterTest::convertDataToDataCustomDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
@@ -598,6 +673,9 @@ void AbstractConverterTest::convertDataToFileThroughData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char> data) override {
             return Containers::array({data.back(), data.front()});
         }
@@ -620,6 +698,9 @@ void AbstractConverterTest::convertDataToFileThroughDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             return {};
         }
@@ -645,6 +726,9 @@ void AbstractConverterTest::convertDataToFileThroughDataNotWritable() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             return Containers::Array<char>{1};
         }
@@ -667,6 +751,8 @@ void AbstractConverterTest::convertDataToFileNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -684,6 +770,8 @@ void AbstractConverterTest::convertDataToFileNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -697,6 +785,9 @@ void AbstractConverterTest::convertFileToFile() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         bool doConvertFileToFile(Stage, const Containers::StringView from, const Containers::StringView to) override {
             Containers::Array<char> data = Utility::Directory::read(from);
             return Utility::Directory::write(to, Containers::array({data.back(), data.front()}));
@@ -719,6 +810,9 @@ void AbstractConverterTest::convertFileToFileThroughData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char> data) override {
             return Containers::array({data.back(), data.front()});
         }
@@ -740,6 +834,9 @@ void AbstractConverterTest::convertFileToFileThroughDataNotFound() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
@@ -757,6 +854,9 @@ void AbstractConverterTest::convertFileToFileThroughDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             return {};
         }
@@ -782,6 +882,9 @@ void AbstractConverterTest::convertFileToFileThroughDataNotWritable() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             return Containers::Array<char>{1};
         }
@@ -804,6 +907,8 @@ void AbstractConverterTest::convertFileToFileNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -821,6 +926,8 @@ void AbstractConverterTest::convertFileToFileNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -834,6 +941,9 @@ void AbstractConverterTest::convertFileToData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertFileToData(Stage, const Containers::StringView from) override {
             Containers::Array<char> data = Utility::Directory::read(from);
             return Containers::array({data.back(), data.front()});
@@ -850,6 +960,9 @@ void AbstractConverterTest::convertFileToDataAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char> data) override {
             return Containers::array({data.back(), data.front()});
         }
@@ -865,6 +978,9 @@ void AbstractConverterTest::convertFileToDataAsDataNotFound() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         Containers::Array<char> doConvertDataToData(Stage, Containers::ArrayView<const char>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
             return {};
@@ -886,6 +1002,9 @@ void AbstractConverterTest::convertFileToDataNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
     } converter;
 
     std::ostringstream out;
@@ -903,6 +1022,8 @@ void AbstractConverterTest::convertFileToDataNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -920,6 +1041,8 @@ void AbstractConverterTest::convertFileToDataCustomDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage, const Containers::StringView) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
@@ -937,6 +1060,8 @@ void AbstractConverterTest::linkDataToData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
@@ -966,6 +1091,8 @@ void AbstractConverterTest::linkDataToDataNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -983,6 +1110,8 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1000,6 +1129,8 @@ void AbstractConverterTest::linkDataToDataNoData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1017,6 +1148,8 @@ void AbstractConverterTest::linkDataToDataCustomDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
@@ -1034,6 +1167,8 @@ void AbstractConverterTest::linkDataToFileThroughData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
@@ -1063,6 +1198,8 @@ void AbstractConverterTest::linkDataToFileThroughDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             return {};
@@ -1089,6 +1226,8 @@ void AbstractConverterTest::linkDataToFileThroughDataNotWritable() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{1};
@@ -1112,6 +1251,8 @@ void AbstractConverterTest::linkDataToFileNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1129,6 +1270,8 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1146,6 +1289,8 @@ void AbstractConverterTest::linkDataToFileNoData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1159,6 +1304,8 @@ void AbstractConverterTest::linkFilesToFile() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             CORRADE_COMPARE(from.size(), 2);
@@ -1192,6 +1339,8 @@ void AbstractConverterTest::linkFilesToFileThroughData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
@@ -1221,6 +1370,8 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotFound() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1242,6 +1393,8 @@ void AbstractConverterTest::linkFilesToFileThroughDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             return {};
@@ -1270,6 +1423,8 @@ void AbstractConverterTest::linkFilesToFileThroughDataNotWritable() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             return Containers::Array<char>{1};
@@ -1295,6 +1450,8 @@ void AbstractConverterTest::linkFilesToFileNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1312,6 +1469,8 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1329,6 +1488,8 @@ void AbstractConverterTest::linkFilesToFileNoFile() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1342,6 +1503,8 @@ void AbstractConverterTest::linkFilesToData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
             CORRADE_COMPARE(from.size(), 2);
@@ -1371,6 +1534,8 @@ void AbstractConverterTest::linkFilesToDataAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>> data) override {
             CORRADE_COMPARE(data.size(), 2);
@@ -1394,6 +1559,8 @@ void AbstractConverterTest::linkFilesToDataAsDataNotFound() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkDataToData(Containers::ArrayView<const std::pair<Stage, Containers::ArrayView<const char>>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1418,6 +1585,8 @@ void AbstractConverterTest::linkFilesToDataNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1435,6 +1604,8 @@ void AbstractConverterTest::linkFilesToDataNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1454,6 +1625,8 @@ void AbstractConverterTest::linkFilesToDataNoFile() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1471,6 +1644,8 @@ void AbstractConverterTest::linkFilesToDataCustomDeleter() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
             return Containers::Array<char>{nullptr, 0, [](char*, std::size_t){}};
@@ -1490,6 +1665,9 @@ void AbstractConverterTest::setInputFileCallback() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         void doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
             *static_cast<int*>(userData) = 1337;
         }
@@ -1510,6 +1688,9 @@ void AbstractConverterTest::setInputFileCallbackTemplate() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         void doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
             called = true;
         }
@@ -1536,6 +1717,9 @@ void AbstractConverterTest::setInputFileCallbackTemplateNull() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         void doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
             called = !callback && !userData;
         }
@@ -1555,6 +1739,9 @@ void AbstractConverterTest::setInputFileCallbackTemplateConst() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+
         void doSetInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
             called = true;
         }
@@ -1578,6 +1765,8 @@ void AbstractConverterTest::setInputFileCallbackNotImplemented() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     int a;
@@ -1599,6 +1788,8 @@ void AbstractConverterTest::setInputFileCallbackNotSupported() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
     } converter;
 
     std::ostringstream out;
@@ -1616,6 +1807,8 @@ void AbstractConverterTest::setInputFileCallbackValidateFileDirectly() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateFile|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView filename) override {
             return {filename == "file.dat" && inputFileCallback() && inputFileCallbackUserData(), "it's what it is!"};
@@ -1641,6 +1834,8 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
             validateFileCalled = true;
@@ -1690,6 +1885,8 @@ void AbstractConverterTest::setInputFileCallbackValidateFileThroughBaseImplement
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage stage, const Containers::StringView filename) override {
             validateFileCalled = true;
@@ -1716,6 +1913,8 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1758,6 +1957,8 @@ void AbstractConverterTest::setInputFileCallbackValidateFileAsDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ValidateData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         std::pair<bool, Containers::String> doValidateFile(Stage, const Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1781,6 +1982,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileDirectly() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertFile|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage stage, const Containers::StringView from, const Containers::StringView to) override {
             return stage == Stage::Mesh && from == "file.dat" && to == "file.out" && inputFileCallback() && inputFileCallbackUserData();
@@ -1806,6 +2009,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage stage, const Containers::StringView from, const Containers::StringView to) override {
             convertFileToFileCalled = true;
@@ -1863,6 +2068,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileThroughBaseImpl
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage stage, const Containers::StringView from, const Containers::StringView to) override {
             convertFileToFileCalled = true;
@@ -1889,6 +2096,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1939,6 +2148,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataFailed() 
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -1962,6 +2173,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToFileAsDataNotWritab
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doConvertFileToFile(Stage, Containers::StringView, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2009,6 +2222,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataDirectly() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from) override {
             if(stage == Stage::Compute && from == "file.dat" && inputFileCallback() && inputFileCallbackUserData())
@@ -2038,6 +2253,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataThroughBaseImpl
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from) override {
             convertFileToDataCalled = true;
@@ -2091,6 +2308,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataThroughBaseImpl
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage stage, Containers::StringView from) override {
             convertFileToDataCalled = true;
@@ -2117,6 +2336,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2163,6 +2384,8 @@ void AbstractConverterTest::setInputFileCallbackConvertFileToDataAsDataFailed() 
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::ConvertData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doConvertFileToData(Stage, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2186,6 +2409,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileDirectly() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkFile|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             return from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && to == "file.out" && inputFileCallback() && inputFileCallbackUserData();
@@ -2214,6 +2439,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             linkFilesToFileCalled = true;
@@ -2282,6 +2509,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileThroughBaseImplem
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from, Containers::StringView to) override {
             linkFilesToFileCalled = true;
@@ -2339,6 +2568,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2400,6 +2631,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2445,6 +2678,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToFileAsDataNotWritable
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         bool doLinkFilesToFile(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>, Containers::StringView) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2501,6 +2736,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataDirectly() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
             if(from.size() == 2 && from[0].first == Stage::Vertex && from[0].second == "another.dat" && from[1].first == Stage::Fragment && from[1].second == "file.dat" && inputFileCallback() && inputFileCallbackUserData())
@@ -2532,6 +2769,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
             linkFilesToDataCalled = true;
@@ -2595,6 +2834,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataThroughBaseImplem
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData|ConverterFeature::InputFileCallback;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>> from) override {
             linkFilesToDataCalled = true;
@@ -2647,6 +2888,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsData() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2703,6 +2946,8 @@ void AbstractConverterTest::setInputFileCallbackLinkFilesToDataAsDataFailed() {
         ConverterFeatures doFeatures() const override {
             return ConverterFeature::LinkData;
         }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
 
         Containers::Array<char> doLinkFilesToData(Containers::ArrayView<const std::pair<Stage, Containers::StringView>>) override {
             CORRADE_VERIFY(!"this shouldn't be reached");
@@ -2769,6 +3014,13 @@ void AbstractConverterTest::debugFlags() {
 
     Debug{&out} << (ConverterFlag::Verbose|ConverterFlag(0xf0)) << ConverterFlags{};
     CORRADE_COMPARE(out.str(), "ShaderTools::ConverterFlag::Verbose|ShaderTools::ConverterFlag(0xf0) ShaderTools::ConverterFlags{}\n");
+}
+
+void AbstractConverterTest::debugFormat() {
+    std::ostringstream out;
+
+    Debug{&out} << Format::Glsl << Format(0xf0);
+    CORRADE_COMPARE(out.str(), "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
 }
 
 void AbstractConverterTest::debugStage() {
