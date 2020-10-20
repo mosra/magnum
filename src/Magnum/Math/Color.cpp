@@ -27,8 +27,7 @@
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <cstring>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Tweakable.h>
 #endif
 
@@ -146,28 +145,30 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a hexadecimal color literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not a hexadecimal color literal";
         return {TweakableState::Recompile, {}};
     }
 
-    const bool isSrgb = String::viewEndsWith(value, "_srgb");
-    if(!isSrgb && !String::viewEndsWith(value, "_rgb")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _rgb or _srgb";
+    const bool isSrgb = value.hasSuffix("_srgb"_s);
+    if(!isSrgb && !value.hasSuffix("_rgb"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _rgb or _srgb";
         return {TweakableState::Recompile, {}};
     }
 
     char* end;
-    const Magnum::UnsignedInt result = std::strtoul(value, &end, 16);
+    const Magnum::UnsignedInt result = std::strtoul(value.data(), &end, 16);
 
     if(end != value.end() - (isSrgb ? 5 : 4)) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a color literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after a color literal";
         return {TweakableState::Recompile, {}};
     }
 
     if(value.size() != std::size_t(isSrgb ? 13 : 12)) {
-        Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
+        Error{} << "Utility::TweakableParser:" << value << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
 
@@ -176,28 +177,30 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> TweakableP
                  Magnum::Math::Literals::operator "" _rgb(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a hexadecimal color literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not a hexadecimal color literal";
         return {TweakableState::Recompile, {}};
     }
 
-    const bool isSrgb = String::viewEndsWith(value, "_srgba");
-    if(!isSrgb && !String::viewEndsWith(value, "_rgba")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _rgba or _srgba";
+    const bool isSrgb = value.hasSuffix("_srgba"_s);
+    if(!isSrgb && !value.hasSuffix("_rgba"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _rgba or _srgba";
         return {TweakableState::Recompile, {}};
     }
 
     char* end;
-    const Magnum::UnsignedInt result = std::strtoul(value, &end, 16);
+    const Magnum::UnsignedInt result = std::strtoul(value.data(), &end, 16);
 
     if(end != value.end() - (isSrgb ? 6 : 5)) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a color literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after a color literal";
         return {TweakableState::Recompile, {}};
     }
 
     if(value.size() != std::size_t(isSrgb ? 16 : 15)) {
-        Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
+        Error{} << "Utility::TweakableParser:" << value << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
 
@@ -206,28 +209,30 @@ std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> TweakableP
                  Magnum::Math::Literals::operator "" _rgba(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<Magnum::Math::Color3<Magnum::Float>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a hexadecimal color literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not a hexadecimal color literal";
         return {TweakableState::Recompile, {}};
     }
 
-    const bool isSrgb = String::viewEndsWith(value, "_srgbf");
-    if(!isSrgb && !String::viewEndsWith(value, "_rgbf")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _rgbf or _srgbf";
+    const bool isSrgb = value.hasSuffix("_srgbf"_s);
+    if(!isSrgb && !value.hasSuffix("_rgbf"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _rgbf or _srgbf";
         return {TweakableState::Recompile, {}};
     }
 
     char* end;
-    const Magnum::UnsignedInt result = std::strtoul(value, &end, 16);
+    const Magnum::UnsignedInt result = std::strtoul(value.data(), &end, 16);
 
     if(end != value.end() - (isSrgb ? 6 : 5)) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a color literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after a color literal";
         return {TweakableState::Recompile, {}};
     }
 
     if(value.size() != std::size_t(isSrgb ? 14 : 13)) {
-        Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
+        Error{} << "Utility::TweakableParser:" << value << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
 
@@ -236,28 +241,30 @@ std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> TweakableParser<M
                  Magnum::Math::Literals::operator "" _rgbf(result)};
 }
 
-std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> TweakableParser<Magnum::Math::Color4<Magnum::Float>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     if(value.size() < 2 || value[0] != '0' || (value[1] != 'x' && value[1] != 'X')) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a hexadecimal color literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not a hexadecimal color literal";
         return {TweakableState::Recompile, {}};
     }
 
-    const bool isSrgb = String::viewEndsWith(value, "_srgbaf");
-    if(!isSrgb && !String::viewEndsWith(value, "_rgbaf")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _rgbaf or _srgbaf";
+    const bool isSrgb = value.hasSuffix("_srgbaf"_s);
+    if(!isSrgb && !value.hasSuffix("_rgbaf"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _rgbaf or _srgbaf";
         return {TweakableState::Recompile, {}};
     }
 
     char* end;
-    const Magnum::UnsignedInt result = std::strtoul(value, &end, 16);
+    const Magnum::UnsignedInt result = std::strtoul(value.data(), &end, 16);
 
     if(end != value.end() - (isSrgb ? 7 : 6)) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a color literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after a color literal";
         return {TweakableState::Recompile, {}};
     }
 
     if(value.size() != (isSrgb ? 17 : 16)) {
-        Error{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "doesn't have expected number of digits";
+        Error{} << "Utility::TweakableParser:" << value << "doesn't have expected number of digits";
         return {TweakableState::Error, {}};
     }
 

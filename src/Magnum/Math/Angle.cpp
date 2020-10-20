@@ -26,96 +26,102 @@
 #include "Angle.h"
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <algorithm>
-#include <Corrade/Containers/ArrayView.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
+#include <algorithm> /** @todo get rid of this once StringView::find() exists */
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magnum::Math::Deg<Magnum::Float>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> TweakableParser<Magnum::Math::Deg<Magnum::Float>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     char* end;
-    const Magnum::Float result = std::strtof(value, &end);
+    const Magnum::Float result = std::strtof(value.data(), &end);
 
     if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not an angle literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
-    if(!String::viewEndsWith(value, "_degf")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _degf";
+    if(!value.hasSuffix("_degf"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _degf";
         return {TweakableState::Recompile, {}};
     }
 
     if(end != value.end() - 5) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after an angle literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
     return {TweakableState::Success, Magnum::Math::Deg<Magnum::Float>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Magnum::Math::Deg<Magnum::Double>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> TweakableParser<Magnum::Math::Deg<Magnum::Double>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     char* end;
-    const Magnum::Double result = std::strtod(value, &end);
+    const Magnum::Double result = std::strtod(value.data(), &end);
 
     if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not an angle literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
-    if(!String::viewEndsWith(value, "_deg")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _deg";
+    if(!value.hasSuffix("_deg"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _deg";
         return {TweakableState::Recompile, {}};
     }
 
     if(end != value.end() - 4) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after an angle literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
     return {TweakableState::Success, Magnum::Math::Deg<Magnum::Double>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magnum::Math::Rad<Magnum::Float>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> TweakableParser<Magnum::Math::Rad<Magnum::Float>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     char* end;
-    const Magnum::Float result = std::strtof(value, &end);
+    const Magnum::Float result = std::strtof(value.data(), &end);
 
     if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not an angle literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
-    if(!String::viewEndsWith(value, "_radf")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _radf";
+    if(!value.hasSuffix("_radf"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value.data() << "has an unexpected suffix, expected _radf";
         return {TweakableState::Recompile, {}};
     }
 
     if(end != value.end() - 5) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after an angle literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
     return {TweakableState::Success, Magnum::Math::Rad<Magnum::Float>{result}};
 }
 
-std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> TweakableParser<Magnum::Math::Rad<Magnum::Double>>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> TweakableParser<Magnum::Math::Rad<Magnum::Double>>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     char* end;
-    const Magnum::Double result = std::strtod(value, &end);
+    const Magnum::Double result = std::strtod(value.data(), &end);
 
     if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not an angle literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not an angle literal";
         return {TweakableState::Recompile, {}};
     }
 
-    if(!String::viewEndsWith(value, "_rad")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _rad";
+    if(!value.hasSuffix("_rad"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _rad";
         return {TweakableState::Recompile, {}};
     }
 
     if(end != value.end() - 4) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after an angle literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after an angle literal";
         return {TweakableState::Recompile, {}};
     }
 

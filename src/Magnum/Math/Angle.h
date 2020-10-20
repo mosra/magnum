@@ -263,7 +263,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Float>
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> parse(Containers::StringView value);
 };
 
 /**
@@ -276,7 +276,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Double
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> parse(Containers::StringView value);
 };
 
 /**
@@ -289,7 +289,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Float>
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> parse(Containers::StringView value);
 };
 
 /**
@@ -302,7 +302,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> parse(Containers::StringView value);
 };
 #endif
 

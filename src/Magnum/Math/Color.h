@@ -1429,7 +1429,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::Uns
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> parse(Containers::StringView value);
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -1447,7 +1447,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Uns
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> parse(Containers::StringView value);
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -1465,7 +1465,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::Flo
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> parse(Containers::StringView value);
 };
 
 /**
@@ -1479,7 +1479,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Flo
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> parse(Containers::StringView value);
 };
 #endif
 

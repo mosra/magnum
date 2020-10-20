@@ -30,8 +30,8 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-#include <algorithm>
-#include <Corrade/Utility/String.h>
+#include <algorithm> /** @todo get rid of this once StringView::find() exists */
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
 
@@ -50,22 +50,24 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace Corrade { namespace Utility {
 
-std::pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half>::parse(const Containers::ArrayView<const char> value) {
+std::pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half>::parse(const Containers::StringView value) {
+    using namespace Containers::Literals;
+
     char* end;
-    const Magnum::Float result = std::strtof(value, &end);
+    const Magnum::Float result = std::strtof(value.data(), &end);
 
     if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a half literal";
+        Warning{} << "Utility::TweakableParser:" << value << "is not a half literal";
         return {TweakableState::Recompile, {}};
     }
 
-    if(!String::viewEndsWith(value, "_h")) {
-        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _h";
+    if(!value.hasSuffix("_h"_s)) {
+        Warning{} << "Utility::TweakableParser:" << value << "has an unexpected suffix, expected _h";
         return {TweakableState::Recompile, {}};
     }
 
     if(end != value.end() - 2) {
-        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a half literal";
+        Warning{} << "Utility::TweakableParser: unexpected characters" << value.suffix(end) << "after a half literal";
         return {TweakableState::Recompile, {}};
     }
 

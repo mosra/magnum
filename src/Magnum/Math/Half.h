@@ -213,7 +213,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Half> {
     TweakableParser() = delete;
 
     /** @brief Parse the value */
-    static std::pair<TweakableState, Magnum::Math::Half> parse(Containers::ArrayView<const char> value);
+    static std::pair<TweakableState, Magnum::Math::Half> parse(Containers::StringView value);
 };
 
 }}
