@@ -270,7 +270,7 @@ constexpr GL::TextureFormat TextureFormatR =
 void DistanceFieldVectorGLTest::renderDefaults2D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 
@@ -326,7 +326,7 @@ void DistanceFieldVectorGLTest::renderDefaults2D() {
 void DistanceFieldVectorGLTest::renderDefaults3D() {
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
 
@@ -385,7 +385,7 @@ void DistanceFieldVectorGLTest::render2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh square = MeshTools::compile(Primitives::squareSolid(Primitives::SquareFlag::TextureCoordinates));
 
@@ -451,7 +451,7 @@ void DistanceFieldVectorGLTest::render3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid(Primitives::PlaneFlag::TextureCoordinates));
 

@@ -794,7 +794,7 @@ void PhongGLTest::renderDefaults() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has 6 different pixels on the edges and a bunch of small
@@ -834,7 +834,7 @@ void PhongGLTest::renderColored() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
@@ -920,7 +920,7 @@ void PhongGLTest::renderSinglePixelTextured() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
@@ -943,7 +943,7 @@ void PhongGLTest::renderTextured() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
@@ -1042,7 +1042,7 @@ void PhongGLTest::renderTexturedNormal() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
     CORRADE_VERIFY(importer);
@@ -1141,7 +1141,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
@@ -1221,7 +1221,7 @@ void PhongGLTest::renderShininess() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     {
         #ifdef CORRADE_TARGET_IOS
@@ -1307,7 +1307,7 @@ void PhongGLTest::renderAlpha() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Containers::Optional<Trade::ImageData2D> image;
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -1460,7 +1460,7 @@ void PhongGLTest::renderObjectId() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* Color output should have no difference -- same as in colored() */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1531,7 +1531,7 @@ void PhongGLTest::renderLights() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
@@ -1578,7 +1578,7 @@ void PhongGLTest::renderLightsSetOneByOne() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 3.0f, meanThreshold = 0.02f;
@@ -1619,7 +1619,7 @@ void PhongGLTest::renderLowLightAngle() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 63.0f, meanThreshold = 0.36f;
@@ -1639,7 +1639,7 @@ void PhongGLTest::renderZeroLights() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
@@ -1766,7 +1766,7 @@ void PhongGLTest::renderInstanced() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates|

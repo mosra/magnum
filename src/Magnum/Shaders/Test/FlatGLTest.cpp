@@ -464,7 +464,7 @@ void FlatGLTest::renderDefaults2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
@@ -484,7 +484,7 @@ void FlatGLTest::renderDefaults3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
@@ -506,7 +506,7 @@ void FlatGLTest::renderColored2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
@@ -537,7 +537,7 @@ void FlatGLTest::renderColored3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has 5 different pixels on the edges */
@@ -590,7 +590,7 @@ void FlatGLTest::renderSinglePixelTextured2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has 5 different pixels on the edges */
@@ -632,7 +632,7 @@ void FlatGLTest::renderSinglePixelTextured3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has 5 different pixels on the edges */
@@ -654,7 +654,7 @@ void FlatGLTest::renderTextured2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
@@ -710,7 +710,7 @@ void FlatGLTest::renderTextured3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));
@@ -769,7 +769,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Trade::MeshData circleData = Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates);
@@ -823,7 +823,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
@@ -896,7 +896,7 @@ void FlatGLTest::renderAlpha2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Containers::Optional<Trade::ImageData2D> image;
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -947,7 +947,7 @@ void FlatGLTest::renderAlpha3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Containers::Optional<Trade::ImageData2D> image;
     Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
@@ -1068,7 +1068,7 @@ void FlatGLTest::renderObjectId2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* Color output should have no difference -- same as in colored2D() */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1130,7 +1130,7 @@ void FlatGLTest::renderObjectId3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* Color output should have no difference -- same as in colored3D() */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1181,7 +1181,7 @@ void FlatGLTest::renderInstanced2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32,
         Primitives::Circle2DFlag::TextureCoordinates));
@@ -1265,7 +1265,7 @@ void FlatGLTest::renderInstanced3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates));

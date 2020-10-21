@@ -111,7 +111,7 @@ void ForceRendererGLTest::render2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     /* ARM Mali G71 (Huawei P10) has some rounding differences causing the
        the arrowhead to be on a different place (but the rest is okay and the
@@ -167,7 +167,7 @@ void ForceRendererGLTest::render3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     {
         CORRADE_EXPECT_FAIL("I'm unable to convince it to orient the arrowhead correctly in 3D.");

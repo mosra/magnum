@@ -221,7 +221,7 @@ void RendererGLTest::pointCoord() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     const Float maxThreshold = 0.0f, meanThreshold = 0.0f;

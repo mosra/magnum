@@ -214,7 +214,7 @@ template<class T> void VertexColorGLTest::renderDefaults2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has differently rasterized edges on eight pixels */
@@ -235,7 +235,7 @@ template<class T> void VertexColorGLTest::renderDefaults3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
@@ -291,7 +291,7 @@ template<class T> void VertexColorGLTest::render2D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* AMD has minor rounding differences in the gradient compared to Intel,
@@ -313,7 +313,7 @@ template<class T> void VertexColorGLTest::render3D() {
 
     if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
 
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
