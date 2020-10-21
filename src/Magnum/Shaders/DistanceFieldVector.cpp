@@ -104,8 +104,9 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix({});
-    if(flags & Flag::TextureTransformation) setTextureMatrix({});
+    setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
+    if(flags & Flag::TextureTransformation)
+        setTextureMatrix(Matrix3{Math::IdentityInit});
     setColor(Color4{1.0f}); /* Outline color is zero by default */
     setOutlineRange(0.5f, 1.0f);
     setSmoothness(0.04f);

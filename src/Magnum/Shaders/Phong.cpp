@@ -252,8 +252,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     /* Default to fully opaque white so we can see the textures */
     if(flags & Flag::AmbientTexture) setAmbientColor(Magnum::Color4{1.0f});
     else setAmbientColor(Magnum::Color4{0.0f});
-    setTransformationMatrix({});
-    setProjectionMatrix({});
+    setTransformationMatrix(Matrix4{Math::IdentityInit});
+    setProjectionMatrix(Matrix4{Math::IdentityInit});
     if(lightCount) {
         setDiffuseColor(Magnum::Color4{1.0f});
         setSpecularColor(Magnum::Color4{1.0f, 0.0f});
@@ -266,9 +266,10 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         setLightSpecularColors(colors);
         setLightRanges(Containers::Array<Float>{Containers::DirectInit, lightCount, Constants::inf()});
         /* Light position is zero by default */
-        setNormalMatrix({});
+        setNormalMatrix(Matrix3x3{Math::IdentityInit});
     }
-    if(flags & Flag::TextureTransformation) setTextureMatrix({});
+    if(flags & Flag::TextureTransformation)
+        setTextureMatrix(Matrix3{Math::IdentityInit});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */
     #endif

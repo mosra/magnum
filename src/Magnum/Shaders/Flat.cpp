@@ -142,8 +142,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix({});
-    if(flags & Flag::TextureTransformation) setTextureMatrix({});
+    setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
+    if(flags & Flag::TextureTransformation)
+        setTextureMatrix(Matrix3{Math::IdentityInit});
     setColor(Magnum::Color4{1.0f});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */

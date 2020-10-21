@@ -294,7 +294,7 @@ MeshVisualizer2D::MeshVisualizer2D(const Flags flags): Implementation::MeshVisua
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix({});
+    setTransformationProjectionMatrix(Matrix3{Math::IdentityInit});
     if(flags & (Flag::Wireframe
         #ifndef MAGNUM_TARGET_GLES2
         |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
@@ -513,8 +513,8 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationMatrix({});
-    setProjectionMatrix({});
+    setTransformationMatrix(Matrix4{Math::IdentityInit});
+    setProjectionMatrix(Matrix4{Math::IdentityInit});
     if(flags & (Flag::Wireframe
         #ifndef MAGNUM_TARGET_GLES2
         |Flag::InstancedObjectId|Flag::VertexId|Flag::PrimitiveIdFromVertexId
@@ -539,7 +539,7 @@ MeshVisualizer3D::MeshVisualizer3D(const Flags flags): Implementation::MeshVisua
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(flags & (Flag::TangentDirection|Flag::BitangentFromTangentDirection|Flag::BitangentDirection|Flag::NormalDirection)) {
-        setNormalMatrix({});
+        setNormalMatrix(Matrix3x3{Math::IdentityInit});
         setLineWidth(1.0f);
         setLineLength(1.0f);
     }

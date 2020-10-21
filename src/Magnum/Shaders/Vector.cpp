@@ -101,8 +101,9 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(const Flags flags): 
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setTransformationProjectionMatrix({});
-    if(flags & Flag::TextureTransformation) setTextureMatrix({});
+    setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{Math::IdentityInit});
+    if(flags & Flag::TextureTransformation)
+        setTextureMatrix(Matrix3{Math::IdentityInit});
     setColor(Color4{1.0f}); /* Background color is zero by default */
     #endif
 }
