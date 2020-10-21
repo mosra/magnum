@@ -169,6 +169,8 @@ See also:
     [mosra/magnum#460](https://github.com/mosra/magnum/issues/460))
 -   The `version.h` header now gets populated from Git correctly also when
     inside a CMake subproject
+-   Suppressed a warning specific to MinGW GCC 8+ (see
+    [mosra/magnum#474](https://github.com/mosra/magnum/issues/474))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
