@@ -26,6 +26,7 @@
 #include "AnyImageImporter.h"
 
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
@@ -145,31 +146,36 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
 }
 
 void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
+    using namespace Containers::Literals;
+
     CORRADE_INTERNAL_ASSERT(manager());
+
+    /* So we can use the convenient hasSuffix() API */
+    const Containers::StringView dataString = data;
 
     std::string plugin;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
-    if(Utility::String::viewBeginsWith(data, "sB"))
+    if(dataString.hasPrefix("sB"_s))
         plugin = "BasisImporter";
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
-    else if(Utility::String::viewBeginsWith(data, "DDS "))
+    else if(dataString.hasPrefix("DDS "_s))
         plugin = "DdsImporter";
     /* http://www.openexr.com/openexrfilelayout.pdf */
-    else if(Utility::String::viewBeginsWith(data, "\x76\x2f\x31\x01"))
+    else if(dataString.hasPrefix("\x76\x2f\x31\x01"_s))
         plugin = "OpenExrImporter";
     /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format */
-    else if(Utility::String::viewBeginsWith(data, "#?RADIANCE"))
+    else if(dataString.hasPrefix("#?RADIANCE"_s))
         plugin = "HdrImporter";
     /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
-    else if(Utility::String::viewBeginsWith(data, "\xff\xd8\xff"))
+    else if(dataString.hasPrefix("\xff\xd8\xff"_s))
         plugin = "JpegImporter";
     /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
-    else if(Utility::String::viewBeginsWith(data, "\x89PNG\x0d\x0a\x1a\x0a"))
+    else if(dataString.hasPrefix("\x89PNG\x0d\x0a\x1a\x0a"_s))
         plugin = "PngImporter";
     /* http://paulbourke.net/dataformats/tiff/,
        http://paulbourke.net/dataformats/tiff/tiff_summary.pdf */
-    else if(Utility::String::viewBeginsWith(data, "II\x2a\x00") ||
-            Utility::String::viewBeginsWith(data, "MM\x00\x2a"))
+    else if(dataString.hasPrefix("II\x2a\x00"_s) ||
+            dataString.hasPrefix("MM\x00\x2a"_s))
         plugin = "TiffImporter";
     /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
        TGAs are a complete guesswork, so try after everything else fails. */
