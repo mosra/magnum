@@ -307,7 +307,7 @@ CompileGLTest::CompileGLTest() {
        difference in normals; disable specular as that only causes unnecessary
        rounding errors across GPUs */
     _phong.setLightPositions({{0.0f, 0.0f, -0.0f, 1.0f}})
-        .setLightColors({0xffffff_rgbf*9.0f})
+        .setLightColors({0xffffff_rgbf*5.0f})
         .setSpecularColor(0x00000000_rgbaf);
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -748,7 +748,7 @@ template<class T> void CompileGLTest::threeDimensions() {
             _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
-            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0113f}));
+            (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
     }
 
     /* Check generated flat / smooth normals with the phong shader. If smooth
@@ -1088,7 +1088,7 @@ void CompileGLTest::packedAttributes() {
         _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
         /* SwiftShader has some minor off-by-one precision differences */
-        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0113f}));
+        (DebugTools::CompareImageToFile{_manager, 0.5f, 0.013f}));
 
     /* Check colors */
     _framebuffer.clear(GL::FramebufferClear::Color);
