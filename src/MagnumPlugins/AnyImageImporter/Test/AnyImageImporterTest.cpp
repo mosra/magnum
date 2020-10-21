@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
@@ -97,6 +98,24 @@ constexpr struct {
     /* Not testing everything, just the most important ones */
 };
 
+using namespace Containers::Literals;
+
+const struct {
+    const char* name;
+    Containers::StringView data;
+    const char* signature;
+} DetectUnknownData[]{
+    {"something random", "\x25\x3a\x00\x56 blablabla"_s, "253a0056"},
+    /* There was a bug where the error message shifted a signed value,
+       poisoning the output. It also was throwing away leading zero bytes. */
+    {"leading zeros, negative char", "\x00\xff\x00\xff"_s, "00ff00ff"},
+    {"just one byte", "\x33"_s, "33"},
+    {"just one zero byte", "\x00"_s, "00"},
+    {"DDS, but no space", "DDS!"_s, "44445321"},
+    {"TIFF, but too short", "II\x2a"_s, "49492a"},
+    {"TIFF, but no zero byte", "MM\xff\x2a"_s, "4d4dff2a"}
+};
+
 AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::load},
         Containers::arraySize(LoadData));
@@ -104,9 +123,12 @@ AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::detect},
         Containers::arraySize(DetectData));
 
-    addTests({&AnyImageImporterTest::unknownExtension,
-              &AnyImageImporterTest::unknownSignature,
-              &AnyImageImporterTest::emptyData});
+    addTests({&AnyImageImporterTest::unknownExtension});
+
+    addInstancedTests({&AnyImageImporterTest::unknownSignature},
+        Containers::arraySize(DetectUnknownData));
+
+    addTests({&AnyImageImporterTest::emptyData});
 
     addInstancedTests({&AnyImageImporterTest::verbose},
         Containers::arraySize(LoadData));
@@ -178,15 +200,16 @@ void AnyImageImporterTest::unknownExtension() {
 }
 
 void AnyImageImporterTest::unknownSignature() {
+    auto&& data = DetectUnknownData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     std::ostringstream output;
     Error redirectError{&output};
 
-    constexpr const char data[]{ 0x25, 0x3a };
-
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
-    CORRADE_VERIFY(!importer->openData(data));
+    CORRADE_VERIFY(!importer->openData(data.data));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x253a0000\n");
+    CORRADE_COMPARE(output.str(), Utility::formatString("Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x{}\n", data.signature));
 }
 
 void AnyImageImporterTest::emptyData() {

@@ -30,6 +30,7 @@
 #include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Trade/ImageData.h"
@@ -196,11 +197,14 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
         Error{} << "Trade::AnyImageImporter::openData(): file is empty";
         return;
     } else {
-        std::uint32_t signature = data[0] << 24;
-        if(data.size() > 1) signature |= data[1] << 16;
-        if(data.size() > 2) signature |= data[2] << 8;
-        if(data.size() > 3) signature |= data[3];
-        Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature" << reinterpret_cast<void*>(signature);
+        /* FFS so much casting to avoid implicit sign extension ruining
+           everything */
+        UnsignedInt signature = UnsignedInt(UnsignedByte(data[0])) << 24;
+        if(data.size() > 1) signature |= UnsignedInt(UnsignedByte(data[1])) << 16;
+        if(data.size() > 2) signature |= UnsignedInt(UnsignedByte(data[2])) << 8;
+        if(data.size() > 3) signature |= UnsignedInt(UnsignedByte(data[3]));
+        /* If there's less than four bytes, cut the rest away */
+        Error{} << "Trade::AnyImageImporter::openData(): cannot determine the format from signature 0x" << Debug::nospace << Utility::formatString("{:.8x}", signature).substr(0, data.size() < 4 ? data.size()*2 : std::string::npos);
         return;
     }
 
