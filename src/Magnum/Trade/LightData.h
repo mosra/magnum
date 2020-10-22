@@ -185,7 +185,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
          *      @p outerConeAngle for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
-         * @param outerConeAngle    Inner cone angle. Expected to be greater
+         * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
          *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
@@ -231,7 +231,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @ref Trade-LightData-attenuation for more information.
          *
          * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 45.0_degf @ce,
+         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
          * and both are @cpp 360.0_degf @ce otherwise. Use
          * @ref LightData(Type, const Color3&, Float, const Vector3&, Float, Rad, Rad, const void*)
          * in order to specify cone angles as well.
@@ -281,7 +281,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * @ref Trade-LightData-attenuation for more information.
          *
          * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 45.0_degf @ce,
+         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
          * and both are @cpp 360.0_degf @ce otherwise. Use
          * @ref LightData(Type, const Color3&, Float, const Vector3&, Rad, Rad, const void*)
          * in order to specify cone angles as well.
@@ -300,7 +300,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
          *      @p outerConeAngle for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
-         * @param outerConeAngle    Inner cone angle. Expected to be greater
+         * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
          *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
@@ -337,7 +337,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * for more information.
          *
          * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 45.0_degf @ce,
+         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
          * and both are @cpp 360.0_degf @ce otherwise. Use
          * @ref LightData(Type, const Color3&, Float, Float, Rad, Rad, const void*)
          * in order to specify cone angles as well.
@@ -353,7 +353,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          *      than or equal to @cpp 0.0_degf @ce and less than or equal to
          *      @p outerConeAngle for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
-         * @param outerConeAngle    Inner cone angle. Expected to be greater
+         * @param outerConeAngle    Outer cone angle. Expected to be greater
          *      than or equal to @p innerConeAngle and less than or equal to
          *      @cpp 360.0_degf @ce for a @ref Type::Spot light,
          *      @cpp 360.0_degf @ce otherwise.
@@ -387,7 +387,7 @@ class MAGNUM_TRADE_EXPORT LightData {
          * information.
          *
          * For a @ref Type::Spot light, @ref innerConeAngle() is implicitly set
-         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 45.0_degf @ce,
+         * to @cpp 0.0_degf @ce and @ref outerConeAngle() to @cpp 90.0_degf @ce,
          * and both are @cpp 360.0_degf @ce otherwise. Use
          * @ref LightData(Type, const Color3&, Float, Rad, Rad, const void*) in
          * order to specify cone angles as well.

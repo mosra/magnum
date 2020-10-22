@@ -42,7 +42,7 @@ LightData::LightData(const Type type, const Color3& color, const Float intensity
 
 LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const Float range, const void* const importerState) noexcept: LightData{type, color, intensity, attenuation, range,
     type == Type::Spot ? 0.0_degf : 360.0_degf,
-    type == Type::Spot ? 45.0_degf : 360.0_degf,
+    type == Type::Spot ? 90.0_degf : 360.0_degf,
     importerState} {}
 
 LightData::LightData(const Type type, const Color3& color, const Float intensity, const Vector3& attenuation, const Rad innerConeAngle, const Rad outerConeAngle, const void* const importerState) noexcept: LightData{type, color, intensity, attenuation, Constants::inf(), innerConeAngle, outerConeAngle, importerState} {}

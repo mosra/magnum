@@ -132,7 +132,7 @@ void LightDataTest::construct() {
         CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
         CORRADE_COMPARE(data.range(), 15.0f);
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
-        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 90.0_degf);
         CORRADE_COMPARE(data.importerState(), &a);
 
     /* Implicit non-spot angles */
@@ -187,7 +187,7 @@ void LightDataTest::constructAttenuation() {
         CORRADE_COMPARE(data.attenuation(), (Vector3{0.1f, 0.5f, 0.7f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
-        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 90.0_degf);
         CORRADE_COMPARE(data.importerState(), &a);
 
     /* Implicit range + non-spot angles */
@@ -242,7 +242,7 @@ void LightDataTest::constructRange() {
         CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), 15.0f);
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
-        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 90.0_degf);
         CORRADE_COMPARE(data.importerState(), &a);
 
     /* Implicit attenuation for a point + non-spot angles */
@@ -329,7 +329,7 @@ void LightDataTest::constructNone() {
         CORRADE_COMPARE(data.attenuation(), (Vector3{1.0f, 0.0f, 1.0f}));
         CORRADE_COMPARE(data.range(), Constants::inf());
         CORRADE_COMPARE(data.innerConeAngle(), 0.0_degf);
-        CORRADE_COMPARE(data.outerConeAngle(), 45.0_degf);
+        CORRADE_COMPARE(data.outerConeAngle(), 90.0_degf);
         CORRADE_COMPARE(data.importerState(), &a);
 
     /* Implicit attenuation + range for a point + non-spot angles */
