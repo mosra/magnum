@@ -537,6 +537,12 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * @see @ref ShaderTools-AbstractConverter-usage-callbacks
          */
+        /** @todo once porting away from std::string, it might make sense to
+            also return a const void view (so it's always implicitly
+            convertible) and not an Optional (as in, empty but non-null view
+            would be used for empty files and null would be a failure); then it
+            also might make sense to have fileCallback() return a char view
+            again to avoid ugly casts in all user code */
         void setInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData = nullptr);
 
         /**
