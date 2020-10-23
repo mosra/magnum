@@ -29,9 +29,9 @@
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
@@ -116,13 +116,13 @@ namespace {
        or '-'; `code` is a keyboard layout independent key string, e.g. 'KeyA'
        or 'Minus'. Note that the Y key on some layouts may result in 'KeyZ'. */
     Key toKey(const EM_UTF8* const key, const EM_UTF8* const code) {
-        const std::size_t keyLength = std::strlen(key);
-        if(keyLength == 0) return Key::Unknown;
+        const Containers::StringView keyView = key;
+        if(keyView.isEmpty() == 0) return Key::Unknown;
 
         /* We use key for a-z as it gives us a keyboard layout respecting
            representation of the key, i.e. we get `z` for z depending on layout
            where code may give us `y` independent of the layout. */
-        if(keyLength == 1) {
+        if(keyView.size() == 1) {
             if(key[0] >= 'a' && key[0] <= 'z') return Key(key[0]);
             else if(key[0] >= 'A' && key[0] <= 'Z') return Key(key[0] - 'A' + 'a');
         }
@@ -130,20 +130,22 @@ namespace {
         /* We use code for 0-9 as it allows us to differentiate towards Numpad
            digits. For digits independent of numpad or not, key is e.g. '0' for
            Zero */
-        const std::size_t codeLength = std::strlen(code);
-        if(Utility::String::viewBeginsWith({code, codeLength}, "Digit")) {
+        const Containers::StringView codeView = code;
+        using namespace Containers::Literals;
+        constexpr Containers::StringView numpad = "Numpad"_s;
+        if(codeView.hasPrefix("Digit"_s)) {
             return Key(code[5]);
 
         /* Numpad keys */
-        } else if(Utility::String::viewBeginsWith({code, codeLength}, "Numpad")) {
-            std::string numKey(code + 6);
-            if(numKey == "Add") return Key::NumAdd;
-            if(numKey == "Decimal") return Key::NumDecimal;
-            if(numKey == "Divide") return Key::NumDivide;
-            if(numKey == "Enter") return Key::NumEnter;
-            if(numKey == "Equal") return Key::NumEqual;
-            if(numKey == "Multiply") return Key::NumMultiply;
-            if(numKey == "Subtract") return Key::NumSubtract;
+        } else if(codeView.hasPrefix(numpad)) {
+            const Containers::StringView numKey = codeView.suffix(numpad.size());
+            if(numKey == "Add"_s) return Key::NumAdd;
+            if(numKey == "Decimal"_s) return Key::NumDecimal;
+            if(numKey == "Divide"_s) return Key::NumDivide;
+            if(numKey == "Enter"_s) return Key::NumEnter;
+            if(numKey == "Equal"_s) return Key::NumEqual;
+            if(numKey == "Multiply"_s) return Key::NumMultiply;
+            if(numKey == "Subtract"_s) return Key::NumSubtract;
 
             /* Numpad0 - Numpad9 */
             const Int num = numKey[0] - '0';
