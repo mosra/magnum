@@ -77,7 +77,7 @@ AnySceneConverterTest::AnySceneConverterTest() {
     #endif
 
     /* Create the output directory if it doesn't exist yet */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYSCENECONVERTER_TEST_DIR));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Utility::Directory::mkpath(ANYSCENECONVERTER_TEST_OUTPUT_DIR));
 }
 
 void AnySceneConverterTest::load() {
