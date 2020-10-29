@@ -322,9 +322,48 @@ Shader converters are most commonly implemented as plugins. Depending on
 exposed @ref features(), a plugin can support shader validation, conversion or
 linking.
 
+@m_class{m-block m-warning}
+
+@par Multiple shader sources
+    Compared to the (very broad) OpenGL API, only one shader source can be
+    specified for a single stage. If you need to pass additional preprocessor
+    flags, it's possible to do it via @ref setDefinitions() for plugins that
+    support @ref ConverterFeature::Preprocess; if you have shader source
+    scattered across multiple files either concatenate them together before
+    processing or @cpp #include @ce the dependencies from the top-level file,
+    potentially together with setting up @ref ShaderTools-AbstractConverter-usage-callbacks "file callbacks"
+    (providing the particular converter implementation supports preprocessor
+    includes).
+
 @subsection ShaderTools-AbstractConverter-usage-validation Shader validation
 
+As is common with other plugin interfaces, the
+@ref AnyConverter "AnyShaderConverter" will detect a shader format based on
+file extension, load an appropriate validator plugin for given format and
+validate it:
+
+@snippet MagnumShaderTools.cpp AbstractConverter-usage-validation
+
+In most cases, the validation result depends on the format version and target
+environment used. Formats and versions set by @ref setInputFormat() /
+@ref setOutputFormat() get propagated by @ref AnyConverter "AnyShaderConverter"
+to the particular plugin, however the interpretation is plugin-specific, so be
+sure to read their docs.
+
 @subsection ShaderTools-AbstractConverter-usage-conversion Shader conversion and linking
+
+The following example shows converting a GLSL shader to SPIR-V together with
+setting preprocessor defines and treating any warnings as errors. This time
+it's not using @ref AnyConverter "AnyShaderConverter" but instead asking for a
+plugin using the `GlslToSpirvShaderConverter` alias (which maps for example to
+@ref GlslangConverter "GlslangShaderConverter") --- since we're operating
+directly on data, the plugin would have no chance to know the desired input /
+output format otherwise. Same goes for the shader stage, which has to be
+supplied explicitly:
+
+@snippet MagnumShaderTools.cpp AbstractConverter-usage-compilation
+
+@todoc document linking when SpirvToolsShaderConverter implements that
 
 @subsection ShaderTools-AbstractConverter-usage-callbacks Loading shaders from memory, using file callbacks
 

@@ -38,6 +38,64 @@ using namespace Magnum;
 
 int main() {
 {
+/* [AbstractConverter-usage-validation] */
+PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+Containers::Pointer<ShaderTools::AbstractConverter> converter =
+    manager.loadAndInstantiate("AnyShaderConverter");
+
+bool valid;
+Containers::String message;
+if(converter) std::tie(valid, message) =
+    converter->validateFile(ShaderTools::Stage::Unspecified, "file.spv");
+if(!converter || !valid)
+    Error{} << "Validation failed:" << message;
+else if(!message.isEmpty())
+    Warning{} << "Validation succeeded with warnings:" << message;
+else
+    Debug{} << "Validation passed";
+/* [AbstractConverter-usage-validation] */
+}
+
+{
+PluginManager::Manager<ShaderTools::AbstractConverter> manager;
+/* [AbstractConverter-usage-compilation] */
+Containers::Pointer<ShaderTools::AbstractConverter> converter =
+    manager.loadAndInstantiate("GlslToSpirvShaderConverter");
+
+/* Using CORRADE_LINE_STRING will make the compiler report line info that
+   matches the source */
+Containers::StringView glsl = "#line " CORRADE_LINE_STRING "\n" R"GLSL(
+#version 450 core
+
+layout(binding=0) uniform Material {
+    vec4 color;
+};
+
+#ifdef TEXTURED
+layout(binding=1) uniform sampler2D colorTexture;
+layout(location=0) in vec2 textureCoordinates;
+#endif
+
+layout(location=0) out vec4 fragmentColor;
+
+void main() {
+    fragmentColor = color
+        #ifdef TEXTURED
+        *texture(colorTexture, textureCoordinates)
+        #endif
+        ;
+}
+)GLSL";
+
+converter->setDefinitions({
+    {"TEXTURED", ""}
+});
+Containers::Array<char> spirv = converter->convertDataToData(
+    ShaderTools::Stage::Fragment, glsl);
+/* [AbstractConverter-usage-compilation] */
+}
+
+{
 Containers::Pointer<ShaderTools::AbstractConverter> converter;
 Containers::Array<const char> extract(const std::string&, const std::string&);
 /* [AbstractConverter-usage-callbacks] */
