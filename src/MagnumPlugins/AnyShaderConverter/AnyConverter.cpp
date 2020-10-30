@@ -43,6 +43,8 @@ struct AnyConverter::State {
 
     Containers::Array<std::pair<Containers::String, Containers::String>> definitions;
     Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitionViews;
+
+    Containers::String debugInfoLevel;
 };
 
 AnyConverter::AnyConverter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
@@ -52,9 +54,8 @@ AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::s
 AnyConverter::~AnyConverter() = default;
 
 ConverterFeatures AnyConverter::doFeatures() const {
-    /** @todo Optimize, DebugInfo, those also need checks that the plugin
-        actually supports them */
-    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess;
+    /** @todo Optimize, also need checks that the plugin actually supports it */
+    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess|ConverterFeature::DebugInfo;
 }
 
 void AnyConverter::doSetInputFormat(const Format format, const Containers::StringView version) {
@@ -87,6 +88,10 @@ void AnyConverter::doSetDefinitions(const Containers::ArrayView<const std::pair<
                 Containers::StringView{}
         };
     }
+}
+
+void AnyConverter::doSetDebugInfoLevel(const Containers::StringView level) {
+    _state->debugInfoLevel = Containers::String::nullTerminatedGlobalView(level);
 }
 
 namespace {
@@ -238,14 +243,22 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         return {};
     }
 
+    /* Check that it can output debug info, in case we were asked to */
+    if(!_state->debugInfoLevel.isEmpty() && !(converter->features() & ConverterFeature::DebugInfo)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToFile():" << metadata->name() << "does not support controlling debug info output";
+        return {};
+    }
+
     /* Propagate input/output version and flags */
     converter->setFlags(flags());
     converter->setInputFormat(_state->inputFormat, _state->inputVersion);
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
 
-    /* Propagate definitions, if any */
+    /* Propagate definitions and debug info, if any */
     if(!_state->definitionViews.empty())
         converter->setDefinitions(_state->definitionViews);
+    if(!_state->debugInfoLevel.isEmpty())
+        converter->setDebugInfoLevel(_state->debugInfoLevel);
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

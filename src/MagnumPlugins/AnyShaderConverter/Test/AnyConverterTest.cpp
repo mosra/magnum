@@ -53,10 +53,12 @@ struct AnyConverterTest: TestSuite::Tester {
     void convert();
     void convertNotSupported();
     void convertPreprocessNotSupported();
+    void convertDebugInfoNotSupported();
     void convertPropagateFlags();
     void convertPropagateInputVersion();
     void convertPropagateOutputVersion();
     void convertPropagatePreprocess();
+    void convertPropagateDebugInfo();
 
     void detectValidate();
     void detectConvert();
@@ -103,10 +105,12 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convert,
               &AnyConverterTest::convertNotSupported,
               &AnyConverterTest::convertPreprocessNotSupported,
+              &AnyConverterTest::convertDebugInfoNotSupported,
               &AnyConverterTest::convertPropagateFlags,
               &AnyConverterTest::convertPropagateInputVersion,
               &AnyConverterTest::convertPropagateOutputVersion,
-              &AnyConverterTest::convertPropagatePreprocess});
+              &AnyConverterTest::convertPropagatePreprocess,
+              &AnyConverterTest::convertPropagateDebugInfo});
 
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
@@ -331,6 +335,29 @@ void AnyConverterTest::convertPreprocessNotSupported() {
         "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support preprocessing\n");
 }
 
+void AnyConverterTest::convertDebugInfoNotSupported() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("SpirvToolsShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("SpirvToolsShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setDebugInfoLevel("1");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"),
+    Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spvasm")));
+    /** @todo it one may support that, in which case we need to find another
+        victim */
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support controlling debug info output\n");
+}
+
 void AnyConverterTest::convertPropagateFlags() {
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
@@ -441,6 +468,30 @@ void AnyConverterTest::convertPropagatePreprocess() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\n"
         "WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved\n", inputFilename));
+}
+
+void AnyConverterTest::convertPropagateDebugInfo() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    /* This is an invalid level */
+    converter->setDebugInfoLevel("2");
+
+    /* We have to supply a valid file path because the version gets checked in
+       doConvertDataToData(), called from AbstractConverter::doConvertFileToFile()
+       with the file contents. */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::GlslangConverter::convertDataToData(): debug info level should be 0, 1 or empty but got 2\n");
 }
 
 void AnyConverterTest::detectValidate() {
