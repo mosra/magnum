@@ -162,6 +162,8 @@ void AbstractConverter::doSetDebugInfoLevel(Containers::StringView) {
 std::pair<bool, Containers::String> AbstractConverter::validateData(const Stage stage, const Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(features() & ConverterFeature::ValidateData,
         "ShaderTools::AbstractConverter::validateData(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::validateData(): PreprocessOnly is not allowed in combination with validation", {});
 
     /* Cast to a non-void type for more convenience */
     std::pair<bool, Containers::String> out = doValidateData(stage, Containers::arrayCast<const char>(data));
@@ -177,6 +179,8 @@ std::pair<bool, Containers::String> AbstractConverter::doValidateData(Stage, Con
 std::pair<bool, Containers::String> AbstractConverter::validateFile(const Stage stage, const Containers::StringView filename) {
     CORRADE_ASSERT(features() & (ConverterFeature::ValidateFile|ConverterFeature::ValidateData),
         "ShaderTools::AbstractConverter::validateFile(): feature not supported", {});
+    CORRADE_ASSERT(!(_flags & ConverterFlag::PreprocessOnly),
+        "ShaderTools::AbstractConverter::validateFile(): PreprocessOnly is not allowed in combination with validation", {});
 
     std::pair<bool, Containers::String> out;
 

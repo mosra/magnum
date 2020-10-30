@@ -69,6 +69,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void validateData();
     void validateDataNotSupported();
     void validateDataNotImplemented();
+    void validateDataPreprocessOnly();
     void validateDataCustomStringDeleter();
 
     void validateFile();
@@ -76,6 +77,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void validateFileAsDataNotFound();
     void validateFileNotSupported();
     void validateFileNotImplemented();
+    void validateFilePreprocessOnly();
     void validateFileCustomStringDeleter();
 
     void convertDataToData();
@@ -207,6 +209,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::validateData,
               &AbstractConverterTest::validateDataNotSupported,
               &AbstractConverterTest::validateDataNotImplemented,
+              &AbstractConverterTest::validateDataPreprocessOnly,
               &AbstractConverterTest::validateDataCustomStringDeleter,
 
               &AbstractConverterTest::validateFile,
@@ -214,6 +217,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::validateFileAsDataNotFound,
               &AbstractConverterTest::validateFileNotSupported,
               &AbstractConverterTest::validateFileNotImplemented,
+              &AbstractConverterTest::validateFilePreprocessOnly,
               &AbstractConverterTest::validateFileCustomStringDeleter,
 
               &AbstractConverterTest::convertDataToData,
@@ -712,6 +716,26 @@ void AbstractConverterTest::validateDataNotImplemented() {
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): feature advertised but not implemented\n");
 }
 
+void AbstractConverterTest::validateDataPreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateData|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.validateData({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateData(): PreprocessOnly is not allowed in combination with validation\n");
+}
+
 void AbstractConverterTest::validateDataCustomStringDeleter() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -836,6 +860,26 @@ void AbstractConverterTest::validateFileNotImplemented() {
     Error redirectError{&out};
     converter.validateFile({}, {});
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::validateFilePreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::ValidateFile|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.validateFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::validateFile(): PreprocessOnly is not allowed in combination with validation\n");
 }
 
 void AbstractConverterTest::validateFileCustomStringDeleter() {
