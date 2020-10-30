@@ -105,6 +105,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void linkDataToData();
     void linkDataToDataNotSupported();
     void linkDataToDataNotImplemented();
+    void linkDataToDataPreprocessOnly();
     void linkDataToDataNoData();
     void linkDataToDataCustomDeleter();
     void linkDataToFileThroughData();
@@ -112,6 +113,7 @@ struct AbstractConverterTest: TestSuite::Tester {
     void linkDataToFileThroughDataNotWritable();
     void linkDataToFileNotSupported();
     void linkDataToFileNotImplemented();
+    void linkDataToFilePreprocessOnly();
     void linkDataToFileNoData();
 
     void linkFilesToFile();
@@ -121,12 +123,14 @@ struct AbstractConverterTest: TestSuite::Tester {
     void linkFilesToFileThroughDataNotWritable();
     void linkFilesToFileNotSupported();
     void linkFilesToFileNotImplemented();
+    void linkFilesToFilePreprocessOnly();
     void linkFilesToFileNoFile();
     void linkFilesToData();
     void linkFilesToDataAsData();
     void linkFilesToDataAsDataNotFound();
     void linkFilesToDataNotSupported();
     void linkFilesToDataNotImplemented();
+    void linkFilesToDataPreprocessOnly();
     void linkFilesToDataNoFile();
     void linkFilesToDataCustomDeleter();
 
@@ -239,6 +243,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::linkDataToData,
               &AbstractConverterTest::linkDataToDataNotSupported,
               &AbstractConverterTest::linkDataToDataNotImplemented,
+              &AbstractConverterTest::linkDataToDataPreprocessOnly,
               &AbstractConverterTest::linkDataToDataNoData,
               &AbstractConverterTest::linkDataToDataCustomDeleter,
               &AbstractConverterTest::linkDataToFileThroughData,
@@ -246,6 +251,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::linkDataToFileThroughDataNotWritable,
               &AbstractConverterTest::linkDataToFileNotSupported,
               &AbstractConverterTest::linkDataToFileNotImplemented,
+              &AbstractConverterTest::linkDataToFilePreprocessOnly,
               &AbstractConverterTest::linkDataToFileNoData,
 
               &AbstractConverterTest::linkFilesToFile,
@@ -255,12 +261,14 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::linkFilesToFileThroughDataNotWritable,
               &AbstractConverterTest::linkFilesToFileNotSupported,
               &AbstractConverterTest::linkFilesToFileNotImplemented,
+              &AbstractConverterTest::linkFilesToFilePreprocessOnly,
               &AbstractConverterTest::linkFilesToFileNoFile,
               &AbstractConverterTest::linkFilesToData,
               &AbstractConverterTest::linkFilesToDataAsData,
               &AbstractConverterTest::linkFilesToDataAsDataNotFound,
               &AbstractConverterTest::linkFilesToDataNotSupported,
               &AbstractConverterTest::linkFilesToDataNotImplemented,
+              &AbstractConverterTest::linkFilesToDataPreprocessOnly,
               &AbstractConverterTest::linkFilesToDataNoFile,
               &AbstractConverterTest::linkFilesToDataCustomDeleter,
 
@@ -1393,6 +1401,26 @@ void AbstractConverterTest::linkDataToDataNotImplemented() {
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
 }
 
+void AbstractConverterTest::linkDataToDataPreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.linkDataToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): PreprocessOnly is not allowed in combination with linking\n");
+}
+
 void AbstractConverterTest::linkDataToDataNoData() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1551,6 +1579,26 @@ void AbstractConverterTest::linkDataToFileNotImplemented() {
     Error redirectError{&out};
     converter.linkDataToFile({{}}, "file.dat");
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkDataToFilePreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.linkDataToFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToFile(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkDataToFileNoData() {
@@ -1752,6 +1800,26 @@ void AbstractConverterTest::linkFilesToFileNotImplemented() {
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): feature advertised but not implemented\n");
 }
 
+void AbstractConverterTest::linkFilesToFilePreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkFile|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.linkFilesToFile({}, {});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToFile(): PreprocessOnly is not allowed in combination with linking\n");
+}
+
 void AbstractConverterTest::linkFilesToFileNoFile() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -1887,6 +1955,26 @@ void AbstractConverterTest::linkFilesToDataNotImplemented() {
         {{}, Utility::Directory::join(SHADERTOOLS_TEST_DIR, "file.dat")}
     });
     CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkDataToData(): feature advertised but not implemented\n");
+}
+
+void AbstractConverterTest::linkFilesToDataPreprocessOnly() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    struct: AbstractConverter {
+        ConverterFeatures doFeatures() const override {
+            return ConverterFeature::LinkData|ConverterFeature::Preprocess;
+        }
+        void doSetInputFormat(Format, Containers::StringView) override {}
+        void doSetOutputFormat(Format, Containers::StringView) override {}
+    } converter;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    converter.setFlags(ConverterFlag::PreprocessOnly);
+    converter.linkFilesToData({});
+    CORRADE_COMPARE(out.str(), "ShaderTools::AbstractConverter::linkFilesToData(): PreprocessOnly is not allowed in combination with linking\n");
 }
 
 void AbstractConverterTest::linkFilesToDataNoFile() {
