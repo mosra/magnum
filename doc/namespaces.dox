@@ -515,8 +515,10 @@ target_link_libraries(your-app PRIVATE Magnum::ShaderTools)
 @endcode
 
 Additional plugins and utilities are built separately. See particular
-`*Converter` class documentation, @ref building, @ref building-plugins,
-@ref cmake, @ref cmake-plugins and @ref plugins for more information.
+`*Converter` class documentation, the
+@ref magnum-shaderconverter "magnum-shaderconverter" utility documentation,
+@ref building, @ref building-plugins, @ref cmake, @ref cmake-plugins and
+@ref plugins for more information.
 */
 
 /** @dir Magnum/Text
@@ -595,7 +597,8 @@ target_link_libraries(your-app PRIVATE Magnum::Trade)
 
 Additional plugins and utilities are built separately. See particular
 `Trade::*Importer` and `*ImageConverter` class documentation, the
-@ref magnum-imageconverter "magnum-imageconverter" utility documentation,
+@ref magnum-imageconverter "magnum-imageconverter" and
+@ref magnum-sceneconverter "magnum-sceneconverter" utility documentation,
 @ref building, @ref building-plugins, @ref cmake, @ref cmake-plugins and
 @ref plugins for more information.
 */
