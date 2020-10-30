@@ -25,6 +25,7 @@
 
 #include "AnyConverter.h"
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/PluginManager/Manager.h>
@@ -39,6 +40,9 @@ namespace Magnum { namespace ShaderTools {
 struct AnyConverter::State {
     Format inputFormat, outputFormat;
     Containers::String inputVersion, outputVersion;
+
+    Containers::Array<std::pair<Containers::String, Containers::String>> definitions;
+    Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitionViews;
 };
 
 AnyConverter::AnyConverter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
@@ -48,9 +52,9 @@ AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::s
 AnyConverter::~AnyConverter() = default;
 
 ConverterFeatures AnyConverter::doFeatures() const {
-    /** @todo Preprocess, Optimize, DebugInfo, those also need checks that the
-        plugin actually supports them */
-    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile;
+    /** @todo Optimize, DebugInfo, those also need checks that the plugin
+        actually supports them */
+    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess;
 }
 
 void AnyConverter::doSetInputFormat(const Format format, const Containers::StringView version) {
@@ -61,6 +65,28 @@ void AnyConverter::doSetInputFormat(const Format format, const Containers::Strin
 void AnyConverter::doSetOutputFormat(Format format, Containers::StringView version) {
     _state->outputFormat = format;
     _state->outputVersion = Containers::String::nullTerminatedGlobalView(version);
+}
+
+void AnyConverter::doSetDefinitions(const Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) {
+    /* We have to make a local copy, unfortunately, and then a view on that
+       local copy */
+    _state->definitions = Containers::Array<std::pair<Containers::String, Containers::String>>{definitions.size()};
+    _state->definitionViews = Containers::Array<std::pair<Containers::StringView, Containers::StringView>>{definitions.size()};
+    for(std::size_t i = 0; i != definitions.size(); ++i) {
+        /* Avoid a copy if the input is a global string literal */
+        _state->definitions[i] = {
+            Containers::String::nullTerminatedGlobalView(definitions[i].first),
+            Containers::String::nullTerminatedGlobalView(definitions[i].second)
+        };
+        /* Preserve the distinction between empty defines ("") and undefines
+           (nullptr or default constructor) */
+        _state->definitionViews[i] = {
+            _state->definitions[i].first,
+            definitions[i].second.data() ?
+                Containers::StringView{_state->definitions[i].second} :
+                Containers::StringView{}
+        };
+    }
 }
 
 namespace {
@@ -141,10 +167,18 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
-    /* Instantiate the plugin, check that it can actually validate */
+    /* Instantiate the plugin */
     Containers::Pointer<AbstractConverter> converter = static_cast<PluginManager::Manager<AbstractConverter>*>(manager())->instantiate(plugin);
+
+    /* Check that it can actually validate */
     if(!(converter->features() & ConverterFeature::ValidateFile)) {
         Error{} << "ShaderTools::AnyConverter::validateFile():" << metadata->name() << "does not support validation";
+        return {};
+    }
+
+    /* Check that it can preprocess, in case we were asked to preprocess */
+    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+        Error{} << "ShaderTools::AnyConverter::validateFile():" << metadata->name() << "does not support preprocessing";
         return {};
     }
 
@@ -152,6 +186,10 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     converter->setFlags(flags());
     converter->setInputFormat(_state->inputFormat, _state->inputVersion);
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
+
+    /* Propagate definitions, if any */
+    if(!_state->definitionViews.empty())
+        converter->setDefinitions(_state->definitionViews);
 
     /* Try to validate the file (error output should be printed by the plugin
        itself) */
@@ -185,10 +223,18 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
             d << "(provided by" << metadata->name() << Debug::nospace << ")";
     }
 
-    /* Instantiate the plugin, check that it can actually validate */
+    /* Instantiate the plugin */
     Containers::Pointer<AbstractConverter> converter = static_cast<PluginManager::Manager<AbstractConverter>*>(manager())->instantiate(plugin);
+
+    /* Check that it can actually convert */
     if(!(converter->features() & ConverterFeature::ConvertFile)) {
         Error{} << "ShaderTools::AnyConverter::convertFileToFile():" << metadata->name() << "does not support conversion";
+        return {};
+    }
+
+    /* Check that it can preprocess, in case we were asked to preprocess */
+    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToFile():" << metadata->name() << "does not support preprocessing";
         return {};
     }
 
@@ -196,6 +242,10 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     converter->setFlags(flags());
     converter->setInputFormat(_state->inputFormat, _state->inputVersion);
     converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
+
+    /* Propagate definitions, if any */
+    if(!_state->definitionViews.empty())
+        converter->setDefinitions(_state->definitionViews);
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */

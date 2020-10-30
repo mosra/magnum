@@ -1,0 +1,10 @@
+# You have to add the following to your .git/config or global
+# ~/.gitconfig to make the binary diffs work (without the comment
+# character, of course). Assumes spirv-dis exists:
+#
+# [diff "spirv"]
+#     textconv = spirv-dis
+#     binary = true
+#
+
+*.spv binary diff=spirv

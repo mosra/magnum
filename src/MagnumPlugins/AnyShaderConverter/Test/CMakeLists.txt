@@ -47,7 +47,9 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 
 corrade_add_test(AnyShaderConverterTest AnyConverterTest.cpp
     LIBRARIES MagnumShaderTools
-    FILES file.glsl)
+    FILES
+        file.glsl
+        file.spv)
 target_include_directories(AnyShaderConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(AnyShaderConverterTest PRIVATE AnyShaderConverter)

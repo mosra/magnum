@@ -132,6 +132,7 @@ class MAGNUM_ANYSHADERCONVERTER_EXPORT AnyConverter: public AbstractConverter {
         MAGNUM_ANYSHADERCONVERTER_LOCAL ConverterFeatures doFeatures() const override;
         MAGNUM_ANYSHADERCONVERTER_LOCAL void doSetInputFormat(Format, Containers::StringView version) override;
         MAGNUM_ANYSHADERCONVERTER_LOCAL void doSetOutputFormat(Format, Containers::StringView version) override;
+        MAGNUM_ANYSHADERCONVERTER_LOCAL void doSetDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions) override;
         MAGNUM_ANYSHADERCONVERTER_LOCAL std::pair<bool, Containers::String> doValidateFile(Stage stage, Containers::StringView filename) override;
         MAGNUM_ANYSHADERCONVERTER_LOCAL bool doConvertFileToFile(Stage stage, Containers::StringView from, Containers::StringView to) override;
 

@@ -44,15 +44,19 @@ struct AnyConverterTest: TestSuite::Tester {
 
     void validate();
     void validateNotSupported();
+    void validatePreprocessNotSupported();
     void validatePropagateFlags();
     void validatePropagateInputVersion();
     void validatePropagateOutputVersion();
+    void validatePropagatePreprocess();
 
     void convert();
     void convertNotSupported();
+    void convertPreprocessNotSupported();
     void convertPropagateFlags();
     void convertPropagateInputVersion();
     void convertPropagateOutputVersion();
+    void convertPropagatePreprocess();
 
     void detectValidate();
     void detectConvert();
@@ -90,15 +94,19 @@ constexpr struct {
 AnyConverterTest::AnyConverterTest() {
     addTests({&AnyConverterTest::validate,
               &AnyConverterTest::validateNotSupported,
+              &AnyConverterTest::validatePreprocessNotSupported,
               &AnyConverterTest::validatePropagateFlags,
               &AnyConverterTest::validatePropagateInputVersion,
               &AnyConverterTest::validatePropagateOutputVersion,
+              &AnyConverterTest::validatePropagatePreprocess,
 
               &AnyConverterTest::convert,
               &AnyConverterTest::convertNotSupported,
+              &AnyConverterTest::convertPreprocessNotSupported,
               &AnyConverterTest::convertPropagateFlags,
               &AnyConverterTest::convertPropagateInputVersion,
-              &AnyConverterTest::convertPropagateOutputVersion});
+              &AnyConverterTest::convertPropagateOutputVersion,
+              &AnyConverterTest::convertPropagatePreprocess});
 
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
@@ -133,11 +141,34 @@ void AnyConverterTest::validate() {
 
     /* Make it print a warning so we know it's doing something */
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(true, Utility::formatString("WARNING: {}:4: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        std::make_pair(true, Utility::formatString("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
 }
 
 void AnyConverterTest::validateNotSupported() {
     CORRADE_SKIP("No plugin that would support just validation exists.");
+}
+
+void AnyConverterTest::validatePreprocessNotSupported() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("SpirvToolsShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("SpirvToolsShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setDefinitions({
+        {"DEFINE", "hahahahah"}
+    });
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(converter->validateFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv")),
+        std::make_pair(false, ""));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::validateFile(): SpirvToolsShaderConverter does not support preprocessing\n");
 }
 
 void AnyConverterTest::validatePropagateFlags() {
@@ -160,7 +191,7 @@ void AnyConverterTest::validatePropagateFlags() {
     std::ostringstream out;
     Debug redirectDebug{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
-        std::make_pair(false, Utility::formatString("WARNING: {}:4: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+        std::make_pair(false, Utility::formatString("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::validateFile(): using GlslShaderConverter (provided by GlslangShaderConverter)\n");
 }
@@ -213,6 +244,31 @@ void AnyConverterTest::validatePropagateOutputVersion() {
         "ShaderTools::GlslangConverter::validateData(): output format should be Unspecified but got ShaderTools::Format::Spirv\n");
 }
 
+void AnyConverterTest::validatePropagatePreprocess() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    const std::string filename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl");
+
+    /* Check that undefining works properly -- if it stays defined, the source
+       won't compile */
+    converter->setDefinitions({
+        {"SHOULD_BE_UNDEFINED", "really"},
+        {"SHOULD_BE_UNDEFINED", nullptr},
+        {"reserved__identifier", "different__but_also_wrong"}
+    });
+
+    CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
+        std::make_pair(true, Utility::formatString("WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+}
+
 void AnyConverterTest::convert() {
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
@@ -236,11 +292,43 @@ void AnyConverterTest::convert() {
     CORRADE_VERIFY(Utility::Directory::exists(outputFilename));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\n"
-        "WARNING: {}:4: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved\n", inputFilename));
+        "WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved\n", inputFilename));
 }
 
 void AnyConverterTest::convertNotSupported() {
     CORRADE_SKIP("No plugin that would support just validation exists.");
+}
+
+void AnyConverterTest::convertPreprocessNotSupported() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("SpirvToolsShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("SpirvToolsShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setDefinitions({
+        {"DEFINE", "hahahahah"}
+    });
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"),
+    Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spvasm")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support preprocessing\n");
+
+    /* It should fail for the flag as well */
+    out.str({});
+    converter->setDefinitions({});
+    converter->setFlags(ConverterFlag::PreprocessOnly);
+    CORRADE_VERIFY(!converter->convertFileToFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"),
+    Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spvasm")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support preprocessing\n");
 }
 
 void AnyConverterTest::convertPropagateFlags() {
@@ -270,7 +358,7 @@ void AnyConverterTest::convertPropagateFlags() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "ShaderTools::AnyConverter::convertFileToFile(): using GlslToSpirvShaderConverter (provided by GlslangShaderConverter)\n"
         "ShaderTools::GlslangConverter::convertDataToData(): compilation failed:\n"
-        "WARNING: {}:4: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved\n", filename));
+        "WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved\n", filename));
 }
 
 void AnyConverterTest::convertPropagateInputVersion() {
@@ -319,6 +407,40 @@ void AnyConverterTest::convertPropagateOutputVersion() {
     CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::convertDataToData(): output format version target should be opengl4.5 or vulkanX.Y but got opengl4.0\n");
+}
+
+void AnyConverterTest::convertPropagatePreprocess() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    /* Check that undefining works properly -- if it stays defined, the source
+       won't compile */
+    converter->setDefinitions({
+        {"SHOULD_BE_UNDEFINED", "really"},
+        {"SHOULD_BE_UNDEFINED", nullptr},
+        {"reserved__identifier", "different__but_also_wrong"}
+    });
+
+    const std::string inputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl");
+    const std::string outputFilename = Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv");
+    Utility::Directory::rm(outputFilename);
+    CORRADE_VERIFY(!Utility::Directory::exists(outputFilename));
+
+    /* Make it print a warning so we know it's doing something */
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    CORRADE_VERIFY(converter->convertFileToFile(Stage::Fragment, inputFilename, outputFilename));
+    CORRADE_VERIFY(Utility::Directory::exists(outputFilename));
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+        "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\n"
+        "WARNING: {}:10: 'different__but_also_wrong' : identifiers containing consecutive underscores (\"__\") are reserved\n", inputFilename));
 }
 
 void AnyConverterTest::detectValidate() {
