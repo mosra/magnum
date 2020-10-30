@@ -125,6 +125,12 @@ namespace for available font converter plugins.
 You can use the @ref magnum-fontconverter "magnum-fontconverter" utility to do
 font conversion on command-line.
 
+@m_class{m-note m-success}
+
+@par
+    There's also a @ref magnum-fontconverter "magnum-fontconverter" tool,
+    exposing functionality of all font converter plugins on a command line.
+
 @section Text-AbstractFontConverter-subclassing Subclassing
 
 Plugin implements @ref doFeatures() and one or more of `exportTo*()` /

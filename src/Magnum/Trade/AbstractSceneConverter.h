@@ -135,6 +135,13 @@ various formats or performing optimizations and other operations on them. See
 @ref plugins for more information and `*SceneConverter` classes in the
 @ref Trade namespace for available scene converter plugins.
 
+@m_class{m-note m-success}
+
+@par
+    There's also a @ref magnum-sceneconverter "magnum-sceneconverter" tool,
+    exposing functionality of all scene converter plugins on a command line as
+    well as performing introspection of scene files.
+
 @section Trade-AbstractSceneConverter-data-dependency Data dependency
 
 The instances returned from various functions *by design* have no dependency on

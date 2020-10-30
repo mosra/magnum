@@ -158,6 +158,13 @@ like this, completely with all error handling:
 See @ref plugins for more information about general plugin usage and
 `*Importer` classes in the @ref Trade namespace for available importer plugins.
 
+@m_class{m-note m-success}
+
+@par
+    There are also @ref magnum-imageconverter "magnum-imageconverter" and
+    @ref magnum-sceneconverter "magnum-sceneconverter" tools which you can use
+    to perform introspection of image and scene files.
+
 @subsection Trade-AbstractImporter-usage-callbacks Loading data from memory, using file callbacks
 
 Besides loading data directly from the filesystem using @ref openFile() like

@@ -316,6 +316,11 @@ different representations or performing optimizations and other operations on
 them. See @ref plugins for more information and `*ShaderConverter` classes in
 the @ref ShaderTools namespace for available scene converter plugins.
 
+@m_class{m-note m-success}
+
+@par
+    There's also a @ref magnum-shaderconverter "magnum-shaderconverter" tool, exposing functionality of all shader converter plugins on a command line.
+
 @section ShaderTools-AbstractConverter-usage Usage
 
 Shader converters are most commonly implemented as plugins. Depending on

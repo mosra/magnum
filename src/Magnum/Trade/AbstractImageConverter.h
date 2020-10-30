@@ -145,6 +145,13 @@ Provides functionality for converting images between various internal formats
 or compressing them. See @ref plugins for more information and `*ImageConverter`
 classes in @ref Trade namespace for available image converter plugins.
 
+@m_class{m-note m-success}
+
+@par
+    There's also a @ref magnum-imageconverter "magnum-imageconverter" tool,
+    exposing functionality of all image converter plugins on a command line as
+    well as performing introspection of image files.
+
 @section Trade-AbstractImageConverter-data-dependency Data dependency
 
 The instances returned from various functions *by design* have no dependency on
