@@ -25,10 +25,10 @@
 
 #include "AnyConverter.h"
 
-#include <Corrade/PluginManager/Manager.h>
-#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringStl.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Corrade/PluginManager/PluginMetadata.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
