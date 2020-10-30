@@ -217,14 +217,17 @@ converter for more information.)")
             Error{} << "Multiple input files are allowed only for --link";
             return 3;
         }
+    }
+    if(args.isSet("validate") || args.isSet("link")) {
         if(args.isSet("preprocess-only")) {
-            Error{} << "The --preprocess-only option isn't allowed for --link";
+            Error{} << "The --preprocess-only option isn't allowed for --validate or --link";
             return 4;
         }
-    }
-    if((args.isSet("validate") || args.isSet("link")) && args.arrayValueCount("converter") > 1) {
-        Error{} << "Cannot use multiple converters with --validate or --link";
-        return 5;
+
+        if(args.arrayValueCount("converter") > 1) {
+            Error{} << "Cannot use multiple converters with --validate or --link";
+            return 5;
+        }
     }
     if(args.isSet("quiet") && args.isSet("verbose")) {
         Error{} << "Can't set both --quiet and --verbose";
