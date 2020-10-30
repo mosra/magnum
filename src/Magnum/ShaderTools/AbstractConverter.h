@@ -679,6 +679,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref convertFileToFile(), @ref convertFileToData(),
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
+         *
+         * Has no effect for @ref validateData() or @ref validateFile().
          * @see @ref setDebugInfoLevel()
          */
         void setOptimizationLevel(Containers::StringView level);
@@ -692,6 +694,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref convertFileToFile(), @ref convertFileToData(),
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
+         *
+         * Has no effect for @ref validateData() or @ref validateFile().
          * @see @ref setOptimizationLevel()
          */
         void setDebugInfoLevel(Containers::StringView level);
