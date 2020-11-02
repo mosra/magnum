@@ -336,6 +336,11 @@ See also:
     @ref Trade::LightData::Type::Directional as that's the more commonly used
     term
 
+@subsection changelog-latest-documentation Documentation
+
+-   Added a note about MinGW GCC and Clang ABI incompatibility to
+    @ref platforms-windows (see [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
+
 @section changelog-2020-06 2020.06
 
 Released 2020-06-27, tagged as

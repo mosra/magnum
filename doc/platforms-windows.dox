@@ -30,7 +30,7 @@ namespace Magnum {
 
 @tableofcontents
 @m_keyword{ANGLE OpenGL compatibility layer,,}
-@m_keywords{clang-cl}
+@m_keywords{clang-cl MSYS2 MinGW}
 @m_footernavigation
 
 @section platforms-windows-hidpi HiDPI support
@@ -349,10 +349,34 @@ ERROR:2:1: `` : syntax error: illegal extended ASCII character (0xbf)
 While the C++ compilers can usually ignore the BOM marker, it's not so common
 with GLSL compilers in the drivers. Save your file as UTF-8 without BOM.
 
-@todoc DLL paths
+@subsection platform-windows-troubleshooting-duplicate-section-has-different-size "Duplicate section has different size" warnings/errors on MinGW
+
+If you use MinGW Clang, you might be running into warnings like
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+C:/msys64/mingw64/lib/libMagnumGlfwApplication-d.a(GlfwApplication.cpp.obj): duplicate section ".rdata$_ZTSN6Magnum8Platform15GlfwApplicationE[_ZTSN6Magnum8Platform15GlfwApplicationE]" has different size.
+@endcode
+
+or, with `-fuse-ld=lld`, even an error:
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+lld-link: error: duplicate symbol: typeinfo name for Magnum::Platform::GlfwApplication
+>>> defined at CMakeFiles/appExec.dir/src/main.cpp.obj
+>>> defined at libMagnumGlfwApplication-d.a(GlfwApplication.cpp.obj)
+@endcode
+
+This happens when combining libraries built with MinGW GCC and MinGW Clang, as
+those two are unfortunately not fully ABI-compatible. Instead please rebuild
+alll your dependencies using the same compiler. See
+[mosra/magnum#439](https://github.com/mosra/magnum/issues/439) for details.
+
+@todoc DLL paths (wait, what is this TODO about, even)
 @todoc vcpkg
 @todoc desktop ES
-@todoc mingw, clang, clang/c2...
 @todoc lcov on mingw (ugh)
 */
 
