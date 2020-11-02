@@ -97,11 +97,10 @@ Containers::Array<char> spirv = converter->convertDataToData(
 
 {
 Containers::Pointer<ShaderTools::AbstractConverter> converter;
-Containers::Array<const char> extract(const std::string&, const std::string&);
+Containers::Array<char> extract(const std::string&, const std::string&);
 /* [AbstractConverter-usage-callbacks] */
 struct Data {
-    std::unordered_map<std::string,
-        Containers::Array<const char>> files;
+    std::unordered_map<std::string, Containers::Array<char>> files;
 } data;
 
 converter->setInputFileCallback([](const std::string& filename,
@@ -116,11 +115,16 @@ converter->setInputFileCallback([](const std::string& filename,
             return {};
         }
 
-        /* Extract from an archive if not there yet */
-        if(found == data.files.end()) found = data.files.emplace(
-            filename, extract("shaders.zip", filename)).first;
+        /* Extract from an archive if not there yet; fail if not extraction
+           failed */
+        if(found == data.files.end()) {
+            Containers::Array<char> file = extract("shaders.zip", filename);
+            if(!file) return {};
 
-        return Containers::arrayView(found->second);
+            found = data.files.emplace(filename, std::move(file)).first;
+        }
+
+        return Containers::ArrayView<const char>{found->second};
     }, data);
 
 /* extracted from a ZIP */
