@@ -621,7 +621,10 @@ add any performance gains, is not supported in Magnum. See also
 @subsection opengl-unsupported-extensions Unsupported ARB / Khronos extensions
 
 -   @gl_extension{ARB,shading_language_include} is overly complicated and
-    supported exclusively by NVidia
+    supported exclusively by NVidia. However, see the
+    @ref ShaderTools::GlslangConverter "GlslangShaderConverter" plugin for
+    shader preprocessing/compilation that *does* support @cpp #include @ce
+    directives.
 -   @gl_extension{ARB,cl_event} seems to be not supported anywhere
 -   @gl_extension{ARB,shader_stencil_export} is supported exclusively by AMD
 -   @gl_extension{EXT,texture_compression_latc} is superseded by
