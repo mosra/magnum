@@ -896,6 +896,9 @@ class EmscriptenApplication {
         Flags _flags;
         Cursor _cursor;
 
+        bool _deprecatedTargetBehavior{};
+        std::string _canvasTarget;
+
         #ifdef MAGNUM_TARGET_GL
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};
         Containers::Pointer<Platform::GLContext> _context;
