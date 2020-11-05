@@ -352,7 +352,7 @@ void AnyConverterTest::convertDebugInfoNotSupported() {
     Error redirectError{&out};
     CORRADE_VERIFY(!converter->convertFileToFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"),
     Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spvasm")));
-    /** @todo it one may support that, in which case we need to find another
+    /** @todo it once may support that, in which case we need to find another
         victim */
     CORRADE_COMPARE(out.str(),
         "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support controlling debug info output\n");
