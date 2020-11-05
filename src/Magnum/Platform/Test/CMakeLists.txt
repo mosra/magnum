@@ -43,6 +43,8 @@ if(WITH_EMSCRIPTENAPPLICATION)
     add_executable(PlatformEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE MagnumEmscriptenApplication MagnumGL)
     set_target_properties(PlatformEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
+    # Test that the canvas and keylistener can be found with both the old and the new Emscripten target behaviors
+    target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0")
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
@@ -51,6 +53,21 @@ if(WITH_EMSCRIPTENAPPLICATION)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationTest.html
             $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html)
+
+    add_executable(PlatformMultipleEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
+    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE MagnumEmscriptenApplication MagnumGL)
+    set_target_properties(PlatformMultipleEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
+    target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0.2,0,0.2,1)
+    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
+    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
+    add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+            ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+            $<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/MultipleEmscriptenApplicationTest.html
+            $<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>/PlatformMultipleEmscriptenApplicationTest.html)
 endif()
 
 if(WITH_GLFWAPPLICATION)
