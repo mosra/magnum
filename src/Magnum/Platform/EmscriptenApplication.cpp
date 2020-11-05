@@ -269,7 +269,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     _dpiScaling = dpiScaling(configuration);
     if(!configuration.size().isZero()) {
         const Vector2i scaledCanvasSize = configuration.size()*_dpiScaling;
-        emscripten_set_canvas_element_size("#canvas", scaledCanvasSize.x(), scaledCanvasSize.y());
+        emscripten_set_canvas_element_size(_canvasTarget.c_str(), scaledCanvasSize.x(), scaledCanvasSize.y());
     }
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
@@ -327,6 +327,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
     Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
 
+    _canvasTarget = configuration.canvasTarget();
+
     /* Get CSS canvas size and cache it. This is used later to detect canvas
        resizes in emscripten_set_resize_callback() and fire viewport events,
        because browsers are only required to fire resize events on the window
@@ -346,10 +348,10 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     }
     _dpiScaling = dpiScaling(configuration);
     const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
-    emscripten_set_canvas_element_size("#canvas", scaledCanvasSize.x(), scaledCanvasSize.y());
+    emscripten_set_canvas_element_size(_canvasTarget.c_str(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     /* Create WebGL context */
-    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context = emscripten_webgl_create_context("#canvas", &attrs);
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context = emscripten_webgl_create_context(_canvasTarget.c_str(), &attrs);
     if(!context) {
         /* When context creation fails, `context` is a negative integer
            matching EMSCRIPTEN_RESULT_* defines */
@@ -371,23 +373,14 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
 
 Vector2i EmscriptenApplication::windowSize() const {
     Vector2d size;
-    /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
-       depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
-       set (which we can't detect at compile time). Fortunately, using #canvas
-       works the same way both in the previous versions and the current one.
-       Unfortunately, this is also the only value that works the same way for
-       both. Further details at
-       https://github.com/emscripten-core/emscripten/pull/7977 */
-    /** @todo don't hardcode "#canvas" everywhere, make it configurable from outside */
-    emscripten_get_element_css_size("#canvas", &size.x(), &size.y());
+    emscripten_get_element_css_size(_canvasTarget.c_str(), &size.x(), &size.y());
     return Vector2i{Math::round(size)};
 }
 
 #ifdef MAGNUM_TARGET_GL
 Vector2i EmscriptenApplication::framebufferSize() const {
     Vector2i size;
-    /* See above why hardcoded */
-    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
+    emscripten_get_canvas_element_size(_canvasTarget.c_str(), &size.x(), &size.y());
     return size;
 }
 #endif
@@ -423,12 +416,11 @@ void EmscriptenApplication::swapBuffers() {
 /* Called from window resize event but also explicitly from
    setContainerCssClass() */
 void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
-    /* See windowSize() for why we hardcode "#canvas" here */
     const Vector2i canvasSize{windowSize()};
     if(canvasSize != _lastKnownCanvasSize) {
         _lastKnownCanvasSize = canvasSize;
         const Vector2i size = canvasSize*_dpiScaling*_devicePixelRatio;
-        emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
+        emscripten_set_canvas_element_size(_canvasTarget.c_str(), size.x(), size.y());
         ViewportEvent e{event, canvasSize,
             #ifdef MAGNUM_TARGET_GL
             framebufferSize(),
@@ -466,23 +458,21 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         emscripten_set_resize_callback(target, this, false, cb);
     }
 
-    /* See windowSize() for why we hardcode "#canvas" here */
-
-    emscripten_set_mousedown_callback("#canvas", this, false,
+    emscripten_set_mousedown_callback(_canvasTarget.c_str(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
             return e.isAccepted();
         }));
 
-    emscripten_set_mouseup_callback("#canvas", this, false,
+    emscripten_set_mouseup_callback(_canvasTarget.c_str(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
             return e.isAccepted();
         }));
 
-    emscripten_set_mousemove_callback("#canvas", this, false,
+    emscripten_set_mousemove_callback(_canvasTarget.c_str(), this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             auto& app = *static_cast<EmscriptenApplication*>(userData);
             /* With DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR, canvasX/Y is
@@ -499,7 +489,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return e.isAccepted();
         }));
 
-    emscripten_set_wheel_callback("#canvas", this, false,
+    emscripten_set_wheel_callback(_canvasTarget.c_str(), this, false,
         ([](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
             MouseScrollEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
