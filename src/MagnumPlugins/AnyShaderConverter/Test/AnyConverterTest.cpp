@@ -54,11 +54,13 @@ struct AnyConverterTest: TestSuite::Tester {
     void convertNotSupported();
     void convertPreprocessNotSupported();
     void convertDebugInfoNotSupported();
+    void convertOptimizationNotSupported();
     void convertPropagateFlags();
     void convertPropagateInputVersion();
     void convertPropagateOutputVersion();
     void convertPropagatePreprocess();
     void convertPropagateDebugInfo();
+    void convertPropagateOptimization();
 
     void detectValidate();
     void detectConvert();
@@ -106,11 +108,13 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::convertNotSupported,
               &AnyConverterTest::convertPreprocessNotSupported,
               &AnyConverterTest::convertDebugInfoNotSupported,
+              &AnyConverterTest::convertOptimizationNotSupported,
               &AnyConverterTest::convertPropagateFlags,
               &AnyConverterTest::convertPropagateInputVersion,
               &AnyConverterTest::convertPropagateOutputVersion,
               &AnyConverterTest::convertPropagatePreprocess,
-              &AnyConverterTest::convertPropagateDebugInfo});
+              &AnyConverterTest::convertPropagateDebugInfo,
+              &AnyConverterTest::convertPropagateOptimization});
 
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
@@ -358,6 +362,29 @@ void AnyConverterTest::convertDebugInfoNotSupported() {
         "ShaderTools::AnyConverter::convertFileToFile(): SpirvToolsShaderConverter does not support controlling debug info output\n");
 }
 
+void AnyConverterTest::convertOptimizationNotSupported() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("GlslangShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("GlslangShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    converter->setOptimizationLevel("1");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"),
+    Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
+    /** @todo it once may support that, in which case we need to find another
+        victim */
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::AnyConverter::convertFileToFile(): GlslangShaderConverter does not support optimization\n");
+}
+
 void AnyConverterTest::convertPropagateFlags() {
     PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
     #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
@@ -492,6 +519,30 @@ void AnyConverterTest::convertPropagateDebugInfo() {
     CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(),
         "ShaderTools::GlslangConverter::convertDataToData(): debug info level should be 0, 1 or empty but got 2\n");
+}
+
+void AnyConverterTest::convertPropagateOptimization() {
+    PluginManager::Manager<AbstractConverter> manager{MAGNUM_PLUGINS_SHADERCONVERTER_INSTALL_DIR};
+    #ifdef ANYSHADERCONVERTER_PLUGIN_FILENAME
+    CORRADE_VERIFY(manager.load(ANYSHADERCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    if(manager.load("SpirvToolsShaderConverter") < PluginManager::LoadState::Loaded)
+        CORRADE_SKIP("SpirvToolsShaderConverter plugin can't be loaded.");
+
+    Containers::Pointer<AbstractConverter> converter = manager.instantiate("AnyShaderConverter");
+
+    /* This is an invalid level */
+    converter->setOptimizationLevel("2");
+
+    /* We have to supply a valid file path because the version gets checked in
+       doConvertDataToData(), called from AbstractConverter::doConvertFileToFile()
+       with the file contents. */
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.spv"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
+    CORRADE_COMPARE(out.str(),
+        "ShaderTools::SpirvToolsConverter::convertDataToData(): optimization level should be 0, 1, s, legalizeHlsl, vulkanToWebGpu, webGpuToVulkan or empty but got 2\n");
 }
 
 void AnyConverterTest::detectValidate() {

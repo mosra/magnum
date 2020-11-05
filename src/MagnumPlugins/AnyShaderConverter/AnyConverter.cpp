@@ -44,7 +44,7 @@ struct AnyConverter::State {
     Containers::Array<std::pair<Containers::String, Containers::String>> definitions;
     Containers::Array<std::pair<Containers::StringView, Containers::StringView>> definitionViews;
 
-    Containers::String debugInfoLevel;
+    Containers::String debugInfoLevel, optimizationLevel;
 };
 
 AnyConverter::AnyConverter(PluginManager::Manager<AbstractConverter>& manager): AbstractConverter{manager} {}
@@ -54,8 +54,7 @@ AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::s
 AnyConverter::~AnyConverter() = default;
 
 ConverterFeatures AnyConverter::doFeatures() const {
-    /** @todo Optimize, also need checks that the plugin actually supports it */
-    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess|ConverterFeature::DebugInfo;
+    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess|ConverterFeature::DebugInfo|ConverterFeature::Optimize;
 }
 
 void AnyConverter::doSetInputFormat(const Format format, const Containers::StringView version) {
@@ -92,6 +91,10 @@ void AnyConverter::doSetDefinitions(const Containers::ArrayView<const std::pair<
 
 void AnyConverter::doSetDebugInfoLevel(const Containers::StringView level) {
     _state->debugInfoLevel = Containers::String::nullTerminatedGlobalView(level);
+}
+
+void AnyConverter::doSetOptimizationLevel(const Containers::StringView level) {
+    _state->optimizationLevel = Containers::String::nullTerminatedGlobalView(level);
 }
 
 namespace {
@@ -249,6 +252,12 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         return {};
     }
 
+    /* Check that it can optimize, in case we were asked to */
+    if(!_state->optimizationLevel.isEmpty() && !(converter->features() & ConverterFeature::Optimize)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToFile():" << metadata->name() << "does not support optimization";
+        return {};
+    }
+
     /* Propagate input/output version and flags */
     converter->setFlags(flags());
     converter->setInputFormat(_state->inputFormat, _state->inputVersion);
@@ -259,6 +268,8 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
         converter->setDefinitions(_state->definitionViews);
     if(!_state->debugInfoLevel.isEmpty())
         converter->setDebugInfoLevel(_state->debugInfoLevel);
+    if(!_state->optimizationLevel.isEmpty())
+        converter->setOptimizationLevel(_state->optimizationLevel);
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
