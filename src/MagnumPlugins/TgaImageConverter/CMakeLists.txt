@@ -39,7 +39,7 @@ add_plugin(TgaImageConverter
     TgaImageConverter.conf
     TgaImageConverter.cpp
     TgaImageConverter.h)
-if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(TgaImageConverter PUBLIC MagnumTrade)
@@ -55,7 +55,7 @@ install(FILES TgaImageConverter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_D
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 # Automatic static plugin import
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
     target_sources(TgaImageConverter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()

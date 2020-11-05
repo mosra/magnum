@@ -27,7 +27,7 @@
 # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
 # doesn't support dynamic plugins on iOS, this sorta works around that. Should
 # be revisited when updating Travis to newer Xcode (xcode7.3 has CMake 3.6).
-if(NOT BUILD_PLUGINS_STATIC)
+if(NOT MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
     set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
     if(WITH_TGAIMPORTER)
         set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
@@ -43,7 +43,7 @@ file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
 corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp
     LIBRARIES MagnumTrade)
 target_include_directories(TgaImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
     target_link_libraries(TgaImageConverterTest PRIVATE TgaImageConverter)
     if(WITH_TGAIMPORTER)
         target_link_libraries(TgaImageConverterTest PRIVATE TgaImporter)
@@ -56,7 +56,7 @@ else()
     endif()
 endif()
 set_target_properties(TgaImageConverterTest PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter/Test")
-if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)
+if(CORRADE_BUILD_STATIC AND NOT MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC)
     # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
     # That's generally okay, *except if* the build is static, the executable
     # uses a plugin manager and needs to share globals with the plugins (such

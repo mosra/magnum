@@ -39,7 +39,7 @@ add_plugin(AnyImageConverter
     AnyImageConverter.conf
     AnyImageConverter.cpp
     AnyImageConverter.h)
-if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(AnyImageConverter PUBLIC MagnumTrade)
@@ -55,7 +55,7 @@ install(FILES AnyImageConverter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
 
 # Automatic static plugin import
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
     target_sources(AnyImageConverter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()

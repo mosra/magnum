@@ -39,13 +39,13 @@ add_plugin(MagnumFontConverter
     MagnumFontConverter.conf
     MagnumFontConverter.cpp
     MagnumFontConverter.h)
-if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumFontConverter PUBLIC Magnum MagnumText MagnumTrade)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter PUBLIC TgaImageConverter)
-elseif(BUILD_PLUGINS_STATIC)
+elseif(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     target_link_libraries(MagnumFontConverter INTERFACE TgaImageConverter)
 endif()
 # Modify output location only if all are set, otherwise it makes no sense
@@ -60,7 +60,7 @@ install(FILES MagnumFontConverter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
 # Automatic static plugin import
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
     target_sources(MagnumFontConverter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()

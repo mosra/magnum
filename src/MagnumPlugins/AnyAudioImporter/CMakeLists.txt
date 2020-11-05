@@ -39,7 +39,7 @@ add_plugin(AnyAudioImporter
     AnyAudioImporter.conf
     AnyImporter.cpp
     AnyImporter.h)
-if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(AnyAudioImporter PUBLIC Magnum MagnumAudio)
@@ -55,7 +55,7 @@ install(FILES AnyImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
 
 # Automatic static plugin import
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
     target_sources(AnyAudioImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()

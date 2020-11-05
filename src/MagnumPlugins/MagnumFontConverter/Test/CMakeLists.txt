@@ -35,7 +35,7 @@ endif()
 # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
 # doesn't support dynamic plugins on iOS, this sorta works around that. Should
 # be revisited when updating Travis to newer Xcode (xcode7.3 has CMake 3.6).
-if(NOT BUILD_PLUGINS_STATIC)
+if(NOT MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     set(MAGNUMFONTCONVERTER_PLUGIN_FILENAME $<TARGET_FILE:MagnumFontConverter>)
     set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
     if(WITH_TGAIMPORTER)
@@ -55,7 +55,7 @@ corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
         ../../MagnumFont/Test/font.conf
         ../../MagnumFont/Test/font.tga)
 target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     target_link_libraries(MagnumFontConverterTest PRIVATE
         MagnumFontConverter) # TgaImageConverter should get linked transitively
     if(WITH_TGAIMPORTER)
@@ -69,7 +69,7 @@ else()
     endif()
 endif()
 set_target_properties(MagnumFontConverterTest PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter/Test")
-if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)
+if(CORRADE_BUILD_STATIC AND NOT MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC)
     # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
     # That's generally okay, *except if* the build is static, the executable
     # uses a plugin manager and needs to share globals with the plugins (such

@@ -39,7 +39,7 @@ add_plugin(AnySceneConverter
     AnySceneConverter.conf
     AnySceneConverter.cpp
     AnySceneConverter.h)
-if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
+if(MAGNUM_ANYSCENECONVERTER_BUILD_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(AnySceneConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(AnySceneConverter PUBLIC MagnumTrade)
@@ -55,7 +55,7 @@ install(FILES AnySceneConverter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnySceneConverter)
 
 # Automatic static plugin import
-if(BUILD_PLUGINS_STATIC)
+if(MAGNUM_ANYSCENECONVERTER_BUILD_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnySceneConverter)
     target_sources(AnySceneConverter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
