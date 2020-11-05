@@ -146,20 +146,24 @@ MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, ConverterFeatures valu
 enum class ConverterFlag: UnsignedInt {
     /**
      * Suppress warnings, print just errors. By default the converter prints
-     * both warnings and errors.
+     * both warnings and errors. Corresponds to the `-q` / `--quiet` option in
+     * @ref magnum-shaderconverter "magnum-shaderconverter".
      * @see @ref ConverterFlag::WarningAsError
      */
     Quiet = 1 << 0,
 
     /**
      * Print verbose diagnostic. By default the converter only prints warnings
-     * and errors.
+     * and errors. Corresponds to the `-v` / `--verbose` option in
+     * @ref magnum-shaderconverter "magnum-shaderconverter".
      */
     Verbose = 1 << 1,
 
     /**
      * Treat warnings as error. By default, if a warning occurs,
      * validation or conversion succeeds. With this flag set, it fails.
+     * Corresponds to the `--warning-as-error` option in
+     * @ref magnum-shaderconverter "magnum-shaderconverter".
      * @see @ref ConverterFlag::Quiet
      */
     WarningAsError = 1 << 2,
@@ -170,7 +174,9 @@ enum class ConverterFlag: UnsignedInt {
      * @ref AbstractConverter::linkDataToData(),
      * @ref AbstractConverter::linkDataToFile(),
      * @ref AbstractConverter::linkFilesToFile() or
-     * @ref AbstractConverter::linkFilesToData().
+     * @ref AbstractConverter::linkFilesToData(). Corresponds to the `-E` /
+     * `--preprocess-only` option in
+     * @ref magnum-shaderconverter "magnum-shaderconverter".
      */
     PreprocessOnly = 1 << 3
 };
@@ -510,6 +516,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ConverterFlag for more
          * information. By default no flags are set.
+         *
+         * Corresponds to the `-q` / `--quiet`, `-v` / `--verbose`,
+         * `--warning-as-error` and `-E` / `--preprocess-only` options
+         * in @ref magnum-shaderconverter "magnum-shaderconverter".
          */
         void setFlags(ConverterFlags flags);
 
@@ -623,6 +633,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref convertFileToFile(), @ref convertFileToData(),
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
+         *
+         * The @p version parameter corresponds to the `--input-version` option
+         * in @ref magnum-shaderconverter "magnum-shaderconverter", the
+         * @p format isn't currently exposed there.
          * @see @ref setOutputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -643,6 +657,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref convertFileToFile(), @ref convertFileToData(),
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
+         *
+         * The @p version parameter corresponds to the `--output-version`
+         * option in @ref magnum-shaderconverter "magnum-shaderconverter", the
+         * @p format isn't currently exposed there.
          * @see @ref setInputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -663,6 +681,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Calling this function replaces the previous set, calling it with an
          * empty list will reset the definitions back to initial state.
+         *
+         * Corresponds to the `-D` / `--define` and `-U` / `--undefine` options
+         * in @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref ConverterFlag::PreprocessOnly
          */
         void setDefinitions(Containers::ArrayView<const std::pair<Containers::StringView, Containers::StringView>> definitions);
@@ -681,6 +702,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * or @ref linkFilesToData() call will fail.
          *
          * Has no effect for @ref validateData() or @ref validateFile().
+         *
+         * Corresponds to the `-O` / `--optimize` option in
+         * @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref setDebugInfoLevel()
          */
         void setOptimizationLevel(Containers::StringView level);
@@ -696,6 +720,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * or @ref linkFilesToData() call will fail.
          *
          * Has no effect for @ref validateData() or @ref validateFile().
+         *
+         * Corresponds to the `-g` / `--debug-info` option in
+         * @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref setOptimizationLevel()
          */
         void setDebugInfoLevel(Containers::StringView level);
@@ -734,6 +761,8 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *      happen that the returned string is empty and a message is
          *      printed to error output instead.
          *
+         * Corresponds to the `--validate` option in
+         * @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref features(), @ref validateData()
          */
         std::pair<bool, Containers::String> validateFile(Stage stage, Containers::StringView filename);
@@ -767,6 +796,10 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref ConverterFeature::ConvertData is supported. Returns
          * @cpp true @ce on success, prints an error message and returns
          * @cpp false @ce otherwise.
+         *
+         * Corresponds to the default behavior of
+         * @ref magnum-shaderconverter "magnum-shaderconverter" when neither
+         * `--validate` nor `--link` is specified.
          * @see @ref features(), @ref convertFileToData(),
          *      @ref convertDataToData(), @ref convertDataToFile()
          */
@@ -823,6 +856,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * otherwise. Can't be called if @ref ConverterFlag::PreprocessOnly is
          * set --- in that case  @ref convertFileToFile() has to be used
          * instead.
+         *
+         * Corresponds to the `--link` option in
+         * @ref magnum-shaderconverter "magnum-shaderconverter".
          * @see @ref features(), @ref linkFilesToData(), @ref linkDataToFile(),
          *      @ref linkDataToData()
          */

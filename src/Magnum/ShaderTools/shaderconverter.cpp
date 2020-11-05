@@ -71,22 +71,34 @@ magnum-shaderconverter [-h|--help] [--validate] [--link]
 Arguments:
 
 -   `input` --- input file(s)
--   `output` --- output file, ignored if `--validate` is present
+-   `output` --- output file, ignored if `--validate` is present. If neither
+    `--validate` nor `--link` is present, corresponds to the
+    @ref ShaderTools::AbstractConverter::convertFileToFile() function.
 -   `-h`, `--help` --- display this help message and exit
--   `--validate` --- validate input
--   `--link` --- link multiple input files together
+-   `--validate` --- validate input. Corresponds to the
+    @ref ShaderTools::AbstractConverter::validateFile() function.
+-   `--link` --- link multiple input files together. Corresponds to the
+    @ref ShaderTools::AbstractConverter::linkFilesToFile() function.
 -   `-C`, `--converter CONVERTER` --- shader converter plugin(s)
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
--   `-q`, `--quiet` --- quiet output from converter plugin(s)
--   `-v`, `--verbose` --- verbose output from converter plugin(s)
--   `--warning-as-error` --- treat warnings as errors
--   `-E`, `--preprocess-only` --- preprocess the input file and exit
--   `-D`, `--define name=value` --- define a preprocessor macro
--   `-U`, `--undefine name` --- undefine a preprocessor macro
--   `-O`, `--optimize LEVEL` --- optimization level to use
--   `-g`, `--debug-info LEVEL` --- debug info level to use
+-   `-q`, `--quiet` --- quiet output from converter plugin(s). Corresponds to
+    the @ref ShaderTools::ConverterFlag::Quiet flag.
+-   `-v`, `--verbose` --- verbose output from converter plugin(s). Corresponds
+    to the @ref ShaderTools::ConverterFlag::Verbose flag.
+-   `--warning-as-error` --- treat warnings as errors. Corresponds to the
+    @ref ShaderTools::ConverterFlag::WarningAsError flag.
+-   `-E`, `--preprocess-only` --- preprocess the input file and exit.
+    Corresponds to the @ref ShaderTools::ConverterFlag::PreprocessOnly flag.
+-   `-D`, `--define name=value` --- define a preprocessor macro. Corresponds to
+    the @ref ShaderTools::AbstractConverter::setDefinitions() function.
+-   `-U`, `--undefine name` --- undefine a preprocessor macro. Corresponds to
+    the @ref ShaderTools::AbstractConverter::setDefinitions() function.
+-   `-O`, `--optimize LEVEL` --- optimization level to use. Corresponds to the
+    @ref ShaderTools::AbstractConverter::setOptimizationLevel() function.
+-   `-g`, `--debug-info LEVEL` --- debug info level to use. Corresponds to the
+    @ref ShaderTools::AbstractConverter::setDebugInfoLevel() function.
 -   `--input-version VERSION` --- input format version for each converter
 -   `--output-version VERSION` --- output format version for each converter
 
