@@ -516,7 +516,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         if(element === document) return 1;
         if(element === window) return 2;
         if('id' in element)
-            return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
+            return allocate(intArrayFromString('#' + element.id), 'i8', ALLOC_NORMAL);
 
         return 0;
     }));
@@ -527,7 +527,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         if(element === document) element = {id: '#document'};
         if(element === window) element = {id: '#window'};
         if('id' in element)
-            return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
+            return allocate(intArrayFromString('#' + element.id), 'i8', ALLOC_NORMAL);
 
         return 0;
     }));
