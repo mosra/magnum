@@ -112,7 +112,7 @@ package() {
     DESTDIR="$pkgdir/" ninja install
 
     # Prevent the release version from overwriting the debug binary
-    for i in al-info gl-info distancefieldconverter fontconverter imageconverter sceneconverter; do
+    for i in al-info gl-info distancefieldconverter fontconverter imageconverter sceneconverter shaderconverter; do
         mv $pkgdir/usr/bin/magnum-${i}{,d}
     done
 
