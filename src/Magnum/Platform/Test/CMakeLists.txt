@@ -51,6 +51,22 @@ if(WITH_EMSCRIPTENAPPLICATION)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationTest.html
             $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html)
+
+    add_executable(PlatformEmscriptenApplicationCustomCanvasTest EmscriptenApplicationTest.cpp)
+    target_link_libraries(PlatformEmscriptenApplicationCustomCanvasTest PRIVATE MagnumEmscriptenApplication MagnumGL)
+    set_target_properties(PlatformEmscriptenApplicationCustomCanvasTest PROPERTIES FOLDER "Magnum/Platform/Test")
+    target_compile_definitions(PlatformEmscriptenApplicationCustomCanvasTest PRIVATE CUSTOM_CANVAS_ID)
+    add_custom_command(TARGET PlatformEmscriptenApplicationCustomCanvasTest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+        ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+        ${CMAKE_CURRENT_SOURCE_DIR}/PatchWebApplicationCssCustomCanvas.cmake
+        $<TARGET_FILE_DIR:PlatformEmscriptenApplicationCustomCanvasTest>
+        COMMAND ${CMAKE_COMMAND} -P PatchWebApplicationCssCustomCanvas.cmake
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationCustomCanvasTest.html
+            $<TARGET_FILE_DIR:PlatformEmscriptenApplicationCustomCanvasTest>/PlatformEmscriptenApplicationCustomCanvasTest.html
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:PlatformEmscriptenApplicationCustomCanvasTest>)
 endif()
 
 if(WITH_GLFWAPPLICATION)

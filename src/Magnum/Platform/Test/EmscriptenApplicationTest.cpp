@@ -153,7 +153,11 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         return;
     }
 
-    create(Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)
+    create(Configuration{}
+        .setWindowFlags(Configuration::WindowFlag::Resizable)
+        #ifdef CUSTOM_CANVAS_ID
+        .setCanvasTarget("#canvas2")
+        #endif
         //, GLConfiguration{}.setFlags({})
     );
 

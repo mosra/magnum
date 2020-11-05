@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum EmscriptenApplication Test</title>
+  <link rel="stylesheet" href="WebApplicationCustomCanvas.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum EmscriptenApplication Custom Canvas Test</h1>
+  <div id="container" class="">
+    <div id="sizer"><div id="expander"><div id="listener">
+      <canvas id="canvas2" tabindex="0"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="status-description"></div>
+      <script src="EmscriptenApplication.js"></script>
+      <script>
+      /* Override default canvas set in EmscriptenApplication.js */
+      Module.canvas = document.getElementById('canvas2');
+      </script>
+      <script async="async" src="PlatformEmscriptenApplicationCustomCanvasTest.js"></script>
+      <script>
+      /* To test keyboard capture directly on the canvas */
+      Module.keyboardListeningElement = Module.canvas;
+      Module.canvas.addEventListener('mousedown', function(event) {
+          event.target.focus();
+      });
+      </script>
+    </div></div></div>
+    <!-- To test that it doesn't render into the default canvas -->
+    <canvas id="canvas"></canvas>
+  </div>
+</body>
+</html>
