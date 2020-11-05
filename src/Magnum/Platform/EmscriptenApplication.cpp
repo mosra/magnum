@@ -266,6 +266,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     }
     #endif
 
+    _canvasTarget = configuration.canvasTarget();
+
     _dpiScaling = dpiScaling(configuration);
     if(!configuration.size().isZero()) {
         const Vector2i scaledCanvasSize = configuration.size()*_dpiScaling;
