@@ -402,7 +402,13 @@ void EmscriptenApplication::setWindowTitle(const std::string& title) {
 void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({document.getElementById('container').className = AsciiToString($0);}, cssClass.data());
+    EM_ASM_({
+        /* Handle also the classic #container for backwards compatibility. We
+           also need to preserve the mn-container otherwise next time we'd have
+           no way to look for it anymore. */
+        (Module['canvas'].closest('.mn-container') ||
+         document.getElementById('container')).className = (['mn-container', AsciiToString($0)]).join(' ');
+    }, cssClass.data());
     #pragma GCC diagnostic pop
 
     /* Trigger a potential viewport event -- we don't poll the canvas size like
