@@ -330,7 +330,7 @@ element) from the page to avoid them affecting the canvas. Combining
 Besides the canvas, there's minimal styling for @cb{.html} <h1> @ce,
 @cb{.html} <p> @ce and @cb{.html} <code> @ce tags. Putting extra content inside
 the @cb{.css} div#sizer @ce will center it, following the canvas width. If you
-need more advanced styling, check out [m.css](http://mcss.mosra.cz).
+need more advanced styling, check out [m.css](https://mcss.mosra.cz).
 
 @note It's also possible to modify the container CSS classes from the C++ side
     using @ref Platform::EmscriptenApplication::setContainerCssClass() /
