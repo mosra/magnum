@@ -47,18 +47,19 @@ var Module = {
     },
 
     canvas: document.getElementById('canvas'),
+    status: document.getElementById('status'),
+    statusDescription: document.getElementById('status-description'),
 
     setStatus: function(message) {
-        var status = document.getElementById('status');
         /* Emscripten calls setStatus("") after a timeout even if the app
            aborts. That would erase the crash message, so don't allow that */
-        if(status && status.innerHTML != "Oops :(")
-            status.innerHTML = message;
+        if(Module.status && Module.status.innerHTML != "Oops :(")
+            Module.status.innerHTML = message;
     },
 
     setStatusDescription: function(message) {
-        var statusDescription = document.getElementById('status-description');
-        if(statusDescription) statusDescription.innerHTML = message;
+        if(Module.statusDescription)
+            Module.statusDescription.innerHTML = message;
     },
 
     totalDependencies: 0,

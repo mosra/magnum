@@ -50,15 +50,17 @@ var Module = {
     /* onAbort not handled here, as the output is printed directly on the page */
 
     canvas: document.getElementById('canvas'),
+    status: document.getElementById('status'),
+    statusDescription: document.getElementById('status-description'),
+    log: document.getElementById('log'),
 
     setStatus: function(message) {
-        var status = document.getElementById('status');
-        if(status) status.innerHTML = message;
+        if(Module.status) Module.status.innerHTML = message;
     },
 
     setStatusDescription: function(message) {
-        var statusDescription = document.getElementById('status-description');
-        if(statusDescription) statusDescription.innerHTML = message;
+        if(Module.statusDescription)
+            Module.statusDescription.innerHTML = message;
     },
 
     totalDependencies: 0,
@@ -72,7 +74,7 @@ var Module = {
         } else {
             Module.setStatus('Download complete');
             Module.setStatusDescription('');
-            document.getElementById('log').style.display = 'block';
+            Module.log.style.display = 'block';
         }
     }
 };
@@ -92,4 +94,4 @@ for(var i = 0; i != args.length; ++i) {
 }
 
 Module.setStatus('Downloading...');
-document.getElementById('log').style.display = 'none';
+Module.log.style.display = 'none';
