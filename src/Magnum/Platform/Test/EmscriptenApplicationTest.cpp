@@ -101,7 +101,7 @@ struct EmscriptenApplicationTest: Platform::Application {
             stopTextInput();
         } else if(event.key() == KeyEvent::Key::F) {
             Debug{} << "toggling fullscreen";
-            setContainerCssClass((_fullscreen ^= true) ? "fullsize" : "");
+            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™!");

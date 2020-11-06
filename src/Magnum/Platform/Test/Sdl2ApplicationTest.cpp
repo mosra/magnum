@@ -125,7 +125,7 @@ struct Sdl2ApplicationTest: Platform::Application {
         #else
         else if(event.key() == KeyEvent::Key::F) {
             Debug{} << "toggling fullscreen";
-            setContainerCssClass((_fullscreen ^= true) ? "fullsize" : "");
+            setContainerCssClass((_fullscreen ^= true) ? "mn-fullsize" : "");
         }
         #endif
     }
