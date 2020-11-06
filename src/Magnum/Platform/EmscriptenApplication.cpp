@@ -117,7 +117,7 @@ namespace {
        or 'Minus'. Note that the Y key on some layouts may result in 'KeyZ'. */
     Key toKey(const EM_UTF8* const key, const EM_UTF8* const code) {
         const Containers::StringView keyView = key;
-        if(keyView.isEmpty() == 0) return Key::Unknown;
+        if(keyView.isEmpty()) return Key::Unknown;
 
         /* We use key for a-z as it gives us a keyboard layout respecting
            representation of the key, i.e. we get `z` for z depending on layout
