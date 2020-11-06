@@ -36,31 +36,37 @@ body {
   color: #dcdcdc; /*var(--color)*/
 }
 
-/* #container         makes the canvas occupy the whole page width
-   #sizer             centers it
-   #expander          does aspect ratio preservation
-   #listener          snaps to #expander edges
-   #listener::before  does the border, which finally goes below the canvas */
-#container {
+/* .mn-container         makes the canvas occupy the whole page width
+   .mn-sizer             centers it
+   .mn-expander          does aspect ratio preservation
+   .mn-listener          snaps to #expander edges
+   .mn-listener::before  does the border, which finally goes below the canvas
+   .mn-canvas            is the canvas
+
+   The #container, #sizer, #expander, #listener, #canvas IDs are kept for
+   backwards compatibility purposes but are discouraged as the mn-prefixed
+   classes are less likely to clash with other markup and allow more than one
+   canvas on a page. TODO: remove in 2022 and require classes */
+.mn-container, #container {
   margin: 1rem -1rem 1rem -1rem;
 }
-#sizer {
+.mn-sizer, #sizer {
   margin-left: auto;
   margin-right: auto;
   max-width: 100%;
   width: 640px;
 }
-#expander {
+.mn-expander, #expander {
   position: relative;
 }
-#listener {
+.mn-listener, #listener {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
 }
-#listener::before {
+.mn-listener::before, #listener::before {
   position: absolute;
   content: ' ';
   top: 0;
@@ -74,8 +80,9 @@ body {
   border-color: #405363; /*var(--line-color)*/
 }
 
-/* Canvas size and aspect ratio knobs */
-#container.fullsize {
+/* Canvas size and aspect ratio knobs. Again the unprefixed variants are for
+   backwards compatibility purposes. */
+.mn-container.mn-fullsize, #container.fullsize {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -83,63 +90,97 @@ body {
   right: 0;
   margin: 0;
 }
-#container.fullsize #sizer, #container.fullsize #expander {
+.mn-container.mn-fullsize .mn-sizer, #container.fullsize #sizer,
+.mn-container.mn-fullsize .mn-expander, #container.fullsize #expander {
   width: 100%; height: 100%;
 }
 
-#container.width-240 #sizer { width: 240px; }
-#container.width-320 #sizer { width: 320px; }
-#container.width-360 #sizer { width: 360px; }
-#container.width-480 #sizer { width: 480px; }
-#container.width-600 #sizer { width: 600px; }
-#container.width-640 #sizer, #container #sizer {
+.mn-container.mn-width-240 .mn-sizer, #container.width-240 #sizer {
+  width: 240px;
+}
+.mn-container.mn-width-320 .mn-sizer, #container.width-320 #sizer {
+  width: 320px;
+}
+.mn-container.mn-width-360 .mn-sizer, #container.width-360 #sizer {
+  width: 360px;
+}
+.mn-container.mn-width-480 .mn-sizer, #container.width-480 #sizer {
+  width: 480px;
+}
+.mn-container.mn-width-600 .mn-sizer, #container.width-600 #sizer {
+  width: 600px;
+}
+.mn-container.mn-width-640 .mn-sizer, #container.width-640 #sizer,
+.mn-container .mn-sizer, #container #sizer {
   width: 640px; /* default */
 }
-#container.width-800 #sizer { width: 800px; }
+.mn-container.mn-width-800 .mn-sizer, #container.width-800 #sizer {
+  width: 800px;
+}
 
-#container.aspect-1-1 #expander { padding-bottom: 100%; }
-#container.aspect-4-3 #expander, #container:not(.fullsize):not([class*='aspect-']) #expander {
+.mn-container.mn-aspect-1-1 .mn-expander, #container.aspect-1-1 #expander {
+  padding-bottom: 100%;
+}
+.mn-container.mn-aspect-4-3 .mn-expander, #container.aspect-4-3 #expander,
+.mn-container:not(.mn-fullsize):not([class*='mn-aspect-']) .mn-expander,
+#container:not(.fullsize):not([class*='aspect-']) #expander {
   padding-bottom: 75%; /* default */
 }
-#container.aspect-3-4 #expander { padding-bottom: 133.3333%; }
-#container.aspect-3-2 #expander { padding-bottom: 66.6667%; }
-#container.aspect-2-3 #expander { padding-bottom: 150%; }
-#container.aspect-16-9 #expander { padding-bottom: 56.25% }
-#container.aspect-9-16 #expander { padding-bottom: 177.7778% }
-#container.aspect-2-1 #expander { padding-bottom: 50%; }
-#container.aspect-1-2 #expander { padding-bottom: 200%; }
+.mn-container.mn-aspect-3-4 .mn-expander, #container.aspect-3-4 #expander {
+  padding-bottom: 133.3333%;
+}
+.mn-container.mn-aspect-3-2 .mn-expander, #container.aspect-3-2 #expander {
+  padding-bottom: 66.6667%;
+}
+.mn-container.mn-aspect-2-3 .mn-expander, #container.aspect-2-3 #expander {
+  padding-bottom: 150%;
+}
+.mn-container.mn-aspect-16-9 .mn-expander, #container.aspect-16-9 #expander {
+  padding-bottom: 56.25%
+}
+.mn-container.mn-aspect-9-16 .mn-expander, #container.aspect-9-16 #expander {
+  padding-bottom: 177.7778%
+}
+.mn-container.mn-aspect-2-1 .mn-expander, #container.aspect-2-1 #expander {
+  padding-bottom: 50%;
+}
+.mn-container.mn-aspect-1-2 .mn-expander, #container.aspect-1-2 #expander {
+  padding-bottom: 200%;
+}
 
-#canvas, pre#log {
+.mn-canvas, #canvas, pre.mn-log, pre#log {
   max-width: 100%;
   width: 100%;
   z-index: 10;
   border-radius: 0.2rem; /*var(--border-radius)*/
 }
-#canvas:focus { outline-color: #5b9dd9; } /*var(--header-link-current-color)*/
-#canvas {
+.mn-canvas:focus, #canvas:focus {
+  outline-color: #5b9dd9; /*var(--header-link-current-color)*/
+}
+.mn-canvas, #canvas {
   height: 100%;
   margin-bottom: -0.25rem; /* otherwise there's scrollbar w/ fullsize (why?) */
 }
-#status, #status-description {
+.mn-status, #status, .mn-status-description, #status-description {
   position: absolute;
   text-align: center;
   width: 100%;
   z-index: 9;
 }
-#status {
+.mn-status, #status {
   top: 10%;
   font-size: 1.5rem;
   font-weight: 600;
 }
-#status-description {
+.mn-status-description, #status-description {
   top: 22.5%;
   padding-left: 2rem;
   padding-right: 2rem;
 }
-#canvas.hidden {
+.mn-canvas.mn-hidden, #canvas.hidden {
   display: none;
 }
-pre#log {
+pre.mn-log, pre#log {
   /* Make it fill at least the space given to it but let it expand beyond
      (scrollbars in that tiny area are useless) */
   min-height: 100%;
@@ -158,7 +199,7 @@ h1 {
   font-size: 1.75rem;
   font-weight: 600;
 }
-#sizer p {
+.mn-sizer p, #sizer p {
   text-align: center;
 }
 code {

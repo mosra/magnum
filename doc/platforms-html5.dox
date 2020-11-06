@@ -129,11 +129,11 @@ variables.
 </head>
 <body>
   <h1>Magnum Emscripten Application</h1>
-  <div id="container">
-    <div id="sizer"><div id="expander"><div id="listener">
-      <canvas id="canvas"></canvas>
-      <div id="status">Initialization...</div>
-      <div id="status-description"></div>
+  <div class="mn-container">
+    <div class="mn-sizer"><div class="mn-expander"><div class="mn-listener">
+      <canvas class="mn-canvas" id="canvas"></canvas>
+      <div class="mn-status" id="status">Initialization...</div>
+      <div class="mn-status-description" id="status-description"></div>
       <script src="EmscriptenApplication.js"></script>
       <script async="async" src="{{ application }}.js"></script>
     </div></div></div>
@@ -142,17 +142,29 @@ variables.
 </html>
 @endcode
 
+@m_class{m-note m-danger}
+
+@par
+    For backwards compatibility purposes the default CSS style supports also
+    @cb{.css} #container @ce, @cb{.css} #sizer @ce, @cb{.css} #expander @ce,
+    @cb{.css} #listener @ce, @cb{.css} #canvas @ce, @cb{.css} #status @ce and
+    @cb{.css} #status-description @ce IDs instead of the @cb{.css} .mn- @ce
+    prefixed classes, but their use is discouraged as the classes are less
+    likely to clash with other markup and allow more than one
+    @cb{.html} <canvas> @ce on a page. This compatibility is scheduled to be
+    removed in the future.
+
 For basic usage you don't need to modify the CSS and JS files at all and
 everything can be set up directly from the HTML markup. Replace
 @cb{.jinja} {{ application }} @ce with the name of your application executable
 and adapt page title and heading as desired. You can modify all files to your
-liking, but the HTML file must contain at least
-@cb{.html} <canvas id="canvas"> @ce enclosed in
-@cb{.html} <div id="listener"> @ce. The JavaScript file contains event
-listeners that print loading status on the page. The status is displayed in the
-remaining two @cb{.html} <div> @ce s, if they are available. The CSS file
-contains a basic style, see @ref platforms-html5-layout "below" for available
-options to tweak the default look.
+liking, but the HTML file must contain at least a
+@cb{.html} <canvas id="canvas"> @ce referenced in @cb{.js} Module.canvas @ce.
+The JavaScript file contains event listeners that print loading status on the
+page. The status is displayed in the remaining two @cb{.html} <div> @ce s, if
+they are available. The CSS file contains a basic style, see
+@ref platforms-html5-layout "below" for available options to tweak the default
+look.
 
 In order to deploy the app, you need to put the JS driver code, the WebAssembly
 binary (or the asm.js memory image, in case you are compiling with the classic
@@ -228,12 +240,12 @@ and `MAGNUM_WEBAPPLICATION_CSS` CMake variables.
 </head>
 <body>
   <h1>Magnum Windowless Emscripten Application</h1>
-  <div id="container">
-    <div id="sizer"><div id="expander"><div id="listener">
-      <canvas id="canvas" class="hidden"></canvas>
-      <pre id="log"></pre>
-      <div id="status">Initialization...</div>
-      <div id="status-description"></div>
+  <div class="mn-container">
+    <div class="mn-sizer"><div class="mn-expander"><div class="mn-listener">
+      <canvas class="mn-canvas mn-hidden" id="canvas"></canvas>
+      <pre class="mn-log" id="log"></pre>
+      <div class="mn-status" id="status">Initialization...</div>
+      <div class="mn-status-description" id="status-description"></div>
       <script src="WindowlessEmscriptenApplication.js"></script>
       <script async="async" src="{{ application }}.js"></script>
     </div></div></div>
@@ -241,6 +253,18 @@ and `MAGNUM_WEBAPPLICATION_CSS` CMake variables.
 </body>
 </html>
 @endcode
+
+@m_class{m-note m-danger}
+
+@par
+    For backwards compatibility purposes the default CSS style supports also
+    @cb{.css} #container @ce, @cb{.css} #sizer @ce, @cb{.css} #expander @ce,
+    @cb{.css} #listener @ce, @cb{.css} #canvas @ce, @cb{.css} #log @ce,
+    @cb{.css} #status @ce and @cb{.css} #status-description @ce IDs instead of
+    the @cb{.css} .mn- @ce prefixed classes, but their use is discouraged as
+    the classes are less likely to clash with other markup and allow more than
+    one @cb{.html} <canvas> @ce on a page. This compatibility is scheduled to
+    be removed in the future.
 
 Replace @cb{.jinja} {{ application }} @ce with the name of your application
 executable. You can modify all the files to your liking, but the HTML file must
@@ -273,68 +297,81 @@ endif()
 @section platforms-html5-layout Modifying page style, canvas size and aspect ratio
 
 The `WebApplication.css` file contains a basic style and the additional
-@cb{.css} #container @ce, @cb{.css} #sizer @ce, @cb{.css} #expander @ce and
-@cb{.css} #listener @ce @cb{.html} <div> @ce s take care of aligning the canvas
-to the center and making it responsively scale on narrow screens, preserving
-aspect ratio. For proper responsiveness on all platforms it's important to
-include the @cb{.html} <meta name="viewport"> @ce tag in the HTML markup as
-well.
+@cb{.css} .mn-container @ce, @cb{.css} .mn-sizer @ce, @cb{.css} .mn-expander @ce
+and @cb{.css} .mn-listener @ce @cb{.html} <div> @ce s take care of aligning the
+canvas to the center and making it responsively scale on narrow screens,
+preserving aspect ratio. For proper responsiveness on all platforms it's
+important to include the @cb{.html} <meta name="viewport"> @ce tag in the HTML
+markup as well.
 
 By default the canvas is @cpp 640px @ce wide with a 4:3 aspect ratio, you can
-modify this by placing one of the @cb{.css} .aspect-* @ce CSS classes on the
-@cb{.html} <div id="container"> @ce:
+modify this by placing one of the @cb{.css} .mn-aspect-* @ce CSS classes on the
+@cb{.html} <div class="mn-container"> @ce:
 
 Aspect ratio    | CSS class (landscape/portrait)
 --------------- | ------------------------------
-1:1             | @cb{.css} .aspect-1-1 @ce <b></b>
-4:3 (1.33:1)    | @cb{.css} .aspect-4-3 @ce (default) / @cb{.css} .aspect-3-4 @ce
-3:2 (1.5:1)     | @cb{.css} .aspect-3-2 @ce / @cb{.css} .aspect-2-3 @ce
-16:9 (1.78:1)   | @cb{.css} .aspect-16-9 @ce / @cb{.css} .aspect-9-16 @ce
-2:1             | @cb{.css} .aspect-2-1 @ce / @cb{.css} .aspect-1-2 @ce
+1:1             | @cb{.css} .mn-aspect-1-1 @ce <b></b>
+4:3 (1.33:1)    | @cb{.css} .mn-aspect-4-3 @ce (default) / @cb{.css} .mn-aspect-3-4 @ce
+3:2 (1.5:1)     | @cb{.css} .mn-aspect-3-2 @ce / @cb{.css} .mn-aspect-2-3 @ce
+16:9 (1.78:1)   | @cb{.css} .mn-aspect-16-9 @ce / @cb{.css} .mn-aspect-9-16 @ce
+2:1             | @cb{.css} .mn-aspect-2-1 @ce / @cb{.css} .mn-aspect-1-2 @ce
 
 For example, for a 640x360 canvas (16:9 aspect ratio), you would use
-@cb{.html} <div id="container" class="aspect-16-9"> @ce. Besides the predefined
-classes above, it's also possible to specify your own aspect ratio using a
-@cb{.css} padding-bottom @ce style with a percentage equal to inverse of
-the ratio for @cb{.css} div#expander @ce --- for example, a 2.35:1 ratio would
-be @cb{.html} <div id="expander" style="padding-bottom: 42.553%"> @ce.
+@cb{.html} <div class="mn-container mn-aspect-16-9"> @ce. Besides the
+predefined classes above, it's also possible to specify your own aspect ratio
+using a @cb{.css} padding-bottom @ce style with a percentage equal to inverse
+of the ratio for @cb{.css} div#expander @ce --- for example, a 2.35:1 ratio
+would be @cb{.html} <div class="mn-expander" style="padding-bottom: 42.553%"> @ce.
 
 Size of the canvas can be also overriden by specifying one of the
-@cb{.css} .width-* @ce CSS classes on the @cb{.html} <div id="container"> @ce:
+@cb{.css} .mn-width-* @ce CSS classes on the
+@cb{.html} <div class="mn-container"> @ce:
 
 Width           | CSS class
 --------------- | ---------
-240px           | @cb{.css} .width-240 @ce <b></b>
-320px           | @cb{.css} .width-320 @ce <b></b>
-360px           | @cb{.css} .width-360 @ce <b></b>
-480px           | @cb{.css} .width-480 @ce <b></b>
-600px           | @cb{.css} .width-600 @ce <b></b>
-640px           | @cb{.css} .width-640 @ce (default)
-800px           | @cb{.css} .width-800 @ce <b></b>
+240px           | @cb{.css} .mn-width-240 @ce <b></b>
+320px           | @cb{.css} .mn-width-320 @ce <b></b>
+360px           | @cb{.css} .mn-width-360 @ce <b></b>
+480px           | @cb{.css} .mn-width-480 @ce <b></b>
+600px           | @cb{.css} .mn-width-600 @ce <b></b>
+640px           | @cb{.css} .mn-width-640 @ce (default)
+800px           | @cb{.css} .mn-width-800 @ce <b></b>
 
 For example, for a 480x640 canvas (3:4, portrait) you would use
-@cb{.html} <div id="container" class="width-480 aspect-3-4"> @ce. Besides the
-predefined classes above, it's also possible to specify your own by adding a
-@cb{.css} width @ce style to the @cb{.css} div#sizer @ce --- for example, a
-1024x768 canvas would be @cb{.html} <div id="sizer" style="width: 1024px"> @ce.
-Again note that if the canvas is larger than window width, it gets
-automatically scaled down, preserving its aspect ratio.
+@cb{.html} <div class="mn-container mn-width-480 mn-aspect-3-4"> @ce. Besides
+the predefined classes above, it's also possible to specify your own by adding
+a @cb{.css} width @ce style to the @cb{.css} div.mn-sizer @ce --- for example,
+a 1024x768 canvas would be
+@cb{.html} <div class="mn-sizer" style="width: 1024px"> @ce. Again note that if
+the canvas is larger than window width, it gets automatically scaled down,
+preserving its aspect ratio.
 
 It's also possible to stretch the canvas to occupy the full page using the
-@cb{.css} .fullsize @ce CSS class set to @cb{.css} div#container @ce. In this
-case it's advised to remove all other elements (such as the @cb{.html} <h1> @ce
-element) from the page to avoid them affecting the canvas. Combining
-@cb{.css} .fullsize @ce with the other @cb{.css} .aspect-* @ce or
-@cb{.css} .width-* @ce classes is not supported.
+@cb{.css} .mn-fullsize @ce CSS class set to @cb{.css} div.mn-container @ce. In
+this case it's advised to remove all other elements (such as the
+@cb{.html} <h1> @ce element) from the page to avoid them affecting the canvas.
+Combining @cb{.css} .mn-fullsize @ce with the other @cb{.css} .mn-aspect-* @ce
+or @cb{.css} .mn-width-* @ce classes is not supported.
 
 Besides the canvas, there's minimal styling for @cb{.html} <h1> @ce,
 @cb{.html} <p> @ce and @cb{.html} <code> @ce tags. Putting extra content inside
-the @cb{.css} div#sizer @ce will center it, following the canvas width. If you
-need more advanced styling, check out [m.css](https://mcss.mosra.cz).
+the @cb{.css} div.mn-sizer @ce will center it, following the canvas width. If
+you need more advanced styling, check out [m.css](https://mcss.mosra.cz).
 
 @note It's also possible to modify the container CSS classes from the C++ side
     using @ref Platform::EmscriptenApplication::setContainerCssClass() /
     @ref Platform::Sdl2Application::setContainerCssClass().
+
+@m_class{m-note m-danger}
+
+@par
+    For backwards compatibility purposes, on a markup that uses the discouraged
+    @cb{.css} #container @ce, @cb{.css} #sizer @ce, @cb{.css} #expander @ce,
+    @cb{.css} #listener @ce, @cb{.css} #status @ce, @cb{.css} #canvas @ce and
+    @cb{.css} #status-description @ce IDs, the above @cb{.css} .mn-width-* @ce
+    and @cb{.css} .mn-aspect-* @ce CSS classes are supported without the
+    @cb{.css} .mn- @ce prefix. This compatibility is scheduled to be removed in
+    the future.
 
 @section platforms-html5-files Bundling files
 
