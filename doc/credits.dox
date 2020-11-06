@@ -176,11 +176,11 @@ Are the below lists missing your name or something's wrong?
 -   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- warning
     fixes, Windows buildsystem improvements
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
-    Gentoo ebuild
+    Gentoo ebuild)
+-   **Pablo Escobar** ([\@pezcode](https://github.com/pezcode)) --- @ref Math
+    additions, @ref Platform::EmscriptenApplication improvements
 -   **Pascal Thomet** ([\@pthom](https://github.com/pthom)) --- C++17
     compilation fixes, buildsystem improvements, Hunter package
--   **Pablo Escobar** ([\@pezcode](https://github.com/pezcode)) --- @ref Math
-    additions
 -   **Sam Spilsbury** ([\@smspillaz](https://github.com/smspillaz)) --- WebGL
     and GLES fixes
 -   **Samuel Kogler** ([\@skogler](https://github.com/skogler)) ---
