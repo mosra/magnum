@@ -517,12 +517,21 @@ class EmscriptenApplication {
         /**
          * @brief Set container CSS class
          *
-         * Assigns given CSS class to the @cb{.html} <div id="container"> @ce.
-         * Useful for example to change aspect ratio of the view or stretch it
-         * to cover the full page. See @ref platforms-html5-layout for more
-         * information about possible values. Note that this replaces any
-         * existing class, to set multiple classes separate them with
-         * whitespace.
+         * Assigns given CSS class to the @cb{.html} <div class="mn-container"> @ce
+         * enclosing the application @cb{.html} <canvas> @ce. Useful for
+         * example to change aspect ratio of the view or stretch it to cover
+         * the full page. See @ref platforms-html5-layout for more information
+         * about possible values. Note that this replaces any existing class
+         * (except for @cb{.css} .mn-container @ce, which is kept), to set
+         * multiple classes separate them with whitespace.
+         *
+         * @m_class{m-note m-danger}
+         *
+         * @par
+         *      For backwards compatibility purposes the function will look for
+         *      *any* @cb{.html} <div id="container"> @ce in case the
+         *      @cb{.html} <div class="mn-container"> @ce is not found. This
+         *      compatibility is scheduled to be removed in the future.
          */
         void setContainerCssClass(const std::string& cssClass);
 
