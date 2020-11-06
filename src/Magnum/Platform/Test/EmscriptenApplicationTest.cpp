@@ -75,16 +75,19 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {
-        if(event.key() != KeyEvent::Key::Unknown) {
-            Debug{} << "keyPressEvent(" << event.keyName().c_str() << "): ✓";
-        } else {
-            Debug{} << "keyPressEvent(" << event.keyName().c_str() << "): x";
-        }
+        {
+            Debug d;
+            if(event.key() != KeyEvent::Key::Unknown) {
+                d << "keyPressEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✔";
+            } else {
+                d << "keyPressEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✘";
+            }
 
-        if(event.modifiers() & KeyEvent::Modifier::Shift) Debug{} << "Shift";
-        if(event.modifiers() & KeyEvent::Modifier::Ctrl) Debug{} << "Ctrl";
-        if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
-        if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
+            if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
+            if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
+            if(event.modifiers() & KeyEvent::Modifier::Alt) d << "Alt";
+            if(event.modifiers() & KeyEvent::Modifier::Super) d << "Super";
+        }
 
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
@@ -111,16 +114,19 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
-        if(event.key() != KeyEvent::Key::Unknown) {
-            Debug{} << "keyReleaseEvent(" << event.keyName().c_str() << "): ✓";
-        } else {
-            Debug{} << "keyReleaseEvent(" << event.keyName().c_str() << "): x";
-        }
+        {
+            Debug d;
+            if(event.key() != KeyEvent::Key::Unknown) {
+                d << "keyReleaseEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✔";
+            } else {
+                d << "keyReleaseEvent(" << Debug::nospace << event.keyName().data() << Debug::nospace << "): ✘";
+            }
 
-        if(event.modifiers() & KeyEvent::Modifier::Shift) Debug{} << "Shift";
-        if(event.modifiers() & KeyEvent::Modifier::Ctrl) Debug{} << "Ctrl";
-        if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
-        if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
+            if(event.modifiers() & KeyEvent::Modifier::Shift) d << "Shift";
+            if(event.modifiers() & KeyEvent::Modifier::Ctrl) d << "Ctrl";
+            if(event.modifiers() & KeyEvent::Modifier::Alt) d << "Alt";
+            if(event.modifiers() & KeyEvent::Modifier::Super) d << "Super";
+        }
 
         event.setAccepted();
     }
