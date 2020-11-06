@@ -31,6 +31,7 @@
 
 #include "Magnum/ImageView.h"
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/Platform/Sdl2Application.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -68,6 +69,8 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     void drawEvent() override {
         Debug{} << "draw event";
+        GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+
         swapBuffers();
     }
 
