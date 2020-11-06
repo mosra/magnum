@@ -273,11 +273,12 @@ endif()
 @section platforms-html5-layout Modifying page style, canvas size and aspect ratio
 
 The `WebApplication.css` file contains a basic style and the additional
-@cb{.css} .container @ce, @cb{.css} .sizer @ce and @cb{.css} .expander @ce
-@cb{.html} <div> @ce s take care of aligning the canvas to the center and
-making it responsively scale on narrow screens, preserving aspect ratio. For
-proper responsiveness on all platforms it's important to include the
-@cb{.html} <meta name="viewport"> @ce tag in the HTML markup as well.
+@cb{.css} #container @ce, @cb{.css} #sizer @ce, @cb{.css} #expander @ce and
+@cb{.css} #listener @ce @cb{.html} <div> @ce s take care of aligning the canvas
+to the center and making it responsively scale on narrow screens, preserving
+aspect ratio. For proper responsiveness on all platforms it's important to
+include the @cb{.html} <meta name="viewport"> @ce tag in the HTML markup as
+well.
 
 By default the canvas is @cpp 640px @ce wide with a 4:3 aspect ratio, you can
 modify this by placing one of the @cb{.css} .aspect-* @ce CSS classes on the

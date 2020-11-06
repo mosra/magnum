@@ -797,7 +797,7 @@ class Sdl2Application {
         /**
          * @brief Set container CSS class
          *
-         * Assigns given CSS class to the @cb{.html} <div class="container"> @ce.
+         * Assigns given CSS class to the @cb{.html} <div id="container"> @ce.
          * Useful for example to change aspect ratio of the view or stretch it
          * to cover the full page. See @ref platforms-html5-layout for more
          * information about possible values. Note that this replaces any
