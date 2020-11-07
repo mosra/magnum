@@ -336,7 +336,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
     Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
 
-    /* Find out which elemen target strings Emscripten expects. This depends on
+    /* Find out which element target strings Emscripten expects. This depends on
        the DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR compiler option.  */
     _deprecatedTargetBehavior = checkForDeprecatedEmscriptenTargetBehavior();
     if(_deprecatedTargetBehavior) {

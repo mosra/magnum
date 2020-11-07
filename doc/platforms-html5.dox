@@ -294,6 +294,55 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 endif()
 @endcode
 
+@section platforms-html5-multiple-apps Multiple applications on one page
+
+@note Support for this feature is currently only tested with
+    @ref Platform::EmscriptenApplication. @ref Platform::Sdl2Application
+    and @ref Platform::GlfwApplication support largely depends on Emscripten's
+    underlying emulation libraries and may vary across Emscripten versions.
+
+Running multiple graphical applications on a single page is possible, but
+requires a few changes. By default, Emscripten and `EmscriptenApplication.js`
+populate a global @cb{.js} Module @ce object with things like callbacks and the
+canvas element to render into. This is not suitable when using more than one
+application. Emscripten's `-s MODULARIZE` option creates a script
+that defines a function with a local @cb{.js} Module @ce object instead.
+This way each application runs inside its own function with a separate
+environment.
+
+To let `EmscriptenApplication.js` access the local @cb{.js} Module @ce,
+it must be prepended to the application with the `--pre-js` compiler option,
+at which point you also don't have to bundle it separately anymore:
+
+@code{.cmake}
+target_link_libraries(my-application PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
+target_link_libraries(my-application PRIVATE "--pre-js ${MAGNUM_EMSCRIPTENAPPLICATION_JS}")
+@endcode
+
+Instead of running instantly, the application must be instantiated
+using the function name set with `EXPORT_NAME`:
+
+@code{.html-jinja}
+<script src="{{ application }}.js"></script>
+<script>
+  createModule().then(function(myModule) {
+    // application loaded and running
+  });
+</script>
+@endcode
+
+If you need to make changes to the @cb{.js} Module @ce object created by
+EmscriptenApplication.js, you can add that code to a file that's loaded
+with `--pre-js` right after `EmscriptenApplication.js`. This is usually
+needed for pointing to elements with custom IDs, like the canvas to
+render into or the elements to display status updates:
+
+@code{.js}
+Module.canvas = document.getElementById('my-canvas');
+Module.status = document.getElementById('my-status');
+Module.statusDescription = document.getElementById('my-status-description');
+@endcode
+
 @section platforms-html5-layout Modifying page style, canvas size and aspect ratio
 
 The `WebApplication.css` file contains a basic style and the additional
