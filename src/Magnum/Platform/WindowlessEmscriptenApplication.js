@@ -23,75 +23,98 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-var Module = {
-    preRun: [],
-    postRun: [],
+"use strict";
 
-    arguments: [],
+function createMagnumModule(init) {
+    const module = Object.assign({}, Module);
 
-    doNotCaptureKeyboard: true,
+    Object.assign(module, {
+        preRun: [],
+        postRun: [],
 
-    printErr: function(message) {
-        var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
-            .replace(/[\"&<>]/g, function (a) {
-                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
-            }) + '\n';
-    },
+        arguments: [],
 
-    print: function(message) {
-        var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
-            .replace(/[\"&<>]/g, function (a) {
-                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
-            }) + '\n';
-    },
+        printErr: function(_message) {
+            if(module.log) {
+                module.log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+                    .replace(/[\"&<>]/g, function (a) {
+                        return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+                    }) + '\n';
+            }
+        },
 
-    /* onAbort not handled here, as the output is printed directly on the page */
+        print: function(_message) {
+            if(module.log) {
+                module.log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+                    .replace(/[\"&<>]/g, function (a) {
+                        return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+                    }) + '\n';
+            }
+        },
 
-    canvas: document.getElementById('canvas'),
-    status: document.getElementById('status'),
-    statusDescription: document.getElementById('status-description'),
-    log: document.getElementById('log'),
+        /* onAbort not handled here, as the output is printed directly on the page */
 
-    setStatus: function(message) {
-        if(Module.status) Module.status.innerHTML = message;
-    },
+        canvas: document.getElementById('canvas'),
+        status: document.getElementById('status'),
+        statusDescription: document.getElementById('status-description'),
+        log: document.getElementById('log'),
 
-    setStatusDescription: function(message) {
-        if(Module.statusDescription)
-            Module.statusDescription.innerHTML = message;
-    },
+        setStatus: function(message) {
+            if(module.status)
+                module.status.innerHTML = message;
+        },
 
-    totalDependencies: 0,
+        setStatusDescription: function(message) {
+            if(module.statusDescription)
+                module.statusDescription.innerHTML = message;
+        },
 
-    monitorRunDependencies: function(left) {
-        this.totalDependencies = Math.max(this.totalDependencies, left);
+        totalDependencies: 0,
 
-        if(left) {
-            Module.setStatus('Downloading...');
-            Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
-        } else {
-            Module.setStatus('Download complete');
-            Module.setStatusDescription('');
-            Module.log.style.display = 'block';
+        monitorRunDependencies: function(left) {
+            this.totalDependencies = Math.max(this.totalDependencies, left);
+
+            if(left) {
+                module.setStatus('Downloading...');
+                module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
+            } else {
+                module.setStatus('Download complete');
+                module.setStatusDescription('');
+                module.log.style.display = 'block';
+            }
         }
+    });
+
+    /* Parse arguments, e.g. /app/?foo=bar&fizz&buzz=3 goes to the app as
+       ['--foo', 'bar', '--fizz', '--buzz', '3'] */
+    const args = decodeURIComponent(window.location.search.substr(1)).trim().split('&');
+    for(let i = 0; i != args.length; ++i) {
+        let j = args[i].indexOf('=');
+        /* Key + value */
+        if(j != -1) {
+            module.arguments.push('--' + args[i].substring(0, j));
+            module.arguments.push(args[i].substring(j + 1));
+
+        /* Just key */
+        } else module.arguments.push('--' + args[i]);
     }
-};
 
-/* Parse arguments, e.g. /app/?foo=bar&fizz&buzz=3 goes to the app as
-   ['--foo', 'bar', '--fizz', '--buzz', '3'] */
-var args = decodeURIComponent(window.location.search.substr(1)).trim().split('&');
-for(var i = 0; i != args.length; ++i) {
-    var j = args[i].indexOf('=');
-    /* Key + value */
-    if(j != -1) {
-        Module.arguments.push('--' + args[i].substring(0, j));
-        Module.arguments.push(args[i].substring(j + 1));
+    Object.assign(module, init);
 
-    /* Just key */
-    } else Module.arguments.push('--' + args[i]);
+    module.setStatus("Downloading...");
+    if(module.log)
+        module.log.style.display = 'none';
+
+    return module;
 }
 
-Module.setStatus('Downloading...');
-Module.log.style.display = 'none';
+/* Default global Module object */
+var Module = createMagnumModule();
+
+/* UMD export */
+if(typeof exports === 'object' && typeof module === 'object') /* CommonJS/Node */
+    module.exports = createMagnumModule;
+else if(typeof define === 'function' && define['amd']) /* AMD */
+    define([], function() { return createMagnumModule; });
+else if(typeof exports === 'object') /* CommonJS strict */
+    exports["createMagnumModule"] = createMagnumModule;
