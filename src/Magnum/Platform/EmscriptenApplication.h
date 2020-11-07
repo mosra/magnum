@@ -875,6 +875,10 @@ class EmscriptenApplication {
          */
 
     private:
+        static bool checkForDeprecatedEmscriptenTargetBehavior();
+        static std::string canvasId();
+
+    private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
             TextInputActive = 1 << 1,
@@ -896,6 +900,7 @@ class EmscriptenApplication {
         Flags _flags;
         Cursor _cursor;
 
+        bool _deprecatedTargetBehavior{};
         std::string _canvasTarget;
 
         #ifdef MAGNUM_TARGET_GL
@@ -1175,7 +1180,7 @@ class EmscriptenApplication::Configuration {
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
-        /*implicit*/ Configuration() {}
+        constexpr /*implicit*/ Configuration() {}
 
         /**
          * @brief Set window title
@@ -1234,27 +1239,10 @@ class EmscriptenApplication::Configuration {
             return *this;
         }
 
-        std::string canvasTarget() const {
-            /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
-            depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
-            set (which we can't detect at compile time). Fortunately, using #canvas
-            works the same way both in the previous versions and the current one.
-            Unfortunately, this is also the only value that works the same way for
-            both. Further details at
-            https://github.com/emscripten-core/emscripten/pull/7977 */
-            return _canvasTarget.empty() ? "#canvas" : _canvasTarget;
-        }
-
-        Configuration& setCanvasTarget(const std::string& canvasTarget) {
-            _canvasTarget = canvasTarget;
-            return *this;
-        }
-
     private:
         Vector2i _size;
         Vector2 _dpiScaling;
         WindowFlags _windowFlags;
-        std::string _canvasTarget;
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Configuration::WindowFlags)
