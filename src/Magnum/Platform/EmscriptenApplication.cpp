@@ -524,7 +524,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        1.38.27 depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
        but we don't want to force this flag on the users so the behavior
        handles both. */
-    char* keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
+    int keyboardListeningElement = EM_ASM_INT({
         var element = Module['keyboardListeningElement'] || document;
 
         if(element === document) return 1;
@@ -533,21 +533,21 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
 
         return 0;
-    }));
+    });
     #pragma GCC diagnostic pop
 
-    std::string keyboardListeningElementString;
-    const char* keyboardListeningTarget = keyboardListeningElement;
-    if(_deprecatedTargetBehavior && keyboardListeningElement == reinterpret_cast<char*>(1)) {
+    std::string keyboardListeningTargetString;
+    const char* keyboardListeningTarget = reinterpret_cast<char*>(keyboardListeningElement);
+    if(_deprecatedTargetBehavior && keyboardListeningElement == 1) {
         keyboardListeningTarget = "#document";
-    } else if(_deprecatedTargetBehavior && keyboardListeningElement == reinterpret_cast<char*>(2)) {
+    } else if(_deprecatedTargetBehavior && keyboardListeningElement == 2) {
         keyboardListeningTarget = "#window";
-    } else if(keyboardListeningElement) {
+    } else if(keyboardListeningElement > 2) {
         if(!_deprecatedTargetBehavior)
-            keyboardListeningElementString = "#";
-        keyboardListeningElementString += keyboardListeningElement;
-        std::free(keyboardListeningElement);
-        keyboardListeningTarget = keyboardListeningElementString.data();
+            keyboardListeningTargetString = "#";
+        keyboardListeningTargetString += keyboardListeningTarget;
+        std::free(reinterpret_cast<void*>(keyboardListeningElement));
+        keyboardListeningTarget = keyboardListeningTargetString.data();
     }
 
     /* Happens only if keyboardListeningElement was set, but did not have an
