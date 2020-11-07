@@ -31,7 +31,6 @@
 
 #include "Magnum/ImageView.h"
 #include "Magnum/Math/ConfigurationValue.h"
-#include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/Platform/Sdl2Application.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -46,6 +45,10 @@
 #include <SDL_events.h>
 #ifdef CORRADE_TARGET_CLANG_CL
 #pragma clang diagnostic pop
+#endif
+
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/DefaultFramebuffer.h"
 #endif
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
@@ -69,7 +72,9 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     void drawEvent() override {
         Debug{} << "draw event";
+        #ifdef MAGNUM_TARGET_GL
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+        #endif
 
         swapBuffers();
     }
