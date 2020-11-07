@@ -671,7 +671,7 @@ void EmscriptenApplication::setCursor(Cursor cursor) {
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({document.querySelector(AsciiToString($0)).style.cursor = AsciiToString($1);}, _canvasTarget.data(), CursorMap[UnsignedInt(cursor)]);
+    EM_ASM_({Module['canvas'].style.cursor = AsciiToString($0);}, CursorMap[UnsignedInt(cursor)]);
     #pragma GCC diagnostic pop
 }
 
