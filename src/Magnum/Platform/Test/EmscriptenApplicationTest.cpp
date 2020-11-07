@@ -31,6 +31,7 @@
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/Math/Color.h"
 
 namespace Magnum { namespace Platform { namespace Test {
 
@@ -40,6 +41,9 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     virtual void drawEvent() override {
         Debug() << "draw event";
+        #ifdef CUSTOM_CLEAR_COLOR
+        GL::Renderer::setClearColor({ CUSTOM_CLEAR_COLOR });
+        #endif
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
         swapBuffers();
@@ -155,9 +159,6 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
 
     create(Configuration{}
         .setWindowFlags(Configuration::WindowFlag::Resizable)
-        #ifdef CUSTOM_CANVAS_ID
-        .setCanvasTarget("#canvas2")
-        #endif
         //, GLConfiguration{}.setFlags({})
     );
 

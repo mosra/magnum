@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum Multiple EmscriptenApplication Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum Multiple EmscriptenApplication Test</h1>
+  <div id="container" class="">
+    <div id="sizer"><div id="expander"><div id="listener">
+      <canvas id="canvas" tabindex="0"></canvas>
+      <canvas id="canvas2" tabindex="1"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="status-description"></div>
+      <script src="EmscriptenApplication.js"></script>
+      <script src="PlatformMultipleEmscriptenApplicationTest.js"></script>
+      <script>
+      const myModule = Module;
+      /* Override default canvas set in EmscriptenApplication.js */
+      myModule.canvas = document.getElementById('canvas2');
+
+      myModule.keyboardListeningElement = Module.canvas;
+      myModule.canvas.addEventListener('mousedown', function(event) {
+          event.target.focus();
+      });
+
+      /*
+        This application is compiled with -s MODULARIZE -s EXPORT_NAME=createModule
+        so it doesn't run until we instantiate it with its own Module object
+      */
+      createModule(myModule);
+      </script>
+      <!--
+        Create a fresh Module. This application is compiled without -s MODULARIZE
+        so Module is expected to be global and the application is run instantly.
+      -->
+      <script src="EmscriptenApplication.js"></script>
+      <script src="PlatformEmscriptenApplicationTest.js"></script>
+      <script>
+        Module.keyboardListeningElement = Module.canvas;
+        Module.canvas.addEventListener('mousedown', function(event) {
+            event.target.focus();
+        });
+        </script>
+    </div></div></div>
+  </div>
+</body>
+</html>
