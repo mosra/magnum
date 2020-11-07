@@ -23,59 +23,59 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-var Module = {
-    preRun: [],
-    postRun: [],
+var Module = typeof Module !== "undefined" ? Module : {};
 
-    arguments: [],
+Module.preRun = [];
+Module.postRun = [];
 
-    doNotCaptureKeyboard: true,
+Module.arguments = [];
 
-    printErr: function(message) {
-        var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
-            .replace(/[\"&<>]/g, function (a) {
-                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
-            }) + '\n';
-    },
+Module.doNotCaptureKeyboard = true;
 
-    print: function(message) {
-        var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
-            .replace(/[\"&<>]/g, function (a) {
-                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
-            }) + '\n';
-    },
+Module.printErr = function(message) {
+    var log = document.getElementById('log');
+    log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+        .replace(/[\"&<>]/g, function (a) {
+            return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+        }) + '\n';
+};
 
-    /* onAbort not handled here, as the output is printed directly on the page */
+Module.print = function(message) {
+    var log = document.getElementById('log');
+    log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+        .replace(/[\"&<>]/g, function (a) {
+            return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+        }) + '\n';
+};
 
-    canvas: document.getElementById('canvas'),
-    status: document.getElementById('status'),
-    statusDescription: document.getElementById('status-description'),
-    log: document.getElementById('log'),
+/* onAbort not handled here, as the output is printed directly on the page */
 
-    setStatus: function(message) {
-        if(Module.status) Module.status.innerHTML = message;
-    },
+Module.canvas = document.getElementById('canvas');
+Module.status = document.getElementById('status');
+Module.statusDescription = document.getElementById('status-description');
+Module.log = document.getElementById('log');
 
-    setStatusDescription: function(message) {
-        if(Module.statusDescription)
-            Module.statusDescription.innerHTML = message;
-    },
+Module.setStatus = function(message) {
+    if(Module.status) Module.status.innerHTML = message;
+};
 
-    totalDependencies: 0,
+Module.setStatusDescription = function(message) {
+    if(Module.statusDescription)
+        Module.statusDescription.innerHTML = message;
+};
 
-    monitorRunDependencies: function(left) {
-        this.totalDependencies = Math.max(this.totalDependencies, left);
+Module.totalDependencies = 0;
 
-        if(left) {
-            Module.setStatus('Downloading...');
-            Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
-        } else {
-            Module.setStatus('Download complete');
-            Module.setStatusDescription('');
-            Module.log.style.display = 'block';
-        }
+Module.monitorRunDependencies = function(left) {
+    this.totalDependencies = Math.max(this.totalDependencies, left);
+
+    if(left) {
+        Module.setStatus('Downloading...');
+        Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
+    } else {
+        Module.setStatus('Download complete');
+        Module.setStatusDescription('');
+        Module.log.style.display = 'block';
     }
 };
 
