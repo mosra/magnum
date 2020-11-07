@@ -25,55 +25,55 @@
 
 "use strict"; /* it summons the Cthulhu in a proper way, they say */
 
-var Module = {
-    preRun: [],
-    postRun: [],
+var Module = typeof Module !== "undefined" ? Module : {};
 
-    arguments: [],
+Module.preRun = [];
+Module.postRun = [];
 
-    printErr: function(message) {
-        console.error(Array.prototype.slice.call(arguments).join(' '));
-    },
+Module.arguments = [];
 
-    print: function(message) {
-        console.log(Array.prototype.slice.call(arguments).join(' '));
-    },
+Module.printErr = function(_message) {
+    console.error(Array.prototype.slice.call(arguments).join(' '));
+};
 
-    onAbort: function() {
-        Module.canvas.style.opacity = 0.333;
-        Module.canvas.style.zIndex = -1;
-        Module.setStatus("Oops :(");
-        Module.setStatusDescription("The app crashed. Refresh the page or check the browser console for details.");
-    },
+Module.print = function(_message) {
+    console.log(Array.prototype.slice.call(arguments).join(' '));
+};
 
-    canvas: document.getElementById('canvas'),
-    status: document.getElementById('status'),
-    statusDescription: document.getElementById('status-description'),
+Module.onAbort = function() {
+    Module.canvas.style.opacity = 0.333;
+    Module.canvas.style.zIndex = -1;
+    Module.setStatus("Oops :(");
+    Module.setStatusDescription("The app crashed. Refresh the page or check the browser console for details.");
+};
 
-    setStatus: function(message) {
-        /* Emscripten calls setStatus("") after a timeout even if the app
-           aborts. That would erase the crash message, so don't allow that */
-        if(Module.status && Module.status.innerHTML != "Oops :(")
-            Module.status.innerHTML = message;
-    },
+Module.canvas = document.getElementById('canvas');
+Module.status = document.getElementById('status');
+Module.statusDescription = document.getElementById('status-description');
 
-    setStatusDescription: function(message) {
-        if(Module.statusDescription)
-            Module.statusDescription.innerHTML = message;
-    },
+Module.setStatus = function(message) {
+    /* Emscripten calls setStatus("") after a timeout even if the app
+        aborts. That would erase the crash message, so don't allow that */
+    if(Module.status && Module.status.innerHTML != "Oops :(")
+        Module.status.innerHTML = message;
+};
 
-    totalDependencies: 0,
+Module.setStatusDescription = function(message) {
+    if(Module.statusDescription)
+        Module.statusDescription.innerHTML = message;
+};
 
-    monitorRunDependencies: function(left) {
-        this.totalDependencies = Math.max(this.totalDependencies, left);
+Module.totalDependencies = 0;
 
-        if(left) {
-            Module.setStatus('Downloading...');
-            Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
-        } else {
-            Module.setStatus('Download complete');
-            Module.setStatusDescription('');
-        }
+Module.monitorRunDependencies = function(left) {
+    this.totalDependencies = Math.max(this.totalDependencies, left);
+
+    if(left) {
+        Module.setStatus('Downloading...');
+        Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
+    } else {
+        Module.setStatus('Download complete');
+        Module.setStatusDescription('');
     }
 };
 
