@@ -14,14 +14,14 @@
       <div class="mn-status" id="status">Initialization...</div>
       <div class="mn-status-description" id="status-description"></div>
       <script src="EmscriptenApplication.js"></script>
-      <script async="async" src="PlatformEmscriptenApplicationTest.js"></script>
       <script>
-      /* To test keyboard capture directly on the canvas */
-      Module.keyboardListeningElement = Module.canvas;
-      Module.canvas.addEventListener('mousedown', function(event) {
-          event.target.focus();
-      });
+        /* To test keyboard capture directly on the canvas */
+        Module.keyboardListeningElement = Module.canvas;
+        Module.canvas.addEventListener('mousedown', function(event) {
+            event.target.focus();
+        });
       </script>
+      <script async="async" src="PlatformEmscriptenApplicationTest.js"></script>
     </div></div></div>
   </div>
 </body>
