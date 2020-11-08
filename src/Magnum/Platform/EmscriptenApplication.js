@@ -25,70 +25,93 @@
 
 "use strict"; /* it summons the Cthulhu in a proper way, they say */
 
-var Module = typeof Module !== "undefined" ? Module : {};
+function createMagnumModule(init) {
+    /* Take the Emscripten-supplied Module object as a base */
+    const module = Object.assign({}, Module);
 
-Module.preRun = [];
-Module.postRun = [];
+    /* Update it with our things */
+    Object.assign(module, {
+        preRun: [],
+        postRun: [],
 
-Module.arguments = [];
+        arguments: [],
 
-Module.printErr = function(_message) {
-    console.error(Array.prototype.slice.call(arguments).join(' '));
-};
+        printErr: function(_message) {
+            console.error(Array.prototype.slice.call(arguments).join(' '));
+        },
 
-Module.print = function(_message) {
-    console.log(Array.prototype.slice.call(arguments).join(' '));
-};
+        print: function(_message) {
+            console.log(Array.prototype.slice.call(arguments).join(' '));
+        },
 
-Module.onAbort = function() {
-    Module.canvas.style.opacity = 0.333;
-    Module.canvas.style.zIndex = -1;
-    Module.setStatus("Oops :(");
-    Module.setStatusDescription("The app crashed. Refresh the page or check the browser console for details.");
-};
+        onAbort: function() {
+            module.canvas.style.opacity = 0.333;
+            module.canvas.style.zIndex = -1;
+            module.setStatus("Oops :(");
+            module.setStatusDescription("The app crashed. Refresh the page or check the browser console for details.");
+        },
 
-Module.canvas = document.getElementById('canvas');
-Module.status = document.getElementById('status');
-Module.statusDescription = document.getElementById('status-description');
+        canvas: document.getElementById('canvas'),
+        status: document.getElementById('status'),
+        statusDescription: document.getElementById('status-description'),
 
-Module.setStatus = function(message) {
-    /* Emscripten calls setStatus("") after a timeout even if the app
-        aborts. That would erase the crash message, so don't allow that */
-    if(Module.status && Module.status.innerHTML != "Oops :(")
-        Module.status.innerHTML = message;
-};
+        setStatus: function(message) {
+            /* Emscripten calls setStatus("") after a timeout even if the app
+                aborts. That would erase the crash message, so don't allow that */
+            if(module.status && module.status.innerHTML != "Oops :(")
+                module.status.innerHTML = message;
+        },
 
-Module.setStatusDescription = function(message) {
-    if(Module.statusDescription)
-        Module.statusDescription.innerHTML = message;
-};
+        setStatusDescription: function(message) {
+            if(module.statusDescription)
+                module.statusDescription.innerHTML = message;
+        },
 
-Module.totalDependencies = 0;
+        totalDependencies: 0,
 
-Module.monitorRunDependencies = function(left) {
-    this.totalDependencies = Math.max(this.totalDependencies, left);
+        monitorRunDependencies: function(left) {
+            this.totalDependencies = Math.max(this.totalDependencies, left);
 
-    if(left) {
-        Module.setStatus('Downloading...');
-        Module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
-    } else {
-        Module.setStatus('Download complete');
-        Module.setStatusDescription('');
+            if(left) {
+                module.setStatus('Downloading...');
+                module.setStatusDescription((this.totalDependencies - left) + ' / ' + this.totalDependencies);
+            } else {
+                module.setStatus('Download complete');
+                module.setStatusDescription('');
+            }
+        }
+    });
+
+    /* Parse arguments, e.g. /app/?foo=bar&fizz&buzz=3 goes to the app as
+       ['--foo', 'bar', '--fizz', '--buzz', '3'] */
+    const args = decodeURIComponent(window.location.search.substr(1)).trim().split('&');
+    for(let i = 0; i != args.length; ++i) {
+        let j = args[i].indexOf('=');
+        /* Key + value */
+        if(j != -1) {
+            module.arguments.push('--' + args[i].substring(0, j));
+            module.arguments.push(args[i].substring(j + 1));
+
+        /* Just key */
+        } else module.arguments.push('--' + args[i]);
     }
-};
 
-/* Parse arguments, e.g. /app/?foo=bar&fizz&buzz=3 goes to the app as
-   ['--foo', 'bar', '--fizz', '--buzz', '3'] */
-var args = decodeURIComponent(window.location.search.substr(1)).trim().split('&');
-for(var i = 0; i != args.length; ++i) {
-    var j = args[i].indexOf('=');
-    /* Key + value */
-    if(j != -1) {
-        Module.arguments.push('--' + args[i].substring(0, j));
-        Module.arguments.push(args[i].substring(j + 1));
+    /* Let the user-supplied object overwrite all the above */
+    Object.assign(module, init);
 
-    /* Just key */
-    } else Module.arguments.push('--' + args[i]);
+    /* We can do this here because at this point `module.status` should be correct */
+    module.setStatus("Downloading...");
+
+    return module;
 }
 
-Module.setStatus('Downloading...');
+/* Default global Module object */
+var Module = createMagnumModule();
+
+/* UMD export */
+if(typeof exports === 'object' && typeof module === 'object') /* CommonJS/Node */
+    module.exports = createMagnumModule;
+else if(typeof define === 'function' && define['amd']) /* AMD */
+    define([], function() { return createMagnumModule; });
+else if(typeof exports === 'object') /* CommonJS strict */
+    exports["createMagnumModule"] = createMagnumModule;

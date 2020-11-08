@@ -302,32 +302,41 @@ endif()
     underlying emulation libraries and may vary across Emscripten versions.
 
 Running multiple graphical applications on a single page is possible, but
-requires a few changes. By default, Emscripten and `EmscriptenApplication.js`
-populate a global @cb{.js} Module @ce object with things like callbacks and the
-canvas element to render into. This is not suitable when using more than one
-application. Emscripten's `-s MODULARIZE` option creates a script
-that defines a function with a local @cb{.js} Module @ce object instead.
-This way each application runs inside its own function with a separate
-environment.
-
-To let `EmscriptenApplication.js` access the local @cb{.js} Module @ce,
-it must be prepended to the application with the `--pre-js` compiler option,
-at which point you also don't have to bundle it separately anymore:
+requires a few changes. By default, Emscripten populates a global @cb{.js} Module @ce
+object with things like callbacks and the canvas element to render into. This is not
+suitable when using more than one application. Emscripten's `MODULARIZE` option
+creates a script that defines a function with a local @cb{.js} Module @ce object
+instead. This way each application runs inside its own function with a separate
+environment:
 
 @code{.cmake}
 target_link_libraries(my-application PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
-target_link_libraries(my-application PRIVATE "--pre-js ${MAGNUM_EMSCRIPTENAPPLICATION_JS}")
 @endcode
 
-Instead of running instantly, the application must be instantiated
-using the function name set with `EXPORT_NAME`:
+Instead of running instantly, the application can then be instantiated
+using the function name set with `EXPORT_NAME`. The function optionally
+takes an object to populate the local @cb{.js} Module @ce.
+
+While `EmscriptenApplication.js` populates the @cb{.js} Module @ce object by default,
+it also defines a function @cb{.js} createMagnumModule @ce that lets you create
+new module objects to pass to the Emscripten module function. This allows you
+to include `EmscriptenApplication.js` only once per page without having to bundle it with
+Emscripten's `--pre-js` option. To override the default values, pass an object to
+@cb{.js} createMagnumModule @ce. This is the easiest way to set the canvas or
+status elements of each application:
 
 @code{.html-jinja}
+<script src="EmscriptenApplication.js"></script>
 <script src="{{ application }}.js"></script>
 <script>
-  createModule().then(function(myModule) {
-    // application loaded and running
-  });
+    const myModule = createMagnumModule({
+        canvas: document.getElementById('my-canvas'),
+        status: document.getElementById('my-status'),
+        statusDescription: document.getElementById('my-status-description')
+    });
+    createModule(myModule).then(function(myModule) {
+        // application loaded and running
+    });
 </script>
 @endcode
 

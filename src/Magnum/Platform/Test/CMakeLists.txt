@@ -60,11 +60,10 @@ if(WITH_EMSCRIPTENAPPLICATION)
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0.2,0,0.2,1)
     target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
     target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
-    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js")
-    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/MultipleEmscriptenApplicationTestPre.js")
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+            ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
             $<TARGET_FILE_DIR:PlatformMultipleEmscriptenApplicationTest>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/MultipleEmscriptenApplicationTest.html

@@ -5,6 +5,7 @@
   <title>Magnum Multiple EmscriptenApplication Test</title>
   <link rel="stylesheet" href="WebApplication.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="EmscriptenApplication.js"></script>
 </head>
 <body>
   <h1>Magnum Multiple EmscriptenApplication Test</h1>
@@ -14,16 +15,19 @@
       <div class="mn-status" id="status1">Initialization...</div>
       <div class="mn-status-description" id="status-description1"></div>
       <script src="PlatformMultipleEmscriptenApplicationTest.js"></script>
-      <script>
-        /*
-          This application is compiled with -s MODULARIZE -s EXPORT_NAME=createModule
-          so it doesn't run until we instantiate it with its own Module object.
-          We embedded EmscriptenApplication.js into the application .js via --pre-js
-          so that its code is run before the Emscripten runtime code.
-          All changes to Module (e.g overriding the canvas element) have to be done
-          in another --pre-js (MultipleEmscriptenApplicationTestPre.js).
-        */
-        createModule();
+      <script async="async">
+        /* This application is compiled with -s MODULARIZE -s EXPORT_NAME=createModule
+          so it doesn't run until we instantiate it with its own Module object. */
+        const myModule = createMagnumModule({
+          canvas: document.getElementById('canvas1'),
+          status: document.getElementById('status1'),
+          statusDescription: document.getElementById('status-description1')
+        });
+        myModule.keyboardListeningElement = myModule.canvas;
+        myModule.canvas.addEventListener('mousedown', function(event) {
+            event.target.focus();
+        });
+        createModule(myModule);
       </script>
     </div></div></div>
   </div>
@@ -32,14 +36,11 @@
       <canvas class="mn-canvas" id="canvas2" tabindex="1"></canvas>
       <div class="mn-status" id="status2">Initialization...</div>
       <div class="mn-status-description" id="status-description2"></div>
-      <!--
-        Create a fresh Module. This application is compiled without -s MODULARIZE
-        so Module is expected to be global and the application is run instantly.
-        You'll usually want to use MODULARIZE for all applications but this
-        makes it easier to reuse the existing PlatformEmscriptenApplicationTest.js.
-      -->
-      <script src="EmscriptenApplication.js"></script>
       <script>
+        /* This application is compiled without -s MODULARIZE so it uses the
+           global Module set by EmscriptenApplication.js and runs instantly.
+           You'll usually want to use MODULARIZE for all applications but this
+           makes it easier to reuse the existing PlatformEmscriptenApplicationTest */
         Module.canvas = document.getElementById('canvas2');
         Module.status = document.getElementById('status2');
         Module.statusDescription = document.getElementById('status-description2');
