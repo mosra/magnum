@@ -572,7 +572,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     std::string keyboardListeningTargetString;
     if(keyboardListeningTarget == EMSCRIPTEN_EVENT_TARGET_DOCUMENT) {
         keyboardListeningTarget = _deprecatedTargetBehavior ? "#document" : keyboardListeningTarget;
-    } else if(EMSCRIPTEN_EVENT_TARGET_WINDOW) {
+    } else if(keyboardListeningTarget == EMSCRIPTEN_EVENT_TARGET_WINDOW) {
         keyboardListeningTarget = _deprecatedTargetBehavior ? "#window" : keyboardListeningTarget;
     } else if (keyboardListeningTarget) {
         if(!_deprecatedTargetBehavior)
