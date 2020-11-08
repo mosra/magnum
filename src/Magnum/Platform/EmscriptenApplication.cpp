@@ -181,6 +181,36 @@ namespace {
 
         return Key::Unknown;
     }
+
+    std::string canvasId() {
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+        char* id = reinterpret_cast<char*>(EM_ASM_INT({
+            return allocate(intArrayFromString(Module['canvas'].id), 'i8', ALLOC_NORMAL);
+        }));
+        #pragma GCC diagnostic pop
+        std::string str = id;
+        std::free(id);
+        return str;
+    }
+
+    bool checkForDeprecatedEmscriptenTargetBehavior() {
+        /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
+        depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
+        set.
+        https://github.com/emscripten-core/emscripten/pull/7977
+        There is no simple way to check for compiler options so check
+        whether the new CSS selectors are being used. If so, it should find
+        canvas#[id] which is any canvas with the ID of Module.canvas.
+        The old target behavior will look for an element with id="canvas#[id]"
+        which could theoretically exist but that's highly unlikely. */
+        bool deprecated = true;
+        Vector2d tempSize;
+        if(emscripten_get_element_css_size(("canvas#" + canvasId()).data(), &tempSize.x(), &tempSize.y()) >= 0) {
+            deprecated = false;
+        }
+        return deprecated;
+    }
 }
 
 EmscriptenApplication::EmscriptenApplication(const Arguments& arguments): EmscriptenApplication{arguments, Configuration{}} {}
@@ -748,38 +778,6 @@ void EmscriptenApplication::redraw() {
 
 void EmscriptenApplication::exit(int) {
     _flags |= Flag::ExitRequested;
-}
-
-bool EmscriptenApplication::checkForDeprecatedEmscriptenTargetBehavior() {
-    /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
-       depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
-       set.
-       https://github.com/emscripten-core/emscripten/pull/7977
-       There is no simple way to check for compiler options so check
-       whether the new CSS selectors are being used. If so, it should find
-       canvas#[id] which is any canvas with the ID of Module.canvas.
-       The old target behavior will look for an element with id="canvas#[id]"
-       which could theoretically exist but that's highly unlikely. */
-    bool deprecated = true;
-    #ifdef EMSCRIPTEN_EVENT_TARGET_WINDOW
-    Vector2d tempSize;
-    if(emscripten_get_element_css_size(("canvas#" + canvasId()).data(), &tempSize.x(), &tempSize.y()) >= 0) {
-        deprecated = false;
-    }
-    #endif
-    return deprecated;
-}
-
-std::string EmscriptenApplication::canvasId() {
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-    char* id = reinterpret_cast<char*>(EM_ASM_INT({
-        return allocate(intArrayFromString(Module['canvas'].id), 'i8', ALLOC_NORMAL);
-    }));
-    #pragma GCC diagnostic pop
-    std::string str = id;
-    std::free(id);
-    return str;
 }
 
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {

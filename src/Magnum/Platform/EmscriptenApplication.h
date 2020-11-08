@@ -875,10 +875,6 @@ class EmscriptenApplication {
          */
 
     private:
-        static bool checkForDeprecatedEmscriptenTargetBehavior();
-        static std::string canvasId();
-
-    private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
             TextInputActive = 1 << 1,
