@@ -43,6 +43,13 @@
 #include "Magnum/Platform/GLContext.h"
 #endif
 
+/** @todo drop once we don't support < 1.38.27 anymore */
+#ifndef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
+#define EMSCRIPTEN_EVENT_TARGET_DOCUMENT reinterpret_cast<const char*>(1)
+#define EMSCRIPTEN_EVENT_TARGET_WINDOW reinterpret_cast<const char*>(2)
+#define EMSCRIPTEN_EVENT_TARGET_SCREEN reinterpret_cast<const char*>(3)
+#endif
+
 namespace Magnum { namespace Platform {
 
 namespace {
@@ -464,11 +471,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        changes. Better than polling for this change in every frame like
        Sdl2Application does, but still not ideal. */
     if(resizable) {
-        const char* target =
-        #ifdef EMSCRIPTEN_EVENT_TARGET_WINDOW
-            !_deprecatedTargetBehavior ? EMSCRIPTEN_EVENT_TARGET_WINDOW :
-        #endif
-            "#window";
+        const char* target = _deprecatedTargetBehavior ? "#window" : EMSCRIPTEN_EVENT_TARGET_WINDOW;
         auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
             static_cast<EmscriptenApplication*>(userData)->handleCanvasResize(event);
             return false; /** @todo what does ignoring a resize event mean? */
@@ -524,29 +527,28 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        1.38.27 depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
        but we don't want to force this flag on the users so the behavior
        handles both. */
-    int keyboardListeningElement = EM_ASM_INT({
+    const char* keyboardListeningTarget = reinterpret_cast<const char*>(EM_ASM_INT({
         var element = Module['keyboardListeningElement'] || document;
 
-        if(element === document) return 1;
-        if(element === window) return 2;
+        if(element === document) return 1; // EMSCRIPTEN_EVENT_TARGET_DOCUMENT
+        if(element === window) return 2; // EMSCRIPTEN_EVENT_TARGET_WINDOW
         if('id' in element)
             return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
 
         return 0;
-    });
+    }));
     #pragma GCC diagnostic pop
 
     std::string keyboardListeningTargetString;
-    const char* keyboardListeningTarget = reinterpret_cast<char*>(keyboardListeningElement);
-    if(_deprecatedTargetBehavior && keyboardListeningElement == 1) {
-        keyboardListeningTarget = "#document";
-    } else if(_deprecatedTargetBehavior && keyboardListeningElement == 2) {
-        keyboardListeningTarget = "#window";
-    } else if(keyboardListeningElement > 2) {
+    if(keyboardListeningTarget == EMSCRIPTEN_EVENT_TARGET_DOCUMENT) {
+        keyboardListeningTarget = _deprecatedTargetBehavior ? "#document" : keyboardListeningTarget;
+    } else if(EMSCRIPTEN_EVENT_TARGET_WINDOW) {
+        keyboardListeningTarget = _deprecatedTargetBehavior ? "#window" : keyboardListeningTarget;
+    } else if (keyboardListeningTarget) {
         if(!_deprecatedTargetBehavior)
             keyboardListeningTargetString = "#";
         keyboardListeningTargetString += keyboardListeningTarget;
-        std::free(reinterpret_cast<void*>(keyboardListeningElement));
+        std::free(const_cast<char*>(keyboardListeningTarget));
         keyboardListeningTarget = keyboardListeningTargetString.data();
     }
 
