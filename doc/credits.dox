@@ -178,7 +178,8 @@ Are the below lists missing your name or something's wrong?
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
     Gentoo ebuild)
 -   **Pablo Escobar** ([\@pezcode](https://github.com/pezcode)) --- @ref Math
-    additions, @ref Platform::EmscriptenApplication improvements
+    additions, support for multiple @ref Platform::EmscriptenApplication
+    canvases on one page
 -   **Pascal Thomet** ([\@pthom](https://github.com/pthom)) --- C++17
     compilation fixes, buildsystem improvements, Hunter package
 -   **Sam Spilsbury** ([\@smspillaz](https://github.com/smspillaz)) --- WebGL

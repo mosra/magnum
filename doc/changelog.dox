@@ -77,6 +77,12 @@ See also:
 -   Added @ref MeshTools::generateQuadIndices() for quad triangulation
     including non-convex and non-planar quads
 
+@subsubsection changelog-latest-new-platform Platform libraries
+
+-   It's now possible to have multiple @ref Platform::EmscriptenApplication
+    canvases on a single page (see [mosra/magnum#480](https://github.com/mosra/magnum/pull/480),
+    [mosra/magnum#481](https://github.com/mosra/magnum/pull/481))
+
 @subsubsection changelog-latest-new-shaders Shaders library
 
 -   Added @ref Shaders::Phong::setNormalTextureScale(), consuming the recently
@@ -206,6 +212,16 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   Markup styling for Emscripten application was switched to prefer using
+    CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
+    @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,
+    @cb{.css} #log @ce, @cb{.css} #status @ce and
+    @cb{.css} #status-description @ce IDs as this enables having more than one
+    application on the page. Styling still supports the IDs for backwards
+    compatibility, from now the IDs are only required in order to reference
+    the canvas and status elements from the JS `Module`. See
+    @ref platforms-html5-apps and [mosra/magnum#481](https://github.com/mosra/magnum/pull/481)
+    for details.
 -   @ref Shaders::Phong::setLightPositions() and
     @ref Shaders::Phong::setLightPosition() taking three-component vectors are
     deprecated in favor of variants taking four-component vectors, where the
