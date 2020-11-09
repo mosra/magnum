@@ -64,7 +64,7 @@ if(WITH_EMSCRIPTENAPPLICATION)
         # TODO: use target_link_options() once we can require CMake 3.13
         "-s MODULARIZE -s EXPORT_NAME=createModule"
         "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
-    target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0.2,0,0.2,1)
+    target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0x3bd267_rgbf)
     set_target_properties(PlatformMultipleEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

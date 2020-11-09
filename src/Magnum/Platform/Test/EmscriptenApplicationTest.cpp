@@ -36,6 +36,8 @@
 
 namespace Magnum { namespace Platform { namespace Test {
 
+using namespace Math::Literals;
+
 struct EmscriptenApplicationTest: Platform::Application {
     /* For testing resize events */
     explicit EmscriptenApplicationTest(const Arguments& arguments);
@@ -43,7 +45,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     virtual void drawEvent() override {
         Debug() << "draw event";
         #ifdef CUSTOM_CLEAR_COLOR
-        GL::Renderer::setClearColor({ CUSTOM_CLEAR_COLOR });
+        GL::Renderer::setClearColor(CUSTOM_CLEAR_COLOR);
         #endif
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
