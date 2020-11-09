@@ -40,6 +40,8 @@ See also:
 
 @subsection changelog-latest-new New features
 
+-   New @ref NoAllocate constructor tag, to be used by the @ref Vk library
+
 @subsubsection changelog-latest-new-debugtools DebugTools library
 
 -   Added @ref DebugTools::ColorMap::coolWarmSmooth() and

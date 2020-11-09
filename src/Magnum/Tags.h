@@ -54,6 +54,21 @@ Vulkan / ... object.
 typedef Corrade::Containers::NoCreateT NoCreateT;
 
 /**
+@brief No allocation tag type
+@m_since_latest
+
+Used to distinguish construction without allocating memory.
+@see @ref NoAllocate
+*/
+/* Explicit constructor to avoid ambiguous calls when using {} */
+struct NoAllocateT {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    struct Init{};
+    constexpr explicit NoAllocateT(Init) {}
+    #endif
+};
+
+/**
 @brief No initialization tag
 @m_since{2020,06}
 
@@ -79,6 +94,14 @@ constexpr NoCreateT NoCreate{};
 #else
 using Corrade::Containers::NoCreate;
 #endif
+
+/**
+@brief No allocation tag
+@m_since_latest
+
+Use for construction without allocating memory.
+*/
+constexpr NoAllocateT NoAllocate{NoAllocateT::Init{}};
 
 }
 

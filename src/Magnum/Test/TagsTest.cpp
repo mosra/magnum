@@ -45,11 +45,13 @@ TagsTest::TagsTest() {
 void TagsTest::noDefaultConstructor() {
     CORRADE_VERIFY(!std::is_default_constructible<NoInitT>::value);
     CORRADE_VERIFY(!std::is_default_constructible<NoCreateT>::value);
+    CORRADE_VERIFY(!std::is_default_constructible<NoAllocateT>::value);
 }
 
 void TagsTest::inlineDefinition() {
     CORRADE_VERIFY((std::is_same<decltype(NoInit), const NoInitT>::value));
     CORRADE_VERIFY((std::is_same<decltype(NoCreate), const NoCreateT>::value));
+    CORRADE_VERIFY((std::is_same<decltype(NoAllocate), const NoAllocateT>::value));
 }
 
 }}}
