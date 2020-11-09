@@ -42,10 +42,13 @@ endif()
 
 if(WITH_EMSCRIPTENAPPLICATION)
     add_executable(PlatformEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
-    target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE MagnumEmscriptenApplication MagnumGL)
+    target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE
+        MagnumEmscriptenApplication MagnumGL
+        # Test that the canvas and keylistener can be found with both the old
+        # and the new Emscripten target behaviors
+        # TODO: use target_link_options() once we can require CMake 3.13
+        "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0")
     set_target_properties(PlatformEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
-    # Test that the canvas and keylistener can be found with both the old and the new Emscripten target behaviors
-    target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0")
     add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
@@ -56,11 +59,13 @@ if(WITH_EMSCRIPTENAPPLICATION)
             $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html)
 
     add_executable(PlatformMultipleEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
-    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE MagnumEmscriptenApplication MagnumGL)
-    set_target_properties(PlatformMultipleEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
+    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE
+        MagnumEmscriptenApplication MagnumGL
+        # TODO: use target_link_options() once we can require CMake 3.13
+        "-s MODULARIZE -s EXPORT_NAME=createModule"
+        "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
     target_compile_definitions(PlatformMultipleEmscriptenApplicationTest PRIVATE CUSTOM_CLEAR_COLOR=0.2,0,0.2,1)
-    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
-    target_link_libraries(PlatformMultipleEmscriptenApplicationTest PRIVATE "-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1")
+    set_target_properties(PlatformMultipleEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     add_custom_command(TARGET PlatformMultipleEmscriptenApplicationTest POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
