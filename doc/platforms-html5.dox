@@ -279,7 +279,9 @@ available. The CSS file is shared with graphical apps, again see
 look.
 
 Deployment is similar to @ref platforms-html5-apps "graphical apps", only
-referencing a different JS file:
+referencing a different JS file ---
+@cb{.sh} ${MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS} @ce instead of
+@cb{.sh} ${MAGNUM_EMSCRIPTENAPPLICATION_JS} @ce:
 
 @code{.cmake}
 if(CORRADE_TARGET_EMSCRIPTEN)
