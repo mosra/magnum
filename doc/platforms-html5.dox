@@ -159,10 +159,12 @@ everything can be set up directly from the HTML markup. Replace
 @cb{.jinja} {{ application }} @ce with the name of your application executable
 and adapt page title and heading as desired. You can modify all files to your
 liking, but the HTML file must contain at least a
-@cb{.html} <canvas id="canvas"> @ce referenced in @cb{.js} Module.canvas @ce.
-The JavaScript file contains event listeners that print loading status on the
-page. The status is displayed in the remaining two @cb{.html} <div> @ce s, if
-they are available. The CSS file contains a basic style, see
+@cb{.html} <canvas> @ce referenced using an ID in @cb{.js} Module.canvas @ce
+--- by default it's @cb{.css} #canvas @ce but
+@ref platforms-html5-multiple-apps "it's possible to override it". The
+JavaScript file contains event listeners that print loading status on the page.
+The status is displayed in the remaining two @cb{.html} <div> @ce s, if they
+are available. The CSS file contains a basic style, see
 @ref platforms-html5-layout "below" for available options to tweak the default
 look.
 
@@ -298,58 +300,51 @@ endif()
 
 @note Support for this feature is currently only tested with
     @ref Platform::EmscriptenApplication. @ref Platform::Sdl2Application
-    and @ref Platform::GlfwApplication support largely depends on Emscripten's
-    underlying emulation libraries and may vary across Emscripten versions.
+    support largely depends on Emscripten's underlying emulation libraries and
+    may vary across Emscripten versions.
 
-Running multiple graphical applications on a single page is possible, but
-requires a few changes. By default, Emscripten populates a global @cb{.js} Module @ce
-object with things like callbacks and the canvas element to render into. This is not
+Running multiple applications on a single page is possible, but requires a few
+changes. By default, Emscripten populates a global @cb{.js} Module @ce object
+with things like callbacks and the canvas element to render into. This is not
 suitable when using more than one application. Emscripten's `MODULARIZE` option
-creates a script that defines a function with a local @cb{.js} Module @ce object
-instead. This way each application runs inside its own function with a separate
-environment:
+creates a script that defines a function with a local @cb{.js} Module @ce
+object instead. This way each application runs inside its own function with a
+separate environment:
 
 @code{.cmake}
-target_link_libraries(my-application PRIVATE "-s MODULARIZE -s EXPORT_NAME=createModule")
+# If you have CMake 3.13+
+target_link_options(my-application PRIVATE
+    "SHELL:-s MODULARIZE"
+    "SHELL:-s EXPORT_NAME=createModule")
+
+# Or alternatively, supported by older CMake versions as well
+target_link_libraries(my-application PRIVATE
+    "-s MODULARIZE -s EXPORT_NAME=createModule")
 @endcode
 
-Instead of running instantly, the application can then be instantiated
-using the function name set with `EXPORT_NAME`. The function optionally
-takes an object to populate the local @cb{.js} Module @ce.
+Instead of running instantly, the application can then be instantiated using
+the function name set with `EXPORT_NAME`. The function optionally takes an
+object to populate the local @cb{.js} Module @ce.
 
-While `EmscriptenApplication.js` populates the @cb{.js} Module @ce object by default,
-it also defines a function @cb{.js} createMagnumModule @ce that lets you create
-new module objects to pass to the Emscripten module function. This allows you
-to include `EmscriptenApplication.js` only once per page without having to bundle it with
-Emscripten's `--pre-js` option. To override the default values, pass an object to
-@cb{.js} createMagnumModule @ce. This is the easiest way to set the canvas or
-status elements of each application:
+While `EmscriptenApplication.js` populates the @cb{.js} Module @ce object by
+default, it also defines a @cb{.js} createMagnumModule() @ce function that lets
+you create new module objects to pass to the Emscripten module function. Pass
+an object to it to override the default values. This is the easiest way to set
+the canvas or status elements of each application:
 
 @code{.html-jinja}
 <script src="EmscriptenApplication.js"></script>
 <script src="{{ application }}.js"></script>
 <script>
-    const myModule = createMagnumModule({
-        canvas: document.getElementById('my-canvas'),
-        status: document.getElementById('my-status'),
-        statusDescription: document.getElementById('my-status-description')
-    });
-    createModule(myModule).then(function(myModule) {
-        // application loaded and running
-    });
+const myModule = createMagnumModule({
+    canvas: document.getElementById('my-canvas'),
+    status: document.getElementById('my-status'),
+    statusDescription: document.getElementById('my-status-description')
+});
+createModule(myModule).then(function(myModule) {
+    // application loaded and running
+});
 </script>
-@endcode
-
-If you need to make changes to the @cb{.js} Module @ce object created by
-EmscriptenApplication.js, you can add that code to a file that's loaded
-with `--pre-js` right after `EmscriptenApplication.js`. This is usually
-needed for pointing to elements with custom IDs, like the canvas to
-render into or the elements to display status updates:
-
-@code{.js}
-Module.canvas = document.getElementById('my-canvas');
-Module.status = document.getElementById('my-status');
-Module.statusDescription = document.getElementById('my-status-description');
 @endcode
 
 @section platforms-html5-layout Modifying page style, canvas size and aspect ratio
