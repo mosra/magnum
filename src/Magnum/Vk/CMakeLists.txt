@@ -31,7 +31,6 @@ set(MagnumVk_SRCS
     CommandPool.cpp
     Extensions.cpp
     Handle.cpp
-    Image.cpp
     Instance.cpp
     Memory.cpp
     Result.cpp
@@ -46,6 +45,7 @@ set(MagnumVk_GracefulAssert_SRCS
     DeviceProperties.cpp
     Enums.cpp
     ExtensionProperties.cpp
+    Image.cpp
     LayerProperties.cpp)
 
 set(MagnumVk_HEADERS

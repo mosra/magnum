@@ -28,7 +28,6 @@
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Integration.h"
-#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
@@ -75,13 +74,13 @@ Image Image::wrap(Device& device, const VkImage handle, const HandleFlags flags)
     return out;
 }
 
-Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_RESULT(device->CreateImage(device, info, nullptr, &_handle));
 }
 
-Image::Image(NoCreateT): _device{}, _handle{} {}
+Image::Image(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}
 
-Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
     other._handle = {};
 }
 
@@ -95,6 +94,7 @@ Image& Image::operator=(Image&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
+    swap(other._dedicatedMemory, _dedicatedMemory);
     return *this;
 }
 
@@ -105,6 +105,32 @@ MemoryRequirements Image::memoryRequirements() const {
     info.image = _handle;
     _device->state().getImageMemoryRequirementsImplementation(*_device, info, requirements);
     return requirements;
+}
+
+void Image::bindMemory(Memory& memory, const UnsignedLong offset) {
+    VkBindImageMemoryInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO;
+    info.image = _handle;
+    info.memory = memory;
+    info.memoryOffset = offset;
+    _device->state().bindImageMemoryImplementation(*_device, 1, &info);
+}
+
+void Image::bindDedicatedMemory(Memory&& memory) {
+    bindMemory(memory, 0);
+    _dedicatedMemory = std::move(memory);
+}
+
+bool Image::hasDedicatedMemory() const {
+    /* Sigh. Though better than needing to have `const handle()` overloads
+       returning `const VkDeviceMemory_T*` */
+    return const_cast<Image&>(*this)._dedicatedMemory.handle();
+}
+
+Memory& Image::dedicatedMemory() {
+    CORRADE_ASSERT(_dedicatedMemory.handle(),
+        "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory", _dedicatedMemory);
+    return _dedicatedMemory;
 }
 
 VkImage Image::release() {
@@ -123,6 +149,19 @@ void Image::getMemoryRequirementsImplementationKHR(Device& device, const VkImage
 
 void Image::getMemoryRequirementsImplementation11(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
     device->GetImageMemoryRequirements2(device, &info, &requirements);
+}
+
+void Image::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+    for(std::size_t i = 0; i != count; ++i)
+        device->BindImageMemory(device, infos[i].image, infos[i].memory, infos[i].memoryOffset);
+}
+
+void Image::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+    device->BindImageMemory2KHR(device, count, infos);
+}
+
+void Image::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+    device->BindImageMemory2(device, count, infos);
 }
 
 }}

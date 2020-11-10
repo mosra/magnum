@@ -63,7 +63,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | |
 @fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Image::bindMemory()
 
 @subsection vulkan-mapping-functions-c C
 

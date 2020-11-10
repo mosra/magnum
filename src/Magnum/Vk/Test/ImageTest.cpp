@@ -24,7 +24,9 @@
 */
 
 #include <new>
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Integration.h"
@@ -47,6 +49,8 @@ struct ImageTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+
+    void dedicatedMemoryNotDedicated();
 };
 
 ImageTest::ImageTest() {
@@ -62,7 +66,9 @@ ImageTest::ImageTest() {
               &ImageTest::createInfoConstructFromVk,
 
               &ImageTest::constructNoCreate,
-              &ImageTest::constructCopy});
+              &ImageTest::constructCopy,
+
+              &ImageTest::dedicatedMemoryNotDedicated});
 }
 
 void ImageTest::createInfoConstruct() {
@@ -197,6 +203,20 @@ void ImageTest::constructNoCreate() {
 void ImageTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Image, const Image&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Image, const Image&>{}));
+}
+
+void ImageTest::dedicatedMemoryNotDedicated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Image image{NoCreate};
+    CORRADE_VERIFY(!image.hasDedicatedMemory());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    image.dedicatedMemory();
+    CORRADE_COMPARE(out.str(), "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory\n");
 }
 
 }}}}

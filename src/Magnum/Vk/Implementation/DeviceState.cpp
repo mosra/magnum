@@ -46,6 +46,14 @@ DeviceState::DeviceState(Device& device) {
     } else {
         getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementationDefault;
     }
+
+    if(device.isVersionSupported(Version::Vk11)) {
+        bindImageMemoryImplementation = &Image::bindMemoryImplementation11;
+    } else if(device.isExtensionEnabled<Extensions::KHR::bind_memory2>()) {
+        bindImageMemoryImplementation = &Image::bindMemoryImplementationKHR;
+    } else {
+        bindImageMemoryImplementation = &Image::bindMemoryImplementationDefault;
+    }
 }
 
 }}}
