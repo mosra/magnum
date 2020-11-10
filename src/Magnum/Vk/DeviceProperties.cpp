@@ -244,6 +244,10 @@ UnsignedInt DeviceProperties::pickMemory(const MemoryFlags requiredFlags, const 
     std::exit(1); /* LCOV_EXCL_LINE */
 }
 
+UnsignedInt DeviceProperties::pickMemory(const MemoryFlags requiredFlags, const UnsignedInt memories) {
+    return pickMemory(requiredFlags, {}, memories);
+}
+
 Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFlags requiredFlags, const MemoryFlags preferredFlags, const UnsignedInt memories) {
     const VkPhysicalDeviceMemoryProperties properties = memoryProperties().memoryProperties;
 
@@ -275,6 +279,10 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFl
 
     Error{} << "Vk::DeviceProperties::tryPickMemory(): no" << requiredFlags << "found among" << Math::popcount(memories & ((1 << properties.memoryTypeCount) - 1)) << "considered memory types";
     return {};
+}
+
+Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFlags requiredFlags, const UnsignedInt memories) {
+    return tryPickMemory(requiredFlags, {}, memories);
 }
 
 Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {

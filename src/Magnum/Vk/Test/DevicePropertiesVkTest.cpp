@@ -444,8 +444,10 @@ void DevicePropertiesVkTest::memoryTypesPick() {
         MemoryFlag::HostVisible|MemoryFlag::HostCoherent,
         TestSuite::Compare::GreaterOrEqual);
 
-    /* Pick should return the same ID, and shouldn't exit */
+    /* Pick should return the same ID, and shouldn't exit. Test also the
+       overload with no preferred flags. */
     CORRADE_COMPARE(devices[0].pickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent), id);
+    CORRADE_COMPARE(devices[0].pickMemory(MemoryFlag::HostVisible|MemoryFlag::HostCoherent, ~UnsignedInt{}), id);
 
     /* If we put the same into preferred flags and leave the required empty, it
        should pick the same (the first one as well) */
@@ -482,8 +484,10 @@ void DevicePropertiesVkTest::memoryTypesPickFailed() {
     Error redirectError{&out};
     CORRADE_VERIFY(!devices[0].tryPickMemory(MemoryFlag(0xc0ffeee0)));
     CORRADE_VERIFY(!devices[0].tryPickMemory({}, {}, 0));
+    CORRADE_VERIFY(!devices[0].tryPickMemory({}, 0));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlag(0xc0ffeee0) found among {} considered memory types\n"
+        "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlags{{}} found among 0 considered memory types\n"
         "Vk::DeviceProperties::tryPickMemory(): no Vk::MemoryFlags{{}} found among 0 considered memory types\n", devices[0].memoryCount()));
 }
 

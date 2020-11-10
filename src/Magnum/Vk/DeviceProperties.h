@@ -456,6 +456,14 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         UnsignedInt pickMemory(MemoryFlags requiredFlags, MemoryFlags preferredFlags = {}, UnsignedInt memories = ~UnsignedInt{});
 
         /**
+         * @overload
+         *
+         * Equivalent to calling @ref pickMemory(MemoryFlags, MemoryFlags, UnsignedInt)
+         * with empty @p preferredFlags.
+         */
+        UnsignedInt pickMemory(MemoryFlags requiredFlags, UnsignedInt memories);
+
+        /**
          * @brief Try to pick a memory type satisfying given flags
          *
          * Compared to @ref pickMemory() the function returns
@@ -463,6 +471,14 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * instead of exiting.
          */
         Containers::Optional<UnsignedInt> tryPickMemory(MemoryFlags requiredFlags, MemoryFlags preferredFlags = {}, UnsignedInt memories = ~UnsignedInt{});
+
+        /**
+         * @overload
+         *
+         * Equivalent to calling @ref tryPickMemory(MemoryFlags, MemoryFlags, UnsignedInt)
+         * with empty @p preferredFlags.
+         */
+        Containers::Optional<UnsignedInt> tryPickMemory(MemoryFlags requiredFlags, UnsignedInt memories);
 
     private:
         friend Implementation::InstanceState;
