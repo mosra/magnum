@@ -900,6 +900,59 @@ You can also add further arguments to `apksigner` here. See the
 [official documentaton for apksigner](https://developer.android.com/studio/command-line/apksigner)
 for details.
 
+@subsection platforms-android-troubleshooting-ndk-home-deprecated Warning about ANDROID_NDK_HOME being deprecated
+
+If you see the following warning when building with Android Gradle Plugin 3.6.0
+and newer, it's because an @cb{.sh} $ANDROID_NDK_HOME @ce environment variable
+is defined.
+
+@code{.shell-session}
+$ gradle build
+
+> Configure project :
+WARNING: Support for ANDROID_NDK_HOME is deprecated and will be removed in the future. Use android.ndkVersion in build.gradle instead.
+Support for ANDROID_NDK_HOME is deprecated and will be removed in the future. Use android.ndkVersion in build.gradle instead.
+@endcode
+
+Ignore it, it's the best way. If you *really* want to get rid of the warning
+you can @cb{.sh} unset ANDROID_NDK_HOME @ce or edit your default system environment and remove this entry, but at that point Gradle will most probably
+suddenly want to download the NDK again somewhere inside the SDK installation
+directory, which may fail @ref platforms-android-troubleshooting-permissions "due to readonly directory permissions".
+At that point you're on your own, sorry. This path hasn't been investigated
+yet.
+
+@subsection platforms-android-troubleshooting-ndk-version Specifying NDK version in gradle.build
+
+With Android Gradle plugin 3.6.0 and newer it's possible to specify which NDK
+to use via `android.ndkVersion`. However it requires you to
+[specify the full version](https://developer.android.com/studio/projects/install-ndk#apply-specific-version) and doing something like
+
+@code{.gradle}
+android {
+    ndkVersion "19"
+
+
+    // ...
+@endcode
+
+@m_class{m-noindent}
+
+will result in the following error, or worse, a
+@ref platforms-android-troubleshooting-no-signature-applicable "cryptic error about some closure".
+
+@code{.shell-session}
+> Specified android.ndkVersion '19' does not have enough precision. Use major.minor.micro in version.
+@endcode
+
+The complete NDK version isn't listed in any of the online Android docs, you
+have to look into the `source.properties` file in the NDK root, which might say
+for example the following. It may be also available through the GUI SDK manager.
+
+@code{.properties}
+Pkg.Desc = Android NDK
+Pkg.Revision = 19.0.5232133
+@endcode
+
 @subsection platforms-android-troubleshooting-cant-find Gradle CMake can't find dependencies
 
 Gradle by default searches only in the NDK install path. If you have your
@@ -947,10 +1000,11 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
     [the official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#jniLibs)
     for details.
 
-@subsection platforms-android-troubleshooting-java8 Gradle aborting due to too new Java
+@subsection platforms-android-troubleshooting-gradle-evaluation-listener Gradle aborting due to "failed to notify project evaluation listener"
 
-If you see one of the following outputs, it might be that you're using Java 9
-or 10, which is not supported by Android build tools yet:
+All these errors look the same to an untrained eye, starting with the
+following, however there's a broad variety of reasons and *of course* it won't
+tell you what is actually wrong:
 
 @code{.shell-session}
 $ gradle build
@@ -960,16 +1014,21 @@ FAILURE: Build failed with an exception.
 * What went wrong:
 …
 > Failed to notify project evaluation listener.
+@endcode
+
+The line right after is the key clue to know the root cause --- see the
+following sections
+
+@subsubsection platforms-android-troubleshooting-java8 Too new Java
+
+Older versions of Android build tools didn't support Java 9 or 10, which could manifest as any of the following:
+
+@code{.shell-session}
+> Failed to notify project evaluation listener.
    > javax/xml/bind/annotation/XmlSchema
 @endcode
 
 @code{.shell-session}
-$ gradle build
-
-FAILURE: Build failed with an exception.
-
-* What went wrong:
-…
 > Failed to notify project evaluation listener.
    > Could not initialize class com.android.sdklib.repository.AndroidSdkHandler
 @endcode
@@ -988,27 +1047,97 @@ On ArchLinux, Java 8 is provided by the [jdk8-openjdk](https://www.archlinux.org
 package, which is pulled in as a dependency of the `android-sdk` and `gradle`
 packages.
 
-@subsection platforms-android-troubleshooting-term Gradle aborting due to termcap
+@subsubsection platforms-android-troubleshooting-gradle6 Too new Gradle (or maybe NDK or...)
 
-If you see the following output, Gradle is crashing because @cb{.sh} $TERM @ce
-is set to `xterm-256color` or `xterm-24`:
+Older version of Android build tools don't seem to work with new Gradle (in
+this case 6.6.1) anymore. Or that's the most plausible explanation, it might
+also be that these don't work with new NDK versions either (r19 in this case)
+but why is that reported by a throwing exception 1000 stack frames deep in some
+totally random ungoogleable API is just beyond me. Anyway --- the following
+may happen with Android Gradle plugin 2.3.3:
+
+@code{.shell-session}
+> Failed to notify project evaluation listener.
+   > org.gradle.api.tasks.compile.CompileOptions.setBootClasspath(Ljava/lang/String;)V
+@endcode
+
+While this with 3.0.0:
+
+@code{.shell-session}
+> Failed to notify project evaluation listener.
+   > org.gradle.api.internal.TaskInputsInternal.property(Ljava/lang/String;Ljava/lang/Object;)Lorg/gradle/api/tasks/TaskInputs;
+@endcode
+
+This for 3.3.0:
+
+@code{.shell-session}
+> Failed to notify project evaluation listener.
+   > org.gradle.api.file.ProjectLayout.directoryProperty(Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/file/DirectoryProperty;
+@endcode
+
+And probably a dozen other variants, but I am not willing to waste my time any
+further by enumerating all possible embarrasing crashes of cursed tools. The
+oldest Android Gradle plugin version that worked with Gradle 6.6.1 and NDK r19
+was 3.6.0, and to change it update the following entry in your `build.gradle`:
+
+@code{.gradle}
+buildscript {
+    // ...
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.0'
+    }
+}
+@endcode
+
+@subsection platform-android-troubleshooting-no-repositories-defined Gradle fails because no repositories are defined
+
+Android Gradle plugin 3.6 and newer may *greet* you with the following when
+doing a fresh build:
 
 @code{.shell-session}
 $ gradle build
 
+> Task :mergeDebugResources FAILED
+
 FAILURE: Build failed with an exception.
 
 * What went wrong:
-Could not open terminal for stdout: could not get termcap entry
+Execution failed for task ':mergeDebugResources'.
+> Could not resolve all files for configuration ':_internal_aapt2_binary'.
+   > Cannot resolve external dependency com.android.tools.build:aapt2:4.0.0-6051327 because no repositories are defined.
+     Required by:
+         project :
 @endcode
 
-Solution is to set @cb{.sh} TERM=xterm @ce. See
-[gradle/gradle#4440](https://github.com/gradle/gradle/issues/4440) for more
-information.
+Solution is to add the following to your `build.gradle`:
 
-@code{.sh}
-TERM=xterm gradle build
+@code{.gradle}
+allprojects {
+    repositories {
+        google()
+    }
+}
 @endcode
+
+* *in addition* to the existing repositories defined inside `buildscript`:
+
+@code{.gradle}
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+
+    // ...
+@endcode
+
+Both the two existing repositories inside `buildscript` are still needed, it
+will fail with different but no less cryptic errors if you attempt to remove
+either of them. When you add the `allprojects` entry, the problem may seemingly
+look like it disappeared, since removing `allprojects` again will still work.
+This is only true until you recreate the build directory from scratch so better
+keep it there.
 
 @subsection platforms-android-troubleshooting-licenses Accepting SDK licenses for Gradle
 
@@ -1034,10 +1163,14 @@ following (assuming you have SDK version 26 at least):
 sdkmanager --licenses # and then manually accept all of them
 @endcode
 
-The tool doesn't provide any diagnostic output if the accepting failed, so be
-sure to verify that everything went well by executing @cb{.sh} sdkmanager --licenses @ce
-again. If it offers the same licenses again, you might want to force it with
-@cb{.sh} sudo @ce.
+@m_class{m-note m-danger}
+
+@par
+    The tool says @cb{.shell-session} All SDK package licenses accepted @ce and
+    * **returns with a success error code even if the accepting failed**, so be
+    sure to verify that everything went well by executing @cb{.sh} sdkmanager --licenses @ce again. If it offers the same licenses again, it didn't succeed
+    before. In that case you may want to force it with @cb{.sh} sudo @ce (and
+    then verify once again).
 
 If the tool blows up with the following error, it's again because the Java
 version is too new, see @ref platforms-android-troubleshooting-java8 "above"
@@ -1048,6 +1181,39 @@ Exception in thread "main" java.lang.NoClassDefFoundError: javax/xml/bind/annota
         at com.android.repository.api.SchemaModule$SchemaModuleVersion.<init>(SchemaModule.java:156)
         …
 @endcode
+
+@subsection platforms-android-troubleshooting-licenses Gradle complains about an exception while marshalling some XML file that doesn't exist
+
+@code{.shell-session}
+$ gradle build
+
+> Configure project :
+Exception while marshalling /opt/android-sdk/build-tools/29.0.3/package.xml. Probably the SDK is read-only
+…
+@endcode
+
+This message doesn't seem to result in a build error, however it might be
+annoying. The files it complains about don't exist on the filesystem and it's
+related to the @ref platforms-android-troubleshooting-licenses problem --- the
+`package.xml` files get created during the (`sudo`ed) run of `sdkmanager`, even
+if there are no licenses left to sign.
+
+@subsection platforms-android-troubleshooting-no-signature-applicable Gradle fails because no signature of method is applicable for argument types
+
+@code{.shell-session}
+$ gradle build
+
+* Where:
+Build file '…/build.gradle' line: …
+
+* What went wrong:
+…
+> No signature of method: build_3w19jaw3zqx2h2gvdj91syekc.android() is applicable for argument types: (build_3w19jaw3zqx2h2gvdj91syekc$_run_closure1) values: [build_3w19jaw3zqx2h2gvdj91syekc$_run_closure1@393eb206]
+@endcode
+
+The particular cryptic value may differ, but this means you have some error in
+your Gradle file. Of course it won't tell you what the error is, so good luck
+commenting out parts of the file until it works or you reach a different error.
 
 @subsection platforms-android-troubleshooting-permissions Android SDK directory permissions
 
@@ -1065,6 +1231,38 @@ it's often enough to just install such packages. In case of ArchLinux, all
 relevant packages are available in AUR. For the above error in particular, the
 matching packages are [android-sdk-build-tools-26.0.2](https://aur.archlinux.org/packages/android-sdk-build-tools-26.0.2/)
 and [android-platform-25](https://aur.archlinux.org/packages/android-platform-25/).
+
+@section platforms-android-obsolete-troubleshooting Obsolete troubleshooting
+
+These issues should no longer appear in practice with reasonably recent
+versions of Android tools, however are still kept <s>to remind us everything
+used to be even worse than it is now</s> in case your project keeps using the
+older versions (which is recommended for sanity, there's not many things worse
+than upgrading Android NDK).
+
+@subsection platforms-android-troubleshooting-term Gradle aborting due to termcap
+
+If you see the following output, Gradle is crashing because @cb{.sh} $TERM @ce
+is set to `xterm-256color` or `xterm-24`:
+
+@code{.shell-session}
+$ gradle build
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Could not open terminal for stdout: could not get termcap entry
+@endcode
+
+Solution is to set @cb{.sh} TERM=xterm @ce. See
+[gradle/gradle#4440](https://github.com/gradle/gradle/issues/4440) for more
+information. Doesn't seem to be an issue with Gradle 6.6.1 anymore, but the
+exact version where this got fixed is unknown.
+
+@code{.sh}
+TERM=xterm gradle build
+@endcode
+
 */
 
 }
