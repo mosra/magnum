@@ -906,6 +906,8 @@ If you see the following warning when building with Android Gradle Plugin 3.6.0
 and newer, it's because an @cb{.sh} $ANDROID_NDK_HOME @ce environment variable
 is defined.
 
+@m_class{m-console-wrap}
+
 @code{.shell-session}
 $ gradle build
 
@@ -939,6 +941,8 @@ android {
 
 will result in the following error, or worse, a
 @ref platforms-android-troubleshooting-no-signature-applicable "cryptic error about some closure".
+
+@m_class{m-console-wrap}
 
 @code{.shell-session}
 > Specified android.ndkVersion '19' does not have enough precision. Use major.minor.micro in version.
@@ -982,6 +986,8 @@ gradle build
 
 You can also put that directly into the `gradle.build` file, although that's
 not recommended because it hardcodes your local system setup in the project:
+
+@m_class{m-console-wrap}
 
 @code{.gradle}
 android {
@@ -1089,6 +1095,8 @@ but why is that reported by a throwing exception 1000 stack frames deep in some
 totally random ungoogleable API is just beyond me. Anyway --- the following
 may happen with Android Gradle plugin 2.3.3:
 
+@m_class{m-console-wrap}
+
 @code{.shell-session}
 > Failed to notify project evaluation listener.
    > org.gradle.api.tasks.compile.CompileOptions.setBootClasspath(Ljava/lang/String;)V
@@ -1096,12 +1104,16 @@ may happen with Android Gradle plugin 2.3.3:
 
 While this with 3.0.0:
 
+@m_class{m-console-wrap}
+
 @code{.shell-session}
 > Failed to notify project evaluation listener.
    > org.gradle.api.internal.TaskInputsInternal.property(Ljava/lang/String;Ljava/lang/Object;)Lorg/gradle/api/tasks/TaskInputs;
 @endcode
 
 This for 3.3.0:
+
+@m_class{m-console-wrap}
 
 @code{.shell-session}
 > Failed to notify project evaluation listener.
@@ -1127,6 +1139,8 @@ buildscript {
 
 Android Gradle plugin 3.6 and newer may *greet* you with the following when
 doing a fresh build:
+
+@m_class{m-console-wrap}
 
 @code{.shell-session}
 $ gradle build
@@ -1177,6 +1191,8 @@ keep it there.
 Gradle might refuse to build a project if SDK licenses are not accepted, with
 an error that might look like this:
 
+@m_class{m-console-wrap}
+
 @code{.shell-session}
 $ gradle build
 
@@ -1209,6 +1225,8 @@ If the tool blows up with the following error, it's again because the Java
 version is too new, see @ref platforms-android-troubleshooting-java8 "above"
 for a solution:
 
+@m_class{m-console-wrap}
+
 @code{.shell-session}
 Exception in thread "main" java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema
         at com.android.repository.api.SchemaModule$SchemaModuleVersion.<init>(SchemaModule.java:156)
@@ -1216,6 +1234,8 @@ Exception in thread "main" java.lang.NoClassDefFoundError: javax/xml/bind/annota
 @endcode
 
 @subsection platforms-android-troubleshooting-marshalling-nonexistent-xml Gradle complains about an exception while marshalling some XML file that doesn't exist
+
+@m_class{m-console-wrap}
 
 @code{.shell-session}
 $ gradle build
@@ -1232,6 +1252,8 @@ related to the @ref platforms-android-troubleshooting-licenses problem --- the
 if there are no licenses left to sign.
 
 @subsection platforms-android-troubleshooting-no-signature-applicable Gradle fails because no signature of method is applicable for argument types
+
+@m_class{m-console-wrap}
 
 @code{.shell-session}
 $ gradle build
@@ -1268,8 +1290,8 @@ and [android-platform-25](https://aur.archlinux.org/packages/android-platform-25
 @section platforms-android-obsolete-troubleshooting Obsolete troubleshooting
 
 These issues should no longer appear in practice with reasonably recent
-versions of Android tools, however are still kept <del>to remind us everything
-used to be even worse than it is now</del> in case your project keeps using the
+versions of Android tools, however are still kept <s>to remind us everything
+used to be even worse than it is now</s> in case your project keeps using the
 older versions (which is recommended for sanity, there's not many things worse
 than upgrading Android NDK).
 
