@@ -953,7 +953,7 @@ Pkg.Desc = Android NDK
 Pkg.Revision = 19.0.5232133
 @endcode
 
-@subsection platforms-android-troubleshooting-cant-find Debugging Gradle CMake issues
+@subsection platforms-android-troubleshooting-cmake Debugging Gradle CMake issues
 
 Gradle by default doesn't show any useful output for the CMake run, only the
 error output when something goes wrong. For general debugging, you have to run
@@ -978,6 +978,24 @@ environment variable to your install location:
 @code{.sh}
 export CMAKE_PREFIX_PATH=<path-where-your-dependencies-are-installed>
 gradle build
+@endcode
+
+You can also put that directly into the `gradle.build` file, although that's
+not recommended because it hardcodes your local system setup in the project:
+
+@code{.gradle}
+android {
+    ...
+
+    defaultConfig {
+        ...
+
+        externalNativeBuild {
+            cmake {
+                // Append to the existing arguments that are there
+                arguments '-DANDROID_STL=c++_static', '-DCMAKE_PREFIX_PATH=<path-where-your-dependencies-are-installed>'
+            }
+        }
 @endcode
 
 If you have the dependencies installed in the NDK path, but it still fails,
@@ -1197,7 +1215,7 @@ Exception in thread "main" java.lang.NoClassDefFoundError: javax/xml/bind/annota
         …
 @endcode
 
-@subsection platforms-android-troubleshooting-licenses Gradle complains about an exception while marshalling some XML file that doesn't exist
+@subsection platforms-android-troubleshooting-marshalling-nonexistent-xml Gradle complains about an exception while marshalling some XML file that doesn't exist
 
 @code{.shell-session}
 $ gradle build
@@ -1250,8 +1268,8 @@ and [android-platform-25](https://aur.archlinux.org/packages/android-platform-25
 @section platforms-android-obsolete-troubleshooting Obsolete troubleshooting
 
 These issues should no longer appear in practice with reasonably recent
-versions of Android tools, however are still kept <s>to remind us everything
-used to be even worse than it is now</s> in case your project keeps using the
+versions of Android tools, however are still kept <del>to remind us everything
+used to be even worse than it is now</del> in case your project keeps using the
 older versions (which is recommended for sanity, there's not many things worse
 than upgrading Android NDK).
 
