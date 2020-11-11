@@ -953,7 +953,22 @@ Pkg.Desc = Android NDK
 Pkg.Revision = 19.0.5232133
 @endcode
 
-@subsection platforms-android-troubleshooting-cant-find Gradle CMake can't find dependencies
+@subsection platforms-android-troubleshooting-cant-find Debugging Gradle CMake issues
+
+Gradle by default doesn't show any useful output for the CMake run, only the
+error output when something goes wrong. For general debugging, you have to run
+`gradle build -i`, which will spit out immense heaps of even more useless
+content, and the actual CMake output messages are interleaved with some JSON
+dumps in a way that makes them practically invisible. To find a start of the
+CMake log, it might help to redirect the output and then search for
+`Check for working CXX compiler`.
+
+To make things worse, the CMake build isn't stored in the `build/` directory,
+but rather in (hidden) `.externalNativeBuild/` or `.cxx/` directories,
+depending on which version you're at. Be sure to remove those when retrying a
+CMake configure step, otherwise CMake may not even get run.
+
+@subsubsection platforms-android-troubleshooting-cant-find Gradle CMake can't find dependencies
 
 Gradle by default searches only in the NDK install path. If you have your
 dependencies installed somewhere else (this goes especially for the *native*
