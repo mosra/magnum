@@ -26,6 +26,8 @@
 #include "DeviceState.h"
 
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Version.h"
 
 namespace Magnum { namespace Vk { namespace Implementation {
@@ -35,6 +37,14 @@ DeviceState::DeviceState(Device& device) {
         getDeviceQueueImplementation = &Device::getQueueImplementation11;
     } else {
         getDeviceQueueImplementation = &Device::getQueueImplementationDefault;
+    }
+
+    if(device.isVersionSupported(Version::Vk11)) {
+        getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementation11;
+    } else if(device.isExtensionEnabled<Extensions::KHR::get_memory_requirements2>()) {
+        getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementationKHR;
+    } else {
+        getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementationDefault;
     }
 }
 

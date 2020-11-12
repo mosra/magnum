@@ -23,8 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
@@ -43,6 +44,8 @@ struct ImageVkTest: VulkanTester {
     void constructMove();
 
     void wrap();
+
+    void memoryRequirements();
 };
 
 ImageVkTest::ImageVkTest() {
@@ -55,7 +58,9 @@ ImageVkTest::ImageVkTest() {
               &ImageVkTest::constructCubeMapArray,
               &ImageVkTest::constructMove,
 
-              &ImageVkTest::wrap});
+              &ImageVkTest::wrap,
+
+              &ImageVkTest::memoryRequirements});
 }
 
 void ImageVkTest::construct1D() {
@@ -178,6 +183,16 @@ void ImageVkTest::wrap() {
     CORRADE_COMPARE(wrapped.release(), image);
     CORRADE_VERIFY(!wrapped.handle());
     device()->DestroyImage(device(), image, nullptr);
+}
+
+void ImageVkTest::memoryRequirements() {
+    /* Use linear tiling for a deterministic memory size */
+    ImageCreateInfo2D info{ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_UNORM, {128, 64}, 1};
+    info->tiling = VK_IMAGE_TILING_LINEAR;
+    Image image{device(), info, NoAllocate};
+
+    MemoryRequirements requirements = image.memoryRequirements();
+    CORRADE_COMPARE(requirements.size(), 128*64*4);
 }
 
 }}}}

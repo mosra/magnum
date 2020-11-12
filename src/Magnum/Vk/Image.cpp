@@ -28,7 +28,9 @@
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {
 
@@ -96,10 +98,31 @@ Image& Image::operator=(Image&& other) noexcept {
     return *this;
 }
 
+MemoryRequirements Image::memoryRequirements() const {
+    MemoryRequirements requirements;
+    VkImageMemoryRequirementsInfo2 info{};
+    info.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2;
+    info.image = _handle;
+    _device->state().getImageMemoryRequirementsImplementation(*_device, info, requirements);
+    return requirements;
+}
+
 VkImage Image::release() {
     const VkImage handle = _handle;
     _handle = {};
     return handle;
+}
+
+void Image::getMemoryRequirementsImplementationDefault(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetImageMemoryRequirements(device, info.image, &requirements.memoryRequirements);
+}
+
+void Image::getMemoryRequirementsImplementationKHR(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetImageMemoryRequirements2KHR(device, &info, &requirements);
+}
+
+void Image::getMemoryRequirementsImplementation11(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetImageMemoryRequirements2(device, &info, &requirements);
 }
 
 }}

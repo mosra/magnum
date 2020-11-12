@@ -41,6 +41,8 @@
 
 namespace Magnum { namespace Vk {
 
+namespace Implementation { struct DeviceState; }
+
 /**
 @brief Image usage
 @m_since_latest
@@ -396,6 +398,14 @@ class MAGNUM_VK_EXPORT Image {
         HandleFlags handleFlags() const { return _flags; }
 
         /**
+         * @brief Image memory requirements
+         *
+         * @see @fn_vk_keyword{GetImageMemoryRequirements2},
+         *      @fn_vk_keyword{GetImageMemoryRequirements}
+         */
+        MemoryRequirements memoryRequirements() const;
+
+        /**
          * @brief Release the underlying Vulkan image
          *
          * Releases ownership of the Vulkan image and returns its handle so
@@ -406,6 +416,12 @@ class MAGNUM_VK_EXPORT Image {
         VkImage release();
 
     private:
+        friend Implementation::DeviceState;
+
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationDefault(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationKHR(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementation11(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
 

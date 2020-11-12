@@ -34,13 +34,39 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct MemoryTest: TestSuite::Tester {
     explicit MemoryTest();
 
+    void requirementsConstructNoInit();
+    void requirementsConstructFromVk();
+
     void debugMemoryFlag();
     void debugMemoryFlags();
 };
 
 MemoryTest::MemoryTest() {
-    addTests({&MemoryTest::debugMemoryFlag,
+    addTests({&MemoryTest::requirementsConstructNoInit,
+              &MemoryTest::requirementsConstructFromVk,
+
+              &MemoryTest::debugMemoryFlag,
               &MemoryTest::debugMemoryFlags});
+}
+
+void MemoryTest::requirementsConstructNoInit() {
+    MemoryRequirements requirements{NoInit};
+    requirements->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    new(&requirements) MemoryRequirements{NoInit};
+    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<MemoryRequirements, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, MemoryRequirements>::value));
+}
+
+void MemoryTest::requirementsConstructFromVk() {
+    VkMemoryRequirements2 vkRequirements;
+    vkRequirements.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+
+    MemoryRequirements requirements{vkRequirements};
+    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
 }
 
 void MemoryTest::debugMemoryFlag() {

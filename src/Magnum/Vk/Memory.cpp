@@ -30,6 +30,17 @@
 
 namespace Magnum { namespace Vk {
 
+MemoryRequirements::MemoryRequirements(): _requirements{} {
+    _requirements.sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2;
+}
+
+MemoryRequirements::MemoryRequirements(NoInitT) noexcept {}
+
+MemoryRequirements::MemoryRequirements(const VkMemoryRequirements2& requirements):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _requirements(requirements) {}
+
 Debug& operator<<(Debug& debug, const MemoryFlag value) {
     debug << "Vk::MemoryFlag" << Debug::nospace;
 

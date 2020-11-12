@@ -434,8 +434,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          *      should be considered etc.). Expected to have at least one bit
          *      of the first @ref memoryCount() bits set, otherwise the
          *      function will always fail. Defaults to all bits set, meaning
-         *      all memory types are considered. Corresponds to the
-         *       `memoryTypeBits` field of @type_vk{MemoryRequirements}.
+         *      all memory types are considered. Corresponds to
+         *      @ref MemoryRequirements::memories().
          *
          * Queries memory properties using @ref memoryProperties() and out of
          * memory types set in @p memoryBits tries to find one that contains

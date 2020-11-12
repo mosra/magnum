@@ -26,12 +26,14 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::Vk::MemoryFlag, enum set @ref Magnum::Vk::MemoryFlags
+ * @brief Class @ref Magnum::Vk::MemoryRequirements, enum @ref Magnum::Vk::MemoryFlag, enum set @ref Magnum::Vk::MemoryFlags
  */
 
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
+#include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
 
@@ -108,6 +110,69 @@ CORRADE_ENUMSET_OPERATORS(MemoryFlags)
 @m_since_latest
 */
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryFlags value);
+
+/**
+@brief Device memory requirements
+@m_since_latest
+
+Wraps a @type_vk_keyword{MemoryRequirements2}. Not constructible directly,
+returned from @ref Image::memoryRequirements().
+@see @ref DeviceProperties::pickMemory()
+*/
+class MAGNUM_VK_EXPORT MemoryRequirements {
+    public:
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit MemoryRequirements(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit MemoryRequirements(const VkMemoryRequirements2& requirements);
+
+        /** @brief Underlying @type_vk{MemoryRequirements} structure */
+        VkMemoryRequirements2& requirements() { return _requirements; }
+        /** @overload */
+        const VkMemoryRequirements2& requirements() const { return _requirements; }
+        /** @overload */
+        operator VkMemoryRequirements2&() { return _requirements; }
+        /** @overload */
+        operator const VkMemoryRequirements2&() const { return _requirements; }
+        /** @overload */
+        VkMemoryRequirements2* operator->() { return &_requirements; }
+        /** @overload */
+        const VkMemoryRequirements2* operator->() const { return &_requirements; }
+
+        /** @brief Required memory size */
+        UnsignedLong size() const {
+            return _requirements.memoryRequirements.size;
+        }
+
+        /** @brief Required memory alignment */
+        UnsignedLong alignment() const {
+            return _requirements.memoryRequirements.alignment;
+        }
+
+        /** @brief Bits indicating which memory  */
+        UnsignedInt memories() const {
+            return _requirements.memoryRequirements.memoryTypeBits;
+        }
+
+    private:
+        friend Image;
+
+        explicit MemoryRequirements();
+
+        VkMemoryRequirements2 _requirements;
+};
 
 }}
 

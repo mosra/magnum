@@ -34,6 +34,8 @@ struct DeviceState {
     explicit DeviceState(Device& instance);
 
     void(*getDeviceQueueImplementation)(Device&, const VkDeviceQueueInfo2&, VkQueue&);
+    /** @todo put this eventually into a dedicated image state struct? */
+    void(*getImageMemoryRequirementsImplementation)(Device&, const VkImageMemoryRequirementsInfo2&, VkMemoryRequirements2&);
 };
 
 }}}
