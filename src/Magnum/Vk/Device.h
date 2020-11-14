@@ -392,10 +392,20 @@ class MAGNUM_VK_EXPORT Device {
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
 
-        /** @brief Device version */
+        /**
+         * @brief Version supported by the device
+         *
+         * Unless overriden using `--magnum-vulkan-version` on the
+         * @ref Vk-Device-command-line "command line", corresponds to
+         * @ref DeviceProperties::apiVersion().
+         */
         Version version() const { return _version; }
 
-        /** @brief Whether given version is supported on the device */
+        /**
+         * @brief Whether given version is supported on the device
+         *
+         * Compares @p version against @ref version().
+         */
         bool isVersionSupported(Version version) const {
             return _version >= version;
         }

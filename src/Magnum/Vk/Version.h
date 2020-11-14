@@ -132,7 +132,7 @@ as @cb{.shell-session} <major>.<minor> @ce if patch is zero.
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Version value);
 
 /**
-@brief Enumerate instance version
+@brief Enumerate version supported by the instance
 @m_since_latest
 
 Note that the @fn_vk{EnumerateInstanceVersion} function isn't available in

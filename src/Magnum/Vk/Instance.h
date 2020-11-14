@@ -432,10 +432,20 @@ class MAGNUM_VK_EXPORT Instance {
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
 
-        /** @brief Instance version */
+        /**
+         * @brief Version supported by the instance
+         *
+         * Unless overriden using `--magnum-vulkan-version` on the
+         * @ref Vk-Device-command-line "command line", corresponds to
+         * @ref enumerateInstanceVersion().
+         */
         Version version() const { return _version; }
 
-        /** @brief Whether given version is supported on the instance */
+        /**
+         * @brief Whether given version is supported on the instance
+         *
+         * Compares @p version against @ref version().
+         */
         bool isVersionSupported(Version version) const {
             return _version >= version;
         }
