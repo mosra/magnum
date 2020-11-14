@@ -28,7 +28,7 @@
 #include <algorithm>
 #include <Corrade/Containers/StringView.h>
 
-#include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/Assert.h"
 
 namespace Magnum { namespace Vk {
 

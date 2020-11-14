@@ -24,32 +24,59 @@
 */
 
 #include <sstream>
+
+#ifndef CORRADE_STANDARD_ASSERT
+#define CORRADE_NO_ASSERT
+#endif
+
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Result.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
-struct ResultTest: TestSuite::Tester {
-    explicit ResultTest();
+struct AssertDisabledTest: TestSuite::Tester {
+    explicit AssertDisabledTest();
 
-    /* The assert macro is tested separately, as it needs a bunch of extra
-       handling */
-
-    void debug();
+    void result();
+    void vkResult();
 };
 
-ResultTest::ResultTest() {
-    addTests({&ResultTest::debug});
+AssertDisabledTest::AssertDisabledTest() {
+    addTests({&AssertDisabledTest::result,
+              &AssertDisabledTest::vkResult});
+
+    #ifdef CORRADE_STANDARD_ASSERT
+    setTestName("Magum::Vk::Test::AssertStandardDisabledTest");
+    #endif
 }
 
-void ResultTest::debug() {
+void AssertDisabledTest::result() {
     std::ostringstream out;
-    Debug{&out} << Result::ErrorExtensionNotPresent << Result(-10007655);
-    CORRADE_COMPARE(out.str(), "Vk::Result::ErrorExtensionNotPresent Vk::Result(-10007655)\n");
+    Error redirectError{&out};
+
+    Result a = Result::ErrorUnknown;
+    Result r = Result::ErrorFragmentedPool;
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = r);
+
+    CORRADE_COMPARE(a, Result::ErrorFragmentedPool);
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AssertDisabledTest::vkResult() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    VkResult a = VK_ERROR_UNKNOWN;
+    VkResult r = VK_ERROR_FRAGMENTED_POOL;
+    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = r);
+
+    CORRADE_COMPARE(Result(a), Result::ErrorFragmentedPool);
+    CORRADE_COMPARE(out.str(), "");
 }
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Vk::Test::ResultTest)
+CORRADE_TEST_MAIN(Magnum::Vk::Test::AssertDisabledTest)

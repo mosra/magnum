@@ -28,9 +28,9 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
-#include "Magnum/Vk/Result.h"
 
 namespace Magnum { namespace Vk {
 

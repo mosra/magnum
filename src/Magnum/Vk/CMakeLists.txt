@@ -49,6 +49,7 @@ set(MagnumVk_GracefulAssert_SRCS
     LayerProperties.cpp)
 
 set(MagnumVk_HEADERS
+    Assert.h
     CommandBuffer.h
     CommandPool.h
     Device.h

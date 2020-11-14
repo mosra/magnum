@@ -38,6 +38,45 @@ corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
+
+add_library(VkAssertTestObjects OBJECT AssertTest.cpp)
+target_include_directories(VkAssertTestObjects PRIVATE $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
+corrade_add_test(VkAssertTest
+    $<TARGET_OBJECTS:VkAssertTestObjects>
+    ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+    LIBRARIES MagnumVk)
+# WILL_FAIL doesn't work for abort() on desktop, test this only on embedded
+# then. Oh well. Also the tests could be just one executable added multiple
+# times with different arguments, but corrade_add_test() doesn't support that,
+# so I'm doing it at least via an OBJECT library.
+if(CORRADE_TARGET_ANDROID)
+    corrade_add_test(VkAssertTestFailAssertResult
+        $<TARGET_OBJECTS:VkAssertTestObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ARGUMENTS --fail-on-assert-result true
+        LIBRARIES MagnumVk)
+    set_tests_properties(VkAssertTestFailAssertResult PROPERTIES
+        PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorFragmentedPool at ")
+    corrade_add_test(VkAssertTestFailAssertVkResult
+        $<TARGET_OBJECTS:VkAssertTestObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ARGUMENTS --fail-on-assert-vk-result true
+        LIBRARIES MagnumVk)
+    set_tests_properties(VkAssertTestFailAssertVkResult PROPERTIES
+        PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorFragmentedPool at ")
+endif()
+
+# The same as above, but using CORRADE_STANDARD_ASSERT
+corrade_add_test(VkAssertStandardTest AssertTest.cpp LIBRARIES MagnumVk)
+target_compile_definitions(VkAssertStandardTest PRIVATE
+    "CORRADE_STANDARD_ASSERT")
+
+corrade_add_test(VkAssertDisabledTest AssertDisabledTest.cpp LIBRARIES MagnumVk)
+# The same as above, but using CORRADE_STANDARD_ASSERT and NDEBUG
+corrade_add_test(VkAssertStandardDisabledTest AssertDisabledTest.cpp LIBRARIES MagnumVk)
+target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
+    "CORRADE_STANDARD_ASSERT" "NDEBUG")
+
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 
 if(BUILD_VK_TESTS)

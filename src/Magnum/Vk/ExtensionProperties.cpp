@@ -30,8 +30,8 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Extensions.h"
-#include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 
 namespace Magnum { namespace Vk {

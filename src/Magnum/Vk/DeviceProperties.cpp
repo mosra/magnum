@@ -33,12 +33,12 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Memory.h"
-#include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
