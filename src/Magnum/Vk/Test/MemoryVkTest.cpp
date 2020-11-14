@@ -48,13 +48,13 @@ MemoryVkTest::MemoryVkTest() {
 }
 
 void MemoryVkTest::construct() {
-    Memory memory{device(), MemoryAllocateInfo{1024*1024, deviceProperties().pickMemory(MemoryFlag::DeviceLocal)}};
+    Memory memory{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::DeviceLocal)}};
     CORRADE_VERIFY(memory.handle());
     CORRADE_COMPARE(memory.handleFlags(), HandleFlag::DestroyOnDestruction);
 }
 
 void MemoryVkTest::constructMove() {
-    Memory a{device(), MemoryAllocateInfo{1024*1024, deviceProperties().pickMemory(MemoryFlag::DeviceLocal)}};
+    Memory a{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::DeviceLocal)}};
     VkDeviceMemory handle = a.handle();
 
     Memory b = std::move(a);
@@ -76,7 +76,7 @@ void MemoryVkTest::constructMove() {
 void MemoryVkTest::wrap() {
     VkDeviceMemory memory{};
     CORRADE_COMPARE(Result(device()->AllocateMemory(device(),
-        MemoryAllocateInfo{1024*1024, deviceProperties().pickMemory(MemoryFlag::DeviceLocal)},
+        MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::DeviceLocal)},
         nullptr, &memory)), Result::Success);
     CORRADE_VERIFY(memory);
 

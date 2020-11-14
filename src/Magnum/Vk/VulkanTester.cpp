@@ -33,9 +33,10 @@
 namespace Magnum { namespace Vk {
 
 VulkanTester::VulkanTester(): VulkanTester{NoCreate} {
-    *_deviceProperties = pickDevice(_instance);
-    _device = Vk::Device{_instance, Vk::DeviceCreateInfo{*_deviceProperties}
-        .addQueues(_deviceProperties->pickQueueFamily(Vk::QueueFlag::Graphics), {0.0f}, {_queue})
+    DeviceProperties deviceProperties = pickDevice(_instance);
+    UnsignedInt graphicsQueue = deviceProperties.pickQueueFamily(Vk::QueueFlag::Graphics);
+    _device = Vk::Device{_instance, Vk::DeviceCreateInfo{std::move(deviceProperties)}
+        .addQueues(graphicsQueue, {0.0f}, {_queue})
     };
 }
 
@@ -45,6 +46,6 @@ VulkanTester::VulkanTester(NoCreateT): VulkanTester{NoCreate, NoCreate} {
     };
 }
 
-VulkanTester::VulkanTester(NoCreateT, NoCreateT): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _instance{NoCreate}, _device{NoCreate}, _deviceProperties{Containers::InPlaceInit, NoCreate}, _queue{NoCreate} {}
+VulkanTester::VulkanTester(NoCreateT, NoCreateT): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _instance{NoCreate}, _device{NoCreate}, _queue{NoCreate} {}
 
 }}

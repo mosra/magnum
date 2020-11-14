@@ -77,8 +77,7 @@ See @ref building, @ref cmake and @ref testsuite for more information.
 
 The class implicitly creates a Vulkan @ref Instance and @ref Device with
 default layers and extensions and one graphics queue. These are then available
-through @ref instance(), @ref device(), @ref deviceProperties() and
-@ref queue() getters.
+through @ref instance(), @ref device() and @ref queue() getters.
 
 If you want to create a custom device, use the @ref VulkanTester(NoCreateT)
 constructor. You can then move the device and queue instances to the getters to
@@ -93,8 +92,7 @@ class VulkanTester: public TestSuite::Tester {
          *
          * Creates an instance using implicit settings, picks a default device
          * and creates a graphics queue on that device. These are then exposed
-         * through @ref instance(), @ref device(), @ref deviceProperties() and
-         * @ref queue() getters.
+         * through @ref instance(), @ref device() and @ref queue() getters.
          */
         explicit VulkanTester();
 
@@ -102,8 +100,8 @@ class VulkanTester: public TestSuite::Tester {
          * @brief Construct without creating a device
          *
          * Use the @ref instance() to pick and create a device. You can then
-         * move it to @ref device(), @ref deviceProperties() and @ref queue()
-         * to have them accessible through common interfaces again.
+         * move it to @ref device() and @ref queue() to have them accessible
+         * through common interfaces again.
          */
         explicit VulkanTester(NoCreateT);
 
@@ -111,8 +109,8 @@ class VulkanTester: public TestSuite::Tester {
          * @brief Construct without creating an instance or device
          *
          * Leaves the initialization completely on the user. You can move the
-         * instances to @ref instance(), @ref device(), @ref deviceProperties()
-         * and @ref queue() to have them accessible through common interfaces.
+         * instances to @ref instance(), @ref device() and @ref queue() to have
+         * them accessible through common interfaces.
          */
         explicit VulkanTester(NoCreateT, NoCreateT);
 
@@ -137,21 +135,11 @@ class VulkanTester: public TestSuite::Tester {
         Device& device() { return _device; }
 
         /**
-         * @brief Vulkan device properties
-         *
-         * In case the class was constructed using @ref VulkanTester(NoCreateT)
-         * or @ref VulkanTester(NoCreateT, NoCreateT), this instance is
-         * initially not created. Move a created instance onto it to make it
-         * useful.
-         */
-        DeviceProperties& deviceProperties() { return *_deviceProperties; }
-
-        /**
          * @brief Vulkan queue
          *
          * In case the calss was constructed using @ref VulkanTester(), the
          * queue corresponds to @ref DeviceProperties::pickQueueFamily() with
-         * @ref QueueFlag::Graphics called on @ref deviceProperties().
+         * @ref QueueFlag::Graphics called on @ref Device::properties().
          *
          * In case the class was constructed using @ref VulkanTester(NoCreateT)
          * or @ref VulkanTester(NoCreateT, NoCreateT), this instance is
@@ -163,7 +151,6 @@ class VulkanTester: public TestSuite::Tester {
     private:
         Instance _instance;
         Device _device;
-        Containers::Pointer<DeviceProperties> _deviceProperties;
         Queue _queue;
 };
 

@@ -52,7 +52,7 @@ CommandBufferVkTest::CommandBufferVkTest() {
 
 void CommandBufferVkTest::construct() {
     CommandPool pool{device(), CommandPoolCreateInfo{
-        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
     {
         CommandBuffer buffer = pool.allocate();
@@ -66,7 +66,7 @@ void CommandBufferVkTest::construct() {
 
 void CommandBufferVkTest::constructMove() {
     CommandPool pool{device(), CommandPoolCreateInfo{
-        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
     CommandBuffer a = pool.allocate();
     VkCommandBuffer handle = a.handle();
@@ -89,7 +89,7 @@ void CommandBufferVkTest::constructMove() {
 
 void CommandBufferVkTest::wrap() {
     CommandPool pool{device(), CommandPoolCreateInfo{
-        deviceProperties().pickQueueFamily(QueueFlag::Graphics)}};
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
     VkCommandBuffer buffer{};
     VkCommandBufferAllocateInfo info{};
@@ -111,7 +111,7 @@ void CommandBufferVkTest::wrap() {
 
 void CommandBufferVkTest::reset() {
     CommandPool pool{device(), CommandPoolCreateInfo{
-        deviceProperties().pickQueueFamily(QueueFlag::Graphics),
+        device().properties().pickQueueFamily(QueueFlag::Graphics),
         CommandPoolCreateInfo::Flag::ResetCommandBuffer}};
 
     CommandBuffer a = pool.allocate();

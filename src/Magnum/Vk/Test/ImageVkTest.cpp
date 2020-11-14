@@ -164,7 +164,7 @@ void ImageVkTest::constructMove() {
     /* Verify that also the dedicated memory gets moved */
     MemoryRequirements requirements = a.memoryRequirements();
     a.bindDedicatedMemory(Vk::Memory{device(), Vk::MemoryAllocateInfo{requirements.size(),
-        deviceProperties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}});
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}});
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
     Image b = std::move(a);
@@ -230,7 +230,7 @@ void ImageVkTest::bindMemory() {
 
     Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
         requirements.size() + offset,
-        deviceProperties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
 
     image.bindMemory(memory, offset);
     CORRADE_VERIFY(!image.hasDedicatedMemory());
@@ -245,7 +245,7 @@ void ImageVkTest::bindDedicatedMemory() {
 
     Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
         requirements.size(),
-        deviceProperties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
     VkDeviceMemory handle = memory.handle();
     CORRADE_VERIFY(handle);
 
