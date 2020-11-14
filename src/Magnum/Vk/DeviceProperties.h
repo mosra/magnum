@@ -221,10 +221,17 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /** @brief Move assignment */
         DeviceProperties& operator=(DeviceProperties&&) noexcept;
 
-        /** @brief Underlying @type_vk{PhysicalDevice} handle */
-        VkPhysicalDevice handle() { return _handle; }
+        /**
+         * @brief Underlying @type_vk{PhysicalDevice} handle
+         *
+         * Unlike most handle getters, this one is marked as @cpp const @ce
+         * because the @ref DeviceProperties class is treated as a *view* on
+         * the physical device --- it doesn't change the device state in any
+         * way, only queries its properties.
+         */
+        VkPhysicalDevice handle() const { return _handle; }
         /** @overload */
-        operator VkPhysicalDevice() { return _handle; }
+        operator VkPhysicalDevice() const { return _handle; }
 
         /**
          * @brief Raw device properties
