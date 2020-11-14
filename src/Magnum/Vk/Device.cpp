@@ -111,7 +111,9 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
             extensionProperties = &*extensionPropertiesStorage;
         }
 
-        /* No extensions at the moment */
+        /* Only if we don't have Vulkan 1.1, on which this is core */
+        if(_state->version < Version::Vk11 && extensionProperties->isSupported<Extensions::KHR::get_memory_requirements2>())
+            addEnabledExtensions<Extensions::KHR::get_memory_requirements2>();
     }
 }
 
