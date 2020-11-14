@@ -63,6 +63,11 @@ struct DeviceCreateInfo::State {
     std::size_t nextQueuePriority = 0;
     bool quietLog = false;
     Version version = Version::None;
+    /* Gets populated in the DeviceCreateInfo constructor that takes a
+       DeviceProperties&&, in which case it's then moved to the newly created
+       Device instance. If not populated, the Device instance gets nothing and
+       it'll gets populated on first access to Device::properties(). */
+    DeviceProperties properties{NoCreate};
 };
 
 DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): _physicalDevice{deviceProperties}, _info{}, _state{Containers::InPlaceInit} {
@@ -119,6 +124,10 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
     }
 }
 
+DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): DeviceCreateInfo{deviceProperties, extensionProperties, flags} {
+    _state->properties = std::move(deviceProperties);
+}
+
 DeviceCreateInfo::DeviceCreateInfo(NoInitT) noexcept {}
 
 DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo& info): _physicalDevice{physicalDevice},
@@ -128,7 +137,7 @@ DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDevi
 
 DeviceCreateInfo::~DeviceCreateInfo() = default;
 
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) {
+DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) & {
     if(extensions.empty()) return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
@@ -160,11 +169,21 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
     return *this;
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) {
+DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) && {
+    addEnabledExtensions(extensions);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) & {
     return addEnabledExtensions(Containers::arrayView(extensions));
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) {
+DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) && {
+    addEnabledExtensions(extensions);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) & {
     if(extensions.empty()) return *this;
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
@@ -185,11 +204,21 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
     return *this;
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) {
+DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) && {
+    addEnabledExtensions(extensions);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) & {
     return addEnabledExtensions(Containers::arrayView(extensions));
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) {
+DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) && {
+    addEnabledExtensions(extensions);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
     CORRADE_ASSERT(!priorities.empty(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified", *this);
     CORRADE_ASSERT(output.size() == priorities.size(), "Vk::DeviceCreateInfo::addQueues(): expected" << priorities.size() << "outuput queue references but got" << output.size(), *this);
 
@@ -217,11 +246,21 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
     return addQueues(info);
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) {
+DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
+    addQueues(family, priorities, output);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
     return addQueues(family, Containers::arrayView(priorities), Containers::arrayView(output));
 }
 
-DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) {
+DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
+    addQueues(family, priorities, output);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) & {
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
     if(!_state) _state.emplace();
@@ -234,6 +273,11 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& inf
     _info.queueCreateInfoCount = _state->queues.size();
 
     return *this;
+}
+
+DeviceCreateInfo&& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) && {
+    addQueues(info);
+    return std::move(*this);
 }
 
 Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
@@ -251,7 +295,11 @@ Device Device::wrap(Instance& instance, const VkDevice handle, const Version ver
     return wrap(instance, handle, version, Containers::arrayView(enabledExtensions), flags);
 }
 
-Device::Device(Instance& instance, const DeviceCreateInfo& info):
+Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{instance, info, DeviceProperties{NoCreate}} {}
+
+Device::Device(Instance& instance, DeviceCreateInfo&& info): Device{instance, info, std::move(info._state->properties)} {}
+
+Device::Device(Instance& instance, const DeviceCreateInfo& info, DeviceProperties&& properties):
     #ifdef CORRADE_GRACEFUL_ASSERT
     _handle{}, /* Otherwise the destructor dies if we hit the queue assert */
     #endif
@@ -260,7 +308,16 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info):
     CORRADE_ASSERT(info._info.queueCreateInfoCount,
         "Vk::Device: needs to be created with at least one queue", );
 
-    const Version version = info._state->version != Version::None ? info._state->version : DeviceProperties::wrap(instance, info._physicalDevice).apiVersion();
+    /* If the passed properties are populated, use them. Otherwise create a new
+       instance as we'd have no other way to remember the VkPhysicalDevice
+       handle otherwise */
+    if(properties.handle())
+        _properties.emplace(std::move(properties));
+    else
+        _properties.emplace(DeviceProperties::wrap(instance, info._physicalDevice));
+
+    const Version version = info._state->version != Version::None ?
+        info._state->version : _properties->apiVersion();
 
     /* Print all enabled extensions if we're not told to be quiet */
     if(!info._state || !info._state->quietLog) {
@@ -315,7 +372,7 @@ Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
 
 Device::Device(Device&& other) noexcept: _handle{other._handle},
     _flags{other._flags}, _version{other._version},
-    _extensionStatus{other._extensionStatus}, _state{std::move(other._state)},
+    _extensionStatus{other._extensionStatus}, _properties{std::move(other._properties)}, _state{std::move(other._state)},
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _functionPointers(other._functionPointers)
@@ -335,6 +392,7 @@ Device& Device::operator=(Device&& other) noexcept {
     swap(other._flags, _flags);
     swap(other._version, _version);
     swap(other._extensionStatus, _extensionStatus);
+    swap(other._properties, _properties);
     swap(other._state, _state);
     swap(other._functionPointers, _functionPointers);
     return *this;

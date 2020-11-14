@@ -54,9 +54,11 @@ struct DeviceVkTest: VulkanTester {
     void createInfoCopiedStrings();
     void createInfoNoQueuePriorities();
     void createInfoWrongQueueOutputCount();
+    void createInfoRvalue();
 
     void construct();
     void constructExtensions();
+    void constructTransferDeviceProperties();
     void constructExtensionsCommandLineDisable();
     void constructExtensionsCommandLineEnable();
     void constructMultipleQueues();
@@ -64,7 +66,9 @@ struct DeviceVkTest: VulkanTester {
     void constructMove();
     void constructUnknownExtension();
     void constructNoQueue();
+
     void wrap();
+
     void populateGlobalFunctionPointers();
 };
 
@@ -126,9 +130,11 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::createInfoCopiedStrings,
               &DeviceVkTest::createInfoNoQueuePriorities,
               &DeviceVkTest::createInfoWrongQueueOutputCount,
+              &DeviceVkTest::createInfoRvalue,
 
               &DeviceVkTest::construct,
-              &DeviceVkTest::constructExtensions});
+              &DeviceVkTest::constructExtensions,
+              &DeviceVkTest::constructTransferDeviceProperties});
 
     addInstancedTests({&DeviceVkTest::constructExtensionsCommandLineDisable,
                        &DeviceVkTest::constructExtensionsCommandLineEnable},
@@ -233,6 +239,33 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
 }
 
+void DeviceVkTest::createInfoRvalue() {
+    Float zero[1]{};
+    Queue a{NoCreate}, b{NoCreate};
+    Containers::Reference<Queue> reference[1]{a};
+
+    VkDeviceQueueCreateInfo rawQueueInfo{};
+    rawQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    rawQueueInfo.pQueuePriorities = zero;
+    rawQueueInfo.queueFamilyIndex = 0;
+    rawQueueInfo.queueCount = 1;
+
+    DeviceCreateInfo&& info = DeviceCreateInfo{pickDevice(instance())}
+        .addEnabledExtensions(Containers::ArrayView<const Containers::StringView>{})
+        .addEnabledExtensions(std::initializer_list<Containers::StringView>{})
+        .addEnabledExtensions(Containers::ArrayView<const Extension>{})
+        .addEnabledExtensions(std::initializer_list<Extension>{})
+        .addEnabledExtensions<>()
+        .addQueues(0, zero, reference)
+        .addQueues(0, {0.0f}, {b})
+        .addQueues(rawQueueInfo);
+
+    /* Just to test something, main point is that the above compiles, links and
+       returns a &&. Can't test anything related to the contents because the
+       destructor gets called at the end of the expression. */
+    CORRADE_VERIFY(&info);
+}
+
 void DeviceVkTest::construct() {
     if(std::getenv("MAGNUM_VULKAN_VERSION"))
         CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
@@ -258,6 +291,11 @@ void DeviceVkTest::construct() {
 
         /* The queue should be also filled in */
         CORRADE_VERIFY(queue.handle());
+
+        /* Device properties should be lazy-populated and different from the
+           above instances because we didn't transfer the ownership */
+        CORRADE_COMPARE(device.properties().name(), deviceProperties.name());
+        CORRADE_VERIFY(&device.properties().properties() != &deviceProperties.properties());
     }
 
     /* Shouldn't crash or anything */
@@ -301,6 +339,19 @@ void DeviceVkTest::constructExtensions() {
     /* ... and function pointers loaded */
     CORRADE_VERIFY(device->CmdDebugMarkerInsertEXT);
     CORRADE_VERIFY(device->TrimCommandPoolKHR);
+}
+
+void DeviceVkTest::constructTransferDeviceProperties() {
+    DeviceProperties deviceProperties = pickDevice(instance());
+    const void* vkProperties = &deviceProperties.properties();
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{std::move(deviceProperties)}
+        .addQueues(0, {0.0f}, {queue})
+    };
+
+    /* Device properties should be the same address as in the original instance
+       because the ownership got transferred through */
+    CORRADE_COMPARE(&device.properties().properties(), vkProperties);
 }
 
 void DeviceVkTest::constructExtensionsCommandLineDisable() {
@@ -496,6 +547,9 @@ void DeviceVkTest::constructRawQueue() {
 }
 
 void DeviceVkTest::constructMove() {
+    if(std::getenv("MAGNUM_VULKAN_VERSION"))
+        CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
+
     DeviceProperties deviceProperties = pickDevice(instance());
     ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties();
     if(!extensions.isSupported<Extensions::KHR::maintenance1>())
@@ -517,6 +571,7 @@ void DeviceVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.version(), version);
+    CORRADE_COMPARE(b.properties().apiVersion(), version);
     CORRADE_VERIFY(b.isExtensionEnabled<Extensions::KHR::maintenance1>());
     /* Function pointers in a are left in whatever state they were before, as
        that doesn't matter */
@@ -529,6 +584,7 @@ void DeviceVkTest::constructMove() {
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.version(), version);
+    CORRADE_COMPARE(c.properties().apiVersion(), version);
     CORRADE_VERIFY(c.isExtensionEnabled<Extensions::KHR::maintenance1>());
     /* Everything is swapped, including function pointers */
     CORRADE_VERIFY(!b->CreateBuffer);

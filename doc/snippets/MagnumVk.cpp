@@ -63,11 +63,10 @@ info->pNext = &validationFeatures;
 {
 Vk::Instance instance;
 /* [CommandPool-usage] */
-Vk::DeviceProperties props = DOXYGEN_IGNORE(pickDevice(instance));
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
 Vk::CommandPool graphicsCommandPool{device, Vk::CommandPoolCreateInfo{
-    props.pickQueueFamily(Vk::QueueFlag::Graphics)
+    device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
 }};
 /* [CommandPool-usage] */
 
