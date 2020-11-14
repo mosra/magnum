@@ -222,8 +222,9 @@ void ImageVkTest::bindMemory() {
     MemoryRequirements requirements = image.memoryRequirements();
 
     /* We're testing the offset, so ensure what we hardcode is correctly
-       aligned */
-    constexpr UnsignedLong offset = 4096;
+       aligned. For Intel 1 kB was enough, SwiftShader wanted 4 kB, AMD wants
+       128 kB. */
+    constexpr UnsignedLong offset = 128*1024;
     CORRADE_COMPARE_AS(offset, requirements.alignment(),
         TestSuite::Compare::Divisible);
 
