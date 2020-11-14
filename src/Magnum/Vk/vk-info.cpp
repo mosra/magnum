@@ -250,6 +250,19 @@ int main(int argc, char** argv) {
     const Vk::Version deviceVersion = device.apiVersion();
     Debug{} << "Reported version:" << deviceVersion;
 
+    /* Driver info. Print only if the device actually reports something,
+       otherwise assume VK_KHR_driver_properties are not supported. Due to the
+       mess that's VK_KHR_get_physical_device_properties2 and the interactions
+       between instance and driver version it's not possible to easily check
+       for extension presence. */
+    if(Int(device.driver())) {
+        Debug{} << "Driver:" << device.driverName() << "(" << Debug::nospace << device.driver() << Debug::nospace << ")";
+        Debug{} << "Driver info:" << device.driverInfo() << "(version" << Debug::packed << device.driverVersion() << Debug::nospace << ")";
+
+    /* Otherwise just print an Unknown placeholder, indicating the extension
+       is not supported */
+    } else Debug{} << "Driver:" << device.driver();
+
     std::size_t deviceFuture = 0;
 
     if(!args.isSet("all-extensions"))

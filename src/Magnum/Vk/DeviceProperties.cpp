@@ -33,11 +33,13 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/ExtensionProperties.h"
+#include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
 
@@ -45,6 +47,7 @@ namespace Magnum { namespace Vk {
 
 struct DeviceProperties::State {
     VkPhysicalDeviceProperties2 properties{};
+    VkPhysicalDeviceDriverProperties driverProperties{};
     VkPhysicalDeviceMemoryProperties2 memoryProperties{};
     Containers::Array<VkQueueFamilyProperties2> queueFamilyProperties;
 };
@@ -65,12 +68,39 @@ Containers::StringView DeviceProperties::name() {
     return properties().properties.deviceName;
 }
 
+DeviceDriver DeviceProperties::driver() {
+    /* Ensure the values are populated first */
+    return properties(), DeviceDriver(_state->driverProperties.driverID);
+}
+
+Containers::StringView DeviceProperties::driverName() {
+    /* Ensure the values are populated first */
+    return properties(), _state->driverProperties.driverName;
+}
+
+Containers::StringView DeviceProperties::driverInfo() {
+    /* Ensure the values are populated first */
+    return properties(), _state->driverProperties.driverInfo;
+}
+
 const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
     if(!_state) _state.emplace();
 
     /* Properties not fetched yet, do that now */
     if(!_state->properties.sType) {
         _state->properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+
+        Containers::Reference<void*> next = _state->properties.pNext;
+
+        /* Device extension properties. Populated only if needed. */
+        ExtensionProperties extensions{NoCreate};
+
+        /* Fetch driver properties, if supported */
+        if(_instance->isVersionSupported(Version::Vk12) || (extensions = enumerateExtensionProperties()).isSupported<Extensions::KHR::driver_properties>()) {
+            *next = &_state->driverProperties;
+            next = _state->driverProperties.pNext;
+            _state->driverProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
+        }
 
         _instance->state().getPhysicalDevicePropertiesImplementation(*this, _state->properties);
     }
@@ -370,6 +400,35 @@ Debug& operator<<(Debug& debug, const DeviceType value) {
         _c(DiscreteGpu)
         _c(VirtualGpu)
         _c(Cpu)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DeviceDriver value) {
+    debug << "Vk::DeviceDriver" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::DeviceDriver::value: return debug << "::" << Debug::nospace << #value;
+        _c(Unknown)
+        _c(AmdOpenSource)
+        _c(AmdProprietary)
+        _c(ArmProprietary)
+        _c(BroadcomProprietary)
+        _c(GgpProprietary)
+        _c(GoogleSwiftShader)
+        _c(ImaginationProprietary)
+        _c(IntelOpenSourceMesa)
+        _c(IntelProprietaryWindows)
+        _c(MesaLlvmpipe)
+        _c(MesaRadv)
+        _c(MoltenVk)
+        _c(NVidiaProprietary)
+        _c(QualcommProprietary)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

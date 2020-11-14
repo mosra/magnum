@@ -81,6 +81,75 @@ enum class DeviceType: Int {
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DeviceType value);
 
 /**
+@brief Physical device driver ID
+@m_since_latest
+
+Wraps a @type_vk_keyword{DriverId}.
+@see @ref DeviceProperties::driver()
+@requires_vk12 Extension @vk_extension{KHR,driver_properties}
+@m_enum_values_as_keywords
+*/
+enum class DeviceDriver: Int {
+    /**
+     * Unknown. Returned from @ref DeviceProperties::driver() in case Vulkan
+     * 1.2 or the @vk_extension{KHR,driver_properties} extension isn't
+     * supported.
+     */
+    Unknown = 0,
+
+    /* Unlike with VkDriverId, which gets allocated sequentially, the rest of
+       this list is sorted alphabetically for easier lookup. */
+
+    /** Open-source AMD */
+    AmdOpenSource = VK_DRIVER_ID_AMD_OPEN_SOURCE,
+
+    /** Proprietary AMD */
+    AmdProprietary = VK_DRIVER_ID_AMD_PROPRIETARY,
+
+    /** Proprietary ARM */
+    ArmProprietary = VK_DRIVER_ID_ARM_PROPRIETARY,
+
+    /** Proprietary Broadcom */
+    BroadcomProprietary = VK_DRIVER_ID_BROADCOM_PROPRIETARY,
+
+    /** Proprietary GGP */
+    GgpProprietary = VK_DRIVER_ID_GGP_PROPRIETARY,
+
+    /** Google SwiftShader */
+    GoogleSwiftShader = VK_DRIVER_ID_GOOGLE_SWIFTSHADER,
+
+    /** Proprietary Imagination */
+    ImaginationProprietary = VK_DRIVER_ID_IMAGINATION_PROPRIETARY,
+
+    /** Open-source Intel Mesa drivers */
+    IntelOpenSourceMesa = VK_DRIVER_ID_INTEL_OPEN_SOURCE_MESA,
+
+    /** Proprietary Intel driver on Windows */
+    IntelProprietaryWindows = VK_DRIVER_ID_INTEL_PROPRIETARY_WINDOWS,
+
+    /** Mesa LLVMpipe */
+    MesaLlvmpipe = VK_DRIVER_ID_MESA_LLVMPIPE,
+
+    /** Mesa RADV */
+    MesaRadv = VK_DRIVER_ID_MESA_RADV,
+
+    /** MoltenVK */
+    MoltenVk = VK_DRIVER_ID_MOLTENVK,
+
+    /** Proprietary NVidia */
+    NVidiaProprietary = VK_DRIVER_ID_NVIDIA_PROPRIETARY,
+
+    /** Proprietary Qualcomm */
+    QualcommProprietary = VK_DRIVER_ID_QUALCOMM_PROPRIETARY,
+};
+
+/**
+@debugoperatorclassenum{DeviceProperties,DeviceDriver}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DeviceDriver value);
+
+/**
 @brief Queue flag
 @m_since_latest
 
@@ -236,11 +305,19 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /**
          * @brief Raw device properties
          *
-         * Populated lazily on first request. If Vulkan 1.1 or the
-         * @vk_extension{KHR,get_physical_device_properties2} extension is not
-         * enabled on the originating instance, only the Vulkan 1.0 subset of
-         * device properties is queried, with the `pNext` member being
-         * @cpp nullptr @ce.
+         * Populated lazily on first request. If Vulkan 1.1 is not supported
+         * and the @vk_extension{KHR,get_physical_device_properties2} extension
+         * is not enabled on the originating instance, only the Vulkan 1.0
+         * subset of device properties is queried, with the `pNext` member
+         * being @cpp nullptr @ce. Otherwise:
+         *
+         * -    If Vulkan 1.2 is supported or the
+         *      @vk_extension{KHR,driver_properties} extension is supported by
+         *      the device, the `pNext` chain contains a
+         *      @type_vk{PhysicalDeviceDriverProperties} structure and the
+         *      @ref driver(), @ref driverName() and @ref driverInfo()
+         *      properties are populated.
+         *
          * @see @fn_vk_keyword{GetPhysicalDeviceProperties2},
          *      @fn_vk_keyword{GetPhysicalDeviceProperties}
          */
@@ -254,16 +331,6 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          */
         Version apiVersion() {
             return Version(properties().properties.apiVersion);
-        }
-
-        /**
-         * @brief Driver version
-         *
-         * Convenience access to @ref properties() internals, populated lazily
-         * on first request.
-         */
-        Version driverVersion() {
-            return Version(properties().properties.driverVersion);
         }
 
         /**
@@ -283,6 +350,49 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * on first request.
          */
         Containers::StringView name();
+
+        /**
+         * @brief Driver ID
+         *
+         * Convenience access to @ref properties() internals, populated lazily
+         * on first request. Only present if Vulkan 1.2 is supported or the
+         * @vk_extension{KHR,driver_properties} extension is supported by the
+         * device, otherwise returns @ref DeviceDriver::Unknown. Note that
+         * there might be driver IDs not yet listed in the @ref DeviceDriver
+         * enum, moreover drivers are allowed to return unregistered IDs as
+         * well.
+         */
+        DeviceDriver driver();
+
+        /**
+         * @brief Driver version
+         *
+         * Convenience access to @ref properties() internals, populated lazily
+         * on first request.
+         */
+        Version driverVersion() {
+            return Version(properties().properties.driverVersion);
+        }
+
+        /**
+         * @brief Driver name
+         *
+         * Convenience access to @ref properties() internals, populated lazily
+         * on first request. Only present if Vulkan 1.2 is supported or the
+         * @vk_extension{KHR,driver_properties} extension is supported by the
+         * device, otherwise returns an empty string.
+         */
+        Containers::StringView driverName();
+
+        /**
+         * @brief Driver info
+         *
+         * Convenience access to @ref properties() internals, populated lazily
+         * on first request. Only present if Vulkan 1.2 is supported or the
+         * @vk_extension{KHR,driver_properties} extension is supported by the
+         * device, otherwise returns an empty string.
+         */
+        Containers::StringView driverInfo();
 
         /**
          * @brief Enumerate device extensions

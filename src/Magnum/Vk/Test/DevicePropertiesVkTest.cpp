@@ -61,6 +61,8 @@ struct DevicePropertiesVkTest: VulkanTester {
     void extensionIsSupported();
     void extensionNamedRevision();
 
+    void driverProperties();
+
     void queueFamilies();
     void queueFamiliesOutOfRange();
     void queueFamiliesPick();
@@ -106,6 +108,8 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
               &DevicePropertiesVkTest::extensionConstructMove,
               &DevicePropertiesVkTest::extensionIsSupported,
               &DevicePropertiesVkTest::extensionNamedRevision,
+
+              &DevicePropertiesVkTest::driverProperties,
 
               &DevicePropertiesVkTest::queueFamilies,
               &DevicePropertiesVkTest::queueFamiliesOutOfRange,
@@ -181,6 +185,29 @@ void DevicePropertiesVkTest::wrap() {
 
     Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
     CORRADE_COMPARE(wrapped.name(), devices[0].name());
+}
+
+void DevicePropertiesVkTest::driverProperties() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    Debug{} << "Driver ID:" << device->driver();
+
+    ExtensionProperties extensions = device->enumerateExtensionProperties();
+    if(!instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>() || !extensions.isSupported<Extensions::KHR::driver_properties>()) {
+        CORRADE_COMPARE(device->driver(), DeviceDriver::Unknown);
+        CORRADE_COMPARE(device->driverName(), "");
+        CORRADE_COMPARE(device->driverInfo(), "");
+        CORRADE_SKIP("KHR_driver_properties not supported.");
+    }
+
+    CORRADE_VERIFY(Int(device->driver()));
+    CORRADE_VERIFY(!device->driverName().isEmpty());
+    {
+        CORRADE_EXPECT_FAIL_IF(device->driver() == DeviceDriver::GoogleSwiftShader,
+            "SwiftShader reports empty driver info.");
+        CORRADE_VERIFY(!device->driverInfo().isEmpty());
+    }
 }
 
 void DevicePropertiesVkTest::enumerateExtensions() {

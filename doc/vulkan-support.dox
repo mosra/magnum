@@ -96,7 +96,7 @@ Extension                                           | Status
 @vk_extension{KHR,shader_subgroup_extended_types}   | |
 @vk_extension{KHR,8bit_storage}                     | |
 @vk_extension{KHR,shader_atomic_int64}              | |
-@vk_extension{KHR,driver_properties}                | |
+@vk_extension{KHR,driver_properties}                | mostly
 @vk_extension{KHR,shader_float_controls}            | |
 @vk_extension{KHR,depth_stencil_resolve}            | |
 @vk_extension{KHR,timeline_semaphore}               | |

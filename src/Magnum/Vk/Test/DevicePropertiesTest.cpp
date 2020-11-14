@@ -38,6 +38,7 @@ struct DevicePropertiesTest: TestSuite::Tester {
     void constructCopy();
 
     void debugDeviceType();
+    void debugDeviceDriver();
     void debugQueueFamilyPropertiesFlag();
     void debugQueueFamilyPropertiesFlags();
     void debugMemoryHeapFlag();
@@ -49,6 +50,7 @@ DevicePropertiesTest::DevicePropertiesTest() {
               &DevicePropertiesTest::constructCopy,
 
               &DevicePropertiesTest::debugDeviceType,
+              &DevicePropertiesTest::debugDeviceDriver,
               &DevicePropertiesTest::debugQueueFamilyPropertiesFlag,
               &DevicePropertiesTest::debugQueueFamilyPropertiesFlags,
               &DevicePropertiesTest::debugMemoryHeapFlag,
@@ -74,6 +76,12 @@ void DevicePropertiesTest::debugDeviceType() {
     std::ostringstream out;
     Debug{&out} << DeviceType::DiscreteGpu << DeviceType(-10007655);
     CORRADE_COMPARE(out.str(), "Vk::DeviceType::DiscreteGpu Vk::DeviceType(-10007655)\n");
+}
+
+void DevicePropertiesTest::debugDeviceDriver() {
+    std::ostringstream out;
+    Debug{&out} << DeviceDriver::MesaLlvmpipe << DeviceDriver(-10007655);
+    CORRADE_COMPARE(out.str(), "Vk::DeviceDriver::MesaLlvmpipe Vk::DeviceDriver(-10007655)\n");
 }
 
 void DevicePropertiesTest::debugQueueFamilyPropertiesFlag() {
