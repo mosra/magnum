@@ -91,6 +91,7 @@ struct {
         Containers::array({"",
             "--magnum-enable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         true, true, true,
+        "Device: {}\n"
         "Device version: Vulkan {}.{}{}\n"
         "Enabled device extensions:\n"
         "    VK_EXT_debug_marker\n"
@@ -102,6 +103,7 @@ struct {
             "--magnum-vulkan-version", "1.0",
             "--magnum-enable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         false, true, true,
+        "Device: {}\n"
         "Device version: Vulkan 1.0\n"
         "Enabled device extensions:\n"
         "    VK_EXT_debug_marker\n"
@@ -112,6 +114,7 @@ struct {
         Containers::array({"",
             "--magnum-enable-extensions", "VK_KHR_maintenance1"}),
         true, false, true,
+        "Device: {}\n"
         "Device version: Vulkan {}.{}{}\n"
         "Enabled device extensions:\n"
         "    VK_KHR_maintenance1\n"},
@@ -120,6 +123,7 @@ struct {
             "--magnum-disable-extensions", "VK_EXT_debug_marker VK_KHR_maintenance1"}),
         nullptr,
         true, false, false,
+        "Device: {}\n"
         "Device version: Vulkan {}.{}{}\n"},
 };
 
@@ -402,7 +406,7 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     UnsignedInt minor = versionMinor(deviceProperties.apiVersion());
     UnsignedInt patch = versionPatch(deviceProperties.apiVersion());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */
@@ -456,7 +460,7 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     UnsignedInt minor = versionMinor(deviceProperties.apiVersion());
     UnsignedInt patch = versionPatch(deviceProperties.apiVersion());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */
