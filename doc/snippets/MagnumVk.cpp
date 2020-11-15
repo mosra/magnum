@@ -24,7 +24,7 @@
 */
 
 #include <string>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Directory.h>
 

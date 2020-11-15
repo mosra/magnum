@@ -43,14 +43,11 @@ LayerProperties::~LayerProperties() = default;
 LayerProperties& LayerProperties::operator=(LayerProperties&&) noexcept = default;
 
 Containers::ArrayView<const Containers::StringView> LayerProperties::names() {
-    return {reinterpret_cast<const Containers::StringView*>(_layers.end()), _layers.size()};
+    return _names;
 }
 
 bool LayerProperties::isSupported(const Containers::StringView layer) {
-    return std::binary_search(
-        reinterpret_cast<const Containers::StringView*>(_layers.end()),
-        reinterpret_cast<const Containers::StringView*>(_layers.end()) + _layers.size(),
-        layer);
+    return std::binary_search(_names.begin(), _names.end(), layer);
 }
 
 UnsignedInt LayerProperties::count() {
@@ -95,22 +92,19 @@ LayerProperties enumerateLayerProperties() {
 
     /* Allocate extra for a list of string views that we'll use to sort &
        search the values; query the layers */
-    out._layers = Containers::Array<VkLayerProperties>{
-        reinterpret_cast<VkLayerProperties*>(new char[count*(sizeof(VkLayerProperties) + sizeof(Containers::StringView))]),
-        count,
-        [](VkLayerProperties* data, std::size_t) {
-            delete[] reinterpret_cast<char*>(data);
-        }};
+    out._data = Containers::ArrayTuple{
+        {NoInit, count, out._layers},
+        {count, out._names}
+    };
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEnumerateInstanceLayerProperties(&count, out._layers.data()));
 
     /* Expect the layer count didn't change between calls */
     CORRADE_INTERNAL_ASSERT(count == out._layers.size());
 
     /* Populate the views and sort them so we can search in O(log n) later */
-    Containers::ArrayView<Containers::StringView> layerNames{reinterpret_cast<Containers::StringView*>(out._layers.end()), count};
-    for(std::size_t i = 0; i != layerNames.size(); ++i)
-        layerNames[i] = out._layers[i].layerName;
-    std::sort(layerNames.begin(), layerNames.end());
+    for(std::size_t i = 0; i != out._names.size(); ++i)
+        out._names[i] = out._layers[i].layerName;
+    std::sort(out._names.begin(), out._names.end());
 
     return out;
 }

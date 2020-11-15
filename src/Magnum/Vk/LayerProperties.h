@@ -30,7 +30,8 @@
  * @m_since_latest
  */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -146,7 +147,9 @@ class MAGNUM_VK_EXPORT LayerProperties {
 
         explicit LayerProperties();
 
-        Containers::Array<VkLayerProperties> _layers;
+        Containers::ArrayTuple _data;
+        Containers::ArrayView<VkLayerProperties> _layers;
+        Containers::ArrayView<Containers::StringView> _names;
 };
 
 /**

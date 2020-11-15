@@ -30,7 +30,8 @@
  * @m_since_latest
  */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/Magnum.h"
@@ -180,8 +181,10 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
 
         explicit ExtensionProperties(const Containers::ArrayView<const Containers::StringView> layers, VkResult(*enumerator)(void*, const char*, UnsignedInt*, VkExtensionProperties*), void* state);
 
-        Containers::Array<VkExtensionProperties> _extensions;
-        std::size_t _uniqueExtensionCount;
+        Containers::ArrayTuple _data;
+        Containers::ArrayView<VkExtensionProperties> _extensions;
+        Containers::ArrayView<Containers::StringView> _names;
+        Containers::ArrayView<UnsignedInt> _extensionLayers;
 };
 
 /**

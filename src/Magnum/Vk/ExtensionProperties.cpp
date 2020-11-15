@@ -61,14 +61,11 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
     /* Allocate extra for a list of string views that we'll use to sort &
        search the values and a layer index so we can map the extensions back
        to which layer they come from */
-    _extensions = Containers::Array<VkExtensionProperties>{
-        reinterpret_cast<VkExtensionProperties*>(new char[totalCount*(sizeof(VkExtensionProperties) + sizeof(Containers::StringView) + sizeof(UnsignedInt))]),
-        totalCount,
-        [](VkExtensionProperties* data, std::size_t) {
-            delete[] reinterpret_cast<char*>(data);
-        }};
-    Containers::ArrayView<Containers::StringView> extensionNames{reinterpret_cast<Containers::StringView*>(_extensions.end()), totalCount};
-    Containers::ArrayView<UnsignedInt> extensionLayers{reinterpret_cast<UnsignedInt*>(extensionNames.end()), totalCount};
+    _data = Containers::ArrayTuple{
+        {NoInit, totalCount, _extensions},
+        {totalCount, _names},
+        {NoInit, totalCount, _extensionLayers}
+    };
 
     /* Query the extensions, save layer ID for each */
     std::size_t offset = 0;
@@ -77,8 +74,8 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
         MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(enumerator(state,
             i == 0 ? nullptr :
                 Containers::String::nullTerminatedView(layers[i - 1]).data(),
-            &count, reinterpret_cast<VkExtensionProperties*>(_extensions.data()) + offset));
-        for(std::size_t j = 0; j != count; ++j) extensionLayers[offset + j] = i;
+            &count, _extensions + offset));
+        for(std::size_t j = 0; j != count; ++j) _extensionLayers[offset + j] = i;
         offset += count;
     }
 
@@ -100,27 +97,24 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
        costly enumeration. */
     if(offset < totalCount) {
         Warning{} << "Vk::ExtensionProperties: inconsistent extension count reported by the driver, expected" << totalCount << "but got only" << offset;
-        extensionNames = {extensionNames, offset};
-        extensionLayers = {extensionLayers, offset};
+        _names = {_names, offset};
+        _extensionLayers = {_extensionLayers, offset};
     } else CORRADE_INTERNAL_ASSERT(offset == totalCount);
 
     /* Populate the views, sort them and remove duplicates so we can search in
        O(log n) later */
-    for(std::size_t i = 0; i != extensionNames.size(); ++i)
-        extensionNames[i] = _extensions[i].extensionName;
-    std::sort(extensionNames.begin(), extensionNames.end());
-    _uniqueExtensionCount = std::unique(extensionNames.begin(), extensionNames.end()) - extensionNames.begin();
+    for(std::size_t i = 0; i != _names.size(); ++i)
+        _names[i] = _extensions[i].extensionName;
+    std::sort(_names.begin(), _names.end());
+    _names = _names.prefix(std::unique(_names.begin(), _names.end()));
 }
 
 Containers::ArrayView<const Containers::StringView> ExtensionProperties::names() const {
-    return {reinterpret_cast<const Containers::StringView*>(_extensions.end()), _uniqueExtensionCount};
+    return _names;
 }
 
 bool ExtensionProperties::isSupported(const Containers::StringView extension) const {
-    return std::binary_search(
-        reinterpret_cast<const Containers::StringView*>(_extensions.end()),
-        reinterpret_cast<const Containers::StringView*>(_extensions.end()) + _uniqueExtensionCount,
-        extension);
+    return std::binary_search(_names.begin(), _names.end(), extension);
 }
 
 bool ExtensionProperties::isSupported(const Extension& extension) const {
@@ -148,12 +142,9 @@ UnsignedInt ExtensionProperties::revision(const UnsignedInt id) const {
 }
 
 UnsignedInt ExtensionProperties::revision(const Containers::StringView extension) const {
-    /* Thanks, C++, for forcing me to do one more comparison than strictly
-       necessary */
-    auto found = std::lower_bound(
-        reinterpret_cast<const Containers::StringView*>(_extensions.end()),
-        reinterpret_cast<const Containers::StringView*>(_extensions.end()) + _uniqueExtensionCount,
-        extension);
+    /* Thanks, C++, for forcing me to have a larger bug surface instead of
+       providing a library helper to find the damn thing. */
+    auto found = std::lower_bound(_names.begin(), _names.end(), extension);
     if(*found != extension) return 0;
 
     /* The view target is contents of the VkExtensionProperties structure,
@@ -164,7 +155,7 @@ UnsignedInt ExtensionProperties::revision(const Containers::StringView extension
 UnsignedInt ExtensionProperties::layer(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _extensions.size(),
         "Vk::xtensionProperties::layer(): index" << id << "out of range for" << _extensions.size() << "entries", {});
-    return reinterpret_cast<const UnsignedInt*>(reinterpret_cast<const Containers::StringView*>(_extensions.end()) + _extensions.size())[id];
+    return _extensionLayers[id];
 }
 
 InstanceExtensionProperties::InstanceExtensionProperties(InstanceExtensionProperties&&) noexcept = default;
