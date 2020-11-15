@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StaticArray.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -315,23 +316,40 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFl
     return tryPickMemory(requiredFlags, {}, memories);
 }
 
-Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
-    /* Retrieve total device count */
-    UnsignedInt count;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->EnumeratePhysicalDevices(instance, &count, nullptr));
+/* Can't be inside an anonymous namespace as it's friended to DeviceProperties */
+namespace Implementation {
 
+UnsignedInt enumerateDevicesInto(Instance& instance, Containers::ArrayView<DeviceProperties> out) {
     /* Allocate memory for the output, fetch the handles into it */
-    Containers::Array<DeviceProperties> out{Containers::NoInit, count};
-    Containers::ArrayView<VkPhysicalDevice> handles{reinterpret_cast<VkPhysicalDevice*>(out.data()), count};
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
+    Containers::ArrayView<VkPhysicalDevice> handles{reinterpret_cast<VkPhysicalDevice*>(out.data()), out.size()};
+    UnsignedInt count = out.size();
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
 
-    /* Expect the device count didn't change between calls */
-    CORRADE_INTERNAL_ASSERT(count == out.size());
+    /* Expect the final count isn't larger than the output array */
+    CORRADE_INTERNAL_ASSERT(count <= out.size());
 
     /* Construct actual DeviceProperties instances from these, go backwards so
        we don't overwrite the not-yet-processed handles */
     for(std::size_t i = count; i != 0; --i)
         new(out.data() + i - 1) DeviceProperties{instance, handles[i - 1]};
+    /* Construct the remaining entries so the array destructor doesn't crash */
+    for(std::size_t i = count; i != out.size(); ++i)
+        new(out.data() + i) DeviceProperties{NoCreate};
+
+    return count;
+}
+
+}
+
+Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
+    /* Retrieve total device count */
+    UnsignedInt count;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->EnumeratePhysicalDevices(instance, &count, nullptr));
+
+    /* Fetch device handles, expect the device count didn't change between
+       calls */
+    Containers::Array<DeviceProperties> out{Containers::NoInit, count};
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Implementation::enumerateDevicesInto(instance, out) == out.size());
 
     return out;
 }
@@ -340,26 +358,31 @@ Containers::Optional<DeviceProperties> tryPickDevice(Instance& instance) {
     Utility::Arguments args = Implementation::arguments();
     args.parse(instance.state().argc, instance.state().argv);
 
-    Containers::Array<DeviceProperties> devices = enumerateDevices(instance);
-
     /* Pick the first by default */
     if(args.value("device").empty()) {
-        if(devices.empty()) {
+        Containers::Array1<DeviceProperties> devices{Containers::NoInit};
+        if(!Implementation::enumerateDevicesInto(instance, devices)) {
             Error{} << "Vk::tryPickDevice(): no Vulkan devices found";
             return {};
         }
+
         return std::move(devices.front());
     }
 
     /* Pick by ID */
     if(args.value("device")[0] >= '0' && args.value("device")[0] <= '9') {
-        UnsignedInt id = args.value<UnsignedInt>("device");
-        if(id >= devices.size()) {
-            Error{} << "Vk::tryPickDevice(): index" << id << "out of bounds for" << devices.size() << "Vulkan devices";
+        const UnsignedInt id = args.value<UnsignedInt>("device");
+        Containers::Array<DeviceProperties> devices{Containers::NoInit, id + 1};
+        const UnsignedInt count = Implementation::enumerateDevicesInto(instance, devices);
+        if(id >= count) {
+            Error{} << "Vk::tryPickDevice(): index" << id << "out of bounds for" << count << "Vulkan devices";
             return {};
         }
+
         return std::move(devices[id]);
     }
+
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance);
 
     /* Pick by type */
     DeviceType type;

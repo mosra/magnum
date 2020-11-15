@@ -42,7 +42,10 @@
 
 namespace Magnum { namespace Vk {
 
-namespace Implementation { struct InstanceState; }
+namespace Implementation {
+    struct InstanceState;
+    UnsignedInt enumerateDevicesInto(Instance& instance, Containers::ArrayView<DeviceProperties> out);
+}
 
 /**
 @brief Physical device type
@@ -604,7 +607,7 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /* The DAMN THING lists this among friends, which is AN IMPLEMENTATION
            DETAIL */
         friend DeviceCreateInfo;
-        friend MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance&);
+        friend UnsignedInt Implementation::enumerateDevicesInto(Instance&, Containers::ArrayView<DeviceProperties>);
         #endif
 
         explicit DeviceProperties(Instance& instance, VkPhysicalDevice handle);
@@ -644,10 +647,15 @@ MAGNUM_VK_EXPORT Containers::Array<DeviceProperties> enumerateDevices(Instance& 
 @brief Pick a physical device
 @m_since_latest
 
-Calls @ref enumerateDevices() and selects a device based on preferences
-specified through the `--magnum-device` @ref Vk-Instance-command-line "command-line option".
-If a device is not found, exits. See @ref tryPickDevice() for an alternative
-that doesn't exit on failure. See @ref Device for general usage information.
+Selects a device based on preferences specified through the `--magnum-device`
+@ref Vk-Instance-command-line "command-line option". If a device is not found,
+exits. See @ref tryPickDevice() for an alternative that doesn't exit on
+failure. See @ref Device for general usage information.
+
+If `--magnum-device` is not specified or `--magnum-device` specifies a device
+index, this function enumerates just the first N devices to satisfy the
+request. Otherwise calls @ref enumerateDevices() and picks the first device
+matching the criteria in `--magnum-device`.
 */
 MAGNUM_VK_EXPORT DeviceProperties pickDevice(Instance& instance);
 
