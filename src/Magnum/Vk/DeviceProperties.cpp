@@ -318,12 +318,12 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickMemory(const MemoryFl
 Containers::Array<DeviceProperties> enumerateDevices(Instance& instance) {
     /* Retrieve total device count */
     UnsignedInt count;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(instance->EnumeratePhysicalDevices(instance, &count, nullptr));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->EnumeratePhysicalDevices(instance, &count, nullptr));
 
     /* Allocate memory for the output, fetch the handles into it */
     Containers::Array<DeviceProperties> out{Containers::NoInit, count};
     Containers::ArrayView<VkPhysicalDevice> handles{reinterpret_cast<VkPhysicalDevice*>(out.data()), count};
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
 
     /* Expect the device count didn't change between calls */
     CORRADE_INTERNAL_ASSERT(count == out.size());

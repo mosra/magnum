@@ -292,7 +292,7 @@ Instance::Instance(const InstanceCreateInfo& info): _flags{HandleFlag::DestroyOn
         }
     }
 
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkCreateInstance(info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateInstance(info, nullptr, &_handle));
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     if(info._state)

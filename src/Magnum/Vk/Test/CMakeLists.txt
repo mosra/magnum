@@ -50,20 +50,34 @@ corrade_add_test(VkAssertTest
 # times with different arguments, but corrade_add_test() doesn't support that,
 # so I'm doing it at least via an OBJECT library.
 if(CORRADE_TARGET_ANDROID)
-    corrade_add_test(VkAssertTestFailAssertResult
+    corrade_add_test(VkAssertTestFailAssertSuccess
         $<TARGET_OBJECTS:VkAssertTestObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp
-        ARGUMENTS --fail-on-assert-result true
+        ARGUMENTS --fail-on-assert-success true
         LIBRARIES MagnumVk)
-    set_tests_properties(VkAssertTestFailAssertResult PROPERTIES
+    set_tests_properties(VkAssertTestFailAssertSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorFragmentedPool at ")
-    corrade_add_test(VkAssertTestFailAssertVkResult
+    corrade_add_test(VkAssertTestFailAssertSucce___Incomplete
         $<TARGET_OBJECTS:VkAssertTestObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp
-        ARGUMENTS --fail-on-assert-vk-result true
+        ARGUMENTS --fail-on-assert-success-or-incomplete true
         LIBRARIES MagnumVk)
-    set_tests_properties(VkAssertTestFailAssertVkResult PROPERTIES
+    set_tests_properties(VkAssertTestFailAssertSucce___Incomplete PROPERTIES
+        PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorExtensionNotPresent at ")
+    corrade_add_test(VkAssertTestFailAssertVkSuccess
+        $<TARGET_OBJECTS:VkAssertTestObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ARGUMENTS --fail-on-assert-vk-success true
+        LIBRARIES MagnumVk)
+    set_tests_properties(VkAssertTestFailAssertVkSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorFragmentedPool at ")
+    corrade_add_test(VkAssertTestFailAssertVkSuc___Incomplete
+        $<TARGET_OBJECTS:VkAssertTestObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp
+        ARGUMENTS --fail-on-assert-vk-success-or-incomplete true
+        LIBRARIES MagnumVk)
+    set_tests_properties(VkAssertTestFailAssertVkSuc___Incomplete PROPERTIES
+        PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorExtensionNotPresent at ")
 endif()
 
 # The same as above, but using CORRADE_STANDARD_ASSERT

@@ -67,7 +67,7 @@ Memory Memory::wrap(Device& device, const VkDeviceMemory handle, const HandleFla
 }
 
 Memory::Memory(Device& device, const MemoryAllocateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(device->AllocateMemory(device, info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateMemory(device, info, nullptr, &_handle));
 }
 
 Memory::Memory(NoCreateT): _device{}, _handle{} {}

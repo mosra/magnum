@@ -331,7 +331,7 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
         }
     }
 
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(instance->CreateDevice(info._physicalDevice, info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->CreateDevice(info._physicalDevice, info, nullptr, &_handle));
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     initialize(instance, version);

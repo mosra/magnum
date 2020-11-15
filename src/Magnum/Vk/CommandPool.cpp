@@ -54,7 +54,7 @@ CommandPool CommandPool::wrap(Device& device, const VkCommandPool handle, const 
 }
 
 CommandPool::CommandPool(Device& device, const CommandPoolCreateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(device->CreateCommandPool(device, info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateCommandPool(device, info, nullptr, &_handle));
 }
 
 CommandPool::CommandPool(NoCreateT) noexcept: _device{}, _handle{} {}
@@ -87,13 +87,13 @@ CommandBuffer CommandPool::allocate(const CommandBufferLevel level) {
     info.commandPool = _handle;
     info.commandBufferCount = 1;
     info.level = VkCommandBufferLevel(level);
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).AllocateCommandBuffers(*_device, &info, &out._handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).AllocateCommandBuffers(*_device, &info, &out._handle));
 
     return out;
 }
 
 void CommandPool::reset(const CommandPoolResetFlags flags) {
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).ResetCommandPool(*_device, _handle, VkCommandPoolResetFlags(flags)));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).ResetCommandPool(*_device, _handle, VkCommandPoolResetFlags(flags)));
 }
 
 VkCommandPool CommandPool::release() {

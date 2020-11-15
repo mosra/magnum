@@ -49,7 +49,7 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
     std::size_t totalCount = 0;
     for(std::size_t i = 0; i <= layers.size(); ++i) {
         UnsignedInt count;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(enumerator(state,
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(enumerator(state,
             i == 0 ? nullptr :
                 Containers::String::nullTerminatedView(layers[i - 1]).data(),
             &count, nullptr));
@@ -73,7 +73,7 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
     std::size_t offset = 0;
     for(std::size_t i = 0; i <= layers.size(); ++i) {
         UnsignedInt count = totalCount - offset;
-        MAGNUM_VK_INTERNAL_ASSERT_RESULT(enumerator(state,
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(enumerator(state,
             i == 0 ? nullptr :
                 Containers::String::nullTerminatedView(layers[i - 1]).data(),
             &count, reinterpret_cast<VkExtensionProperties*>(_extensions.data()) + offset));

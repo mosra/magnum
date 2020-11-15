@@ -61,7 +61,7 @@ CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other) noexcept {
 }
 
 void CommandBuffer::reset(const CommandBufferResetFlags flags) {
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT((**_device).ResetCommandBuffer(_handle, VkCommandBufferResetFlags(flags)));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).ResetCommandBuffer(_handle, VkCommandBufferResetFlags(flags)));
 }
 
 VkCommandBuffer CommandBuffer::release() {

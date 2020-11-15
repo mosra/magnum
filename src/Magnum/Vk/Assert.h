@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Macro @ref MAGNUM_VK_INTERNAL_ASSERT_RESULT()
+ * @brief Macro @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(), @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE()
  * @m_since_latest
  */
 
@@ -35,7 +35,7 @@
 
 #include "Magnum/configure.h"
 
-#if !defined(CORRADE_NO_ASSERT) && !defined(MAGNUM_VK_INTERNAL_ASSERT_RESULT)
+#if !defined(CORRADE_NO_ASSERT) && (!defined(MAGNUM_VK_INTERNAL_ASSERT_SUCCESS) || !defined(MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE))
 #ifndef CORRADE_STANDARD_ASSERT
 #include <cstdlib>
 #include <Corrade/Utility/Debug.h>
@@ -58,21 +58,56 @@ Vulkan functions returning @type_vk{Result} and APIs returning
 @ref Magnum::Vk::Result "Vk::Result".
 
 You can override this implementation by placing your own
-@cpp #define MAGNUM_VK_INTERNAL_ASSERT_RESULT @ce before including the
+@cpp #define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS @ce before including the
 @ref Magnum/Vk/Assert.h header.
+@see @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE()
 */
-#ifndef MAGNUM_VK_INTERNAL_ASSERT_RESULT
+#ifndef MAGNUM_VK_INTERNAL_ASSERT_SUCCESS
 #if defined(CORRADE_NO_ASSERT) || (defined(CORRADE_STANDARD_ASSERT) && defined(NDEBUG))
-#define MAGNUM_VK_INTERNAL_ASSERT_RESULT(call)                              \
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(call)                             \
     static_cast<void>(call)
 #elif defined(CORRADE_STANDARD_ASSERT)
-#define MAGNUM_VK_INTERNAL_ASSERT_RESULT(call)                              \
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(call)                             \
     assert(Magnum::Vk::Result(call) == Magnum::Vk::Result::Success)
 #else
-#define MAGNUM_VK_INTERNAL_ASSERT_RESULT(call)                              \
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(call)                             \
     do {                                                                    \
-        const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call);         \
-        if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::Success) {                                                       \
+        const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
+        if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::Success) { \
+            Corrade::Utility::Error{Corrade::Utility::Error::defaultOutput()} << "Call " #call " failed with" << _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) << "at " __FILE__ ":" CORRADE_LINE_STRING; \
+            std::abort();                                                   \
+        }                                                                   \
+    } while(false)
+#endif
+#endif
+
+/**
+@brief Assert that a Vulkan function call succeeds or returns incomplete data
+@m_since_latest
+
+A variant of @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() that allows the call to
+return @ref Magnum::Vk::Result::Incomplete "Vk::Result::Incomplete" in addition
+to @ref Magnum::Vk::Result::Success "Vk::Result::Success".
+
+You can override this implementation by placing your own
+@cpp #define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE @ce before
+including the @ref Magnum/Vk/Assert.h header.
+*/
+#ifndef MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE
+#if defined(CORRADE_NO_ASSERT) || (defined(CORRADE_STANDARD_ASSERT) && defined(NDEBUG))
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(call)               \
+    static_cast<void>(call)
+#elif defined(CORRADE_STANDARD_ASSERT)
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(call)               \
+    do {                                                                    \
+        const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
+        assert(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == Magnum::Vk::Result::Success || _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) == Magnum::Vk::Result::Incomplete);    \
+    } while(false)
+#else
+#define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(call)               \
+    do {                                                                    \
+        const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
+        if(_CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::Success && _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) != Magnum::Vk::Result::Incomplete) { \
             Corrade::Utility::Error{Corrade::Utility::Error::defaultOutput()} << "Call " #call " failed with" << _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) << "at " __FILE__ ":" CORRADE_LINE_STRING; \
             std::abort();                                                   \
         }                                                                   \

@@ -88,7 +88,7 @@ LayerProperties enumerateLayerProperties() {
 
     /* Retrieve layer count */
     UnsignedInt count;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEnumerateInstanceLayerProperties(&count, nullptr));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEnumerateInstanceLayerProperties(&count, nullptr));
 
     /* No layers, nothing to do */
     if(!count) return out;
@@ -101,7 +101,7 @@ LayerProperties enumerateLayerProperties() {
         [](VkLayerProperties* data, std::size_t) {
             delete[] reinterpret_cast<char*>(data);
         }};
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEnumerateInstanceLayerProperties(&count, out._layers.data()));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEnumerateInstanceLayerProperties(&count, out._layers.data()));
 
     /* Expect the layer count didn't change between calls */
     CORRADE_INTERNAL_ASSERT(count == out._layers.size());

@@ -75,7 +75,7 @@ Image Image::wrap(Device& device, const VkImage handle, const HandleFlags flags)
 }
 
 Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(device->CreateImage(device, info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateImage(device, info, nullptr, &_handle));
 }
 
 Image::Image(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}

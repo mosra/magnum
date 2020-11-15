@@ -38,45 +38,74 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct AssertTest: TestSuite::Tester {
     explicit AssertTest();
 
-    void result();
-    void vkResult();
+    void success();
+    void successOrIncomplete();
+    void vkSuccess();
+    void vkSuccessOrIncomplete();
 
-    bool _failAssertResult, _failAssertVkResult;
+    bool _failAssertSuccess, _failAssertSuccessOrIncomplete,
+        _failAssertVkSuccess, _failAssertVkSuccessOrIncomplete;
 };
 
 AssertTest::AssertTest(): TestSuite::Tester{TesterConfiguration{}.setSkippedArgumentPrefixes({"fail-on"})} {
-    addTests({&AssertTest::result,
-              &AssertTest::vkResult});
+    addTests({&AssertTest::success,
+              &AssertTest::successOrIncomplete,
+              &AssertTest::vkSuccess,
+              &AssertTest::vkSuccessOrIncomplete});
 
     Utility::Arguments args{"fail-on"};
-    args.addOption("assert-result", "false").setHelp("assert-result", "fail on MAGNUM_VK_INTERNAL_ASSERT_RESULT() with Vk::Result", "BOOL")
-        .addOption("assert-vk-result", "false").setHelp("assert-vk-result", "fail on MAGNUM_VK_INTERNAL_ASSERT_RESULT() with VkResult", "BOOL")
+    args.addOption("assert-success", "false").setHelp("assert-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() with Vk::Result", "BOOL")
+        .addOption("assert-success-or-incomplete", "false").setHelp("assert-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE() with Vk::Result", "BOOL")
+        .addOption("assert-vk-success", "false").setHelp("assert-vk-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() with VkResult", "BOOL")
+        .addOption("assert-vk-success-or-incomplete", "false").setHelp("assert-vk-success-or-incomplete", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE() with VkResult", "BOOL")
         .parse(arguments().first, arguments().second);
 
-    _failAssertResult = args.value<bool>("assert-result");
-    _failAssertVkResult = args.value<bool>("assert-vk-result");
+    _failAssertSuccess = args.value<bool>("assert-success");
+    _failAssertSuccessOrIncomplete = args.value<bool>("assert-success-or-incomplete");
+    _failAssertVkSuccess = args.value<bool>("assert-vk-success");
+    _failAssertVkSuccessOrIncomplete = args.value<bool>("assert-vk-success-or-incomplete");
 
     #ifdef CORRADE_STANDARD_ASSERT
     setTestName("Magum::Vk::Test::AssertStandardTest");
     #endif
 }
 
-void AssertTest::result() {
+void AssertTest::success() {
     Result a = Result::ErrorUnknown;
 
-    Result r = _failAssertResult ? Result::ErrorFragmentedPool : Result::Success;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = r);
+    Result r = _failAssertSuccess ? Result::ErrorFragmentedPool : Result::Success;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = r);
 
     CORRADE_COMPARE(a, Result::Success);
 }
 
-void AssertTest::vkResult() {
+void AssertTest::successOrIncomplete() {
+    Result a = Result::ErrorUnknown;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = Result::Success);
+
+    Result r = _failAssertSuccessOrIncomplete ? Result::ErrorExtensionNotPresent : Result::Incomplete;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = r);
+
+    CORRADE_COMPARE(a, Result::Incomplete);
+}
+
+void AssertTest::vkSuccess() {
     VkResult a = VK_ERROR_UNKNOWN;
 
-    VkResult s = _failAssertVkResult ? VK_ERROR_FRAGMENTED_POOL : VK_SUCCESS;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = s);
+    VkResult s = _failAssertVkSuccess ? VK_ERROR_FRAGMENTED_POOL : VK_SUCCESS;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = s);
 
     CORRADE_COMPARE(Result(a), Result::Success);
+}
+
+void AssertTest::vkSuccessOrIncomplete() {
+    VkResult a = VK_ERROR_UNKNOWN;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = VK_SUCCESS);
+
+    VkResult s = _failAssertVkSuccessOrIncomplete ? VK_ERROR_EXTENSION_NOT_PRESENT : VK_INCOMPLETE;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = s);
+
+    CORRADE_COMPARE(Result(a), Result::Incomplete);
 }
 
 }}}}

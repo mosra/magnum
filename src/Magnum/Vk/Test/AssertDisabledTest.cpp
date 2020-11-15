@@ -40,40 +40,68 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct AssertDisabledTest: TestSuite::Tester {
     explicit AssertDisabledTest();
 
-    void result();
-    void vkResult();
+    void success();
+    void successOrIncomplete();
+    void vkSuccess();
+    void vkSuccessOrIncomplete();
 };
 
 AssertDisabledTest::AssertDisabledTest() {
-    addTests({&AssertDisabledTest::result,
-              &AssertDisabledTest::vkResult});
+    addTests({&AssertDisabledTest::success,
+              &AssertDisabledTest::successOrIncomplete,
+              &AssertDisabledTest::vkSuccess,
+              &AssertDisabledTest::vkSuccessOrIncomplete});
 
     #ifdef CORRADE_STANDARD_ASSERT
     setTestName("Magum::Vk::Test::AssertStandardDisabledTest");
     #endif
 }
 
-void AssertDisabledTest::result() {
+void AssertDisabledTest::success() {
     std::ostringstream out;
     Error redirectError{&out};
 
     Result a = Result::ErrorUnknown;
     Result r = Result::ErrorFragmentedPool;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = r);
-
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = r);
     CORRADE_COMPARE(a, Result::ErrorFragmentedPool);
+
     CORRADE_COMPARE(out.str(), "");
 }
 
-void AssertDisabledTest::vkResult() {
+void AssertDisabledTest::successOrIncomplete() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Result a = Result::ErrorUnknown;
+    Result r = Result::ErrorExtensionNotPresent;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = r);
+    CORRADE_COMPARE(a, Result::ErrorExtensionNotPresent);
+
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AssertDisabledTest::vkSuccess() {
     std::ostringstream out;
     Error redirectError{&out};
 
     VkResult a = VK_ERROR_UNKNOWN;
     VkResult r = VK_ERROR_FRAGMENTED_POOL;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(a = r);
-
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(a = r);
     CORRADE_COMPARE(Result(a), Result::ErrorFragmentedPool);
+
+    CORRADE_COMPARE(out.str(), "");
+}
+
+void AssertDisabledTest::vkSuccessOrIncomplete() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    VkResult b = VK_ERROR_UNKNOWN;
+    VkResult s = VK_ERROR_EXTENSION_NOT_PRESENT;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(b = s);
+    CORRADE_COMPARE(Result(b), Result::ErrorExtensionNotPresent);
+
     CORRADE_COMPARE(out.str(), "");
 }
 

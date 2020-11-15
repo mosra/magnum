@@ -47,7 +47,7 @@ Version enumerateInstanceVersion() {
     if(!vkEnumerateInstanceVersion) return Version::Vk10;
 
     UnsignedInt version;
-    MAGNUM_VK_INTERNAL_ASSERT_RESULT(vkEnumerateInstanceVersion(&version));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkEnumerateInstanceVersion(&version));
     return Version(version);
 }
 
