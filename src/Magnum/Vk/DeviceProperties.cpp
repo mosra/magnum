@@ -47,11 +47,87 @@
 namespace Magnum { namespace Vk {
 
 struct DeviceProperties::State {
+    explicit State(Instance& instance, VkPhysicalDevice handle);
+
+    /* Cached device extension properties to dispatch on when querying
+       properties. Should be only used through
+       DeviceProperties::extensionPropertiesInternal(). */
+    Containers::Optional<ExtensionProperties> extensions;
+
+    void(*getPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceProperties2&);
+    void(*getQueueFamilyPropertiesImplementation)(DeviceProperties&, UnsignedInt&, VkQueueFamilyProperties2*);
+    void(*getMemoryPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceMemoryProperties2&);
+
     VkPhysicalDeviceProperties2 properties{};
     VkPhysicalDeviceDriverProperties driverProperties{};
     VkPhysicalDeviceMemoryProperties2 memoryProperties{};
     Containers::Array<VkQueueFamilyProperties2> queueFamilyProperties;
 };
+
+DeviceProperties::State::State(Instance& instance, const VkPhysicalDevice handle) {
+    /* All this extension-dependent dispatch has to be stored per physical
+       device, not just on instance, because it's actually instance-level
+       functionality depending on a version of a particular device. According
+       to https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap3.html#fundamentals-validusage-versions :
+
+        Physical-device-level functionality or behavior added by a new core
+        version of the API must not be used unless it is supported by the
+        physical device as determined by VkPhysicalDeviceProperties::apiVersion
+        and the specified version of VkApplicationInfo::apiVersion.
+
+       and https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap4.html#_extending_physical_device_core_functionality :
+
+        New core physical-device-level functionality can be used when the
+        physical-device version is greater than or equal to the version of
+        Vulkan that added the new functionality. The Vulkan version supported
+        by a physical device can be obtained by calling
+        vkGetPhysicalDeviceProperties.
+
+       and https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap4.html#initialization-phys-dev-extensions :
+
+        Applications must not use a VkPhysicalDevice in any command added by an
+        extension or core version that is not supported by that physical
+        device.
+
+       Which means for example, if Vulkan 1.1 is supported by the instance, it
+       doesn't actually imply I can use vkGetPhysicalDeviceProperties2() -- I
+       can only use that in case the device supports 1.1 as well, which means I
+       have to call vkGetPhysicalDeviceProperties() first in order to be able
+       to call vkGetPhysicalDeviceProperties2().
+
+       On the other hand, if the device is 1.0 but the instance
+       supports VK_KHR_get_physical_device_properties2, I can call
+       vkGetPhysicalDeviceProperties2KHR() directly -- https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/chap4.html#initialization-phys-dev-extensions :
+
+        When the VK_KHR_get_physical_device_properties2 extension is enabled,
+        or when both the instance and the physical-device versions are at least
+        1.1, physical-device-level functionality of a device extension can be
+        used with a physical device if the corresponding extension is
+        enumerated by vkEnumerateDeviceExtensionProperties for that physical
+        device, even before a logical device has been created.
+
+       This also explains why e.g. VK_KHR_driver_properties is a device
+       extension and not instance extension -- I can only add it to the pNext
+       chain if the device is able to understand it, even though it's shoveled
+       there by an instance-level API. */
+
+    instance->GetPhysicalDeviceProperties(handle, &properties.properties);
+
+    /* Have to check both the instance and device version, see above */
+    if(instance.isVersionSupported(Version::Vk11) && Version(properties.properties.apiVersion) >= Version::Vk11) {
+        getPropertiesImplementation = &DeviceProperties::getPropertiesImplementation11;
+        getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementation11;
+        getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementation11;
+    } else if(instance.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        getPropertiesImplementation = &DeviceProperties::getPropertiesImplementationKHR;
+        getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationKHR;
+        getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementationKHR;
+    } else {
+        getPropertiesImplementation = DeviceProperties::getPropertiesImplementationDefault;
+        getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationDefault;
+        getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementationDefault;
+    }
+}
 
 DeviceProperties::DeviceProperties(NoCreateT) noexcept: _instance{}, _handle{} {}
 
@@ -65,13 +141,29 @@ DeviceProperties::~DeviceProperties() = default;
 
 DeviceProperties& DeviceProperties::operator=(DeviceProperties&&) noexcept = default;
 
+Version DeviceProperties::version() {
+    return Version(properties1().apiVersion);
+}
+
+bool DeviceProperties::isVersionSupported(const Version version) {
+    return Version(properties1().apiVersion) >= version;
+}
+
+DeviceType DeviceProperties::type() {
+    return DeviceType(properties1().deviceType);
+}
+
 Containers::StringView DeviceProperties::name() {
-    return properties().properties.deviceName;
+    return properties1().deviceName;
 }
 
 DeviceDriver DeviceProperties::driver() {
     /* Ensure the values are populated first */
     return properties(), DeviceDriver(_state->driverProperties.driverID);
+}
+
+Version DeviceProperties::driverVersion() {
+    return Version(properties1().driverVersion);
 }
 
 Containers::StringView DeviceProperties::driverName() {
@@ -84,8 +176,14 @@ Containers::StringView DeviceProperties::driverInfo() {
     return properties(), _state->driverProperties.driverInfo;
 }
 
+const VkPhysicalDeviceProperties& DeviceProperties::properties1() {
+    if(!_state) _state.emplace(*_instance, _handle);
+
+    return _state->properties.properties;
+}
+
 const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
-    if(!_state) _state.emplace();
+    if(!_state) _state.emplace(*_instance, _handle);
 
     /* Properties not fetched yet, do that now */
     if(!_state->properties.sType) {
@@ -93,17 +191,14 @@ const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
 
         Containers::Reference<void*> next = _state->properties.pNext;
 
-        /* Device extension properties. Populated only if needed. */
-        ExtensionProperties extensions{NoCreate};
-
         /* Fetch driver properties, if supported */
-        if(_instance->isVersionSupported(Version::Vk12) || (extensions = enumerateExtensionProperties()).isSupported<Extensions::KHR::driver_properties>()) {
+        if(isVersionSupported(Version::Vk12) || extensionPropertiesInternal().isSupported<Extensions::KHR::driver_properties>()) {
             *next = &_state->driverProperties;
             next = _state->driverProperties.pNext;
             _state->driverProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
         }
 
-        _instance->state().getPhysicalDevicePropertiesImplementation(*this, _state->properties);
+        _state->getPropertiesImplementation(*this, _state->properties);
     }
 
     return _state->properties;
@@ -132,18 +227,24 @@ ExtensionProperties DeviceProperties::enumerateExtensionProperties(std::initiali
     return enumerateExtensionProperties(Containers::arrayView(layers));
 }
 
+const ExtensionProperties& DeviceProperties::extensionPropertiesInternal() {
+    if(!_state) _state.emplace(*_instance, _handle);
+    if(!_state->extensions) _state->extensions = enumerateExtensionProperties();
+    return *_state->extensions;
+}
+
 Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFamilyProperties() {
-    if(!_state) _state.emplace();
+    if(!_state) _state.emplace(*_instance, _handle);
 
     /* Fetch if not already */
     if(_state->queueFamilyProperties.empty()) {
         UnsignedInt count;
-        _instance->state().getPhysicalDeviceQueueFamilyPropertiesImplementation(*this, count, nullptr);
+        _state->getQueueFamilyPropertiesImplementation(*this, count, nullptr);
 
         _state->queueFamilyProperties = Containers::Array<VkQueueFamilyProperties2>{Containers::ValueInit, count};
         for(VkQueueFamilyProperties2& i: _state->queueFamilyProperties)
             i.sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
-        _instance->state().getPhysicalDeviceQueueFamilyPropertiesImplementation(*this, count, _state->queueFamilyProperties);
+        _state->getQueueFamilyPropertiesImplementation(*this, count, _state->queueFamilyProperties);
         CORRADE_INTERNAL_ASSERT(count == _state->queueFamilyProperties.size());
     }
 
@@ -211,11 +312,11 @@ Containers::Optional<UnsignedInt> DeviceProperties::tryPickQueueFamily(const Que
 }
 
 const VkPhysicalDeviceMemoryProperties2& DeviceProperties::memoryProperties() {
-    if(!_state) _state.emplace();
+    if(!_state) _state.emplace(*_instance, _handle);
 
     if(!_state->memoryProperties.sType) {
         _state->memoryProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2;
-        _instance->state().getPhysicalDeviceMemoryPropertiesImplementation(*this, _state->memoryProperties);
+        _state->getMemoryPropertiesImplementation(*this, _state->memoryProperties);
     }
 
     return _state->memoryProperties;

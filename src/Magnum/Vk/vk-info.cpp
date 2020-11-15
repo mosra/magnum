@@ -233,7 +233,7 @@ int main(int argc, char** argv) {
         Debug{} << "Found" << devices.size() << "devices:";
         for(Vk::DeviceProperties& device: devices) {
             Debug{} << "   " << device.name() << Debug::nospace << ","
-                << device.apiVersion() << Debug::newline
+                << device.version() << Debug::newline
                 << "     " << device.type() << Debug::nospace << ", driver"
                 << Debug::packed << device.driverVersion();
         }
@@ -247,7 +247,7 @@ int main(int argc, char** argv) {
 
     Debug{} << "Picked device" << device.name() << Debug::newline;
 
-    const Vk::Version deviceVersion = device.apiVersion();
+    const Vk::Version deviceVersion = device.version();
     Debug{} << "Reported version:" << deviceVersion;
 
     /* Driver info. Print only if the device actually reports something,

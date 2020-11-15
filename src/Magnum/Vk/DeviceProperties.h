@@ -327,14 +327,19 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         const VkPhysicalDeviceProperties2& properties();
 
         /**
-         * @brief API version
+         * @brief Device version
          *
          * Convenience access to @ref properties() internals, populated lazily
          * on first request.
          */
-        Version apiVersion() {
-            return Version(properties().properties.apiVersion);
-        }
+        Version version();
+
+        /**
+         * @brief Whether given version is supported on the device
+         *
+         * Compares @p version against @ref version().
+         */
+        bool isVersionSupported(Version version);
 
         /**
          * @brief Device type
@@ -342,9 +347,7 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * Convenience access to @ref properties() internals, populated lazily
          * on first request.
          */
-        DeviceType type() {
-            return DeviceType(properties().properties.deviceType);
-        }
+        DeviceType type();
 
         /**
          * @brief Device name
@@ -373,9 +376,7 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * Convenience access to @ref properties() internals, populated lazily
          * on first request.
          */
-        Version driverVersion() {
-            return Version(properties().properties.driverVersion);
-        }
+        Version driverVersion();
 
         /**
          * @brief Driver name
@@ -611,6 +612,22 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         #endif
 
         explicit DeviceProperties(Instance& instance, VkPhysicalDevice handle);
+
+        /* The vkPhysicalDeviceProperties() function has to get called in any
+           case to decide if vkPhysicalDeviceProperties2() can get called. That
+           means we can get the VkPhysicalDeviceProperties subset in a cheaper
+           way than when going through properties(). This distinction however
+           would only confuse the users, so it's a private API and while
+           version(), name(), driverVersion() etc. queries use it they only
+           mention properties() in the public docs. */
+        MAGNUM_VK_LOCAL const VkPhysicalDeviceProperties& properties1();
+
+        /* Cached version of enumerateExtensionProperties() for internal use by
+           the property query functions. The enumerateExtensionProperties() API
+           returns by-value because every time there can be a different set of
+           layers, so we can't do any caching on that level but need a separate
+           function. */
+        MAGNUM_VK_LOCAL const ExtensionProperties& extensionPropertiesInternal();
 
         MAGNUM_VK_LOCAL static void getPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);

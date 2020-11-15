@@ -142,8 +142,11 @@ void DevicePropertiesVkTest::enumerate() {
         CORRADE_ITERATION(device.name());
 
         CORRADE_VERIFY(device.handle());
-        CORRADE_COMPARE_AS(device.apiVersion(), Version::Vk10,
+        CORRADE_COMPARE_AS(device.version(), Version::Vk10,
             TestSuite::Compare::GreaterOrEqual);
+        /* Device version is supported */
+        CORRADE_VERIFY(device.isVersionSupported(device.version()));
+        CORRADE_VERIFY(!device.isVersionSupported(Version::None));
         CORRADE_COMPARE_AS(device.driverVersion(), Version::Vk10,
             TestSuite::Compare::GreaterOrEqual);
         CORRADE_VERIFY(device.type() != DeviceType::Other);
@@ -193,15 +196,12 @@ void DevicePropertiesVkTest::driverProperties() {
 
     Debug{} << "Driver ID:" << device->driver();
 
-    ExtensionProperties extensions = device->enumerateExtensionProperties();
-    if(!instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>() || !extensions.isSupported<Extensions::KHR::driver_properties>()) {
-        CORRADE_COMPARE(device->driver(), DeviceDriver::Unknown);
+    if(device->driver() == DeviceDriver::Unknown) {
         CORRADE_COMPARE(device->driverName(), "");
         CORRADE_COMPARE(device->driverInfo(), "");
         CORRADE_SKIP("KHR_driver_properties not supported.");
     }
 
-    CORRADE_VERIFY(Int(device->driver()));
     CORRADE_VERIFY(!device->driverName().isEmpty());
     {
         CORRADE_EXPECT_FAIL_IF(device->driver() == DeviceDriver::GoogleSwiftShader,

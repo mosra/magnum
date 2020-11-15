@@ -26,7 +26,6 @@
 */
 
 #include "Magnum/Vk/Vk.h"
-#include "Magnum/Vk/Vulkan.h"
 
 namespace Magnum { namespace Vk { namespace Implementation {
 
@@ -36,9 +35,10 @@ struct InstanceState {
     Int argc;
     const char** argv;
 
-    void(*getPhysicalDevicePropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceProperties2&);
-    void(*getPhysicalDeviceQueueFamilyPropertiesImplementation)(DeviceProperties&, UnsignedInt&, VkQueueFamilyProperties2*);
-    void(*getPhysicalDeviceMemoryPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceMemoryProperties2&);
+    /* There are currently no instance-level extension-dependent code paths.
+       Everything is currently in DeviceProperties internals, as
+       physical-device-level APIs depend on device version, not instance
+       version, and thus have to be wired up differently for each device. */
 };
 
 }}}

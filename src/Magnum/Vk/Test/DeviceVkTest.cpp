@@ -284,9 +284,9 @@ void DeviceVkTest::construct() {
         /* Device function pointers should be populated */
         CORRADE_VERIFY(device->CreateBuffer);
         CORRADE_COMPARE(device.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(device.version(), deviceProperties.apiVersion());
+        CORRADE_COMPARE(device.version(), deviceProperties.version());
         /* Device version is supported */
-        CORRADE_VERIFY(device.isVersionSupported(deviceProperties.apiVersion()));
+        CORRADE_VERIFY(device.isVersionSupported(deviceProperties.version()));
         CORRADE_VERIFY(!device.isVersionSupported(Version::None));
         /* No extensions are enabled by default ... */
         CORRADE_VERIFY(!device.isExtensionEnabled<Extensions::EXT::debug_marker>());
@@ -397,14 +397,14 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
             Extensions::KHR::maintenance1
         >()};
     CORRADE_VERIFY(device.handle());
-    CORRADE_COMPARE(device.isVersionSupported(deviceProperties.apiVersion()), data.driverVersionSupported);
+    CORRADE_COMPARE(device.isVersionSupported(deviceProperties.version()), data.driverVersionSupported);
     CORRADE_COMPARE(device.isExtensionEnabled<Extensions::EXT::debug_marker>(), data.debugMarkerEnabled);
     CORRADE_COMPARE(device.isExtensionEnabled<Extensions::KHR::maintenance1>(), data.maintenance1Enabled);
 
     /** @todo cleanup when Debug::toString() or some similar utility exists */
-    UnsignedInt major = versionMajor(deviceProperties.apiVersion());
-    UnsignedInt minor = versionMinor(deviceProperties.apiVersion());
-    UnsignedInt patch = versionPatch(deviceProperties.apiVersion());
+    UnsignedInt major = versionMajor(deviceProperties.version());
+    UnsignedInt minor = versionMinor(deviceProperties.version());
+    UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
     CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
 
@@ -451,14 +451,14 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
         /* Nothing enabled by the application */
     };
     CORRADE_VERIFY(device.handle());
-    CORRADE_COMPARE(device.isVersionSupported(deviceProperties.apiVersion()), data.driverVersionSupported);
+    CORRADE_COMPARE(device.isVersionSupported(deviceProperties.version()), data.driverVersionSupported);
     CORRADE_COMPARE(device.isExtensionEnabled<Extensions::EXT::debug_marker>(), data.debugMarkerEnabled);
     CORRADE_COMPARE(device.isExtensionEnabled<Extensions::KHR::maintenance1>(), data.maintenance1Enabled);
 
     /** @todo cleanup when Debug::toString() or some similar utility exists */
-    UnsignedInt major = versionMajor(deviceProperties.apiVersion());
-    UnsignedInt minor = versionMinor(deviceProperties.apiVersion());
-    UnsignedInt patch = versionPatch(deviceProperties.apiVersion());
+    UnsignedInt major = versionMajor(deviceProperties.version());
+    UnsignedInt minor = versionMinor(deviceProperties.version());
+    UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
     CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
 
@@ -575,7 +575,7 @@ void DeviceVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.version(), version);
-    CORRADE_COMPARE(b.properties().apiVersion(), version);
+    CORRADE_COMPARE(b.properties().version(), version);
     CORRADE_VERIFY(b.isExtensionEnabled<Extensions::KHR::maintenance1>());
     /* Function pointers in a are left in whatever state they were before, as
        that doesn't matter */
@@ -588,7 +588,7 @@ void DeviceVkTest::constructMove() {
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.version(), version);
-    CORRADE_COMPARE(c.properties().apiVersion(), version);
+    CORRADE_COMPARE(c.properties().version(), version);
     CORRADE_VERIFY(c.isExtensionEnabled<Extensions::KHR::maintenance1>());
     /* Everything is swapped, including function pointers */
     CORRADE_VERIFY(!b->CreateBuffer);

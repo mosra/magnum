@@ -83,7 +83,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
     /* Take the minimum of instance and device version. Instance version being
        smaller than a device version happens mainly if there's a forced Vulkan
        version via --magnum-vulkan version, which will be later used to cap available features. */
-    _state->version = Version(Math::min(UnsignedInt(deviceProperties._instance->version()), UnsignedInt(deviceProperties.apiVersion())));
+    _state->version = Version(Math::min(UnsignedInt(deviceProperties._instance->version()), UnsignedInt(deviceProperties.version())));
 
     /* If there are any disabled extensions, sort them and save for later --
        we'll use them to filter the ones added by the app */
@@ -317,7 +317,7 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
         _properties.emplace(DeviceProperties::wrap(instance, info._physicalDevice));
 
     const Version version = info._state->version != Version::None ?
-        info._state->version : _properties->apiVersion();
+        info._state->version : _properties->version();
 
     /* Print all enabled extensions if we're not told to be quiet */
     if(!info._state || !info._state->quietLog) {
