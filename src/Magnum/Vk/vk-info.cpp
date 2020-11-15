@@ -169,8 +169,8 @@ int main(int argc, char** argv) {
     #endif
     Debug{} << "";
 
-    const Vk::Version version = Vk::enumerateInstanceVersion();
-    Debug{} << "Reported instance version:" << version;
+    const Vk::Version instanceVersion = Vk::enumerateInstanceVersion();
+    Debug{} << "Reported instance version:" << instanceVersion;
     Debug{} << "Reported instance layers:";
     for(UnsignedInt i = 0, max = layerProperties.count(); i != max; ++i) {
         Debug{} << "   " << layerProperties.name(i) << "(r" << Debug::nospace << layerProperties.revision(i) << Debug::nospace << ", written against" << layerProperties.version(i) << Debug::nospace << ")";
@@ -182,11 +182,11 @@ int main(int argc, char** argv) {
         Vk::Version::Vk12,
         Vk::Version::None
     };
-    std::size_t future = 0;
+    std::size_t instanceFuture = 0;
 
     if(!args.isSet("all-extensions"))
-        while(versions[future] != Vk::Version::None && version >= versions[future])
-            ++future;
+        while(versions[instanceFuture] != Vk::Version::None && instanceVersion >= versions[instanceFuture])
+            ++instanceFuture;
 
     /** @todo do better once implemented in format() */
     using namespace Containers::Literals;
@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
             d << ")";
         }
 
-    } else for(std::size_t i = future; i != Containers::arraySize(versions); ++i) {
+    } else for(std::size_t i = instanceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::InstanceExtension> extensions = Vk::InstanceExtension::extensions(versions[i]);
         if(extensions.empty()) continue;
 
@@ -217,7 +217,7 @@ int main(int argc, char** argv) {
 
             if(instanceExtensionProperties.isSupported(extension))
                 d << "REV." << Debug::nospace << instanceExtensionProperties.revision(extension);
-            else if(version >= extension.requiredVersion())
+            else if(instanceVersion >= extension.requiredVersion())
                 d << "  -";
             else
                 d << " n/a";
@@ -246,7 +246,15 @@ int main(int argc, char** argv) {
     Vk::DeviceProperties device = Vk::pickDevice(instance);
 
     Debug{} << "Picked device" << device.name() << Debug::newline;
-    Debug{} << "Reported version:" << device.apiVersion();
+
+    const Vk::Version deviceVersion = device.apiVersion();
+    Debug{} << "Reported version:" << deviceVersion;
+
+    std::size_t deviceFuture = 0;
+
+    if(!args.isSet("all-extensions"))
+        while(versions[deviceFuture] != Vk::Version::None && deviceVersion >= versions[deviceFuture])
+            ++deviceFuture;
 
     Vk::ExtensionProperties extensionProperties = device.enumerateExtensionProperties(layerProperties.names());
 
@@ -261,7 +269,7 @@ int main(int argc, char** argv) {
             d << ")";
         }
 
-    } else for(std::size_t i = future; i != Containers::arraySize(versions); ++i) {
+    } else for(std::size_t i = deviceFuture; i != Containers::arraySize(versions); ++i) {
         Containers::ArrayView<const Vk::Extension> extensions = Vk::Extension::extensions(versions[i]);
         if(extensions.empty()) continue;
 
@@ -275,7 +283,7 @@ int main(int argc, char** argv) {
 
             if(extensionProperties.isSupported(extension))
                 d << "REV." << Debug::nospace << extensionProperties.revision(extension);
-            else if(version >= extension.requiredVersion())
+            else if(deviceVersion >= extension.requiredVersion())
                 d << "  -";
             else
                 d << " n/a";
