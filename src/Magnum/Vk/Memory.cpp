@@ -25,6 +25,7 @@
 
 #include "Memory.h"
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Debug.h>
 
@@ -90,6 +91,30 @@ Memory& Memory::operator=(Memory&& other) noexcept {
     swap(other._flags, _flags);
     swap(other._size, _size);
     return *this;
+}
+
+Containers::Array<char, MemoryMapDeleter> Memory::map(const UnsignedLong offset, const UnsignedLong size) {
+    void* data;
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).MapMemory(*_device, _handle, offset, size, {}, &data));
+    return Containers::Array<char, MemoryMapDeleter>{static_cast<char*>(data), size, MemoryMapDeleter{(**_device).UnmapMemory, *_device, _handle}};
+}
+
+Containers::Array<char, MemoryMapDeleter> Memory::map() {
+    return map(0, _size);
+}
+
+Containers::Array<const char, MemoryMapDeleter> Memory::mapRead(const UnsignedLong offset, const UnsignedLong size) {
+    Containers::Array<char, MemoryMapDeleter> out = map(offset, size);
+
+    /* Simply "cast" to a const array. Extracting the deleter before because
+       the order of operations is unspecified and the deleter could be queried
+       after release() got called */
+    const MemoryMapDeleter deleter = out.deleter();
+    return Containers::Array<const char, MemoryMapDeleter>{out.release(), size, deleter};
+}
+
+Containers::Array<const char, MemoryMapDeleter> Memory::mapRead() {
+    return mapRead(0, _size);
 }
 
 VkDeviceMemory Memory::release() {

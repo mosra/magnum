@@ -53,6 +53,7 @@ class InstanceExtension;
 class InstanceExtensionProperties;
 class LayerProperties;
 class Memory;
+class MemoryMapDeleter;
 class MemoryRequirements;
 enum class MemoryFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryFlag> MemoryFlags;

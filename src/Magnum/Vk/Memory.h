@@ -39,6 +39,15 @@
 
 namespace Magnum { namespace Vk {
 
+/** @relates Memory
+@brief Deleter for mapped memory
+@m_since_latest
+
+Deleter for the array returned from @ref Memory::map(). Calls
+@fn_vk_keyword{UnmapMemory}.
+*/
+class MemoryMapDeleter;
+
 /**
 @brief Memory type flag
 @m_since_latest
@@ -308,6 +317,45 @@ class MAGNUM_VK_EXPORT Memory {
         UnsignedLong size() const { return _size; }
 
         /**
+         * @brief Map a memory range
+         * @param offset    Byte offset
+         * @param size      Memory size
+         *
+         * The returned array size is @p size and the deleter performs an
+         * unmap. For this operation to work, the memory has to be allocated
+         * with @ref MemoryFlag::HostVisible and the @p offset and @p size be
+         * in bounds for @ref size().
+         * @see @fn_vk_keyword{MapMemory}, @fn_vk{UnmapMemory}
+         */
+        Containers::Array<char, MemoryMapDeleter> map(UnsignedLong offset, UnsignedLong size);
+
+        /**
+         * @brief Map the whole memory
+         *
+         * Equivalent to calling @ref map(UnsignedLong, UnsignedLong) with
+         * @cpp 0 @ce and @ref size().
+         */
+        Containers::Array<char, MemoryMapDeleter> map();
+
+        /**
+         * @brief Map a memory range read-only
+         *
+         * Like @ref map(UnsignedLong, UnsignedLong) but returning a
+         * @cpp const @ce array. Currently Vulkan doesn't have any flags to
+         * control read/write access, so apart from a different return type the
+         * behavior is equivalent.
+         */
+        Containers::Array<const char, MemoryMapDeleter> mapRead(UnsignedLong offset, UnsignedLong size);
+
+        /**
+         * @brief Map the whole memory read-only
+         *
+         * Equivalent to calling @ref mapRead(UnsignedLong, UnsignedLong) with
+         * @cpp 0 @ce and @ref size().
+         */
+        Containers::Array<const char, MemoryMapDeleter> mapRead();
+
+        /**
          * @brief Release the underlying Vulkan memory
          *
          * Releases ownership of the Vulkan memory and returns its handle so
@@ -325,6 +373,22 @@ class MAGNUM_VK_EXPORT Memory {
         HandleFlags _flags;
         UnsignedLong _size;
 };
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+class MAGNUM_VK_EXPORT MemoryMapDeleter {
+    public:
+        explicit MemoryMapDeleter(): _unmap{}, _device{}, _memory{} {}
+        explicit MemoryMapDeleter(void(*unmap)(VkDevice, VkDeviceMemory), VkDevice device, VkDeviceMemory memory): _unmap{unmap}, _device{device}, _memory{memory} {}
+        void operator()(const char*, std::size_t) {
+            if(_unmap) _unmap(_device, _memory);
+        }
+
+    private:
+        void(*_unmap)(VkDevice, VkDeviceMemory);
+        VkDevice _device;
+        VkDeviceMemory _memory;
+};
+#endif
 
 }}
 

@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Memory.h"
@@ -38,13 +40,19 @@ struct MemoryVkTest: VulkanTester {
     void constructMove();
 
     void wrap();
+
+    void map();
+    void mapRead();
 };
 
 MemoryVkTest::MemoryVkTest() {
     addTests({&MemoryVkTest::construct,
               &MemoryVkTest::constructMove,
 
-              &MemoryVkTest::wrap});
+              &MemoryVkTest::wrap,
+
+              &MemoryVkTest::map,
+              &MemoryVkTest::mapRead});
 }
 
 void MemoryVkTest::construct() {
@@ -92,6 +100,41 @@ void MemoryVkTest::wrap() {
     CORRADE_VERIFY(!wrapped.handle());
     CORRADE_COMPARE(wrapped.size(), 0);
     device()->FreeMemory(device(), memory, nullptr);
+}
+
+void MemoryVkTest::map() {
+    Memory a{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::HostVisible)}};
+
+    /* Map and write */
+    {
+        Containers::Array<char, MemoryMapDeleter> mapped = a.map();
+        CORRADE_COMPARE(mapped.size(), 1024*1024);
+        mapped[1024 + 37] = 'c';
+    }
+
+    /* Map a subrange again -- shouldn't fail since we unmapped implicitly
+       above */
+    {
+        Containers::Array<char, MemoryMapDeleter> mapped = a.map(1024, 100);
+        CORRADE_COMPARE(mapped.size(), 100);
+        CORRADE_COMPARE(mapped[37], 'c');
+    }
+}
+
+void MemoryVkTest::mapRead() {
+    Memory a{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::HostVisible)}};
+
+    /* Map and write, unmap should be implicit */
+    {
+        Containers::Array<const char, MemoryMapDeleter> mapped = a.mapRead();
+        CORRADE_COMPARE(mapped.size(), 1024*1024);
+    }
+
+    /* Map a subrange again */
+    {
+        Containers::Array<const char, MemoryMapDeleter> mapped = a.mapRead(1024, 100);
+        CORRADE_COMPARE(mapped.size(), 100);
+    }
 }
 
 }}}}
