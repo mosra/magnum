@@ -245,6 +245,7 @@ class MAGNUM_VK_EXPORT Memory {
          * @brief Wrap existing Vulkan handle
          * @param device    Vulkan device the memory is allocated on
          * @param handle    The @type_vk{DeviceMemory} handle
+         * @param size      Memory size
          * @param flags     Handle flags
          *
          * The @p handle is expected to be originating from @p device. Unlike
@@ -253,7 +254,7 @@ class MAGNUM_VK_EXPORT Memory {
          * behavior.
          * @see @ref release()
          */
-        static Memory wrap(Device& device, VkDeviceMemory handle, HandleFlags flags = {});
+        static Memory wrap(Device& device, VkDeviceMemory handle, UnsignedLong size, HandleFlags flags = {});
 
         /**
          * @brief Constructor
@@ -303,6 +304,9 @@ class MAGNUM_VK_EXPORT Memory {
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
 
+        /** @brief Memory allocation size */
+        UnsignedLong size() const { return _size; }
+
         /**
          * @brief Release the underlying Vulkan memory
          *
@@ -319,6 +323,7 @@ class MAGNUM_VK_EXPORT Memory {
 
         VkDeviceMemory _handle;
         HandleFlags _flags;
+        UnsignedLong _size;
 };
 
 }}

@@ -58,22 +58,24 @@ MemoryAllocateInfo::MemoryAllocateInfo(const VkMemoryAllocateInfo& info):
        member instead of doing a copy */
     _info(info) {}
 
-Memory Memory::wrap(Device& device, const VkDeviceMemory handle, const HandleFlags flags) {
+Memory Memory::wrap(Device& device, const VkDeviceMemory handle, const UnsignedLong size, const HandleFlags flags) {
     Memory out{NoCreate};
     out._device = &device;
     out._handle = handle;
     out._flags = flags;
+    out._size = size;
     return out;
 }
 
-Memory::Memory(Device& device, const MemoryAllocateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+Memory::Memory(Device& device, const MemoryAllocateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _size{info->allocationSize} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->AllocateMemory(device, info, nullptr, &_handle));
 }
 
 Memory::Memory(NoCreateT): _device{}, _handle{} {}
 
-Memory::Memory(Memory&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+Memory::Memory(Memory&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _size{other._size} {
     other._handle = {};
+    other._size = {};
 }
 
 Memory::~Memory() {
@@ -86,12 +88,14 @@ Memory& Memory::operator=(Memory&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
+    swap(other._size, _size);
     return *this;
 }
 
 VkDeviceMemory Memory::release() {
     const VkDeviceMemory handle = _handle;
     _handle = {};
+    _size = {};
     return handle;
 }
 

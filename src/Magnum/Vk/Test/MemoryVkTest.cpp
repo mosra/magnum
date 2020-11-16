@@ -51,6 +51,7 @@ void MemoryVkTest::construct() {
     Memory memory{device(), MemoryAllocateInfo{1024*1024, device().properties().pickMemory(MemoryFlag::DeviceLocal)}};
     CORRADE_VERIFY(memory.handle());
     CORRADE_COMPARE(memory.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(memory.size(), 1024*1024);
 }
 
 void MemoryVkTest::constructMove() {
@@ -61,6 +62,7 @@ void MemoryVkTest::constructMove() {
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(b.size(), 1024*1024);
 
     Memory c{NoCreate};
     c = std::move(b);
@@ -68,6 +70,7 @@ void MemoryVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(c.size(), 1024*1024);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Memory>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Memory>::value);
@@ -80,12 +83,14 @@ void MemoryVkTest::wrap() {
         nullptr, &memory)), Result::Success);
     CORRADE_VERIFY(memory);
 
-    auto wrapped = Memory::wrap(device(), memory, HandleFlag::DestroyOnDestruction);
+    auto wrapped = Memory::wrap(device(), memory, 1024*1024, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), memory);
+    CORRADE_COMPARE(wrapped.size(), 1024*1024);
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), memory);
     CORRADE_VERIFY(!wrapped.handle());
+    CORRADE_COMPARE(wrapped.size(), 0);
     device()->FreeMemory(device(), memory, nullptr);
 }
 
