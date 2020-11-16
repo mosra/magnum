@@ -355,9 +355,27 @@ class MAGNUM_VK_EXPORT Image {
          * @param device    Vulkan device to create the image on
          * @param info      Image creation info
          *
-         * @see @fn_vk_keyword{CreateImage}
+         * Use @ref memoryRequirements(), @ref Memory and @ref bindMemory() to
+         * bind a memory (sub)allocation to the image.
+         * @see @ref Image(Device&, const ImageCreateInfo&, MemoryFlags),
+         *      @fn_vk_keyword{CreateImage}
          */
         explicit Image(Device& device, const ImageCreateInfo& info, NoAllocateT);
+
+        /**
+         * @brief Construct an image
+         * @param device        Vulkan device to create the image on
+         * @param info          Image creation info
+         * @param memoryFlags   Memory allocation flags
+         *
+         * Compared to @ref Image(Device&, const ImageCreateInfo&, NoAllocateT)
+         * allocates a memory satisfying @p memoryFlags as well.
+         *
+         * @attention At this point, a dedicated allocation is used,
+         *      subsequently accessible through @ref dedicatedMemory(). This
+         *      behavior may change in the future.
+         */
+        explicit Image(Device& device, const ImageCreateInfo& info, MemoryFlags memoryFlags);
 
         /**
          * @brief Construct without creating the image

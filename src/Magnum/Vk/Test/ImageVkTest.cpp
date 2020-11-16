@@ -53,6 +53,8 @@ struct ImageVkTest: VulkanTester {
 
     void bindMemory();
     void bindDedicatedMemory();
+
+    void directAllocation();
 };
 
 ImageVkTest::ImageVkTest() {
@@ -70,7 +72,9 @@ ImageVkTest::ImageVkTest() {
               &ImageVkTest::memoryRequirements,
 
               &ImageVkTest::bindMemory,
-              &ImageVkTest::bindDedicatedMemory});
+              &ImageVkTest::bindDedicatedMemory,
+
+              &ImageVkTest::directAllocation});
 }
 
 void ImageVkTest::construct1D() {
@@ -158,14 +162,11 @@ void ImageVkTest::constructCubeMapArray() {
 }
 
 void ImageVkTest::constructMove() {
-    Image a{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, NoAllocate};
-    VkImage handle = a.handle();
-
     /* Verify that also the dedicated memory gets moved */
-    MemoryRequirements requirements = a.memoryRequirements();
-    a.bindDedicatedMemory(Vk::Memory{device(), Vk::MemoryAllocateInfo{requirements.size(),
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}});
+    Image a{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
+            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1},
+        Vk::MemoryFlag::DeviceLocal};
+    VkImage handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
     Image b = std::move(a);
@@ -261,6 +262,15 @@ void ImageVkTest::bindDedicatedMemory() {
     image.bindDedicatedMemory(std::move(memory));
     CORRADE_VERIFY(image.hasDedicatedMemory());
     CORRADE_COMPARE(image.dedicatedMemory().handle(), handle);
+}
+
+void ImageVkTest::directAllocation() {
+    Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
+        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, Vk::MemoryFlag::DeviceLocal};
+
+    /* Not sure what else to test here */
+    CORRADE_VERIFY(image.hasDedicatedMemory());
+    CORRADE_VERIFY(image.dedicatedMemory().handle());
 }
 
 }}}}

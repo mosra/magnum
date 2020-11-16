@@ -27,6 +27,7 @@
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
@@ -76,6 +77,14 @@ Image Image::wrap(Device& device, const VkImage handle, const HandleFlags flags)
 
 Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateImage(device, info, nullptr, &_handle));
+}
+
+Image::Image(Device& device, const ImageCreateInfo& info, const MemoryFlags memoryFlags): Image{device, info, NoAllocate} {
+    const MemoryRequirements requirements = memoryRequirements();
+    bindDedicatedMemory(Memory{device, MemoryAllocateInfo{
+        requirements.size(),
+        device.properties().pickMemory(memoryFlags, requirements.memories())
+    }});
 }
 
 Image::Image(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}
