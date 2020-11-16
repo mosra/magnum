@@ -81,6 +81,9 @@ void ExtensionsTest::isInstanceExtension() {
         Extensions::KHR::get_physical_device_properties2,
         Extensions::KHR::external_memory_capabilities,
         Extensions::KHR::external_fence>::value)); /* not */
+
+    /* Empty variadic list should return true */
+    CORRADE_VERIFY(Implementation::IsInstanceExtension<>::value);
 }
 
 void ExtensionsTest::isExtension() {
@@ -117,6 +120,9 @@ void ExtensionsTest::isExtension() {
         Extensions::KHR::external_memory,
         Extensions::KHR::depth_stencil_resolve,
         Extensions::KHR::external_fence_capabilities>::value)); /* not */
+
+    /* Empty variadic list should return true */
+    CORRADE_VERIFY(Implementation::IsExtension<>::value);
 }
 
 void ExtensionsTest::constructInstanceExtensionFromCompileTimeExtension() {

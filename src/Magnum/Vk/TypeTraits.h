@@ -40,6 +40,7 @@ namespace Implementation {
     /** @todo filter out GL/AL extensions also */
 
     template<class...> class IsInstanceExtension;
+    template<> class IsInstanceExtension<> { public: enum: bool { value = true }; };
     CORRADE_HAS_TYPE(IsInstanceExtension<U>, decltype(T::InstanceIndex));
     template<class T, class U, class ...Args> class IsInstanceExtension<T, U, Args...> {
         /** @todo C++17: use &&... instead of all this */
@@ -47,6 +48,7 @@ namespace Implementation {
     };
 
     template<class...> class IsExtension;
+    template<> class IsExtension<> { public: enum: bool { value = true }; };
     CORRADE_HAS_TYPE(IsExtension<U>, decltype(T::Index));
     template<class T, class U, class ...Args> class IsExtension<T, U, Args...> {
         /** @todo C++17: use &&... instead of all this */
