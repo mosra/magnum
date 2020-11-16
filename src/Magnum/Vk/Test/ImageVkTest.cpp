@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Vk/DeviceProperties.h"
@@ -213,7 +214,15 @@ void ImageVkTest::memoryRequirements() {
     Image image{device(), info, NoAllocate};
 
     MemoryRequirements requirements = image.memoryRequirements();
-    CORRADE_COMPARE(requirements.size(), 128*64*4);
+    {
+        /* Can't use device().properties().driver() ==
+           DeviceDriver::GoogleSwiftShader because that information is not
+           available when we run with KHR_get_physical_device_properties2
+           disabled :/ */
+        CORRADE_EXPECT_FAIL_IF(device().properties().name().hasPrefix("SwiftShader") && requirements.size() == 128*64*4 + 16,
+            "SwiftShader reports 16 bytes (two pointers?) more than expected for a linear tiling.");
+        CORRADE_COMPARE(requirements.size(), 128*64*4);
+    }
 }
 
 void ImageVkTest::bindMemory() {
