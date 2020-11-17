@@ -160,6 +160,14 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 {
 int argc{};
 const char** argv{};
+/* [Instance-usage-minimal] */
+Vk::Instance instance{{argc, argv}};
+/* [Instance-usage-minimal] */
+}
+
+{
+int argc{};
+const char** argv{};
 /* [Instance-usage] */
 using namespace Containers::Literals;
 

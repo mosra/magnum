@@ -110,25 +110,31 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          *      @ref enumerateInstanceVersion()
          * -    @cpp pApplicationInfo->engineName @ce to @cpp "Magnum" @ce
          */
-        explicit InstanceCreateInfo(Int argc, const char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* const extensionProperties, Flags flags = {});
+        /* All those are implicit in order to allow writing
+            Instance instance{{argc, argv}};
+           It's a tradeoff between a completely verbose way and
+            Instance instance{argc, argv};
+           in which case all these overloads would need to be duplicated on
+           Instance as well. */
+        /*implicit*/ InstanceCreateInfo(Int argc, const char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* const extensionProperties, Flags flags = {});
 
         /** @overload */
-        explicit InstanceCreateInfo(Int argc, char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, const_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, char** argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, const_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
 
         /** @overload */
-        explicit InstanceCreateInfo(Int argc, std::nullptr_t argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, static_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, std::nullptr_t argv, const LayerProperties* layerProperties, const InstanceExtensionProperties* extensionProperties, Flags flags = {}): InstanceCreateInfo{argc, static_cast<const char**>(argv), layerProperties, extensionProperties, flags} {}
 
         /** @overload */
-        explicit InstanceCreateInfo(Int argc, const char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, const char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
 
         /** @overload */
-        explicit InstanceCreateInfo(Int argc, char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, char** argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
 
         /** @overload */
-        explicit InstanceCreateInfo(Int argc, std::nullptr_t argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
+        /*implicit*/ InstanceCreateInfo(Int argc, std::nullptr_t argv, Flags flags = {}): InstanceCreateInfo{argc, argv, nullptr, nullptr, flags} {}
 
         /** @overload */
-        explicit InstanceCreateInfo(Flags flags = {}): InstanceCreateInfo{0, nullptr, flags} {}
+        /*implicit*/ InstanceCreateInfo(Flags flags = {}): InstanceCreateInfo{0, nullptr, flags} {}
 
         /**
          * @brief Construct without initializing the contents
@@ -243,9 +249,12 @@ pointers.
 While an @ref Instance can be default-constructed without much fuss, it's
 recommended to pass a @ref InstanceCreateInfo with at least the `argc` / `argv`
 pair, which allows you to use various `--magnum-*`
-@ref Vk-Instance-command-line "command-line options" listed below. Setting
-application info may be beneficial for the driver, but it's not required
-either.
+@ref Vk-Instance-command-line "command-line options":
+
+@snippet MagnumVk.cpp Instance-usage-minimal
+
+In addition to command-line arguments, setting application info isn't strictly
+required either, but may be beneficial for the driver:
 
 @snippet MagnumVk.cpp Instance-usage
 
