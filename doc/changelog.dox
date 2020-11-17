@@ -363,7 +363,7 @@ See also:
 @subsection changelog-latest-documentation Documentation
 
 -   Added a note about MinGW GCC and Clang ABI incompatibility to
-    @ref platforms-windows (see [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
+    @ref platforms-windows "Windows platform docs" (see [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
 
 @section changelog-2020-06 2020.06
 
