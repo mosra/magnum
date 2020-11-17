@@ -63,10 +63,9 @@ struct DeviceCreateInfo::State {
     std::size_t nextQueuePriority = 0;
     bool quietLog = false;
     Version version = Version::None;
-    /* Gets populated in the DeviceCreateInfo constructor that takes a
-       DeviceProperties&&, in which case it's then moved to the newly created
-       Device instance. If not populated, the Device instance gets nothing and
-       it'll gets populated on first access to Device::properties(). */
+    /* Gets populated at the very end of DeviceCreateInfo(DeviceProperties&)
+       and then possibly overwritten in DeviceCreateInfo(DeviceProperties&&).
+       Either way, it's meant to be valid after the constructor exits. */
     DeviceProperties properties{NoCreate};
 };
 
@@ -122,6 +121,16 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
         if(_state->version < Version::Vk11 && extensionProperties->isSupported<Extensions::KHR::bind_memory2>())
             addEnabledExtensions<Extensions::KHR::bind_memory2>();
     }
+
+    /* Conservatively populate the device properties.
+       - In case the DeviceCreateInfo(DeviceProperties&&) constructor is used,
+         it'll get overwritten straight away with a populated instance.
+       - In case the addQueues(QueueFlags) API is not used and DeviceCreateInfo
+         isn't subsequently moved to the Device, it'll never get touched again
+         and Device will wrap() its own.
+       - In case addQueues(QueueFlags) is used it'll get populated and then
+         possibly discarded if it isn't subsequently moved to the Device. */
+    _state->properties = DeviceProperties::wrap(*deviceProperties._instance, deviceProperties._handle);
 }
 
 DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&& deviceProperties, const ExtensionProperties* extensionProperties, const Flags flags): DeviceCreateInfo{deviceProperties, extensionProperties, flags} {
@@ -260,6 +269,24 @@ DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const s
     return std::move(*this);
 }
 
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
+    return addQueues(_state->properties.pickQueueFamily(flags), priorities, output);
+}
+
+DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
+    addQueues(flags, priorities, output);
+    return std::move(*this);
+}
+
+DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
+    return addQueues(flags, Containers::arrayView(priorities), Containers::arrayView(output));
+}
+
+DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
+    addQueues(flags, priorities, output);
+    return std::move(*this);
+}
+
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) & {
     /* This can happen in case we used the NoInit or VkDeviceCreateInfo
        constructor */
@@ -295,7 +322,7 @@ Device Device::wrap(Instance& instance, const VkDevice handle, const Version ver
     return wrap(instance, handle, version, Containers::arrayView(enabledExtensions), flags);
 }
 
-Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{instance, info, DeviceProperties{NoCreate}} {}
+Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{instance, info, DeviceProperties::wrap(instance, info._physicalDevice)} {}
 
 Device::Device(Instance& instance, DeviceCreateInfo&& info): Device{instance, info, std::move(info._state->properties)} {}
 
@@ -303,18 +330,17 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
     #ifdef CORRADE_GRACEFUL_ASSERT
     _handle{}, /* Otherwise the destructor dies if we hit the queue assert */
     #endif
-    _flags{HandleFlag::DestroyOnDestruction}
+    _flags{HandleFlag::DestroyOnDestruction},
+    _properties{Containers::InPlaceInit, std::move(properties)}
 {
+    /* The properties should always be a valid instance, either moved from
+       outside or created again from VkPhysicalDevice, in case it couldn't be
+       moved. If it's not, something in DeviceCreateInfo or here got messed
+       up. */
+    CORRADE_INTERNAL_ASSERT(_properties->handle());
+
     CORRADE_ASSERT(info._info.queueCreateInfoCount,
         "Vk::Device: needs to be created with at least one queue", );
-
-    /* If the passed properties are populated, use them. Otherwise create a new
-       instance as we'd have no other way to remember the VkPhysicalDevice
-       handle otherwise */
-    if(properties.handle())
-        _properties.emplace(std::move(properties));
-    else
-        _properties.emplace(DeviceProperties::wrap(instance, info._physicalDevice));
 
     const Version version = info._state->version != Version::None ?
         info._state->version : _properties->version();

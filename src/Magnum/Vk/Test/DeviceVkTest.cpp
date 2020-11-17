@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StringStl.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -57,6 +58,7 @@ struct DeviceVkTest: VulkanTester {
     void createInfoRvalue();
 
     void construct();
+    void constructQueueFromFlags();
     void constructExtensions();
     void constructTransferDeviceProperties();
     void constructExtensionsCommandLineDisable();
@@ -137,6 +139,7 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::createInfoRvalue,
 
               &DeviceVkTest::construct,
+              &DeviceVkTest::constructQueueFromFlags,
               &DeviceVkTest::constructExtensions,
               &DeviceVkTest::constructTransferDeviceProperties});
 
@@ -244,9 +247,14 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
 }
 
 void DeviceVkTest::createInfoRvalue() {
+    /* Verify that there actually are graphics queues so we don't exit inside
+       addQueues() */
+    CORRADE_VERIFY(pickDevice(instance()).tryPickQueueFamily(QueueFlag::Graphics));
+
     Float zero[1]{};
-    Queue a{NoCreate}, b{NoCreate};
-    Containers::Reference<Queue> reference[1]{a};
+    Queue a{NoCreate}, b{NoCreate}, c{NoCreate}, d{NoCreate};
+    Containers::Reference<Queue> referenceA[1]{a};
+    Containers::Reference<Queue> referenceC[1]{c};
 
     VkDeviceQueueCreateInfo rawQueueInfo{};
     rawQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -260,8 +268,10 @@ void DeviceVkTest::createInfoRvalue() {
         .addEnabledExtensions(Containers::ArrayView<const Extension>{})
         .addEnabledExtensions(std::initializer_list<Extension>{})
         .addEnabledExtensions<>()
-        .addQueues(0, zero, reference)
+        .addQueues(0, zero, referenceA)
         .addQueues(0, {0.0f}, {b})
+        .addQueues(QueueFlag::Graphics, zero, referenceC)
+        .addQueues(QueueFlag::Graphics, {0.0f}, {d})
         .addQueues(rawQueueInfo);
 
     /* Just to test something, main point is that the above compiles, links and
@@ -304,6 +314,21 @@ void DeviceVkTest::construct() {
 
     /* Shouldn't crash or anything */
     CORRADE_VERIFY(true);
+}
+
+void DeviceVkTest::constructQueueFromFlags() {
+    DeviceProperties deviceProperties = pickDevice(instance());
+
+    /* Verify that there actually are graphics queues so we don't exit after */
+    CORRADE_VERIFY(deviceProperties.tryPickQueueFamily(QueueFlag::Graphics));
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{deviceProperties}
+        .addQueues(QueueFlag::Graphics, {0.0f}, {queue})};
+    CORRADE_VERIFY(device.handle());
+
+    /* The queue should be filled in like usual */
+    CORRADE_VERIFY(queue.handle());
 }
 
 void DeviceVkTest::constructExtensions() {

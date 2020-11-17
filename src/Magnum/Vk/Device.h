@@ -207,7 +207,8 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * @return Reference to self (for method chaining)
          *
          * At least one queue has to be added.
-         * @see @ref DeviceProperties::pickQueueFamily()
+         * @see @ref DeviceProperties::pickQueueFamily(),
+         *      @ref addQueues(QueueFlags, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>)
          */
         DeviceCreateInfo& addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &;
         /** @overload */
@@ -216,6 +217,27 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
         DeviceCreateInfo& addQueues(UnsignedInt family, std::initializer_list<Float> priorities, std::initializer_list<Containers::Reference<Queue>> output) &;
         /** @overload */
         DeviceCreateInfo&& addQueues(UnsignedInt family, std::initializer_list<Float> priorities, std::initializer_list<Containers::Reference<Queue>> output) &&;
+
+        /**
+         * @brief Add queues of family matching given flags
+         *
+         * Equivalent to picking a queue family first using
+         * @ref DeviceProperties::pickQueueFamily() based on @p flags and then
+         * calling @ref addQueues(UnsignedInt, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>)
+         * with the family index.
+         *
+         * Note that @ref DeviceProperties::pickQueueFamily() exits in case it
+         * doesn't find any family satisfying given @p flags --- for a
+         * failproof scenario you may want to go with the above overload and
+         * @ref DeviceProperties::tryPickQueueFamily() instead.
+         */
+        DeviceCreateInfo& addQueues(QueueFlags flags, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &;
+        /** @overload */
+        DeviceCreateInfo&& addQueues(QueueFlags flags, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &&;
+        /** @overload */
+        DeviceCreateInfo& addQueues(QueueFlags flags, std::initializer_list<Float> priorities, std::initializer_list<Containers::Reference<Queue>> output) &;
+        /** @overload */
+        DeviceCreateInfo&& addQueues(QueueFlags flags, std::initializer_list<Float> priorities, std::initializer_list<Containers::Reference<Queue>> output) &&;
 
         /**
          * @brief Add queues using raw info
@@ -269,23 +291,20 @@ even a software implementation. If the application needs something specific,
 you can use @ref enumerateDevices() instead, pick a device from the list
 manually, provide the users with a list to choose from etc.
 
-@snippet MagnumVk.cpp Device-usage-pick
-
-After a device is picked, a @ref Device can be created using
-@ref DeviceCreateInfo. At the very least you'll need to set up queues, as every
-Vulkan device needs at least one. That's done by creating an empty @ref Queue
-instance and then referencing it from @ref DeviceCreateInfo::addQueues(). After
-the device is constructed, the queue gets populated and is ready to be used.
+The picked device is then passed to @ref DeviceCreateInfo. At the very least
+you'll also need to set up queues, as every Vulkan device needs at least one.
+That's done by creating an empty @ref Queue instance and then referencing it
+from @ref DeviceCreateInfo::addQueues(). After the device is constructed, the
+queue gets populated and is ready to be used.
 
 @snippet MagnumVk.cpp Device-usage-construct-queue
 
-In the above snippet, we requested a graphics queue --- the
-@ref DeviceProperties instance we made earlier acts as knowledge base for a
-particular device, providing info about available queues, extensions, features,
-memory heaps and implementation limits --- and we used a convenience API to
-pick the first available graphics queue. As with device picking, you can
-also iterate through all @ref DeviceProperties::queueFamilyCount() and choose
-one manually.
+In the above snippet, we requested a graphics queue via a convenience API. The
+information about available queues and other device properties is stored in a
+@ref DeviceProperties that got returned from @ref pickDevice() and
+@ref DeviceCreateInfo called @ref DeviceProperties::pickQueueFamily() for us.
+As with device picking, you can also iterate through all
+@ref DeviceProperties::queueFamilyCount() and choose one manually.
 
 Same as with @ref Instance, the above won't enable any additional extensions
 except for what the engine itself needs or what's supplied on the command line. Use @ref DeviceCreateInfo::addEnabledExtensions() to enable them, you can use

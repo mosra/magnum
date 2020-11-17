@@ -79,24 +79,20 @@ Vk::CommandBuffer commandBuffer = graphicsCommandPool.allocate();
 
 {
 Vk::Instance instance;
-/* [Device-usage-pick] */
-Vk::DeviceProperties props = Vk::pickDevice(instance);
-/* [Device-usage-pick] */
-
 /* [Device-usage-construct-queue] */
 Vk::Queue queue{NoCreate};
-Vk::Device device{instance, Vk::DeviceCreateInfo{props}
-    .addQueues(props.pickQueueFamily(Vk::QueueFlag::Graphics), {0.0f}, {queue})
+Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
+    .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})
 };
 /* [Device-usage-construct-queue] */
 }
 
 {
 Vk::Instance instance;
-Vk::DeviceProperties props{NoCreate};
+Vk::DeviceProperties properties{NoCreate};
 using namespace Containers::Literals;
 /* [Device-usage-extensions] */
-Vk::Device device{instance, Vk::DeviceCreateInfo{props}
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
     DOXYGEN_IGNORE()
     .addEnabledExtensions<                         // predefined extensions
         Vk::Extensions::EXT::index_type_uint8,
@@ -108,12 +104,12 @@ Vk::Device device{instance, Vk::DeviceCreateInfo{props}
 
 {
 Vk::Instance instance;
-Vk::DeviceProperties props{NoCreate};
 using namespace Containers::Literals;
 /* [Device-usage-check-supported] */
-Vk::ExtensionProperties extensions = props.enumerateExtensionProperties();
+Vk::DeviceProperties properties = Vk::pickDevice(instance);
+Vk::ExtensionProperties extensions = properties.enumerateExtensionProperties();
 
-Vk::DeviceCreateInfo info{props};
+Vk::DeviceCreateInfo info{properties};
 if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
     info.addEnabledExtensions<Vk::Extensions::EXT::index_type_uint8>();
 if(extensions.isSupported("VK_NV_mesh_shader"_s))
