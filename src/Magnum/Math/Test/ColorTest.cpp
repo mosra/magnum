@@ -556,8 +556,8 @@ void ColorTest::constructHsvCopy() {
 }
 
 void ColorTest::compareHsv() {
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf + Deg(TypeTraits<Float>::epsilon()*100.0f), 0.5f, 0.9f}));
-    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf + Deg(TypeTraits<Float>::epsilon()*400.0f), 0.5f, 0.9f}));
+    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*100.0_degf, 0.5f, 0.9f}));
+    CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf + TypeTraits<Float>::epsilon()*400.0_degf, 0.5f, 0.9f}));
 
     CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} == ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*0.5f}));
     CORRADE_VERIFY((ColorHsv{135.0_degf, 0.5f, 0.9f} != ColorHsv{135.0_degf, 0.5f, 0.9f + TypeTraits<Float>::epsilon()*2.0f}));

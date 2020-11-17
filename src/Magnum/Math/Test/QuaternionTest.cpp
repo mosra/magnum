@@ -344,7 +344,7 @@ void QuaternionTest::compare() {
 
 void QuaternionTest::isNormalized() {
     CORRADE_VERIFY(!Quaternion({1.0f, 2.0f, 3.0f}, 4.0f).isNormalized());
-    CORRADE_VERIFY(Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).isNormalized());
+    CORRADE_VERIFY(Quaternion::rotation(23.0_degf, Vector3::xAxis()).isNormalized());
 }
 
 template<class T> void QuaternionTest::isNormalizedEpsilon() {
@@ -476,21 +476,21 @@ void QuaternionTest::invertedNormalizedNotNormalized() {
 
 void QuaternionTest::rotation() {
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
-    Quaternion q = Quaternion::rotation(Deg(120.0f), axis);
+    Quaternion q = Quaternion::rotation(120.0_degf, axis);
     CORRADE_COMPARE(q.length(), 1.0f);
     CORRADE_COMPARE(q, Quaternion(Vector3(0.5f, 0.5f, 0.5f), 0.5f));
-    CORRADE_COMPARE_AS(q.angle(), Deg(120.0f), Deg);
+    CORRADE_COMPARE_AS(q.angle(), 120.0_degf, Deg);
     CORRADE_COMPARE(q.axis(), axis);
     CORRADE_COMPARE(q.axis().length(), 1.0f);
 
     /* Verify negative angle */
-    Quaternion q2 = Quaternion::rotation(Deg(-120.0f), axis);
+    Quaternion q2 = Quaternion::rotation(-120.0_degf, axis);
     CORRADE_COMPARE(q2, Quaternion(Vector3(-0.5f, -0.5f, -0.5f), 0.5f));
-    CORRADE_COMPARE_AS(q2.angle(), Deg(120.0f), Deg);
+    CORRADE_COMPARE_AS(q2.angle(), 120.0_degf, Deg);
     CORRADE_COMPARE(q2.axis(), -axis);
 
     /* Default-constructed quaternion has zero angle and NaN axis */
-    CORRADE_COMPARE_AS(Quaternion().angle(), Deg(0.0f), Deg);
+    CORRADE_COMPARE_AS(Quaternion().angle(), 0.0_degf, Deg);
     CORRADE_VERIFY(Quaternion().axis() != Quaternion().axis());
 }
 
@@ -557,8 +557,8 @@ void QuaternionTest::angleNotNormalized() {
 void QuaternionTest::matrix() {
     Vector3 axis = Vector3(-3.0f, 1.0f, 5.0f).normalized();
 
-    Quaternion q = Quaternion::rotation(Deg(37.0f), axis);
-    Matrix3x3 m = Matrix4::rotation(Deg(37.0f), axis).rotationScaling();
+    Quaternion q = Quaternion::rotation(37.0_degf, axis);
+    Matrix3x3 m = Matrix4::rotation(37.0_degf, axis).rotationScaling();
 
     /* Verify that negated quaternion gives the same rotation */
     CORRADE_COMPARE(q.toMatrix(), m);
@@ -569,8 +569,8 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
     /* Trace < 0, max is diagonal[2] */
-    Matrix3x3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
-    Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
+    Matrix3x3 m2 = Matrix4::rotation(130.0_degf, axis).rotationScaling();
+    Quaternion q2 = Quaternion::rotation(130.0_degf, axis);
     CORRADE_COMPARE_AS(m2.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m2.diagonal()[2],
         Math::max(m2.diagonal()[0], m2.diagonal()[1]),
@@ -579,8 +579,8 @@ void QuaternionTest::matrix() {
 
     /* Trace < 0, max is diagonal[1] */
     Vector3 axis2 = Vector3(-3.0f, 5.0f, 1.0f).normalized();
-    Matrix3x3 m3 = Matrix4::rotation(Deg(130.0f), axis2).rotationScaling();
-    Quaternion q3 = Quaternion::rotation(Deg(130.0f), axis2);
+    Matrix3x3 m3 = Matrix4::rotation(130.0_degf, axis2).rotationScaling();
+    Quaternion q3 = Quaternion::rotation(130.0_degf, axis2);
     CORRADE_COMPARE_AS(m3.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m3.diagonal()[1],
         Math::max(m3.diagonal()[0], m3.diagonal()[2]),
@@ -589,8 +589,8 @@ void QuaternionTest::matrix() {
 
     /* Trace < 0, max is diagonal[0] */
     Vector3 axis3 = Vector3(5.0f, -3.0f, 1.0f).normalized();
-    Matrix3x3 m4 = Matrix4::rotation(Deg(130.0f), axis3).rotationScaling();
-    Quaternion q4 = Quaternion::rotation(Deg(130.0f), axis3);
+    Matrix3x3 m4 = Matrix4::rotation(130.0_degf, axis3).rotationScaling();
+    Quaternion q4 = Quaternion::rotation(130.0_degf, axis3);
     CORRADE_COMPARE_AS(m4.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m4.diagonal()[0],
         Math::max(m4.diagonal()[1], m4.diagonal()[2]),
@@ -876,8 +876,8 @@ void QuaternionTest::slerpShortestPathNotNormalized() {
 }
 
 void QuaternionTest::transformVector() {
-    Quaternion a = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
-    Matrix4 m = Matrix4::rotationX(Deg(23.0f));
+    Quaternion a = Quaternion::rotation(23.0_degf, Vector3::xAxis());
+    Matrix4 m = Matrix4::rotationX(23.0_degf);
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     Vector3 rotated = a.transformVector(v);
@@ -886,8 +886,8 @@ void QuaternionTest::transformVector() {
 }
 
 void QuaternionTest::transformVectorNormalized() {
-    Quaternion a = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
-    Matrix4 m = Matrix4::rotationX(Deg(23.0f));
+    Quaternion a = Quaternion::rotation(23.0_degf, Vector3::xAxis());
+    Matrix4 m = Matrix4::rotationX(23.0_degf);
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     Vector3 rotated = a.transformVectorNormalized(v);

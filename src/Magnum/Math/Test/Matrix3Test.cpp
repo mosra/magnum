@@ -339,7 +339,7 @@ void Matrix3Test::rotation() {
                    {-0.258819f, 0.965926f, 0.0f},
                    {      0.0f,      0.0f, 1.0f});
 
-    CORRADE_COMPARE(Matrix3::rotation(Deg(15.0f)), matrix);
+    CORRADE_COMPARE(Matrix3::rotation(15.0_degf), matrix);
 }
 
 void Matrix3Test::reflection() {
@@ -618,12 +618,12 @@ void Matrix3Test::vectorParts() {
 }
 
 void Matrix3Test::invertedRigid() {
-    Matrix3 actual = Matrix3::rotation(Deg(-74.0f))*
+    Matrix3 actual = Matrix3::rotation(-74.0_degf)*
                      Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
                      Matrix3::translation({2.0f, -3.0f});
     Matrix3 expected = Matrix3::translation({-2.0f, 3.0f})*
                        Matrix3::reflection(Vector2(0.5f, -2.0f).normalized())*
-                       Matrix3::rotation(Deg(74.0f));
+                       Matrix3::rotation(74.0_degf);
 
     CORRADE_COMPARE(actual.invertedRigid(), expected);
     CORRADE_COMPARE(actual.invertedRigid(), actual.inverted());
@@ -646,7 +646,7 @@ void Matrix3Test::invertedRigidNotRigid() {
 }
 
 void Matrix3Test::transform() {
-    Matrix3 a = Matrix3::translation({1.0f, -5.0f})*Matrix3::rotation(Deg(90.0f));
+    Matrix3 a = Matrix3::translation({1.0f, -5.0f})*Matrix3::rotation(90.0_degf);
     Vector2 v(1.0f, -2.0f);
 
     CORRADE_COMPARE(a.transformVector(v), Vector2(2.0f, 1.0f));

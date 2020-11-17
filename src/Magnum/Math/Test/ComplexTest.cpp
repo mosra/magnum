@@ -302,7 +302,7 @@ void ComplexTest::compare() {
 
 void ComplexTest::isNormalized() {
     CORRADE_VERIFY(!Complex(2.5f, -3.7f).isNormalized());
-    CORRADE_VERIFY(Complex::rotation(Deg(23.0f)).isNormalized());
+    CORRADE_VERIFY(Complex::rotation(23.0_degf).isNormalized());
 }
 
 template<class T> void ComplexTest::isNormalizedEpsilon() {
@@ -474,23 +474,23 @@ void ComplexTest::angleNotNormalized() {
 }
 
 void ComplexTest::rotation() {
-    Complex a = Complex::rotation(Deg(120.0f));
+    Complex a = Complex::rotation(120.0_degf);
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, Complex(-0.5f, 0.8660254f));
-    CORRADE_COMPARE_AS(a.angle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(a.angle(), 120.0_degf, Rad);
 
     /* Verify negative angle */
-    Complex b = Complex::rotation(Deg(-240.0f));
+    Complex b = Complex::rotation(-240.0_degf);
     CORRADE_COMPARE(b, Complex(-0.5f, 0.8660254f));
-    CORRADE_COMPARE_AS(b.angle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(b.angle(), 120.0_degf, Rad);
 
     /* Default-constructed complex number has zero angle */
-    CORRADE_COMPARE_AS(Complex().angle(), Deg(0.0f), Rad);
+    CORRADE_COMPARE_AS(Complex().angle(), 0.0_degf, Rad);
 }
 
 void ComplexTest::matrix() {
-    Complex a = Complex::rotation(Deg(37.0f));
-    Matrix2x2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
+    Complex a = Complex::rotation(37.0_degf);
+    Matrix2x2 m = Matrix3::rotation(37.0_degf).rotationScaling();
 
     CORRADE_COMPARE(a.toMatrix(), m);
     CORRADE_COMPARE(Complex::fromMatrix(m), a);
@@ -504,7 +504,7 @@ void ComplexTest::matrixNotOrthogonal() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Complex::fromMatrix(Matrix3::rotation(Deg(37.0f)).rotationScaling()*2);
+    Complex::fromMatrix(Matrix3::rotation(37.0_degf).rotationScaling()*2);
     CORRADE_COMPARE(out.str(),
         "Math::Complex::fromMatrix(): the matrix is not orthogonal:\n"
         "Matrix(1.59727, -1.20363,\n"
@@ -571,8 +571,8 @@ void ComplexTest::slerpNotNormalized() {
 }
 
 void ComplexTest::transformVector() {
-    Complex a = Complex::rotation(Deg(23.0f));
-    Matrix3 m = Matrix3::rotation(Deg(23.0f));
+    Complex a = Complex::rotation(23.0_degf);
+    Matrix3 m = Matrix3::rotation(23.0_degf);
     Vector2 v(-3.6f, 0.7f);
 
     Vector2 rotated = a.transformVector(v);

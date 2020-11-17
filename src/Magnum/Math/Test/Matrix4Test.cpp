@@ -395,7 +395,7 @@ void Matrix4Test::rotation() {
                    { 0.47987163f,  0.59757626f,  0.6423596f, 0.0f},
                    {-0.80181062f,  0.00151846f, 0.59757626f, 0.0f},
                    {        0.0f,         0.0f,        0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(-74.0_degf, Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
 }
 
 void Matrix4Test::rotationNotNormalized() {
@@ -406,7 +406,7 @@ void Matrix4Test::rotationNotNormalized() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    Matrix4::rotation(Deg(-74.0f), {-1.0f, 2.0f, 2.0f});
+    Matrix4::rotation(-74.0_degf, {-1.0f, 2.0f, 2.0f});
     CORRADE_COMPARE(out.str(), "Math::Matrix4::rotation(): axis Vector(-1, 2, 2) is not normalized\n");
 }
 
@@ -546,7 +546,7 @@ void Matrix4Test::perspectiveProjectionFov() {
                      {      0.0f, 9.788454f,         0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {      0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100.0f), expected);
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(27.0_degf, 2.35f, 32.0f, 100.0f), expected);
 }
 
 void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
@@ -554,7 +554,7 @@ void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
                      {      0.0f, 9.788454f,   0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.0f, -1.0f},
                      {      0.0f,      0.0f, -64.0f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, Constants::inf()), expected);
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(27.0_degf, 2.35f, 32.0f, Constants::inf()), expected);
 }
 
 void Matrix4Test::perspectiveProjectionOffCenter() {
@@ -942,12 +942,12 @@ void Matrix4Test::vectorParts() {
 }
 
 void Matrix4Test::invertedRigid() {
-    Matrix4 actual = Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized())*
+    Matrix4 actual = Matrix4::rotation(-74.0_degf, Vector3(-1.0f, 0.5f, 2.0f).normalized())*
                      Matrix4::reflection(Vector3(0.5f, -2.0f, 2.0f).normalized())*
                      Matrix4::translation({1.0f, 2.0f, -3.0f});
     Matrix4 expected = Matrix4::translation({-1.0f, -2.0f, 3.0f})*
                        Matrix4::reflection(Vector3(0.5f, -2.0f, 2.0f).normalized())*
-                       Matrix4::rotation(Deg(74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized());
+                       Matrix4::rotation(74.0_degf, Vector3(-1.0f, 0.5f, 2.0f).normalized());
 
 
     CORRADE_COMPARE(actual.invertedRigid(), expected);
@@ -972,7 +972,7 @@ void Matrix4Test::invertedRigidNotRigid() {
 }
 
 void Matrix4Test::transform() {
-    Matrix4 a = Matrix4::translation({1.0f, -5.0f, 3.5f})*Matrix4::rotation(Deg(90.0f), Vector3::zAxis());
+    Matrix4 a = Matrix4::translation({1.0f, -5.0f, 3.5f})*Matrix4::rotation(90.0_degf, Vector3::zAxis());
     Vector3 v(1.0f, -2.0f, 5.5f);
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
