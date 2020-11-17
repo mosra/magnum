@@ -165,6 +165,9 @@ void AbstractShaderProgramGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<DummyShader>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<DummyShader>::value);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

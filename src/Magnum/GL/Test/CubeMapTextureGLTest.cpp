@@ -50,6 +50,7 @@ struct CubeMapTextureGLTest: OpenGLTester {
     explicit CubeMapTextureGLTest();
 
     void construct();
+    void constructMove();
     void wrap();
 
     void bind();
@@ -302,6 +303,7 @@ const struct {
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
+              &CubeMapTextureGLTest::constructMove,
               &CubeMapTextureGLTest::wrap,
 
               &CubeMapTextureGLTest::bind,
@@ -439,6 +441,15 @@ void CubeMapTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void CubeMapTextureGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(CubeMapTexture), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<CubeMapTexture>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<CubeMapTexture>::value);
 }
 
 void CubeMapTextureGLTest::wrap() {

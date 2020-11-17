@@ -46,6 +46,7 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct PrimitiveQueryGLTest: OpenGLTester {
     explicit PrimitiveQueryGLTest();
 
+    void constructMove();
     void wrap();
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -61,7 +62,8 @@ struct PrimitiveQueryGLTest: OpenGLTester {
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
-    addTests({&PrimitiveQueryGLTest::wrap,
+    addTests({&PrimitiveQueryGLTest::constructMove,
+              &PrimitiveQueryGLTest::wrap,
 
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &PrimitiveQueryGLTest::primitivesGenerated,
@@ -74,6 +76,21 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
               &PrimitiveQueryGLTest::transformFeedbackOverflow
               #endif
               });
+}
+
+void PrimitiveQueryGLTest::constructMove() {
+    /* Move constructor tested in AbstractQuery. Compared to other *Query
+       classes, PrimitiveQuery contains an additional layer ID, which is
+       trivial to move and the move is defaulted, so we HOPEFULLY don't need to
+       test. In case this bites me in the future, I'm stupid. */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(sizeof(PrimitiveQuery), sizeof(AbstractQuery) + sizeof(GLuint));
+    #else
+    CORRADE_COMPARE(sizeof(PrimitiveQuery), sizeof(AbstractQuery));
+    #endif
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<PrimitiveQuery>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<PrimitiveQuery>::value);
 }
 
 void PrimitiveQueryGLTest::wrap() {

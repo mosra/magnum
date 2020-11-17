@@ -45,6 +45,7 @@ struct RectangleTextureGLTest: OpenGLTester {
     explicit RectangleTextureGLTest();
 
     void construct();
+    void constructMove();
     void wrap();
 
     void bind();
@@ -115,6 +116,7 @@ const struct {
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
     addTests({&RectangleTextureGLTest::construct,
+              &RectangleTextureGLTest::constructMove,
               &RectangleTextureGLTest::wrap,
 
               &RectangleTextureGLTest::bind,
@@ -165,6 +167,15 @@ void RectangleTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void RectangleTextureGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(RectangleTexture), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<RectangleTexture>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<RectangleTexture>::value);
 }
 
 void RectangleTextureGLTest::wrap() {

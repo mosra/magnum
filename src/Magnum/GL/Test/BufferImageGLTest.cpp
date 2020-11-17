@@ -399,6 +399,9 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(c.size(), Vector2i(4, 1));
     CORRADE_COMPARE(c.dataSize(), 4);
     CORRADE_COMPARE(c.buffer().id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<BufferImage2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<BufferImage2D>::value);
 }
 
 void BufferImageGLTest::constructMoveCompressed() {
@@ -446,6 +449,9 @@ void BufferImageGLTest::constructMoveCompressed() {
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.dataSize(), 8);
     CORRADE_COMPARE(c.buffer().id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<CompressedBufferImage2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<CompressedBufferImage2D>::value);
 }
 
 void BufferImageGLTest::dataProperties() {

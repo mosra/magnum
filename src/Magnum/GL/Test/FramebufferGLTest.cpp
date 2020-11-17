@@ -367,6 +367,9 @@ void FramebufferGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.viewport(), Range2Di({32, 16}, {128, 256}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Framebuffer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Framebuffer>::value);
 }
 
 void FramebufferGLTest::wrap() {

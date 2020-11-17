@@ -42,15 +42,26 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct PipelineStatisticsQueryGLTest: OpenGLTester {
     explicit PipelineStatisticsQueryGLTest();
 
+    void constructMove();
     void wrap();
 
     void queryVerticesSubmitted();
 };
 
 PipelineStatisticsQueryGLTest::PipelineStatisticsQueryGLTest() {
-    addTests({&PipelineStatisticsQueryGLTest::wrap,
+    addTests({&PipelineStatisticsQueryGLTest::constructMove,
+              &PipelineStatisticsQueryGLTest::wrap,
 
               &PipelineStatisticsQueryGLTest::queryVerticesSubmitted});
+}
+
+void PipelineStatisticsQueryGLTest::constructMove() {
+    /* Move constructor tested in AbstractQuery, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(PipelineStatisticsQuery), sizeof(AbstractQuery));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<PipelineStatisticsQuery>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<PipelineStatisticsQuery>::value);
 }
 
 void PipelineStatisticsQueryGLTest::wrap() {

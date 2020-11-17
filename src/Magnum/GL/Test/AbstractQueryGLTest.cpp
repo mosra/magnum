@@ -106,6 +106,8 @@ void AbstractQueryGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+
+    /* nothrow move constructibility tested in subclasses */
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

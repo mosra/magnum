@@ -109,6 +109,9 @@ void RenderbufferGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Renderbuffer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Renderbuffer>::value);
 }
 
 void RenderbufferGLTest::wrap() {

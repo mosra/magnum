@@ -51,6 +51,8 @@ struct TextureArrayGLTest: OpenGLTester {
     #endif
     void construct2D();
 
+    void constructMove();
+
     #ifndef MAGNUM_TARGET_GLES
     void wrap1D();
     #endif
@@ -273,6 +275,8 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #endif
         &TextureArrayGLTest::construct2D,
 
+        &TextureArrayGLTest::constructMove,
+
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::wrap1D,
         #endif
@@ -432,6 +436,15 @@ void TextureArrayGLTest::construct2D() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void TextureArrayGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(Texture2DArray), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Texture2DArray>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Texture2DArray>::value);
 }
 
 #ifndef MAGNUM_TARGET_GLES

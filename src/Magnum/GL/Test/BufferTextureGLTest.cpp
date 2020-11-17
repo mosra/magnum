@@ -45,6 +45,7 @@ struct BufferTextureGLTest: OpenGLTester {
     explicit BufferTextureGLTest();
 
     void construct();
+    void constructMove();
     void wrap();
 
     void bind();
@@ -68,6 +69,7 @@ struct BufferTextureGLTest: OpenGLTester {
 
 BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
+              &BufferTextureGLTest::constructMove,
               &BufferTextureGLTest::wrap,
 
               &BufferTextureGLTest::bind,
@@ -107,6 +109,15 @@ void BufferTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(BufferTexture), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<BufferTexture>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<BufferTexture>::value);
 }
 
 void BufferTextureGLTest::wrap() {

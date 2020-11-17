@@ -41,6 +41,7 @@ struct MultisampleTextureGLTest: OpenGLTester {
 
     void construct2D();
     void construct2DArray();
+    void constructMove();
 
     void wrap2D();
     void wrap2DArray();
@@ -64,6 +65,8 @@ struct MultisampleTextureGLTest: OpenGLTester {
 MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
               &MultisampleTextureGLTest::construct2DArray,
+
+              &MultisampleTextureGLTest::constructMove,
 
               &MultisampleTextureGLTest::wrap2D,
               &MultisampleTextureGLTest::wrap2DArray,
@@ -120,6 +123,15 @@ void MultisampleTextureGLTest::construct2DArray() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MultisampleTextureGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(MultisampleTexture2D), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<MultisampleTexture2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<MultisampleTexture2D>::value);
 }
 
 void MultisampleTextureGLTest::wrap2D() {

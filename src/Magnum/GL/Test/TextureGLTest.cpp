@@ -55,6 +55,8 @@ struct TextureGLTest: OpenGLTester {
     void construct3D();
     #endif
 
+    void constructMove();
+
     #ifndef MAGNUM_TARGET_GLES
     void wrap1D();
     #endif
@@ -433,6 +435,8 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::construct3D,
         #endif
 
+        &TextureGLTest::constructMove,
+
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::wrap1D,
         #endif
@@ -689,6 +693,15 @@ void TextureGLTest::construct3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
+
+void TextureGLTest::constructMove() {
+    /* Move constructor tested in AbstractTexture, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(Texture2D), sizeof(AbstractTexture));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Texture2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Texture2D>::value);
+}
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::wrap1D() {

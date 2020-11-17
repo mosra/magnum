@@ -164,6 +164,9 @@ void BufferGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Buffer>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Buffer>::value);
 }
 
 void BufferGLTest::wrap() {

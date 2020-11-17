@@ -44,6 +44,7 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct SampleQueryGLTest: OpenGLTester {
     explicit SampleQueryGLTest();
 
+    void constructMove();
     void wrap();
 
     void querySamplesPassed();
@@ -53,13 +54,23 @@ struct SampleQueryGLTest: OpenGLTester {
 };
 
 SampleQueryGLTest::SampleQueryGLTest() {
-    addTests({&SampleQueryGLTest::wrap,
+    addTests({&SampleQueryGLTest::constructMove,
+              &SampleQueryGLTest::wrap,
 
               &SampleQueryGLTest::querySamplesPassed,
               #ifndef MAGNUM_TARGET_GLES
               &SampleQueryGLTest::conditionalRender
               #endif
               });
+}
+
+void SampleQueryGLTest::constructMove() {
+    /* Move constructor tested in AbstractQuery, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(SampleQuery), sizeof(AbstractQuery));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<SampleQuery>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<SampleQuery>::value);
 }
 
 void SampleQueryGLTest::wrap() {

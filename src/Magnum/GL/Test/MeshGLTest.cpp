@@ -408,6 +408,9 @@ void MeshGLTest::constructMove() {
         CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 85);
         #endif
     }
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Mesh>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Mesh>::value);
 }
 
 void MeshGLTest::wrap() {

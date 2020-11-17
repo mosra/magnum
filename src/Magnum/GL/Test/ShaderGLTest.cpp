@@ -137,6 +137,9 @@ void ShaderGLTest::constructMove() {
     #else
     CORRADE_COMPARE(c.sources(), std::vector<std::string>{"#version 300 es\n"});
     #endif
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Shader>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Shader>::value);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

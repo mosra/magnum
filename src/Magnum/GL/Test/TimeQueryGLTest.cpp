@@ -35,6 +35,7 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct TimeQueryGLTest: OpenGLTester {
     explicit TimeQueryGLTest();
 
+    void constructMove();
     void wrap();
 
     void queryTime();
@@ -42,10 +43,20 @@ struct TimeQueryGLTest: OpenGLTester {
 };
 
 TimeQueryGLTest::TimeQueryGLTest() {
-    addTests({&TimeQueryGLTest::wrap,
+    addTests({&TimeQueryGLTest::constructMove,
+              &TimeQueryGLTest::wrap,
 
               &TimeQueryGLTest::queryTime,
               &TimeQueryGLTest::queryTimestamp});
+}
+
+void TimeQueryGLTest::constructMove() {
+    /* Move constructor tested in AbstractQuery, here we just verify there
+       are no extra members that would need to be taken care of */
+    CORRADE_COMPARE(sizeof(TimeQuery), sizeof(AbstractQuery));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<TimeQuery>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<TimeQuery>::value);
 }
 
 void TimeQueryGLTest::wrap() {
