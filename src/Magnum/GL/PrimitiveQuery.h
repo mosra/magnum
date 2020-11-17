@@ -59,14 +59,13 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
          * @m_enum_values_as_keywords
          */
         enum class Target: GLenum {
-            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader. When used with @ref begin(UnsignedInt), the index must
              * be lower than @ref TransformFeedback::maxVertexStreams(). Use
              * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
              * result.
-             * @requires_gles30 Not defined in OpenGL ES 2.0.
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{EXT,geometry_shader}
              * @requires_gles Geometry shaders are not available in WebGL.

@@ -49,7 +49,7 @@ struct PrimitiveQueryGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_WEBGL
     void primitivesGenerated();
     #endif
     #ifndef MAGNUM_TARGET_GLES
@@ -65,7 +65,7 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
     addTests({&PrimitiveQueryGLTest::constructMove,
               &PrimitiveQueryGLTest::wrap,
 
-              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              #ifndef MAGNUM_TARGET_WEBGL
               &PrimitiveQueryGLTest::primitivesGenerated,
               #endif
               #ifndef MAGNUM_TARGET_GLES
@@ -113,7 +113,7 @@ void PrimitiveQueryGLTest::wrap() {
     glDeleteQueries(1, &id);
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_WEBGL
 void PrimitiveQueryGLTest::primitivesGenerated() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
