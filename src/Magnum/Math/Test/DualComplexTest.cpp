@@ -283,7 +283,7 @@ void DualComplexTest::data() {
 
 void DualComplexTest::isNormalized() {
     CORRADE_VERIFY(!DualComplex({2.0f, 1.0f}, {}).isNormalized());
-    CORRADE_VERIFY((DualComplex::rotation(Deg(23.0f))*DualComplex::translation({6.0f, 3.0f})).isNormalized());
+    CORRADE_VERIFY((DualComplex::rotation(23.0_degf)*DualComplex::translation({6.0f, 3.0f})).isNormalized());
 }
 
 template<class T> void DualComplexTest::isNormalizedEpsilonRotation() {
@@ -392,10 +392,10 @@ void DualComplexTest::invertedNormalizedNotNormalized() {
 }
 
 void DualComplexTest::rotation() {
-    DualComplex a = DualComplex::rotation(Deg(120.0f));
+    DualComplex a = DualComplex::rotation(120.0_degf);
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(a, DualComplex({-0.5f, 0.8660254f}, {0.0f, 0.0f}));
-    CORRADE_COMPARE_AS(a.rotation().angle(), Deg(120.0f), Rad);
+    CORRADE_COMPARE_AS(a.rotation().angle(), 120.0_degf, Rad);
 
     /* Constexpr access to rotation */
     constexpr DualComplex b({-1.0f, 2.0f}, {});
@@ -416,18 +416,18 @@ void DualComplexTest::translation() {
 
 void DualComplexTest::combinedTransformParts() {
     Vector2 translation = Vector2(-1.5f, 2.75f);
-    DualComplex a = DualComplex::translation(translation)*DualComplex::rotation(Deg(23.0f));
-    DualComplex b = DualComplex::rotation(Deg(23.0f))*DualComplex::translation(translation);
+    DualComplex a = DualComplex::translation(translation)*DualComplex::rotation(23.0_degf);
+    DualComplex b = DualComplex::rotation(23.0_degf)*DualComplex::translation(translation);
 
-    CORRADE_COMPARE_AS(a.rotation().angle(), Deg(23.0f), Rad);
-    CORRADE_COMPARE_AS(b.rotation().angle(), Deg(23.0f), Rad);
+    CORRADE_COMPARE_AS(a.rotation().angle(), 23.0_degf, Rad);
+    CORRADE_COMPARE_AS(b.rotation().angle(), 23.0_degf, Rad);
     CORRADE_COMPARE(a.translation(), translation);
-    CORRADE_COMPARE(b.translation(), Complex::rotation(Deg(23.0f)).transformVector(translation));
+    CORRADE_COMPARE(b.translation(), Complex::rotation(23.0_degf).transformVector(translation));
 }
 
 void DualComplexTest::matrix() {
-    DualComplex a = DualComplex::rotation(Deg(23.0f))*DualComplex::translation({2.0f, 3.0f});
-    Matrix3 m = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
+    DualComplex a = DualComplex::rotation(23.0_degf)*DualComplex::translation({2.0f, 3.0f});
+    Matrix3 m = Matrix3::rotation(23.0_degf)*Matrix3::translation({2.0f, 3.0f});
 
     CORRADE_COMPARE(a.toMatrix(), m);
     CORRADE_COMPARE(DualComplex::fromMatrix(m), a);
@@ -461,10 +461,10 @@ void DualComplexTest::transformVector() {
 }
 
 void DualComplexTest::transformPoint() {
-    DualComplex a = DualComplex::translation({2.0f, 3.0f})*DualComplex::rotation(Deg(23.0f));
-    DualComplex b = DualComplex::rotation(Deg(23.0f))*DualComplex::translation({2.0f, 3.0f});
-    Matrix3 m = Matrix3::translation({2.0f, 3.0f})*Matrix3::rotation(Deg(23.0f));
-    Matrix3 n = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
+    DualComplex a = DualComplex::translation({2.0f, 3.0f})*DualComplex::rotation(23.0_degf);
+    DualComplex b = DualComplex::rotation(23.0_degf)*DualComplex::translation({2.0f, 3.0f});
+    Matrix3 m = Matrix3::translation({2.0f, 3.0f})*Matrix3::rotation(23.0_degf);
+    Matrix3 n = Matrix3::rotation(23.0_degf)*Matrix3::translation({2.0f, 3.0f});
     Vector2 v(-3.6f, 0.7f);
 
     Vector2 transformedA = a.transformPoint(v);
