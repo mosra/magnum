@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020 Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2020 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -108,6 +109,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
 
         /**
          * @brief Create dual complext from rotation complex and translation vector
+         * @m_since_latest
          *
          * @f[
          *      \hat c = r + \epsilon (v_x + iv_y)

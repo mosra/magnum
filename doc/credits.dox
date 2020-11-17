@@ -147,8 +147,9 @@ Are the below lists missing your name or something's wrong?
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
     @ref Audio and @ref Trade library enhancements,
     @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication
-    implementation, frustum and cone culling, bug reports, Windows build
-    improvements, documentation improvements and tons of other stuff
+    implementation, frustum and cone culling and other @ref Math additions, bug
+    reports, Windows build improvements, documentation improvements and tons of
+    other stuff
 -   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
     --- Debian package, improvements to @ref Platform::GlfwApplication and
