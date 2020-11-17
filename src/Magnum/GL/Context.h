@@ -492,7 +492,7 @@ class MAGNUM_GL_EXPORT Context {
         Context(const Context&) = delete;
 
         /** @brief Move constructor */
-        Context(Context&& other);
+        Context(Context&& other) noexcept;
 
         ~Context();
 

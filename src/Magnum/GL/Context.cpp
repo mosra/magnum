@@ -660,7 +660,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
         _disabledExtensions.push_back(extension);
 }
 
-Context::Context(Context&& other): _version{other._version},
+Context::Context(Context&& other) noexcept: _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
     _flags{other._flags},
     #endif

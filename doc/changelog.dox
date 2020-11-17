@@ -188,6 +188,8 @@ See also:
 
 @subsection changelog-latest-bugfixes Bug fixes
 
+-   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
+    accident
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
     due to an uninitialized variable in its
     @ref Platform::EmscriptenApplication::GLConfiguration "GLConfiguration"

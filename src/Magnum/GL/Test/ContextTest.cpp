@@ -89,6 +89,9 @@ void ContextTest::constructCopyMove() {
     CORRADE_VERIFY((std::is_constructible<Context, Context&&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Context, const Context&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Context, Context&&>{}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Context>::value);
+    /* No move assignment */
 }
 
 void ContextTest::makeCurrentNoOp() {
