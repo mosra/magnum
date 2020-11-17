@@ -181,12 +181,12 @@ void IntersectionTest::rangeFrustum() {
 
 void IntersectionTest::aabbFrustum() {
     const Frustum frustum{
-        {1.0f, 0.0f, 0.0f, 0.0f},
         {-1.0f, 0.0f, 0.0f, 5.0f},
-        {0.0f, 1.0f, 0.0f, 0.0f},
+        {1.0f, 0.0f, 0.0f, 0.0f},
         {0.0f, -1.0f, 0.0f, 1.0f},
-        {0.0f, 0.0f, 1.0f, 0.0f},
-        {0.0f, 0.0f, -1.0f, 10.0f}};
+        {0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f, 10.0f},
+        {0.0f, 0.0f, 1.0f, 0.0f}};
 
     /* Fully inside */
     CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{0.0f}, Vector3{1.0f}, frustum));
@@ -204,20 +204,50 @@ void IntersectionTest::aabbFrustum() {
 }
 
 void IntersectionTest::sphereFrustum() {
+    /* Frustum spanning [(-10, -10, -10), (0, 0, 0)] */
     const Frustum frustum{
+        {-1.0f, 0.0f, 0.0f, -10.0f},
         {1.0f, 0.0f, 0.0f, 0.0f},
-        {-1.0f, 0.0f, 0.0f, 10.0f},
+        {0.0f, -0.5f, 0.0f, -5.0f}, /* Intentionally not normalized */
         {0.0f, 1.0f, 0.0f, 0.0f},
-        {0.0f, -1.0f, 0.0f, 10.0f},
         {0.0f, 0.0f, 1.0f, 0.0f},
-        {0.0f, 0.0f, -1.0f, 10.0f}};
+        {0.0f, 0.0f, -2.0f, -20.0f}}; /* Intentionally not normalized */
 
-    /* Sphere on edge */
-    CORRADE_VERIFY(Intersection::sphereFrustum({0.0f, 0.0f, -1.0f}, 1.5f, frustum));
+    /* Sphere overlapping each face by 0.5 */
+    CORRADE_VERIFY(Intersection::sphereFrustum({ 1.0f,  0.0f,  0.0f}, 1.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({-11.0f, 0.0f,  0.0f}, 1.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({ 0.0f,  1.0f,  0.0f}, 1.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({ 0.0f,-11.0f,  0.0f}, 1.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({ 0.0f,  0.0f,  1.0f}, 1.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({ 0.0f,  0.0f,-11.0f}, 1.5f, frustum));
+    /* Sphere touching each face */
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 1.0f,  0.0f,  0.0f}, 1.0f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.0f, 0.0f,  0.0f}, 1.0f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  1.0f,  0.0f}, 1.0f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,-11.0f,  0.0f}, 1.0f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  0.0f,  1.0f}, 1.0f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  0.0f,-11.0f}, 1.0f, frustum));
     /* Sphere inside */
-    CORRADE_VERIFY(Intersection::sphereFrustum({5.5f, 5.5f, 5.5f}, 1.5f,  frustum));
-    /* Sphere outside */
-    CORRADE_VERIFY(!Intersection::sphereFrustum({0.0f, 0.0f, 100.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(Intersection::sphereFrustum({-1.0f, -2.0f, -3.0f}, 1.5f, frustum));
+    /* Sphere outside each face */
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 1.0f,  0.0f,  0.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.0f, 0.0f,  0.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  1.0f,  0.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,-11.0f,  0.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  0.0f,  1.0f}, 0.5f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({ 0.0f,  0.0f,-11.0f}, 0.5f, frustum));
+
+    /* Some "Corner" cases, sphere touching corner, but shouldn't intersect */
+    CORRADE_VERIFY(!Intersection::sphereFrustum({1.1f, 1.1f, 1.1f}, 1.1f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.1f, -11.1f, -11.1f}, 1.1f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({1.1f, -11.1f, 1.1f}, 1.1f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.1f, 1.1f, -11.1f}, 1.1f, frustum));
+
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.1f, 1.1f, 1.1f}, 1.1f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({1.1f, -11.1f, -11.1f}, 1.1f, frustum));
+
+    CORRADE_VERIFY(!Intersection::sphereFrustum({1.1f, 1.1f, -11.1f}, 1.1f, frustum));
+    CORRADE_VERIFY(!Intersection::sphereFrustum({-11.1f, -11.1f, 1.1f}, 1.1f, frustum));
 }
 
 void IntersectionTest::pointCone() {

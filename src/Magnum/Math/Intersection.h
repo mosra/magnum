@@ -193,6 +193,7 @@ template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T
 
 Checks for each plane of the frustum whether the sphere is behind the plane
 (the points distance larger than the sphere's radius) using
+
 @ref Distance::pointPlaneScaled().
 */
 template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, T sphereRadius, const Frustum<T>& frustum);
@@ -441,18 +442,15 @@ template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T
 }
 
 template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, const T sphereRadius, const Frustum<T>& frustum) {
-    const T radiusSq = sphereRadius*sphereRadius;
-
     for(const Vector4<T>& plane: frustum) {
         /* The sphere is in front of one of the frustum planes (normals point
            outwards) */
-        if(Distance::pointPlaneScaled<T>(sphereCenter, plane) < -radiusSq)
+        if(Distance::pointPlane<T>(sphereCenter, plane) >= sphereRadius)
             return false;
     }
 
     return true;
 }
-
 
 template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle) {
     const T tanAngleSqPlusOne = Math::pow<2>(Math::tan(coneAngle*T(0.5))) + T(1);
