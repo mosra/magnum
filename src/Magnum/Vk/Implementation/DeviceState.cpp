@@ -53,10 +53,13 @@ DeviceState::DeviceState(Device& device) {
 
     if(device.isVersionSupported(Version::Vk11)) {
         bindImageMemoryImplementation = &Image::bindMemoryImplementation11;
+        bindBufferMemoryImplementation = &Buffer::bindMemoryImplementation11;
     } else if(device.isExtensionEnabled<Extensions::KHR::bind_memory2>()) {
         bindImageMemoryImplementation = &Image::bindMemoryImplementationKHR;
+        bindBufferMemoryImplementation = &Buffer::bindMemoryImplementationKHR;
     } else {
         bindImageMemoryImplementation = &Image::bindMemoryImplementationDefault;
+        bindBufferMemoryImplementation = &Buffer::bindMemoryImplementationDefault;
     }
 }
 

@@ -24,7 +24,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkCommandBufferTest CommandBufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)

@@ -27,7 +27,6 @@
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
-    Buffer.cpp
     CommandBuffer.cpp
     CommandPool.cpp
     Extensions.cpp
@@ -42,6 +41,7 @@ set(MagnumVk_SRCS
     Implementation/InstanceState.cpp)
 
 set(MagnumVk_GracefulAssert_SRCS
+    Buffer.cpp
     Device.cpp
     DeviceProperties.cpp
     Enums.cpp

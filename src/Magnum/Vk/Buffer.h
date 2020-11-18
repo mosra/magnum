@@ -34,6 +34,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
@@ -227,10 +228,47 @@ class MAGNUM_VK_EXPORT Buffer {
         /**
          * @brief Buffer memory requirements
          *
-         * @see @fn_vk_keyword{GetBufferMemoryRequirements2},
+         * @see @ref bindMemory(), @fn_vk_keyword{GetBufferMemoryRequirements2},
          *      @fn_vk_keyword{GetBufferMemoryRequirements}
          */
         MemoryRequirements memoryRequirements() const;
+
+        /**
+         * @brief Bind buffer memory
+         *
+         * Assumes that @p memory type, the amount of @p memory at @p offset
+         * and @p offset alignment corresponds to buffer memory requirements.
+         * @see @ref memoryRequirements(), @ref bindDedicatedMemory(),
+         *      @fn_vk_keyword{BindBufferMemory2},
+         *      @fn_vk_keyword{BindBufferMemory}
+         */
+        void bindMemory(Memory& memory, UnsignedLong offset);
+
+        /**
+         * @brief Bind a dedicated buffer memory
+         *
+         * Equivalent to @ref bindMemory() with @p offset set to @cpp 0 @ce,
+         * with the additional effect that @p memory ownership transfers to the
+         * buffer and is then available through @ref dedicatedMemory().
+         */
+        void bindDedicatedMemory(Memory&& memory);
+
+        /**
+         * @brief Whether the buffer has a dedicated memory
+         *
+         * Returns @cpp true @ce if the buffer memory was bound using
+         * @ref bindDedicatedMemory(), @cpp false @ce otherwise.
+         * @see @ref dedicatedMemory()
+         */
+        bool hasDedicatedMemory() const;
+
+        /**
+         * @brief Dedicated buffer memory
+         *
+         * Expects that the buffer has a dedicated memory.
+         * @see @ref hasDedicatedMemory()
+         */
+        Memory& dedicatedMemory();
 
         /**
          * @brief Release the underlying Vulkan buffer
@@ -249,11 +287,16 @@ class MAGNUM_VK_EXPORT Buffer {
         MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationKHR(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
         MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementation11(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
 
+        MAGNUM_VK_LOCAL static void bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* infos);
+        MAGNUM_VK_LOCAL static void bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* infos);
+        MAGNUM_VK_LOCAL static void bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* infos);
+
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
 
         VkBuffer _handle;
         HandleFlags _flags;
+        Memory _dedicatedMemory;
 };
 
 }}

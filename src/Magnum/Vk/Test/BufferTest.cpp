@@ -24,7 +24,9 @@
 */
 
 #include <new>
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Buffer.h"
 
@@ -39,6 +41,8 @@ struct BufferTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+
+    void dedicatedMemoryNotDedicated();
 };
 
 BufferTest::BufferTest() {
@@ -47,7 +51,9 @@ BufferTest::BufferTest() {
               &BufferTest::createInfoConstructFromVk,
 
               &BufferTest::constructNoCreate,
-              &BufferTest::constructCopy});
+              &BufferTest::constructCopy,
+
+              &BufferTest::dedicatedMemoryNotDedicated});
 }
 
 void BufferTest::createInfoConstruct() {
@@ -91,6 +97,20 @@ void BufferTest::constructNoCreate() {
 void BufferTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+}
+
+void BufferTest::dedicatedMemoryNotDedicated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Buffer buffer{NoCreate};
+    CORRADE_VERIFY(!buffer.hasDedicatedMemory());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    buffer.dedicatedMemory();
+    CORRADE_COMPARE(out.str(), "Vk::Buffer::dedicatedMemory(): buffer doesn't have a dedicated memory\n");
 }
 
 }}}}

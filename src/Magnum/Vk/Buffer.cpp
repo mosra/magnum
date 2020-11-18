@@ -28,7 +28,6 @@
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
-#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {
@@ -58,13 +57,13 @@ Buffer Buffer::wrap(Device& device, const VkBuffer handle, const HandleFlags fla
     return out;
 }
 
-Buffer::Buffer(Device& device, const BufferCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+Buffer::Buffer(Device& device, const BufferCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateBuffer(device, info, nullptr, &_handle));
 }
 
-Buffer::Buffer(NoCreateT): _device{}, _handle{} {}
+Buffer::Buffer(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}
 
-Buffer::Buffer(Buffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+Buffer::Buffer(Buffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
     other._handle = {};
 }
 
@@ -78,6 +77,7 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
+    swap(other._dedicatedMemory, _dedicatedMemory);
     return *this;
 }
 
@@ -88,6 +88,32 @@ MemoryRequirements Buffer::memoryRequirements() const {
     info.buffer = _handle;
     _device->state().getBufferMemoryRequirementsImplementation(*_device, info, requirements);
     return requirements;
+}
+
+void Buffer::bindMemory(Memory& memory, const UnsignedLong offset) {
+    VkBindBufferMemoryInfo info{};
+    info.sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO;
+    info.buffer = _handle;
+    info.memory = memory;
+    info.memoryOffset = offset;
+    _device->state().bindBufferMemoryImplementation(*_device, 1, &info);
+}
+
+void Buffer::bindDedicatedMemory(Memory&& memory) {
+    bindMemory(memory, 0);
+    _dedicatedMemory = std::move(memory);
+}
+
+bool Buffer::hasDedicatedMemory() const {
+    /* Sigh. Though better than needing to have `const handle()` overloads
+       returning `const VkDeviceMemory_T*` */
+    return const_cast<Buffer&>(*this)._dedicatedMemory.handle();
+}
+
+Memory& Buffer::dedicatedMemory() {
+    CORRADE_ASSERT(_dedicatedMemory.handle(),
+        "Vk::Buffer::dedicatedMemory(): buffer doesn't have a dedicated memory", _dedicatedMemory);
+    return _dedicatedMemory;
 }
 
 VkBuffer Buffer::release() {
@@ -106,6 +132,19 @@ void Buffer::getMemoryRequirementsImplementationKHR(Device& device, const VkBuff
 
 void Buffer::getMemoryRequirementsImplementation11(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
     device->GetBufferMemoryRequirements2(device, &info, &requirements);
+}
+
+void Buffer::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+    for(std::size_t i = 0; i != count; ++i)
+        device->BindBufferMemory(device, infos[i].buffer, infos[i].memory, infos[i].memoryOffset);
+}
+
+void Buffer::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+    device->BindBufferMemory2KHR(device, count, infos);
+}
+
+void Buffer::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+    device->BindBufferMemory2(device, count, infos);
 }
 
 }}

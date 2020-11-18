@@ -37,6 +37,7 @@ struct DeviceState {
     /** @todo put this eventually into a dedicated buffer / image state struct? */
     void(*getBufferMemoryRequirementsImplementation)(Device&, const VkBufferMemoryRequirementsInfo2&, VkMemoryRequirements2&);
     void(*getImageMemoryRequirementsImplementation)(Device&, const VkImageMemoryRequirementsInfo2&, VkMemoryRequirements2&);
+    void(*bindBufferMemoryImplementation)(Device&, UnsignedInt, const VkBindBufferMemoryInfo*);
     void(*bindImageMemoryImplementation)(Device&, UnsignedInt, const VkBindImageMemoryInfo*);
 };
 

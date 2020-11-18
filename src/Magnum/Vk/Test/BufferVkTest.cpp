@@ -23,7 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/TestSuite/Compare/Numeric.h>
+
 #include "Magnum/Vk/Buffer.h"
+#include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
@@ -40,6 +43,9 @@ struct BufferVkTest: VulkanTester {
     void wrap();
 
     void memoryRequirements();
+
+    void bindMemory();
+    void bindDedicatedMemory();
 };
 
 BufferVkTest::BufferVkTest() {
@@ -48,7 +54,10 @@ BufferVkTest::BufferVkTest() {
 
               &BufferVkTest::wrap,
 
-              &BufferVkTest::memoryRequirements});
+              &BufferVkTest::memoryRequirements,
+
+              &BufferVkTest::bindMemory,
+              &BufferVkTest::bindDedicatedMemory});
 }
 
 void BufferVkTest::construct() {
@@ -66,17 +75,29 @@ void BufferVkTest::constructMove() {
     Buffer a{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 1024}, NoAllocate};
     VkBuffer handle = a.handle();
 
+    /* Verify that also the dedicated memory gets moved */
+    MemoryRequirements requirements = a.memoryRequirements();
+    a.bindDedicatedMemory(Vk::Memory{device(), Vk::MemoryAllocateInfo{requirements.size(),
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}});
+    VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
+
     Buffer b = std::move(a);
     CORRADE_VERIFY(!a.handle());
+    CORRADE_VERIFY(!a.hasDedicatedMemory());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_VERIFY(b.hasDedicatedMemory());
+    CORRADE_COMPARE(b.dedicatedMemory().handle(), memoryHandle);
 
     Buffer c{NoCreate};
     c = std::move(b);
     CORRADE_VERIFY(!b.handle());
+    CORRADE_VERIFY(!b.hasDedicatedMemory());
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_VERIFY(c.hasDedicatedMemory());
+    CORRADE_COMPARE(c.dedicatedMemory().handle(), memoryHandle);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Buffer>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Buffer>::value);
@@ -102,6 +123,40 @@ void BufferVkTest::memoryRequirements() {
 
     MemoryRequirements requirements = buffer.memoryRequirements();
     CORRADE_COMPARE(requirements.size(), 16384);
+}
+
+void BufferVkTest::bindMemory() {
+    Buffer buffer{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 16384}, NoAllocate};
+    MemoryRequirements requirements = buffer.memoryRequirements();
+
+    /* Similarly to the Image bindMemory() test, use a 128 kB offset */
+    constexpr UnsignedLong offset = 128*1024;
+    CORRADE_COMPARE_AS(offset, requirements.alignment(),
+        TestSuite::Compare::Divisible);
+
+    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+        requirements.size() + offset,
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+
+    buffer.bindMemory(memory, offset);
+    CORRADE_VERIFY(!buffer.hasDedicatedMemory());
+}
+
+void BufferVkTest::bindDedicatedMemory() {
+    Buffer buffer{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 16384}, NoAllocate};
+    MemoryRequirements requirements = buffer.memoryRequirements();
+
+    /** @todo expand once KHR_dedicated_allocation is implemented */
+
+    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+        requirements.size(),
+        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+    VkDeviceMemory handle = memory.handle();
+    CORRADE_VERIFY(handle);
+
+    buffer.bindDedicatedMemory(std::move(memory));
+    CORRADE_VERIFY(buffer.hasDedicatedMemory());
+    CORRADE_COMPARE(buffer.dedicatedMemory().handle(), handle);
 }
 
 }}}}
