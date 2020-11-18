@@ -186,7 +186,11 @@ namespace {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
         char* id = reinterpret_cast<char*>(EM_ASM_INT({
-            return allocate(intArrayFromString(Module['canvas'].id), 'i8', ALLOC_NORMAL);
+            const id = Module['canvas'].id;
+            const bytes = lengthBytesUTF8(id) + 1;
+            const memory = _malloc(bytes);
+            stringToUTF8(id, memory, bytes);
+            return memory;
         }));
         #pragma GCC diagnostic pop
         std::string str = id;
@@ -562,8 +566,12 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
         if(element === document) return 1; /* EMSCRIPTEN_EVENT_TARGET_DOCUMENT */
         if(element === window) return 2; /* EMSCRIPTEN_EVENT_TARGET_WINDOW */
-        if('id' in element)
-            return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
+        if('id' in element) {
+            const bytes = lengthBytesUTF8(element.id) + 1;
+            const memory = _malloc(bytes);
+            stringToUTF8(element.id, memory, bytes);
+            return memory;
+        }
 
         return 0;
     }));
