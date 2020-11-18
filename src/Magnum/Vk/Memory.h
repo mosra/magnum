@@ -125,7 +125,8 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryFlags value);
 @m_since_latest
 
 Wraps a @type_vk_keyword{MemoryRequirements2}. Not constructible directly,
-returned from @ref Image::memoryRequirements().
+returned from @ref Image::memoryRequirements() and
+@ref Buffer::memoryRequirements().
 @see @ref DeviceProperties::pickMemory()
 */
 class MAGNUM_VK_EXPORT MemoryRequirements {
@@ -176,6 +177,7 @@ class MAGNUM_VK_EXPORT MemoryRequirements {
         }
 
     private:
+        friend Buffer;
         friend Image;
 
         explicit MemoryRequirements();

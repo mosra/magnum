@@ -40,6 +40,8 @@
 
 namespace Magnum { namespace Vk {
 
+namespace Implementation { struct DeviceState; }
+
 /**
 @brief Buffer usage
 @m_since_latest
@@ -223,6 +225,14 @@ class MAGNUM_VK_EXPORT Buffer {
         HandleFlags handleFlags() const { return _flags; }
 
         /**
+         * @brief Buffer memory requirements
+         *
+         * @see @fn_vk_keyword{GetBufferMemoryRequirements2},
+         *      @fn_vk_keyword{GetBufferMemoryRequirements}
+         */
+        MemoryRequirements memoryRequirements() const;
+
+        /**
          * @brief Release the underlying Vulkan buffer
          *
          * Releases ownership of the Vulkan buffer and returns its handle so
@@ -233,6 +243,12 @@ class MAGNUM_VK_EXPORT Buffer {
         VkBuffer release();
 
     private:
+        friend Implementation::DeviceState;
+
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationDefault(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationKHR(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+        MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementation11(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
+
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
 

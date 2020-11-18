@@ -25,6 +25,7 @@
 
 #include "DeviceState.h"
 
+#include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Image.h"
@@ -40,10 +41,13 @@ DeviceState::DeviceState(Device& device) {
     }
 
     if(device.isVersionSupported(Version::Vk11)) {
+        getBufferMemoryRequirementsImplementation = &Buffer::getMemoryRequirementsImplementation11;
         getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementation11;
     } else if(device.isExtensionEnabled<Extensions::KHR::get_memory_requirements2>()) {
+        getBufferMemoryRequirementsImplementation = &Buffer::getMemoryRequirementsImplementationKHR;
         getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementationKHR;
     } else {
+        getBufferMemoryRequirementsImplementation = &Buffer::getMemoryRequirementsImplementationDefault;
         getImageMemoryRequirementsImplementation = &Image::getMemoryRequirementsImplementationDefault;
     }
 

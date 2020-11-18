@@ -25,6 +25,7 @@
 
 #include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
@@ -37,13 +38,17 @@ struct BufferVkTest: VulkanTester {
     void constructMove();
 
     void wrap();
+
+    void memoryRequirements();
 };
 
 BufferVkTest::BufferVkTest() {
     addTests({&BufferVkTest::construct,
               &BufferVkTest::constructMove,
 
-              &BufferVkTest::wrap});
+              &BufferVkTest::wrap,
+
+              &BufferVkTest::memoryRequirements});
 }
 
 void BufferVkTest::construct() {
@@ -90,6 +95,13 @@ void BufferVkTest::wrap() {
     CORRADE_COMPARE(wrapped.release(), buffer);
     CORRADE_VERIFY(!wrapped.handle());
     device()->DestroyBuffer(device(), buffer, nullptr);
+}
+
+void BufferVkTest::memoryRequirements() {
+    Buffer buffer{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 16384}, NoAllocate};
+
+    MemoryRequirements requirements = buffer.memoryRequirements();
+    CORRADE_COMPARE(requirements.size(), 16384);
 }
 
 }}}}

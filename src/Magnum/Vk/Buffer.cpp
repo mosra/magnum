@@ -28,6 +28,8 @@
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Memory.h"
+#include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {
 
@@ -79,10 +81,31 @@ Buffer& Buffer::operator=(Buffer&& other) noexcept {
     return *this;
 }
 
+MemoryRequirements Buffer::memoryRequirements() const {
+    MemoryRequirements requirements;
+    VkBufferMemoryRequirementsInfo2 info{};
+    info.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2;
+    info.buffer = _handle;
+    _device->state().getBufferMemoryRequirementsImplementation(*_device, info, requirements);
+    return requirements;
+}
+
 VkBuffer Buffer::release() {
     const VkBuffer handle = _handle;
     _handle = {};
     return handle;
+}
+
+void Buffer::getMemoryRequirementsImplementationDefault(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetBufferMemoryRequirements(device, info.buffer, &requirements.memoryRequirements);
+}
+
+void Buffer::getMemoryRequirementsImplementationKHR(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetBufferMemoryRequirements2KHR(device, &info, &requirements);
+}
+
+void Buffer::getMemoryRequirementsImplementation11(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
+    device->GetBufferMemoryRequirements2(device, &info, &requirements);
 }
 
 }}

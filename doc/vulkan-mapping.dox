@@ -189,7 +189,7 @@ Vulkan function                         | Matching API
 @fn_vk{GetBufferDeviceAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{GetBufferOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{GetDeviceMemoryOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@fn_vk{GetBufferMemoryRequirements}, \n @fn_vk{GetBufferMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetBufferMemoryRequirements}, \n @fn_vk{GetBufferMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Buffer::memoryRequirements()
 @fn_vk{GetDescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceGroupPeerMemoryFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceMemoryCommitment}       | |
@@ -311,6 +311,7 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{BufferCreateInfo}              | @ref BufferCreateInfo
+@type_vk{BufferMemoryRequirementsInfo}  | not exposed, internal to @ref Buffer::memoryRequirements()
 
 @subsection vulkan-mapping-structures-c C
 
