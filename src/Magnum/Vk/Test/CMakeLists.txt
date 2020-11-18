@@ -24,6 +24,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandBufferTest CommandBufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
@@ -94,6 +95,7 @@ target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 
 if(BUILD_VK_TESTS)
+    corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandBufferVkTest CommandBufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandPoolVkTest CommandPoolVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkDeviceVkTest DeviceVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)

@@ -27,6 +27,7 @@
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
+    Buffer.cpp
     CommandBuffer.cpp
     CommandPool.cpp
     Extensions.cpp
@@ -50,6 +51,7 @@ set(MagnumVk_GracefulAssert_SRCS
 
 set(MagnumVk_HEADERS
     Assert.h
+    Buffer.h
     CommandBuffer.h
     CommandPool.h
     Device.h
