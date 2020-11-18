@@ -320,7 +320,7 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{DeviceCreateInfo}              | @ref DeviceCreateInfo
-@type_vk{DeviceQueueCreateInfo}         | not exposed, but you can pass a custom instance to @ref DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo&)
+@type_vk{DeviceQueueCreateInfo}         | not exposed, but you can pass a custom instance to @ref DeviceCreateInfo::addQueues()
 
 @subsection vulkan-mapping-structures-i I
 

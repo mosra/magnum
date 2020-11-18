@@ -207,8 +207,9 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * @return Reference to self (for method chaining)
          *
          * At least one queue has to be added.
-         * @see @ref DeviceProperties::pickQueueFamily(),
-         *      @ref addQueues(QueueFlags, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>)
+         * @see @ref DeviceProperties::pickQueueFamily()
+         * @todoc link to addQueues(QueueFlags) once doxygen finally GROWS UP
+         *      and can link to &-qualified functions FFS
          */
         DeviceCreateInfo& addQueues(UnsignedInt family, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &;
         /** @overload */
@@ -223,13 +224,14 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *
          * Equivalent to picking a queue family first using
          * @ref DeviceProperties::pickQueueFamily() based on @p flags and then
-         * calling @ref addQueues(UnsignedInt, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>)
-         * with the family index.
+         * calling the above @ref addQueues() variant with the family index.
          *
          * Note that @ref DeviceProperties::pickQueueFamily() exits in case it
          * doesn't find any family satisfying given @p flags --- for a
          * failproof scenario you may want to go with the above overload and
          * @ref DeviceProperties::tryPickQueueFamily() instead.
+         * @todoc link to addQueues(UnsignedInt) above once doxygen finally
+         *      GROWS UP and can link to &-qualified functions FFS
          */
         DeviceCreateInfo& addQueues(QueueFlags flags, Containers::ArrayView<const Float> priorities, Containers::ArrayView<const Containers::Reference<Queue>> output) &;
         /** @overload */
@@ -408,9 +410,12 @@ class MAGNUM_VK_EXPORT Device {
          * @param info      Device creation info
          *
          * After creating the device requests device queues added via
-         * @ref DeviceCreateInfo::addQueues(UnsignedInt, Containers::ArrayView<const Float>, Containers::ArrayView<const Containers::Reference<Queue>>), populating the @ref Queue references.
+         * @ref DeviceCreateInfo::addQueues(), populating the @ref Queue
+         * references.
          * @see @fn_vk_keyword{CreateDevice}, @fn_vk_keyword{GetDeviceQueue2},
          *      @fn_vk_keyword{GetDeviceQueue}
+         * @todoc link to a concrete addQueues() overload above once doxygen
+         *      finally GROWS UP and can link to &-qualified functions FFS
          */
         explicit Device(Instance& instance, const DeviceCreateInfo& info);
 
