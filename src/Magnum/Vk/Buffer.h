@@ -182,9 +182,25 @@ class MAGNUM_VK_EXPORT Buffer {
          * @param device    Vulkan device to create the buffer on
          * @param info      Buffer creation info
          *
-         * @see @fn_vk_keyword{CreateBuffer}
+         * @see @ref Buffer(Device&, const BufferCreateInfo&, MemoryFlags),
+         *      @fn_vk_keyword{CreateBuffer}
          */
         explicit Buffer(Device& device, const BufferCreateInfo& info, NoAllocateT);
+
+        /**
+         * @brief Construct a buffer
+         * @param device        Vulkan device to create the buffer on
+         * @param info          Buffer creation info
+         * @param memoryFlags   Memory allocation flags
+         *
+         * Compared to @ref Buffer(Device&, const BufferCreateInfo&, NoAllocateT)
+         * allocates a memory satisfying @p memoryFlags as well.
+         *
+         * @attention At this point, a dedicated allocation is used,
+         *      subsequently accessible through @ref dedicatedMemory(). This
+         *      behavior may change in the future.
+         */
+        explicit Buffer(Device& device, const BufferCreateInfo& info, MemoryFlags memoryFlags);
 
         /**
          * @brief Construct without creating the buffer

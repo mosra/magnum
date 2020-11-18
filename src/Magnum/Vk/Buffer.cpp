@@ -27,6 +27,7 @@
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
@@ -59,6 +60,14 @@ Buffer Buffer::wrap(Device& device, const VkBuffer handle, const HandleFlags fla
 
 Buffer::Buffer(Device& device, const BufferCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateBuffer(device, info, nullptr, &_handle));
+}
+
+Buffer::Buffer(Device& device, const BufferCreateInfo& info, const MemoryFlags memoryFlags): Buffer{device, info, NoAllocate} {
+    const MemoryRequirements requirements = memoryRequirements();
+    bindDedicatedMemory(Memory{device, MemoryAllocateInfo{
+        requirements.size(),
+        device.properties().pickMemory(memoryFlags, requirements.memories())
+    }});
 }
 
 Buffer::Buffer(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}

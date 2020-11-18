@@ -46,6 +46,8 @@ struct BufferVkTest: VulkanTester {
 
     void bindMemory();
     void bindDedicatedMemory();
+
+    void directAllocation();
 };
 
 BufferVkTest::BufferVkTest() {
@@ -57,7 +59,9 @@ BufferVkTest::BufferVkTest() {
               &BufferVkTest::memoryRequirements,
 
               &BufferVkTest::bindMemory,
-              &BufferVkTest::bindDedicatedMemory});
+              &BufferVkTest::bindDedicatedMemory,
+
+              &BufferVkTest::directAllocation});
 }
 
 void BufferVkTest::construct() {
@@ -72,13 +76,9 @@ void BufferVkTest::construct() {
 }
 
 void BufferVkTest::constructMove() {
-    Buffer a{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 1024}, NoAllocate};
-    VkBuffer handle = a.handle();
-
     /* Verify that also the dedicated memory gets moved */
-    MemoryRequirements requirements = a.memoryRequirements();
-    a.bindDedicatedMemory(Vk::Memory{device(), Vk::MemoryAllocateInfo{requirements.size(),
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}});
+    Buffer a{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 1024}, Vk::MemoryFlag::DeviceLocal};
+    VkBuffer handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
     Buffer b = std::move(a);
@@ -157,6 +157,16 @@ void BufferVkTest::bindDedicatedMemory() {
     buffer.bindDedicatedMemory(std::move(memory));
     CORRADE_VERIFY(buffer.hasDedicatedMemory());
     CORRADE_COMPARE(buffer.dedicatedMemory().handle(), handle);
+}
+
+void BufferVkTest::directAllocation() {
+    Buffer buffer{device(),
+        BufferCreateInfo{BufferUsage::StorageBuffer, 16384},
+        Vk::MemoryFlag::DeviceLocal};
+
+    /* Not sure what else to test here */
+    CORRADE_VERIFY(buffer.hasDedicatedMemory());
+    CORRADE_VERIFY(buffer.dedicatedMemory().handle());
 }
 
 }}}}
