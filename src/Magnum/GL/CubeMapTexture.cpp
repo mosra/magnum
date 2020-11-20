@@ -128,6 +128,10 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
        the compression, we need to ask GL for it */
     std::pair<std::size_t, std::size_t> dataOffsetSize;
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        /* Unlike in AbstractTexture::compressedImage(), here we have a
+           separate offset and size because of the
+           nv-cubemap-broken-full-compressed-image-query workaround, where it
+           needs to go slice-by-slice, advancing the offset each time */
         dataOffsetSize.first = 0;
         dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
     } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
@@ -164,6 +168,10 @@ void CubeMapTexture::compressedImage(const Int level, const MutableCompressedIma
        the compression, we need to ask GL for it */
     std::pair<std::size_t, std::size_t> dataOffsetSize;
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        /* Unlike in AbstractTexture::compressedImage(), here we have a
+           separate offset and size because of the
+           nv-cubemap-broken-full-compressed-image-query workaround, where it
+           needs to go slice-by-slice, advancing the offset each time */
         dataOffsetSize.first = 0;
         dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
     } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
@@ -194,6 +202,10 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
        the compression, we need to ask GL for it */
     std::pair<std::size_t, std::size_t> dataOffsetSize;
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        /* Unlike in AbstractTexture::compressedImage(), here we have a
+           separate offset and size because of the
+           nv-cubemap-broken-full-compressed-image-query workaround, where it
+           needs to go slice-by-slice, advancing the offset each time */
         dataOffsetSize.first = 0;
         dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
     } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
