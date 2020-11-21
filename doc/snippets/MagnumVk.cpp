@@ -64,7 +64,6 @@ info->pNext = &validationFeatures;
 }
 
 {
-Vk::Instance instance;
 /* [CommandPool-usage] */
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
@@ -125,7 +124,7 @@ DOXYGEN_IGNORE()
 Vk::Instance instance;
 VkQueryPool pool{};
 /* [Device-function-pointers] */
-Vk::Device device{DOXYGEN_IGNORE(instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)})};
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
 // ...
 device->ResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
