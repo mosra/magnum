@@ -39,6 +39,7 @@ corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkShaderTest ShaderTest.cpp LIBRARIES MagnumVk)
 
 add_library(VkAssertTestObjects OBJECT AssertTest.cpp)
 target_include_directories(VkAssertTestObjects PRIVATE $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -95,6 +96,15 @@ target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
 
 if(BUILD_VK_TESTS)
+    if(CORRADE_TARGET_ANDROID)
+        set(VK_TEST_DIR ".")
+    else()
+        set(VK_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
     corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandBufferVkTest CommandBufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandPoolVkTest CommandPoolVkTest.cpp LIBRARIES MagnumVulkanTester)
@@ -105,5 +115,7 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkImageVkTest ImageVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkInstanceVkTest InstanceVkTest.cpp LIBRARIES MagnumVk)
     corrade_add_test(VkMemoryVkTest MemoryVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+    corrade_add_test(VkShaderVkTest ShaderVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+    target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
 endif()

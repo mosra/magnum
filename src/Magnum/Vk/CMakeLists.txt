@@ -34,6 +34,7 @@ set(MagnumVk_SRCS
     Instance.cpp
     Memory.cpp
     Result.cpp
+    Shader.cpp
     Version.cpp
 
     Implementation/Arguments.cpp
@@ -67,6 +68,7 @@ set(MagnumVk_HEADERS
     Memory.h
     Queue.h
     Result.h
+    Shader.h
     TypeTraits.h
     Version.h
     Vk.h

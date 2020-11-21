@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
@@ -37,6 +39,7 @@
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Queue.h"
+#include "Magnum/Vk/Shader.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 using namespace Magnum;
@@ -254,6 +257,19 @@ if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
     // well, tough luck
 }
 /* [Instance-isExtensionEnabled] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* [Shader-usage] */
+Vk::ShaderCreateInfo info{
+    CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Directory::read("shader.spv"))
+};
+
+DOXYGEN_IGNORE()
+
+Vk::Shader shader{device, info};
+/* [Shader-usage] */
 }
 
 {

@@ -62,7 +62,7 @@ Vulkan function                         | Matching API
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | |
-@fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Buffer::bindMemory()
 @fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Image::bindMemory()
 
 @subsection vulkan-mapping-functions-c C
@@ -145,7 +145,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateSemaphore}, \n @fn_vk{DestroySemaphore} | |
-@fn_vk{CreateShaderModule}, \n @fn_vk{DestroyShaderModule} | |
+@fn_vk{CreateShaderModule}, \n @fn_vk{DestroyShaderModule} | @ref Shader constructor and destructor
 
 @subsection vulkan-mapping-functions-d D
 
@@ -348,6 +348,14 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{MemoryAllocateInfo}            | @ref MemoryAllocateInfo
+
+@subsection vulkan-mapping-structures-s S
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{ShaderCreateInfo}              | @ref ShaderCreateInfo
 
 */
 
