@@ -64,6 +64,58 @@ info->pNext = &validationFeatures;
 }
 
 {
+using namespace Containers::Literals;
+int argc{};
+char** argv{};
+/* [wrapping-optimizing-properties-instance] */
+Vk::LayerProperties layers = DOXYGEN_IGNORE(Vk::enumerateLayerProperties());
+Vk::InstanceExtensionProperties extensions = DOXYGEN_IGNORE(Vk::enumerateInstanceExtensionProperties(layers.names()));
+
+/* Pass the layer and extension properties for use by InstanceCreateInfo */
+Vk::InstanceCreateInfo info{argc, argv, &layers, &extensions};
+if(layers.isSupported("VK_LAYER_KHRONOS_validation"_s))
+    info.addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s});
+if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())
+    info.addEnabledExtensions<Vk::Extensions::EXT::debug_report>();
+DOXYGEN_IGNORE()
+
+Vk::Instance instance{info};
+/* [wrapping-optimizing-properties-instance] */
+}
+
+{
+Vk::Instance instance{NoCreate};
+Vk::Queue queue{NoCreate};
+/* [wrapping-optimizing-properties-device-single-expression] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
+    .addQueues(DOXYGEN_IGNORE(Vk::QueueFlag::Graphics, {0.0f}, {queue}))
+    DOXYGEN_IGNORE()
+};
+/* [wrapping-optimizing-properties-device-single-expression] */
+}
+
+{
+using namespace Containers::Literals;
+Vk::Instance instance{NoCreate};
+/* [wrapping-optimizing-properties-device-move] */
+Vk::DeviceProperties properties = Vk::pickDevice(instance);
+Vk::ExtensionProperties extensions = properties.enumerateExtensionProperties();
+
+/* Move the device properties to the info structure, pass extension properties
+   to allow reuse as well */
+Vk::DeviceCreateInfo info{std::move(properties), &extensions};
+if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
+    info.addEnabledExtensions<Vk::Extensions::EXT::index_type_uint8>();
+if(extensions.isSupported("VK_NV_mesh_shader"_s))
+    info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
+DOXYGEN_IGNORE()
+
+/* Finally, be sure to move the info structure to the device as well */
+Vk::Device device{instance, std::move(info)};
+/* [wrapping-optimizing-properties-device-move] */
+}
+
+{
 /* [CommandPool-usage] */
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
@@ -207,7 +259,7 @@ Vk::InstanceExtensionProperties extensions =
     Vk::enumerateInstanceExtensionProperties(layers.names());
 
 /* Enable only those that are supported */
-Vk::InstanceCreateInfo info{argc, argv, &layers, &extensions};
+Vk::InstanceCreateInfo info{argc, argv};
 if(layers.isSupported("VK_LAYER_KHRONOS_validation"_s))
     info.addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s});
 if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())

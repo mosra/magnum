@@ -98,5 +98,39 @@ will skip all initialization and leave the contents unspecified to be filled
 later. Note that at that point you have the full responsibility to correctly
 set up all members.
 
+@section vulkan-wrapping-optimizing-properties Optimizing instance and device property retrieval
+
+Retrieving layer and extension info as well as device properties involves
+allocations, string operations, sorting and other potentially expensive work
+both on the application side and in the driver. While the
+@ref Vk::LayerProperties, @ref Vk::InstanceExtensionProperties /
+@ref Vk::ExtensionProperties and @ref Vk::DeviceProperties APIs are made in a
+way to optimize subsequent queries as much as possible, care should be taken to
+avoid constructing and  initializing them more times than necessary.
+
+For @ref Vk::Instance creation, the @ref Vk::InstanceCreateInfo constructor is
+able to take pointers to existing @ref Vk::LayerProperties and
+@ref Vk::InstanceExtensionProperties instances and reuse them to query
+availability of implicitly enabled layers and extensions. If they're not
+passed, the class may (but also might not) create its own instances internally:
+
+@snippet MagnumVk.cpp wrapping-optimizing-properties-instance
+
+For @ref Vk::Device creation, the @ref Vk::DeviceProperties should ideally be
+* *moved* all the way to the @ref Vk::Device constructor, at which point it's
+made available through @ref Vk::Device::properties() to any code that needs it.
+If you have @ref Vk::pickDevice(), @ref Vk::DeviceCreateInfo and
+@ref Vk::Device constructor all in a single expression, the optimal operation
+is done implicitly:
+
+@snippet MagnumVk.cpp wrapping-optimizing-properties-device-single-expression
+
+However, if you instantiate @ref Vk::DeviceProperties and/or
+@ref Vk::DeviceCreateInfo separately, you have to @cpp std::move() @ce them to
+achieve the desired effect. An existing @ref Vk::ExtensionProperties instance
+can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
+
+@snippet MagnumVk.cpp wrapping-optimizing-properties-device-move
+
 */
 }

@@ -282,14 +282,14 @@ checked with @ref isExtensionEnabled().
 However, with the above approach, if any layer or extension isn't available,
 the instance creation will abort. The recommended workflow is thus first
 checking layer and extension availability using @ref enumerateLayerProperties()
-and @ref enumerateInstanceExtensionProperties(). The @ref InstanceCreateInfo
-class uses these properties internally as well, pass them in the constructor
-to avoid querying those again internally:
+and @ref enumerateInstanceExtensionProperties():
 
 @snippet MagnumVk.cpp Instance-usage-check-supported
 
 Next step after creating a Vulkan instance is picking and creating a
 @ref Device.
+
+@see @ref vulkan-wrapping-optimizing-properties
 
 @section Vk-Instance-command-line Command-line options
 

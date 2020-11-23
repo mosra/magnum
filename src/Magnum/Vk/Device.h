@@ -317,14 +317,14 @@ checked with @ref isExtensionEnabled().
 @snippet MagnumVk.cpp Device-usage-extensions
 
 Usually you'll be first checking for extension availability instead, which is
-again accessible through the @ref DeviceProperties instance. Similarly to
-@ref Instance, as the extension list is used internally as well, pass it in the
-constructor to avoid querying them again internally:
+again accessible through the @ref DeviceProperties instance:
 
 @snippet MagnumVk.cpp Device-usage-check-supported
 
 With both @ref Instance and @ref Device created, you can proceed to setting up
 a @ref CommandPool.
+
+@see @ref vulkan-wrapping-optimizing-properties
 
 @section Vk-Device-command-line Command-line options
 
