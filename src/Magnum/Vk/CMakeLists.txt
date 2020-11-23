@@ -32,7 +32,6 @@ set(MagnumVk_SRCS
     Extensions.cpp
     Handle.cpp
     Instance.cpp
-    Memory.cpp
     Result.cpp
     Shader.cpp
     Version.cpp
@@ -48,7 +47,8 @@ set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp
     ExtensionProperties.cpp
     Image.cpp
-    LayerProperties.cpp)
+    LayerProperties.cpp
+    Memory.cpp)
 
 set(MagnumVk_HEADERS
     Assert.h

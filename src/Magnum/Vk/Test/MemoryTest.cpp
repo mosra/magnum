@@ -37,6 +37,9 @@ struct MemoryTest: TestSuite::Tester {
     void requirementsConstructNoInit();
     void requirementsConstructFromVk();
 
+    void requirementsAlignedSize();
+    void requirementsAlignedSizeZeroAlignement();
+
     void allocateInfoConstruct();
     void allocateInfoConstructNoInit();
     void allocateInfoConstructFromVk();
@@ -51,6 +54,9 @@ struct MemoryTest: TestSuite::Tester {
 MemoryTest::MemoryTest() {
     addTests({&MemoryTest::requirementsConstructNoInit,
               &MemoryTest::requirementsConstructFromVk,
+
+              &MemoryTest::requirementsAlignedSize,
+              &MemoryTest::requirementsAlignedSizeZeroAlignement,
 
               &MemoryTest::allocateInfoConstruct,
               &MemoryTest::allocateInfoConstructNoInit,
@@ -81,6 +87,36 @@ void MemoryTest::requirementsConstructFromVk() {
 
     MemoryRequirements requirements{vkRequirements};
     CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+}
+
+void MemoryTest::requirementsAlignedSize() {
+    /* Creating from a raw Vulkan structure because there's no other way */
+    VkMemoryRequirements2 vkRequirements{};
+    vkRequirements.memoryRequirements.size = 13765;
+    CORRADE_COMPARE(MemoryRequirements{vkRequirements}.alignedSize(4096), 16384);
+
+    vkRequirements.memoryRequirements.size = 16383;
+    CORRADE_COMPARE(MemoryRequirements{vkRequirements}.alignedSize(4096), 16384);
+
+    vkRequirements.memoryRequirements.size = 16384;
+    CORRADE_COMPARE(MemoryRequirements{vkRequirements}.alignedSize(4096), 16384);
+
+    vkRequirements.memoryRequirements.size = 0;
+    CORRADE_COMPARE(MemoryRequirements{vkRequirements}.alignedSize(4096), 0);
+}
+
+void MemoryTest::requirementsAlignedSizeZeroAlignement() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    VkMemoryRequirements2 vkRequirements{};
+    vkRequirements.memoryRequirements.size = 16384;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MemoryRequirements{vkRequirements}.alignedSize(0);
+    CORRADE_COMPARE(out.str(), "Vk::MemoryRequirements::alignedSize(): alignment can't be zero\n");
 }
 
 void MemoryTest::allocateInfoConstruct() {

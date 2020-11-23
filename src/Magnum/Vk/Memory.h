@@ -161,15 +161,34 @@ class MAGNUM_VK_EXPORT MemoryRequirements {
         /** @overload */
         const VkMemoryRequirements2* operator->() const { return &_requirements; }
 
-        /** @brief Required memory size */
+        /**
+         * @brief Required memory size
+         *
+         * @see @ref alignedSize()
+         */
         UnsignedLong size() const {
             return _requirements.memoryRequirements.size;
         }
 
-        /** @brief Required memory alignment */
+        /**
+         * @brief Required memory alignment
+         *
+         * @see @ref alignedSize()
+         */
         UnsignedLong alignment() const {
             return _requirements.memoryRequirements.alignment;
         }
+
+        /**
+         * @brief Required memory size rounded up for given alignment
+         *
+         * Pads @ref size() with given alignment requirements. For example, a
+         * 13765-byte buffer aligned to 4 kB would be 16384 bytes. See the
+         * @ref Memory class for more information and example usage.
+         *
+         * The alignment is expected to be non-zero.
+         */
+        UnsignedLong alignedSize(UnsignedLong alignment) const;
 
         /** @brief Bits indicating which memory  */
         UnsignedInt memories() const {

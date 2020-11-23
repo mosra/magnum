@@ -46,6 +46,11 @@ MemoryRequirements::MemoryRequirements(const VkMemoryRequirements2& requirements
        member instead of doing a copy */
     _requirements(requirements) {}
 
+UnsignedLong MemoryRequirements::alignedSize(const UnsignedLong alignment) const {
+    CORRADE_ASSERT(alignment, "Vk::MemoryRequirements::alignedSize(): alignment can't be zero", {});
+    return ((_requirements.memoryRequirements.size + alignment - 1)/alignment)*alignment;
+}
+
 MemoryAllocateInfo::MemoryAllocateInfo(UnsignedLong size, UnsignedInt memory): _info{} {
     _info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     _info.allocationSize = size;
