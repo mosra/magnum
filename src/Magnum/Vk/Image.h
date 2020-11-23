@@ -333,7 +333,37 @@ class ImageCreateInfoCubeMapArray: public ImageCreateInfo {
 @brief Image
 @m_since_latest
 
-Wraps a @type_vk_keyword{Image}.
+Wraps a @type_vk_keyword{Image} and its memory.
+
+@section Vk-Image-usage Basic usage
+
+Pass one of the @ref ImageCreateInfo subclasses depending on desired image type
+with desired usage, format, size and other propoerties to the @ref Image
+constructor together with specifying @ref MemoryFlags for memory allocation.
+
+@snippet MagnumVk.cpp Image-usage
+
+@attention At this point, a dedicated allocation is used, subsequently
+    accessible through @ref dedicatedMemory(). This behavior may change in the
+    future.
+
+@section Vk-Image-usage-custom-allocation Custom memory allocation
+
+Using @ref Image(Device&, const ImageCreateInfo&, NoAllocateT), the image will
+be created without any memory attached. Image memory requirements can be
+subsequently queried using @ref memoryRequirements() and an allocated memory
+bound with @ref bindMemory(). See @ref Memory for further details about memory allocation.
+
+@snippet MagnumVk.cpp Image-usage-custom-allocation
+
+Using @ref bindDedicatedMemory() instead of @ref bindMemory() will transfer
+ownership of the @ref Memory to the image instance, making it subsequently
+available through @ref dedicatedMemory(). This matches current behavior of the
+@ref Image(Device&, const ImageCreateInfo&, MemoryFlags) constructor shown
+above, except that you have more control over choosing and allocating the
+memory.
+
+@see @ref Buffer
 */
 class MAGNUM_VK_EXPORT Image {
     public:

@@ -267,7 +267,65 @@ class MAGNUM_VK_EXPORT MemoryAllocateInfo {
 @brief Device memory
 @m_since_latest
 
-Wraps a @type_vk_keyword{DeviceMemory}.
+Wraps a @type_vk_keyword{DeviceMemory} and handles its allocation and mapping.
+
+@section Vk-Memory-usage Usage
+
+By default, the memory will get allocated for you during the creation of
+@ref Buffer, @ref Image and other objects. In case you want to handle the
+allocation yourself instead (which you indicate by passing the @ref NoAllocate
+tag to constructors of these objects), it consists of these steps:
+
+1.  Querying memory requirements of a particular object, for example using
+    @ref Buffer::memoryRequirements() or @ref Image::memoryRequirements()
+2.  Picking a memory type satisfying requirements of the object it's being
+    allocated for (such as allowed memory types) and user requirements (whether
+    it should be device-local, host-mappable etc.) using
+    @ref DeviceProperties::pickMemory()
+3.  Allocating a new @ref Memory or taking a (correctly aligned) sub-range of
+    an existing allocation from given memory type
+4.  Binding the memory (sub-range) to the object, using
+    @ref Buffer::bindMemory(), @ref Image::bindMemory() and others
+
+The following example allocates a single block memory for two buffers, one
+containing vertex and the other index data:
+
+@snippet MagnumVk.cpp Memory-usage
+
+@section Vk-Memory-mapping Memory mapping
+
+If the memory is created with the @ref MemoryFlag::HostVisible flag, it can be
+mapped on the host via @ref map(). The unmapping is then taken care of by a
+custom deleter in the returned @ref Corrade::Containers::Array. It's possible
+to map either the whole range or a sub-range, however note that one @ref Memory
+object can't be mapped twice at the same time --- in the code snippet above, it
+means that in order to upload vertex and index data, there are two options:
+
+-   One is to first map the vertex buffer sub-range, upload the data, unmap it,
+    and then do the same process for the index buffer sub-range. This way is
+    more encapsulated without having to worry if there's already a mapping and
+    who owns it, but means more work for the driver.
+-   Another option is to map the whole memory at once and then upload data of
+    particular buffers to correct subranges. Here the mapping has to be owned
+    by some external entity which ensures it's valid for as long as any buffer
+    wants to map its memory sub-range.
+
+The following example maps the memory allocated above and copies index and
+vertex data to it:
+
+@snippet MagnumVk.cpp Memory-mapping
+
+<b></b>
+
+@m_class{m-note m-success}
+
+@par Map temporarily or forever?
+    Mapping smaller ranges and unmapping again after makes sense on 32-bit
+    systems where the amount of virtual memory is limited --- otherwise it may
+    happen that the system won't be able to find a sufficiently large block of
+    virtual memory, causing the next mapping to fail. On 64-bit systems the
+    virtual address space is sufficiently large for most use cases and it's
+    common to just map the whole memory block for its whole lifetime.
 */
 class MAGNUM_VK_EXPORT Memory {
     public:

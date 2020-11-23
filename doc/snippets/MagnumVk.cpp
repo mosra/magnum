@@ -25,10 +25,12 @@
 
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPool.h"
 #include "Magnum/Vk/Device.h"
@@ -37,6 +39,7 @@
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/Shader.h"
@@ -113,6 +116,35 @@ DOXYGEN_IGNORE()
 /* Finally, be sure to move the info structure to the device as well */
 Vk::Device device{instance, std::move(info)};
 /* [wrapping-optimizing-properties-device-move] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Buffer-usage] */
+Vk::Buffer buffer{device,
+    Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
+    Vk::MemoryFlag::DeviceLocal
+};
+/* [Buffer-usage] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Buffer-usage-custom-allocation] */
+Vk::Buffer buffer{device,
+    Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
+    NoAllocate
+};
+
+Vk::MemoryRequirements requirements = buffer.memoryRequirements();
+Vk::Memory memory{device, Vk::MemoryAllocateInfo{
+    requirements.size(),
+    device.properties().pickMemory(Vk::MemoryFlag::DeviceLocal,
+        requirements.memories())
+}};
+
+buffer.bindMemory(memory, 0);
+/* [Buffer-usage-custom-allocation] */
 }
 
 {
@@ -212,6 +244,35 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 }
 
 {
+Vk::Device device{NoCreate};
+/* [Image-usage] */
+Vk::Image image{device, Vk::ImageCreateInfo2D{
+        Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
+    }, Vk::MemoryFlag::DeviceLocal
+};
+/* [Image-usage] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Image-usage-custom-allocation] */
+Vk::Image image{device, Vk::ImageCreateInfo2D{
+        Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
+    }, NoAllocate
+};
+
+Vk::MemoryRequirements requirements = image.memoryRequirements();
+Vk::Memory memory{device, Vk::MemoryAllocateInfo{
+    requirements.size(),
+    device.properties().pickMemory(Vk::MemoryFlag::DeviceLocal,
+        requirements.memories())
+}};
+
+image.bindMemory(memory, 0);
+/* [Image-usage-custom-allocation] */
+}
+
+{
 int argc{};
 const char** argv{};
 /* [Instance-usage-minimal] */
@@ -308,6 +369,51 @@ if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
     // well, tough luck
 }
 /* [Instance-isExtensionEnabled] */
+}
+
+{
+Vk::Device device{NoCreate};
+Containers::ArrayView<const char> vertexData, indexData;
+/* [Memory-usage] */
+/* Create buffers without allocating them */
+Vk::Buffer vertices{device,
+    Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, vertexData.size()},
+    NoAllocate};
+Vk::Buffer indices{device,
+    Vk::BufferCreateInfo{Vk::BufferUsage::IndexBuffer, vertexData.size()},
+    NoAllocate};
+
+/* Query memory requirements of both buffers, calculate max alignment */
+Vk::MemoryRequirements verticesRequirements = vertices.memoryRequirements();
+Vk::MemoryRequirements indicesRequirements = indices.memoryRequirements();
+const UnsignedLong alignment = Math::max(verticesRequirements.alignment(),
+                                         indicesRequirements.alignment());
+
+/* Allocate memory that's large enough to contain both buffers including
+   the strictest alignment, and is of a type satisfying requirements of both */
+Vk::Memory memory{device, Vk::MemoryAllocateInfo{
+    verticesRequirements.alignedSize(alignment) +
+        indicesRequirements.alignedSize(alignment),
+    device.properties().pickMemory(Vk::MemoryFlag::HostVisible,
+        verticesRequirements.memories() & indicesRequirements.memories())
+}};
+
+const UnsignedLong indicesOffset = verticesRequirements.alignedSize(alignment);
+
+/* Bind the respective sub-ranges to the buffers */
+vertices.bindMemory(memory, 0);
+indices.bindMemory(memory, indicesOffset);
+/* [Memory-usage] */
+
+/* [Memory-mapping] */
+/* The memory gets unmapped again at the end of scope */
+{
+    Containers::Array<char, Vk::MemoryMapDeleter> mapped = memory.map();
+    Utility::copy(vertexData, mapped.prefix(vertexData.size()));
+    Utility::copy(indexData,
+        mapped.slice(indicesOffset, indicesOffset + indexData.size()));
+}
+/* [Memory-mapping] */
 }
 
 {
