@@ -153,6 +153,10 @@ See also:
 -   @ref Platform::GlfwApplication now defaults to EGL on
     @ref MAGNUM_TARGET_DESKTOP_GLES "non-desktop"
     @ref MAGNUM_TARGET_GLES "GLES builds" (see [mosra/magnum#470](https://github.com/mosra/magnum/pull/470))
+-   On Emscripten, @ref Platform::EmscriptenApplication used an internal
+    allocation function, which changed signature in 2.0.5 and caused runtime
+    failures when `-s ASSERTIONS` was enabled. A public stable API is now used
+    instead, see [mosra/magnum#483](https://github.com/mosra/magnum/pull/483).
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
@@ -191,6 +195,7 @@ See also:
     inside a CMake subproject
 -   Suppressed a warning specific to MinGW GCC 8+ (see
     [mosra/magnum#474](https://github.com/mosra/magnum/issues/474))
+-   Linux and Emscripten builds were migrated from Travis to Circle CI
 
 @subsection changelog-latest-bugfixes Bug fixes
 
