@@ -50,6 +50,13 @@ if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CMAKE_LIBRARY_OUTPUT_DIRECTORY AND CMAKE_A
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/importers
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/magnum$<$<CONFIG:Debug>:-d>/importers)
 endif()
+if(CORRADE_TARGET_EMSCRIPTEN)
+    # Since 1.39.0, this needs to be enabled on the plugin. Before (on 1.38.44
+    # at least) this wasn't needed, at least for the test -- having it enabled
+    # for the test binary and in the linker was enough. Most probably related
+    # to fastcomp->llvm backend switch.
+    set_property(TARGET ObjImporter APPEND_STRING PROPERTY COMPILE_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0")
+endif()
 
 install(FILES ObjImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
