@@ -192,6 +192,66 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja
 
 @section platforms-macos-troubleshooting Troubleshooting
 
+@subsection platforms-macos-troubleshooting-build-mysteriously-fails Build mysteriously fails due to some <cmath> errors
+
+Happening usually after a system or Xcode upgrade, builds can start failing
+with errors like below. The exact reasons are unclear, can vary and happen only
+in certain cases (for example a manual build works but Homebrew package install
+doesn't).
+
+@m_class{m-console-wrap}
+
+@code{.ansi}
+In file included from ../src/MagnumPlugins/PngImageConverter/PngImageConverter.cpp:42:
+In file included from /usr/local/include/Magnum/ImageView.h:35:
+In file included from /usr/local/include/Magnum/PixelStorage.h:36:
+In file included from /usr/local/include/Magnum/Math/Vector3.h:32:
+In file included from /usr/local/include/Magnum/Math/Vector2.h:32:
+In file included from /usr/local/include/Magnum/Math/Vector.h:37:
+In file included from /usr/local/include/Corrade/Utility/StlMath.h:75:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath:317:9: error: no member named 'signbit' in the global namespace
+using ::signbit;
+      ~~^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath:318:9: error: no member named 'fpclassify' in the global namespace
+using ::fpclassify;
+      ~~^
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1/cmath:319:9: error: no member named 'isfinite' in the global namespace; did you mean 'finite'?
+using ::isfinite;
+      ~~^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.0.sdk/usr/include/math.h:752:12: note: 'finite' declared here
+extern int finite(double)
+           ^
+@endcode
+
+In the above case it's because @ref Trade::PngImageConverter "PngImageConverter"
+(or @ref Trade::PngImporter "PngImporter") uses libPNG, which depends on zlib.
+Zlib, along with curl and few others are the only libraries shipped directly
+with macOS, and that's the core of the problem. Here zlib got errorneously
+found in a different SDK than the remaining dependencies, causing two mutually
+incompatible include directories from a 11.0 and 10.15 SDK used together, as
+can be seen in the clang invocation (which gets displayed by `ninja` on failure
+or can be retreived from Homebrew logs):
+
+@m_class{m-console-wrap}
+
+@code{.ansi}
+clang++ … -I/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX11.0.sdk[0m/usr/include[0m … -o CMakeFiles/PngImageConverter.dir/PngImageConverter.cpp.o -c ../src/MagnumPlugins/PngImageConverter/PngImageConverter.cpp -isysroot/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX10.15.sdk[0m --sysroot=/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX10.15.sdk[0m -isystem/usr/local/include
+@endcode
+
+One often suggested magic incantation that sometimes removes the curse is the
+following:
+
+@code{.sh}
+xcode-select --install # try with sudo maybe
+@endcode
+
+If that doesn't help, the next step is to prevent multiple SDKs getting mixed
+together by removing all folders inside `/Library/Developer/CommandLineTools/SDKs`
+except the latest one. Simply [deleting them is the designated way](https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-HOW_CAN_I_UNINSTALL_THE_COMMAND_LINE_TOOLS_)
+to do this.
+
+@subsection platforms-macos-troubleshooting-gl Mac-specific OpenGL behavior
+
 -   @ref GL::AbstractShaderProgram::validate() expects that the shader has a
     properly configured framebuffer bound along with proper @ref GL::Renderer
     setup. That is often hard to achieve, so the function cannot be portably
