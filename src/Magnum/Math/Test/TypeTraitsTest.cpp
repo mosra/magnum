@@ -65,8 +65,6 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     void equal();
 };
 
-enum: std::size_t { EqualsZeroDataCount = 3 };
-
 struct {
     const char* name;
     Float a, aStep;
@@ -79,7 +77,7 @@ struct {
     Double getStep(Double) const { return bStep; }
     long double get(long double) const { return c; }
     long double getStep(long double) const { return cStep; }
-} EqualsZeroData[EqualsZeroDataCount] = {
+} EqualsZeroData[] = {
     {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l,
         #ifndef CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
         5.0e-17l
@@ -157,7 +155,7 @@ TypeTraitsTest::TypeTraitsTest() {
         &TypeTraitsTest::equalsZeroFloatingPoint<Float>,
         &TypeTraitsTest::equalsZeroFloatingPoint<Double>,
         &TypeTraitsTest::equalsZeroFloatingPoint<long double>},
-        EqualsZeroDataCount);
+        Corrade::Containers::arraySize(EqualsZeroData));
 
     addTests({&TypeTraitsTest::equal});
 }
