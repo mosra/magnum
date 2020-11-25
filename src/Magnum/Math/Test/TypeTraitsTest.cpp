@@ -85,11 +85,11 @@ struct {
         5.0e-14
         #endif
     },
-    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l,
+    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15,
         #ifndef CORRADE_LONG_DOUBLE_SAME_AS_DOUBLE
-        5.0e-18l
+        1.0e-18l, 5.0e-18l
         #else
-        5.0e-15
+        1.0e-15l, 5.0e-15l
         #endif
     },
     {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2,
