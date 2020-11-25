@@ -74,7 +74,8 @@ check() {
 
     rm -rf coverage
     mkdir coverage
-    # Keep in sync with package/ci/appveyor-lcov.sh and travis.yml, please
+    # Keep in sync with package/ci/appveyor-lcov.sh, circleci.yml travis.yml,
+    # please
     lcov --directory . --capture --output-file coverage.info
     lcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
     lcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null

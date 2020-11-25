@@ -10,113 +10,114 @@ addons:
     - libopenal-dev
 
 matrix:
+  # The commented-out jobs are currently handled on Circle CI
   include:
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-gl
-    - TARGET=desktop
-    - CMAKE_CXX_FLAGS="--coverage"
-    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
-    - CONFIGURATION=Debug
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-nondeprecated
-    - TARGET=desktop
-    - BUILD_DEPRECATED=OFF
-    - CMAKE_CXX_FLAGS="-DCORRADE_NO_ASSERT"
-    - CONFIGURATION=Release
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: clang
-    env:
-    - JOBID=linux-sanitizers
-    - TARGET=desktop-sanitizers
-    - CMAKE_CXX_FLAGS=-fsanitize=address
-    - CONFIGURATION=Debug
-    addons:
-      apt:
-        sources:
-        - llvm-toolchain-xenial
-        packages:
-        - libgl1-mesa-dev
-        - ninja-build
-        - clang-3.8
-        - libsdl2-dev
-        - libglfw3-dev
-        - libopenal-dev
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: clang
-    env:
-    - JOBID=linux-threadsanitizer
-    - TARGET=desktop-sanitizers
-    - CMAKE_CXX_FLAGS=-fsanitize=thread
-    - CONFIGURATION=Debug
-    addons:
-      apt:
-        sources:
-        - llvm-toolchain-xenial
-        packages:
-        - libgl1-mesa-dev
-        - ninja-build
-        - clang-3.8
-        - libsdl2-dev
-        - libglfw3-dev
-        - libopenal-dev
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-vulkan
-    - TARGET=desktop-vulkan
-    - CMAKE_CXX_FLAGS="--coverage"
-    addons:
-      apt:
-        packages:
-        - ninja-build
-        - lcov
-        - libsdl2-dev
-        - libglfw3-dev
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-static
-    - TARGET=desktop
-    - CMAKE_CXX_FLAGS="--coverage"
-    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
-    - BUILD_STATIC=ON
-    - CONFIGURATION=Debug
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-gles2
-    - TARGET=desktop-gles
-    - TARGET_GLES2=ON
-    - CMAKE_CXX_FLAGS="--coverage"
-    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
-  - language: cpp
-    os: linux
-    dist: xenial
-    compiler: gcc
-    env:
-    - JOBID=linux-gles3
-    - TARGET=desktop-gles
-    - TARGET_GLES2=OFF
-    - CMAKE_CXX_FLAGS="--coverage"
-    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-gl
+    #- TARGET=desktop
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
+    #- CONFIGURATION=Debug
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-nondeprecated
+    #- TARGET=desktop
+    #- BUILD_DEPRECATED=OFF
+    #- CMAKE_CXX_FLAGS="-DCORRADE_NO_ASSERT"
+    #- CONFIGURATION=Release
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: clang
+    #env:
+    #- JOBID=linux-sanitizers
+    #- TARGET=desktop-sanitizers
+    #- CMAKE_CXX_FLAGS=-fsanitize=address
+    #- CONFIGURATION=Debug
+    #addons:
+      #apt:
+        #sources:
+        #- llvm-toolchain-xenial
+        #packages:
+        #- libgl1-mesa-dev
+        #- ninja-build
+        #- clang-3.8
+        #- libsdl2-dev
+        #- libglfw3-dev
+        #- libopenal-dev
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: clang
+    #env:
+    #- JOBID=linux-threadsanitizer
+    #- TARGET=desktop-sanitizers
+    #- CMAKE_CXX_FLAGS=-fsanitize=thread
+    #- CONFIGURATION=Debug
+    #addons:
+      #apt:
+        #sources:
+        #- llvm-toolchain-xenial
+        #packages:
+        #- libgl1-mesa-dev
+        #- ninja-build
+        #- clang-3.8
+        #- libsdl2-dev
+        #- libglfw3-dev
+        #- libopenal-dev
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-vulkan
+    #- TARGET=desktop-vulkan
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #addons:
+      #apt:
+        #packages:
+        #- ninja-build
+        #- lcov
+        #- libsdl2-dev
+        #- libglfw3-dev
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-static
+    #- TARGET=desktop
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
+    #- BUILD_STATIC=ON
+    #- CONFIGURATION=Debug
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-gles2
+    #- TARGET=desktop-gles
+    #- TARGET_GLES2=ON
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
+  #- language: cpp
+    #os: linux
+    #dist: xenial
+    #compiler: gcc
+    #env:
+    #- JOBID=linux-gles3
+    #- TARGET=desktop-gles
+    #- TARGET_GLES2=OFF
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
   - language: cpp
     os: osx
     # The new plugin testing workflow is dynamically loading and unloading them
@@ -160,26 +161,27 @@ matrix:
     - JOBID=ios-gles3
     - TARGET=ios-simulator
     - TARGET_GLES2=OFF
-  - language: cpp
-    os: osx
-    # Since August 1st, 2019, tests that iterate over 65536 elements
-    # (MathHalfTest, MathPackingTest and MathColorTest) are segfaulting on the
-    # xcode9.3 image. Using whatever image is the default instead.
-    #osx_image: xcode9.3
-    env:
-    - JOBID=emscripten-webgl1
-    - TARGET=emscripten
-    - TARGET_GLES2=ON
-  - language: cpp
-    os: osx
-    # Since August 1st, 2019, tests that iterate over 65536 elements
-    # (MathHalfTest, MathPackingTest and MathColorTest) are segfaulting on the
-    # xcode9.3 image. Using whatever image is the default instead.
-    #osx_image: xcode9.3
-    env:
-    - JOBID=emscripten-webgl2
-    - TARGET=emscripten
-    - TARGET_GLES2=OFF
+  # TODO: these should be redone on Linux + Docker, like with Corrade
+  #- language: cpp
+    #os: osx
+    ## Since August 1st, 2019, tests that iterate over 65536 elements
+    ## (MathHalfTest, MathPackingTest and MathColorTest) are segfaulting on the
+    ## xcode9.3 image. Using whatever image is the default instead.
+    ##osx_image: xcode9.3
+    #env:
+    #- JOBID=emscripten-webgl1
+    #- TARGET=emscripten
+    #- TARGET_GLES2=ON
+  #- language: cpp
+    #os: osx
+    ## Since August 1st, 2019, tests that iterate over 65536 elements
+    ## (MathHalfTest, MathPackingTest and MathColorTest) are segfaulting on the
+    ## xcode9.3 image. Using whatever image is the default instead.
+    ##osx_image: xcode9.3
+    #env:
+    #- JOBID=emscripten-webgl2
+    #- TARGET=emscripten
+    #- TARGET_GLES2=OFF
   - language: android
     os: linux
     # Setting xenial here will cause it to use 12.04, with GCC 4.6 and other
@@ -249,12 +251,6 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
-# binaryen is a dependency for wasm targets, but homebrew devs don't give a
-# shit: https://github.com/Homebrew/homebrew-core/issues/47869 Also the
-# generated .emscripten doesn't have a newline at EOL so the workaround listed
-# in the issue doesn't work and one has to add explicit \n there to make it
-# work. EVERYTHING SUCKS NOWADAYS.
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install emscripten binaryen && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc && echo -e "\nBINARYEN_ROOT = '/usr/local'\n" >> ~/.emscripten; fi
 - if [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL on macOS and iOS (cached)
@@ -285,7 +281,7 @@ script:
 - sync
 
 after_success:
-# Keep in sync with PKBUILD-coverage and appveyor-lcov.sh, please
+# Keep in sync with PKBUILD-coverage, appveyor-lcov.sh and circleci.yml, please
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --directory . --capture --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null; fi
