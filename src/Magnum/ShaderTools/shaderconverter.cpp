@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/GrowableArray.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
@@ -64,6 +65,8 @@ magnum-shaderconverter [-h|--help] [--validate] [--link]
     [-c|--converter-options key=val,key2=val2,…]... [-q|--quiet] [-v|--verbose]
     [--warning-as-error] [-E|--preprocess-only] [-D|--define name=value]...
     [-U|--undefine name]... [-O|--optimize LEVEL] [-g|--debug-info LEVEL]
+    [--input-format glsl|spv|spvasm|hlsl|metal]...
+    [--output-format glsl|spv|spvasm|hlsl|metal]...
     [--input-version VERSION]... [--output-version VERSION]...
     [--] input... output
 @endcode
@@ -99,6 +102,10 @@ Arguments:
     @ref ShaderTools::AbstractConverter::setOptimizationLevel() function.
 -   `-g`, `--debug-info LEVEL` --- debug info level to use. Corresponds to the
     @ref ShaderTools::AbstractConverter::setDebugInfoLevel() function.
+-   `--input-format glsl|spv|spvasm|hlsl|metal` --- input format for each
+    converter
+-   `--output-format glsl|spv|spvasm|hlsl|metal` --- output format for each
+    converter
 -   `--input-version VERSION` --- input format version for each converter
 -   `--output-version VERSION` --- output format version for each converter
 
@@ -118,10 +125,10 @@ key/value pairs to set in the converter plugin configuration. If the `=`
 character is omitted, it's equivalent to saying `key=true`; configuration
 subgroups are delimited with `/`. It's possible to specify the `-C` /
 `--converter` option (and correspondingly also `-c` / `--converter-options`,
-`--input-version` and `--output-version`) multiple times in order to chain more
-converters together. All converters in the chain have to support the
-@ref ShaderTools::ConverterFeature::ConvertData feature, if there's just one
-converter it's enough for it to support
+`--input-format`, `--output-format`, `--input-version` and `--output-version`)
+multiple times in order to chain more converters together. All converters in
+the chain have to support the @ref ShaderTools::ConverterFeature::ConvertData
+feature, if there's just one converter it's enough for it to support
 @ref ShaderTools::ConverterFeature::ConvertFile. If no `-C` / `--converter` is
 specified, @ref ShaderTools::AnyConverter "AnyShaderConverter" is used.
 
@@ -130,9 +137,10 @@ The `-D` / `--define`, `-U` / `--undefine`, `-O` / `--optimize`, `-g` /
 converter. Split the conversion to multiple passes if you need to pass those to
 converters later in the chain.
 
-Values accepted by `-O` / `--optimize`, `-g` / `--debug-info`, `--input-version`
-and `--output-version` are converter-specific, see documentation of a
-particular converter for more information.
+Values accepted by `-O` / `--optimize`, `-g` / `--debug-info`, `--input-format`,
+`--output-format`, `--input-version` and `--output-version` are
+converter-specific, see documentation of a particular converter for more
+information.
 
 @section magnum-shaderconverter-example Example usage
 
@@ -158,6 +166,7 @@ magnum-shaderconverter phong.frag -DDIFFUSE_TEXTURE -DNORMAL_TEXTURE --input-ver
 
 }
 
+using namespace Corrade::Containers::Literals;
 using namespace Magnum;
 
 int main(int argc, char** argv) {
@@ -177,6 +186,9 @@ int main(int argc, char** argv) {
         .addArrayOption('U', "undefine").setHelp("undefine", "undefine a preprocessor macro", "name")
         .addOption('O', "optimize").setHelp("optimize", "optimization level to use", "LEVEL")
         .addOption('g', "debug-info").setHelp("debug-info", "debug info level to use", "LEVEL")
+        /** @todo what the heck is the extension for wgsl and dxil?! */
+        .addArrayOption("input-format").setHelp("input-format", "input format for each converter", "glsl|spv|spvasm|hlsl|metal")
+        .addArrayOption("output-format").setHelp("output-format", "output format for each converter", "glsl|spv|spvasm|hlsl|metal")
         .addArrayOption("input-version").setHelp("input-version", "input format version for each converter", "VERSION")
         .addArrayOption("output-version").setHelp("output-version", "output format version for each converter", "VERSION")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
@@ -201,20 +213,21 @@ The -c / --converter-options argument accept a comma-separated list of
 key/value pairs to set in the converter plugin configuration. If the =
 character is omitted, it's equivalent to saying key=true; configuration
 subgroups are delimited with /. It's possible to specify the -C / --converter
-option (and correspondingly also -c / --converter-options, --input-version and
---output-version) multiple times in order to chain more converters together.
-All converters in the chain have to support the ConvertData feature, if there's
-just one converter it's enough for it to support ConvertFile. If no -C /
---converter is specified, AnyShaderConverter is used.
+option (and correspondingly also -c / --converter-options, --input-format,
+--output-format, --input-version and --output-version) multiple times in order
+to chain more converters together. All converters in the chain have to support
+the ConvertData feature, if there's just one converter it's enough for it to
+support ConvertFile. If no -C / --converter is specified, AnyShaderConverter is
+used.
 
 The -D / --define, -U / --undefine, -O / --optimize, -g / --debug-info, -E /
 --preprocess-only arguments apply only to the first converter. Split the
 conversion to multiple passes if you need to pass those to converters later in
 the chain.
 
-Values accepted by -O / --optimize, -g / --debug-info, --input-version and
---output-version are converter-specific, see documentation of a particular
-converter for more information.)")
+Values accepted by -O / --optimize, -g / --debug-info, --input-format,
+--output-format, --input-version and --output-version are converter-specific,
+see documentation of a particular converter for more information.)")
         .parse(argc, argv);
 
     /* Generic checks */
@@ -268,13 +281,46 @@ converter for more information.)")
             return 7;
         }
 
-        /* Set options and versions, if passed */
+        /* Set options if passed */
         if(i < args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
+
+        /* Parse format, if passed */
+        ShaderTools::Format inputFormat{}, outputFormat{};
+        auto parseFormat = [](Containers::StringView format) -> Containers::Optional<ShaderTools::Format> {
+            if(format == ""_s) return ShaderTools::Format::Unspecified;
+            if(format == "glsl"_s) return ShaderTools::Format::Glsl;
+            if(format == "spv"_s) return ShaderTools::Format::Spirv;
+            if(format == "spvasm"_s) return ShaderTools::Format::SpirvAssembly;
+            if(format == "hlsl"_s) return ShaderTools::Format::Hlsl;
+            if(format == "metal"_s) return ShaderTools::Format::Msl;
+            /** @todo wgsl and dxil once i figure out the extensions */
+
+            Error{} << "Unrecognized format" << format << Debug::nospace << ", expected glsl, spv, spvasm, hlsl or metal";
+            return {};
+        };
+        if(i < args.arrayValueCount("input-format")) {
+            if(const Containers::Optional<ShaderTools::Format> format = parseFormat(args.arrayValue<Containers::StringView>("input-format", i)))
+                inputFormat = *format;
+            else return 8;
+        }
+        if(i < args.arrayValueCount("output-format")) {
+            if(const Containers::Optional<ShaderTools::Format> format = parseFormat(args.arrayValue<Containers::StringView>("output-format", i)))
+                outputFormat = *format;
+            else return 9;
+        }
+
+        /* Get version, if passed */
+        Containers::StringView inputVersion{}, outputVersion{};
         if(i < args.arrayValueCount("input-version"))
-            converter->setInputFormat({}, args.arrayValue("input-version", i));
+            inputVersion = args.arrayValue("input-version", i);
         if(i < args.arrayValueCount("output-version"))
-            converter->setOutputFormat({}, args.arrayValue("output-version", i));
+            outputVersion = args.arrayValue("output-version", i);
+
+        /* If not passed, these are set to Unspecified and "", which is the
+           default */
+        converter->setInputFormat(inputFormat, inputVersion);
+        converter->setOutputFormat(outputFormat, outputVersion);
 
         ShaderTools::ConverterFlags flags;
 
@@ -290,7 +336,7 @@ converter for more information.)")
             if((args.isSet("preprocess-only") || args.arrayValueCount("define") || args.arrayValueCount("undefine"))) {
                 if(!(converter->features() & ShaderTools::ConverterFeature::Preprocess)) {
                     Error{} << "The -E / -D / -U options are set, but" << converterName << "doesn't support preprocessing";
-                    return 8;
+                    return 10;
                 }
 
                 if(args.isSet("preprocess-only"))
@@ -315,7 +361,7 @@ converter for more information.)")
             if(!args.value("optimize").empty()) {
                 if(!(converter->features() & ShaderTools::ConverterFeature::Optimize)) {
                     Error{} << "The -O option is set, but" << converterName << "doesn't support optimization";
-                    return 9;
+                    return 11;
                 }
 
                 converter->setOptimizationLevel(args.value("optimize"));
@@ -324,7 +370,7 @@ converter for more information.)")
             if(!args.value("debug-info").empty()) {
                 if(!(converter->features() & ShaderTools::ConverterFeature::DebugInfo)) {
                     Error{} << "The -g option is set, but" << converterName << "doesn't support debug info";
-                    return 10;
+                    return 12;
                 }
 
                 converter->setDebugInfoLevel(args.value("debug-info"));
@@ -349,7 +395,7 @@ converter for more information.)")
 
             if(!(converter->features() & ShaderTools::ConverterFeature::ValidateFile)) {
                 Error{} << converterName << "doesn't support file validation";
-                return 11;
+                return 13;
             }
 
             std::pair<bool, Containers::String> out = converter->validateFile(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0));
@@ -363,7 +409,7 @@ converter for more information.)")
                 if(!out.second.isEmpty()) Warning{} << out.second;
             } else if(args.isSet("verbose"))
                 Debug{} << "Validation passed";
-            return out.first ? 0 : 12;
+            return out.first ? 0 : 14;
         }
 
         /** @todo ability to specify the stage (need a configurationvalue parser for this) */
@@ -372,7 +418,7 @@ converter for more information.)")
         if(i == 0 && converterCount <= 1) {
             if(!(converter->features() & ShaderTools::ConverterFeature::ConvertFile)) {
                 Error{} << converterName << "doesn't support file conversion";
-                return 13;
+                return 15;
             }
 
             /* No verbose output for just one converter */
@@ -381,14 +427,14 @@ converter for more information.)")
             if(args.isSet("link")) {
                 if(!converter->linkFilesToFile(linkInputs, args.value("output"))) {
                     Error{} << "Cannot link" << args.arrayValue("input", 0) << "and others to" << args.value("output");
-                    return 14;
+                    return 16;
                 }
 
             /* Converting */
             } else {
                 if(!converter->convertFileToFile(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0), args.value("output"))) {
                     Error{} << "Cannot convert" << args.arrayValue("input", 0) << "to" << args.value("output");
-                    return 15;
+                    return 17;
                 }
             }
 
@@ -396,7 +442,7 @@ converter for more information.)")
         } else {
             if(!(converter->features() & ShaderTools::ConverterFeature::ConvertData)) {
                 Error{} << converterName << "doesn't support data conversion";
-                return 16;
+                return 18;
             }
 
             /* This is the first --converter and there are more, go from a file
@@ -409,14 +455,14 @@ converter for more information.)")
                 if(args.isSet("link")) {
                     if(!(data = converter->linkFilesToData(linkInputs))) {
                         Error{} << "Cannot link" << args.arrayValue("input", 0) << "and others to" << args.value("output");
-                        return 17;
+                        return 19;
                     }
 
                 /* Converting */
                 } else {
                     if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0)))) {
                         Error{} << "Cannot convert" << args.arrayValue("input", 0);
-                        return 18;
+                        return 20;
                     }
                 }
 
@@ -431,7 +477,7 @@ converter for more information.)")
                 /* Subsequent operations are always a conversion, not link */
                 if(!(data = converter->convertDataToData(ShaderTools::Stage::Unspecified, data))) {
                     Error{} << "Cannot convert shader data";
-                    return 19;
+                    return 21;
                 }
 
             /* This is the last --converter, output to a file and exit the
@@ -445,7 +491,7 @@ converter for more information.)")
                 /* Subsequent operations are always a conversion, not link */
                 if(!converter->convertDataToFile(ShaderTools::Stage::Unspecified, data, args.value("output"))) {
                     Error{} << "Cannot save file" << args.value("output");
-                    return 20;
+                    return 22;
                 }
 
             } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
