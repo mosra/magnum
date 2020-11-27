@@ -7,6 +7,7 @@ not give up on flexibility? *Here it is.* And it's free to use, even for
 commercial purposes.
 
 [![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://circleci.com/gh/mosra/magnum.svg?style=shield)](https://circleci.com/gh/mosra/magnum)
 [![Build Status](https://travis-ci.com/mosra/magnum.svg?branch=master)](https://travis-ci.com/mosra/magnum)
 [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 [![Coverage Status](https://codecov.io/gh/mosra/magnum/branch/master/graph/badge.svg)](https://codecov.io/gh/mosra/magnum)

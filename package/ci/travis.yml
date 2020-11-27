@@ -118,35 +118,35 @@ matrix:
     #- TARGET_GLES2=OFF
     #- CMAKE_CXX_FLAGS="--coverage"
     #- LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.8"
-  - language: cpp
-    os: osx
-    # The new plugin testing workflow is dynamically loading and unloading them
-    # in the tests. When that's combined with coverage and LLVM < 5.0.1, all
-    # such tests crash on exit: https://bugs.llvm.org/show_bug.cgi?id=27224
-    # But only in some cases (for example not at all in tests for Corrade
-    # PluginManager itself). The commit fixing it is from Jan 3 2018 and all
-    # Xcode versions before Xcode 9.3 beta (released on Jan 24) are affected.
-    # https://github.com/llvm-mirror/compiler-rt/commit/860d7953a6f36980f406bfbff76f3c00f15eed57
-    # Xcode 9.3 beta has broken git clone ("unknown protocol version 2") since
-    # Feb 16 2019, so using version 9.3 now.
-    osx_image: xcode9.3
-    compiler: clang
-    env:
-    - JOBID=macos-gl
-    - TARGET=desktop
-    - CMAKE_CXX_FLAGS="--coverage"
-    - CONFIGURATION=Debug
-  - language: cpp
-    os: osx
-    # See above
-    osx_image: xcode9.3
-    compiler: clang
-    env:
-    - JOBID=macos-static
-    - TARGET=desktop
-    - CMAKE_CXX_FLAGS="--coverage"
-    - BUILD_STATIC=ON
-    - CONFIGURATION=Debug
+  #- language: cpp
+    #os: osx
+    ## The new plugin testing workflow is dynamically loading and unloading them
+    ## in the tests. When that's combined with coverage and LLVM < 5.0.1, all
+    ## such tests crash on exit: https://bugs.llvm.org/show_bug.cgi?id=27224
+    ## But only in some cases (for example not at all in tests for Corrade
+    ## PluginManager itself). The commit fixing it is from Jan 3 2018 and all
+    ## Xcode versions before Xcode 9.3 beta (released on Jan 24) are affected.
+    ## https://github.com/llvm-mirror/compiler-rt/commit/860d7953a6f36980f406bfbff76f3c00f15eed57
+    ## Xcode 9.3 beta has broken git clone ("unknown protocol version 2") since
+    ## Feb 16 2019, so using version 9.3 now.
+    #osx_image: xcode9.3
+    #compiler: clang
+    #env:
+    #- JOBID=macos-gl
+    #- TARGET=desktop
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- CONFIGURATION=Debug
+  #- language: cpp
+    #os: osx
+    ## See above
+    #osx_image: xcode9.3
+    #compiler: clang
+    #env:
+    #- JOBID=macos-static
+    #- TARGET=desktop
+    #- CMAKE_CXX_FLAGS="--coverage"
+    #- BUILD_STATIC=ON
+    #- CONFIGURATION=Debug
   - language: cpp
     os: osx
     osx_image: xcode7.3

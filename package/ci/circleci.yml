@@ -13,6 +13,9 @@ executors:
   ubuntu-16_04:
     docker:
     - image: ubuntu:xenial-20201014
+  xcode-9_4:
+    macos:
+      xcode: 9.4.1
   emscripten:
     docker:
     # 1.39.0 is the oldest on Docker. Anything before 1.39.2 is useless as emar
@@ -24,7 +27,7 @@ executors:
     - image: emscripten/emsdk:1.39.6-upstream
 
 commands:
-  install-base:
+  install-base-linux:
     parameters:
       extra:
         type: string
@@ -37,6 +40,20 @@ commands:
           apt update
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
           apt install -y git ninja-build $LCOV_PACKAGES << parameters.extra >>
+
+  install-base-macos:
+    parameters:
+      extra:
+        type: string
+        default: ""
+    steps:
+    - run:
+        name: Install base packages
+        # As usual, homebrew takes five minutes to update and then explodes in
+        # a spectacular way. How is this acceptable?!
+        command: |
+          if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov"; fi
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake ninja $LCOV_PACKAGES << parameters.extra >>
 
   install-gcc-4_8:
     steps:
@@ -158,7 +175,7 @@ jobs:
       CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
     - install-gcc-4_8
     - install-cmake-3_4
@@ -174,7 +191,7 @@ jobs:
       CMAKE_CXX_FLAGS: --coverage
       CONFIGURATION: Debug
     steps:
-    - install-base:
+    - install-base-linux:
         extra: cmake libsdl2-dev libglfw3-dev
     - build:
         script: unix-desktop-vulkan.sh
@@ -190,7 +207,7 @@ jobs:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libsdl2-dev libglfw3-dev
     - install-gcc-4_8
     - install-cmake-3_4
@@ -209,7 +226,7 @@ jobs:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libsdl2-dev libglfw3-dev
     - install-gcc-4_8
     - install-cmake-3_4
@@ -229,7 +246,7 @@ jobs:
       CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
     - install-gcc-4_8
     - install-cmake-3_4
@@ -247,7 +264,7 @@ jobs:
       CONFIGURATION: Release
       PLATFORM_GL_API: GLX
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev
     - install-gcc-4_8
     - install-cmake-3_4
@@ -266,7 +283,7 @@ jobs:
       CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libgl1-mesa-dev libopenal-dev
     - install-clang-3_8
     - install-cmake-3_4
@@ -285,7 +302,7 @@ jobs:
       CONFIGURATION: Debug
       PLATFORM_GL_API: GLX
     steps:
-    - install-base:
+    - install-base-linux:
         extra: libgl1-mesa-dev libopenal-dev
     - install-clang-3_8
     - install-cmake-3_4
@@ -293,13 +310,41 @@ jobs:
     - build:
         script: unix-desktop.sh
 
+  macos-gl:
+    executor: xcode-9_4
+    environment:
+      CMAKE_CXX_FLAGS: --coverage
+      CONFIGURATION: Debug
+      PLATFORM_GL_API: CGL
+    steps:
+    - install-base-macos:
+        extra: sdl2 glfw
+    - build:
+        script: unix-desktop.sh
+    - lcov
+
+  macos-static:
+    executor: xcode-9_4
+    environment:
+      # STUPID yml interprets unquoted ON as a boolean
+      BUILD_STATIC: "ON"
+      CMAKE_CXX_FLAGS: --coverage
+      CONFIGURATION: Debug
+      PLATFORM_GL_API: CGL
+    steps:
+    - install-base-macos:
+        extra: sdl2 glfw
+    - build:
+        script: unix-desktop.sh
+    - lcov
+
   emscripten-webgl1:
     executor: emscripten
     environment:
       # STUPID yml interprets unquoted ON as a boolean
       TARGET_GLES2: "ON"
     steps:
-    - install-base
+    - install-base-linux
     - build:
         script: emscripten.sh
 
@@ -309,7 +354,7 @@ jobs:
       # STUPID yml interprets unquoted OFF as a boolean
       TARGET_GLES2: "OFF"
     steps:
-    - install-base
+    - install-base-linux
     - build:
         script: emscripten.sh
 
@@ -325,5 +370,7 @@ workflows:
     - linux-nondeprecated
     - linux-sanitizers
     - linux-threadsanitizer
+    - macos-gl
+    - macos-static
     - emscripten-webgl1
     - emscripten-webgl2
