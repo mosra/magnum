@@ -242,14 +242,14 @@ void AnyConverterTest::validatePropagateOutputVersion() {
     /* This is an invalid version. We have to supply a valid file path because
        the version gets checked in doValidateData(), called from
        AbstractConverter::doValidateFile() with the file contents. */
-    converter->setOutputFormat(Format::Spirv, "opengl4.0");
+    converter->setOutputFormat(Format::Glsl, "opengl4.0");
 
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl")),
         std::make_pair(false, ""));
     CORRADE_COMPARE(out.str(),
-        "ShaderTools::GlslangConverter::validateData(): output format should be Unspecified but got ShaderTools::Format::Spirv\n");
+        "ShaderTools::GlslangConverter::validateData(): output format should be Spirv or Unspecified but got ShaderTools::Format::Glsl\n");
 }
 
 void AnyConverterTest::validatePropagatePreprocess() {
