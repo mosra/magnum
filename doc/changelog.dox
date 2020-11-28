@@ -199,6 +199,8 @@ See also:
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
     an explicit exception-enabling flag when built with Emscripten 1.39.0 and
     newer
+-   On CMake 3.16 and newer, `FindMagnum.cmake` can provide additional details
+    if some component is not found.
 
 @subsection changelog-latest-bugfixes Bug fixes
 

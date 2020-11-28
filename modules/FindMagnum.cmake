@@ -356,20 +356,50 @@ endif()
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENTS
     Audio DebugTools GL MeshTools Primitives SceneGraph Shaders ShaderTools
-    Text TextureTools Trade Vk
-    AndroidApplication EmscriptenApplication GlfwApplication GlxApplication
-    Sdl2Application XEglApplication WindowlessCglApplication
-    WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication
-    WindowlessWglApplication WindowlessWindowsEglApplication
-    CglContext EglContext GlxContext WglContext
-    OpenGLTester)
+    Text TextureTools Trade
+    WindowlessEglApplication EglContext OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
     TgaImageConverter TgaImporter WavAudioImporter)
 set(_MAGNUM_EXECUTABLE_COMPONENTS
-    distancefieldconverter fontconverter imageconverter sceneconverter
-    shaderconverter gl-info al-info)
+    imageconverter sceneconverter shaderconverter gl-info al-info)
+# Audio and Vk libs aren't enabled by default, and none of the Context,
+# Application, Tester libs nor plugins are. Keep in sync with Magnum's root
+# CMakeLists.txt.
+set(_MAGNUM_IMPLICITLY_ENABLED_COMPONENTS
+    DebugTools MeshTools SceneGraph Shaders ShaderTools Text TextureTools Trade
+    GL Primitives)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS Vk)
+endif()
+if(NOT CORRADE_TARGET_ANDROID)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS Sdl2Application)
+endif()
+if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS GlfwApplication)
+endif()
+if(CORRADE_TARGET_ANDROID)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS AndroidApplication)
+endif()
+if(CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS EmscriptenApplication)
+endif()
+if(CORRADE_TARGET_IOS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessIosApplication)
+endif()
+if(CORRADE_TARGET_APPLE AND NOT CORRADE_TARGET_IOS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessCglApplication CglContext)
+endif()
+if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS GlxApplication XEglApplication WindowlessGlxApplication GlxContext)
+endif()
+if(CORRADE_TARGET_WINDOWS)
+    list(APPEND _MAGNUM_LIBRARY_COMPONENTS WindowlessWglApplication WglContext WindowlessWindowsEglApplication)
+endif()
+if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
+    list(APPEND _MAGNUM_EXECUTABLE_COMPONENTS fontconverter distancefieldconverter)
+endif()
 
 # Inter-component dependencies
 set(_MAGNUM_Audio_DEPENDENCIES )
@@ -497,6 +527,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 endforeach()
 
 # Join the lists, remove duplicate components
+set(_MAGNUM_ORIGINAL_FIND_COMPONENTS ${Magnum_FIND_COMPONENTS})
 if(_MAGNUM_ADDITIONAL_COMPONENTS)
     list(INSERT Magnum_FIND_COMPONENTS 0 ${_MAGNUM_ADDITIONAL_COMPONENTS})
 endif()
@@ -529,10 +560,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             find_library(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE Magnum${_component})
             mark_as_advanced(MAGNUM_${_COMPONENT}_LIBRARY_DEBUG
                 MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
-        endif()
 
         # Plugin components
-        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
+        elseif(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
             # AudioImporter plugin specific name suffixes
@@ -600,6 +630,22 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
             # Reset back
             set(CMAKE_FIND_LIBRARY_PREFIXES "${_tmp_prefixes}")
+
+        # Executables
+        elseif(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
+            add_executable(Magnum::${_component} IMPORTED)
+
+            find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
+            mark_as_advanced(MAGNUM_${_COMPONENT}_EXECUTABLE)
+
+            if(MAGNUM_${_COMPONENT}_EXECUTABLE)
+                set_property(TARGET Magnum::${_component} PROPERTY
+                    IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
+            endif()
+
+        # Something unknown, skip. FPHSA will take care of handling this below.
+        else()
+            continue()
         endif()
 
         # Library location for libraries/plugins
@@ -616,19 +662,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     IMPORTED_CONFIGURATIONS DEBUG)
                 set_property(TARGET Magnum::${_component} PROPERTY
                     IMPORTED_LOCATION_DEBUG ${MAGNUM_${_COMPONENT}_LIBRARY_DEBUG})
-            endif()
-        endif()
-
-        # Executables
-        if(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
-            add_executable(Magnum::${_component} IMPORTED)
-
-            find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
-            mark_as_advanced(MAGNUM_${_COMPONENT}_EXECUTABLE)
-
-            if(MAGNUM_${_COMPONENT}_EXECUTABLE)
-                set_property(TARGET Magnum::${_component} PROPERTY
-                    IMPORTED_LOCATION ${MAGNUM_${_COMPONENT}_EXECUTABLE})
             endif()
         endif()
 
@@ -1005,11 +1038,45 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     endif()
 endif()
 
+# For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
+# useful info about the failed components.
+if(NOT CMAKE_VERSION VERSION_LESS 3.16)
+    set(_MAGNUM_REASON_FAILURE_MESSAGE)
+    # Go only through the originally specified find_package() components, not
+    # the dependencies added by us afterwards
+    foreach(_component ${_MAGNUM_ORIGINAL_FIND_COMPONENTS})
+        if(Magnum_${_component}_FOUND)
+            continue()
+        endif()
+
+        # If it's not known at all, tell the user -- it might be a new library
+        # and an old Find module, or something platform-specific.
+        if(NOT _component IN_LIST _MAGNUM_LIBRARY_COMPONENTS AND NOT _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND NOT _component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
+            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not a known component on this platform.")
+        # Otherwise, if it's not among implicitly built components, hint that
+        # the user may need to enable it
+        # TODO: currently, the _FOUND variable doesn't reflect if dependencies
+        #   were found. When it will, this needs to be updated to avoid
+        #   misleading messages.
+        elseif(NOT _component IN_LIST _MAGNUM_IMPLICITLY_ENABLED_COMPONENTS)
+            string(TOUPPER ${_component} _COMPONENT)
+            list(APPEND _MAGNUM_REASON_FAILURE_MESSAGE "${_component} is not built by default. Make sure you enabled WITH_${_COMPONENT} when building Magnum.")
+        # Otherwise we have no idea. Better be silent than to print something
+        # misleading.
+        else()
+        endif()
+    endforeach()
+
+    string(REPLACE ";" " " _MAGNUM_REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
+    set(_MAGNUM_REASON_FAILURE_MESSAGE REASON_FAILURE_MESSAGE "${_MAGNUM_REASON_FAILURE_MESSAGE}")
+endif()
+
 # Complete the check with also all components
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY ${MAGNUM_EXTRAS_NEEDED}
-    HANDLE_COMPONENTS)
+    HANDLE_COMPONENTS
+    ${_MAGNUM_REASON_FAILURE_MESSAGE})
 
 # Components with optional dependencies -- add them once we know if they were
 # found or not.
