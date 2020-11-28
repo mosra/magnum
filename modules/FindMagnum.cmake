@@ -354,7 +354,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENT_LIST
+set(_MAGNUM_LIBRARY_COMPONENTS
     Audio DebugTools GL MeshTools Primitives SceneGraph Shaders ShaderTools
     Text TextureTools Trade Vk
     AndroidApplication EmscriptenApplication GlfwApplication GlxApplication
@@ -363,11 +363,11 @@ set(_MAGNUM_LIBRARY_COMPONENT_LIST
     WindowlessWglApplication WindowlessWindowsEglApplication
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
-set(_MAGNUM_PLUGIN_COMPONENT_LIST
+set(_MAGNUM_PLUGIN_COMPONENTS
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneConverter
     AnySceneImporter MagnumFont MagnumFontConverter ObjImporter
     TgaImageConverter TgaImporter WavAudioImporter)
-set(_MAGNUM_EXECUTABLE_COMPONENT_LIST
+set(_MAGNUM_EXECUTABLE_COMPONENTS
     distancefieldconverter fontconverter imageconverter sceneconverter
     shaderconverter gl-info al-info)
 
@@ -467,7 +467,7 @@ set(_MAGNUM_WglContext_DEPENDENCIES GL)
 set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter GL) # and below
 set(_MAGNUM_MagnumFontConverter_DEPENDENCIES Trade TgaImageConverter) # and below
 set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
-foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
+foreach(_component ${_MAGNUM_PLUGIN_COMPONENTS})
     if(_component MATCHES ".+AudioImporter")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Audio)
     elseif(_component MATCHES ".+ShaderConverter")
@@ -504,13 +504,6 @@ if(Magnum_FIND_COMPONENTS)
     list(REMOVE_DUPLICATES Magnum_FIND_COMPONENTS)
 endif()
 
-# Convert components lists to regular expressions so I can use if(MATCHES).
-# TODO: Drop this once CMake 3.3 and if(IN_LIST) can be used
-foreach(_WHAT LIBRARY PLUGIN EXECUTABLE)
-    string(REPLACE ";" "|" _MAGNUM_${_WHAT}_COMPONENTS "${_MAGNUM_${_WHAT}_COMPONENT_LIST}")
-    set(_MAGNUM_${_WHAT}_COMPONENTS "^(${_MAGNUM_${_WHAT}_COMPONENTS})$")
-endforeach()
-
 # Find all components. Maintain a list of components that'll need to have
 # their optional dependencies checked.
 set(_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD )
@@ -524,7 +517,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         set(Magnum_${_component}_FOUND TRUE)
     else()
         # Library components
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
             # Set library defaults, find the library
@@ -539,7 +532,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Plugin components
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             add_library(Magnum::${_component} UNKNOWN IMPORTED)
 
             # AudioImporter plugin specific name suffixes
@@ -610,7 +603,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Library location for libraries/plugins
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             if(MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     IMPORTED_CONFIGURATIONS RELEASE)
@@ -627,7 +620,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Executables
-        if(_component MATCHES ${_MAGNUM_EXECUTABLE_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS)
             add_executable(Magnum::${_component} IMPORTED)
 
             find_program(MAGNUM_${_COMPONENT}_EXECUTABLE magnum-${_component})
@@ -909,7 +902,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # No special setup for WavAudioImporter plugin
 
         # Find library/plugin includes
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
                 NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
                 HINTS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
@@ -918,7 +911,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # Automatic import of static plugins. Skip in case the include dir was
         # not found -- that'll fail later with a proper message.
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        if(_component IN_LIST _MAGNUM_PLUGIN_COMPONENTS AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
             # Automatic import of static plugins
             file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
             string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)
@@ -931,7 +924,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # Link to core Magnum library, add inter-library dependencies. If there
         # are optional dependencies, defer adding them to later once we know if
         # they were found or not.
-        if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
+        if(_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
             set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
@@ -950,7 +943,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         endif()
 
         # Decide if the library was found
-        if(((_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS}) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component MATCHES ${_MAGNUM_EXECUTABLE_COMPONENTS} AND MAGNUM_${_COMPONENT}_EXECUTABLE))
+        if(((_component IN_LIST _MAGNUM_LIBRARY_COMPONENTS OR _component IN_LIST _MAGNUM_PLUGIN_COMPONENTS) AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR AND (MAGNUM_${_COMPONENT}_LIBRARY_DEBUG OR MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)) OR (_component IN_LIST _MAGNUM_EXECUTABLE_COMPONENTS AND MAGNUM_${_COMPONENT}_EXECUTABLE))
             set(Magnum_${_component}_FOUND TRUE)
         else()
             set(Magnum_${_component}_FOUND FALSE)
