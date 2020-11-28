@@ -58,11 +58,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-turbo.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref turbo() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref turbo() @m_enddiv
 
 @endparblock
 
@@ -70,11 +70,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-magma.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref magma() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref magma() @m_enddiv
 
 @endparblock
 
@@ -82,11 +82,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-plasma.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref plasma() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref plasma() @m_enddiv
 
 @endparblock
 
@@ -94,11 +94,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-inferno.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref inferno() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref inferno() @m_enddiv
 
 @endparblock
 
@@ -106,11 +106,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-viridis.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref viridis() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref viridis() @m_enddiv
 
 @endparblock
 
@@ -118,11 +118,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-cool-warm-smooth.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmSmooth() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmSmooth() @m_enddiv
 
 @endparblock
 
@@ -130,11 +130,11 @@ See @ref building, @ref cmake and @ref debug-tools for more information.
 
 @parblock
 
-@m_div{m-col-l-8 m-push-l-3 m-col-m-8 m-push-m-4 m-nopadt}
+@m_div{m-col-l-7 m-push-l-4 m-col-m-8 m-push-m-4 m-nopadt}
 @image html colormap-cool-warm-bent.png width=100%
 @m_enddiv
 
-@m_div{m-col-l-2 m-pull-l-7 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmBent() @m_enddiv
+@m_div{m-col-l-3 m-pull-l-6 m-col-m-4 m-pull-m-8 m-text-center m-nopadt} @ref coolWarmBent() @m_enddiv
 
 @endparblock
 
