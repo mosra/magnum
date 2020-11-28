@@ -143,7 +143,8 @@ Are the below lists missing your name or something's wrong?
     bootstrap project
 -   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- Homebrew
     package for `magnum-bindings`
--   **[\@Janos95](https://github.com/Janos95)** -- @ref Math additions
+-   **[\@Janos95](https://github.com/Janos95)** -- @ref Math and
+    @ref DebugTools::ColorMap additions
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
     @ref Audio and @ref Trade library enhancements,
     @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication

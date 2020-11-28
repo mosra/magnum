@@ -40,6 +40,11 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-debugtools DebugTools library
+
+-   Added @ref DebugTools::ColorMap::coolWarmSmooth() and
+    @ref DebugTools::ColorMap::coolWarmBent() (see [mosra/magnum#473](https://github.com/mosra/magnum/pull/473))
+
 @subsubsection changelog-latest-new-gl GL library
 
 -   Implemented @gl_extension{EXT,texture_norm16} and
@@ -77,6 +82,7 @@ See also:
     and @ref Math::Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&) to
     create a transformation from a rotation and translation part (see
     [mosra/magnum#471](https://github.com/mosra/magnum/pull/471))
+-   Added @ref Math::Intersection::rayRange() (see [mosra/magnum#484](https://github.com/mosra/magnum/pull/484))
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 

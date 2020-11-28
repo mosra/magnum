@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2016, 2018 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2020 janos <janos.meny@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -177,6 +178,7 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 @param range                Range
 @return @cpp true @ce if the the ray intersects the range, @cpp false @ce
     otherwise
+@m_since_latest
 
 Note that you need to pass the inverse ray direction and not the ray direction.
 The purpose for this is to reduce the number of times you have to compute
