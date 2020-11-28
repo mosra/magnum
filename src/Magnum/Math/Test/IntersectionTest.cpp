@@ -51,6 +51,7 @@ struct IntersectionTest: Corrade::TestSuite::Tester {
     void sphereConeView();
     void sphereConeViewNotRigid();
     void rangeCone();
+    void rayRange();
     void aabbCone();
 };
 
@@ -81,6 +82,7 @@ IntersectionTest::IntersectionTest() {
               &IntersectionTest::sphereConeView,
               &IntersectionTest::sphereConeViewNotRigid,
               &IntersectionTest::rangeCone,
+              &IntersectionTest::rayRange,
               &IntersectionTest::aabbCone});
 }
 
@@ -432,6 +434,55 @@ void IntersectionTest::rangeCone() {
     CORRADE_VERIFY(!Intersection::rangeCone(
         Range3D::fromSize(-15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
         center, normal, angle));
+}
+
+
+void IntersectionTest::rayRange() {
+    const Vector3 origin{2,2,2};
+    const Range3D range{{-1, -1, -1},
+                        {1,  1,  1}};
+
+    const Vector3 center{0,0,1};
+    const Vector3 edge{0,-1,1};
+    const Vector3 corner{-1,-1,1};
+    const Float eps = 1e-6;
+
+    const Vector3 ones{1,1,1};
+
+    /* intersection at face center */
+    const Vector3 direction1 = center - origin;
+    const Vector3 invDir1 = ones/direction1;
+    CORRADE_VERIFY(Intersection::rayRange(origin, invDir1, range));
+
+    /* intersection close to edge */
+    const Vector3 direction2 = edge + Vector3{0,eps,0} - origin;
+    const Vector3 invDir2 = ones/direction2;
+    CORRADE_VERIFY(Intersection::rayRange(origin, invDir2, range));
+
+    /* no intersection close to edge */
+    const Vector3 direction3 = edge - Vector3{0,eps,0} - origin;
+    const Vector3 invDir3 = ones/direction3;
+    CORRADE_VERIFY(!Intersection::rayRange(origin, invDir3, range));
+
+    /* intersection close to corner */
+    const Vector3 direction4 = corner + Vector3{eps,eps,0} - origin;
+    const Vector3 invDir4 = ones/direction4;
+    CORRADE_VERIFY(Intersection::rayRange(origin, invDir4, range));
+
+    /* no intersection close to corner */
+    const Vector3 direction5 = corner - Vector3{eps,eps,0} - origin;
+    const Vector3 invDir5 = ones/direction5;
+    CORRADE_VERIFY(!Intersection::rayRange(origin, invDir5, range));
+
+    /* divide by zero test with intersection */
+    const Vector3 direction6{0,0,-1};
+    const Vector3 invDir6 = ones/direction6;
+    CORRADE_VERIFY(Intersection::rayRange({0,0,2}, invDir6, range));
+
+    /* divide by zero test without intersection */
+    const Vector3 direction7{0,0,1};
+    const Vector3 invDir7 = ones/direction7;
+    CORRADE_VERIFY(!Intersection::rayRange(origin, invDir7, range));
 }
 
 void IntersectionTest::aabbCone() {
