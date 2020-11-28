@@ -103,15 +103,19 @@ cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WI
 cmake_dependent_option(WITH_TRADE "Build Trade library" ON "NOT WITH_MESHTOOLS;NOT WITH_PRIMITIVES;NOT WITH_IMAGECONVERTER;NOT WITH_ANYIMAGEIMPORTER;NOT WITH_ANYIMAGECONVERTER;NOT WITH_ANYSCENEIMPORTER;NOT WITH_OBJIMPORTER;NOT WITH_TGAIMAGECONVERTER;NOT WITH_TGAIMPORTER" ON)
 cmake_dependent_option(WITH_GL "Build GL library" ON "NOT WITH_SHADERS;NOT WITH_GL_INFO;NOT WITH_ANDROIDAPPLICATION;NOT WITH_WINDOWLESSIOSAPPLICATION;NOT WITH_CGLCONTEXT;NOT WITH_GLXAPPLICATION;NOT WITH_GLXCONTEXT;NOT WITH_XEGLAPPLICATION;NOT WITH_WINDOWLESSWGLAPPLICATION;NOT WITH_WGLCONTEXT;NOT WITH_WINDOWLESSWINDOWSEGLAPPLICATION;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 option(WITH_PRIMITIVES "Builf Primitives library" ON)
-option(WITH_VK "Build Vk library" OFF)
 
 cmake_dependent_option(TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF "WITH_GL" OFF)
 cmake_dependent_option(TARGET_GL "Build libraries with OpenGL interoperability" ON "WITH_GL" OFF)
-cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
 
 # EGL context and windowless EGL application, available everywhere
 cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_GL_INFO;NOT TARGET_HEADLESS" ON)
 option(WITH_EGLCONTEXT "Build EglContext library" OFF)
+
+# Vulkan, everywhere except Emscripten
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    option(WITH_VK "Build Vk library" OFF)
+    cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
+endif()
 
 # Android-specific application libraries
 if(CORRADE_TARGET_ANDROID)
