@@ -172,19 +172,20 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 
 /**
 @brief Intersection of a ray with a range.
-@param rayOrigin    Origin of the ray
-@param invRayDir  Componentwise inverse of the ray direction
-@param range Range
-@return @cpp true @ce if the the ray intersect the range, @cpp false @ce otherwise.
+@param rayOrigin            Origin of the ray
+@param inverseRayDirection  Component-wise inverse of the ray direction
+@param range                Range
+@return @cpp true @ce if the the ray intersects the range, @cpp false @ce
+    otherwise
 
 Note that you need to pass the inverse ray direction and not the ray direction.
 The purpose for this is to reduce the number of times you have to compute
-a ray inverse, when doing multiple ray range intersections (For example
-when traversing an aabb-tree).
-The algorithm implemented is a version of the classical slabs algorithm, see
-listing 1 in [Majercik et al.](http://jcgt.org/published/0007/03/04/).
+a ray inverse, when doing multiple ray / range intersections (for example
+when traversing an AABB tree). The algorithm implemented is a version of the
+classical slabs algorithm, see *Listing 1* in
+[Majercik et al.](http://jcgt.org/published/0007/03/04/).
 */
-template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& invRayDir, const Range3D<T>& range);
+template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& inverseRayDirection, const Range3D<T>& range);
 
 /**
 @brief Intersection of an axis-aligned box and a frustum
@@ -444,10 +445,10 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
     return true;
 }
 
-template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& invRayDir, const Range3D<T>& range) {
-    const Vector3<T> t0 = (range.min() - rayOrigin)*invRayDir;
-    const Vector3<T> t1 = (range.max() - rayOrigin)*invRayDir;
-    const std::pair<Vector3<T>, Vector3<T>> tminMax = minmax(t0,t1);
+template<class T> bool rayRange(const Vector3<T>& rayOrigin, const Vector3<T>& inverseRayDirection, const Range3D<T>& range) {
+    const Vector3<T> t0 = (range.min() - rayOrigin)*inverseRayDirection;
+    const Vector3<T> t1 = (range.max() - rayOrigin)*inverseRayDirection;
+    const std::pair<Vector3<T>, Vector3<T>> tminMax = minmax(t0, t1);
 
     return tminMax.first.max() <= tminMax.second.min();
 }
