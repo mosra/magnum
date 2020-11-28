@@ -185,10 +185,13 @@ namespace {
     std::string canvasId() {
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+        /* Note: can't use let or const, as that breaks closure compiler:
+            ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
+            supported for ECMASCRIPT6 mode or better: const declaration. */
         char* id = reinterpret_cast<char*>(EM_ASM_INT({
-            const id = Module['canvas'].id;
-            const bytes = lengthBytesUTF8(id) + 1;
-            const memory = _malloc(bytes);
+            var id = Module['canvas'].id;
+            var bytes = lengthBytesUTF8(id) + 1;
+            var memory = _malloc(bytes);
             stringToUTF8(id, memory, bytes);
             return memory;
         }));
@@ -561,14 +564,17 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        1.38.27 depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
        but we don't want to force this flag on the users so the behavior
        handles both. */
+    /* Note: can't use let or const, as that breaks closure compiler:
+        ERROR - [JSC_LANGUAGE_FEATURE] This language feature is only
+        supported for ECMASCRIPT6 mode or better: const declaration. */
     const char* keyboardListeningElement = reinterpret_cast<const char*>(EM_ASM_INT({
         var element = Module['keyboardListeningElement'] || document;
 
         if(element === document) return 1; /* EMSCRIPTEN_EVENT_TARGET_DOCUMENT */
         if(element === window) return 2; /* EMSCRIPTEN_EVENT_TARGET_WINDOW */
         if('id' in element) {
-            const bytes = lengthBytesUTF8(element.id) + 1;
-            const memory = _malloc(bytes);
+            var bytes = lengthBytesUTF8(element.id) + 1;
+            var memory = _malloc(bytes);
             stringToUTF8(element.id, memory, bytes);
             return memory;
         }
