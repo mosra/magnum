@@ -102,7 +102,8 @@ find_package(Magnum REQUIRED AnyImageConverter)
 target_link_libraries(your-app PRIVATE Magnum::AnyImageConverter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 */
 class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageConverter {
     public:

@@ -86,7 +86,13 @@ find_package(Magnum REQUIRED TgaImageConverter)
 target_link_libraries(your-app PRIVATE Magnum::TgaImageConverter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
+
+@section Trade-TgaImageConverter-behavior Behavior and limitations
+
+The output is always uncompressed. If you want to make use of RLE compression
+and have the files smaller, use the @ref StbImageConverter plugin instead.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

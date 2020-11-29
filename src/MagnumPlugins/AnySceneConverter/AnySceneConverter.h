@@ -89,7 +89,8 @@ find_package(Magnum REQUIRED AnySceneConverter)
 target_link_libraries(your-app PRIVATE Magnum::AnySceneConverter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 */
 class MAGNUM_ANYSCENECONVERTER_EXPORT AnySceneConverter: public AbstractSceneConverter {
     public:
