@@ -66,10 +66,20 @@ tied to a particular instance/device still apply:
 
 @section vulkan-wrapping-create-info CreateInfo structure wrappers
 
-In most cases, a`Vk::*CreateInfo` instance has all required fields set to valid
-values upon construction, with everything else optional. One exception to this
-rule is for example @ref Vk::DeviceCreateInfo, where the user is expected to
-call @ref Vk::DeviceCreateInfo::addQueues() "addQueues()".
+Unless said otherwise in the particular constructor docs, a`Vk::*CreateInfo`
+instance has all required fields set to valid values upon construction, with
+everything else optional. One exception is for example
+@ref Vk::DeviceCreateInfo, where the user is expected to call
+@ref Vk::DeviceCreateInfo::addQueues() "addQueues()" as well.
+
+@section vulkan-wrapping-host-allocation Host memory allocation
+
+As opposed to device memory allocation, which is exposed through
+@ref Vk::Memory and related APIs, overriding host memory allocation via
+@type_vk{AllocationCallbacks} is not possible as use cases for overriding host
+memory allocators are quite rare. This pointer is thus always set to
+@cpp nullptr @ce in any `vkCreate*()` calls. If you want to supply your own
+callbacks,
 
 @section vulkan-wrapping-raw Common interfaces for interaction with raw Vulkan code
 
