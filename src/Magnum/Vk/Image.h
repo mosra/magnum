@@ -111,7 +111,11 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
         enum class Flag: UnsignedInt {
             /** @todo sparse binding/residency/aliased */
 
-            /** Allow creating a view of different format */
+            /**
+             * Allow creating a view of different format
+             *
+             * @todo implement @vk_extension{KHR,image_format_list}
+             */
             MutableFormat = VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT,
 
             /** Allow creating a cube map view */
