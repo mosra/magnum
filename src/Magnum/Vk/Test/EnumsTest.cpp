@@ -624,14 +624,16 @@ void EnumsTest::mapVkSamplerAddressModeUnsupported() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
+    #if 1
+    CORRADE_SKIP("All sampler address modes are supported.");
+    #else
     CORRADE_VERIFY(!hasVkSamplerAddressMode(Magnum::SamplerWrapping::MirrorClampToEdge));
     std::ostringstream out;
-    {
-        Error redirectError{&out};
-        vkSamplerAddressMode(Magnum::SamplerWrapping::MirrorClampToEdge);
-    }
+    Error redirectError{&out};
+    vkSamplerAddressMode(Magnum::SamplerWrapping::MirrorClampToEdge);
     CORRADE_COMPARE(out.str(),
         "Vk::vkSamplerAddressMode(): unsupported wrapping SamplerWrapping::MirrorClampToEdge\n");
+    #endif
 }
 
 void EnumsTest::mapVkSamplerAddressModeInvalid() {

@@ -193,6 +193,11 @@ See also:
 -   @ref magnum-imageconverter "magnum-imageconverter" has a new `--in-place`
     option for converting images in-place
 
+@subsubsection changelog-latest-changes-vk Vk library
+
+-   @ref Vk::hasVkSamplerAddressMode() and @ref Vk::vkSamplerAddressMode() now
+    recognizes @ref SamplerWrapping::MirrorClampToEdge
+
 @subsection changelog-latest-buildsystem Build system
 
 -   Fixed compilation of the @ref GL library on macOS with ANGLE --- new code

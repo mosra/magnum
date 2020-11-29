@@ -102,7 +102,7 @@ constexpr VkSamplerAddressMode SamplerAddressModeMapping[]{
     VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
     VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
     VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
-    VkSamplerAddressMode(~UnsignedInt{}),
+    VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
 };
 
 }

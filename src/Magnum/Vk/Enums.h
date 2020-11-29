@@ -209,10 +209,8 @@ MAGNUM_VK_EXPORT VkSamplerMipmapMode vkSamplerMipmapMode(Magnum::SamplerMipmap m
 /**
 @brief Check availability of a generic sampler wrapping mode
 
-Some Vulkan targets don't support all generic sampler wrapping modes (for
-example the @ref SamplerWrapping::MirrorClampToEdge). Returns @cpp false @ce if
-current target can't support such format, @cpp true @ce otherwise. The
-@p wrapping value is expected to be valid.
+Returns @cpp false @ce if Vulkan doesn't support such wrapping, @cpp true @ce
+otherwise. The @p wrapping value is expected to be valid.
 
 @note Support of some formats depends on presence of a particular Vulkan
     extension. Such check is outside of the scope of this function and you are

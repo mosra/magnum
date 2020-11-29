@@ -169,8 +169,8 @@ enum class SamplerWrapping: UnsignedInt {
      * Mirror the texture once in negative coordinates and clamp to
      * edge after that.
      *
-     * Corresponds to @ref GL::SamplerWrapping::MirrorClampToEdge. Not
-     * available on Vulkan.
+     * Corresponds to @ref GL::SamplerWrapping::MirrorClampToEdge. /
+     * @val_vk_keyword{SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,SamplerAddressMode}.
      */
     MirrorClampToEdge
 };
