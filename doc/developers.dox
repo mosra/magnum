@@ -563,54 +563,38 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 @section developers-gl-extensions Checklist for adding / removing GL versions and extensions
 
 1.  Install [flextGL](https://github.com/mosra/flextgl)
-2.  Go to `src/MagnumExternal/OpenGL/GL/`:
-    -   Update `extensions.txt` (bump a version or add/remove extensions)
-    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
-        `flextGL.h`, `flextGL.cpp` and `flextGLPlatform.cpp` files
-3.  Go to `src/MagnumExternal/OpenGL/GLES2/`:
-    -   Update `extensions.txt` and `Emscripten/extensions.txt` (add/remove
+2.  Go to `src/MagnumExternal/OpenGL/`:
+    -   Update `GL/extensions.txt`, `GLES2/extensions.txt`,
+        `GLES2/Emscripten/extensions.txt`, `GLES3/extensions.txt`,
+        `GLES3/Emscripten/extensions.txt` (bump versions or add/remove
         extensions)
-    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
-        `flextGL.h`, `flextGL.cpp`, `flextGLPlatform.cpp`,
-        `flextGLWindowsDesktop.h`, `flextGLWindowsDesktop.cpp`,
-        `flextGLPlatformWindowsDesktop.cpp` and `flextGLPlatformIOS.cpp` files.
-        Desktop GLES on Windows still links to the ancient `opengl32.dll`
-        which exports only OpenGL 1.1 symbols, so we have a special set of
-        headers that queries pointers for everything above OpenGL 1.1 (instead
-        of everything above OpenGL ES 2.0). iOS, on the other hand, doesn't
-        have any extension loader mechanism and all supported entrypoints are
-        exported from the library, so we set the function pointers to those
-        exported symbols in case the system GL header defines them.
-    -   Run @cb{.sh} .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt @ce
-        to generate a stripped-down `flextGLEmscripten.h` file. Emscripten
-        doesn't have the ability to manually load extension pointers, thus it
-        has only header files.
-4.  Go to `src/MagnumExternal/OpenGL/GLES3/`:
-    -   Update `extensions.txt` and `Emscripten/extensions.txt` (bump a version
-        or add/remove extensions)
-    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
-        `flextGL.h`, `flextGL.cpp`, `flextGLPlatform.cpp`,
-        `flextGLWindowsDesktop.h`, `flextGLWindowsDesktop.cpp`,
-        `flextGLPlatformWindowsDesktop.cpp` and `flextGLPlatformIOS.cpp` files.
-        See above why there are so many.
-    -   Run @cb{.sh} .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt @ce
-        to generate a stripped-down `flextGLEmscripten.h` file. See above for
-        details.
-5.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
-6.  For every new added function, add an entry to `doc/opengl-mapping.dox`
-7.  For every new added limit query (various `GL_MIN_*` and `GL_MAX_*` macros
+    -   Run `./update-flextgl.sh` to update everything. Reason there is so many
+        variants of the files are the following:
+        -   Desktop GLES on Windows still links to the ancient `opengl32.dll`
+            which exports only OpenGL 1.1 symbols, so we have a special set of
+            headers that queries pointers for everything above OpenGL 1.1
+            (instead of everything above OpenGL ES 2.0).
+        -   iOS, on the other hand, doesn't have any extension loader mechanism
+            and all supported entrypoints are exported from the library, so we
+            set the function pointers to those exported symbols in case the
+            system GL header defines them.
+        -   Emscripten doesn't have the ability to manually load extension
+            pointers, thus it has only header files.
+3.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
+4.  For every new added function, add an entry to `doc/opengl-mapping.dox`
+5.  For every new added limit query (various `GL_MIN_*` and `GL_MAX_*` macros
     etc.), add an entry to the bottom of `doc/opengl-mapping.dox`
-8.  Add a table listing the new version and all new extensions in it to
+6.  Add a table listing the new version and all new extensions in it to
     `doc/opengl-support.dox` (take a list of them from the changelog in the
     official spec PDF). Some extensions might be already present in the general
     extension list, move them out of there.
-9.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` page
+7.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` page
     with @c \@m_footernavigation to `doc/opengl-support.dox`, mention it as a
     @c \@subpage at a correct position in the list
-10. Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` alias
+8.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` alias
     to `Doxyfile`, `Doxyfile-mcss` and `Doxyfile-public`, copypaste it from
     existing and change the numbers
-11. Add new version enum value:
+9.  Add new version enum value:
     -   to `src/Magnum/GL/Version.h`
     -   to debug output in `src/Magnum/GL/Version.cpp`
     -   to @ref GL::Extension::extensions() in `src/Magnum/GL/Context.cpp`
@@ -618,7 +602,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   to specify GLSL version in `src/Magnum/GL/Shader.cpp`
     -   to the list in `src/Magnum/Platform/gl-info.cpp`
     -   to the test in `src/Magnum/GL/Test/ContextTest.cpp`
-12. Add new extensions to `src/Magnum/GL/Extensions.h`
+10. Add new extensions to `src/Magnum/GL/Extensions.h`
     -   order them by extension ID that is mentioned in every extension spec
         file
     -   update the numbering to stay monotonic and unique, round up start index
@@ -626,9 +610,9 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   in case there's a lot of new extensions, @cpp Implementation::ExtensionCount @ce
         might needed to be increased
     -   run `ContextTest` to verify everything is still okay
-13. Update existing extensions with version in which they become core (last
+11. Update existing extensions with version in which they become core (last
     parameter of the `_extension()` macro)
-14. Update extension list in `src/magnum/GL/Context.cpp` according to changes
+12. Update extension list in `src/magnum/GL/Context.cpp` according to changes
     in `src/Magnum/GL/Extensions.h`
 
 In order to remove GL functionality, be sure to touch all places mentioned
