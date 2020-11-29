@@ -46,7 +46,7 @@ provide support for the replacement extensions.
 
 @subsection vulkan-support-10 Vulkan 1.0
 
-TBD
+See the @ref vulkan-mapping page for a list of already implemented functions.
 
 @subsection vulkan-support-11 Vulkan 1.1
 
@@ -55,7 +55,7 @@ TBD
 Extension                                           | Status
 --------------------------------------------------- | ------
 @vk_extension{KHR,multiview}                        | |
-@vk_extension{KHR,get_physical_device_properties2} @m_class{m-label m-info} **instance** | |
+@vk_extension{KHR,get_physical_device_properties2} @m_class{m-label m-info} **instance** | device, memory and queue properties only
 @vk_extension{KHR,device_group}                     | |
 @vk_extension{KHR,shader_draw_parameters}           | |
 @vk_extension{KHR,maintenance1}                     | |
@@ -73,9 +73,9 @@ Extension                                           | Status
 @vk_extension{KHR,dedicated_allocation}             | |
 @vk_extension{KHR,storage_buffer_storage_class}     | |
 @vk_extension{KHR,relaxed_block_layout}             | |
-@vk_extension{KHR,get_memory_requirements2}         | |
+@vk_extension{KHR,get_memory_requirements2}         | done except sparse memory
 @vk_extension{KHR,sampler_ycbcr_conversion}         | |
-@vk_extension{KHR,bind_memory2}                     | |
+@vk_extension{KHR,bind_memory2}                     | done
 @vk_extension{KHR,maintenance3}                     | |
 
 @subsection vulkan-support-12 Vulkan 1.2
@@ -84,7 +84,7 @@ Extension                                           | Status
 
 Extension                                           | Status
 --------------------------------------------------- | ------
-@vk_extension{KHR,sampler_mirror_clamp_to_edge}     | |
+@vk_extension{KHR,sampler_mirror_clamp_to_edge}     | @ref Vk::vkSamplerAddressMode() only
 @vk_extension{KHR,shader_float16_int8}              | |
 @vk_extension{KHR,imageless_framebuffer}            | |
 @vk_extension{KHR,create_renderpass2}               | |
@@ -101,7 +101,7 @@ Extension                                           | Status
 @vk_extension{KHR,depth_stencil_resolve}            | |
 @vk_extension{KHR,timeline_semaphore}               | |
 @vk_extension{KHR,vulkan_memory_model}              | |
-@vk_extension{KHR,spirv_1_4}                        | |
+@vk_extension{KHR,spirv_1_4}                        | done (shading language only)
 @vk_extension{EXT,scalar_block_layout}              | |
 @vk_extension{KHR,separate_depth_stencil_layouts}   | |
 @vk_extension{EXT,separate_stencil_usage}           | |
@@ -117,11 +117,11 @@ Extension                                           | Status
 --------------------------------------------------- | ------
 @vk_extension{EXT,debug_report} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,debug_marker} @m_class{m-label m-danger} **deprecated** | |
-@vk_extension{EXT,texture_compression_astc_hdr}     | |
+@vk_extension{EXT,texture_compression_astc_hdr}     | @ref Vk::vkFormat() only
 @vk_extension{EXT,debug_utils} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
-@vk_extension{EXT,index_type_uint8}                 | |
-@vk_extension{IMG,format_pvrtc}                     | |
+@vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
+@vk_extension{IMG,format_pvrtc}                     | @ref Vk::vkFormat() only
 
 */
 

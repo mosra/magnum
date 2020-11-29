@@ -139,6 +139,26 @@ See also:
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
 
+@subsubsection changelog-latest-new-vk Vk library
+
+-   Boostrapping Vulkan support ([mosra/magnum#234](https://github.com/mosra/magnum/pull/234)), in particular:
+    -   @ref Vk::LayerProperties, @ref Vk::InstanceExtensionProperties and
+        @ref Vk::enumerateInstanceVersion() APIs for querying instance-level
+        properties
+    -   @ref Vk::DeviceProperties and @ref Vk::ExtensionProperties for querying
+        device-level properties
+    -   @ref Vk::Instance and @ref Vk::Device APIs for instance and device
+        creation and fetching instance/device-specific function pointers,
+        @ref Vk::Queue setup
+    -   @ref Vk::CommandPool and @ref Vk::CommandBuffer wrappers
+    -   Initial implementations of @ref Vk::Memory, @ref Vk::Buffer and
+        @ref Vk::Image
+    -   @ref Vk::Shader wrapper
+    -   New @ref magnum-vk-info "magnum-vk-info" utility, a Vulkan-specific
+        counterpart for @ref magnum-gl-info "magnum-gl-info"
+    -   @ref vulkan "Initial documentation", in particular @ref vulkan-support,
+        @ref vulkan-wrapping and @ref vulkan-mapping
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-gl GL library
