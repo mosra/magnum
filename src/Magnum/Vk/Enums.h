@@ -56,7 +56,7 @@ In case @ref isMeshPrimitiveImplementationSpecific() returns @cpp false @ce for
 @p primitive stores a Vulkan-specific primitive topology and returns
 @ref meshPrimitiveUnwrap() cast to @type_vk{PrimitiveTopology}.
 
-Not all generic mesh primitives are available in Vulkan and this function
+Not all generic mesh primitives have a Vulkan equivalent and this function
 expects that given primitive is available. Use @ref hasVkPrimitiveTopology() to
 query availability of given primitive.
 @see @ref vkIndexType()
@@ -80,7 +80,7 @@ MAGNUM_VK_EXPORT bool hasVkIndexType(Magnum::MeshIndexType type);
 /**
 @brief Convert generic mesh index type to Vulkan mesh index type
 
-Not all generic index types are available in Vulkan and this function expects
+Not all generic index types have a Vulkan equivalent and this function expects
 that given type is available. Use @ref hasVkIndexType() to query availability
 of given index type.
 @see @ref vkPrimitiveTopology()
@@ -91,8 +91,7 @@ MAGNUM_VK_EXPORT VkIndexType vkIndexType(Magnum::MeshIndexType type);
 @brief Check availability of a generic vertex format
 @m_since{2020,06}
 
-Some Vulkan targets don't support all generic vertex formats. Returns
-@cpp false @ce if current target can't support such format, @cpp true @ce
+Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
 otherwise. Moreover, returns @cpp true @ce also for all formats that are
 @ref isVertexFormatImplementationSpecific(). The @p format value is expected
 to be valid. Note that for matrix formats the function only returns a
@@ -111,9 +110,8 @@ MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::VertexFormat format);
 /**
 @brief Check availability of a generic pixel format
 
-Some Vulkan targets don't support all generic formats. Returns @cpp false @ce
-if current target can't support such format, @cpp true @ce otherwise. Moreover,
-returns @cpp true @ce also for all formats that are
+Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
+otherwise. Moreover, returns @cpp true @ce also for all formats that are
 @ref isPixelFormatImplementationSpecific(). The @p format value is expected to
 be valid.
 
@@ -128,9 +126,8 @@ MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::PixelFormat format);
 /**
 @brief Check availability of a generic compressed pixel format
 
-Some Vulkan targets don't support all generic formats. Returns @cpp false @ce
-if current target can't support such format, @cpp true @ce otherwise. Moreover,
-returns @cpp true @ce also for all formats that are
+Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
+otherwise. Moreover, returns @cpp true @ce also for all formats that are
 @ref isCompressedPixelFormatImplementationSpecific(). The @p format value is
 expected to be valid.
 
@@ -152,9 +149,9 @@ In case @ref isVertexFormatImplementationSpecific() returns @cpp false @ce for
 @p format stores a Vulkan-specific format and returns @ref vertexFormatUnwrap()
 cast to @type_vk{Format}.
 
-Not all generic vertex formats may be available on all targets and this
-function expects that given format is available on the target. Use
-@ref hasVkFormat(Magnum::VertexFormat) to query availability of given format.
+Not all generic vertex formats have a Vulkan equivalent and this function
+expects that given format is available. Use @ref hasVkFormat(Magnum::VertexFormat)
+to query availability of given format.
 */
 MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::VertexFormat format);
 
@@ -167,9 +164,9 @@ In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
 @p format stores a Vulkan-specific format and returns @ref pixelFormatUnwrap()
 cast to @type_vk{Format}.
 
-Not all generic pixel formats may be available on all targets and this function
-expects that given format is available on the target. Use
-@ref hasVkFormat(Magnum::PixelFormat) to query availability of given format.
+Not all generic pixel formats have a Vulkan equivalent and this function
+expects that given format is available. Use @ref hasVkFormat(Magnum::PixelFormat)
+to query availability of given format.
 */
 MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::PixelFormat format);
 
@@ -182,8 +179,8 @@ In case @ref isCompressedPixelFormatImplementationSpecific() returns
 assumes @p format stores a Vulkan-specific format and returns
 @ref compressedPixelFormatUnwrap() cast to @type_vk{Format}.
 
-Not all generic pixel formats may be available on all targets and this function
-expects that given format is available on the target. Use
+Not all generic pixel formats have a Vulkan equivalent and this function
+expects that given format is available. Use
 @ref hasVkFormat(Magnum::CompressedPixelFormat) to query availability of given
 format.
 */
@@ -212,9 +209,9 @@ MAGNUM_VK_EXPORT VkSamplerMipmapMode vkSamplerMipmapMode(Magnum::SamplerMipmap m
 Returns @cpp false @ce if Vulkan doesn't support such wrapping, @cpp true @ce
 otherwise. The @p wrapping value is expected to be valid.
 
-@note Support of some formats depends on presence of a particular Vulkan
+@note Support of some modes depends on presence of a particular Vulkan
     extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such format.
+    expected to verify extension availability before using such mode.
 
 @see @ref vkSamplerAddressMode(), @ref vkFilter(), @ref vkSamplerMipmapMode()
 */
@@ -223,9 +220,9 @@ MAGNUM_VK_EXPORT bool hasVkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
 /**
 @brief Convert generic sampler filter mode to Vulkan sampler address mode
 
-Not all generic sampler wrapping modes may be available on all targets and this
-function expects that given format is available on the target. Use
-@ref hasVkSamplerAddressMode() to query availability of given mode.
+Not all generic sampler wrapping modes have a Vulkan equivalent and this
+function expects that given mode is available. Use @ref hasVkSamplerAddressMode()
+to query availability of given mode.
 @see @ref vkFilter(), @ref vkSamplerAddressMode()
 */
 MAGNUM_VK_EXPORT VkSamplerAddressMode vkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
