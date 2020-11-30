@@ -41,6 +41,10 @@ extern "C" void ANativeActivity_onCreate(struct ANativeActivity*, void*, size_t)
 
 namespace Magnum { namespace Platform {
 
+enum class AndroidApplication::Flag: UnsignedByte {
+    Redraw = 1 << 0
+};
+
 struct AndroidApplication::LogOutput {
     LogOutput();
 
@@ -173,6 +177,10 @@ Vector2i AndroidApplication::framebufferSize() const {
 
 void AndroidApplication::swapBuffers() {
     eglSwapBuffers(_display, _surface);
+}
+
+void AndroidApplication::redraw() {
+    _flags |= Flag::Redraw;
 }
 
 void AndroidApplication::viewportEvent(ViewportEvent& event) {

@@ -346,7 +346,7 @@ class AndroidApplication {
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { _flags |= Flag::Redraw; }
+        void redraw();
 
     private:
         /**
@@ -421,9 +421,7 @@ class AndroidApplication {
     private:
         struct LogOutput;
 
-        enum class Flag: UnsignedByte {
-            Redraw = 1 << 0
-        };
+        enum class Flag: UnsignedByte;
         typedef Containers::EnumSet<Flag> Flags;
 
         static void commandEvent(android_app* state, std::int32_t cmd);
