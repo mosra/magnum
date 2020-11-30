@@ -25,8 +25,9 @@
 
 namespace Magnum { namespace Vk {
 
-/** @page vulkan-mapping Command mapping
-@brief List of Vulkan commands corresponding to particular Magnum API.
+/** @page vulkan-mapping Command and structure mapping
+@brief List of Vulkan commands and structures corresponding to particular Magnum APIs.
+@m_since_latest
 
 @tableofcontents
 @m_footernavigation
@@ -294,7 +295,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{WaitForFences}                   | |
 
-@section vulkan-mapping-structures Info structures
+@section vulkan-mapping-structures Structures
 
 @subsection vulkan-mapping-structures-a A
 
@@ -302,7 +303,12 @@ Vulkan function                         | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{AllocationCallbacks}           | intentionally @ref vulkan-wrapping-host-allocation "not exposed"
 @type_vk{ApplicationInfo}               | @ref InstanceCreateInfo
+@type_vk{AttachmentDescription}, \n @type_vk{AttachmentDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{AttachmentDescriptionStencilLayout} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{AttachmentReference}, \n @type_vk{AttachmentReference2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{AttachmentReferenceStencilLayout} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 
 @subsection vulkan-mapping-structures-b B
 
@@ -310,8 +316,22 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{BindBufferMemoryDeviceGroupInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{BindBufferMemoryInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{BindImageMemoryDeviceGroupInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{BindImageMemoryInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{BindImagePlaneMemoryInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{BaseInStructure}               | |
+@type_vk{BaseOutStructure}              | |
+@type_vk{BindSparseInfo}                | |
+@type_vk{BufferCopy}                    | |
 @type_vk{BufferCreateInfo}              | @ref BufferCreateInfo
-@type_vk{BufferMemoryRequirementsInfo}  | not exposed, internal to @ref Buffer::memoryRequirements()
+@type_vk{BufferDeviceAddressInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{BufferImageCopy}               | |
+@type_vk{BufferMemoryBarrier}           | |
+@type_vk{BufferMemoryRequirementsInfo}, \n @type_vk{BufferMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Buffer::memoryRequirements()
+@type_vk{BufferOpaqueCaptureAddressCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{BufferViewCreateInfo}          | |
 
 @subsection vulkan-mapping-structures-c C
 
@@ -319,8 +339,19 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{ClearAttachment}               | |
+@type_vk{ClearColorValue}               | convertible from/to @ref Magnum::Vector3 "Vector3", @ref Magnum::Color3 "Color3", @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" using @ref Magnum/Vk/Integration.h
+@type_vk{ClearDepthStencilValue}        | |
+@type_vk{ClearValue}                    | |
+@type_vk{ClearRect}                     | convertible from/to @ref Range3Di using @ref Magnum/Vk/Integration.h
 @type_vk{CommandBufferAllocateInfo}     | not exposed, internal to @ref CommandPool::allocate()
+@type_vk{CommandBufferBeginInfo}        | |
+@type_vk{CommandBufferInheritanceInfo}  | |
 @type_vk{CommandPoolCreateInfo}         | @ref CommandPoolCreateInfo
+@type_vk{ComponentMapping}              | |
+@type_vk{ComputePipelineCreateInfo}     | |
+@type_vk{ConformanceVersion}            | |
+@type_vk{CopyDescriptorSet}             | |
 
 @subsection vulkan-mapping-structures-d D
 
@@ -328,8 +359,82 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{DebugMarkerMarkerInfoEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugMarkerObjectNameInfoEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugMarkerObjectTagInfoEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugReportCallbackCreateInfoEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsMessengerCallbackDataEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsMessengerCreateInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsObjectNameInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsObjectTagInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DescriptorBufferInfo}          | |
+@type_vk{DescriptorImageInfo}           | |
+@type_vk{DescriptorPoolCreateInfo}      | |
+@type_vk{DescriptorPoolSize}            | |
+@type_vk{DescriptorSetAllocateInfo}     | |
+@type_vk{DescriptorSetLayoutBinding}    | |
+@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} | |
+@type_vk{DescriptorSetLayoutCreateInfo} | |
+@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DescriptorSetVariableDescriptorCountAllocateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorSetVariableDescriptorCountLayoutSupport} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorUpdateTemplateEntry} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DescriptorUpdateTemplateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DeviceCreateInfo}              | @ref DeviceCreateInfo
+@type_vk{DeviceGroupBindSparseInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceGroupCommandBufferBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceGroupDeviceCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceGroupRenderPassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceGroupSubmitInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceMemoryOpaqueCaptureAddressInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{DeviceQueueCreateInfo}         | not exposed, but you can pass a custom instance to @ref DeviceCreateInfo::addQueues()
+@type_vk{DeviceQueueInfo2}              | not exposed, internal to @ref Device constructor
+@type_vk{DispatchIndirectCommand}       | |
+@type_vk{DrawIndirectCommand}           | |
+@type_vk{DrawIndexedIndirectCommand}    | |
+
+@subsection vulkan-mapping-structures-e E
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{EventCreateInfo}               | |
+@type_vk{ExportFenceCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExportMemoryAllocateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExportSemaphoreCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExtensionProperties}           | @ref ExtensionProperties
+@type_vk{Extent2D}                      | convertible from/to @ref Magnum::Vector2i "Vector2i" using @ref Magnum/Vk/Integration.h
+@type_vk{Extent3D}                      | convertible from/to @ref Magnum::Vector3i "Vector3i" using @ref Magnum/Vk/Integration.h
+@type_vk{ExternalBufferProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalFenceProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalImageFormatProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalMemoryBufferCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalMemoryImageCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalMemoryProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-structures-f F
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{FenceCreateInfo}               | |
+@type_vk{FormatProperties}, \n @type_vk{FormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{FramebufferAttachmentsCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{FramebufferAttachmentImageInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{FramebufferCreateInfo}         | |
+
+@subsection vulkan-mapping-structures-g G
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{GraphicsPipelineCreateInfo}    | |
 
 @subsection vulkan-mapping-structures-i I
 
@@ -337,9 +442,30 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{ImageBlit}                     | |
+@type_vk{ImageCopy}                     | |
 @type_vk{ImageCreateInfo}               | @ref ImageCreateInfo
-@type_vk{ImageMemoryRequirementsInfo}   | not exposed, internal to @ref Image::memoryRequirements()
+@type_vk{ImageFormatListCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{ImageFormatProperties}, \n @type_vk{ImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ImageSubresourceRange}         | |
+@type_vk{ImageMemoryBarrier}            | |
+@type_vk{ImageMemoryRequirementsInfo}, \n @type_vk{ImageMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Image::memoryRequirements()
+@type_vk{ImagePlaneMemoryRequirementsInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ImageResolve}                  | |
+@type_vk{ImageSparseMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ImageStencilUsageCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{ImageViewCreateInfo}           | |
+@type_vk{ImageViewUsageCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{InputAttachmentAspectReference} | |
 @type_vk{InstanceCreateInfo}            | @ref InstanceCreateInfo
+
+@subsection vulkan-mapping-structures-l L
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{LayerProperties}               | @ref LayerProperties
 
 @subsection vulkan-mapping-structures-m M
 
@@ -347,7 +473,120 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{MappedMemoryRange}             | |
 @type_vk{MemoryAllocateInfo}            | @ref MemoryAllocateInfo
+@type_vk{MemoryAllocateFlagsInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{MemoryBarrier}                 | |
+@type_vk{MemoryDedicatedAllocateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{MemoryDedicatedRequirements} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{MemoryHeap}                    | @ref DeviceProperties::memoryHeapSize(), \n @ref DeviceProperties::memoryHeapFlags()
+@type_vk{MemoryOpaqueCaptureAddressAllocateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{MemoryRequirements}, \n @type_vk{MemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref MemoryRequirements
+@type_vk{MemoryType}                    | @ref DeviceProperties::memoryFlags(), \n @ref DeviceProperties::memoryHeapIndex()
+
+@subsection vulkan-mapping-structures-o O
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{Offset2D}                      | convertible from/to @ref Magnum::Vector2i "Vector2i" using @ref Magnum/Vk/Integration.h
+@type_vk{Offset3D}                      | convertible from/to @ref Magnum::Vector3i "Vector3i" using @ref Magnum/Vk/Integration.h
+
+@subsection vulkan-mapping-structures-p P
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{PhysicalDevice8bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDevice16bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceBufferDeviceAddressFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceDepthStencilResolveProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceDescriptorIndexingFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceDescriptorIndexingProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceDriverProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceExternalBufferInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceExternalFenceInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceExternalImageFormatInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceExternalSemaphoreInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceFeatures}, \n @type_vk{PhysicalDeviceFeatures2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceFloat16Int8Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceFloatControlsProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceGroupProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceHostQueryResetFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceIDProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceImageFormatInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceImagelessFramebufferFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceIndexTypeUint8FeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{PhysicalDeviceLimits}          | |
+@type_vk{PhysicalDeviceMaintenance3Properties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceMemoryProperties}, \n @type_vk{PhysicalDeviceMemoryProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
+@type_vk{PhysicalDeviceMultiviewFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceMultiviewProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDevicePointClippingProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceProperties}, \n @type_vk{PhysicalDeviceProperties2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
+@type_vk{PhysicalDeviceProtectedMemoryFeatures} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceProtectedMemoryProperties} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceSamplerFilterMinmaxProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceSamplerYcbcrConversionFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceSeparateDepthStencilLayoutsFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceScalarBlockLayoutFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceShaderAtomicInt64Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceShaderDrawParametersFeatures} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceShaderFloat16Int8Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceShaderSubgroupExtendedTypesFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceSparseImageFormatInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceSparseProperties} | |
+@type_vk{PhysicalDeviceSubgroupProperties} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceTimelineSemaphoreFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceTimelineSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceUniformBufferStandardLayoutFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceVariablePointersFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceVulkan11Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
+@type_vk{PhysicalDeviceVulkan11Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
+@type_vk{PhysicalDeviceVulkan12Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
+@type_vk{PhysicalDeviceVulkan12Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
+@type_vk{PhysicalDeviceVulkanMemoryModelFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PipelineCacheCreateInfo}       | |
+@type_vk{PipelineColorBlendAttachmentState} | |
+@type_vk{PipelineColorBlendStateCreateInfo} | |
+@type_vk{PipelineDepthStencilStateCreateInfo} | |
+@type_vk{PipelineDynamicStateCreateInfo} | |
+@type_vk{PipelineInputAssemblyStateCreateInfo} | |
+@type_vk{PipelineLayoutCreateInfo}      | |
+@type_vk{PipelineMultisampleStateCreateInfo} | |
+@type_vk{PipelineRasterizationStateCreateInfo} | |
+@type_vk{PipelineShaderStageCreateInfo} | |
+@type_vk{PipelineTessellationStateCreateInfo} | |
+@type_vk{PipelineTessellationDomainOriginStateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PipelineVertexInputStateCreateInfo} | |
+@type_vk{PipelineViewportStateCreateInfo} | |
+@type_vk{ProtectedSubmitInfo}           | |
+@type_vk{PushConstantRange}             | |
+
+@subsection vulkan-mapping-structures-q Q
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{QueryPoolCreateInfo}           | |
+@type_vk{QueueFamilyProperties}, \n @type_vk{QueueFamilyProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties::queueFamilyProperties(), \n @ref DeviceProperties::queueFamilyCount(), \n @ref DeviceProperties::queueFamilySize(), \n @ref DeviceProperties::queueFamilyFlags()
+
+@subsection vulkan-mapping-structures-r R
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{Rect2D}                        | convertible from/to @ref Range2Di using @ref Magnum/Vk/Integration.h
+@type_vk{RenderPassBeginInfo}           | |
+@type_vk{RenderPassAttachmentBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{RenderPassCreateInfo}, \n @type_vk{RenderPassCreateInfo2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{RenderPassMultiviewCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{RenderPassInputAttachmentAspectCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 
 @subsection vulkan-mapping-structures-s S
 
@@ -355,7 +594,60 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{ShaderCreateInfo}              | @ref ShaderCreateInfo
+@type_vk{SamplerCreateInfo}             | |
+@type_vk{SamplerReductionModeCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{SamplerYcbcrConversionCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SamplerYcbcrConversionImageFormatProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SamplerYcbcrConversionInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SemaphoreCreateInfo}           | |
+@type_vk{SemaphoreSignalInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SemaphoreTypeCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SemaphoreWaitInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{ShaderModuleCreateInfo}        | @ref ShaderCreateInfo
+@type_vk{SparseBufferMemoryBindInfo}    | |
+@type_vk{SparseImageFormatProperties}, \n @type_vk{SparseImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SparseImageOpaqueMemoryBindInfo} | |
+@type_vk{SparseImageMemoryBindInfo}     | |
+@type_vk{SparseImageMemoryBind}         | |
+@type_vk{SparseImageMemoryRequirements}, \n @type_vk{SparseImageMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SparseMemoryBind}              | |
+@type_vk{SpecializationInfo}            | |
+@type_vk{SpecializationMapEntry}        | |
+@type_vk{StencilOpState}                | |
+@type_vk{SubmitInfo}                    | |
+@type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassDependency}, \n @type_vk{SubpassDependency2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassDescription}, \n @type_vk{SubpassDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassDescriptionDepthStencilResolve} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubresourceLayout}             | |
+
+@subsection vulkan-mapping-structures-t T
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{TimelineSemaphoreSubmitInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+
+@subsection vulkan-mapping-structures-v V
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{ValidationFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{VertexInputBindingDescription} | |
+@type_vk{VertexInputAttributeDescription} | |
+@type_vk{Viewport}                      | convertible from/to @ref Range3D using @ref Magnum/Vk/Integration.h
+
+@subsection vulkan-mapping-structures-w W
+
+@m_class{m-fullwidth}
+
+Vulkan structure                        | Matching API
+--------------------------------------- | ------------
+@type_vk{WriteDescriptorSet}            | |
 
 */
 
