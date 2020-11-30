@@ -246,8 +246,12 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryHeapFlags value);
 @m_since_latest
 
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
-properties such as @type_vk_keyword{PhysicalDeviceProperties2} and
-@type_vk_keyword{GetPhysicalDeviceQueueFamilyProperties2}.
+properties such as @type_vk_keyword{PhysicalDeviceProperties2},
+@type_vk_keyword{PhysicalDeviceQueueFamilyProperties2} and
+@type_vk_keyword{PhysicalDeviceMemoryProperties2}, which are a superset
+of @type_vk_keyword{PhysicalDeviceProperties},
+@type_vk_keyword{PhysicalDeviceQueueFamilyProperties} and
+@type_vk_keyword{PhysicalDeviceMemoryProperties}.
 
 See the @ref Vk-Device-usage "Device class docs" for an example of using this
 class for enumerating available devices and picking one of them.

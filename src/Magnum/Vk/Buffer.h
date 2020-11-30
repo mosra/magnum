@@ -52,14 +52,31 @@ Wraps a @type_vk_keyword{BufferUsageFlagBits}.
 @m_enum_values_as_keywords
 */
 enum class BufferUsage: UnsignedInt {
+    /** Source of a transfer command */
     TransferSource = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+
+    /** Destination of a transfer command */
     TransferDestination = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+
+    /** Suitable for creating a uniform texel buffer view */
     UniformTexelBuffer = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT,
+
+    /** Suitable for creating a storage texel buffer view */
     StorageTexelBuffer = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT,
+
+    /** Suitable for a uniform buffer */
     UniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+
+    /** Suitable for a storage buffer */
     StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+
+    /** Suitable for an index buffer */
     IndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+
+    /** Suitable for a vertex buffer */
     VertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+
+    /** Suitable for a indirect draw buffer */
     IndirectBuffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
 
     /** @todo VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 1.2 */

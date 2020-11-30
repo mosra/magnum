@@ -32,21 +32,22 @@ Provides conversion for the following types:
 
 | Magnum type                           | Equivalent Vulkan type        |
 | ------------------------------------- | ----------------------------- |
-| @ref Magnum::Vector2i "Vector2i"      | @type_vk{Offset2D}, @type_vk{Extent2D} |
-| @ref Magnum::Vector3i "Vector3i"      | @type_vk{Offset3D}, @type_vk{Extent3D} |
-| @ref Magnum::Vector2ui "Vector2ui"    | @type_vk{Extent2D}            |
-| @ref Magnum::Vector3ui "Vector3ui"    | @type_vk{Extent3D}            |
-| @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" | @type_vk{ClearColorValue} |
+| @ref Magnum::Vector2i "Vector2i"      | @type_vk_keyword{Offset2D}, @type_vk_keyword{Extent2D} |
+| @ref Magnum::Vector3i "Vector3i"      | @type_vk_keyword{Offset3D}, @type_vk_keyword{Extent3D} |
+| @ref Magnum::Vector2ui "Vector2ui"    | @type_vk_keyword{Extent2D}    |
+| @ref Magnum::Vector3ui "Vector3ui"    | @type_vk_keyword{Extent3D}    |
+| @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" | @type_vk_keyword{ClearColorValue} |
 | @ref Magnum::Vector3 "Vector3", @ref Magnum::Color3 "Color3" | @type_vk{ClearColorValue} |
-| @ref Magnum::Range3D "Range3D"        | @type_vk{Viewport}            |
-| @ref Magnum::Range2Di "Range2Di"      | @type_vk{Rect2D}              |
-| @ref Magnum::Range3Di "Range3Di"      | @type_vk{ClearRect}           |
+| @ref Magnum::Range3D "Range3D"        | @type_vk_keyword{Viewport}    |
+| @ref Magnum::Range2Di "Range2Di"      | @type_vk_keyword{Rect2D}      |
+| @ref Magnum::Range3Di "Range3Di"      | @type_vk_keyword{ClearRect}   |
 
 @type_vk{ClearColorValue} is an @cpp union @ce, so it's convertible from/to a
 floating-point type as well as integer types, but you have to ensure the type
-is correct for the API call it'll used in. Conversion of @type_vk{ClearColorValue}
-to @ref Magnum::Color3 "Color3" is not allowed, as it would lead to loss of the
-alpha value. In the other direction, alpha is set to @cpp 1.0f @ce.
+is correct for the API call it'll be used in. Conversion of
+@type_vk{ClearColorValue} to @ref Magnum::Color3 "Color3" is not allowed, as it
+would lead to loss of the alpha value. In the other direction, alpha is set to
+@cpp 1.0f @ce.
 
 Third dimension of @type_vk{Viewport} is a depth range, third dimension of
 @type_vk{ClearRect} is an attachment layer range. In both cases you can use

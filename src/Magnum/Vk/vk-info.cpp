@@ -37,6 +37,7 @@ namespace Magnum {
 
 /** @page magnum-vk-info Magnum Vulkan Info
 @brief Displays information about Magnum engine Vulkan capabilities
+@m_since_latest
 
 @m_footernavigation
 @m_keywords{magnum-vk-info vk-info}

@@ -26,6 +26,7 @@
 namespace Magnum {
 /** @page vulkan-wrapping Vulkan wrapping layer
 @brief Overview of the base Vulkan wrapper API
+@m_since_latest
 
 @tableofcontents
 @m_footernavigation

@@ -266,7 +266,10 @@ Expects that all listed layers are supported.
 */
 MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(Containers::ArrayView<const Containers::StringView> layers = {});
 
-/** @overload */
+/**
+ * @overload
+ * @m_since_latest
+ */
 MAGNUM_VK_EXPORT InstanceExtensionProperties enumerateInstanceExtensionProperties(std::initializer_list<Containers::StringView> layers);
 
 }}

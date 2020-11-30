@@ -27,6 +27,7 @@ namespace Magnum {
 
 /** @page vulkan Vuulkan
 @brief State of Vulkan support, version and extension requirements.
+@m_since_latest
 
 The following table maps Vulkan function names to Magnum API, useful for
 developers with existing Vulkan background. Note that, as reverse mapping, each

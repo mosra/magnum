@@ -42,7 +42,8 @@ namespace Magnum { namespace Vk {
 
 Wraps a @type_vk_keyword{Result}.
 @m_enum_values_as_keywords
-@see @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS()
+@see @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(),
+    @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE()
 */
 enum class Result: Int {
     /** Command successfully completed */
