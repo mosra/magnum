@@ -41,7 +41,8 @@ namespace Magnum { namespace Vk {
 @brief Queue
 @m_since_latest
 
-Wraps a @type_vk_keyword{Queue}.
+Wraps a @type_vk_keyword{Queue}. See @ref Device class docs for an introduction
+on how to create a queue.
 @see @ref DeviceCreateInfo::addQueues()
 */
 class MAGNUM_VK_EXPORT Queue {
