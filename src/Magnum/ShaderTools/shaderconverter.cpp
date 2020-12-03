@@ -232,7 +232,7 @@ see documentation of a particular converter for more information.)")
 
     /* Generic checks */
     if(args.isSet("validate")) {
-        if(!args.value("output").empty()) {
+        if(!args.value<Containers::StringView>("output").isEmpty()) {
             Error{} << "Output file shouldn't be set for --validate";
             return 1;
         }
@@ -313,9 +313,9 @@ see documentation of a particular converter for more information.)")
         /* Get version, if passed */
         Containers::StringView inputVersion{}, outputVersion{};
         if(i < args.arrayValueCount("input-version"))
-            inputVersion = args.arrayValue("input-version", i);
+            inputVersion = args.arrayValue<Containers::StringView>("input-version", i);
         if(i < args.arrayValueCount("output-version"))
-            outputVersion = args.arrayValue("output-version", i);
+            outputVersion = args.arrayValue<Containers::StringView>("output-version", i);
 
         /* If not passed, these are set to Unspecified and "", which is the
            default */
@@ -358,29 +358,29 @@ see documentation of a particular converter for more information.)")
                 converter->setDefinitions(definitions);
             }
 
-            if(!args.value("optimize").empty()) {
+            if(!args.value<Containers::StringView>("optimize").isEmpty()) {
                 if(!(converter->features() & ShaderTools::ConverterFeature::Optimize)) {
                     Error{} << "The -O option is set, but" << converterName << "doesn't support optimization";
                     return 11;
                 }
 
-                converter->setOptimizationLevel(args.value("optimize"));
+                converter->setOptimizationLevel(args.value<Containers::StringView>("optimize"));
             }
 
-            if(!args.value("debug-info").empty()) {
+            if(!args.value<Containers::StringView>("debug-info").isEmpty()) {
                 if(!(converter->features() & ShaderTools::ConverterFeature::DebugInfo)) {
                     Error{} << "The -g option is set, but" << converterName << "doesn't support debug info";
                     return 12;
                 }
 
-                converter->setDebugInfoLevel(args.value("debug-info"));
+                converter->setDebugInfoLevel(args.value<Containers::StringView>("debug-info"));
             }
 
             if(args.isSet("link")) {
                 arrayReserve(linkInputs, args.arrayValueCount("input"));
                 for(std::size_t i = 0; i != args.arrayValueCount("input"); ++i)
                     arrayAppend(linkInputs, Containers::InPlaceInit,
-                        ShaderTools::Stage::Unspecified, args.arrayValue("input", i));
+                        ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", i));
             }
         }
 
@@ -398,7 +398,7 @@ see documentation of a particular converter for more information.)")
                 return 13;
             }
 
-            std::pair<bool, Containers::String> out = converter->validateFile(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0));
+            std::pair<bool, Containers::String> out = converter->validateFile(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0));
             if(!out.first) {
                 if(args.isSet("verbose"))
                     Error{} << "Validation failed:";
@@ -425,15 +425,15 @@ see documentation of a particular converter for more information.)")
 
             /* Linking */
             if(args.isSet("link")) {
-                if(!converter->linkFilesToFile(linkInputs, args.value("output"))) {
-                    Error{} << "Cannot link" << args.arrayValue("input", 0) << "and others to" << args.value("output");
+                if(!converter->linkFilesToFile(linkInputs, args.value<Containers::StringView>("output"))) {
+                    Error{} << "Cannot link" << args.arrayValue<Containers::StringView>("input", 0) << "and others to" << args.value<Containers::StringView>("output");
                     return 16;
                 }
 
             /* Converting */
             } else {
-                if(!converter->convertFileToFile(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0), args.value("output"))) {
-                    Error{} << "Cannot convert" << args.arrayValue("input", 0) << "to" << args.value("output");
+                if(!converter->convertFileToFile(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0), args.value<Containers::StringView>("output"))) {
+                    Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0) << "to" << args.value<Containers::StringView>("output");
                     return 17;
                 }
             }
@@ -454,14 +454,14 @@ see documentation of a particular converter for more information.)")
                 /* Linking */
                 if(args.isSet("link")) {
                     if(!(data = converter->linkFilesToData(linkInputs))) {
-                        Error{} << "Cannot link" << args.arrayValue("input", 0) << "and others to" << args.value("output");
+                        Error{} << "Cannot link" << args.arrayValue<Containers::StringView>("input", 0) << "and others to" << args.value<Containers::StringView>("output");
                         return 19;
                     }
 
                 /* Converting */
                 } else {
-                    if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue("input", 0)))) {
-                        Error{} << "Cannot convert" << args.arrayValue("input", 0);
+                    if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0)))) {
+                        Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
                         return 20;
                     }
                 }
@@ -489,8 +489,8 @@ see documentation of a particular converter for more information.)")
                 CORRADE_INTERNAL_ASSERT(data);
 
                 /* Subsequent operations are always a conversion, not link */
-                if(!converter->convertDataToFile(ShaderTools::Stage::Unspecified, data, args.value("output"))) {
-                    Error{} << "Cannot save file" << args.value("output");
+                if(!converter->convertDataToFile(ShaderTools::Stage::Unspecified, data, args.value<Containers::StringView>("output"))) {
+                    Error{} << "Cannot save file" << args.value<Containers::StringView>("output");
                     return 22;
                 }
 
