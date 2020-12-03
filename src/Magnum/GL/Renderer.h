@@ -1898,7 +1898,7 @@ class MAGNUM_GL_EXPORT Renderer {
              *      3.0 and older.
              * @requires_gles Shader storage is not available in WebGL.
              */
-            ShaderStorage = GL_ATOMIC_COUNTER_BARRIER_BIT
+            ShaderStorage = GL_SHADER_STORAGE_BARRIER_BIT
         };
 
         /**

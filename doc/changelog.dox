@@ -239,6 +239,7 @@ See also:
 
 -   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
     accident
+-   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
     due to an uninitialized variable in its
     @ref Platform::EmscriptenApplication::GLConfiguration "GLConfiguration"
