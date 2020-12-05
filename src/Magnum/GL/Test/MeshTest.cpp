@@ -105,8 +105,8 @@ void MeshTest::constructViewNoCreate() {
 }
 
 void MeshTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Mesh>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Mesh>{});
 }
 
 void MeshTest::constructMoveNoCreate() {

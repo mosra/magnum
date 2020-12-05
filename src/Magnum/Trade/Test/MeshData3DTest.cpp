@@ -211,8 +211,8 @@ void MeshData3DTest::constructNoColors() {
 }
 
 void MeshData3DTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<MeshData3D, const MeshData3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshData3D, const MeshData3D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshData3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshData3D>{});
 }
 
 void MeshData3DTest::constructMove() {

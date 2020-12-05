@@ -105,20 +105,20 @@ void TextureTest::construct3DNoCreate() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureTest::constructCopy1D() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture1D, const Texture1D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture1D, const Texture1D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Texture1D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Texture1D>{});
 }
 #endif
 
 void TextureTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture2D, const Texture2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture2D, const Texture2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Texture2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Texture2D>{});
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void TextureTest::constructCopy3D() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture3D, const Texture3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture3D, const Texture3D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Texture3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Texture3D>{});
 }
 #endif
 

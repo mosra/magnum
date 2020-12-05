@@ -87,8 +87,8 @@ void CommandPoolTest::constructNoCreate() {
 }
 
 void CommandPoolTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<CommandPool, const CommandPool&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CommandPool, const CommandPool&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CommandPool>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CommandPool>{});
 }
 
 }}}}

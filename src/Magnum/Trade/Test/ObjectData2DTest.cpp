@@ -147,10 +147,10 @@ void ObjectData2DTest::constructCamera() {
 }
 
 void ObjectData2DTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<ObjectData2D, const ObjectData2D&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<MeshObjectData2D, const MeshObjectData2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<ObjectData2D, const ObjectData2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshObjectData2D, const MeshObjectData2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<ObjectData2D>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshObjectData2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<ObjectData2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshObjectData2D>{});
 }
 
 void ObjectData2DTest::constructMoveTransformations() {

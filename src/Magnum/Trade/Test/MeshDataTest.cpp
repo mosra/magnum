@@ -1808,8 +1808,8 @@ void MeshDataTest::constructInvalidAttributeData() {
 }
 
 void MeshDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<MeshData, const MeshData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshData, const MeshData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshData>{});
 }
 
 void MeshDataTest::constructMove() {

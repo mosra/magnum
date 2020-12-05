@@ -97,8 +97,8 @@ void SkinDataTest::constructDifferentSize() {
 }
 
 void SkinDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<SkinData3D, const SkinData3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<SkinData3D, const SkinData3D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<SkinData3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<SkinData3D>{});
 }
 
 void SkinDataTest::constructMove() {

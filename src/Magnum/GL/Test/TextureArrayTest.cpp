@@ -80,14 +80,14 @@ void TextureArrayTest::construct2DNoCreate() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayTest::constructCopy1D() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture1DArray, const Texture1DArray&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture1DArray, const Texture1DArray&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Texture1DArray>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Texture1DArray>{});
 }
 #endif
 
 void TextureArrayTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture2DArray, const Texture2DArray&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture2DArray, const Texture2DArray&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Texture2DArray>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Texture2DArray>{});
 }
 
 }}}}

@@ -52,8 +52,8 @@ void RectangleTextureTest::constructNoCreate() {
 }
 
 void RectangleTextureTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<RectangleTexture, const RectangleTexture&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<RectangleTexture, const RectangleTexture&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<RectangleTexture>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<RectangleTexture>{});
 }
 
 }}}}

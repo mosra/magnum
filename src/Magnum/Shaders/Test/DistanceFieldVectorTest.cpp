@@ -66,11 +66,8 @@ template<UnsignedInt dimensions> void DistanceFieldVectorTest::constructNoCreate
 template<UnsignedInt dimensions> void DistanceFieldVectorTest::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY((std::is_constructible<DistanceFieldVector<dimensions>, DistanceFieldVector<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<DistanceFieldVector<dimensions>, const DistanceFieldVector<dimensions>&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<DistanceFieldVector<dimensions>, DistanceFieldVector<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<DistanceFieldVector<dimensions>, const DistanceFieldVector<dimensions>&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<DistanceFieldVector<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DistanceFieldVector<dimensions>>{});
 }
 
 void DistanceFieldVectorTest::debugFlag() {

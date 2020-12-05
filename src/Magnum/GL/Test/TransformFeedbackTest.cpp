@@ -52,8 +52,8 @@ void TransformFeedbackTest::constructNoCreate() {
 }
 
 void TransformFeedbackTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<TransformFeedback>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<TransformFeedback>{});
 }
 
 }}}}

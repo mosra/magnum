@@ -422,8 +422,8 @@ void AnimationDataTest::constructImplicitDurationNotOwnedFlagOwned() {
 }
 
 void AnimationDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<AnimationData, const AnimationData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<AnimationData, const AnimationData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<AnimationData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<AnimationData>{});
 }
 
 void AnimationDataTest::constructMove() {

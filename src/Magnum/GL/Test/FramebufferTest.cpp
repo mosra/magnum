@@ -58,8 +58,8 @@ void FramebufferTest::constructNoCreate() {
 }
 
 void FramebufferTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Framebuffer, const Framebuffer&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Framebuffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Framebuffer>{});
 }
 
 void FramebufferTest::debugStatus() {

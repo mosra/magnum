@@ -52,8 +52,8 @@ void RenderbufferTest::constructNoCreate() {
 }
 
 void RenderbufferTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Renderbuffer, const Renderbuffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Renderbuffer, const Renderbuffer&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Renderbuffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Renderbuffer>{});
 }
 
 }}}}

@@ -56,8 +56,8 @@ void ShaderTest::constructNoCreate() {
 }
 
 void ShaderTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Shader, const Shader&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Shader, const Shader&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Shader>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Shader>{});
 }
 
 void ShaderTest::debugType() {

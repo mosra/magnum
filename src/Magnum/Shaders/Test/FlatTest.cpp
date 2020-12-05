@@ -68,11 +68,8 @@ template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
 template<UnsignedInt dimensions> void FlatTest::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY((std::is_constructible<Flat<dimensions>, Flat<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<Flat<dimensions>, const Flat<dimensions>&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<Flat<dimensions>, Flat<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Flat<dimensions>, const Flat<dimensions>&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Flat<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Flat<dimensions>>{});
 }
 
 void FlatTest::debugFlag() {

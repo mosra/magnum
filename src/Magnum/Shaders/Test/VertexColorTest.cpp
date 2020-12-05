@@ -59,11 +59,8 @@ template<UnsignedInt dimensions> void VertexColorTest::constructNoCreate() {
 template<UnsignedInt dimensions> void VertexColorTest::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY((std::is_constructible<VertexColor<dimensions>, VertexColor<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<VertexColor<dimensions>, const VertexColor<dimensions>&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<VertexColor<dimensions>, VertexColor<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<VertexColor<dimensions>, const VertexColor<dimensions>&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<VertexColor<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<VertexColor<dimensions>>{});
 }
 
 }}}}

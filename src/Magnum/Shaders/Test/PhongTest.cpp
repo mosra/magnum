@@ -61,8 +61,8 @@ void PhongTest::constructNoCreate() {
 }
 
 void PhongTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Phong, const Phong&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Phong, const Phong&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Phong>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Phong>{});
 }
 
 void PhongTest::debugFlag() {

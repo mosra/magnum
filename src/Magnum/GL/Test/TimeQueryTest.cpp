@@ -52,8 +52,8 @@ void TimeQueryTest::constructNoCreate() {
 }
 
 void TimeQueryTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<TimeQuery, const TimeQuery&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<TimeQuery, const TimeQuery&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<TimeQuery>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<TimeQuery>{});
 }
 
 }}}}

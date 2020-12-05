@@ -183,8 +183,8 @@ void MeshData2DTest::constructNoColors() {
 }
 
 void MeshData2DTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<MeshData2D, const MeshData2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshData2D, const MeshData2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshData2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshData2D>{});
 }
 
 void MeshData2DTest::constructMove() {

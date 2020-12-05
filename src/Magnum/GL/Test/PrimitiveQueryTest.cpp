@@ -52,8 +52,8 @@ void PrimitiveQueryTest::constructNoCreate() {
 }
 
 void PrimitiveQueryTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<PrimitiveQuery, const PrimitiveQuery&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<PrimitiveQuery, const PrimitiveQuery&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<PrimitiveQuery>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<PrimitiveQuery>{});
 }
 
 }}}}

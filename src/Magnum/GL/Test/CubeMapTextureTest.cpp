@@ -52,8 +52,8 @@ void CubeMapTextureTest::constructNoCreate() {
 }
 
 void CubeMapTextureTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<CubeMapTexture, const CubeMapTexture&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CubeMapTexture, const CubeMapTexture&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CubeMapTexture>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CubeMapTexture>{});
 }
 
 }}}}

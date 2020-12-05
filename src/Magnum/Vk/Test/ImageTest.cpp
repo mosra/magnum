@@ -201,8 +201,8 @@ void ImageTest::constructNoCreate() {
 }
 
 void ImageTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Image, const Image&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Image, const Image&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Image>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Image>{});
 }
 
 void ImageTest::dedicatedMemoryNotDedicated() {

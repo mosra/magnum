@@ -82,19 +82,13 @@ void MeshVisualizerTest::constructNoCreate3D() {
 }
 
 void MeshVisualizerTest::constructCopy2D() {
-    CORRADE_VERIFY((std::is_constructible<MeshVisualizer2D, MeshVisualizer2D&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<MeshVisualizer2D, const MeshVisualizer2D&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<MeshVisualizer2D, MeshVisualizer2D&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer2D, const MeshVisualizer2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizer2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizer2D>{});
 }
 
 void MeshVisualizerTest::constructCopy3D() {
-    CORRADE_VERIFY((std::is_constructible<MeshVisualizer3D, MeshVisualizer3D&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<MeshVisualizer3D, const MeshVisualizer3D&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<MeshVisualizer3D, MeshVisualizer3D&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer3D, const MeshVisualizer3D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshVisualizer3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshVisualizer3D>{});
 }
 
 void MeshVisualizerTest::vertexIndexSameAsObjectId() {

@@ -57,8 +57,8 @@ void AbstractShaderProgramTest::constructNoCreate() {
 void AbstractShaderProgramTest::constructCopy() {
     class DummyShader: public AbstractShaderProgram {};
 
-    CORRADE_VERIFY(!(std::is_constructible<DummyShader, const DummyShader&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<DummyShader, const DummyShader&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<DummyShader>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DummyShader>{});
 }
 
 }}}}

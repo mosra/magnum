@@ -66,11 +66,8 @@ template<UnsignedInt dimensions> void VectorTest::constructNoCreate() {
 template<UnsignedInt dimensions> void VectorTest::constructCopy() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
-    CORRADE_VERIFY((std::is_constructible<Vector<dimensions>, Vector<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<Vector<dimensions>, const Vector<dimensions>&>{}));
-
-    CORRADE_VERIFY((std::is_assignable<Vector<dimensions>, Vector<dimensions>&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Vector<dimensions>, const Vector<dimensions>&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Vector<dimensions>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Vector<dimensions>>{});
 }
 
 void VectorTest::debugFlag() {

@@ -52,8 +52,8 @@ void PipelineStatisticsQueryTest::constructNoCreate() {
 }
 
 void PipelineStatisticsQueryTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<PipelineStatisticsQuery, const PipelineStatisticsQuery&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<PipelineStatisticsQuery, const PipelineStatisticsQuery&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<PipelineStatisticsQuery>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<PipelineStatisticsQuery>{});
 }
 
 }}}}

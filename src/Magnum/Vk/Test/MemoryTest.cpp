@@ -156,8 +156,8 @@ void MemoryTest::constructNoCreate() {
 }
 
 void MemoryTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Memory, const Memory&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Memory, const Memory&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Memory>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Memory>{});
 }
 
 void MemoryTest::debugMemoryFlag() {

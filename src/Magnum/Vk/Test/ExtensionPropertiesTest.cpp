@@ -68,13 +68,13 @@ void ExtensionPropertiesTest::constructInstanceNoCreate() {
 }
 
 void ExtensionPropertiesTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<ExtensionProperties, const ExtensionProperties&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<ExtensionProperties, const ExtensionProperties&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<ExtensionProperties>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<ExtensionProperties>{});
 }
 
 void ExtensionPropertiesTest::constructInstanceCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<InstanceExtensionProperties, const InstanceExtensionProperties&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<InstanceExtensionProperties, const InstanceExtensionProperties&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<InstanceExtensionProperties>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<InstanceExtensionProperties>{});
 }
 
 }}}}

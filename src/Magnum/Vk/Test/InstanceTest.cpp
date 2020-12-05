@@ -85,8 +85,8 @@ void InstanceTest::constructNoCreate() {
 }
 
 void InstanceTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Instance, const Instance&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Instance, const Instance&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Instance>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Instance>{});
 }
 
 }}}}

@@ -454,13 +454,13 @@ void ImageTest::constructCompressedInvalidSize() {
 }
 
 void ImageTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Image2D, const Image2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Image2D, const Image2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Image2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Image2D>{});
 }
 
 void ImageTest::constructCopyCompressed() {
-    CORRADE_VERIFY(!(std::is_constructible<CompressedImage2D, const CompressedImage2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CompressedImage2D, const CompressedImage2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CompressedImage2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CompressedImage2D>{});
 }
 
 void ImageTest::constructMoveGeneric() {

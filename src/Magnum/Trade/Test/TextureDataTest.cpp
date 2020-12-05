@@ -70,8 +70,8 @@ void TextureDataTest::construct() {
 }
 
 void TextureDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<TextureData, const TextureData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<TextureData, const TextureData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<TextureData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<TextureData>{});
 }
 
 void TextureDataTest::constructMove() {

@@ -67,13 +67,13 @@ void BufferImageTest::constructNoCreateCompressed() {
 }
 
 void BufferImageTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<BufferImage2D, const BufferImage2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<BufferImage2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<BufferImage2D>{});
 }
 
 void BufferImageTest::constructCopyCompressed() {
-    CORRADE_VERIFY(!(std::is_constructible<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CompressedBufferImage2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CompressedBufferImage2D>{});
 }
 
 }}}}

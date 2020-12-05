@@ -95,8 +95,8 @@ void BufferTest::constructNoCreate() {
 }
 
 void BufferTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Buffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Buffer>{});
 }
 
 void BufferTest::dedicatedMemoryNotDedicated() {

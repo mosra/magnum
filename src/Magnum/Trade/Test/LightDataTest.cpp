@@ -397,8 +397,8 @@ void LightDataTest::constructInvalid() {
 }
 
 void LightDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<LightData, const LightData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<LightData, const LightData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<LightData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<LightData>{});
 }
 
 void LightDataTest::constructMove() {

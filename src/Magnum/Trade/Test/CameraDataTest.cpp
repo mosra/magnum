@@ -131,8 +131,8 @@ void CameraDataTest::construct2DNearFar() {
 }
 
 void CameraDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<CameraData, const CameraData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CameraData, const CameraData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CameraData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CameraData>{});
 }
 
 void CameraDataTest::constructMove() {

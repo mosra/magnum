@@ -81,8 +81,8 @@ void DeviceTest::constructNoCreate() {
 }
 
 void DeviceTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Device, const Device&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Device, const Device&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Device>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Device>{});
 }
 
 }}}}

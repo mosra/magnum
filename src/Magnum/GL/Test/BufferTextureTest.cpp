@@ -52,8 +52,8 @@ void BufferTextureTest::constructNoCreate() {
 }
 
 void BufferTextureTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<BufferTexture, const BufferTexture&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<BufferTexture, const BufferTexture&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<BufferTexture>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<BufferTexture>{});
 }
 
 }}}}

@@ -671,8 +671,8 @@ void FrameProfilerTest::reSetup() {
 }
 
 void FrameProfilerTest::copy() {
-    CORRADE_VERIFY(!(std::is_constructible<FrameProfiler, const FrameProfiler&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<FrameProfiler, const FrameProfiler&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<FrameProfiler>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<FrameProfiler>{});
 }
 
 void FrameProfilerTest::move() {

@@ -161,10 +161,10 @@ void ObjectData3DTest::constructLight() {
 }
 
 void ObjectData3DTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<ObjectData3D, const ObjectData3D&>{}));
-    CORRADE_VERIFY(!(std::is_constructible<MeshObjectData3D, const MeshObjectData3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<ObjectData3D, const ObjectData3D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MeshObjectData3D, const MeshObjectData3D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<ObjectData3D>{});
+    CORRADE_VERIFY(!std::is_copy_constructible<MeshObjectData3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<ObjectData3D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MeshObjectData3D>{});
 }
 
 void ObjectData3DTest::constructMoveTransformations() {

@@ -52,8 +52,8 @@ void SampleQueryTest::constructNoCreate() {
 }
 
 void SampleQueryTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<SampleQuery, const SampleQuery&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<SampleQuery, const SampleQuery&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<SampleQuery>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<SampleQuery>{});
 }
 
 }}}}

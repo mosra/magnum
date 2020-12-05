@@ -52,8 +52,8 @@ void LayerPropertiesTest::constructNoCreate() {
 }
 
 void LayerPropertiesTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<LayerProperties, const LayerProperties&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<LayerProperties, const LayerProperties&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<LayerProperties>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<LayerProperties>{});
 }
 
 }}}}

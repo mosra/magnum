@@ -85,10 +85,10 @@ void ContextTest::constructNoCreate() {
 
 void ContextTest::constructCopyMove() {
     /* Only move-construction allowed */
-    CORRADE_VERIFY(!(std::is_constructible<Context, const Context&>{}));
-    CORRADE_VERIFY((std::is_constructible<Context, Context&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, const Context&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, Context&&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Context>{});
+    CORRADE_VERIFY(std::is_move_constructible<Context>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Context>{});
+    CORRADE_VERIFY(!std::is_move_assignable<Context>{});
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Context>::value);
     /* No move assignment */

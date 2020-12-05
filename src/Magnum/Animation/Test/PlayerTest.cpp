@@ -255,8 +255,8 @@ void PlayerTest::constructChrono() {
 }
 
 void PlayerTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Player<Float>, const Player<Float>&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Player<Float>, const Player<Float>&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<Player<Float>>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Player<Float>&>{});
 }
 
 void PlayerTest::constructMove() {

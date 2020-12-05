@@ -53,8 +53,8 @@ void CommandBufferTest::constructNoCreate() {
 }
 
 void CommandBufferTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<CommandBuffer, const CommandBuffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CommandBuffer, const CommandBuffer&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<CommandBuffer>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<CommandBuffer>{});
 }
 
 }}}}

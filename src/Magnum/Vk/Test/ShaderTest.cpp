@@ -120,8 +120,8 @@ void ShaderTest::createInfoConstructFromVk() {
 }
 
 void ShaderTest::createInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<ShaderCreateInfo, const ShaderCreateInfo&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<ShaderCreateInfo, const ShaderCreateInfo&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<ShaderCreateInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<ShaderCreateInfo>{});
 }
 
 void ShaderTest::createInfoConstructMove() {

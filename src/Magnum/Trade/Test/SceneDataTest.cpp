@@ -54,8 +54,8 @@ void SceneDataTest::construct() {
 }
 
 void SceneDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<SceneData, const SceneData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<SceneData, const SceneData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<SceneData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<SceneData>{});
 }
 
 void SceneDataTest::constructMove() {

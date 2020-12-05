@@ -68,13 +68,13 @@ void MultisampleTextureTest::construct2DArrayNoCreate() {
 }
 
 void MultisampleTextureTest::constructCopy2D() {
-    CORRADE_VERIFY(!(std::is_constructible<MultisampleTexture2D, const MultisampleTexture2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MultisampleTexture2D, const MultisampleTexture2D&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MultisampleTexture2D>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MultisampleTexture2D>{});
 }
 
 void MultisampleTextureTest::constructCopy2DArray() {
-    CORRADE_VERIFY(!(std::is_constructible<MultisampleTexture2DArray, const MultisampleTexture2DArray&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MultisampleTexture2DArray, const MultisampleTexture2DArray&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MultisampleTexture2DArray>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MultisampleTexture2DArray>{});
 }
 
 }}}}

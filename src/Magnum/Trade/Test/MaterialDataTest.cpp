@@ -1582,8 +1582,8 @@ void MaterialDataTest::constructNonOwnedLayersOffsetOutOfBounds() {
 }
 
 void MaterialDataTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<MaterialData, const MaterialData&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<MaterialData, const MaterialData&>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<MaterialData>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<MaterialData>{});
 }
 
 void MaterialDataTest::constructMove() {
