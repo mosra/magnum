@@ -28,7 +28,6 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Packing.h"
@@ -651,7 +650,7 @@ template<class U, class T> void PackingBatchTest::assertionsCast() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    setTestCaseTemplateName(Corrade::Utility::formatString("{}, {}", TypeTraits<U>::name(), TypeTraits<T>::name()));
+    setTestCaseTemplateName({TypeTraits<U>::name(), TypeTraits<T>::name()});
 
     Math::Vector2<T> data[2]{};
     Math::Vector2<U> resultWrongCount[1]{};

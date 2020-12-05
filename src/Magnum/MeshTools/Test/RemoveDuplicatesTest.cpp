@@ -30,7 +30,6 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
@@ -494,9 +493,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyStl() {
 #endif
 
 template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlace() {
-    setTestCaseTemplateName(Utility::formatString("{}, {}",
-        Math::TypeTraits<IndexType>::name(),
-        Math::TypeTraits<T>::name()));
+    setTestCaseTemplateName({Math::TypeTraits<IndexType>::name(), Math::TypeTraits<T>::name()});
 
     /* Same as above, but with an explicit index buffer */
     IndexType indices[]{3, 2, 0, 1, 2, 3};
@@ -557,9 +554,7 @@ void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceEmptyIndicesVertic
 }
 
 template<class IndexType, class T> void RemoveDuplicatesTest::removeDuplicatesFuzzyIndexedInPlaceErased() {
-    setTestCaseTemplateName(Utility::formatString("{}, {}",
-        Math::TypeTraits<IndexType>::name(),
-        Math::TypeTraits<T>::name()));
+    setTestCaseTemplateName({Math::TypeTraits<IndexType>::name(), Math::TypeTraits<T>::name()});
 
     /* Same as above, but with an explicit index buffer */
     IndexType indices[]{3, 2, 0, 1, 2, 3};
