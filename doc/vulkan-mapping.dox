@@ -231,7 +231,7 @@ Vulkan function                         | Matching API
 
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
-@fn_vk{MapMemory}, \n @fn_vk{UnmapMemory} | |
+@fn_vk{MapMemory}, \n @fn_vk{UnmapMemory} | @ref Memory::map(), @ref MemoryMapDeleter
 @fn_vk{MergePipelineCaches}             | |
 
 @subsection vulkan-mapping-functions-q Q

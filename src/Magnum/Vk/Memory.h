@@ -39,13 +39,6 @@
 
 namespace Magnum { namespace Vk {
 
-/** @relates Memory
-@brief Deleter for mapped memory
-@m_since_latest
-
-Deleter for the array returned from @ref Memory::map(). Calls
-@fn_vk_keyword{UnmapMemory}.
-*/
 class MemoryMapDeleter;
 
 /**
@@ -453,8 +446,15 @@ class MAGNUM_VK_EXPORT Memory {
         UnsignedLong _size;
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @relates Memory
+@brief Deleter for mapped memory
+@m_since_latest
+
+Deleter for the array returned from @ref Memory::map(). Calls
+@fn_vk_keyword{UnmapMemory}.
+*/
 class MAGNUM_VK_EXPORT MemoryMapDeleter {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     public:
         explicit MemoryMapDeleter(): _unmap{}, _device{}, _memory{} {}
         explicit MemoryMapDeleter(void(*unmap)(VkDevice, VkDeviceMemory), VkDevice device, VkDeviceMemory memory): _unmap{unmap}, _device{device}, _memory{memory} {}
@@ -466,8 +466,8 @@ class MAGNUM_VK_EXPORT MemoryMapDeleter {
         void(*_unmap)(VkDevice, VkDeviceMemory);
         VkDevice _device;
         VkDeviceMemory _memory;
+    #endif
 };
-#endif
 
 }}
 
