@@ -73,6 +73,14 @@ everything else optional. One exception is for example
 @ref Vk::DeviceCreateInfo, where the user is expected to call
 @ref Vk::DeviceCreateInfo::addQueues() "addQueues()" as well.
 
+To completely mitigate the overhead from instantiating wrapper `*CreateInfo`
+classes, each of them can also be constructed using the @ref NoInit tag, which
+will skip all initialization and leave the contents unspecified to be filled
+later. In case the structure contains some heap-allocated state, the
+@ref NoInit constructor is guaranteed to not allocate. Note that with
+@ref NoInit constructors you have the full responsibility to correctly set up
+all members.
+
 @section vulkan-wrapping-host-allocation Host memory allocation
 
 As opposed to device memory allocation, which is exposed through
@@ -103,11 +111,10 @@ care to not clash with values and pointers already set:
 
 @snippet MagnumVk.cpp wrapping-extending-create-info
 
-To completely mitigate the overhead from instantiating wrapper `*CreateInfo`
-classes, each of them can also be constructed using the @ref NoInit tag, which
-will skip all initialization and leave the contents unspecified to be filled
-later. Note that at that point you have the full responsibility to correctly
-set up all members.
+Similarly to the @ref NoInit constructors, constructing a `Vk::*CreateInfo`
+from the underlying Vulkan structure is guaranteed to not allocate as well ---
+only a shallow copy of the top-level structure is made and internal pointers,
+if any, keep pointing to the originating data.
 
 @section vulkan-wrapping-optimizing-properties Optimizing instance and device property retrieval
 
