@@ -122,6 +122,11 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
             if(extensionProperties->isSupported<Extensions::KHR::bind_memory2>())
                 addEnabledExtensions<Extensions::KHR::bind_memory2>();
         }
+        /* Only if we don't have Vulkan 1.2, on which these are core */
+        if(_state->version < Version::Vk12) {
+            if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>())
+                addEnabledExtensions<Extensions::KHR::create_renderpass2>();
+        }
     }
 
     /* Conservatively populate the device properties.
