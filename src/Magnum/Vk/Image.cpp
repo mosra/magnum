@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace Vk {
 
-ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const VkFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const Flags flags): _info{} {
+ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const VkFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const ImageLayout initialLayout, const Flags flags): _info{} {
     _info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     _info.flags = VkImageCreateFlags(flags);
     _info.imageType = type;
@@ -48,16 +48,7 @@ ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usage
     /* _info.sharingMode is implicitly VK_SHARING_MODE_EXCLUSIVE;
        _info.queueFamilyIndexCount and _info.pQueueFamilyIndices should be
        filled only for VK_SHARING_MODE_CONCURRENT */
-    /* _info.initialLayout is implicitly VK_IMAGE_LAYOUT_UNDEFINED. The only
-       other possible value is VK_IMAGE_LAYOUT_PREDEFINED, which however also
-       needs VK_IMAGE_TILING_LINEAR, one sample and possibly other restrictions
-       -- https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkImageCreateInfo.html#_description
-
-       Such images need to be allocated from host-visible memory which on
-       discrete GPUs is not fast for device access and thus is recommended to
-       go through a staging buffer (not image) instead. This is however still
-       useful for iGPUs, as the the memory is shared and this avoid an
-       expensive extra copy. */
+    _info.initialLayout = VkImageLayout(initialLayout);
 }
 
 ImageCreateInfo::ImageCreateInfo(NoInitT) noexcept {}

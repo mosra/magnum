@@ -72,7 +72,7 @@ ImageTest::ImageTest() {
 }
 
 void ImageTest::createInfoConstruct() {
-    ImageCreateInfo info{VK_IMAGE_TYPE_2D, ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_UNORM, {256, 128, 1}, 6, 8, 16, ImageCreateInfo::Flag::CubeCompatible};
+    ImageCreateInfo info{VK_IMAGE_TYPE_2D, ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_UNORM, {256, 128, 1}, 6, 8, 16, ImageLayout::Undefined, ImageCreateInfo::Flag::CubeCompatible};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
     CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
