@@ -105,7 +105,7 @@ void Buffer::bindMemory(Memory& memory, const UnsignedLong offset) {
     info.buffer = _handle;
     info.memory = memory;
     info.memoryOffset = offset;
-    _device->state().bindBufferMemoryImplementation(*_device, 1, &info);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(_device->state().bindBufferMemoryImplementation(*_device, 1, &info));
 }
 
 void Buffer::bindDedicatedMemory(Memory&& memory) {
@@ -132,28 +132,29 @@ VkBuffer Buffer::release() {
 }
 
 void Buffer::getMemoryRequirementsImplementationDefault(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetBufferMemoryRequirements(device, info.buffer, &requirements.memoryRequirements);
+    return device->GetBufferMemoryRequirements(device, info.buffer, &requirements.memoryRequirements);
 }
 
 void Buffer::getMemoryRequirementsImplementationKHR(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetBufferMemoryRequirements2KHR(device, &info, &requirements);
+    return device->GetBufferMemoryRequirements2KHR(device, &info, &requirements);
 }
 
 void Buffer::getMemoryRequirementsImplementation11(Device& device, const VkBufferMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetBufferMemoryRequirements2(device, &info, &requirements);
+    return device->GetBufferMemoryRequirements2(device, &info, &requirements);
 }
 
-void Buffer::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+VkResult Buffer::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
     for(std::size_t i = 0; i != count; ++i)
-        device->BindBufferMemory(device, infos[i].buffer, infos[i].memory, infos[i].memoryOffset);
+        if(VkResult result = device->BindBufferMemory(device, infos[i].buffer, infos[i].memory, infos[i].memoryOffset)) return result;
+    return VK_SUCCESS;
 }
 
-void Buffer::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
-    device->BindBufferMemory2KHR(device, count, infos);
+VkResult Buffer::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+    return device->BindBufferMemory2KHR(device, count, infos);
 }
 
-void Buffer::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
-    device->BindBufferMemory2(device, count, infos);
+VkResult Buffer::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
+    return device->BindBufferMemory2(device, count, infos);
 }
 
 }}

@@ -778,6 +778,38 @@ In order to remove Vulkan functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
 
+@section developers-vk-extension-dependent Checklist for Vulkan extension-dependent code paths
+
+Every time an extension-dependent code path is expected to be used several
+times (such as render pass creation, but not one-time device property query,
+for example), it should be implemented through a `*Implementation*()` function
+pointers on a class that needs them:
+
+-   The `*Implementation()` functions should be suffixed depending on version /
+    extension that adds them (so e.g. `ImplementationDefault`,
+    `ImplementationKHR`, `Implementation12`)
+-   The implementation should be `MAGNUM_VK_LOCAL` and @cpp static @ce, taking
+    the class via @cpp Type& self @ce if necessary. This avoids extra overhead
+    coming from member function pointers and doesn't require an @cpp #include @ce
+    of the full type on MSVC in order to avoid ABI issues (as insane as it
+    sounds, MSVC member function pointer size is different depending if the
+    type is incomplete or not, causing hard-to-debug crashes).
+-   Their API should match the latest functionality and doing compatibility
+    steps for previous versions, not the other way around (so for example
+    extracting "version 1" structures from "version 2" in order to call the
+    default functionality)
+-   The return value of the concrete Vulkan call should be always propagated
+    upwards with a @cpp return @ce, *even if* the call returns @cpp void @ce,
+    and the call site should be wrapping it in a
+    @ref MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(). This is preferred over having the
+    assert repeated for each code path, as it generates less code.
+-   @cpp Implementation::InstanceState @ce / @cpp Implementation::DeviceState @ce
+    then contains the dispatching function pointer, choosing the appropriate
+    version based on what version and extensions are available.
+-   Finally, the extension should be implicitly enabled during instance /
+    device creation as appropriate --- for example, if the extension is core in
+    1.2, the extension should be enabled only on 1.1 and below.
+
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
 1.  Verify that there are no important clients stuck on the old version with no

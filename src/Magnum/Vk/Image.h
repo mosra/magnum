@@ -512,9 +512,9 @@ class MAGNUM_VK_EXPORT Image {
         MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementationKHR(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
         MAGNUM_VK_LOCAL static void getMemoryRequirementsImplementation11(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements);
 
-        MAGNUM_VK_LOCAL static void bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
-        MAGNUM_VK_LOCAL static void bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
-        MAGNUM_VK_LOCAL static void bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
+        MAGNUM_VK_LOCAL static VkResult bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
+        MAGNUM_VK_LOCAL static VkResult bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
+        MAGNUM_VK_LOCAL static VkResult bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* infos);
 
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;

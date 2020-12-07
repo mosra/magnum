@@ -122,7 +122,7 @@ void Image::bindMemory(Memory& memory, const UnsignedLong offset) {
     info.image = _handle;
     info.memory = memory;
     info.memoryOffset = offset;
-    _device->state().bindImageMemoryImplementation(*_device, 1, &info);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(_device->state().bindImageMemoryImplementation(*_device, 1, &info));
 }
 
 void Image::bindDedicatedMemory(Memory&& memory) {
@@ -149,28 +149,29 @@ VkImage Image::release() {
 }
 
 void Image::getMemoryRequirementsImplementationDefault(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetImageMemoryRequirements(device, info.image, &requirements.memoryRequirements);
+    return device->GetImageMemoryRequirements(device, info.image, &requirements.memoryRequirements);
 }
 
 void Image::getMemoryRequirementsImplementationKHR(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetImageMemoryRequirements2KHR(device, &info, &requirements);
+    return device->GetImageMemoryRequirements2KHR(device, &info, &requirements);
 }
 
 void Image::getMemoryRequirementsImplementation11(Device& device, const VkImageMemoryRequirementsInfo2& info, VkMemoryRequirements2& requirements) {
-    device->GetImageMemoryRequirements2(device, &info, &requirements);
+    return device->GetImageMemoryRequirements2(device, &info, &requirements);
 }
 
-void Image::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+VkResult Image::bindMemoryImplementationDefault(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
     for(std::size_t i = 0; i != count; ++i)
-        device->BindImageMemory(device, infos[i].image, infos[i].memory, infos[i].memoryOffset);
+        if(VkResult result = device->BindImageMemory(device, infos[i].image, infos[i].memory, infos[i].memoryOffset)) return result;
+    return VK_SUCCESS;
 }
 
-void Image::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
-    device->BindImageMemory2KHR(device, count, infos);
+VkResult Image::bindMemoryImplementationKHR(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+    return device->BindImageMemory2KHR(device, count, infos);
 }
 
-void Image::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
-    device->BindImageMemory2(device, count, infos);
+VkResult Image::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
+    return device->BindImageMemory2(device, count, infos);
 }
 
 }}
