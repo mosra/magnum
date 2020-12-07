@@ -142,7 +142,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
 @fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | |
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
-@fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | |
+@fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
 @fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateSemaphore}, \n @fn_vk{DestroySemaphore} | |
@@ -305,9 +305,9 @@ Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{AllocationCallbacks}           | intentionally @ref vulkan-wrapping-host-allocation "not exposed"
 @type_vk{ApplicationInfo}               | @ref InstanceCreateInfo
-@type_vk{AttachmentDescription}, \n @type_vk{AttachmentDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{AttachmentDescription}, \n @type_vk{AttachmentDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref AttachmentDescription
 @type_vk{AttachmentDescriptionStencilLayout} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{AttachmentReference}, \n @type_vk{AttachmentReference2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{AttachmentReference}, \n @type_vk{AttachmentReference2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref AttachmentReference
 @type_vk{AttachmentReferenceStencilLayout} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 
 @subsection vulkan-mapping-structures-b B
@@ -584,7 +584,7 @@ Vulkan structure                        | Matching API
 @type_vk{Rect2D}                        | convertible from/to @ref Range2Di using @ref Magnum/Vk/Integration.h
 @type_vk{RenderPassBeginInfo}           | |
 @type_vk{RenderPassAttachmentBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{RenderPassCreateInfo}, \n @type_vk{RenderPassCreateInfo2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{RenderPassCreateInfo}, \n @type_vk{RenderPassCreateInfo2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref RenderPassCreateInfo
 @type_vk{RenderPassMultiviewCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{RenderPassInputAttachmentAspectCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 
@@ -617,8 +617,8 @@ Vulkan structure                        | Matching API
 @type_vk{SubmitInfo}                    | |
 @type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{SubpassDependency}, \n @type_vk{SubpassDependency2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{SubpassDescription}, \n @type_vk{SubpassDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassDependency}, \n @type_vk{SubpassDependency2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassDependency
+@type_vk{SubpassDescription}, \n @type_vk{SubpassDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassDescription
 @type_vk{SubpassDescriptionDepthStencilResolve} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{SubresourceLayout}             | |
 

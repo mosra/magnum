@@ -48,7 +48,8 @@ set(MagnumVk_GracefulAssert_SRCS
     ExtensionProperties.cpp
     Image.cpp
     LayerProperties.cpp
-    Memory.cpp)
+    Memory.cpp
+    RenderPass.cpp)
 
 set(MagnumVk_HEADERS
     Assert.h
@@ -67,6 +68,7 @@ set(MagnumVk_HEADERS
     LayerProperties.h
     Memory.h
     Queue.h
+    RenderPass.h
     Result.h
     Shader.h
     TypeTraits.h

@@ -64,6 +64,7 @@ typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
 class Queue;
 enum class QueueFlag: UnsignedInt;
 typedef Containers::EnumSet<QueueFlag> QueueFlags;
+class RenderPass;
 enum class Result: Int;
 enum class Version: UnsignedInt;
 #endif

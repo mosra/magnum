@@ -28,7 +28,13 @@
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 
-namespace Magnum { namespace Vk { namespace Implementation {
+namespace Magnum { namespace Vk {
+
+/* Declared here instead of in Vk.h because it makes no sense to store it
+   anywhere */
+class RenderPassCreateInfo;
+
+namespace Implementation {
 
 struct DeviceState {
     explicit DeviceState(Device& instance);
@@ -39,6 +45,7 @@ struct DeviceState {
     void(*getImageMemoryRequirementsImplementation)(Device&, const VkImageMemoryRequirementsInfo2&, VkMemoryRequirements2&);
     VkResult(*bindBufferMemoryImplementation)(Device&, UnsignedInt, const VkBindBufferMemoryInfo*);
     VkResult(*bindImageMemoryImplementation)(Device&, UnsignedInt, const VkBindImageMemoryInfo*);
+    VkResult(*createRenderPassImplementation)(Device&, const RenderPassCreateInfo&, const VkAllocationCallbacks*, VkRenderPass*);
 };
 
 }}}

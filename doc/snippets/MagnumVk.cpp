@@ -42,6 +42,7 @@
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Queue.h"
+#include "Magnum/Vk/RenderPass.h"
 #include "Magnum/Vk/Shader.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
@@ -414,6 +415,57 @@ indices.bindMemory(memory, indicesOffset);
         mapped.slice(indicesOffset, indicesOffset + indexData.size()));
 }
 /* [Memory-mapping] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* [RenderPass-usage] */
+Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
+    .setAttachments({
+        VK_FORMAT_R8G8B8A8_SRGB,
+        VK_FORMAT_D24_UNORM_S8_UINT
+    })
+    .addSubpass(Vk::SubpassDescription{}
+        .setColorAttachments({0})
+        .setDepthStencilAttachment(1)
+    )
+};
+/* [RenderPass-usage] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* [RenderPass-usage-load-store] */
+Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
+    .setAttachments({
+        {VK_FORMAT_R8G8B8A8_SRGB, Vk::AttachmentLoadOperation::Clear, {}},
+        {VK_FORMAT_D24_UNORM_S8_UINT, Vk::AttachmentLoadOperation::Clear, {}},
+    })
+    DOXYGEN_IGNORE()
+};
+/* [RenderPass-usage-load-store] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* [RenderPass-usage-layout] */
+Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
+    .setAttachments({
+        {VK_FORMAT_R8G8B8A8_SRGB,
+         Vk::AttachmentLoadOperation::Clear, {},
+         Vk::ImageLayout::ColorAttachment,
+         Vk::ImageLayout::ColorAttachment},
+        {VK_FORMAT_D24_UNORM_S8_UINT,
+         Vk::AttachmentLoadOperation::Clear, {},
+         Vk::ImageLayout::DepthStencilAttachment,
+         Vk::ImageLayout::DepthStencilAttachment},
+    })
+    .addSubpass(Vk::SubpassDescription{}
+        .setColorAttachments({{0, Vk::ImageLayout::ColorAttachment}})
+        .setDepthStencilAttachment({1, Vk::ImageLayout::ColorAttachment})
+    )
+};
+/* [RenderPass-usage-layout] */
 }
 
 {

@@ -29,6 +29,7 @@
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/RenderPass.h"
 #include "Magnum/Vk/Version.h"
 
 namespace Magnum { namespace Vk { namespace Implementation {
@@ -60,6 +61,14 @@ DeviceState::DeviceState(Device& device) {
     } else {
         bindImageMemoryImplementation = &Image::bindMemoryImplementationDefault;
         bindBufferMemoryImplementation = &Buffer::bindMemoryImplementationDefault;
+    }
+
+    if(device.isVersionSupported(Version::Vk12)) {
+        createRenderPassImplementation = &RenderPass::createImplementation12;
+    } else if(device.isExtensionEnabled<Extensions::KHR::create_renderpass2>()) {
+        createRenderPassImplementation = &RenderPass::createImplementationKHR;
+    } else {
+        createRenderPassImplementation = &RenderPass::createImplementationDefault;
     }
 }
 
