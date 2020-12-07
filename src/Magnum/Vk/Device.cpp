@@ -179,8 +179,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) && {
-    addEnabledExtensions(extensions);
-    return std::move(*this);
+    return std::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) & {
@@ -188,8 +187,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Containers::StringView> extensions) && {
-    addEnabledExtensions(extensions);
-    return std::move(*this);
+    return std::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) & {
@@ -214,8 +212,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::Array
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Extension> extensions) && {
-    addEnabledExtensions(extensions);
-    return std::move(*this);
+    return std::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) & {
@@ -223,8 +220,7 @@ DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const std::initializer_
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer_list<Extension> extensions) && {
-    addEnabledExtensions(extensions);
-    return std::move(*this);
+    return std::move(addEnabledExtensions(extensions));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
@@ -256,8 +252,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Co
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
-    addQueues(family, priorities, output);
-    return std::move(*this);
+    return std::move(addQueues(family, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
@@ -265,8 +260,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const st
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const UnsignedInt family, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
-    addQueues(family, priorities, output);
-    return std::move(*this);
+    return std::move(addQueues(family, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
@@ -274,8 +268,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const Cont
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) && {
-    addQueues(flags, priorities, output);
-    return std::move(*this);
+    return std::move(addQueues(flags, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) & {
@@ -283,8 +276,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const QueueFlags flags, const std:
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const QueueFlags flags, const std::initializer_list<Float> priorities, const std::initializer_list<Containers::Reference<Queue>> output) && {
-    addQueues(flags, priorities, output);
-    return std::move(*this);
+    return std::move(addQueues(flags, priorities, output));
 }
 
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) & {
@@ -303,8 +295,7 @@ DeviceCreateInfo& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& inf
 }
 
 DeviceCreateInfo&& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& info) && {
-    addQueues(info);
-    return std::move(*this);
+    return std::move(addQueues(info));
 }
 
 Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
