@@ -55,6 +55,8 @@ struct DeviceVkTest: VulkanTester {
     void createInfoCopiedStrings();
     void createInfoNoQueuePriorities();
     void createInfoWrongQueueOutputCount();
+    void createInfoConstructCopy();
+    void createInfoConstructMove();
     void createInfoRvalue();
 
     void construct();
@@ -137,6 +139,8 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::createInfoCopiedStrings,
               &DeviceVkTest::createInfoNoQueuePriorities,
               &DeviceVkTest::createInfoWrongQueueOutputCount,
+              &DeviceVkTest::createInfoConstructCopy,
+              &DeviceVkTest::createInfoConstructMove,
               &DeviceVkTest::createInfoRvalue,
 
               &DeviceVkTest::construct,
@@ -246,6 +250,47 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
     Queue a{NoCreate}, b{NoCreate};
     DeviceCreateInfo{pickDevice(instance())}.addQueues(0, {0.0f, 1.0f, 0.3f}, {a, b});
     CORRADE_COMPARE(out.str(), "Vk::DeviceCreateInfo::addQueues(): expected 3 outuput queue references but got 2\n");
+}
+
+void DeviceVkTest::createInfoConstructCopy() {
+    CORRADE_VERIFY(!(std::is_copy_constructible<DeviceCreateInfo>{}));
+    CORRADE_VERIFY(!(std::is_copy_assignable<DeviceCreateInfo>{}));
+}
+
+void DeviceVkTest::createInfoConstructMove() {
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
+    Queue queue{NoCreate};
+    DeviceCreateInfo a{pickDevice(instance()), DeviceCreateInfo::Flag::NoImplicitExtensions};
+    a.addQueues(0, {0.35f}, {queue})
+     .addEnabledExtensions<Extensions::KHR::get_memory_requirements2,
+                           Extensions::KHR::bind_memory2>();
+
+    DeviceCreateInfo b{std::move(a)};
+    CORRADE_COMPARE(a->enabledExtensionCount, 0);
+    CORRADE_VERIFY(!a->ppEnabledExtensionNames);
+    CORRADE_COMPARE(a->queueCreateInfoCount, 0);
+    CORRADE_VERIFY(!a->pQueueCreateInfos);
+    CORRADE_COMPARE(b->enabledExtensionCount, 2);
+    CORRADE_VERIFY(b->ppEnabledExtensionNames);
+    CORRADE_COMPARE(b->ppEnabledExtensionNames[1], "VK_KHR_bind_memory2"_s);
+    CORRADE_COMPARE(b->queueCreateInfoCount, 1);
+    CORRADE_VERIFY(b->pQueueCreateInfos);
+    CORRADE_COMPARE(b->pQueueCreateInfos[0].pQueuePriorities[0], 0.35f);
+
+    DeviceCreateInfo c{{}, {}};
+    c = std::move(b);
+    CORRADE_COMPARE(b->enabledExtensionCount, 0);
+    CORRADE_VERIFY(!b->ppEnabledExtensionNames);
+    CORRADE_COMPARE(b->queueCreateInfoCount, 0);
+    CORRADE_VERIFY(!b->pQueueCreateInfos);
+    CORRADE_COMPARE(c->enabledExtensionCount, 2);
+    CORRADE_VERIFY(c->ppEnabledExtensionNames);
+    CORRADE_COMPARE(c->ppEnabledExtensionNames[1], "VK_KHR_bind_memory2"_s);
+    CORRADE_COMPARE(c->queueCreateInfoCount, 1);
+    CORRADE_VERIFY(c->pQueueCreateInfos);
+    CORRADE_COMPARE(c->pQueueCreateInfos[0].pQueuePriorities[0], 0.35f);
 }
 
 void DeviceVkTest::createInfoRvalue() {

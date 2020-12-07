@@ -151,7 +151,32 @@ DeviceCreateInfo::DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDevi
        member instead of doing a copy */
     _info(info) {}
 
+DeviceCreateInfo::DeviceCreateInfo(DeviceCreateInfo&& other) noexcept:
+    _physicalDevice{other._physicalDevice},
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(other._info),
+    _state{std::move(other._state)}
+{
+    /* Ensure the previous instance doesn't reference state that's now ours */
+    /** @todo this is now more like a destructible move, do it more selectively
+        and clear only what's really ours and not external? */
+    other._info.pNext = nullptr;
+    other._info.enabledExtensionCount = 0;
+    other._info.ppEnabledExtensionNames = nullptr;
+    other._info.queueCreateInfoCount = 0;
+    other._info.pQueueCreateInfos = nullptr;
+}
+
 DeviceCreateInfo::~DeviceCreateInfo() = default;
+
+DeviceCreateInfo& DeviceCreateInfo::operator=(DeviceCreateInfo&& other) noexcept {
+    using std::swap;
+    swap(other._physicalDevice, _physicalDevice);
+    swap(other._info, _info);
+    swap(other._state, other._state);
+    return *this;
+}
 
 DeviceCreateInfo& DeviceCreateInfo::addEnabledExtensions(const Containers::ArrayView<const Containers::StringView> extensions) & {
     if(extensions.empty()) return *this;

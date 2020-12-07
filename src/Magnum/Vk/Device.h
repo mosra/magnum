@@ -144,7 +144,19 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          */
         explicit DeviceCreateInfo(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo& info);
 
+        /** @brief Copying is not allowed */
+        DeviceCreateInfo(const DeviceCreateInfo&) = delete;
+
+        /** @brief Move constructor */
+        DeviceCreateInfo(DeviceCreateInfo&& other) noexcept;
+
         ~DeviceCreateInfo();
+
+        /** @brief Copying is not allowed */
+        DeviceCreateInfo& operator=(const DeviceCreateInfo&) = delete;
+
+        /** @brief Move assignment */
+        DeviceCreateInfo& operator=(DeviceCreateInfo&& other) noexcept;
 
         /* All the && overloads below are there in order to allow code like
 
