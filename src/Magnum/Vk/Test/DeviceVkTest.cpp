@@ -60,6 +60,7 @@ struct DeviceVkTest: VulkanTester {
     void construct();
     void constructQueueFromFlags();
     void constructExtensions();
+    void constructDeviceCreateInfoConstReference();
     void constructTransferDeviceProperties();
     void constructExtensionsCommandLineDisable();
     void constructExtensionsCommandLineEnable();
@@ -141,6 +142,7 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::construct,
               &DeviceVkTest::constructQueueFromFlags,
               &DeviceVkTest::constructExtensions,
+              &DeviceVkTest::constructDeviceCreateInfoConstReference,
               &DeviceVkTest::constructTransferDeviceProperties});
 
     addInstancedTests({&DeviceVkTest::constructExtensionsCommandLineDisable,
@@ -368,6 +370,23 @@ void DeviceVkTest::constructExtensions() {
     /* ... and function pointers loaded */
     CORRADE_VERIFY(device->CmdDebugMarkerInsertEXT);
     CORRADE_VERIFY(device->TrimCommandPoolKHR);
+}
+
+void DeviceVkTest::constructDeviceCreateInfoConstReference() {
+    Queue queue{NoCreate};
+    DeviceProperties deviceProperties = pickDevice(instance());
+    DeviceCreateInfo info{deviceProperties};
+    info.addQueues(0, {0.0f}, {queue});
+
+    /* Just to verify the overload taking const DeviceProperties& works as
+       well (most of the above tests verified a move) */
+    Device device{instance(), info};
+    CORRADE_VERIFY(device.handle());
+
+    /* Device properties should be lazy-populated and different from the
+       above instances because we didn't transfer the ownership here either */
+    CORRADE_COMPARE(device.properties().name(), deviceProperties.name());
+    CORRADE_VERIFY(&device.properties().properties() != &deviceProperties.properties());
 }
 
 void DeviceVkTest::constructTransferDeviceProperties() {
