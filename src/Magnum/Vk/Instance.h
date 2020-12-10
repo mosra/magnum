@@ -511,7 +511,7 @@ class MAGNUM_VK_EXPORT Instance {
          * @ref Vk-Instance-raw for more information.
          *
          * @attention This operation is changing global state. You need to
-         *      ensure that this function is not called simultaenously from
+         *      ensure that this function is not called simultaneously from
          *      multiple threads and code using those function points is
          *      calling them with the same instance as the one returned by
          *      @ref handle().

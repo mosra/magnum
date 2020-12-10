@@ -79,7 +79,7 @@
 #   globals unique even across different shared libraries. Enabled by default
 #   for static builds.
 #  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
-#   possible to safely use certain Corrade features simultaenously in multiple
+#   possible to safely use certain Corrade features simultaneously in multiple
 #   threads
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, macOS)
