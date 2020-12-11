@@ -173,6 +173,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *          0 & 0 & 1
          *      \end{pmatrix}
          * @f]
+         *
+         * Similar to the classic @m_class{m-doc-external} [gluOrtho2D()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluOrtho2D.xml)
+         * function, except that the projection is always centered.
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
          * @m_keywords{gluOrtho2D()}

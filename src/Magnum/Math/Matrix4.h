@@ -271,8 +271,11 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 & 0 & 0 & 1
          *      \end{pmatrix}
          * @f]
+         *
+         * Similar to the classic @m_class{m-doc-external} [glOrtho()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glOrtho.xml)
+         * function, except that the projection is always centered.
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
-         * @m_keywords{gluOrtho()}
+         * @m_keywords{glOrtho()}
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
@@ -303,7 +306,6 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * If you need an off-center projection, use
          * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
          * instead.
-         *
          * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
          *      @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
@@ -345,12 +347,11 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * This function is similar to the classic @cpp gluPerspective() @ce,
+         * This function is similar to the classic @m_class{m-doc-external} [gluPerspective()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluPerspective.xml),
          * with the difference that @p fov is *horizontal* instead of vertical.
          * If you need an off-center projection (as with the classic
-         * @cpp glFrustum() @ce function), use
-         * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T).
-         *
+         * @m_class{m-doc-external} [glFrustum()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml)
+         * function), use @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T).
          * @see @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
          * @m_keywords{gluPerspective()}
@@ -387,9 +388,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * Equivalent to the classic @cpp glFrustum() @ce function. If
-         * @p bottomLeft and @p topRight are a negation of each other, this
-         * function is equivalent to @ref perspectiveProjection(const Vector2<T>&, T, T).
+         * Equivalent to the classic @m_class{m-doc-external} [glFrustum()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glFrustum.xml)
+         * function. If @p bottomLeft and @p topRight are a negation of each
+         * other, this function is equivalent to
+         * @ref perspectiveProjection(const Vector2<T>&, T, T).
          *
          * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
          *      @ref orthographicProjection(), @ref Matrix3::projection(),
@@ -408,8 +410,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @attention This function transforms an object so it's at @p eye
          *      position and oriented towards @p target, it does *not* produce
          *      a camera matrix. If you want to get the same what equivalent
-         *      call to the well-known `gluLookAt()` would produce, invert the
-         *      result using @ref invertedRigid().
+         *      call to the well-known @m_class{m-doc-external} [gluLookAt()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/gluLookAt.xml)
+         *      would produce, invert the result using @ref invertedRigid().
          * @m_keywords{gluLookAt()}
          */
         static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
