@@ -329,9 +329,14 @@ class MAGNUM_VK_EXPORT Memory {
          * @param size      Memory size
          * @param flags     Handle flags
          *
-         * The @p handle is expected to be originating from @p device. Unlike
-         * a memory allocated using a constructor, the Vulkan memory is by
-         * default not freed on destruction, use @p flags for different
+         * The @p handle is expected to be originating from @p device. The
+         * @p size parameter will be used to properly size the output array
+         * coming from @ref map(). If a concrete @p size is unknown, use a
+         * zero --- you will then be able to only use the @ref map(UnsignedLong, UnsignedLong)
+         * overload.
+         *
+         * Unlike a memory allocated using a constructor, the Vulkan memory is
+         * by default not freed on destruction, use @p flags for different
          * behavior.
          * @see @ref release()
          */

@@ -105,6 +105,7 @@ Containers::Array<char, MemoryMapDeleter> Memory::map(const UnsignedLong offset,
 }
 
 Containers::Array<char, MemoryMapDeleter> Memory::map() {
+    CORRADE_ASSERT(_size, "Vk::Memory::map(): the memory has unknown size, you have to specify it explicitly", {});
     return map(0, _size);
 }
 
@@ -119,6 +120,7 @@ Containers::Array<const char, MemoryMapDeleter> Memory::mapRead(const UnsignedLo
 }
 
 Containers::Array<const char, MemoryMapDeleter> Memory::mapRead() {
+    CORRADE_ASSERT(_size, "Vk::Memory::mapRead(): the memory has unknown size, you have to specify it explicitly", {});
     return mapRead(0, _size);
 }
 

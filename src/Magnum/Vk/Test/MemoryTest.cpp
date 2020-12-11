@@ -24,9 +24,11 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Memory.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
@@ -47,6 +49,8 @@ struct MemoryTest: TestSuite::Tester {
     void constructNoCreate();
     void constructCopy();
 
+    void mapWrappedUnknownSize();
+
     void debugMemoryFlag();
     void debugMemoryFlags();
 };
@@ -64,6 +68,8 @@ MemoryTest::MemoryTest() {
 
               &MemoryTest::constructNoCreate,
               &MemoryTest::constructCopy,
+
+              &MemoryTest::mapWrappedUnknownSize,
 
               &MemoryTest::debugMemoryFlag,
               &MemoryTest::debugMemoryFlags});
@@ -158,6 +164,23 @@ void MemoryTest::constructNoCreate() {
 void MemoryTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Memory>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Memory>{});
+}
+
+void MemoryTest::mapWrappedUnknownSize() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Device device{NoCreate};
+    Memory memory = Memory::wrap(device, {}, 0);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    memory.map();
+    memory.mapRead();
+    CORRADE_COMPARE(out.str(),
+        "Vk::Memory::map(): the memory has unknown size, you have to specify it explicitly\n"
+        "Vk::Memory::mapRead(): the memory has unknown size, you have to specify it explicitly\n");
 }
 
 void MemoryTest::debugMemoryFlag() {
