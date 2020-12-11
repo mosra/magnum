@@ -24,6 +24,7 @@
 */
 
 #include "Device.h"
+#include "DeviceCreateInfo.h"
 
 #include <algorithm>
 #include <Corrade/Containers/Optional.h>

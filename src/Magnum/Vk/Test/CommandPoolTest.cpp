@@ -26,7 +26,7 @@
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Vk/CommandPool.h"
+#include "Magnum/Vk/CommandPoolCreateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 

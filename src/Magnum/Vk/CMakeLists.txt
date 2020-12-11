@@ -54,23 +54,31 @@ set(MagnumVk_GracefulAssert_SRCS
 set(MagnumVk_HEADERS
     Assert.h
     Buffer.h
+    BufferCreateInfo.h
     CommandBuffer.h
     CommandPool.h
+    CommandPoolCreateInfo.h
     Device.h
+    DeviceCreateInfo.h
     DeviceProperties.h
     Enums.h
     Extensions.h
     ExtensionProperties.h
     Handle.h
     Image.h
+    ImageCreateInfo.h
     Instance.h
+    InstanceCreateInfo.h
     Integration.h
     LayerProperties.h
     Memory.h
+    MemoryAllocateInfo.h
     Queue.h
     RenderPass.h
+    RenderPassCreateInfo.h
     Result.h
     Shader.h
+    ShaderCreateInfo.h
     TypeTraits.h
     Version.h
     Vk.h

@@ -27,7 +27,7 @@
 
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
-#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/DeviceProperties.h"

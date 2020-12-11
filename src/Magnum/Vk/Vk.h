@@ -37,8 +37,10 @@ namespace Magnum { namespace Vk {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class Buffer;
+class BufferCreateInfo;
 class CommandBuffer;
 class CommandPool;
+class CommandPoolCreateInfo;
 class Device;
 class DeviceCreateInfo;
 class DeviceProperties;
@@ -47,14 +49,17 @@ class Extension;
 class ExtensionProperties;
 enum class HandleFlag: UnsignedByte;
 typedef Containers::EnumSet<HandleFlag> HandleFlags;
-enum class ImageLayout: Int;
 class Image;
+enum class ImageLayout: Int;
+class ImageCreateInfo;
+/* Not forward-declaring ImageCreateInfo1D etc right now, I see no need */
 class Instance;
 class InstanceCreateInfo;
 class InstanceExtension;
 class InstanceExtensionProperties;
 class LayerProperties;
 class Memory;
+class MemoryAllocateInfo;
 class MemoryMapDeleter;
 class MemoryRequirements;
 enum class MemoryFlag: UnsignedInt;
@@ -65,7 +70,10 @@ class Queue;
 enum class QueueFlag: UnsignedInt;
 typedef Containers::EnumSet<QueueFlag> QueueFlags;
 class RenderPass;
+class RenderPassCreateInfo;
 enum class Result: Int;
+class Shader;
+class ShaderCreateInfo;
 enum class Version: UnsignedInt;
 #endif
 

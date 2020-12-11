@@ -28,7 +28,9 @@
 #include <string> /* sigh, for setSkippedArgumentPrefixes() */
 #include <Corrade/Containers/StringView.h>
 
+#include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 
 namespace Magnum { namespace Vk {
 

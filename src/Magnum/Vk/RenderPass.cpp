@@ -24,6 +24,7 @@
 */
 
 #include "RenderPass.h"
+#include "RenderPassCreateInfo.h"
 
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>

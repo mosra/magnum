@@ -24,12 +24,14 @@
 */
 
 #include "Image.h"
+#include "ImageCreateInfo.h"
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {

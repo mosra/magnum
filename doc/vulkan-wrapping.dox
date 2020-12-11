@@ -35,6 +35,41 @@ The @ref Magnum::Vk library is a thin but high-level abstraction of the
 [Vulkan](https://www.khronos.org/vulkan/) GPU API, providing sane defaults with
 ability to opt-in for greater control and performance.
 
+@section vulkan-wrapping-create-info CreateInfo structure wrappers
+
+The `*CreateInfo` / `*AllocateInfo` structures tend to be rather complex
+compared to the created object and because they're only needed once when
+constructing the object, their definition is put in a separate header. This
+should help compile times in larger codebases where Vulkan objects are
+constructed in one place and then passed around to functions, without needing
+to know anything about the `CreateInfo`-related definitions anymore. Then, for
+convenience, each `ThingCreateInfo.h` header is guaranteed to include the
+`Thing.h` as well, so if you want both you can do for example just
+
+@snippet MagnumVk.cpp wrapping-include-createinfo
+
+<b></b>
+
+@m_class{m-noindent}
+
+instead of having to verbosely include both:
+
+@snippet MagnumVk.cpp wrapping-include-both
+
+Unless said otherwise in the particular constructor docs, a `Vk::*CreateInfo`
+instance has all required fields set to valid values upon construction, with
+everything else optional. One exception is for example
+@ref Vk::DeviceCreateInfo, where the user is expected to call
+@ref Vk::DeviceCreateInfo::addQueues() "addQueues()" as well.
+
+To completely mitigate the overhead from instantiating wrapper `*CreateInfo`
+classes, each of them can also be constructed using the @ref NoInit tag, which
+will skip all initialization and leave the contents unspecified to be filled
+later. In case the structure contains some heap-allocated state, the
+@ref NoInit constructor is guaranteed to not allocate. Note that with
+@ref NoInit constructors you have the full responsibility to correctly set up
+all members.
+
 @section vulkan-wrapping-instance-device Instance and device wrappers
 
 Compared to OpenGL, which has a concept of "current context", Vulkan doesn't
@@ -64,22 +99,6 @@ the `vk*` functions as usual. However, all implications coming from these being
 tied to a particular instance/device still apply:
 
 @snippet MagnumVk.cpp Instance-global-function-pointers
-
-@section vulkan-wrapping-create-info CreateInfo structure wrappers
-
-Unless said otherwise in the particular constructor docs, a`Vk::*CreateInfo`
-instance has all required fields set to valid values upon construction, with
-everything else optional. One exception is for example
-@ref Vk::DeviceCreateInfo, where the user is expected to call
-@ref Vk::DeviceCreateInfo::addQueues() "addQueues()" as well.
-
-To completely mitigate the overhead from instantiating wrapper `*CreateInfo`
-classes, each of them can also be constructed using the @ref NoInit tag, which
-will skip all initialization and leave the contents unspecified to be filled
-later. In case the structure contains some heap-allocated state, the
-@ref NoInit constructor is guaranteed to not allocate. Note that with
-@ref NoInit constructors you have the full responsibility to correctly set up
-all members.
 
 @section vulkan-wrapping-host-allocation Host memory allocation
 

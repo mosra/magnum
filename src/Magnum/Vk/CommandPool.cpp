@@ -24,6 +24,7 @@
 */
 
 #include "CommandPool.h"
+#include "CommandPoolCreateInfo.h"
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/CommandBuffer.h"

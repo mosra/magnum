@@ -28,8 +28,8 @@
 
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
-#include "Magnum/Vk/Image.h"
-#include "Magnum/Vk/Memory.h"
+#include "Magnum/Vk/ImageCreateInfo.h"
+#include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 

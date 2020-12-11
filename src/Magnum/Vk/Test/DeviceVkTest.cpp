@@ -30,12 +30,12 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
-#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Handle.h"
-#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/Result.h"

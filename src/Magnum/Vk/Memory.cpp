@@ -24,6 +24,7 @@
 */
 
 #include "Memory.h"
+#include "MemoryAllocateInfo.h"
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>

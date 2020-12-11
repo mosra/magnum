@@ -28,7 +28,7 @@
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/Vk/Shader.h"
+#include "Magnum/Vk/ShaderCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Memory.h"

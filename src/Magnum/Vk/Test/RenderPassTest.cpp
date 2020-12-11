@@ -31,7 +31,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Image.h"
-#include "Magnum/Vk/RenderPass.h"
+#include "Magnum/Vk/RenderPassCreateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 

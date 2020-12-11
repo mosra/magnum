@@ -28,7 +28,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Handle.h"
-#include "Magnum/Vk/RenderPass.h"
+#include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 

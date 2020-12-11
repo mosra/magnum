@@ -24,7 +24,7 @@
 */
 
 #include "Magnum/Vk/CommandBuffer.h"
-#include "Magnum/Vk/CommandPool.h"
+#include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Result.h"

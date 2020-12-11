@@ -26,7 +26,7 @@
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 

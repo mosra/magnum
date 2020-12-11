@@ -28,7 +28,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {

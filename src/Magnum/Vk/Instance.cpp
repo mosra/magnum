@@ -24,6 +24,7 @@
 */
 
 #include "Instance.h"
+#include "InstanceCreateInfo.h"
 
 #include <algorithm>
 #include <Corrade/Containers/Optional.h>
@@ -300,6 +301,8 @@ Instance::Instance(const InstanceCreateInfo& info): _flags{HandleFlag::DestroyOn
     else
         initialize(version, 0, nullptr);
 }
+
+Instance::Instance(): Instance{InstanceCreateInfo{}} {}
 
 Instance::Instance(NoCreateT): _handle{}, _functionPointers{} {}
 

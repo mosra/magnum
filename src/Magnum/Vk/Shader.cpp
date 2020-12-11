@@ -24,6 +24,7 @@
 */
 
 #include "Shader.h"
+#include "ShaderCreateInfo.h"
 
 #include <Corrade/Containers/ArrayView.h>
 

@@ -29,7 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/Device.h"
-#include "Magnum/Vk/Memory.h"
+#include "Magnum/Vk/MemoryAllocateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 

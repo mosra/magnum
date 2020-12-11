@@ -30,21 +30,31 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Vk/Buffer.h"
+#include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
-#include "Magnum/Vk/CommandPool.h"
-#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/CommandPoolCreateInfo.h"
+#include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
-#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
-#include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
+#include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Queue.h"
-#include "Magnum/Vk/RenderPass.h"
-#include "Magnum/Vk/Shader.h"
+#include "Magnum/Vk/RenderPassCreateInfo.h"
+#include "Magnum/Vk/ShaderCreateInfo.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
+
+/* [wrapping-include-createinfo] */
+#include <Magnum/Vk/RenderPassCreateInfo.h>
+/* [wrapping-include-createinfo] */
+
+/* [wrapping-include-both] */
+#include <Magnum/Vk/RenderPass.h>
+#include <Magnum/Vk/RenderPassCreateInfo.h>
+/* [wrapping-include-both] */
 
 using namespace Magnum;
 
@@ -121,7 +131,12 @@ Vk::Device device{instance, std::move(info)};
 
 {
 Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
 /* [Buffer-creation] */
+#include <Magnum/Vk/BufferCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::Buffer buffer{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
     Vk::MemoryFlag::DeviceLocal
@@ -149,7 +164,12 @@ buffer.bindMemory(memory, 0);
 }
 
 {
+/* The include should be a no-op here since it was already included above */
 /* [CommandPool-creation] */
+#include <Magnum/Vk/CommandPoolCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
 Vk::CommandPool graphicsCommandPool{device, Vk::CommandPoolCreateInfo{
@@ -166,7 +186,12 @@ Vk::CommandBuffer commandBuffer = graphicsCommandPool.allocate();
 
 {
 Vk::Instance instance;
+/* The include should be a no-op here since it was already included above */
 /* [Device-creation-construct-queue] */
+#include <Magnum/Vk/DeviceCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::Queue queue{NoCreate};
 Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
     .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})
@@ -218,8 +243,7 @@ device->ResetQueryPoolEXT(device, DOXYGEN_IGNORE(pool, 0, 0));
 
 {
 VkQueryPool pool{};
-/* Header included again inside a function, but it's fine as the guards will
-   make it empty */
+/* The include should be a no-op here since it was already included above */
 /* [Device-global-function-pointers] */
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
@@ -246,7 +270,12 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 
 {
 Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
 /* [Image-creation] */
+#include <Magnum/Vk/ImageCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::Image image{device, Vk::ImageCreateInfo2D{
         Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
     }, Vk::MemoryFlag::DeviceLocal
@@ -276,7 +305,12 @@ image.bindMemory(memory, 0);
 {
 int argc{};
 const char** argv{};
+/* The include should be a no-op here since it was already included above */
 /* [Instance-creation-minimal] */
+#include <Magnum/Vk/InstanceCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::Instance instance{{argc, argv}};
 /* [Instance-creation-minimal] */
 }
@@ -344,8 +378,7 @@ instance->EnumeratePhysicalDeviceGroupsKHR(instance, &count, properties);
 
 {
 Vk::Instance instance;
-/* Header included again inside a function, but it's fine as the guards will
-   make it empty */
+/* The include should be a no-op here since it was already included above */
 /* [Instance-global-function-pointers] */
 #include <MagnumExternal/Vulkan/flextVkGlobal.h>
 
@@ -375,7 +408,12 @@ if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
 {
 Vk::Device device{NoCreate};
 Containers::ArrayView<const char> vertexData, indexData;
+/* The include should be a no-op here since it was already included above */
 /* [Memory-allocation] */
+#include <Magnum/Vk/MemoryAllocateInfo.h>
+
+DOXYGEN_IGNORE()
+
 /* Create buffers without allocating them */
 Vk::Buffer vertices{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, vertexData.size()},
@@ -419,7 +457,12 @@ indices.bindMemory(memory, indicesOffset);
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* The include should be a no-op here since it was already included above */
 /* [RenderPass-creation] */
+#include <Magnum/Vk/RenderPassCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
         VK_FORMAT_R8G8B8A8_SRGB,
@@ -470,7 +513,12 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* The include should be a no-op here since it was already included above */
 /* [Shader-creation] */
+#include <Magnum/Vk/ShaderCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
 Vk::ShaderCreateInfo info{
     CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Directory::read("shader.spv"))
 };

@@ -34,7 +34,7 @@
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/LayerProperties.h"
-#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 

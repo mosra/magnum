@@ -26,7 +26,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Vk/Shader.h"
+#include "Magnum/Vk/ShaderCreateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
