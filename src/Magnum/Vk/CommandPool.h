@@ -44,8 +44,8 @@ namespace Magnum { namespace Vk {
 @brief Command pool creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandPoolCreateInfo}. See @ref CommandPool for usage
-information.
+Wraps a @type_vk_keyword{CommandPoolCreateInfo}. See
+@ref Vk-CommandPool-creation "Command pool creation" for usage information.
 */
 class MAGNUM_VK_EXPORT CommandPoolCreateInfo {
     public:
@@ -180,20 +180,20 @@ CORRADE_ENUMSET_OPERATORS(CommandPoolResetFlags)
 Wraps a @type_vk_keyword{CommandPool} and handles allocation of
 @ref CommandBuffer "CommandBuffer"s.
 
-@section Vk-CommandPool-usage Usage
+@section Vk-CommandPool-creation Command pool creation and buffer allocation
 
 A @ref CommandPoolCreateInfo doesn't need many inputs --- the only required is
 queue family index coming from @ref DeviceProperties of the device it's created
 on:
 
-@snippet MagnumVk.cpp CommandPool-usage
+@snippet MagnumVk.cpp CommandPool-creation
 
 After that, you can allocate command buffers as follows. The command buffers
 are freed at the end of their instance lifetime, you can also put all allocated
 buffers back to initial state by calling @ref reset(), or alternatively reset
 each buffer separately using @ref CommandBuffer::reset().
 
-@snippet MagnumVk.cpp CommandPool-usage-allocate
+@snippet MagnumVk.cpp CommandPool-allocation
 */
 class MAGNUM_VK_EXPORT CommandPool {
     public:

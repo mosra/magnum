@@ -253,8 +253,8 @@ of @type_vk_keyword{PhysicalDeviceProperties},
 @type_vk_keyword{PhysicalDeviceQueueFamilyProperties} and
 @type_vk_keyword{PhysicalDeviceMemoryProperties}.
 
-See the @ref Vk-Device-usage "Device class docs" for an example of using this
-class for enumerating available devices and picking one of them.
+See the @ref Vk-Device-creation "Device creation docs" for an example of using
+this class for enumerating available devices and picking one of them.
 
 @see @ref pickDevice(), @ref enumerateDevices()
 */

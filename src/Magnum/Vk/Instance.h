@@ -52,7 +52,8 @@ namespace Implementation {
 @m_since_latest
 
 Wraps a @type_vk_keyword{InstanceCreateInfo} and
-@type_vk_keyword{ApplicationInfo}. See @ref Instance for usage information.
+@type_vk_keyword{ApplicationInfo}. See
+@ref Vk-Instance-creation "Instance creation" for usage information.
 */
 class MAGNUM_VK_EXPORT InstanceCreateInfo {
     public:
@@ -244,19 +245,19 @@ CORRADE_ENUMSET_OPERATORS(InstanceCreateInfo::Flags)
 Wraps a @type_vk_keyword{Instance} and stores instance-specific Vulkan function
 pointers.
 
-@section Vk-Instance-usage Usage
+@section Vk-Instance-creation Instance creation
 
 While an @ref Instance can be default-constructed without much fuss, it's
 recommended to pass a @ref InstanceCreateInfo with at least the `argc` / `argv`
 pair, which allows you to use various `--magnum-*`
 @ref Vk-Instance-command-line "command-line options":
 
-@snippet MagnumVk.cpp Instance-usage-minimal
+@snippet MagnumVk.cpp Instance-creation-minimal
 
 In addition to command-line arguments, setting application info isn't strictly
 required either, but may be beneficial for the driver:
 
-@snippet MagnumVk.cpp Instance-usage
+@snippet MagnumVk.cpp Instance-creation
 
 <b></b>
 
@@ -277,14 +278,14 @@ both string names as well as predefined *instance* extensions from the
 @ref Extensions namespace. Later on, presence of predefined extensions can be
 checked with @ref isExtensionEnabled().
 
-@snippet MagnumVk.cpp Instance-usage-layers-extensions
+@snippet MagnumVk.cpp Instance-creation-layers-extensions
 
 However, with the above approach, if any layer or extension isn't available,
 the instance creation will abort. The recommended workflow is thus first
 checking layer and extension availability using @ref enumerateLayerProperties()
 and @ref enumerateInstanceExtensionProperties():
 
-@snippet MagnumVk.cpp Instance-usage-check-supported
+@snippet MagnumVk.cpp Instance-creation-check-supported
 
 Next step after creating a Vulkan instance is picking and creating a
 @ref Device.

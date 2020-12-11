@@ -201,8 +201,8 @@ class MAGNUM_VK_EXPORT MemoryRequirements {
 @brief Memory allocation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{MemoryAllocateInfo}. See @ref Memory for usage
-information.
+Wraps a @type_vk_keyword{MemoryAllocateInfo}. See
+@ref Vk-Memory-allocation "Memory allocation" for usage information.
 */
 class MAGNUM_VK_EXPORT MemoryAllocateInfo {
     public:
@@ -262,7 +262,7 @@ class MAGNUM_VK_EXPORT MemoryAllocateInfo {
 
 Wraps a @type_vk_keyword{DeviceMemory} and handles its allocation and mapping.
 
-@section Vk-Memory-usage Usage
+@section Vk-Memory-allocation Memory allocation
 
 By default, the memory will get allocated for you during the creation of
 @ref Buffer, @ref Image and other objects. In case you want to handle the
@@ -283,7 +283,7 @@ tag to constructors of these objects), it consists of these steps:
 The following example allocates a single block memory for two buffers, one
 containing vertex and the other index data:
 
-@snippet MagnumVk.cpp Memory-usage
+@snippet MagnumVk.cpp Memory-allocation
 
 @section Vk-Memory-mapping Memory mapping
 

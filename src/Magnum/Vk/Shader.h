@@ -44,8 +44,8 @@ namespace Magnum { namespace Vk {
 @brief Shader creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{ShaderModuleCreateInfo}. See @ref Shader for usage
-information.
+Wraps a @type_vk_keyword{ShaderModuleCreateInfo}. See
+@ref Vk-Shader-creation "Shader creation" for usage information.
 */
 class MAGNUM_VK_EXPORT ShaderCreateInfo {
     public:
@@ -173,7 +173,7 @@ CORRADE_ENUMSET_OPERATORS(ShaderCreateInfo::Flags)
 
 Wraps a @type_vk_keyword{ShaderModule}.
 
-@section Vk-Shader-usage Usage
+@section Vk-Shader-creation Shader creation
 
 The @ref ShaderCreateInfo structure takes a single required parameter, which is
 the SPIR-V binary. Besides accepting a @ref Corrade::Containers::ArrayView<const void>,
@@ -182,7 +182,7 @@ to which any container is convertible, it can also take ownership of a
 keeping a loaded file in scope until it's consumed by the @ref Shader
 constructor:
 
-@snippet MagnumVk.cpp Shader-usage
+@snippet MagnumVk.cpp Shader-creation
 */
 class MAGNUM_VK_EXPORT Shader {
     public:

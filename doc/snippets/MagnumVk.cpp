@@ -121,17 +121,17 @@ Vk::Device device{instance, std::move(info)};
 
 {
 Vk::Device device{NoCreate};
-/* [Buffer-usage] */
+/* [Buffer-creation] */
 Vk::Buffer buffer{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
     Vk::MemoryFlag::DeviceLocal
 };
-/* [Buffer-usage] */
+/* [Buffer-creation] */
 }
 
 {
 Vk::Device device{NoCreate};
-/* [Buffer-usage-custom-allocation] */
+/* [Buffer-creation-custom-allocation] */
 Vk::Buffer buffer{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, 1024*1024},
     NoAllocate
@@ -145,40 +145,40 @@ Vk::Memory memory{device, Vk::MemoryAllocateInfo{
 }};
 
 buffer.bindMemory(memory, 0);
-/* [Buffer-usage-custom-allocation] */
+/* [Buffer-creation-custom-allocation] */
 }
 
 {
-/* [CommandPool-usage] */
+/* [CommandPool-creation] */
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
 Vk::CommandPool graphicsCommandPool{device, Vk::CommandPoolCreateInfo{
     device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
 }};
-/* [CommandPool-usage] */
+/* [CommandPool-creation] */
 
-/* [CommandPool-usage-allocate] */
+/* [CommandPool-allocation] */
 Vk::CommandBuffer commandBuffer = graphicsCommandPool.allocate();
 
 // fill the buffer, submit …
-/* [CommandPool-usage-allocate] */
+/* [CommandPool-allocation] */
 }
 
 {
 Vk::Instance instance;
-/* [Device-usage-construct-queue] */
+/* [Device-creation-construct-queue] */
 Vk::Queue queue{NoCreate};
 Vk::Device device{instance, Vk::DeviceCreateInfo{Vk::pickDevice(instance)}
     .addQueues(Vk::QueueFlag::Graphics, {0.0f}, {queue})
 };
-/* [Device-usage-construct-queue] */
+/* [Device-creation-construct-queue] */
 }
 
 {
 Vk::Instance instance;
 Vk::DeviceProperties properties{NoCreate};
 using namespace Containers::Literals;
-/* [Device-usage-extensions] */
+/* [Device-creation-extensions] */
 Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
     DOXYGEN_IGNORE()
     .addEnabledExtensions<                         // predefined extensions
@@ -186,13 +186,13 @@ Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
         Vk::Extensions::KHR::device_group>()
     .addEnabledExtensions({"VK_NV_mesh_shader"_s}) // can be plain strings too
 };
-/* [Device-usage-extensions] */
+/* [Device-creation-extensions] */
 }
 
 {
 Vk::Instance instance;
 using namespace Containers::Literals;
-/* [Device-usage-check-supported] */
+/* [Device-creation-check-supported] */
 Vk::DeviceProperties properties = Vk::pickDevice(instance);
 Vk::ExtensionProperties extensions = properties.enumerateExtensionProperties();
 
@@ -202,7 +202,7 @@ if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
 if(extensions.isSupported("VK_NV_mesh_shader"_s))
     info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
 DOXYGEN_IGNORE()
-/* [Device-usage-check-supported] */
+/* [Device-creation-check-supported] */
 }
 
 {
@@ -246,17 +246,17 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
 
 {
 Vk::Device device{NoCreate};
-/* [Image-usage] */
+/* [Image-creation] */
 Vk::Image image{device, Vk::ImageCreateInfo2D{
         Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
     }, Vk::MemoryFlag::DeviceLocal
 };
-/* [Image-usage] */
+/* [Image-creation] */
 }
 
 {
 Vk::Device device{NoCreate};
-/* [Image-usage-custom-allocation] */
+/* [Image-creation-custom-allocation] */
 Vk::Image image{device, Vk::ImageCreateInfo2D{
         Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
     }, NoAllocate
@@ -270,34 +270,34 @@ Vk::Memory memory{device, Vk::MemoryAllocateInfo{
 }};
 
 image.bindMemory(memory, 0);
-/* [Image-usage-custom-allocation] */
+/* [Image-creation-custom-allocation] */
 }
 
 {
 int argc{};
 const char** argv{};
-/* [Instance-usage-minimal] */
+/* [Instance-creation-minimal] */
 Vk::Instance instance{{argc, argv}};
-/* [Instance-usage-minimal] */
+/* [Instance-creation-minimal] */
 }
 
 {
 int argc{};
 const char** argv{};
-/* [Instance-usage] */
+/* [Instance-creation] */
 using namespace Containers::Literals;
 
 Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
     .setApplicationInfo("My Vulkan Application"_s, Vk::version(1, 2, 3))
 };
-/* [Instance-usage] */
+/* [Instance-creation] */
 }
 
 {
 int argc{};
 const char** argv{};
 using namespace Containers::Literals;
-/* [Instance-usage-layers-extensions] */
+/* [Instance-creation-layers-extensions] */
 Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
     DOXYGEN_IGNORE()
     .addEnabledLayers({"VK_LAYER_KHRONOS_validation"_s})
@@ -306,14 +306,14 @@ Vk::Instance instance{Vk::InstanceCreateInfo{argc, argv}
         Vk::Extensions::KHR::external_fence_capabilities>()
     .addEnabledExtensions({"VK_KHR_xcb_surface"_s}) // can be plain strings too
 };
-/* [Instance-usage-layers-extensions] */
+/* [Instance-creation-layers-extensions] */
 }
 
 {
 int argc{};
 const char** argv{};
 using namespace Containers::Literals;
-/* [Instance-usage-check-supported] */
+/* [Instance-creation-check-supported] */
 /* Query layer and extension support */
 Vk::LayerProperties layers = Vk::enumerateLayerProperties();
 Vk::InstanceExtensionProperties extensions =
@@ -329,7 +329,7 @@ if(extensions.isSupported<Vk::Extensions::EXT::debug_report>())
 DOXYGEN_IGNORE()
 
 Vk::Instance instance{info};
-/* [Instance-usage-check-supported] */
+/* [Instance-creation-check-supported] */
 }
 
 {
@@ -375,7 +375,7 @@ if(instance.isExtensionEnabled<Vk::Extensions::EXT::debug_utils>()) {
 {
 Vk::Device device{NoCreate};
 Containers::ArrayView<const char> vertexData, indexData;
-/* [Memory-usage] */
+/* [Memory-allocation] */
 /* Create buffers without allocating them */
 Vk::Buffer vertices{device,
     Vk::BufferCreateInfo{Vk::BufferUsage::VertexBuffer, vertexData.size()},
@@ -404,7 +404,7 @@ const UnsignedLong indicesOffset = verticesRequirements.alignedSize(alignment);
 /* Bind the respective sub-ranges to the buffers */
 vertices.bindMemory(memory, 0);
 indices.bindMemory(memory, indicesOffset);
-/* [Memory-usage] */
+/* [Memory-allocation] */
 
 /* [Memory-mapping] */
 /* The memory gets unmapped again at the end of scope */
@@ -419,7 +419,7 @@ indices.bindMemory(memory, indicesOffset);
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [RenderPass-usage] */
+/* [RenderPass-creation] */
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
         VK_FORMAT_R8G8B8A8_SRGB,
@@ -430,12 +430,12 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
         .setDepthStencilAttachment(1)
     )
 };
-/* [RenderPass-usage] */
+/* [RenderPass-creation] */
 }
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [RenderPass-usage-load-store] */
+/* [RenderPass-creation-load-store] */
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
         {VK_FORMAT_R8G8B8A8_SRGB, Vk::AttachmentLoadOperation::Clear, {}},
@@ -443,12 +443,12 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     })
     DOXYGEN_IGNORE()
 };
-/* [RenderPass-usage-load-store] */
+/* [RenderPass-creation-load-store] */
 }
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [RenderPass-usage-layout] */
+/* [RenderPass-creation-layout] */
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
         {VK_FORMAT_R8G8B8A8_SRGB,
@@ -465,12 +465,12 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
         .setDepthStencilAttachment({1, Vk::ImageLayout::ColorAttachment})
     )
 };
-/* [RenderPass-usage-layout] */
+/* [RenderPass-creation-layout] */
 }
 
 {
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [Shader-usage] */
+/* [Shader-creation] */
 Vk::ShaderCreateInfo info{
     CORRADE_INTERNAL_ASSERT_EXPRESSION(Utility::Directory::read("shader.spv"))
 };
@@ -478,7 +478,7 @@ Vk::ShaderCreateInfo info{
 DOXYGEN_IGNORE()
 
 Vk::Shader shader{device, info};
-/* [Shader-usage] */
+/* [Shader-creation] */
 }
 
 {

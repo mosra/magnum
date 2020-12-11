@@ -53,8 +53,8 @@ namespace Implementation {
 @brief Device creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{DeviceCreateInfo}. See @ref Device for usage
-information.
+Wraps a @type_vk_keyword{DeviceCreateInfo}. See
+@ref Vk-Device-creation "Device creation" for usage information.
 */
 class MAGNUM_VK_EXPORT DeviceCreateInfo {
     public:
@@ -294,7 +294,7 @@ CORRADE_ENUMSET_OPERATORS(DeviceCreateInfo::Flags)
 Wraps a @type_vk_keyword{Device} and stores device-specific Vulkan function
 pointers.
 
-@section Vk-Device-usage Usage
+@section Vk-Device-creation Device creation
 
 With an @ref Instance ready, a device has to be picked first. Commonly it's
 done by calling @ref pickDevice() and letting the library choose. This
@@ -311,7 +311,7 @@ That's done by creating an empty @ref Queue instance and then referencing it
 from @ref DeviceCreateInfo::addQueues(). After the device is constructed, the
 queue gets populated and is ready to be used.
 
-@snippet MagnumVk.cpp Device-usage-construct-queue
+@snippet MagnumVk.cpp Device-creation-construct-queue
 
 In the above snippet, we requested a graphics queue via a convenience API. The
 information about available queues and other device properties is stored in a
@@ -326,12 +326,12 @@ both string names as well as predefined *device* extensions from the
 @ref Extensions namespace. Later on, presence of predefined extensions can be
 checked with @ref isExtensionEnabled().
 
-@snippet MagnumVk.cpp Device-usage-extensions
+@snippet MagnumVk.cpp Device-creation-extensions
 
 Usually you'll be first checking for extension availability instead, which is
 again accessible through the @ref DeviceProperties instance:
 
-@snippet MagnumVk.cpp Device-usage-check-supported
+@snippet MagnumVk.cpp Device-creation-check-supported
 
 With both @ref Instance and @ref Device created, you can proceed to setting up
 a @ref CommandPool.

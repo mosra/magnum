@@ -225,8 +225,8 @@ enum class ImageLayout: Int {
 @brief Image creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{ImageCreateInfo}. See @ref Image for usage
-information.
+Wraps a @type_vk_keyword{ImageCreateInfo}. See
+@ref Vk-Image-creation "Image creation" for usage information.
 @see @ref ImageCreateInfo1D, @ref ImageCreateInfo2D, @ref ImageCreateInfo3D,
     @ref ImageCreateInfo1DArray, @ref ImageCreateInfo2DArray,
     @ref ImageCreateInfoCubeMap, @ref ImageCreateInfoCubeMapArray
@@ -525,26 +525,26 @@ class ImageCreateInfoCubeMapArray: public ImageCreateInfo {
 
 Wraps a @type_vk_keyword{Image} and its memory.
 
-@section Vk-Image-usage Basic usage
+@section Vk-Image-creation Image creation
 
 Pass one of the @ref ImageCreateInfo subclasses depending on desired image type
 with desired usage, format, size and other propoerties to the @ref Image
 constructor together with specifying @ref MemoryFlags for memory allocation.
 
-@snippet MagnumVk.cpp Image-usage
+@snippet MagnumVk.cpp Image-creation
 
 @attention At this point, a dedicated allocation is used, subsequently
     accessible through @ref dedicatedMemory(). This behavior may change in the
     future.
 
-@section Vk-Image-usage-custom-allocation Custom memory allocation
+@subsection Vk-Image-creation-custom-allocation Custom memory allocation
 
 Using @ref Image(Device&, const ImageCreateInfo&, NoAllocateT), the image will
 be created without any memory attached. Image memory requirements can be
 subsequently queried using @ref memoryRequirements() and an allocated memory
 bound with @ref bindMemory(). See @ref Memory for further details about memory allocation.
 
-@snippet MagnumVk.cpp Image-usage-custom-allocation
+@snippet MagnumVk.cpp Image-creation-custom-allocation
 
 Using @ref bindDedicatedMemory() instead of @ref bindMemory() will transfer
 ownership of the @ref Memory to the image instance, making it subsequently

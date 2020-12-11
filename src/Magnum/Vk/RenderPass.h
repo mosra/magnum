@@ -800,8 +800,8 @@ class MAGNUM_VK_EXPORT SubpassDependency {
 @m_since_latest
 
 Wraps a @type_vk_keyword{RenderPassCreateInfo2} /
-@type_vk_keyword{RenderPassCreateInfo}. See @ref RenderPass for usage
-information.
+@type_vk_keyword{RenderPassCreateInfo}. See
+@ref Vk-RenderPass-creation "Render pass creation" for usage information.
 
 @section Vk-RenderPassCreateInfo-compatibility Compatibility with VkRenderPassCreateInfo
 
@@ -1011,12 +1011,12 @@ descriptions, subpasses and their dependencies. The render pass description is
 independent of any specific image views used for attachments, these two are
 connected together in a framebuffer.
 
-@section Vk-RenderPass-usage Basic usage
+@section Vk-RenderPass-creation Render pass creation
 
-A render pass is a set of attachments, described by @ref AttachmentDescription
-instances, subpasses operating on those attachments, described by a
-@ref SubpassDescription using @ref AttachmentReference instances, and subpass
-dependencies, described by @ref SubpassDependency.
+@ref RenderPassCreateInfo is a set of attachments, described by
+@ref AttachmentDescription instances, subpasses operating on those attachments,
+described by a @ref SubpassDescription using @ref AttachmentReference
+instances, and subpass dependencies, described by @ref SubpassDependency.
 
 A render pass has to have at least one subpass. It's common to have just one
 subpass but while the subpass isn't required to operate on any attachments,
@@ -1028,7 +1028,7 @@ on a color and a combined depth/stencil attachment. The main parameter an
 @ref RenderPassCreateInfo::setAttachments() array, and it's actually
 @ref AttachmentReference instances:
 
-@snippet MagnumVk.cpp RenderPass-usage
+@snippet MagnumVk.cpp RenderPass-creation
 
 The above again does a conservative estimate that you'd want to preserve the
 attachment contents between render passes. Usually you'd want to clear the
@@ -1039,7 +1039,7 @@ passing appropriate @ref AttachmentLoadOperation /
 conveniently the zero values, which means you can use @cpp {} @ce instead of
 typing them out in full:
 
-@snippet MagnumVk.cpp RenderPass-usage-load-store
+@snippet MagnumVk.cpp RenderPass-creation-load-store
 
 Vulkan makes heavy use of image layouts for optimal memory access
 and in all the cases above, @ref ImageLayout::General is used as an implicit
@@ -1051,7 +1051,7 @@ more optimal by explicitly specifying both a concrete initial and final layout
 in the @ref AttachmentDescription constructors and in
 each @link AttachmentReference @endlink:
 
-@snippet MagnumVk.cpp RenderPass-usage-layout
+@snippet MagnumVk.cpp RenderPass-creation-layout
 */
 class MAGNUM_VK_EXPORT RenderPass {
     public:

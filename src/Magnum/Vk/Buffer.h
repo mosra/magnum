@@ -97,8 +97,8 @@ CORRADE_ENUMSET_OPERATORS(BufferUsages)
 @brief Buffer creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{BufferCreateInfo}. See @ref Buffer for usage
-information.
+Wraps a @type_vk_keyword{BufferCreateInfo}. See
+@ref Vk-Buffer-creation "Buffer creation" for usage information.
 */
 class MAGNUM_VK_EXPORT BufferCreateInfo {
     public:
@@ -178,25 +178,25 @@ CORRADE_ENUMSET_OPERATORS(BufferCreateInfo::Flags)
 
 Wraps a @type_vk_keyword{Buffer} and its memory.
 
-@section Vk-Buffer-usage Basic usage
+@section Vk-Buffer-creation Buffer creation
 
 Pass a @ref BufferCreateInfo with desired usage and size to the @ref Buffer
 constructor together with specifying @ref MemoryFlags for the allocation.
 
-@snippet MagnumVk.cpp Buffer-usage
+@snippet MagnumVk.cpp Buffer-creation
 
 @attention At this point, a dedicated allocation is used, subsequently
     accessible through @ref dedicatedMemory(). This behavior may change in the
     future.
 
-@section Vk-Buffer-usage-custom-allocation Custom memory allocation
+@subsection Vk-Buffer-creation-custom-allocation Custom memory allocation
 
 Using @ref Buffer(Device&, const BufferCreateInfo&, NoAllocateT), the buffer
 will be created without any memory bound. Buffer memory requirements can be
 then queried using @ref memoryRequirements() and an allocated memory bound with
 @ref bindMemory(). See @ref Memory for further details about memory allocation.
 
-@snippet MagnumVk.cpp Buffer-usage-custom-allocation
+@snippet MagnumVk.cpp Buffer-creation-custom-allocation
 
 Using @ref bindDedicatedMemory() instead of @ref bindMemory() will transfer
 ownership of the @ref Memory to the buffer instance, making it subsequently
