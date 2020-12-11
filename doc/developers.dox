@@ -778,6 +778,31 @@ In order to remove Vulkan functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
 
+@section developers-vk-createinfo Checklist for Vulkan CreateInfo wrappers
+
+-   A `ThingCreateInfo` structure and its dependencies that aren't needed by
+    `Thing` itself should be in a dedicated `ThingCreateInfo.h` header, and
+    including the `Thing.h` at the end for convenience
+-   Every class should have a `Flag` and `Flags` members even if the spec lists
+    no usable flags, exception is the rare structures that don't have any
+    `flags` member (@ref Vk::MemoryAllocateInfo, until Vulkan 1.1 at least)
+-   The main constructor(s) should explicitly list what structure fields are
+    filled to which value, and if the constructor isn't enough to get a working
+    state, it should also clearly mention what needs to be done next
+-   Every class should have a @ref NoInitT constructor, which keeps the
+    structure uninitialized and *doesn't* allocate any internal state
+-   Every class should have a constructor taking the underlying Vulkan
+    structure, it should not allocate either but instead reference the original
+    data
+-   Every class should provide a set of @cpp operator*() @ce,
+    @cpp operator->() @ce and their const variants providing direct access to
+    the underlying Vulkan structure
+-   Every class should have a @cpp operator const VkThing*() const @ce that
+    returns a pointer to the underlying Vulkan structure for convenient use
+    directly in `vkCreate*()` APIs (or alternatively returning a reference, if
+    the structure is commonly used in arrays as is the case with
+    @ref Vk::AttachmentReference for example)
+
 @section developers-vk-extension-dependent Checklist for Vulkan extension-dependent code paths
 
 Every time an extension-dependent code path is expected to be used several
