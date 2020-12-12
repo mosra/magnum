@@ -151,12 +151,12 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) {
        before the policy. */
     Implementation::GlfwDpiScalingPolicy dpiScalingPolicy{};
     if(!_commandLineDpiScaling.isZero()) {
-        Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::GlfwDpiScalingPolicy::Default) {
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
     } else if(!configuration.dpiScaling().isZero()) {
-        Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << configuration.dpiScaling();
         return configuration.dpiScaling();
     } else {
         dpiScalingPolicy = configuration.dpiScalingPolicy();

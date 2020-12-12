@@ -211,12 +211,12 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) {
        before the policy. */
     Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
     if(!_commandLineDpiScaling.isZero()) {
-        Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(_commandLineDpiScalingPolicy != Implementation::Sdl2DpiScalingPolicy::Default) {
         dpiScalingPolicy = _commandLineDpiScalingPolicy;
     } else if(!configuration.dpiScaling().isZero()) {
-        Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << configuration.dpiScaling();
         return configuration.dpiScaling();
     } else {
         dpiScalingPolicy = configuration.dpiScalingPolicy();

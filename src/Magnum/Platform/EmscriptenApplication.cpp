@@ -286,10 +286,10 @@ Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) co
     /* Use values from the configuration only if not overriden on command line.
        In any case explicit scaling has a precedence before the policy. */
     if(!_commandLineDpiScaling.isZero()) {
-        Debug{verbose} << "Platform::EmscriptenApplication: user-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::EmscriptenApplication: user-defined DPI scaling" << _commandLineDpiScaling;
         return _commandLineDpiScaling;
     } else if(!configuration.dpiScaling().isZero()) {
-        Debug{verbose} << "Platform::EmscriptenApplication: app-defined DPI scaling" << _commandLineDpiScaling.x();
+        Debug{verbose} << "Platform::EmscriptenApplication: app-defined DPI scaling" << configuration.dpiScaling();
         return configuration.dpiScaling();
     }
 
