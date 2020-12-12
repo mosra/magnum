@@ -154,11 +154,7 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * @brief Image creation flags
          *
          * Type-safe wrapper for @type_vk_keyword{ImageCreateFlags}.
-         * @see @ref ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags),
-         *      @ref ImageCreateInfo1D, @ref ImageCreateInfo2D,
-         *      @ref ImageCreateInfo3D, @ref ImageCreateInfo1DArray,
-         *      @ref ImageCreateInfo2DArray, @ref ImageCreateInfoCubeMap,
-         *      @ref ImageCreateInfoCubeMapArray
+         * @see @ref ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -189,7 +185,7 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * -    `tiling` to @val_vk{IMAGE_TILING_OPTIMAL,ImageTiling}
          * -    `usage` to @p usages
          * -    `sharingMode` to @val_vk{SHARING_MODE_EXCLUSIVE,SharingMode}
-         * -    `initialLayout` to @p initialLayout
+         * -    `initialLayout`
          *
          * There are various restrictions on @p size, @p layers, @p levels for
          * a particular @p type --- for common image types you're encouraged to
