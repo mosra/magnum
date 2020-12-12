@@ -39,3 +39,7 @@ corrade_add_test(ShaderToolsAbstractConverterTest AbstractConverterTest.cpp
     FILES file.dat another.dat)
 
 target_include_directories(ShaderToolsAbstractConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+set_target_properties(
+    ShaderToolsAbstractConverterTest
+    PROPERTIES FOLDER "Magnum/ShaderTools/Test")

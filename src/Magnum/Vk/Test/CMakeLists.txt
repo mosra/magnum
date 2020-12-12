@@ -81,6 +81,13 @@ if(CORRADE_TARGET_ANDROID)
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuc___Incomplete PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorExtensionNotPresent at ")
+
+    set_target_properties(
+        VkAssertTestFailAssertSuccess
+        VkAssertTestFailAssertSucce___Incomplete
+        VkAssertTestFailAssertVkSuccess
+        VkAssertTestFailAssertVkSuc___Incomplete
+        PROPERTIES FOLDER "Magnum/Vk/Test")
 endif()
 
 # The same as above, but using CORRADE_STANDARD_ASSERT
@@ -95,6 +102,31 @@ target_compile_definitions(VkAssertStandardDisabledTest PRIVATE
     "CORRADE_STANDARD_ASSERT" "NDEBUG")
 
 corrade_add_test(VkVersionTest VersionTest.cpp LIBRARIES MagnumVk)
+
+set_target_properties(
+    VkAssertTest
+    VkAssertStandardTest
+    VkAssertDisabledTest
+    VkAssertStandardDisabledTest
+    VkBufferTest
+    VkCommandBufferTest
+    VkCommandPoolTest
+    VkDeviceTest
+    VkDevicePropertiesTest
+    VkEnumsTest
+    VkExtensionsTest
+    VkExtensionPropertiesTest
+    VkHandleTest
+    VkImageTest
+    VkInstanceTest
+    VkIntegrationTest
+    VkLayerPropertiesTest
+    VkMemoryTest
+    VkResultTest
+    VkRenderPassTest
+    VkShaderTest
+    VkVersionTest
+    PROPERTIES FOLDER "Magnum/Vk/Test")
 
 if(BUILD_VK_TESTS)
     if(CORRADE_TARGET_ANDROID)
@@ -120,4 +152,20 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkShaderVkTest ShaderVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
+
+    set_target_properties(
+        VkBufferVkTest
+        VkCommandBufferVkTest
+        VkCommandPoolVkTest
+        VkDeviceVkTest
+        VkDevicePropertiesVkTest
+        VkExtensionPropertiesVkTest
+        VkLayerPropertiesVkTest
+        VkImageVkTest
+        VkInstanceVkTest
+        VkMemoryVkTest
+        VkRenderPassVkTest
+        VkShaderVkTest
+        VkVersionVkTest
+        PROPERTIES FOLDER "Magnum/Vk/Test")
 endif()
