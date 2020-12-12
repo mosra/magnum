@@ -165,7 +165,7 @@ void ImageVkTest::constructMove() {
     /* Verify that also the dedicated memory gets moved */
     Image a{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1},
-        Vk::MemoryFlag::DeviceLocal};
+        MemoryFlag::DeviceLocal};
     VkImage handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
@@ -238,9 +238,9 @@ void ImageVkTest::bindMemory() {
     CORRADE_COMPARE_AS(offset, requirements.alignment(),
         TestSuite::Compare::Divisible);
 
-    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+    Memory memory{device(), MemoryAllocateInfo{
         requirements.size() + offset,
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(MemoryFlag::DeviceLocal, requirements.memories())}};
 
     image.bindMemory(memory, offset);
     CORRADE_VERIFY(!image.hasDedicatedMemory());
@@ -253,9 +253,9 @@ void ImageVkTest::bindDedicatedMemory() {
 
     /** @todo expand once KHR_dedicated_allocation is implemented */
 
-    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+    Memory memory{device(), MemoryAllocateInfo{
         requirements.size(),
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(MemoryFlag::DeviceLocal, requirements.memories())}};
     VkDeviceMemory handle = memory.handle();
     CORRADE_VERIFY(handle);
 
@@ -266,7 +266,7 @@ void ImageVkTest::bindDedicatedMemory() {
 
 void ImageVkTest::directAllocation() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, Vk::MemoryFlag::DeviceLocal};
+        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, MemoryFlag::DeviceLocal};
 
     /* Not sure what else to test here */
     CORRADE_VERIFY(image.hasDedicatedMemory());

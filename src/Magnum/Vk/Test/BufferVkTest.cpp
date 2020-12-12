@@ -77,7 +77,7 @@ void BufferVkTest::construct() {
 
 void BufferVkTest::constructMove() {
     /* Verify that also the dedicated memory gets moved */
-    Buffer a{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 1024}, Vk::MemoryFlag::DeviceLocal};
+    Buffer a{device(), BufferCreateInfo{BufferUsage::StorageBuffer, 1024}, MemoryFlag::DeviceLocal};
     VkBuffer handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
 
@@ -134,9 +134,9 @@ void BufferVkTest::bindMemory() {
     CORRADE_COMPARE_AS(offset, requirements.alignment(),
         TestSuite::Compare::Divisible);
 
-    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+    Memory memory{device(), MemoryAllocateInfo{
         requirements.size() + offset,
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(MemoryFlag::DeviceLocal, requirements.memories())}};
 
     buffer.bindMemory(memory, offset);
     CORRADE_VERIFY(!buffer.hasDedicatedMemory());
@@ -148,9 +148,9 @@ void BufferVkTest::bindDedicatedMemory() {
 
     /** @todo expand once KHR_dedicated_allocation is implemented */
 
-    Vk::Memory memory{device(), Vk::MemoryAllocateInfo{
+    Memory memory{device(), MemoryAllocateInfo{
         requirements.size(),
-        device().properties().pickMemory(Vk::MemoryFlag::DeviceLocal, requirements.memories())}};
+        device().properties().pickMemory(MemoryFlag::DeviceLocal, requirements.memories())}};
     VkDeviceMemory handle = memory.handle();
     CORRADE_VERIFY(handle);
 
@@ -162,7 +162,7 @@ void BufferVkTest::bindDedicatedMemory() {
 void BufferVkTest::directAllocation() {
     Buffer buffer{device(),
         BufferCreateInfo{BufferUsage::StorageBuffer, 16384},
-        Vk::MemoryFlag::DeviceLocal};
+        MemoryFlag::DeviceLocal};
 
     /* Not sure what else to test here */
     CORRADE_VERIFY(buffer.hasDedicatedMemory());
