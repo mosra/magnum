@@ -404,6 +404,9 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     Vector2i canvasSize;
     if(!configuration.size().isZero()) {
         canvasSize = configuration.size();
+        /* Because hardcoding canvas size for WebGL is usually a wrong thing to
+           do, notify about that in the verbose output */
+        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): hardcoded canvas size" << canvasSize;
     } else {
         canvasSize = _lastKnownCanvasSize;
         Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): autodetected canvas size" << canvasSize;

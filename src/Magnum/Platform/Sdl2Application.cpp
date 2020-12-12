@@ -408,6 +408,9 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     Vector2i windowSize;
     if(!configuration.size().isZero()) {
         windowSize = configuration.size();
+        /* Because hardcoding canvas size for WebGL is usually a wrong thing to
+           do, notify about that in the verbose output */
+        Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): hardcoded canvas size" << windowSize;
     } else {
         windowSize = _lastKnownCanvasSize;
         Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): autodetected canvas size" << windowSize;
@@ -636,6 +639,9 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     Vector2i windowSize;
     if(!configuration.size().isZero()) {
         windowSize = configuration.size();
+        /* Because hardcoding canvas size for WebGL is usually a wrong thing to
+           do, notify about that in the verbose output */
+        Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): hardcoded canvas size" << windowSize;
     } else {
         windowSize = _lastKnownCanvasSize;
         Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): autodetected canvas size" << windowSize;
