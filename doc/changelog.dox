@@ -270,6 +270,9 @@ See also:
 -   Fixed @ref Platform::GlfwApplication, @ref Platform::Sdl2Application and
     @ref Platform::EmscriptenApplication to correctly print app-specified DPI
     scaling in its verbose output
+-   Fixed canvas size setup in @ref Platform::EmscriptenApplication to be the
+    same in the @ref Platform::EmscriptenApplication::Configuration::WindowFlag::Contextless "Contextless"
+    case as for a WebGL-enabled context
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

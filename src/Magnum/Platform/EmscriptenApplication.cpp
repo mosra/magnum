@@ -319,11 +319,29 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 
     _canvasTarget = (_deprecatedTargetBehavior ? "" : "#") + canvasId();
 
-    _dpiScaling = dpiScaling(configuration);
+    /* Get CSS canvas size and cache it. This is used later to detect canvas
+       resizes in emscripten_set_resize_callback() and fire viewport events,
+       because browsers are only required to fire resize events on the window
+       and not on particular DOM elements. */
+    _lastKnownCanvasSize = windowSize();
+
+    /* By default Emscripten creates a 300x150 canvas. That's so freaking
+       random I'm getting mad. Use the real (CSS pixels) canvas size instead,
+       if the size is not hardcoded from the configuration. This is then
+       multiplied by the DPI scaling. */
+    Vector2i canvasSize;
     if(!configuration.size().isZero()) {
-        const Vector2i scaledCanvasSize = configuration.size()*_dpiScaling;
-        emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
+        canvasSize = configuration.size();
+        /* Because hardcoding canvas size for WebGL is usually a wrong thing to
+           do, notify about that in the verbose output */
+        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): hardcoded canvas size" << canvasSize;
+    } else {
+        canvasSize = _lastKnownCanvasSize;
+        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): autodetected canvas size" << canvasSize;
     }
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
+    emscripten_set_canvas_element_size(_canvasTarget.data(), scaledCanvasSize.x(), scaledCanvasSize.y());
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
     setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
