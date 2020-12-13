@@ -82,7 +82,7 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
 
     /* Take the minimum of instance and device version. Instance version being
        smaller than a device version happens mainly if there's a forced Vulkan
-       version via --magnum-vulkan version, which will be later used to cap available features. */
+       version via --magnum-vulkan-version, which will be later used to cap available features. */
     _state->version = Version(Math::min(UnsignedInt(deviceProperties._instance->version()), UnsignedInt(deviceProperties.version())));
 
     /* If there are any disabled extensions, sort them and save for later --

@@ -246,16 +246,9 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryHeapFlags value);
 @m_since_latest
 
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
-properties such as @type_vk_keyword{PhysicalDeviceProperties2},
-@type_vk_keyword{PhysicalDeviceQueueFamilyProperties2} and
-@type_vk_keyword{PhysicalDeviceMemoryProperties2}, which are a superset
-of @type_vk_keyword{PhysicalDeviceProperties},
-@type_vk_keyword{PhysicalDeviceQueueFamilyProperties} and
-@type_vk_keyword{PhysicalDeviceMemoryProperties}.
-
-See the @ref Vk-Device-creation "Device creation docs" for an example of using
-this class for enumerating available devices and picking one of them.
-
+properties. See the @ref Vk-Device-creation "Device creation docs" for an
+example of using this class for enumerating available devices and picking one
+of them.
 @see @ref pickDevice(), @ref enumerateDevices()
 */
 class MAGNUM_VK_EXPORT DeviceProperties {
@@ -318,15 +311,16 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * subset of device properties is queried, with the `pNext` member
          * being @cpp nullptr @ce. Otherwise:
          *
-         * -    If Vulkan 1.2 is supported or the
-         *      @vk_extension{KHR,driver_properties} extension is supported by
-         *      the device, the `pNext` chain contains a
-         *      @type_vk{PhysicalDeviceDriverProperties} structure and the
-         *      @ref driver(), @ref driverName() and @ref driverInfo()
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,driver_properties}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceDriverProperties} and
+         *      the @ref driver(), @ref driverName() and @ref driverInfo()
          *      properties are populated.
          *
          * @see @fn_vk_keyword{GetPhysicalDeviceProperties2},
-         *      @fn_vk_keyword{GetPhysicalDeviceProperties}
+         *      @fn_vk_keyword{GetPhysicalDeviceProperties},
+         *      @type_vk_keyword{PhysicalDeviceProperties2},
+         *      @type_vk_keyword{PhysicalDeviceProperties}
          */
         const VkPhysicalDeviceProperties2& properties();
 
@@ -419,12 +413,14 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /**
          * @brief Queue family properties
          *
-         * Populated lazily on first request. If Vulkan 1.1 or the
-         * @vk_extension{KHR,get_physical_device_properties2} extension is not
-         * enabled on the originating instance, only the Vulkan 1.0 subset of
-         * device properties is queried.
+         * Populated lazily on first request. If Vulkan 1.1 is not supported
+         * and the @vk_extension{KHR,get_physical_device_properties2} extension
+         * is not enabled on the originating instance, only the Vulkan 1.0
+         * subset of device properties is queried.
          * @see @fn_vk_keyword{GetPhysicalDeviceQueueFamilyProperties2},
-         *      @fn_vk_keyword{GetPhysicalDeviceQueueFamilyProperties}
+         *      @fn_vk_keyword{GetPhysicalDeviceQueueFamilyProperties},
+         *      @type_vk_keyword{PhysicalDeviceQueueFamilyProperties2},
+         *      @type_vk_keyword{PhysicalDeviceQueueFamilyProperties}
          */
         Containers::ArrayView<const VkQueueFamilyProperties2> queueFamilyProperties();
 
@@ -480,12 +476,14 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         /**
          * @brief Device memory properties
          *
-         * Populated lazily on first request. If Vulkan 1.1 or the
-         * @vk_extension{KHR,get_physical_device_properties2} extension is not
-         * enabled on the originating instance, only the Vulkan 1.0 subset of
-         * device properties is queried.
+         * Populated lazily on first request. If Vulkan 1.1 is not supported
+         * and the @vk_extension{KHR,get_physical_device_properties2} extension
+         * is not enabled on the originating instance, only the Vulkan 1.0
+         * subset of device properties is queried.
          * @see @fn_vk_keyword{GetPhysicalDeviceMemoryProperties2},
-         *      @fn_vk_keyword{GetPhysicalDeviceMemoryProperties}
+         *      @fn_vk_keyword{GetPhysicalDeviceMemoryProperties},
+         *      @type_vk_keyword{PhysicalDeviceMemoryProperties2},
+         *      @type_vk_keyword{PhysicalDeviceMemoryProperties}
          */
         const VkPhysicalDeviceMemoryProperties2& memoryProperties();
 
