@@ -52,7 +52,7 @@ struct DeviceVkTest: VulkanTester {
     void createInfoConstruct();
     void createInfoConstructNoImplicitExtensions();
     void createInfoExtensions();
-    void createInfoCopiedStrings();
+    void createInfoExtensionsCopiedStrings();
     void createInfoNoQueuePriorities();
     void createInfoWrongQueueOutputCount();
     void createInfoConstructCopy();
@@ -136,7 +136,7 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
     addTests({&DeviceVkTest::createInfoConstruct,
               &DeviceVkTest::createInfoConstructNoImplicitExtensions,
               &DeviceVkTest::createInfoExtensions,
-              &DeviceVkTest::createInfoCopiedStrings,
+              &DeviceVkTest::createInfoExtensionsCopiedStrings,
               &DeviceVkTest::createInfoNoQueuePriorities,
               &DeviceVkTest::createInfoWrongQueueOutputCount,
               &DeviceVkTest::createInfoConstructCopy,
@@ -211,7 +211,7 @@ void DeviceVkTest::createInfoExtensions() {
         Extensions::KHR::get_memory_requirements2::string().data());
 }
 
-void DeviceVkTest::createInfoCopiedStrings() {
+void DeviceVkTest::createInfoExtensionsCopiedStrings() {
     Containers::StringView globalButNotNullTerminated = "VK_KHR_maintenance25"_s.except(1);
     Containers::String localButNullTerminated = Extensions::KHR::draw_indirect_count::string();
 
