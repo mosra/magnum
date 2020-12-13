@@ -370,7 +370,7 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
         info._state->version : _properties->version();
 
     /* Print all enabled extensions if we're not told to be quiet */
-    if(!info._state || !info._state->quietLog) {
+    if(!info._state->quietLog) {
         Debug{} << "Device:" << _properties->name();
         Debug{} << "Device version:" << version;
 
