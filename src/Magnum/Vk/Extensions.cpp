@@ -73,7 +73,7 @@ constexpr Extension DeviceExtensions[] {
     Extensions::IMG::format_pvrtc{},
 };
 constexpr Extension DeviceExtensions11[] {
-  //Extensions::KHR::16bit_storage{},
+    Extensions::KHR::_16bit_storage{},
     Extensions::KHR::bind_memory2{},
     Extensions::KHR::dedicated_allocation{},
     Extensions::KHR::descriptor_update_template{},
@@ -99,7 +99,7 @@ constexpr Extension DeviceExtensions12[] {
     Extensions::EXT::scalar_block_layout{},
     Extensions::EXT::separate_stencil_usage{},
     Extensions::EXT::shader_viewport_index_layer{},
-  //Extensions::KHR::8bit_storage{},
+    Extensions::KHR::_8bit_storage{},
     Extensions::KHR::buffer_device_address{},
     Extensions::KHR::create_renderpass2{},
     Extensions::KHR::depth_stencil_resolve{},

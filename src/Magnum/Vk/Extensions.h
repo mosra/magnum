@@ -44,7 +44,10 @@ namespace Magnum { namespace Vk {
 
 Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref vulkan-support, for example
-@cpp Vk::Extensions::EXT::debug_report @ce.
+@cpp Vk::Extensions::EXT::debug_report @ce. The only exceptions are
+@vk_extension{KHR,8bit_storage} and @vk_extension{KHR,16bit_storage}, which are
+prefixed with an underscore (so e.g. `_8bit_storage` instead of
+`8bit_storage`).
 
 Each struct has the same public methods as the @ref InstanceExtension /
 @ref Extension class (@ref Extension::requiredVersion() "requiredVersion()",
@@ -95,16 +98,18 @@ namespace EXT {
 }
 #undef _extension
 
-#define _extension(index, vendor, extension, _requiredVersion, _coreVersion) \
+#define _extension_(index, vendor, name, extension, _requiredVersion, _coreVersion) \
     struct extension {                                                      \
         enum: std::size_t { Index = index };                                \
         constexpr static Version requiredVersion() { return Version::_requiredVersion; } \
         constexpr static Version coreVersion() { return Version::_coreVersion; } \
         constexpr static Containers::StringView string() {                  \
             using namespace Containers::Literals;                           \
-            return "VK_" #vendor "_" #extension ""_s;                       \
+            return "VK_" #vendor "_" #name ""_s;                            \
         }                                                                   \
     };
+#define _extension(index, vendor, extension, _requiredVersion, _coreVersion) \
+    _extension_(index, vendor, extension, extension, _requiredVersion, _coreVersion)
 namespace EXT {
     /** @todo remove EXT_debug_marker when all platforms have EXT_debug_utils
         (my Huawei P10 doesn't have it) */
@@ -127,7 +132,7 @@ namespace EXT {
     _extension(34, KHR,maintenance1,                        Vk10, Vk11) // #70
     _extension(35, KHR,external_semaphore,                  Vk10, Vk11) // #78
     _extension(36, KHR,shader_float16_int8,                 Vk10, Vk12) // #83
-  //_extension(37, KHR,16bit_storage,                       VK10, Vk11) // #84
+   _extension_(37, KHR,16bit_storage,_16bit_storage,        Vk10, Vk11) // #84
     _extension(38, KHR,descriptor_update_template,          Vk10, Vk11) // #86
     _extension(39, KHR,external_memory,                     Vk10, Vk11) // #73
     _extension(40, KHR,imageless_framebuffer,               Vk10, Vk12) // #109
@@ -145,7 +150,7 @@ namespace EXT {
     _extension(52, KHR,maintenance3,                        Vk10, Vk11) // #169
     _extension(53, KHR,draw_indirect_count,                 Vk10, Vk12) // #170
     _extension(54, KHR,shader_subgroup_extended_types,      Vk11, Vk12) // #176
-  //_extension(55, KHR,8bit_storage,                        Vk10, Vk12) // #178
+   _extension_(55, KHR,8bit_storage,_8bit_storage,          Vk10, Vk12) // #178
     _extension(56, KHR,shader_atomic_int64,                 Vk10, Vk12) // #181
     _extension(57, KHR,driver_properties,                   Vk10, Vk12) // #197
     _extension(58, KHR,shader_float_controls,               Vk10, Vk12) // #198
