@@ -576,7 +576,7 @@ void RenderPassTest::subpassDescriptionConstructMove() {
     CORRADE_COMPARE(a->inputAttachmentCount, 2);
     CORRADE_COMPARE(a->pInputAttachments[1].attachment, 35);
 
-    SubpassDescription b{std::move(a)};
+    SubpassDescription b = std::move(a);
     CORRADE_COMPARE(a->inputAttachmentCount, 0);
     CORRADE_VERIFY(!a->pInputAttachments);
     CORRADE_COMPARE(b->inputAttachmentCount, 2);
@@ -896,7 +896,7 @@ void RenderPassTest::createInfoConstructMove() {
     CORRADE_COMPARE(a->attachmentCount, 2);
     CORRADE_COMPARE(a->pAttachments[1].format, VK_FORMAT_R8G8B8_SNORM);
 
-    RenderPassCreateInfo b{std::move(a)};
+    RenderPassCreateInfo b = std::move(a);
     CORRADE_COMPARE(a->attachmentCount, 0);
     CORRADE_VERIFY(!a->pAttachments);
     CORRADE_COMPARE(b->attachmentCount, 2);
