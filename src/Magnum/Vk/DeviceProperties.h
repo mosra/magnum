@@ -631,6 +631,11 @@ class MAGNUM_VK_EXPORT DeviceProperties {
            function. */
         MAGNUM_VK_LOCAL const ExtensionProperties& extensionPropertiesInternal();
 
+        /* Combines isVersionSupported(E::coreVersion()) and
+           ExtensionProperties::isSupported<E>(). Used internally to avoid
+           accidents with incorrectly specified extension core version. */
+        template<class E> MAGNUM_VK_LOCAL bool isOrVersionSupportedInternal();
+
         MAGNUM_VK_LOCAL static void getPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);

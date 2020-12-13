@@ -193,8 +193,8 @@ const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
         Containers::Reference<void*> next = _state->properties.pNext;
 
         /* Fetch driver properties, if supported */
-        if(isVersionSupported(Version::Vk12) || extensionPropertiesInternal().isSupported<Extensions::KHR::driver_properties>())
-            connect(next, _state->driverProperties, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::driver_properties>())
+            Implementation::structureConnect(next, _state->driverProperties, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES);
 
         _state->getPropertiesImplementation(*this, _state->properties);
     }
@@ -229,6 +229,11 @@ const ExtensionProperties& DeviceProperties::extensionPropertiesInternal() {
     if(!_state) _state.emplace(*_instance, _handle);
     if(!_state->extensions) _state->extensions = enumerateExtensionProperties();
     return *_state->extensions;
+}
+
+template<class E> bool DeviceProperties::isOrVersionSupportedInternal() {
+    if(isVersionSupported(E::coreVersion())) return true;
+    return extensionPropertiesInternal().isSupported<E>();
 }
 
 Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFamilyProperties() {
