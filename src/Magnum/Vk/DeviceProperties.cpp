@@ -43,6 +43,7 @@
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
+#include "Magnum/Vk/Implementation/structureHelpers.h"
 
 namespace Magnum { namespace Vk {
 
@@ -192,11 +193,8 @@ const VkPhysicalDeviceProperties2& DeviceProperties::properties() {
         Containers::Reference<void*> next = _state->properties.pNext;
 
         /* Fetch driver properties, if supported */
-        if(isVersionSupported(Version::Vk12) || extensionPropertiesInternal().isSupported<Extensions::KHR::driver_properties>()) {
-            *next = &_state->driverProperties;
-            next = _state->driverProperties.pNext;
-            _state->driverProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
-        }
+        if(isVersionSupported(Version::Vk12) || extensionPropertiesInternal().isSupported<Extensions::KHR::driver_properties>())
+            connect(next, _state->driverProperties, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES);
 
         _state->getPropertiesImplementation(*this, _state->properties);
     }

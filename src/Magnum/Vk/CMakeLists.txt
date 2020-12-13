@@ -93,6 +93,7 @@ set(MagnumVk_PRIVATE_HEADERS
 
     Implementation/compressedPixelFormatMapping.hpp
     Implementation/pixelFormatMapping.hpp
+    Implementation/structureHelpers.h
     Implementation/vertexFormatMapping.hpp)
 
 # Objects shared between main and test library
