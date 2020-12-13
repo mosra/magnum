@@ -736,21 +736,23 @@ unless it doesn't affect public API at all.
 3.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
 4.  For every new added function and `CreateInfo` structure, add an entry to
     `doc/vulkan-mapping.dox`
-5.  Add a table listing the new version and all new extensions in it to
+5.  For every new `*Feature` structure, expand the @ref Vk::DeviceFeatures
+    enum according to @ref developers-vk-features
+6.  Add a table listing the new version and all new extensions in it to
     `doc/vulkan-support.dox` (take a list of them from the changelog in the
     official spec PDF). Some extensions might be already present in the general
     extension list, move them out of there.
-6.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
+7.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
     `doc/vulkan-support.dox`, mention it as a @c \@subpage at a correct
     position in the list
-7.  Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
+8.  Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
     `Doxyfile-public`, copypaste it from existing and change the numbers
-8.  Add new version enum value:
+9.  Add new version enum value:
     -   to `src/Magnum/Vk/Version.h`
     -   to the list in `src/Magnum/Vk/vk-info.cpp`
     -   to @ref Vk::InstanceExtension::extensions() and
         @ref Vk::Extension::extensions() in `src/Magnum/Vk/Extensions.cpp`
-9.  Add new extensions to `src/Magnum/Vk/Extensions.h`
+10. Add new extensions to `src/Magnum/Vk/Extensions.h`
     -   there's a separate list for instance and device extensions, ensure each
         in the right list
     -   order them by extension ID that is mentioned on every extension spec
@@ -761,9 +763,9 @@ unless it doesn't affect public API at all.
         @cpp Implementation::InstanceExtensionCount @ce /
         @cpp Implementation::DeviceExtensionCount @ce might needed to be
         increased
-10. Add them alphabetically ordered to the correct list in
+11. Add them alphabetically ordered to the correct list in
     `src/Magnum/Vk/Extensions.cpp`
-11. Update existing extensions with version in which they become core (last
+12. Update existing extensions with version in which they become core (last
     parameter of the `_extension()` macro)
 
 In order to remove Vulkan functionality, be sure to touch all places mentioned
@@ -834,6 +836,39 @@ pointers on a class that needs them:
 -   Finally, the extension should be implicitly enabled during instance /
     device creation as appropriate --- for example, if the extension is core in
     1.2, the extension should be enabled only on 1.1 and below.
+
+@section developers-vk-features Checklist for adding Vulkan features
+
+1.  For every new `VkPhysicalDevice*Features` structure, add its boolean
+    members to the @ref Vk::DeviceFeature enum. There are headings referring
+    the full `VkPhysicalDevice*Features` structure name and either the version
+    or extension number, put the new members under a new heading at a correct
+    place.
+2.  Formulate the documentation to start with "Whether" and replace verbose
+    phrases like "the implementation supports ..." from the spec with "... is
+    supported".
+3.  Add a `@see` block, referencing related features if applicable,
+    crossreference the newly added value from the values it refers to as well
+4.  Reference the extension / version it was added in via `@requires_vkXY`
+5.  Add the new members to `Magnum/Vk/Implementation/deviceFeatureMapping.hpp`
+    to the correct place with a `_cver()` or `_cext()` macro as appropriate
+6.  If APIs depending on this feature are already exposed, reference the
+    feature from those
+7.  Extend `Magnum/Vk/Implementation/DeviceFeatures.h` with the new feature
+    struct, added to relatively the same place as in the enum header
+8.  Extend @ref Vk::DeviceProperties::features():
+    -   connecting the new structure to the chain, insert to the correct place
+        again,
+    -   expand the function docs to mention the new structure (again correct
+        order),
+    -   verify that the features were fetched correctly (and especially that a
+        correct structure type was set) with @ref magnum-vk-info "magnum-vk-info"
+        --- (a subset) the new features should be shown as supported and
+        * *especially* everything after still looks the same as it looked
+        before. For some reason the Khronos validation layer doesn't check
+        `sType` fields in this query so it's easy to make a hard-to-discover
+        error
+9.  Add a link to the new Feature structure in `doc/vulkan-mapping.dox`
 
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
