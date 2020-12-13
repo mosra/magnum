@@ -44,6 +44,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Buffer.cpp
     Device.cpp
     DeviceProperties.cpp
+    DeviceFeatures.cpp
     Enums.cpp
     ExtensionProperties.cpp
     Image.cpp
@@ -60,6 +61,7 @@ set(MagnumVk_HEADERS
     CommandPoolCreateInfo.h
     Device.h
     DeviceCreateInfo.h
+    DeviceFeatures.h
     DeviceProperties.h
     Enums.h
     Extensions.h
@@ -88,10 +90,12 @@ set(MagnumVk_HEADERS
 
 set(MagnumVk_PRIVATE_HEADERS
     Implementation/Arguments.h
+    Implementation/DeviceFeatures.h
     Implementation/DeviceState.h
     Implementation/InstanceState.h
 
     Implementation/compressedPixelFormatMapping.hpp
+    Implementation/deviceFeatureMapping.hpp
     Implementation/pixelFormatMapping.hpp
     Implementation/structureHelpers.h
     Implementation/vertexFormatMapping.hpp)

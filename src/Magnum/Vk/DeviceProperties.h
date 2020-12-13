@@ -246,9 +246,9 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryHeapFlags value);
 @m_since_latest
 
 Wraps a @type_vk_keyword{PhysicalDevice} along with its (lazy-populated)
-properties. See the @ref Vk-Device-creation "Device creation docs" for an
-example of using this class for enumerating available devices and picking one
-of them.
+properties and features. See the @ref Vk-Device-creation "Device creation docs"
+for an example of using this class for enumerating available devices and
+picking one of them.
 @see @ref pickDevice(), @ref enumerateDevices()
 */
 class MAGNUM_VK_EXPORT DeviceProperties {
@@ -409,6 +409,85 @@ class MAGNUM_VK_EXPORT DeviceProperties {
 
         /** @overload */
         ExtensionProperties enumerateExtensionProperties(std::initializer_list<Containers::StringView> layers);
+
+        /**
+         * @brief Device features
+         *
+         * Populated lazily on first request, extracting the booleans into a
+         * more compact set of @ref DeviceFeature values. If Vulkan 1.1 is not
+         * supported and the @vk_extension{KHR,get_physical_device_properties2}
+         * extension is not enabled on the originating instance, only the
+         * Vulkan 1.0 subset of device features is queried. Otherwise:
+         *
+         * -    If Vulkan 1.1 is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceProtectedMemoryFeatures}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,multiview} extension is
+         *      supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceMultiviewFeatures}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,shader_draw_parameters}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceShaderDrawParametersFeatures}
+         * -    If the @vk_extension{EXT,texture_compression_astc_hdr}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,shader_float16_int8}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceShaderFloat16Int8Features}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,16bit_storage} extension
+         *      is supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDevice16BitStorageFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,imageless_framebuffer}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceImagelessFramebufferFeatures}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,variable_pointers}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceVariablePointersFeatures}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,sampler_ycbcr_conversion}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{EXT,descriptor_indexing}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,shader_subgroup_extended_types}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceShaderSubgroupExtendedTypesFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,8bit_storage} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDevice8BitStorageFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,shader_atomic_int64}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceShaderAtomicInt64Features}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,timeline_semaphore}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceTimelineSemaphoreFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,vulkan_memory_model}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceVulkanMemoryModelFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{EXT,scalar_block_layout}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceScalarBlockLayoutFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,separate_depth_stencil_layouts}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceSeparateDepthStencilLayoutsFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,uniform_buffer_standard_layout}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceUniformBufferStandardLayoutFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{KHR,buffer_device_address}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceBufferDeviceAddressFeatures}
+         * -    If Vulkan 1.2 or the @vk_extension{EXT,host_query_reset}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceHostQueryResetFeatures}
+         * -    If the @vk_extension{EXT,index_type_uint8} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
+         *
+         * @see @fn_vk_keyword{GetPhysicalDeviceFeatures2},
+         *      @fn_vk_keyword{GetPhysicalDeviceFeatures},
+         *      @type_vk_keyword{PhysicalDeviceFeatures2},
+         *      @type_vk_keyword{PhysicalDeviceFeatures}
+         */
+        const DeviceFeatures& features();
 
         /**
          * @brief Queue family properties
@@ -639,6 +718,10 @@ class MAGNUM_VK_EXPORT DeviceProperties {
         MAGNUM_VK_LOCAL static void getPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementation11(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
+
+        MAGNUM_VK_LOCAL static void getFeaturesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceFeatures2& features);
+        MAGNUM_VK_LOCAL static void getFeaturesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceFeatures2& features);
+        MAGNUM_VK_LOCAL static void getFeaturesImplementation11(DeviceProperties& self, VkPhysicalDeviceFeatures2& features);
 
         MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationDefault(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);
         MAGNUM_VK_LOCAL static void getQueueFamilyPropertiesImplementationKHR(DeviceProperties& self, UnsignedInt& count, VkQueueFamilyProperties2* properties);

@@ -205,7 +205,7 @@ Vulkan function                         | Matching API
 @fn_vk{GetPhysicalDeviceExternalBufferProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceExternalFenceProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceExternalSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@fn_vk{GetPhysicalDeviceFeatures}, \n @fn_vk{GetPhysicalDeviceFeatures2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetPhysicalDeviceFeatures}, \n @fn_vk{GetPhysicalDeviceFeatures2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties::features()
 @fn_vk{GetPhysicalDeviceFormatProperties}, \n @fn_vk{GetPhysicalDeviceFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPhysicalDeviceMemoryProperties}, \n @fn_vk{GetPhysicalDeviceMemoryProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties::memoryProperties()
@@ -499,56 +499,55 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{PhysicalDevice8bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDevice16bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceBufferDeviceAddressFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDevice8bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDevice16bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceBufferDeviceAddressFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceDepthStencilResolveProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceDescriptorIndexingFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceDescriptorIndexingFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceDescriptorIndexingProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{PhysicalDeviceDriverProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{PhysicalDeviceExternalBufferInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceExternalFenceInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceExternalImageFormatInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceExternalSemaphoreInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceFeatures}, \n @type_vk{PhysicalDeviceFeatures2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceFloat16Int8Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceFeatures}, \n @type_vk{PhysicalDeviceFeatures2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceFloatControlsProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{PhysicalDeviceGroupProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceHostQueryResetFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{PhysicalDeviceHostQueryResetFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceIDProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceImageFormatInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceImagelessFramebufferFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceIndexTypeUint8FeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@type_vk{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{PhysicalDeviceImagelessFramebufferFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceIndexTypeUint8FeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceLimits}          | |
 @type_vk{PhysicalDeviceMaintenance3Properties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceMemoryProperties}, \n @type_vk{PhysicalDeviceMemoryProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
-@type_vk{PhysicalDeviceMultiviewFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceMultiviewFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceMultiviewProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDevicePointClippingProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceProperties}, \n @type_vk{PhysicalDeviceProperties2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
-@type_vk{PhysicalDeviceProtectedMemoryFeatures} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceProtectedMemoryFeatures} @m_class{m-label m-flat m-success} **1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceProtectedMemoryProperties} @m_class{m-label m-flat m-success} **1.1** | |
 @type_vk{PhysicalDeviceSamplerFilterMinmaxProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
-@type_vk{PhysicalDeviceSamplerYcbcrConversionFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{PhysicalDeviceSeparateDepthStencilLayoutsFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceScalarBlockLayoutFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
-@type_vk{PhysicalDeviceShaderAtomicInt64Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceShaderDrawParametersFeatures} @m_class{m-label m-flat m-success} **1.1** | |
-@type_vk{PhysicalDeviceShaderFloat16Int8Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceShaderSubgroupExtendedTypesFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceSamplerYcbcrConversionFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceSeparateDepthStencilLayoutsFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceScalarBlockLayoutFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceShaderAtomicInt64Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceShaderDrawParametersFeatures} @m_class{m-label m-flat m-success} **1.1** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceShaderFloat16Int8Features} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceShaderSubgroupExtendedTypesFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceSparseImageFormatInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceSparseProperties} | |
 @type_vk{PhysicalDeviceSubgroupProperties} @m_class{m-label m-flat m-success} **1.1** | |
-@type_vk{PhysicalDeviceTimelineSemaphoreFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceTimelineSemaphoreFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceTimelineSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceUniformBufferStandardLayoutFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{PhysicalDeviceVariablePointersFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceUniformBufferStandardLayoutFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceVariablePointersFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceVulkan11Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkan11Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkan12Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkan12Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
-@type_vk{PhysicalDeviceVulkanMemoryModelFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceVulkanMemoryModelFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PipelineCacheCreateInfo}       | |
 @type_vk{PipelineColorBlendAttachmentState} | |
 @type_vk{PipelineColorBlendStateCreateInfo} | |

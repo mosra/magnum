@@ -29,6 +29,7 @@ corrade_add_test(VkCommandBufferTest CommandBufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDevicePropertiesTest DevicePropertiesTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkDeviceFeaturesTest DeviceFeaturesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkEnumsTest EnumsTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkExtensionsTest ExtensionsTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkExtensionPropertiesTest ExtensionPropertiesTest.cpp LIBRARIES MagnumVk)
@@ -115,6 +116,7 @@ set_target_properties(
     VkCommandBufferTest
     VkCommandPoolTest
     VkDeviceTest
+    VkDeviceFeaturesTest
     VkDevicePropertiesTest
     VkEnumsTest
     VkExtensionsTest

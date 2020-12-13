@@ -35,6 +35,7 @@
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Vk/Assert.h"
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Instance.h"
@@ -42,6 +43,7 @@
 #include "Magnum/Vk/Memory.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
+#include "Magnum/Vk/Implementation/DeviceFeatures.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
 #include "Magnum/Vk/Implementation/structureHelpers.h"
 
@@ -56,6 +58,7 @@ struct DeviceProperties::State {
     Containers::Optional<ExtensionProperties> extensions;
 
     void(*getPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceProperties2&);
+    void(*getFeaturesImplementation)(DeviceProperties&, VkPhysicalDeviceFeatures2&);
     void(*getQueueFamilyPropertiesImplementation)(DeviceProperties&, UnsignedInt&, VkQueueFamilyProperties2*);
     void(*getMemoryPropertiesImplementation)(DeviceProperties&, VkPhysicalDeviceMemoryProperties2&);
 
@@ -63,6 +66,11 @@ struct DeviceProperties::State {
     VkPhysicalDeviceDriverProperties driverProperties{};
     VkPhysicalDeviceMemoryProperties2 memoryProperties{};
     Containers::Array<VkQueueFamilyProperties2> queueFamilyProperties;
+
+    /* Not storing (a chain of) VkPhysicalDeviceFeatures structures, because
+       those are >32x larger than necessary and extremely annoying to operate
+       with. Using a big enum set instead. */
+    DeviceFeatures features;
 };
 
 DeviceProperties::State::State(Instance& instance, const VkPhysicalDevice handle) {
@@ -117,14 +125,17 @@ DeviceProperties::State::State(Instance& instance, const VkPhysicalDevice handle
     /* Have to check both the instance and device version, see above */
     if(instance.isVersionSupported(Version::Vk11) && Version(properties.properties.apiVersion) >= Version::Vk11) {
         getPropertiesImplementation = &DeviceProperties::getPropertiesImplementation11;
+        getFeaturesImplementation = &DeviceProperties::getFeaturesImplementation11;
         getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementation11;
         getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementation11;
     } else if(instance.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
         getPropertiesImplementation = &DeviceProperties::getPropertiesImplementationKHR;
+        getFeaturesImplementation = &DeviceProperties::getFeaturesImplementationKHR;
         getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationKHR;
         getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementationKHR;
     } else {
         getPropertiesImplementation = DeviceProperties::getPropertiesImplementationDefault;
+        getFeaturesImplementation = &DeviceProperties::getFeaturesImplementationDefault;
         getQueueFamilyPropertiesImplementation = &DeviceProperties::getQueueFamilyPropertiesImplementationDefault;
         getMemoryPropertiesImplementation = &DeviceProperties::getMemoryPropertiesImplementationDefault;
     }
@@ -214,6 +225,18 @@ void DeviceProperties::getPropertiesImplementation11(DeviceProperties& self, VkP
     return (**self._instance).GetPhysicalDeviceProperties2(self._handle, &properties);
 }
 
+void DeviceProperties::getFeaturesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceFeatures2& features) {
+    return (**self._instance).GetPhysicalDeviceFeatures(self._handle, &features.features);
+}
+
+void DeviceProperties::getFeaturesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceFeatures2& features) {
+    return (**self._instance).GetPhysicalDeviceFeatures2KHR(self._handle, &features);
+}
+
+void DeviceProperties::getFeaturesImplementation11(DeviceProperties& self, VkPhysicalDeviceFeatures2& features) {
+    return (**self._instance).GetPhysicalDeviceFeatures2(self._handle, &features);
+}
+
 ExtensionProperties DeviceProperties::enumerateExtensionProperties(Containers::ArrayView<const Containers::StringView> layers) {
     return InstanceExtensionProperties{layers, [](void* state, const char* const layer, UnsignedInt* count, VkExtensionProperties* properties) {
         auto& deviceProperties = *static_cast<DeviceProperties*>(state);
@@ -234,6 +257,80 @@ const ExtensionProperties& DeviceProperties::extensionPropertiesInternal() {
 template<class E> bool DeviceProperties::isOrVersionSupportedInternal() {
     if(isVersionSupported(E::coreVersion())) return true;
     return extensionPropertiesInternal().isSupported<E>();
+}
+
+const DeviceFeatures& DeviceProperties::features() {
+    if(!_state) _state.emplace(*_instance, _handle);
+
+    /* If a device doesn't support *any* feature, this will be fetched always.
+       That's rather rare though. */
+    if(!_state->features) {
+        VkPhysicalDeviceFeatures2 features2{};
+        Implementation::DeviceFeatures features{};
+
+        features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+        Containers::Reference<void*> next = features2.pNext;
+
+        /* Fetch extra features, if supported */
+        if(isVersionSupported(Version::Vk11))
+            Implementation::structureConnect(next, features.protectedMemory, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::multiview>())
+            Implementation::structureConnect(next, features.multiview, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::shader_draw_parameters>())
+            Implementation::structureConnect(next, features.shaderDrawParameters, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::texture_compression_astc_hdr>())
+            Implementation::structureConnect(next, features.textureCompressionAstcHdr, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT);
+        if(isOrVersionSupportedInternal<Extensions::KHR::shader_float16_int8>())
+            Implementation::structureConnect(next, features.shaderFloat16Int8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::_16bit_storage>())
+            Implementation::structureConnect(next, features._16BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::imageless_framebuffer>())
+            Implementation::structureConnect(next, features.imagelessFramebuffer, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::variable_pointers>())
+            Implementation::structureConnect(next, features.variablePointers, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::sampler_ycbcr_conversion>())
+            Implementation::structureConnect(next, features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::descriptor_indexing>())
+            Implementation::structureConnect(next, features.descriptorIndexing, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::shader_subgroup_extended_types>())
+            Implementation::structureConnect(next, features.shaderSubgroupExtendedTypes, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::_8bit_storage>())
+            Implementation::structureConnect(next, features._8BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::shader_atomic_int64>())
+            Implementation::structureConnect(next, features.shaderAtomicInt64, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::timeline_semaphore>())
+            Implementation::structureConnect(next, features.timelineSemaphore, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::vulkan_memory_model>())
+            Implementation::structureConnect(next, features.vulkanMemoryModel, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::scalar_block_layout>())
+            Implementation::structureConnect(next, features.scalarBlockLayout, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::separate_depth_stencil_layouts>())
+            Implementation::structureConnect(next, features.separateDepthStencilLayouts, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::uniform_buffer_standard_layout>())
+            Implementation::structureConnect(next, features.uniformBufferStandardLayout, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::buffer_device_address>())
+            Implementation::structureConnect(next, features.bufferDeviceAddress, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::host_query_reset>())
+            Implementation::structureConnect(next, features.hostQueryReset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::index_type_uint8>())
+            Implementation::structureConnect(next, features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
+
+        _state->getFeaturesImplementation(*this, features2);
+
+        #define _c(value, field)                                            \
+            if(features2.features.field)                                    \
+                _state->features |= DeviceFeature::value;
+        #define _cver(value, field, suffix, version)                        \
+            if(features.suffix.field)                                       \
+                _state->features |= DeviceFeature::value;
+        #define _cext _cver
+        #include "Magnum/Vk/Implementation/deviceFeatureMapping.hpp"
+        #undef _c
+        #undef _cver
+        #undef _cext
+    }
+
+    return _state->features;
 }
 
 Containers::ArrayView<const VkQueueFamilyProperties2> DeviceProperties::queueFamilyProperties() {

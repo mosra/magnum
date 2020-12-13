@@ -43,6 +43,8 @@ class CommandPool;
 class CommandPoolCreateInfo;
 class Device;
 class DeviceCreateInfo;
+enum class DeviceFeature: UnsignedShort;
+typedef Containers::BigEnumSet<DeviceFeature, 4> DeviceFeatures;
 class DeviceProperties;
 enum class DeviceType: Int;
 class Extension;

@@ -55,7 +55,7 @@ See the @ref vulkan-mapping page for a list of already implemented functions.
 Extension                                           | Status
 --------------------------------------------------- | ------
 @vk_extension{KHR,multiview}                        | |
-@vk_extension{KHR,get_physical_device_properties2} @m_class{m-label m-info} **instance** | device, memory and queue properties only
+@vk_extension{KHR,get_physical_device_properties2} @m_class{m-label m-info} **instance** | device, feature, memory and queue properties only
 @vk_extension{KHR,device_group}                     | |
 @vk_extension{KHR,shader_draw_parameters}           | |
 @vk_extension{KHR,maintenance1}                     | |

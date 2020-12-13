@@ -32,6 +32,8 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
+#include "Magnum/Math/Functions.h"
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
@@ -62,6 +64,10 @@ struct DevicePropertiesVkTest: VulkanTester {
     void extensionNamedRevision();
 
     void driverProperties();
+
+    void features();
+    void featureExpectedSupported();
+    void featureExpectedUnsupported();
 
     void queueFamilies();
     void queueFamiliesOutOfRange();
@@ -110,6 +116,10 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
               &DevicePropertiesVkTest::extensionNamedRevision,
 
               &DevicePropertiesVkTest::driverProperties,
+
+              &DevicePropertiesVkTest::features,
+              &DevicePropertiesVkTest::featureExpectedSupported,
+              &DevicePropertiesVkTest::featureExpectedUnsupported,
 
               &DevicePropertiesVkTest::queueFamilies,
               &DevicePropertiesVkTest::queueFamiliesOutOfRange,
@@ -208,6 +218,67 @@ void DevicePropertiesVkTest::driverProperties() {
             "SwiftShader reports empty driver info.");
         CORRADE_VERIFY(!device->driverInfo().isEmpty());
     }
+}
+
+void DevicePropertiesVkTest::features() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    std::size_t popcount = 0;
+    for(std::size_t i = 0; i != DeviceFeatures::Size; ++i) {
+        popcount += Math::popcount(device->features().data()[i]);
+    }
+
+    Debug{} << "Available feature count:" << popcount;
+    CORRADE_VERIFY(popcount);
+
+    /* These (and others) are guaranteed to be always present by the spec, so
+       verify our sanity with those. If not, then we have something shitty in
+       our implementation. */
+    CORRADE_VERIFY(device->features() & DeviceFeature::RobustBufferAccess);
+
+    /* These are from additional structures, which can be queried only if both
+       instance and device have 1.1 or if KHR_get_physical_driver_properties2
+       is enabled on the instance. */
+    if(instance().isVersionSupported(Version::Vk11) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        if(device->isVersionSupported(Version::Vk11))
+            CORRADE_VERIFY(device->features() & DeviceFeature::Multiview);
+        if(device->isVersionSupported(Version::Vk12)) {
+            CORRADE_VERIFY(device->features() & DeviceFeature::UniformBufferStandardLayout);
+            CORRADE_VERIFY(device->features() & DeviceFeature::ImagelessFramebuffer);
+            CORRADE_VERIFY(device->features() & DeviceFeature::SeparateDepthStencilLayouts);
+            CORRADE_VERIFY(device->features() & DeviceFeature::HostQueryReset);
+            CORRADE_VERIFY(device->features() & DeviceFeature::TimelineSemaphore);
+            CORRADE_VERIFY(device->features() & DeviceFeature::ShaderSubgroupExtendedTypes);
+        }
+    }
+}
+
+void DevicePropertiesVkTest::featureExpectedSupported() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    if((!instance().isVersionSupported(Version::Vk11) || !device->isVersionSupported(Version::Vk11)) && !instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>())
+        CORRADE_SKIP("Neither Vulkan 1.1 nor KHR_get_physical_device_properties2 is supported, can't test");
+
+    if(!device->enumerateExtensionProperties().isSupported<Extensions::KHR::sampler_ycbcr_conversion>())
+        CORRADE_SKIP("VK_KHR_sampler_ycbcr_conversion not supported, can't test.");
+
+    CORRADE_VERIFY(device->features() & DeviceFeature::SamplerYcbcrConversion);
+}
+
+void DevicePropertiesVkTest::featureExpectedUnsupported() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    if(!((instance().isVersionSupported(Version::Vk11) && device->isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()))
+        CORRADE_SKIP("Vulkan 1.1 or KHR_get_physical_device_properties2 not present, can't test.");
+
+
+    if(device->enumerateExtensionProperties().isSupported<Extensions::EXT::texture_compression_astc_hdr>())
+        CORRADE_SKIP("VK_EXT_texture_compression_astc_hdr supported, can't test.");
+
+    CORRADE_VERIFY(!(device->features() & DeviceFeature::TextureCompressionAstcHdr));
 }
 
 void DevicePropertiesVkTest::enumerateExtensions() {
