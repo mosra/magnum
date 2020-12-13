@@ -423,7 +423,7 @@ Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
 
 Device::Device(Device&& other) noexcept: _handle{other._handle},
     _flags{other._flags}, _version{other._version},
-    _extensionStatus{other._extensionStatus}, _properties{std::move(other._properties)}, _state{std::move(other._state)},
+    _enabledExtensions{other._enabledExtensions}, _properties{std::move(other._properties)}, _state{std::move(other._state)},
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _functionPointers(other._functionPointers)
@@ -442,7 +442,7 @@ Device& Device::operator=(Device&& other) noexcept {
     swap(other._handle, _handle);
     swap(other._flags, _flags);
     swap(other._version, _version);
-    swap(other._extensionStatus, _extensionStatus);
+    swap(other._enabledExtensions, _enabledExtensions);
     swap(other._properties, _properties);
     swap(other._state, _state);
     swap(other._functionPointers, _functionPointers);
@@ -462,7 +462,7 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });
             if(found->string() != extension) continue;
-            _extensionStatus.set(found->index(), true);
+            _enabledExtensions.set(found->index(), true);
         }
     }
 }
@@ -477,7 +477,7 @@ void Device::initialize(Instance& instance, const Version version) {
 }
 
 bool Device::isExtensionEnabled(const Extension& extension) const {
-    return _extensionStatus[extension.index()];
+    return _enabledExtensions[extension.index()];
 }
 
 VkDevice Device::release() {

@@ -289,7 +289,7 @@ class MAGNUM_VK_EXPORT Device {
          */
         template<class E> bool isExtensionEnabled() const {
             static_assert(Implementation::IsExtension<E>::value, "expected a Vulkan device extension");
-            return _extensionStatus[E::Index];
+            return _enabledExtensions[E::Index];
         }
 
         /** @overload */
@@ -352,7 +352,7 @@ class MAGNUM_VK_EXPORT Device {
         VkDevice _handle;
         HandleFlags _flags;
         Version _version;
-        Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
+        Math::BoolVector<Implementation::ExtensionCount> _enabledExtensions;
         Containers::Pointer<DeviceProperties> _properties;
         Containers::Pointer<Implementation::DeviceState> _state;
 
