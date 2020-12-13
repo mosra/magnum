@@ -25,6 +25,7 @@
 
 #include <Corrade/Utility/Arguments.h>
 
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/InstanceCreateInfo.h"
@@ -306,6 +307,48 @@ int main(int argc, char** argv) {
 
     /* If we wanted only extension strings, exit now */
     if(args.isSet("extension-strings")) return 0;
+
+    Debug{} << "Feature support:";
+    {
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets really confused */
+        const Vk::DeviceFeatures features = device.features();
+        #define _c(value, field)                                            \
+            {                                                               \
+                Debug d;                                                    \
+                d << "   " << #value << sixtyfourSpaces.prefix(63 - sizeof(#value)); \
+                if(features & Vk::DeviceFeature::value)                     \
+                    d << "SUPPORTED";                                       \
+                else                                                        \
+                    d << "    -    ";                                       \
+            }
+        #define _cver(value, field, suffix, version)                        \
+            {                                                               \
+                Debug d;                                                    \
+                d << "   " << #value << sixtyfourSpaces.prefix(63 - sizeof(#value)); \
+                if(features & Vk::DeviceFeature::value)                     \
+                    d << "SUPPORTED";                                       \
+                else if(device.isVersionSupported(Vk::Version::version))    \
+                    d << "    -    ";                                       \
+                else                                                        \
+                    d << "   n/a   ";                                       \
+            }
+        #define _cext(value, field, suffix, extension)                      \
+            {                                                               \
+                Debug d;                                                    \
+                d << "   " << #value << sixtyfourSpaces.prefix(63 - sizeof(#value)); \
+                if(features & Vk::DeviceFeature::value)                     \
+                    d << "SUPPORTED";                                       \
+                else if(device.isVersionSupported(Vk::Extensions::extension::coreVersion()) || extensionProperties.isSupported<Vk::Extensions::extension>()) \
+                    d << "    -    ";                                       \
+                else                                                        \
+                    d << "   n/a   ";                                       \
+            }
+        #include "Magnum/Vk/Implementation/deviceFeatureMapping.hpp"
+        #undef _c
+        #undef _cver
+        #undef _cext
+        #endif
+    }
 
     Debug{} << "Queue families:";
     for(UnsignedInt i = 0; i != device.queueFamilyCount(); ++i) {
