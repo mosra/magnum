@@ -40,6 +40,7 @@ corrade_add_test(SceneGraphTranslationTransfo___Test TranslationTransformationTe
 set_property(TARGET
     SceneGraphDualComplexTransfo___Test
     SceneGraphDualQuaternionTran___Test
+    SceneGraphObjectTest
     SceneGraphRigidMatrixTrans___2DTest
     SceneGraphRigidMatrixTrans___3DTest
     SceneGraphTranslationRotat___2DTest

@@ -27,11 +27,14 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/SceneGraph/Camera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
+#include "Magnum/SceneGraph/AbstractFeature.hpp"
+#include "Magnum/SceneGraph/Camera.hpp"
 #include "Magnum/SceneGraph/Camera.h"
-#include "Magnum/SceneGraph/Drawable.h"
-#include "Magnum/SceneGraph/MatrixTransformation2D.h"
-#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/Drawable.hpp"
+#include "Magnum/SceneGraph/FeatureGroup.hpp"
+#include "Magnum/SceneGraph/MatrixTransformation2D.hpp"
+#include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
+#include "Magnum/SceneGraph/Object.hpp"
 #include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
@@ -39,97 +42,117 @@ namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 struct CameraTest: TestSuite::Tester {
     explicit CameraTest();
 
-    void fixAspectRatio();
-    void defaultProjection2D();
-    void defaultProjection3D();
-    void projectionCorrectedInvertedY();
-    void projectionSize2D();
-    void projectionSizeOrthographic();
-    void projectionSizePerspective();
-    void projectionSizeViewport();
+    template<class T> void fixAspectRatio();
+    template<class T> void defaultProjection2D();
+    template<class T> void defaultProjection3D();
+    template<class T> void projectionCorrectedInvertedY();
+    template<class T> void projectionSize2D();
+    template<class T> void projectionSizeOrthographic();
+    template<class T> void projectionSizePerspective();
+    template<class T> void projectionSizeViewport();
 
-    void draw();
-    void drawOrdered();
+    template<class T> void draw();
+    template<class T> void drawOrdered();
 };
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
-
 CameraTest::CameraTest() {
-    addTests({&CameraTest::fixAspectRatio,
-              &CameraTest::defaultProjection2D,
-              &CameraTest::defaultProjection3D,
-              &CameraTest::projectionCorrectedInvertedY,
-              &CameraTest::projectionSize2D,
-              &CameraTest::projectionSizeOrthographic,
-              &CameraTest::projectionSizePerspective,
-              &CameraTest::projectionSizeViewport,
+    addTests<CameraTest>({
+        &CameraTest::fixAspectRatio<Float>,
+        &CameraTest::fixAspectRatio<Double>,
+        &CameraTest::defaultProjection2D<Float>,
+        &CameraTest::defaultProjection2D<Double>,
+        &CameraTest::defaultProjection3D<Float>,
+        &CameraTest::defaultProjection3D<Double>,
+        &CameraTest::projectionCorrectedInvertedY<Float>,
+        &CameraTest::projectionCorrectedInvertedY<Double>,
+        &CameraTest::projectionSize2D<Float>,
+        &CameraTest::projectionSize2D<Double>,
+        &CameraTest::projectionSizeOrthographic<Float>,
+        &CameraTest::projectionSizeOrthographic<Double>,
+        &CameraTest::projectionSizePerspective<Float>,
+        &CameraTest::projectionSizePerspective<Double>,
+        &CameraTest::projectionSizeViewport<Float>,
+        &CameraTest::projectionSizeViewport<Double>,
 
-              &CameraTest::draw,
-              &CameraTest::drawOrdered});
+        &CameraTest::draw<Float>,
+        &CameraTest::draw<Double>,
+        &CameraTest::drawOrdered<Float>,
+        &CameraTest::drawOrdered<Double>});
 }
 
-void CameraTest::fixAspectRatio() {
-    Vector2 projectionScale(0.5f, 1.0f/3.0f);
+template<class T> using Object2D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation2D<T>>;
+template<class T> using Object3D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<T>>;
+template<class T> using Scene3D = SceneGraph::Scene<SceneGraph::BasicMatrixTransformation3D<T>>;
+
+template<class T> void CameraTest::fixAspectRatio() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Vector2<T> projectionScale(T(0.5), T(1.0)/T(3.0));
     Vector2i size(400, 300);
 
     /* Division by zero */
-    Vector2 projectionScaleZeroY(0.5f, 0.0f);
-    Vector2 projectionScaleZeroX(0.0f, 0.5f);
+    Math::Vector2<T> projectionScaleZeroY(T(0.5), T(0.0));
+    Math::Vector2<T> projectionScaleZeroX(T(0.0), T(0.5));
     Vector2i sizeZeroY(400, 0);
     Vector2i sizeZeroX(0, 300);
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Matrix4());
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Clip, projectionScaleZeroX, size)), Math::Matrix4<T>{});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Clip, projectionScaleZeroY, size)), Math::Matrix4<T>{});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Clip, projectionScale, sizeZeroY)), Math::Matrix4<T>{});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Extend, projectionScale, sizeZeroX)), Math::Matrix4<T>{});
 
     /* Not preserved */
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Matrix4());
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::NotPreserved, projectionScale, size)), Math::Matrix4<T>{});
 
     /* Clip */
-    Matrix4 expectedClip({1.0f,      0.0f, 0.0f, 0.0f},
-                         {0.0f, 4.0f/3.0f, 0.0f, 0.0f},
-                         {0.0f,      0.0f, 1.0f, 0.0f},
-                         {0.0f,      0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, Vector2(0.5f), size)), expectedClip);
+    Math::Matrix4<T> expectedClip(
+        {T(1.0),        T(0.0), T(0.0), T(0.0)},
+        {T(0.0), T(4.0)/T(3.0), T(0.0), T(0.0)},
+        {T(0.0),        T(0.0), T(1.0), T(0.0)},
+        {T(0.0),        T(0.0), T(0.0), T(1.0)});
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Clip, Math::Vector2<T>{T(0.5)}, size)), expectedClip);
     Matrix4 expectedClipRectangle({1.0f, 0.0f, 0.0f, 0.0f},
                                   {0.0f, 2.0f, 0.0f, 0.0f},
                                   {0.0f, 0.0f, 1.0f, 0.0f},
                                   {0.0f, 0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Clip, projectionScale, size)), expectedClipRectangle);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Clip, projectionScale, size)), Math::Matrix4<T>{expectedClipRectangle});
 
     /* Extend */
     Matrix4 expectedExtend({3.0f/4.0f, 0.0f, 0.0f, 0.0f},
                            {     0.0f, 1.0f, 0.0f, 0.0f},
                            {     0.0f, 0.0f, 1.0f, 0.0f},
                            {     0.0f, 0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, Vector2(0.5f), size)), expectedExtend);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Extend, Math::Vector2<T>{T(0.5)}, size)), Math::Matrix4<T>{expectedExtend});
     Matrix4 expectedExtendRectangle({0.5f, 0.0f, 0.0f, 0.0f},
                                     {0.0f, 1.0f, 0.0f, 0.0f},
                                     {0.0f, 0.0f, 1.0f, 0.0f},
                                     {0.0f, 0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE((Implementation::aspectRatioFix<3, Float>(AspectRatioPolicy::Extend, projectionScale, size)), expectedExtendRectangle);
+    CORRADE_COMPARE((Implementation::aspectRatioFix<3, T>(AspectRatioPolicy::Extend, projectionScale, size)), Math::Matrix4<T>{expectedExtendRectangle});
 }
 
-void CameraTest::defaultProjection2D() {
-    Object2D o;
-    Camera2D camera(o);
-    CORRADE_COMPARE(camera.projectionMatrix(), Matrix3());
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
+template<class T> void CameraTest::defaultProjection2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    BasicCamera2D<T> camera{o};
+    CORRADE_COMPARE(camera.projectionMatrix(), Math::Matrix3<T>{});
+    CORRADE_COMPARE(camera.projectionSize(), Math::Vector2<T>{T(2.0)});
 }
 
-void CameraTest::defaultProjection3D() {
-    Object3D o;
-    Camera3D camera(o);
-    CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
+template<class T> void CameraTest::defaultProjection3D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> o;
+    BasicCamera3D<T> camera{o};
+    CORRADE_COMPARE(camera.projectionMatrix(), Math::Matrix4<T>{});
+    CORRADE_COMPARE(camera.projectionSize(), Math::Vector2<T>{T(2.0)});
 }
 
-void CameraTest::projectionCorrectedInvertedY() {
-    Object2D o;
-    Camera2D camera(o);
-    camera.setProjectionMatrix(Matrix3::projection({4.0f, -2.0f}))
+template<class T> void CameraTest::projectionCorrectedInvertedY() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    BasicCamera2D<T> camera{o};
+    camera.setProjectionMatrix(Math::Matrix3<T>::projection({T(4.0), T(-2.0)}))
         .setAspectRatioPolicy(AspectRatioPolicy::Extend)
         .setViewport({4, 4});
 
@@ -137,133 +160,145 @@ void CameraTest::projectionCorrectedInvertedY() {
     Matrix3 expected{{0.5f,  0.0f, 0.0f},
                      {0.0f, -0.5f, 0.0f},
                      {0.0f,  0.0f, 1.0f}};
-    CORRADE_COMPARE(camera.projectionMatrix(), expected);
+    CORRADE_COMPARE(camera.projectionMatrix(), Math::Matrix3<T>{expected});
 }
 
-void CameraTest::projectionSize2D() {
-    Vector2 projectionSize(4.0f, 3.0f);
-    Object2D o;
-    Camera2D camera(o);
-    camera.setProjectionMatrix(Matrix3::projection(projectionSize));
+template<class T> void CameraTest::projectionSize2D() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Vector2<T> projectionSize{T(4.0), T(3.0)};
+    Object2D<T> o;
+    BasicCamera2D<T> camera{o};
+    camera.setProjectionMatrix(Math::Matrix3<T>::projection(projectionSize));
     CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 }
 
-void CameraTest::projectionSizeOrthographic() {
-    Vector2 projectionSizeRectangle(5.0f, 4.0f);
-    Object3D o;
-    Camera3D camera(o);
-    camera.setProjectionMatrix(Matrix4::orthographicProjection(projectionSizeRectangle, 1, 9));
+template<class T> void CameraTest::projectionSizeOrthographic() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Vector2<T> projectionSizeRectangle{T(5.0), T(4.0)};
+    Object3D<T> o;
+    BasicCamera3D<T> camera{o};
+    camera.setProjectionMatrix(Math::Matrix4<T>::orthographicProjection(projectionSizeRectangle, 1, 9));
     CORRADE_COMPARE(camera.projectionSize(), projectionSizeRectangle);
 }
 
-void CameraTest::projectionSizePerspective() {
-    Object3D o;
-    Camera3D camera(o);
-    camera.setProjectionMatrix(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100));
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f, 0.204322f));
+template<class T> void CameraTest::projectionSizePerspective() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> o;
+    BasicCamera3D<T> camera{o};
+    camera.setProjectionMatrix(Math::Matrix4<T>::perspectiveProjection(Math::Deg<T>(T(27.0)), T(2.35), T(32.0), 100));
+    CORRADE_COMPARE(camera.projectionSize(), (Math::Vector2<T>{T(0.480157518160232), T(0.20432234815329)}));
 }
 
-void CameraTest::projectionSizeViewport() {
-    Object3D o;
-    Camera3D camera(o);
+template<class T> void CameraTest::projectionSizeViewport() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> o;
+    BasicCamera3D<T> camera(o);
     camera.setViewport({200, 300});
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 2.0f));
+    CORRADE_COMPARE(camera.projectionSize(), (Math::Vector2<T>{T(2.0), T(2.0)}));
 
     camera.setAspectRatioPolicy(AspectRatioPolicy::Extend);
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f, 3.0f));
+    CORRADE_COMPARE(camera.projectionSize(), (Math::Vector2<T>{T(2.0), T(3.0)}));
 
     camera.setAspectRatioPolicy(AspectRatioPolicy::Clip);
-    CORRADE_COMPARE(camera.projectionSize(), Vector2(4.0f/3.0f, 2.0f));
+    CORRADE_COMPARE(camera.projectionSize(), (Math::Vector2<T>{T(4.0)/T(3.0), T(2.0)}));
 }
 
-void CameraTest::draw() {
-    class Drawable: public SceneGraph::Drawable3D {
+template<class T> void CameraTest::draw() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    class Drawable: public SceneGraph::BasicDrawable3D<T> {
         public:
-            Drawable(AbstractObject3D& object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
+            Drawable(AbstractBasicObject3D<T>& object, BasicDrawableGroup3D<T>* group, Math::Matrix4<T>& result): SceneGraph::BasicDrawable3D<T>{object, group}, result(result) {}
 
         protected:
-            void draw(const Matrix4& transformationMatrix, Camera3D&) override {
+            void draw(const Math::Matrix4<T>& transformationMatrix, BasicCamera3D<T>&) override {
                 result = transformationMatrix;
             }
 
         private:
-            Matrix4& result;
+            Math::Matrix4<T>& result;
     };
 
-    DrawableGroup3D group;
-    Scene3D scene;
+    BasicDrawableGroup3D<T> group;
+    Scene3D<T> scene;
 
-    Object3D first(&scene);
-    Matrix4 firstTransformation;
-    first.scale(Vector3(5.0f));
-    new Drawable(first, &group, firstTransformation);
+    Object3D<T> first(&scene);
+    Math::Matrix4<T> firstTransformation;
+    first.scale(Math::Vector3<T>{T(5.0)});
+    new Drawable{first, &group, firstTransformation};
 
-    Object3D second(&scene);
-    Matrix4 secondTransformation;
-    second.translate(Vector3::yAxis(3.0f));
-    new Drawable(second, &group, secondTransformation);
+    Object3D<T> second(&scene);
+    Math::Matrix4<T> secondTransformation;
+    second.translate(Math::Vector3<T>::yAxis(T(3.0)));
+    new Drawable{second, &group, secondTransformation};
 
-    Object3D third(&second);
-    Matrix4 thirdTransformation;
-    third.translate(Vector3::zAxis(-1.5f));
-    new Drawable(third, &group, thirdTransformation);
+    Object3D<T> third(&second);
+    Math::Matrix4<T> thirdTransformation;
+    third.translate(Math::Vector3<T>::zAxis(T(-1.5)));
+    new Drawable{third, &group, thirdTransformation};
 
-    Camera3D camera(third);
+    BasicCamera3D<T> camera{third};
     camera.draw(group);
 
-    CORRADE_COMPARE(firstTransformation, Matrix4::translation({0.0f, -3.0f, 1.5f})*Matrix4::scaling(Vector3(5.0f)));
-    CORRADE_COMPARE(secondTransformation, Matrix4::translation(Vector3::zAxis(1.5f)));
-    CORRADE_COMPARE(thirdTransformation, Matrix4());
+    CORRADE_COMPARE(firstTransformation, Math::Matrix4<T>::translation({T(0.0), T(-3.0), T(1.5)})*Math::Matrix4<T>::scaling(Math::Vector3<T>(T(5.0))));
+    CORRADE_COMPARE(secondTransformation, Math::Matrix4<T>::translation(Math::Vector3<T>::zAxis(T(1.5))));
+    CORRADE_COMPARE(thirdTransformation, Math::Matrix4<T>{});
 }
 
-void CameraTest::drawOrdered() {
-    class Drawable: public SceneGraph::Drawable3D {
+template<class T> void CameraTest::drawOrdered() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    class Drawable: public SceneGraph::BasicDrawable3D<T> {
         public:
-            Drawable(AbstractObject3D& object, DrawableGroup3D* group, std::vector<Matrix4>& result): SceneGraph::Drawable3D(object, group), _result(result) {}
+            Drawable(AbstractBasicObject3D<T>& object, BasicDrawableGroup3D<T>* group, std::vector<Math::Matrix4<T>>& result): SceneGraph::BasicDrawable3D<T>{object, group}, _result(result) {}
 
         protected:
-            void draw(const Matrix4& transformationMatrix, Camera3D&) override {
+            void draw(const Math::Matrix4<T>& transformationMatrix, BasicCamera3D<T>&) override {
                 _result.push_back(transformationMatrix);
             }
 
         private:
-            std::vector<Matrix4>& _result;
+            std::vector<Math::Matrix4<T>>& _result;
     };
 
-    DrawableGroup3D group;
-    Scene3D scene;
+    BasicDrawableGroup3D<T> group;
+    Scene3D<T> scene;
 
-    std::vector<Matrix4> transformations;
+    std::vector<Math::Matrix4<T>> transformations;
 
-    Object3D first(&scene);
-    first.scale(Vector3(5.0f))
-        .translate(Vector3::zAxis(-1.0f));
+    Object3D<T> first{&scene};
+    first.scale(Math::Vector3<T>{T(5.0)})
+        .translate(Math::Vector3<T>::zAxis(T(-1.0)));
     new Drawable{first, &group, transformations};
 
-    Object3D second(&scene);
-    second.translate(Vector3::zAxis(3.0f));
+    Object3D<T> second{&scene};
+    second.translate(Math::Vector3<T>::zAxis(T(3.0)));
     new Drawable{second, &group, transformations};
 
-    Object3D third(&second);
-    third.translate(Vector3::zAxis(-1.5f));
+    Object3D<T> third{&second};
+    third.translate(Math::Vector3<T>::zAxis(T(-1.5)));
     new Drawable{third, &group, transformations};
 
-    Camera3D camera(third);
+    BasicCamera3D<T> camera{third};
 
-    std::vector<std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>> drawableTransformations = camera.drawableTransformations(group);
+    std::vector<std::pair<std::reference_wrapper<SceneGraph::BasicDrawable3D<T>>, Math::Matrix4<T>>> drawableTransformations = camera.drawableTransformations(group);
     std::sort(drawableTransformations.begin(), drawableTransformations.end(),
-        [](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& a,
-           const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& b) {
+        [](const std::pair<std::reference_wrapper<SceneGraph::BasicDrawable3D<T>>, Math::Matrix4<T>>& a,
+           const std::pair<std::reference_wrapper<SceneGraph::BasicDrawable3D<T>>, Math::Matrix4<T>>& b) {
             return a.second.translation().z() < b.second.translation().z();
         });
 
     camera.draw(drawableTransformations);
 
     /* Should be ordered front to back, most negative Z first */
-    CORRADE_COMPARE_AS(transformations, (std::vector<Matrix4>{
-        Matrix4::translation(Vector3::zAxis(-2.5f))*Matrix4::scaling(Vector3{5.0f}), /* first */
-        Matrix4{}, /* third */
-        Matrix4::translation(Vector3::zAxis(1.5f)) /* second */
+    CORRADE_COMPARE_AS(transformations, (std::vector<Math::Matrix4<T>>{
+        Math::Matrix4<T>::translation(Math::Vector3<T>::zAxis(T(-2.5)))*Math::Matrix4<T>::scaling(Math::Vector3<T>{T(5.0)}), /* first */
+        Math::Matrix4<T>{}, /* third */
+        Math::Matrix4<T>::translation(Math::Vector3<T>::zAxis(T(1.5))) /* second */
     }), TestSuite::Compare::Container);
 }
 

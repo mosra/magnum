@@ -28,202 +28,246 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Complex.h"
-#include "Magnum/SceneGraph/RigidMatrixTransformation2D.h"
+#include "Magnum/SceneGraph/Object.hpp"
+#include "Magnum/SceneGraph/RigidMatrixTransformation2D.hpp"
 #include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
-typedef Object<RigidMatrixTransformation2D> Object2D;
-typedef Scene<RigidMatrixTransformation2D> Scene2D;
-
 struct RigidMatrixTransformation2DTest: TestSuite::Tester {
     explicit RigidMatrixTransformation2DTest();
 
-    void fromMatrix();
-    void fromMatrixInvalid();
-    void toMatrix();
-    void compose();
-    void inverted();
+    template<class T> void fromMatrix();
+    template<class T> void fromMatrixInvalid();
+    template<class T> void toMatrix();
+    template<class T> void compose();
+    template<class T> void inverted();
 
-    void setTransformation();
-    void setTransformationInvalid();
-    void resetTransformation();
-    void transform();
-    void transformInvalid();
-    void translate();
-    void rotate();
-    void reflect();
-    void normalizeRotation();
+    template<class T> void setTransformation();
+    template<class T> void setTransformationInvalid();
+    template<class T> void resetTransformation();
+    template<class T> void transform();
+    template<class T> void transformInvalid();
+    template<class T> void translate();
+    template<class T> void rotate();
+    template<class T> void reflect();
+    template<class T> void normalizeRotation();
 };
 
 RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
-    addTests({&RigidMatrixTransformation2DTest::fromMatrix,
-              &RigidMatrixTransformation2DTest::fromMatrixInvalid,
-              &RigidMatrixTransformation2DTest::toMatrix,
-              &RigidMatrixTransformation2DTest::compose,
-              &RigidMatrixTransformation2DTest::inverted,
+    addTests<RigidMatrixTransformation2DTest>({
+        &RigidMatrixTransformation2DTest::fromMatrix<Float>,
+        &RigidMatrixTransformation2DTest::fromMatrix<Double>,
+        &RigidMatrixTransformation2DTest::fromMatrixInvalid<Float>,
+        &RigidMatrixTransformation2DTest::fromMatrixInvalid<Double>,
+        &RigidMatrixTransformation2DTest::toMatrix<Float>,
+        &RigidMatrixTransformation2DTest::toMatrix<Double>,
+        &RigidMatrixTransformation2DTest::compose<Float>,
+        &RigidMatrixTransformation2DTest::compose<Double>,
+        &RigidMatrixTransformation2DTest::inverted<Float>,
+        &RigidMatrixTransformation2DTest::inverted<Double>,
 
-              &RigidMatrixTransformation2DTest::setTransformation,
-              &RigidMatrixTransformation2DTest::setTransformationInvalid,
-              &RigidMatrixTransformation2DTest::resetTransformation,
-              &RigidMatrixTransformation2DTest::transform,
-              &RigidMatrixTransformation2DTest::transformInvalid,
-              &RigidMatrixTransformation2DTest::translate,
-              &RigidMatrixTransformation2DTest::rotate,
-              &RigidMatrixTransformation2DTest::reflect,
-              &RigidMatrixTransformation2DTest::normalizeRotation});
+        &RigidMatrixTransformation2DTest::setTransformation<Float>,
+        &RigidMatrixTransformation2DTest::setTransformation<Double>,
+        &RigidMatrixTransformation2DTest::setTransformationInvalid<Float>,
+        &RigidMatrixTransformation2DTest::setTransformationInvalid<Double>,
+        &RigidMatrixTransformation2DTest::resetTransformation<Float>,
+        &RigidMatrixTransformation2DTest::resetTransformation<Double>,
+        &RigidMatrixTransformation2DTest::transform<Float>,
+        &RigidMatrixTransformation2DTest::transform<Double>,
+        &RigidMatrixTransformation2DTest::transformInvalid<Float>,
+        &RigidMatrixTransformation2DTest::transformInvalid<Double>,
+        &RigidMatrixTransformation2DTest::translate<Float>,
+        &RigidMatrixTransformation2DTest::translate<Double>,
+        &RigidMatrixTransformation2DTest::rotate<Float>,
+        &RigidMatrixTransformation2DTest::rotate<Double>,
+        &RigidMatrixTransformation2DTest::reflect<Float>,
+        &RigidMatrixTransformation2DTest::reflect<Double>,
+        &RigidMatrixTransformation2DTest::normalizeRotation<Float>,
+        &RigidMatrixTransformation2DTest::normalizeRotation<Double>});
 }
 
 using namespace Math::Literals;
 
-void RigidMatrixTransformation2DTest::fromMatrix() {
-    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(m), m);
+template<class T> using Object2D = Object<BasicRigidMatrixTransformation2D<T>>;
+template<class T> using Scene2D = Scene<BasicRigidMatrixTransformation2D<T>>;
+
+template<class T> void RigidMatrixTransformation2DTest::fromMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicRigidMatrixTransformation2D<T>>::fromMatrix(m), m);
 }
 
-void RigidMatrixTransformation2DTest::fromMatrixInvalid() {
+template<class T> void RigidMatrixTransformation2DTest::fromMatrixInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream out;
     Error redirectError{&out};
-    Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
+    Implementation::Transformation<BasicRigidMatrixTransformation2D<T>>::fromMatrix(Math::Matrix3<T>::scaling(Math::Vector2<T>{T(4.0)}));
     CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D: the matrix doesn't represent rigid transformation\n");
 }
 
-void RigidMatrixTransformation2DTest::toMatrix() {
-    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation2D>::toMatrix(m), m);
+template<class T> void RigidMatrixTransformation2DTest::toMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicRigidMatrixTransformation2D<T>>::toMatrix(m), m);
 }
 
-void RigidMatrixTransformation2DTest::compose() {
-    Matrix3 parent = Matrix3::rotation(Deg(17.0f));
-    Matrix3 child = Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation2D>::compose(parent, child), parent*child);
+template<class T> void RigidMatrixTransformation2DTest::compose() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> parent = Math::Matrix3<T>::rotation(Math::Deg<T>(T(17.0)));
+    Math::Matrix3<T> child = Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicRigidMatrixTransformation2D<T>>::compose(parent, child), parent*child);
 }
 
-void RigidMatrixTransformation2DTest::inverted() {
-    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<RigidMatrixTransformation2D>::inverted(m)*m, Matrix3());
+template<class T> void RigidMatrixTransformation2DTest::inverted() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicRigidMatrixTransformation2D<T>>::inverted(m)*m, Math::Matrix3<T>{});
 }
 
-void RigidMatrixTransformation2DTest::setTransformation() {
-    Object2D o;
+template<class T> void RigidMatrixTransformation2DTest::setTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
 
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
-    o.setTransformation(Matrix3::rotation(Deg(17.0f)));
+    o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     CORRADE_VERIFY(o.isDirty());
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
 
     /* Scene cannot be transformed */
-    Scene2D s;
+    Scene2D<T> s;
     s.setClean();
-    s.setTransformation(Matrix3::rotation(Deg(17.0f)));
+    s.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     CORRADE_VERIFY(!s.isDirty());
-    CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(s.transformationMatrix(), Math::Matrix3<T>());
 }
 
-void RigidMatrixTransformation2DTest::setTransformationInvalid() {
+template<class T> void RigidMatrixTransformation2DTest::setTransformationInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Object2D o;
+    Object2D<T> o;
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
     Error redirectError{&out};
-    o.setTransformation(Matrix3::scaling(Vector2(3.0f)));
+    o.setTransformation(Math::Matrix3<T>::scaling(Math::Vector2<T>{T(3.0)}));
     CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::setTransformation(): the matrix doesn't represent rigid transformation\n");
 }
 
-void RigidMatrixTransformation2DTest::resetTransformation() {
-    Object2D o;
-    o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-    CORRADE_VERIFY(o.transformationMatrix() != Matrix3());
+template<class T> void RigidMatrixTransformation2DTest::resetTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+    CORRADE_VERIFY(o.transformationMatrix() != Math::Matrix3<T>());
     o.resetTransformation();
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>());
 }
 
-void RigidMatrixTransformation2DTest::transform() {
+template<class T> void RigidMatrixTransformation2DTest::transform() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.transform(Matrix3::translation({1.0f, -0.3f}));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.transform(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.transformLocal(Matrix3::translation({1.0f, -0.3f}));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.transformLocal(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     }
 }
 
-void RigidMatrixTransformation2DTest::transformInvalid() {
+template<class T> void RigidMatrixTransformation2DTest::transformInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     /* Can't transform with non-rigid transformation */
-    Object2D o;
+    Object2D<T> o;
     std::ostringstream out;
     Error redirectError{&out};
-    o.transform(Matrix3::scaling(Vector2(3.0f)));
+    o.transform(Math::Matrix3<T>::scaling(Math::Vector2<T>{T(3.0)}));
     CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::transform(): the matrix doesn't represent rigid transformation\n");
 }
 
-void RigidMatrixTransformation2DTest::translate() {
+template<class T> void RigidMatrixTransformation2DTest::translate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.translate({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translate({T(1.0), T(-0.3)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.translateLocal({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translateLocal({T(1.0), T(-0.3)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     }
 }
 
-void RigidMatrixTransformation2DTest::rotate() {
+template<class T> void RigidMatrixTransformation2DTest::rotate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
-         .rotate(Complex::rotation(7.0_degf))
-         .rotate(10.0_degf);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}))
+         .rotate(Math::Complex<T>::rotation(Math::Deg<T>{T(7.0)}))
+         .rotate(Math::Deg<T>{T(10.0)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}))
-         .rotateLocal(Complex::rotation(7.0_degf))
-         .rotateLocal(10.0_degf);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}))
+         .rotateLocal(Math::Complex<T>::rotation(Math::Deg<T>{T(7.0)}))
+         .rotateLocal(Math::Deg<T>{T(10.0)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     }
 }
 
-void RigidMatrixTransformation2DTest::reflect() {
+template<class T> void RigidMatrixTransformation2DTest::reflect() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.reflect(Vector2(-1.0f/Constants::sqrt2()));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2()))*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.reflect(Math::Vector2<T>{T(-1.0)/Math::Constants<T>::sqrt2()});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::reflection(Math::Vector2<T>{T(-1.0)/Math::Constants<T>::sqrt2()})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.reflectLocal(Vector2(-1.0f/Constants::sqrt2()));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2())));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.reflectLocal(Math::Vector2<T>{T(-1.0)/Math::Constants<T>::sqrt2()});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::reflection(Math::Vector2<T>{T(-1.0)/Math::Constants<T>::sqrt2()}));
     }
 }
 
-void RigidMatrixTransformation2DTest::normalizeRotation() {
-    Object2D o;
-    o.setTransformation(Matrix3::rotation(Deg(17.0f)));
+template<class T> void RigidMatrixTransformation2DTest::normalizeRotation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     o.normalizeRotation();
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
 }
 
 }}}}

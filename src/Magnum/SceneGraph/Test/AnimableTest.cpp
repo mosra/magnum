@@ -27,47 +27,58 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/SceneGraph/Animable.h"
+#include "Magnum/SceneGraph/AbstractFeature.hpp"
+#include "Magnum/SceneGraph/Animable.hpp"
 #include "Magnum/SceneGraph/AnimableGroup.h"
-#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/FeatureGroup.hpp"
+#include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
+#include "Magnum/SceneGraph/Object.hpp"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 struct AnimableTest: TestSuite::Tester {
     explicit AnimableTest();
 
-    void state();
-    void step();
-    void duration();
-    void repeat();
-    void stop();
-    void pause();
+    template<class T> void state();
+    template<class T> void step();
+    template<class T> void duration();
+    template<class T> void repeat();
+    template<class T> void stop();
+    template<class T> void pause();
 
     void deleteWhileRunning();
 
     void debug();
 };
 
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-
 AnimableTest::AnimableTest() {
-    addTests({&AnimableTest::state,
-              &AnimableTest::step,
-              &AnimableTest::duration,
-              &AnimableTest::repeat,
-              &AnimableTest::stop,
-              &AnimableTest::pause,
+    addTests({&AnimableTest::state<Float>,
+              &AnimableTest::state<Double>,
+              &AnimableTest::step<Float>,
+              &AnimableTest::step<Double>,
+              &AnimableTest::duration<Float>,
+              &AnimableTest::duration<Double>,
+              &AnimableTest::repeat<Float>,
+              &AnimableTest::repeat<Double>,
+              &AnimableTest::stop<Float>,
+              &AnimableTest::stop<Double>,
+              &AnimableTest::pause<Float>,
+              &AnimableTest::pause<Double>,
 
               &AnimableTest::deleteWhileRunning,
 
               &AnimableTest::debug});
 }
 
-void AnimableTest::state() {
-    class StateTrackingAnimable: public SceneGraph::Animable3D {
+template<class T> using Object3D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<T>>;
+
+template<class T> void AnimableTest::state() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    class StateTrackingAnimable: public SceneGraph::BasicAnimable3D<T> {
         public:
-            StateTrackingAnimable(AbstractObject3D& object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group) {
-                setDuration(1.0f);
+            StateTrackingAnimable(AbstractBasicObject3D<T>& object, BasicAnimableGroup3D<T>* group = nullptr): SceneGraph::BasicAnimable3D<T>{object, group} {
+                this->setDuration(1.0f);
             }
 
             std::string trackedState;
@@ -81,8 +92,8 @@ void AnimableTest::state() {
             void animationStopped() override { trackedState += "stopped"; }
     };
 
-    Object3D object;
-    AnimableGroup3D group;
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
     CORRADE_COMPARE(group.runningCount(), 0);
 
     /* Verify initial state */
@@ -157,11 +168,11 @@ void AnimableTest::state() {
     CORRADE_COMPARE(group.runningCount(), 2);
 }
 
-class OneShotAnimable: public SceneGraph::Animable3D {
+template<class T> class OneShotAnimable: public SceneGraph::BasicAnimable3D<T> {
     public:
-        OneShotAnimable(AbstractObject3D& object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
-            setDuration(10.0f);
-            setState(AnimationState::Running);
+        explicit OneShotAnimable(AbstractBasicObject3D<T>& object, BasicAnimableGroup3D<T>* group = nullptr): SceneGraph::BasicAnimable3D<T>{object, group}, time{-1.0f} {
+            this->setDuration(10.0f);
+            this->setState(AnimationState::Running);
         }
 
         Float time;
@@ -181,10 +192,12 @@ class OneShotAnimable: public SceneGraph::Animable3D {
         }
 };
 
-void AnimableTest::step() {
-    class InifiniteAnimable: public SceneGraph::Animable3D {
+template<class T> void AnimableTest::step() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    class InifiniteAnimable: public SceneGraph::BasicAnimable3D<T> {
         public:
-            InifiniteAnimable(AbstractObject3D& object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f), delta(0.0f) {}
+            InifiniteAnimable(AbstractBasicObject3D<T>& object, BasicAnimableGroup3D<T>* group = nullptr): SceneGraph::BasicAnimable3D<T>{object, group}, time{-1.0f}, delta{0.0f} {}
 
             Float time, delta;
 
@@ -195,9 +208,9 @@ void AnimableTest::step() {
             }
     };
 
-    Object3D object;
-    AnimableGroup3D group;
-    InifiniteAnimable animable(object, &group);
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
+    InifiniteAnimable animable{object, &group};
 
     /* Calling step() if no object is running should do nothing */
     group.step(5.0f, 0.5f);
@@ -219,10 +232,12 @@ void AnimableTest::step() {
     CORRADE_COMPARE(animable.delta, 0.75f);
 }
 
-void AnimableTest::duration() {
-    Object3D object;
-    AnimableGroup3D group;
-    OneShotAnimable animable(object, &group);
+template<class T> void AnimableTest::duration() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
+    OneShotAnimable<T> animable{object, &group};
     CORRADE_VERIFY(!animable.isRepeated());
 
     /* First animation step is in duration, verify that animation is still
@@ -240,13 +255,15 @@ void AnimableTest::duration() {
     CORRADE_COMPARE(animable.time, 0.0f);
 }
 
-void AnimableTest::repeat() {
-    class RepeatingAnimable: public SceneGraph::Animable3D {
+template<class T> void AnimableTest::repeat() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    class RepeatingAnimable: public SceneGraph::BasicAnimable3D<T> {
         public:
-            RepeatingAnimable(AbstractObject3D& object, AnimableGroup3D* group = nullptr): SceneGraph::Animable3D(object, group), time(-1.0f) {
-                setDuration(10.0f);
-                setState(AnimationState::Running);
-                setRepeated(true);
+            RepeatingAnimable(AbstractBasicObject3D<T>& object, BasicAnimableGroup3D<T>* group = nullptr): SceneGraph::BasicAnimable3D<T>{object, group}, time(-1.0f) {
+                this->setDuration(10.0f);
+                this->setState(AnimationState::Running);
+                this->setRepeated(true);
             }
 
             Float time;
@@ -257,9 +274,9 @@ void AnimableTest::repeat() {
             }
     };
 
-    Object3D object;
-    AnimableGroup3D group;
-    RepeatingAnimable animable(object, &group);
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
+    RepeatingAnimable animable{object, &group};
     CORRADE_COMPARE(animable.repeatCount(), 0);
 
     /* First animation steps is in first loop iteration */
@@ -301,10 +318,12 @@ void AnimableTest::repeat() {
     CORRADE_COMPARE(animable.state(), AnimationState::Stopped);
 }
 
-void AnimableTest::stop() {
-    Object3D object;
-    AnimableGroup3D group;
-    OneShotAnimable animable(object, &group);
+template<class T> void AnimableTest::stop() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
+    OneShotAnimable<T> animable(object, &group);
     CORRADE_COMPARE(animable.repeatCount(), 0);
 
     /* Eat up some absolute time */
@@ -326,10 +345,12 @@ void AnimableTest::stop() {
     CORRADE_COMPARE(animable.time, 0.0f);
 }
 
-void AnimableTest::pause() {
-    Object3D object;
-    AnimableGroup3D group;
-    OneShotAnimable animable(object, &group);
+template<class T> void AnimableTest::pause() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object3D<T> object;
+    BasicAnimableGroup3D<T> group;
+    OneShotAnimable<T> animable(object, &group);
 
     /* First two steps, animation is running */
     group.step(1.0f, 0.5f);
@@ -357,12 +378,12 @@ void AnimableTest::pause() {
 }
 
 void AnimableTest::deleteWhileRunning() {
-    Object3D object;
+    Object3D<Float> object;
     AnimableGroup3D group;
     CORRADE_COMPARE(group.runningCount(), 0);
 
     {
-        OneShotAnimable animable(object, &group);
+        OneShotAnimable<Float> animable(object, &group);
 
         /* Eat up some absolute time */
         group.step(1.0f, 0.5f);

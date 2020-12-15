@@ -25,215 +25,250 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/SceneGraph/Object.hpp"
 #include "Magnum/SceneGraph/TranslationRotationScalingTransformation2D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
-typedef Object<TranslationRotationScalingTransformation2D> Object2D;
-typedef Scene<TranslationRotationScalingTransformation2D> Scene2D;
-
 struct TranslationRotationScalingTransformation2DTest: TestSuite::Tester {
     explicit TranslationRotationScalingTransformation2DTest();
 
-    void fromMatrix();
-    void toMatrix();
-    void compose();
-    void inverted();
+    template<class T> void fromMatrix();
+    template<class T> void toMatrix();
+    template<class T> void compose();
+    template<class T> void inverted();
 
-    void defaults();
-    void setTransformation();
-    void setTransformationRotateALot();
-    void resetTransformation();
+    template<class T> void defaults();
+    template<class T> void setTransformation();
+    template<class T> void setTransformationRotateALot();
+    template<class T> void resetTransformation();
 
-    void translate();
-    void rotate();
-    void scale();
+    template<class T> void translate();
+    template<class T> void rotate();
+    template<class T> void scale();
 };
 
 TranslationRotationScalingTransformation2DTest::TranslationRotationScalingTransformation2DTest() {
-    addTests({&TranslationRotationScalingTransformation2DTest::fromMatrix,
-              &TranslationRotationScalingTransformation2DTest::toMatrix,
-              &TranslationRotationScalingTransformation2DTest::compose,
-              &TranslationRotationScalingTransformation2DTest::inverted,
+    addTests<TranslationRotationScalingTransformation2DTest>({
+        &TranslationRotationScalingTransformation2DTest::fromMatrix<Float>,
+        &TranslationRotationScalingTransformation2DTest::fromMatrix<Double>,
+        &TranslationRotationScalingTransformation2DTest::toMatrix<Float>,
+        &TranslationRotationScalingTransformation2DTest::toMatrix<Double>,
+        &TranslationRotationScalingTransformation2DTest::compose<Float>,
+        &TranslationRotationScalingTransformation2DTest::compose<Double>,
+        &TranslationRotationScalingTransformation2DTest::inverted<Float>,
+        &TranslationRotationScalingTransformation2DTest::inverted<Double>,
 
-              &TranslationRotationScalingTransformation2DTest::defaults,
-              &TranslationRotationScalingTransformation2DTest::setTransformation,
-              &TranslationRotationScalingTransformation2DTest::setTransformationRotateALot,
-              &TranslationRotationScalingTransformation2DTest::resetTransformation,
+        &TranslationRotationScalingTransformation2DTest::defaults<Float>,
+        &TranslationRotationScalingTransformation2DTest::defaults<Double>,
+        &TranslationRotationScalingTransformation2DTest::setTransformation<Float>,
+        &TranslationRotationScalingTransformation2DTest::setTransformation<Double>,
+        &TranslationRotationScalingTransformation2DTest::setTransformationRotateALot<Float>,
+        &TranslationRotationScalingTransformation2DTest::setTransformationRotateALot<Double>,
+        &TranslationRotationScalingTransformation2DTest::resetTransformation<Float>,
+        &TranslationRotationScalingTransformation2DTest::resetTransformation<Double>,
 
-              &TranslationRotationScalingTransformation2DTest::translate,
-              &TranslationRotationScalingTransformation2DTest::rotate,
-              &TranslationRotationScalingTransformation2DTest::scale});
+        &TranslationRotationScalingTransformation2DTest::translate<Float>,
+        &TranslationRotationScalingTransformation2DTest::translate<Double>,
+        &TranslationRotationScalingTransformation2DTest::rotate<Float>,
+        &TranslationRotationScalingTransformation2DTest::rotate<Double>,
+        &TranslationRotationScalingTransformation2DTest::scale<Float>,
+        &TranslationRotationScalingTransformation2DTest::scale<Double>});
 }
 
 using namespace Math::Literals;
 
-void TranslationRotationScalingTransformation2DTest::fromMatrix() {
-    Matrix3 m = Matrix3::rotation(17.0_degf)*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<TranslationRotationScalingTransformation2D>::fromMatrix(m), m);
+template<class T> using Object2D = Object<BasicTranslationRotationScalingTransformation2D<T>>;
+template<class T> using Scene2D = Scene<BasicTranslationRotationScalingTransformation2D<T>>;
+
+template<class T> void TranslationRotationScalingTransformation2DTest::fromMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationRotationScalingTransformation2D<T>>::fromMatrix(m), m);
 }
 
-void TranslationRotationScalingTransformation2DTest::toMatrix() {
-    Matrix3 m = Matrix3::rotation(17.0_degf)*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<TranslationRotationScalingTransformation2D>::toMatrix(m), m);
+template<class T> void TranslationRotationScalingTransformation2DTest::toMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationRotationScalingTransformation2D<T>>::toMatrix(m), m);
 }
 
-void TranslationRotationScalingTransformation2DTest::compose() {
-    Matrix3 parent = Matrix3::rotation(17.0_degf);
-    Matrix3 child = Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<TranslationRotationScalingTransformation2D>::compose(parent, child), parent*child);
+template<class T> void TranslationRotationScalingTransformation2DTest::compose() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> parent = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)});
+    Math::Matrix3<T> child = Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationRotationScalingTransformation2D<T>>::compose(parent, child), parent*child);
 }
 
-void TranslationRotationScalingTransformation2DTest::inverted() {
-    Matrix3 m = Matrix3::rotation(17.0_degf)*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<TranslationRotationScalingTransformation2D>::inverted(m)*m, Matrix3());
+template<class T> void TranslationRotationScalingTransformation2DTest::inverted() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationRotationScalingTransformation2D<T>>::inverted(m)*m, Math::Matrix3<T>{});
 }
 
-void TranslationRotationScalingTransformation2DTest::defaults() {
-    Object2D o;
-    CORRADE_COMPARE(o.translation(), Vector2{});
-    CORRADE_COMPARE(o.rotation(), Complex{});
-    CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3{});
+template<class T> void TranslationRotationScalingTransformation2DTest::defaults() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    CORRADE_COMPARE(o.translation(), Math::Vector2<T>{});
+    CORRADE_COMPARE(o.rotation(), Math::Complex<T>{});
+    CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void TranslationRotationScalingTransformation2DTest::setTransformation() {
+template<class T> void TranslationRotationScalingTransformation2DTest::setTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     /* Dirty after setting transformation */
-    Object2D o;
+    Object2D<T> o;
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
     o.setTransformation(
-        Matrix3::translation({7.0f, -1.0f})*
-        Matrix3::rotation(17.0_degf)*
-        Matrix3::scaling({1.5f, 0.5f}));
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+        Math::Matrix3<T>::scaling({T(1.5), T(0.5)}));
     CORRADE_VERIFY(o.isDirty());
-    CORRADE_COMPARE(o.translation(), (Vector2{7.0f, -1.0f}));
-    CORRADE_COMPARE(o.rotation(), Complex::rotation(17.0_degf));
-    CORRADE_COMPARE(o.scaling(), (Vector2{1.5f, 0.5f}));
+    CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(7.0), T(-1.0)}));
+    CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+    CORRADE_COMPARE(o.scaling(), (Math::Vector2<T>{T(1.5), T(0.5)}));
     CORRADE_COMPARE(o.transformationMatrix(),
-        Matrix3::translation({7.0f, -1.0f})*
-        Matrix3::rotation(17.0_degf)*
-        Matrix3::scaling({1.5f, 0.5f}));
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+        Math::Matrix3<T>::scaling({T(1.5), T(0.5)}));
 
     /* Scene cannot be transformed */
-    Scene2D s;
+    Scene2D<T> s;
     s.setClean();
     CORRADE_VERIFY(!s.isDirty());
-    s.setTransformation(Matrix3::rotation(17.0_degf));
+    s.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     CORRADE_VERIFY(!s.isDirty());
-    CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(s.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void TranslationRotationScalingTransformation2DTest::setTransformationRotateALot() {
-    Object2D o;
+template<class T> void TranslationRotationScalingTransformation2DTest::setTransformationRotateALot() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
     o.setTransformation(
-        Matrix3::translation({7.0f, -1.0f})*
-        Matrix3::rotation(225.0_degf)*
-        Matrix3::scaling({1.5f, 0.5f}));
-    CORRADE_COMPARE(o.translation(), (Vector2{7.0f, -1.0f}));
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(225.0)})*
+        Math::Matrix3<T>::scaling({T(1.5), T(0.5)}));
+    CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(7.0), T(-1.0)}));
     /* Rotation of more than 180° causes either the rotation matrix or scaling
        to contain negative signs, verify we get a proper matrix back again */
-    CORRADE_COMPARE(o.rotation(), Complex::rotation(225.0_degf));
-    CORRADE_COMPARE(o.scaling(), (Vector2{1.5f, 0.5f}));
+    CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(225.0)}));
+    CORRADE_COMPARE(o.scaling(), (Math::Vector2<T>{T(1.5), T(0.5)}));
     CORRADE_COMPARE(o.transformationMatrix(),
-        Matrix3::translation({7.0f, -1.0f})*
-        Matrix3::rotation(225.0_degf)*
-        Matrix3::scaling({1.5f, 0.5f}));
+        Math::Matrix3<T>::translation({T(7.0), T(-1.0)})*
+        Math::Matrix3<T>::rotation(Math::Deg<T>{T(225.0)})*
+        Math::Matrix3<T>::scaling({T(1.5), T(0.5)}));
 }
 
-void TranslationRotationScalingTransformation2DTest::resetTransformation() {
-    Object2D o;
-    o.rotate(17.0_degf);
-    CORRADE_VERIFY(o.transformationMatrix() != Matrix3());
+template<class T> void TranslationRotationScalingTransformation2DTest::resetTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.rotate(Math::Deg<T>{T(17.0)});
+    CORRADE_VERIFY(o.transformationMatrix() != Math::Matrix3<T>{});
     o.resetTransformation();
-    CORRADE_COMPARE(o.translation(), Vector2{});
-    CORRADE_COMPARE(o.rotation(), Complex{});
-    CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(o.translation(), Math::Vector2<T>{});
+    CORRADE_COMPARE(o.rotation(), Math::Complex<T>{});
+    CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void TranslationRotationScalingTransformation2DTest::translate() {
+template<class T> void TranslationRotationScalingTransformation2DTest::translate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(17.0_degf));
-        o.translate({1.0f, -0.3f})
-         .translate({1.0f, 0.1f});
-        CORRADE_COMPARE(o.translation(), (Vector2{2.0f, -0.2f}));
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(17.0_degf));
-        CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translate({T(1.0), T(-0.3)})
+         .translate({T(1.0), T(0.1)});
+        CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(2.0), T(-0.2)}));
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::translation({1.0f, 0.1f})*
-            Matrix3::translation({1.0f, -0.3f})*
-            Matrix3::rotation(17.0_degf));
+            Math::Matrix3<T>::translation({T(1.0), T(0.1)})*
+            Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(17.0_degf));
-        o.translateLocal({1.0f, -0.3f})
-         .translateLocal({1.0f, 0.1f});
-        CORRADE_COMPARE(o.translation(), (Vector2{2.0f, -0.2f}));
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(17.0_degf));
-        CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translateLocal({T(1.0), T(-0.3)})
+         .translateLocal({T(1.0), T(0.1)});
+        CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(2.0), T(-0.2)}));
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::translation({1.0f, -0.3f})*
-            Matrix3::translation({1.0f, 0.1f})*
-            Matrix3::rotation(17.0_degf));
+            Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*
+            Math::Matrix3<T>::translation({T(1.0), T(0.1)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     }
 }
 
-void TranslationRotationScalingTransformation2DTest::rotate() {
+template<class T> void TranslationRotationScalingTransformation2DTest::rotate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(Complex::rotation(17.0_degf))
-         .rotate(-96.0_degf);
-        CORRADE_COMPARE(o.translation(), (Vector2{1.0f, -0.3f}));
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(-79.0_degf));
-        CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
+        o.rotate(Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}))
+         .rotate(Math::Deg<T>{T(-96.0)});
+        CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(-79.0)}));
+        CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::translation({1.0f, -0.3f})*
-            Matrix3::rotation(-96.0_degf)*
-            Matrix3::rotation(17.0_degf));
+            Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(-96.0)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotateLocal(Complex::rotation(17.0_degf))
-         .rotateLocal(-96.0_degf);
-        CORRADE_COMPARE(o.translation(), (Vector2{1.0f, -0.3f}));
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(-79.0_degf));
-        CORRADE_COMPARE(o.scaling(), Vector2{1.0f});
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
+        o.rotateLocal(Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}))
+         .rotateLocal(Math::Deg<T>{T(-96.0)});
+        CORRADE_COMPARE(o.translation(), (Math::Vector2<T>{T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(-79.0)}));
+        CORRADE_COMPARE(o.scaling(), Math::Vector2<T>{T(1.0)});
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::translation({1.0f, -0.3f})*
-            Matrix3::rotation(17.0_degf)*
-            Matrix3::rotation(-96.0_degf));
+            Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(-96.0)}));
     }
 }
 
-void TranslationRotationScalingTransformation2DTest::scale() {
+template<class T> void TranslationRotationScalingTransformation2DTest::scale() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(17.0_degf));
-        o.scale({1.0f, -0.3f})
-         .scale({0.5f, 1.1f});
-        CORRADE_COMPARE(o.translation(), Vector2{});
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(17.0_degf));
-        CORRADE_COMPARE(o.scaling(), (Vector2{0.5f, -0.33f}));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.scale({T(1.0), T(-0.3)})
+         .scale({T(0.5), T(1.1)});
+        CORRADE_COMPARE(o.translation(), Math::Vector2<T>{});
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        CORRADE_COMPARE(o.scaling(), (Math::Vector2<T>{T(0.5), T(-0.33)}));
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::rotation(17.0_degf)*
-            Matrix3::scaling({0.5f, 1.1f})*
-            Matrix3::scaling({1.0f, -0.3f}));
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+            Math::Matrix3<T>::scaling({T(0.5), T(1.1)})*
+            Math::Matrix3<T>::scaling({T(1.0), T(-0.3)}));
     } {
-        Object2D o;
-        o.setTransformation(Matrix3::rotation(17.0_degf));
-        o.scaleLocal({1.0f, -0.3f})
-         .scaleLocal({0.5f, 1.1f});
-        CORRADE_COMPARE(o.translation(), Vector2{});
-        CORRADE_COMPARE(o.rotation(), Complex::rotation(17.0_degf));
-        CORRADE_COMPARE(o.scaling(), (Vector2{0.5f, -0.33f}));
+        Object2D<T> o;
+        o.setTransformation(Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.scaleLocal({T(1.0), T(-0.3)})
+         .scaleLocal({T(0.5), T(1.1)});
+        CORRADE_COMPARE(o.translation(), Math::Vector2<T>{});
+        CORRADE_COMPARE(o.rotation(), Math::Complex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        CORRADE_COMPARE(o.scaling(), (Math::Vector2<T>{T(0.5), T(-0.33)}));
         CORRADE_COMPARE(o.transformationMatrix(),
-            Matrix3::rotation(17.0_degf)*
-            Matrix3::scaling({1.0f, -0.3f})*
-            Matrix3::scaling({0.5f, 1.1f}));
+            Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*
+            Math::Matrix3<T>::scaling({T(1.0), T(-0.3)})*
+            Math::Matrix3<T>::scaling({T(0.5), T(1.1)}));
     }
 }
 

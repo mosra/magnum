@@ -28,174 +28,212 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/DualComplexTransformation.h"
+#include "Magnum/SceneGraph/Object.hpp"
 #include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
-typedef Object<DualComplexTransformation> Object2D;
-typedef Scene<DualComplexTransformation> Scene2D;
-
 struct DualComplexTransformationTest: TestSuite::Tester {
     explicit DualComplexTransformationTest();
 
-    void fromMatrix();
-    void toMatrix();
-    void compose();
-    void inverted();
+    template<class T> void fromMatrix();
+    template<class T> void toMatrix();
+    template<class T> void compose();
+    template<class T> void inverted();
 
-    void setTransformation();
-    void setTransformationInvalid();
-    void resetTransformation();
-    void transform();
-    void transformInvalid();
-    void translate();
-    void rotate();
-    void normalizeRotation();
+    template<class T> void setTransformation();
+    template<class T> void setTransformationInvalid();
+    template<class T> void resetTransformation();
+    template<class T> void transform();
+    template<class T> void transformInvalid();
+    template<class T> void translate();
+    template<class T> void rotate();
+    template<class T> void normalizeRotation();
 };
 
 DualComplexTransformationTest::DualComplexTransformationTest() {
-    addTests({&DualComplexTransformationTest::fromMatrix,
-              &DualComplexTransformationTest::toMatrix,
-              &DualComplexTransformationTest::compose,
-              &DualComplexTransformationTest::inverted,
+    addTests<DualComplexTransformationTest>({
+        &DualComplexTransformationTest::fromMatrix<Float>,
+        &DualComplexTransformationTest::fromMatrix<Double>,
+        &DualComplexTransformationTest::toMatrix<Float>,
+        &DualComplexTransformationTest::toMatrix<Double>,
+        &DualComplexTransformationTest::compose<Float>,
+        &DualComplexTransformationTest::compose<Double>,
+        &DualComplexTransformationTest::inverted<Float>,
+        &DualComplexTransformationTest::inverted<Double>,
 
-              &DualComplexTransformationTest::setTransformation,
-              &DualComplexTransformationTest::setTransformationInvalid,
-              &DualComplexTransformationTest::resetTransformation,
-              &DualComplexTransformationTest::transform,
-              &DualComplexTransformationTest::transformInvalid,
-              &DualComplexTransformationTest::translate,
-              &DualComplexTransformationTest::rotate,
-              &DualComplexTransformationTest::normalizeRotation});
+        &DualComplexTransformationTest::setTransformation<Float>,
+        &DualComplexTransformationTest::setTransformation<Double>,
+        &DualComplexTransformationTest::setTransformationInvalid<Float>,
+        &DualComplexTransformationTest::setTransformationInvalid<Double>,
+        &DualComplexTransformationTest::resetTransformation<Float>,
+        &DualComplexTransformationTest::resetTransformation<Double>,
+        &DualComplexTransformationTest::transform<Float>,
+        &DualComplexTransformationTest::transform<Double>,
+        &DualComplexTransformationTest::transformInvalid<Float>,
+        &DualComplexTransformationTest::transformInvalid<Double>,
+        &DualComplexTransformationTest::translate<Float>,
+        &DualComplexTransformationTest::translate<Double>,
+        &DualComplexTransformationTest::rotate<Float>,
+        &DualComplexTransformationTest::rotate<Double>,
+        &DualComplexTransformationTest::normalizeRotation<Float>,
+        &DualComplexTransformationTest::normalizeRotation<Double>});
 }
 
 using namespace Math::Literals;
 
-void DualComplexTransformationTest::fromMatrix() {
-    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<DualComplexTransformation>::fromMatrix(m), c);
+template<class T> using Object2D = Object<BasicDualComplexTransformation<T>>;
+template<class T> using Scene2D = Scene<BasicDualComplexTransformation<T>>;
+
+template<class T> void DualComplexTransformationTest::fromMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    Math::DualComplex<T> c = Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)})*Math::DualComplex<T>::translation({1.0, T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicDualComplexTransformation<T>>::fromMatrix(m), c);
 }
 
-void DualComplexTransformationTest::toMatrix() {
-    DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
-    Matrix3 m = Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<DualComplexTransformation>::toMatrix(c), m);
+template<class T> void DualComplexTransformationTest::toMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::DualComplex<T> c = Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)})*Math::DualComplex<T>::translation({T(1.0), T(-0.3)});
+    Math::Matrix3<T> m = Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicDualComplexTransformation<T>>::toMatrix(c), m);
 }
 
-void DualComplexTransformationTest::compose() {
-    DualComplex parent = DualComplex::rotation(Deg(17.0f));
-    DualComplex child = DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<DualComplexTransformation>::compose(parent, child), parent*child);
+template<class T> void DualComplexTransformationTest::compose() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::DualComplex<T> parent = Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)});
+    Math::DualComplex<T> child = Math::DualComplex<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicDualComplexTransformation<T>>::compose(parent, child), parent*child);
 }
 
-void DualComplexTransformationTest::inverted() {
-    DualComplex c = DualComplex::rotation(Deg(17.0f))*DualComplex::translation({1.0f, -0.3f});
-    CORRADE_COMPARE(Implementation::Transformation<DualComplexTransformation>::inverted(c)*c, DualComplex());
+template<class T> void DualComplexTransformationTest::inverted() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Math::DualComplex<T> c = Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)})*Math::DualComplex<T>::translation({T(1.0), T(-0.3)});
+    CORRADE_COMPARE(Implementation::Transformation<BasicDualComplexTransformation<T>>::inverted(c)*c, Math::DualComplex<T>{});
 }
 
-void DualComplexTransformationTest::setTransformation() {
-    Object2D o;
+template<class T> void DualComplexTransformationTest::setTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
 
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
-    o.setTransformation(DualComplex::rotation(Deg(17.0f)));
+    o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
     CORRADE_VERIFY(o.isDirty());
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
 
     /* Scene cannot be transformed */
-    Scene2D s;
+    Scene2D<T> s;
     s.setClean();
-    s.setTransformation(DualComplex::rotation(Deg(17.0f)));
+    s.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
     CORRADE_VERIFY(!s.isDirty());
-    CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(s.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void DualComplexTransformationTest::setTransformationInvalid() {
+template<class T> void DualComplexTransformationTest::setTransformationInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    Object2D o;
+    Object2D<T> o;
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
     Error redirectError{&out};
-    o.setTransformation(DualComplex({1.0f, 2.0f}, {}));
+    o.setTransformation(Math::DualComplex<T>({T(1.0), T(2.0)}, {}));
     CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
 }
 
-void DualComplexTransformationTest::resetTransformation() {
-    Object2D o;
-    o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-    CORRADE_VERIFY(o.transformationMatrix() != Matrix3());
+template<class T> void DualComplexTransformationTest::resetTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
+    CORRADE_VERIFY(o.transformationMatrix() != Math::Matrix3<T>{});
     o.resetTransformation();
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void DualComplexTransformationTest::transform() {
+template<class T> void DualComplexTransformationTest::transform() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.transform(DualComplex::translation({1.0f, -0.3f}));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.transform(Math::DualComplex<T>::translation({T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.transformLocal(DualComplex::translation({1.0f, -0.3f}));
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.transformLocal(Math::DualComplex<T>::translation({T(1.0), T(-0.3)}));
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     }
 }
 
-void DualComplexTransformationTest::transformInvalid() {
+template<class T> void DualComplexTransformationTest::transformInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     /* Can't transform with non-rigid transformation */
-    Object2D o;
+    Object2D<T> o;
     std::ostringstream out;
     Error redirectError{&out};
-    o.transform(DualComplex({1.0f, 2.0f}, {}));
+    o.transform(Math::DualComplex<T>{{T(1.0), T(2.0)}, {}});
     CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
 }
 
-void DualComplexTransformationTest::translate() {
+template<class T> void DualComplexTransformationTest::translate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.translate({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translate({T(1.0), T(-0.3)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     } {
-        Object2D o;
-        o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.translateLocal({1.0f, -0.3f});
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
+        o.translateLocal({T(1.0), T(-0.3)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     }
 }
 
-void DualComplexTransformationTest::rotate() {
+template<class T> void DualComplexTransformationTest::rotate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     {
-        Object2D o;
-        o.setTransformation(DualComplex::translation({1.0f, -0.3f}))
-         .rotate(Complex::rotation(7.0_degf))
-         .rotate(10.0_degf);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::translation({T(1.0), T(-0.3)}))
+         .rotate(Math::Complex<T>::rotation(Math::Deg<T>{T(7.0)}))
+         .rotate(Math::Deg<T>{T(10.0)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)})*Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
     } {
-        Object2D o;
-        o.setTransformation(DualComplex::translation({1.0f, -0.3f}))
-         .rotateLocal(Complex::rotation(7.0_degf))
-         .rotateLocal(10.0_degf);
-        CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
+        Object2D<T> o;
+        o.setTransformation(Math::DualComplex<T>::translation({T(1.0), T(-0.3)}))
+         .rotateLocal(Math::Complex<T>::rotation(Math::Deg<T>{T(7.0)}))
+         .rotateLocal(Math::Deg<T>{T(10.0)});
+        CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
     }
 }
 
-void DualComplexTransformationTest::normalizeRotation() {
-    Object2D o;
-    o.setTransformation(DualComplex::rotation(Deg(17.0f)));
+template<class T> void DualComplexTransformationTest::normalizeRotation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation(Math::DualComplex<T>::rotation(Math::Deg<T>{T(17.0)}));
     o.normalizeRotation();
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::rotation(Math::Deg<T>{T(17.0)}));
 }
 
 }}}}

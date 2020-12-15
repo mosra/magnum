@@ -25,7 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/SceneGraph/MatrixTransformation3D.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
+#include "Magnum/SceneGraph/Object.hpp"
 #include "Magnum/SceneGraph/Scene.h"
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
@@ -33,32 +34,39 @@ namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 struct SceneTest: TestSuite::Tester {
     explicit SceneTest();
 
-    void transformation();
-    void parent();
+    template<class T> void transformation();
+    template<class T> void parent();
 };
 
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-
 SceneTest::SceneTest() {
-    addTests({&SceneTest::transformation,
-              &SceneTest::parent});
+    addTests<SceneTest>({
+        &SceneTest::transformation<Float>,
+        &SceneTest::transformation<Double>,
+        &SceneTest::parent<Float>,
+        &SceneTest::parent<Double>});
 }
 
-void SceneTest::transformation() {
-    Scene3D scene;
+template<class T> using Object3D = SceneGraph::Object<SceneGraph::BasicMatrixTransformation3D<T>>;
+template<class T> using Scene3D = SceneGraph::Scene<SceneGraph::BasicMatrixTransformation3D<T>>;
 
-    Object3D* scenePointer = &scene;
-    scenePointer->setTransformation(Matrix4::translation({1.0f, 1.0f, 1.0f}));
-    CORRADE_COMPARE(scene.transformation(), Matrix4());
+template<class T> void SceneTest::transformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Scene3D<T> scene;
+
+    Object3D<T>* scenePointer = &scene;
+    scenePointer->setTransformation(Math::Matrix4<T>::translation({T(1.0), T(1.0), T(1.0)}));
+    CORRADE_COMPARE(scene.transformation(), Math::Matrix4<T>{});
 }
 
-void SceneTest::parent() {
-    Scene3D scene;
+template<class T> void SceneTest::parent() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Scene3D<T> scene;
 
     /* Scene parent cannot be changed */
-    Object3D* scenePointer = &scene;
-    Object3D object;
+    Object3D<T>* scenePointer = &scene;
+    Object3D<T> object;
     scenePointer->setParent(&object);
     CORRADE_VERIFY(scene.parent() == nullptr);
     CORRADE_VERIFY(scene.children().isEmpty());

@@ -33,114 +33,145 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
-typedef Object<TranslationTransformation2D> Object2D;
-typedef Scene<TranslationTransformation2D> Scene2D;
-
 struct TranslationTransformationTest: TestSuite::Tester {
     explicit TranslationTransformationTest();
 
-    void fromMatrix();
-    void fromMatrixInvalid();
-    void toMatrix();
-    void compose();
-    void inverted();
+    template<class T> void fromMatrix();
+    template<class T> void fromMatrixInvalid();
+    template<class T> void toMatrix();
+    template<class T> void compose();
+    template<class T> void inverted();
 
-    void setTransformation();
-    void resetTransformation();
-    void transform();
-    void translate();
+    template<class T> void setTransformation();
+    template<class T> void resetTransformation();
+    template<class T> void transform();
+    template<class T> void translate();
 
-    void integral();
+    template<class T> void integral();
 };
 
 TranslationTransformationTest::TranslationTransformationTest() {
-    addTests({&TranslationTransformationTest::fromMatrix,
-              &TranslationTransformationTest::fromMatrixInvalid,
-              &TranslationTransformationTest::toMatrix,
-              &TranslationTransformationTest::compose,
-              &TranslationTransformationTest::inverted,
+    addTests<TranslationTransformationTest>({
+        &TranslationTransformationTest::fromMatrix<Float>,
+        &TranslationTransformationTest::fromMatrix<Double>,
+        &TranslationTransformationTest::fromMatrixInvalid<Float>,
+        &TranslationTransformationTest::fromMatrixInvalid<Double>,
+        &TranslationTransformationTest::toMatrix<Float>,
+        &TranslationTransformationTest::toMatrix<Double>,
+        &TranslationTransformationTest::compose<Float>,
+        &TranslationTransformationTest::compose<Double>,
+        &TranslationTransformationTest::inverted<Float>,
+        &TranslationTransformationTest::inverted<Double>,
 
-              &TranslationTransformationTest::setTransformation,
-              &TranslationTransformationTest::resetTransformation,
-              &TranslationTransformationTest::transform,
-              &TranslationTransformationTest::translate,
+        &TranslationTransformationTest::setTransformation<Float>,
+        &TranslationTransformationTest::setTransformation<Double>,
+        &TranslationTransformationTest::resetTransformation<Float>,
+        &TranslationTransformationTest::resetTransformation<Double>,
+        &TranslationTransformationTest::transform<Float>,
+        &TranslationTransformationTest::transform<Double>,
+        &TranslationTransformationTest::translate<Float>,
+        &TranslationTransformationTest::translate<Double>,
 
-              &TranslationTransformationTest::integral});
+        &TranslationTransformationTest::integral<Float>,
+        &TranslationTransformationTest::integral<Double>});
 }
 
-void TranslationTransformationTest::fromMatrix() {
-    const Vector2 v(1.0f, -0.3f);
-    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::translation(v)), v);
+template<class T> using Object2D = Object<BasicTranslationTransformation2D<T>>;
+template<class T> using Scene2D = Scene<BasicTranslationTransformation2D<T>>;
+
+template<class T> void TranslationTransformationTest::fromMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const Math::Vector2<T> v{T(1.0), T(-0.3)};
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationTransformation2D<T>>::fromMatrix(Math::Matrix3<T>::translation(v)), v);
 }
 
-void TranslationTransformationTest::fromMatrixInvalid() {
+template<class T> void TranslationTransformationTest::fromMatrixInvalid() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
     std::ostringstream o;
     Error redirectError{&o};
-    Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
+    Implementation::Transformation<BasicTranslationTransformation2D<T>>::fromMatrix(Math::Matrix3<T>::scaling(Math::Vector2<T>{T(4.0)}));
     CORRADE_COMPARE(o.str(), "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
 }
 
-void TranslationTransformationTest::toMatrix() {
-    const Vector2 v(1.0f, -0.3f);
-    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::toMatrix(v), Matrix3::translation(v));
+template<class T> void TranslationTransformationTest::toMatrix() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const Math::Vector2<T> v{T(1.0), T(-0.3)};
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationTransformation2D<T>>::toMatrix(v), Math::Matrix3<T>::translation(v));
 }
 
-void TranslationTransformationTest::compose() {
-    const Vector2 parent(-0.5f, 2.0f);
-    const Vector2 child(1.0f, -0.3f);
-    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::compose(parent, child), Vector2(0.5f, 1.7f));
+template<class T> void TranslationTransformationTest::compose() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const Math::Vector2<T> parent{T(-0.5), T(2.0)};
+    const Math::Vector2<T> child{T(1.0), T(-0.3)};
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationTransformation2D<T>>::compose(parent, child), (Math::Vector2<T>{T(0.5), T(1.7)}));
 }
 
-void TranslationTransformationTest::inverted() {
-    const Vector2 v(1.0f, -0.3f);
-    CORRADE_COMPARE(Implementation::Transformation<TranslationTransformation2D>::inverted(v), Vector2(-1.0f, 0.3f));
+template<class T> void TranslationTransformationTest::inverted() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    const Math::Vector2<T> v{T(1.0), T(-0.3)};
+    CORRADE_COMPARE(Implementation::Transformation<BasicTranslationTransformation2D<T>>::inverted(v), (Math::Vector2<T>{T(-1.0), T(0.3)}));
 }
 
-void TranslationTransformationTest::setTransformation() {
-    Object2D o;
+template<class T> void TranslationTransformationTest::setTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
 
     /* Dirty after setting transformation */
     o.setClean();
     CORRADE_VERIFY(!o.isDirty());
-    o.setTransformation({1.0f, -0.3f});
+    o.setTransformation({T(1.0), T(-0.3)});
     CORRADE_VERIFY(o.isDirty());
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f}));
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)}));
 
     /* Scene cannot be transformed */
-    Scene2D s;
+    Scene2D<T> s;
     s.setClean();
-    s.setTransformation({1.0f, -0.3f});
+    s.setTransformation({T(1.0), T(-0.3)});
     CORRADE_VERIFY(!s.isDirty());
-    CORRADE_COMPARE(s.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(s.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void TranslationTransformationTest::resetTransformation() {
-    Object2D o;
-    o.setTransformation({1.0f, -0.3f});
-    CORRADE_VERIFY(o.transformationMatrix() != Matrix3());
+template<class T> void TranslationTransformationTest::resetTransformation() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation({T(1.0), T(-0.3)});
+    CORRADE_VERIFY(o.transformationMatrix() != Math::Matrix3<T>{});
     o.resetTransformation();
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3());
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>{});
 }
 
-void TranslationTransformationTest::transform() {
-    Object2D o;
-    o.setTransformation({1.0f, -0.3f})
-        .transform({-0.5f, 2.0f});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({0.5f, 1.7f}));
+template<class T> void TranslationTransformationTest::transform() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation({T(1.0), T(-0.3)})
+        .transform({T(-0.5), T(2.0)});
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(0.5), T(1.7)}));
 }
 
-void TranslationTransformationTest::translate() {
-    Object2D o;
-    o.setTransformation({1.0f, -0.3f})
-        .translate({-0.5f, 2.0f});
-    CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::translation({-0.5f, 2.0f}));
+template<class T> void TranslationTransformationTest::translate() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
+    Object2D<T> o;
+    o.setTransformation({T(1.0), T(-0.3)})
+        .translate({T(-0.5), T(2.0)});
+    CORRADE_COMPARE(o.transformationMatrix(), Math::Matrix3<T>::translation({T(1.0), T(-0.3)})*Math::Matrix3<T>::translation({T(-0.5), T(2.0)}));
 }
 
-void TranslationTransformationTest::integral() {
+template<class T> void TranslationTransformationTest::integral() {
+    setTestCaseTemplateName(Math::TypeTraits<T>::name());
+
     typedef Object<BasicTranslationTransformation2D<Float, Short>> Object2Di;
 
     Object2Di o;
