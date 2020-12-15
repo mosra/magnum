@@ -39,11 +39,11 @@ namespace Magnum { namespace SceneGraph {
 /* These are here to avoid including Complex in RigidMatrixTransformation2D.h */
 
 template<class T> Object<BasicRigidMatrixTransformation2D<T>>& BasicRigidMatrixTransformation2D<T>::rotate(const Math::Complex<T>& complex) {
-    return transform(Matrix3::from(complex.toMatrix(), {}));
+    return transform(Math::Matrix3<T>::from(complex.toMatrix(), {}));
 }
 
 template<class T> Object<BasicRigidMatrixTransformation2D<T>>& BasicRigidMatrixTransformation2D<T>::rotateLocal(const Math::Complex<T>& complex) {
-    return transformLocal(Matrix3::from(complex.toMatrix(), {}));
+    return transformLocal(Math::Matrix3<T>::from(complex.toMatrix(), {}));
 }
 
 }}

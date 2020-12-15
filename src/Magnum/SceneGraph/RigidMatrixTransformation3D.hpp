@@ -39,11 +39,11 @@ namespace Magnum { namespace SceneGraph {
 /* These are here to avoid including Quaternion in the header */
 
 template<class T> Object<BasicRigidMatrixTransformation3D<T>>& BasicRigidMatrixTransformation3D<T>::rotate(const Math::Quaternion<T>& quaternion) {
-    return transform(Matrix4::from(quaternion.toMatrix(), {}));
+    return transform(Math::Matrix4<T>::from(quaternion.toMatrix(), {}));
 }
 
 template<class T> Object<BasicRigidMatrixTransformation3D<T>>& BasicRigidMatrixTransformation3D<T>::rotateLocal(const Math::Quaternion<T>& quaternion) {
-    return transformLocal(Matrix4::from(quaternion.toMatrix(), {}));
+    return transformLocal(Math::Matrix4<T>::from(quaternion.toMatrix(), {}));
 }
 
 }}

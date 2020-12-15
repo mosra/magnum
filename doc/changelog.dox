@@ -273,6 +273,12 @@ See also:
 -   Fixed canvas size setup in @ref Platform::EmscriptenApplication to be the
     same in the @ref Platform::EmscriptenApplication::Configuration::WindowFlag::Contextless "Contextless"
     case as for a WebGL-enabled context
+-   @ref SceneGraph::BasicMatrixTransformation2D,
+    @ref SceneGraph::BasicMatrixTransformation3D,
+    @ref SceneGraph::BasicRigidMatrixTransformation2D and
+    @ref SceneGraph::BasicRigidMatrixTransformation3D were broken in the
+    @ref Magnum::Double "Double" variant. To prevent such cases from happening
+    in the future, the whole library is now tested for both floats and doubles.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
