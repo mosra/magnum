@@ -33,7 +33,11 @@ corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(TagsTest TagsTest.cpp LIBRARIES Magnum)
-corrade_add_test(VersionTest VersionTest.cpp LIBRARIES Magnum)
+
+# Prefixed with project name to avoid conflicts with VersionTest in Corrade and
+# other repos
+corrade_add_test(MagnumVersionTest VersionTest.cpp LIBRARIES Magnum)
+
 corrade_add_test(VertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumTestLib)
 
 set_target_properties(
@@ -46,6 +50,7 @@ set_target_properties(
     ResourceManagerTest
     SamplerTest
     TagsTest
+    MagnumVersionTest
     VertexFormatTest
     PROPERTIES FOLDER "Magnum/Test")
 
