@@ -181,7 +181,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @m_keywords{gluOrtho2D()}
          */
         static Matrix3<T> projection(const Vector2<T>& size) {
-            return scaling(2.0f/size);
+            return scaling(T(2.0)/size);
         }
 
         /**
