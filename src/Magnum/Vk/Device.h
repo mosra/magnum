@@ -31,6 +31,7 @@
  */
 
 #include <cstddef>
+#include <Corrade/Containers/BigEnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Tags.h"
@@ -90,8 +91,24 @@ checked with @ref isExtensionEnabled().
 
 @snippet MagnumVk.cpp Device-creation-extensions
 
-Usually you'll be first checking for extension availability instead, which is
-again accessible through the @ref DeviceProperties instance:
+In addition to extensions, you'll be usually enabling features as well. These
+are all exposed in a giant @ref DeviceFeatures enum and you can simply OR them
+together. Internally, those get translated to @type_vk{PhysicalDeviceFeatures2}
+and related structures, features that are not exposed in the enum can be
+enabled by adding a corresponding structure to the `pNext` chain. As with
+extensions, the set of enabled features can be later checked with
+@ref enabledFeatures().
+
+@snippet MagnumVk.cpp Device-creation-features
+
+However, usually you'll be checking for extension and feature availability
+first, which is doable through
+@ref DeviceProperties::enumerateExtensionProperties() and
+@ref ExtensionProperties::isSupported() for extensions, and
+@ref DeviceProperties::features() for features. In case of features you can
+make use of the enum set operations and simply mask away features that are not
+available --- however note that some features also require an extension to be
+explicitly enabled.
 
 @snippet MagnumVk.cpp Device-creation-check-supported
 
@@ -154,14 +171,18 @@ class MAGNUM_VK_EXPORT Device {
          *      device
          * @param enabledExtensions Extensions that are assumed to be enabled
          *      on the device
+         * @param enabledFeatures Features that are assumed to be enabled on
+         *      the device
          * @param flags         Handle flags
          *
          * The @p handle is expected to be originating from @p instance. The
-         * @p version and @p enabledExtensions parameters populate internal
-         * info about supported version and extensions and will be reflected in
-         * @ref isVersionSupported() and @ref isExtensionEnabled(), among other
-         * things. If @p enabledExtensions is empty, the device will behave as
-         * if no extensions were enabled.
+         * @p version, @p enabledExtensions and @p enabledFeatures parameters
+         * populate internal info about supported version, enabled extensions
+         * and enabled features and will be reflected in
+         * @ref isVersionSupported(), @ref isExtensionEnabled() and
+         * @ref enabledFeatures(), among other things. If @p enabledExtensions
+         * / @p enabledFeatures is empty, the device will behave as if no
+         * extensions / no features were enabled.
          *
          * Note that this function retrieves all device-specific Vulkan
          * function pointers, which is a relatively costly operation. It's thus
@@ -173,10 +194,10 @@ class MAGNUM_VK_EXPORT Device {
          * behavior.
          * @see @ref release()
          */
-        static Device wrap(Instance& instance, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, HandleFlags flags = {});
+        static Device wrap(Instance& instance, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /** @overload */
-        static Device wrap(Instance& instance, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, HandleFlags flags = {});
+        static Device wrap(Instance& instance, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /**
          * @brief Constructor
@@ -297,6 +318,13 @@ class MAGNUM_VK_EXPORT Device {
         bool isExtensionEnabled(const Extension& extension) const;
 
         /**
+         * @brief Features enabled on the device
+         *
+         * @see @ref DeviceProperties::features()
+         */
+        const DeviceFeatures& enabledFeatures() const { return _enabledFeatures; }
+
+        /**
          * @brief Device-specific Vulkan function pointers
          *
          * Function pointers are implicitly stored per-device, use
@@ -345,7 +373,7 @@ class MAGNUM_VK_EXPORT Device {
         explicit Device(Instance& isntance, const DeviceCreateInfo&, DeviceProperties&&);
 
         template<class T> MAGNUM_VK_LOCAL void initializeExtensions(Containers::ArrayView<const T> enabledExtensions);
-        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version);
+        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, const DeviceFeatures& enabledFeatures);
 
         MAGNUM_VK_LOCAL static void getQueueImplementationDefault(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
         MAGNUM_VK_LOCAL static void getQueueImplementation11(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
@@ -354,6 +382,7 @@ class MAGNUM_VK_EXPORT Device {
         HandleFlags _flags;
         Version _version;
         Math::BoolVector<Implementation::ExtensionCount> _enabledExtensions;
+        DeviceFeatures _enabledFeatures;
         Containers::Pointer<DeviceProperties> _properties;
         Containers::Pointer<Implementation::DeviceState> _state;
 

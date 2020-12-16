@@ -259,6 +259,21 @@ template<class E> bool DeviceProperties::isOrVersionSupportedInternal() {
     return extensionPropertiesInternal().isSupported<E>();
 }
 
+bool DeviceProperties::canUseFeatures2ForDeviceCreation() {
+    if(!_state) _state.emplace(*_instance, _handle);
+
+    /* To avoid repeating the logic (and the 10-paragraph explanation) from
+       State constructor here, we simply check what is used to query device
+       features. If the 1.1 or KHR entry point then we can, if the default then
+       we can't. */
+    if(_state->getFeaturesImplementation == getFeaturesImplementation11 ||
+       _state->getFeaturesImplementation == getFeaturesImplementationKHR)
+        return true;
+    if(_state->getFeaturesImplementation == getFeaturesImplementationDefault)
+        return false;
+    CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
 const DeviceFeatures& DeviceProperties::features() {
     if(!_state) _state.emplace(*_instance, _handle);
 

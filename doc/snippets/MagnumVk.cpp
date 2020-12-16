@@ -34,6 +34,7 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
@@ -216,6 +217,22 @@ Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
 
 {
 Vk::Instance instance;
+Vk::DeviceProperties properties{NoCreate};
+using namespace Containers::Literals;
+/* [Device-creation-features] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
+    DOXYGEN_IGNORE()
+    .setEnabledFeatures(
+        Vk::DeviceFeature::IndexTypeUint8|
+        Vk::DeviceFeature::SamplerAnisotropy|
+        Vk::DeviceFeature::GeometryShader|
+        DOXYGEN_IGNORE(Vk::DeviceFeature{}))
+};
+/* [Device-creation-features] */
+}
+
+{
+Vk::Instance instance;
 using namespace Containers::Literals;
 /* [Device-creation-check-supported] */
 Vk::DeviceProperties properties = Vk::pickDevice(instance);
@@ -227,6 +244,11 @@ if(extensions.isSupported<Vk::Extensions::EXT::index_type_uint8>())
 if(extensions.isSupported("VK_NV_mesh_shader"_s))
     info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
 DOXYGEN_IGNORE()
+info.setEnabledFeatures(properties.features() & // mask away unsupported ones
+    (Vk::DeviceFeature::IndexTypeUint8|
+     Vk::DeviceFeature::SamplerAnisotropy|
+     Vk::DeviceFeature::GeometryShader|
+     DOXYGEN_IGNORE(Vk::DeviceFeature{})));
 /* [Device-creation-check-supported] */
 }
 

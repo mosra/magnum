@@ -482,7 +482,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
          *
-         * @see @fn_vk_keyword{GetPhysicalDeviceFeatures2},
+         * @see @ref Device::enabledFeatures(),
+         *      @fn_vk_keyword{GetPhysicalDeviceFeatures2},
          *      @fn_vk_keyword{GetPhysicalDeviceFeatures},
          *      @type_vk_keyword{PhysicalDeviceFeatures2},
          *      @type_vk_keyword{PhysicalDeviceFeatures}
@@ -714,6 +715,9 @@ class MAGNUM_VK_EXPORT DeviceProperties {
            ExtensionProperties::isSupported<E>(). Used internally to avoid
            accidents with incorrectly specified extension core version. */
         template<class E> MAGNUM_VK_LOCAL bool isOrVersionSupportedInternal();
+
+        /* Used by DeviceCreateInfo */
+        MAGNUM_VK_LOCAL bool canUseFeatures2ForDeviceCreation();
 
         MAGNUM_VK_LOCAL static void getPropertiesImplementationDefault(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);
         MAGNUM_VK_LOCAL static void getPropertiesImplementationKHR(DeviceProperties& self, VkPhysicalDeviceProperties2& properties);

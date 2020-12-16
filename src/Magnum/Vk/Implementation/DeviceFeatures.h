@@ -31,7 +31,10 @@ namespace Magnum { namespace Vk { namespace Implementation {
 
 /* Everything except the top-level VkPhysicalDeviceFeatures2 structure, which
    is treated differently when querying and enabling the features. Used by
-   DeviceProperties.cpp. */
+   DeviceProperties.cpp and Device.cpp, in addition needs to be kept in sync
+   with the list in Device.cpp passed to Implementation::structureDisconnectChain()
+   (however there's a test that should catch *all* errors with forgotten or
+   wrongly ordered structures there). */
 struct DeviceFeatures {
     VkPhysicalDeviceProtectedMemoryFeatures protectedMemory;
     VkPhysicalDeviceMultiviewFeatures multiview;

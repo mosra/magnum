@@ -39,6 +39,7 @@
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
@@ -46,14 +47,45 @@
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
+#include "Magnum/Vk/Implementation/DeviceFeatures.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
+#include "Magnum/Vk/Implementation/structureHelpers.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 namespace Magnum { namespace Vk {
 
+/* In any other CreateInfo, we could simply populate a pNext chain of a
+   supported / enabled subset of all structures that might ever get used and
+   then only populate their contents without having to fumble with the linked
+   list connections. That's unfortunately not possible with DeviceCreateInfo,
+   because *don't know yet* what extensions will get enabled. So for everything
+   that might live on the pNext chain (currently just features, but over time
+   it'll be also multi-device setup, swapchain, ...) we need to:
+
+   -    ensure we're not stomping on something in pNext that's defined
+        externally (when constructing DeviceCreateInfo from a raw
+        VkDeviceCreateInfo or when the user directly adds something to pNext),
+        thus only connecting things to _info.pNext, not anywhere else as that
+        might be const memory
+    -   ensure the externally supplied pNext pointers are not lost when we
+        connect our own things
+    -   ensure when e.g. setEnabledFeatures() gets called twice, we don't
+        connect the same structure chain again, ending up with a loop. Which
+        means going through the existing chain and breaking up links that point
+        to the structures we're going to reconnect, this isn't really fast but
+        also it's not really common to call the same API more than once. This
+        also assumes that our structures are pointed to only by our structures
+        again and not something external (that might be const memory again).
+
+*/
 struct DeviceCreateInfo::State {
     Containers::Array<Containers::String> ownedStrings;
     Containers::Array<const char*> extensions;
+
+    VkPhysicalDeviceFeatures2 features2{};
+    Implementation::DeviceFeatures features{};
+    DeviceFeatures enabledFeatures;
+    void* firstEnabledFeature{};
 
     Containers::String disabledExtensionsStorage;
     Containers::Array<Containers::StringView> disabledExtensions;
@@ -133,11 +165,15 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
     /* Conservatively populate the device properties.
        - In case the DeviceCreateInfo(DeviceProperties&&) constructor is used,
          it'll get overwritten straight away with a populated instance.
-       - In case the addQueues(QueueFlags) API is not used and DeviceCreateInfo
-         isn't subsequently moved to the Device, it'll never get touched again
-         and Device will wrap() its own.
-       - In case addQueues(QueueFlags) is used it'll get populated and then
-         possibly discarded if it isn't subsequently moved to the Device. */
+       - In case neither the addQueues(QueueFlags) API (which queries the
+         properties for queue family index) nor the setEnabledFeatures() API
+         (which needs to check where to connect based on version and KHR_gpdp2
+         presence) is not used and DeviceCreateInfo isn't subsequently moved to
+         the Device, it'll never get touched again and Device will wrap() its
+         own.
+       - In case addQueues(QueueFlags) / setEnabledFeatures() is used it'll get
+         populated and then possibly discarded if it isn't subsequently moved
+         to the Device. */
     _state->properties = DeviceProperties::wrap(*deviceProperties._instance, deviceProperties._handle);
 }
 
@@ -256,6 +292,168 @@ DeviceCreateInfo&& DeviceCreateInfo::addEnabledExtensions(const std::initializer
     return std::move(addEnabledExtensions(extensions));
 }
 
+namespace {
+
+template<class T> void structureConnectIfUsed(Containers::Reference<const void*>& next, void*& firstFeatureStructure, T& structure, VkStructureType type) {
+    if(structure.sType) {
+        if(!firstFeatureStructure) firstFeatureStructure = &structure;
+        Implementation::structureConnect(next, structure, type);
+    }
+}
+
+}
+
+DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& features) & {
+    /* Remember the features to pass them to Device later */
+    _state->enabledFeatures = features;
+
+    /* Clear any existing pointers to the feature structure chain. This needs
+       to be done in order to avoid pointing to them again from a different
+       place, creating a loop. Additionally, the pNext chain may contain
+       additional structures after the features and we don't want to lose those
+       -- so it's not possible to simply disconnect and clear them, but we need
+       to first find and preserve what is connected after.
+
+       To avoid quadratic complexity by going through each of the feature
+       structs and attempting to find it in the pNext chain,
+       _state->firstEnabledFeature remembers the first structure in the chain
+       that was enabled previously. We find what structure points to it and
+       then the structureDisconnectChain() goes through the chain and repoints
+       the structure to the first structure that's not from the list, thus
+       preserving the remaining part of the chain. */
+    _info.pEnabledFeatures = nullptr;
+    if(_state->firstEnabledFeature) {
+        const void** const pointerToFirst = Implementation::structureFind(_info.pNext, *static_cast<const VkBaseInStructure*>(_state->firstEnabledFeature));
+        if(pointerToFirst) Implementation::structureDisconnectChain(*pointerToFirst, {
+            /* This list needs to be kept in sync with
+               Implementation::DeviceFeatures, keeping the same order (however
+               there's a test that should catch *all* errors with forgotten or
+               wrongly ordered structures) */
+            _state->features2,
+            _state->features.protectedMemory,
+            _state->features.multiview,
+            _state->features.shaderDrawParameters,
+            _state->features.textureCompressionAstcHdr,
+            _state->features.shaderFloat16Int8,
+            _state->features._16BitStorage,
+            _state->features.imagelessFramebuffer,
+            _state->features.variablePointers,
+            _state->features.samplerYcbcrConversion,
+            _state->features.descriptorIndexing,
+            _state->features.shaderSubgroupExtendedTypes,
+            _state->features._8BitStorage,
+            _state->features.shaderAtomicInt64,
+            _state->features.timelineSemaphore,
+            _state->features.vulkanMemoryModel,
+            _state->features.scalarBlockLayout,
+            _state->features.separateDepthStencilLayouts,
+            _state->features.uniformBufferStandardLayout,
+            _state->features.bufferDeviceAddress,
+            _state->features.hostQueryReset,
+            _state->features.indexTypeUint8
+        });
+
+        _state->firstEnabledFeature = {};
+    }
+
+    /* Now that the feature chain is disconnected from the pNext chain, we can
+       safely clear it */
+    _state->features2 = {};
+    _state->features = {};
+
+    /* If there's no features to enable, exit */
+    if(!features) return *this;
+
+    /* Otherwise, first set enabled bits in each structure and remember which
+       structures have bits set */
+    #define _c(value, field)                                                \
+        if(features & DeviceFeature::value) {                               \
+            _state->features2.sType = VkStructureType(1);                   \
+            _state->features2.features.field = VK_TRUE;                     \
+        }
+    #define _cver(value, field, suffix, version)                            \
+        if(features & DeviceFeature::value) {                               \
+            _state->features.suffix.sType = VkStructureType(1);             \
+            _state->features.suffix.field = VK_TRUE;                        \
+        }
+    #define _cext _cver
+    #include "Magnum/Vk/Implementation/deviceFeatureMapping.hpp"
+    #undef _c
+    #undef _cver
+    #undef _cext
+
+    /* First handle compatibility with unextended Vulkan 1.0 -- there we can
+       only add VkPhysicalDeviceFeatures to pEnabledFeatures and have to ignore
+       the rest. */
+    if(!_state->properties.canUseFeatures2ForDeviceCreation()) {
+        /* Only point to the structure if something was actually enabled there.
+           If not, there's no point in referencing it. */
+        if(_state->features2.sType)
+            _info.pEnabledFeatures = &_state->features2.features;
+        return *this;
+    }
+
+    /* Otherwise we can start from _info.pNext */
+    Containers::Reference<const void*> next = _info.pNext;
+
+    /* Connect together all structures that have something enabled. That
+       includes the VkPhysicalDeviceFeatures2 -- if it doesn't have anything
+       enabled, it's not included in the chain at all. The
+       _state->firstEnabledFeature pointer points to the first enabled feature
+       which will be useful to clean up the previous state if
+       setEnabledFeatures() gets called again. */
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features2, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.protectedMemory, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.multiview, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.shaderDrawParameters, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.textureCompressionAstcHdr, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.shaderFloat16Int8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT16_INT8_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features._16BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.imagelessFramebuffer, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.variablePointers, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.descriptorIndexing, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.shaderSubgroupExtendedTypes, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features._8BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.shaderAtomicInt64, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.timelineSemaphore, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.vulkanMemoryModel, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.scalarBlockLayout, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCALAR_BLOCK_LAYOUT_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.separateDepthStencilLayouts, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.uniformBufferStandardLayout, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.bufferDeviceAddress, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.hostQueryReset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
+
+    return *this;
+}
+
+DeviceCreateInfo&& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& features) && {
+    return std::move(setEnabledFeatures(features));
+}
+
 DeviceCreateInfo& DeviceCreateInfo::addQueues(const UnsignedInt family, const Containers::ArrayView<const Float> priorities, const Containers::ArrayView<const Containers::Reference<Queue>> output) & {
     CORRADE_ASSERT(!priorities.empty(), "Vk::DeviceCreateInfo::addQueues(): at least one queue priority has to be specified", *this);
     CORRADE_ASSERT(output.size() == priorities.size(), "Vk::DeviceCreateInfo::addQueues(): expected" << priorities.size() << "outuput queue references but got" << output.size(), *this);
@@ -331,19 +529,19 @@ DeviceCreateInfo&& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& in
     return std::move(addQueues(info));
 }
 
-Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
+Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
     /* Compared to the constructor nothing is printed here as it would be just
        repeating what was passed to the constructor */
     Device out{NoCreate};
     out._handle = handle;
     out._flags = flags;
     out.initializeExtensions(enabledExtensions);
-    out.initialize(instance, version);
+    out.initialize(instance, version, enabledFeatures);
     return out;
 }
 
-Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const HandleFlags flags) {
-    return wrap(instance, handle, version, Containers::arrayView(enabledExtensions), flags);
+Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+    return wrap(instance, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
 }
 
 Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{instance, info, DeviceProperties::wrap(instance, info._physicalDevice)} {}
@@ -379,12 +577,20 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
             for(std::size_t i = 0, max = info->enabledExtensionCount; i != max; ++i)
                 Debug{} << "   " << info->ppEnabledExtensionNames[i];
         }
+
+        if(info._state->enabledFeatures) {
+            Debug{} << "Enabled features:";
+            for(std::size_t i = 0, max = DeviceFeatures::Size*64; i != max; ++i) {
+                if(!(info._state->enabledFeatures & DeviceFeature(i))) continue;
+                Debug{} << "   " << DeviceFeature(i);
+            }
+        }
     }
 
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->CreateDevice(info._physicalDevice, info, nullptr, &_handle));
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
-    initialize(instance, version);
+    initialize(instance, version, info._state->enabledFeatures);
 
     /* Extension-dependent state is initialized, now we can retrieve the queues
        from the device and save them to the outputs specified in addQueues().
@@ -467,9 +673,10 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
     }
 }
 
-void Device::initialize(Instance& instance, const Version version) {
-    /* Init version, function pointers */
+void Device::initialize(Instance& instance, const Version version, const DeviceFeatures& enabledFeatures) {
+    /* Init version, features, function pointers */
     _version = version;
+    _enabledFeatures = enabledFeatures;
     flextVkInitDevice(_handle, &_functionPointers, instance->GetDeviceProcAddr);
 
     /* Set up extension-dependent functionality */

@@ -133,7 +133,24 @@ care to not clash with values and pointers already set:
 Similarly to the @ref NoInit constructors, constructing a `Vk::*CreateInfo`
 from the underlying Vulkan structure is guaranteed to not allocate as well ---
 only a shallow copy of the top-level structure is made and internal pointers,
-if any, keep pointing to the originating data.
+if any, keep pointing to the originating data. That approach has some
+implications:
+
+-   The user is responsible for ensuring those stay in scope for as long as
+    the structure is needed
+-   When calling Magnum's own APIs on the instance that was constructed from a
+    raw Vulkan structure, the pointed-to-data aren't touched in any way (which
+    means they can be @cpp const @ce), however they might get abandoned and the
+    top-level structure pointed elsewhere.
+-   Existing `pNext` chains are preserved. Calling Magnum's own APIs may result
+    in new entries added to the chain, but always at the front (again in order
+    to allow the pointed-to-data be @cpp const @ce). It's a responsibility of
+    the user to ensure no conflicting or duplicate entries are present
+    in the original chain when mixing it with Magnum's APIs.
+
+It's also possible to add new structures to the `pNext` chain of an existing
+instance. However, to prevent conflicts with Magnum which inserts at the front,
+new raw structures should be always appended at the end of the chain.
 
 @section vulkan-wrapping-optimizing-properties Optimizing instance and device property retrieval
 

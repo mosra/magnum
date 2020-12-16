@@ -31,6 +31,7 @@
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Vk/DeviceCreateInfo.h"
+#include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
@@ -53,6 +54,11 @@ struct DeviceVkTest: VulkanTester {
     void createInfoConstructNoImplicitExtensions();
     void createInfoExtensions();
     void createInfoExtensionsCopiedStrings();
+    void createInfoFeatures();
+    void createInfoFeaturesReplaceExternal();
+    void createInfoFeaturesReplacePrevious();
+    void createInfoFeaturesEnableAllResetAll();
+    void createInfoFeaturesNothingInCoreFeatures();
     void createInfoNoQueuePriorities();
     void createInfoWrongQueueOutputCount();
     void createInfoConstructCopy();
@@ -62,6 +68,8 @@ struct DeviceVkTest: VulkanTester {
     void construct();
     void constructQueueFromFlags();
     void constructExtensions();
+    void constructFeatures();
+    void constructFeaturesFromExtensions();
     void constructDeviceCreateInfoConstReference();
     void constructTransferDeviceProperties();
     void constructExtensionsCommandLineDisable();
@@ -70,6 +78,8 @@ struct DeviceVkTest: VulkanTester {
     void constructRawQueue();
     void constructMove();
     void constructUnknownExtension();
+    void constructFeatureNotSupported();
+    void constructFeatureWithoutExtension();
     void constructNoQueue();
 
     void wrap();
@@ -137,6 +147,11 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::createInfoConstructNoImplicitExtensions,
               &DeviceVkTest::createInfoExtensions,
               &DeviceVkTest::createInfoExtensionsCopiedStrings,
+              &DeviceVkTest::createInfoFeatures,
+              &DeviceVkTest::createInfoFeaturesReplaceExternal,
+              &DeviceVkTest::createInfoFeaturesReplacePrevious,
+              &DeviceVkTest::createInfoFeaturesEnableAllResetAll,
+              &DeviceVkTest::createInfoFeaturesNothingInCoreFeatures,
               &DeviceVkTest::createInfoNoQueuePriorities,
               &DeviceVkTest::createInfoWrongQueueOutputCount,
               &DeviceVkTest::createInfoConstructCopy,
@@ -146,6 +161,8 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::construct,
               &DeviceVkTest::constructQueueFromFlags,
               &DeviceVkTest::constructExtensions,
+              &DeviceVkTest::constructFeatures,
+              &DeviceVkTest::constructFeaturesFromExtensions,
               &DeviceVkTest::constructDeviceCreateInfoConstReference,
               &DeviceVkTest::constructTransferDeviceProperties});
 
@@ -158,6 +175,8 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
 
               &DeviceVkTest::constructMove,
               &DeviceVkTest::constructUnknownExtension,
+              &DeviceVkTest::constructFeatureNotSupported,
+              &DeviceVkTest::constructFeatureWithoutExtension,
               &DeviceVkTest::constructNoQueue,
 
               &DeviceVkTest::wrap,
@@ -171,6 +190,7 @@ void DeviceVkTest::createInfoConstruct() {
     CORRADE_VERIFY(info->sType);
     CORRADE_VERIFY(!info->pNext);
     /* Extensions might or might not be enabled */
+    CORRADE_VERIFY(!info->pEnabledFeatures);
 }
 
 void DeviceVkTest::createInfoConstructNoImplicitExtensions() {
@@ -180,6 +200,7 @@ void DeviceVkTest::createInfoConstructNoImplicitExtensions() {
     /* No extensions enabled as we explicitly disabled that */
     CORRADE_VERIFY(!info->ppEnabledExtensionNames);
     CORRADE_COMPARE(info->enabledExtensionCount, 0);
+    CORRADE_VERIFY(!info->pEnabledFeatures);
 }
 
 void DeviceVkTest::createInfoExtensions() {
@@ -227,6 +248,186 @@ void DeviceVkTest::createInfoExtensionsCopiedStrings() {
 
     CORRADE_COMPARE(info->ppEnabledExtensionNames[1], localButNullTerminated);
     CORRADE_VERIFY(info->ppEnabledExtensionNames[1] != localButNullTerminated.data());
+}
+
+void DeviceVkTest::createInfoFeatures() {
+    DeviceProperties properties = pickDevice(instance());
+
+    /* We don't use the structure for anything, so we don't need to check if
+       the structure is actually supported */
+    DeviceCreateInfo info{properties};
+    info.setEnabledFeatures(DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion);
+
+    /* If we have Vulkan 1.1 on both instance and the device or KHR_gpdp2 is
+       enabled on the instance, pNext chain will be filled as appropriate */
+    if((instance().isVersionSupported(Version::Vk11) && properties.isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pNext);
+        const auto& features2 = *static_cast<const VkPhysicalDeviceFeatures2*>(info->pNext);
+        CORRADE_COMPARE(features2.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+        CORRADE_VERIFY(features2.features.robustBufferAccess);
+
+        CORRADE_VERIFY(features2.pNext);
+        const auto& samplerYcbcrConversionFeatures = *static_cast<const VkPhysicalDeviceSamplerYcbcrConversionFeatures*>(features2.pNext);
+        CORRADE_COMPARE(samplerYcbcrConversionFeatures.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
+        CORRADE_VERIFY(samplerYcbcrConversionFeatures.samplerYcbcrConversion);
+
+    /* Otherwise just the pEnabledFeatures will be enabled */
+    } else {
+        CORRADE_VERIFY(!info->pNext);
+        CORRADE_VERIFY(info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pEnabledFeatures->robustBufferAccess);
+    }
+}
+
+void DeviceVkTest::createInfoFeaturesNothingInCoreFeatures() {
+    DeviceProperties properties = pickDevice(instance());
+
+    DeviceCreateInfo info{properties};
+    info.setEnabledFeatures(DeviceFeature::SamplerYcbcrConversion|DeviceFeature::ImagelessFramebuffer);
+
+    /* If we have Vulkan 1.1 on both instance and the device or KHR_gpdp2 is
+       enabled on the instance, pNext chain will be filled as appropriate */
+    if((instance().isVersionSupported(Version::Vk11) && properties.isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pNext);
+        const auto& imagelessFramebufferFeatures = *static_cast<const VkPhysicalDeviceImagelessFramebufferFeatures*>(info->pNext);
+        CORRADE_COMPARE(imagelessFramebufferFeatures.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES);
+        CORRADE_VERIFY(imagelessFramebufferFeatures.imagelessFramebuffer);
+
+        const auto& samplerYcbcrConversionFeatures = *static_cast<const VkPhysicalDeviceSamplerYcbcrConversionFeatures*>(imagelessFramebufferFeatures.pNext);
+        CORRADE_COMPARE(samplerYcbcrConversionFeatures.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
+        CORRADE_VERIFY(samplerYcbcrConversionFeatures.samplerYcbcrConversion);
+
+    /* Otherwise nothing is enabled as there's nowhere to connect that */
+    } else {
+        CORRADE_VERIFY(!info->pNext);
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+    }
+}
+
+void DeviceVkTest::createInfoFeaturesReplaceExternal() {
+    DeviceProperties properties = pickDevice(instance());
+
+    VkPhysicalDeviceFeatures2 features{};
+    features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    VkAttachmentReference2 somethingAfter{};
+    somethingAfter.pNext = &features;
+
+    DeviceCreateInfo info{properties};
+    info->pNext = &somethingAfter;
+    info->pEnabledFeatures = &features.features;
+
+    info.setEnabledFeatures(DeviceFeature::RobustBufferAccess);
+
+    /* Then, if we have Vulkan 1.1 on both instance and the device or KHR_gpdp2
+       is enabled on the instance, pNext will be filled and pEnabledFeatures
+       reset */
+    if((instance().isVersionSupported(Version::Vk11) && properties.isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pNext);
+        const auto& features2 = *static_cast<const VkPhysicalDeviceFeatures2*>(info->pNext);
+        CORRADE_COMPARE(features2.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+        CORRADE_VERIFY(features2.features.robustBufferAccess);
+
+        /* The original chain should be preserved after */
+        CORRADE_COMPARE(features2.pNext, &somethingAfter);
+
+    /* Otherwise the pNext chain will be preserved and pEnabledFeatures
+       replaced with own instance */
+    } else {
+        CORRADE_VERIFY(info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pEnabledFeatures != &features.features);
+        CORRADE_VERIFY(info->pEnabledFeatures->robustBufferAccess);
+    }
+
+    /* No changes to the original chain, even though it has a features on its
+       own (that's user error)  */
+    CORRADE_COMPARE(somethingAfter.pNext, &features);
+}
+
+void DeviceVkTest::createInfoFeaturesReplacePrevious() {
+    DeviceProperties properties = pickDevice(instance());
+
+    VkAttachmentReference2 somethingAfter{};
+
+    DeviceCreateInfo info{properties};
+    info->pNext = &somethingAfter;
+
+    info.setEnabledFeatures(DeviceFeature::RobustBufferAccess);
+
+    /* If we have Vulkan 1.1 on both instance and the device or KHR_gpdp2 is
+       enabled on the instance, pNext chain will be filled as appropriate */
+    if((instance().isVersionSupported(Version::Vk11) && properties.isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pNext);
+        const auto& features2 = *static_cast<const VkPhysicalDeviceFeatures2*>(info->pNext);
+        CORRADE_COMPARE(features2.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2);
+        CORRADE_VERIFY(features2.features.robustBufferAccess);
+
+        /* The original chain should be preserved after */
+        CORRADE_COMPARE(features2.pNext, &somethingAfter);
+
+    /* Otherwise the pNext chain will be preserved and pEnabledFeatures
+       replaced with own instance */
+    } else {
+        CORRADE_COMPARE(info->pNext, &somethingAfter);
+        CORRADE_VERIFY(info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pEnabledFeatures->robustBufferAccess);
+    }
+
+    /* Setting a different non-core feature */
+    info.setEnabledFeatures(DeviceFeature::ImagelessFramebuffer);
+    if((instance().isVersionSupported(Version::Vk11) && properties.isVersionSupported(Version::Vk11)) || instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>()) {
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+        CORRADE_VERIFY(info->pNext);
+        const auto& imagelessFramebufferFeatures = *static_cast<const VkPhysicalDeviceImagelessFramebufferFeatures*>(info->pNext);
+        CORRADE_COMPARE(imagelessFramebufferFeatures.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES);
+        CORRADE_VERIFY(imagelessFramebufferFeatures.imagelessFramebuffer);
+
+        /* The original chain should still be preserved after, without the
+           structures from the previous case getting in the way */
+        CORRADE_COMPARE(imagelessFramebufferFeatures.pNext, &somethingAfter);
+
+    /* Otherwise the pNext chain will still be preserved and pEnabledFeatures
+       empty */
+    } else {
+        CORRADE_COMPARE(info->pNext, &somethingAfter);
+        CORRADE_VERIFY(!info->pEnabledFeatures);
+    }
+
+    /* Setting no features, everything should be fully discarded, and the
+       original chain still kept. This doesn't have any difference between
+       versions. */
+    info.setEnabledFeatures({});
+    CORRADE_COMPARE(info->pNext, &somethingAfter);
+    CORRADE_VERIFY(!info->pEnabledFeatures);
+    CORRADE_VERIFY(!somethingAfter.pNext);
+}
+
+void DeviceVkTest::createInfoFeaturesEnableAllResetAll() {
+    DeviceProperties properties = pickDevice(instance());
+
+    if((!instance().isVersionSupported(Version::Vk11) || !properties.isVersionSupported(Version::Vk11)) && !instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>())
+        CORRADE_SKIP("Neither Vulkan 1.1 nor KHR_get_physical_device_properties2 is supported, can't test");
+
+    VkAttachmentDescription2 somethingAfter{};
+    somethingAfter.sType = VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2;
+
+    DeviceCreateInfo info{properties};
+    info->pNext = &somethingAfter;
+
+    /* This should populate a huge chain of structures */
+    info.setEnabledFeatures(~DeviceFeatures{});
+    CORRADE_VERIFY(info->pNext != &somethingAfter);
+    CORRADE_VERIFY(!somethingAfter.pNext);
+
+    /* And this should disconnect them all again. If this fails, it means the
+       resetting code path got out of sync with the structure list. Sorry,
+       there's not really a better way how to show *where* it got wrong. */
+    info.setEnabledFeatures({});
+    CORRADE_COMPARE(info->pNext, &somethingAfter);
+    CORRADE_VERIFY(!somethingAfter.pNext);
 }
 
 void DeviceVkTest::createInfoNoQueuePriorities() {
@@ -415,6 +616,40 @@ void DeviceVkTest::constructExtensions() {
     /* ... and function pointers loaded */
     CORRADE_VERIFY(device->CmdDebugMarkerInsertEXT);
     CORRADE_VERIFY(device->TrimCommandPoolKHR);
+}
+
+void DeviceVkTest::constructFeatures() {
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
+        .addQueues(0, {0.0f}, {queue})
+        /* RobustBufferAccess is guaranteed to be supported always, no need to
+           check anything */
+        .setEnabledFeatures(DeviceFeature::RobustBufferAccess)};
+    CORRADE_VERIFY(device.handle());
+
+    /* Features should be reported as enabled */
+    CORRADE_COMPARE(device.enabledFeatures(), DeviceFeature::RobustBufferAccess);
+}
+
+void DeviceVkTest::constructFeaturesFromExtensions() {
+    DeviceProperties properties = pickDevice(instance());
+
+    if(!properties.enumerateExtensionProperties().isSupported<Extensions::KHR::sampler_ycbcr_conversion>())
+        CORRADE_SKIP("VK_KHR_sampler_ycbcr_conversion not supported, can't test");
+    if(!(properties.features() & DeviceFeature::SamplerYcbcrConversion))
+        CORRADE_SKIP("SamplerYcbcrConversion feature not supported, can't test");
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{properties}
+        .addQueues(0, {0.0f}, {queue})
+        .addEnabledExtensions<Extensions::KHR::sampler_ycbcr_conversion>()
+        /* RobustBufferAccess is guaranteed to be supported always, no need to
+           check anything */
+        .setEnabledFeatures(DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion)};
+    CORRADE_VERIFY(device.handle());
+
+    /* Features should be reported as enabled */
+    CORRADE_COMPARE(device.enabledFeatures(), DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion);
 }
 
 void DeviceVkTest::constructDeviceCreateInfoConstReference() {
@@ -699,6 +934,45 @@ void DeviceVkTest::constructUnknownExtension() {
     CORRADE_COMPARE(out.str(), "TODO");
 }
 
+void DeviceVkTest::constructFeatureNotSupported() {
+    DeviceProperties properties = pickDevice(instance());
+    if(properties.features() & DeviceFeature::SparseBinding)
+        CORRADE_SKIP("The SparseBinding feature is supported, can't test");
+    CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{properties}
+        .addQueues(0, {0.0f}, {queue})
+        .setEnabledFeatures(DeviceFeature::SparseBinding)};
+    CORRADE_COMPARE(out.str(), "TODO");
+}
+
+void DeviceVkTest::constructFeatureWithoutExtension() {
+    DeviceProperties properties = pickDevice(instance());
+    if((!instance().isVersionSupported(Version::Vk11) || !properties.isVersionSupported(Version::Vk11)) && !instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>())
+        CORRADE_SKIP("Neither Vulkan 1.1 nor KHR_get_physical_device_properties2 is supported, can't test");
+    if(properties.features() & DeviceFeature::TextureCompressionAstcHdr)
+        CORRADE_SKIP("The TextureCompressionAstcHdr feature is supported, can't test");
+
+    Queue queue{NoCreate};
+    DeviceCreateInfo info{properties};
+    info.addQueues(0, {0.0f}, {queue})
+        .setEnabledFeatures(DeviceFeature::TextureCompressionAstcHdr);
+
+    /* Just to verify we're doing the correct thing */
+    CORRADE_VERIFY(info->pNext);
+    CORRADE_COMPARE(static_cast<const VkBaseInStructure*>(info->pNext)->sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT);
+    CORRADE_VERIFY(static_cast<const VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT*>(info->pNext)->textureCompressionASTC_HDR);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Device device{instance(), info};
+    CORRADE_EXPECT_FAIL("For some reason it doesn't complain when a feature that needs an extension is enabled. Am I stupid?");
+    CORRADE_VERIFY(!out.str().empty());
+}
+
 void DeviceVkTest::constructNoQueue() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
@@ -743,7 +1017,10 @@ void DeviceVkTest::wrap() {
             .addEnabledExtensions<
                 Extensions::EXT::debug_marker,
                 Extensions::KHR::maintenance1
-            >(),
+            >()
+            /* RobustBufferAccess is guaranteed to be supported always, no need
+               to check anything */
+            .setEnabledFeatures(DeviceFeature::RobustBufferAccess),
         nullptr, &device)), Result::Success);
     CORRADE_VERIFY(device);
     /* Populating the queue handle is done only from Device itself, so it won't
@@ -754,7 +1031,7 @@ void DeviceVkTest::wrap() {
         /* Wrapping should load the basic function pointers */
         auto wrapped = Device::wrap(instance2, device, Version::Vk11, {
             Extensions::EXT::debug_marker::string()
-        }, HandleFlag::DestroyOnDestruction);
+        }, DeviceFeature::RobustBufferAccess, HandleFlag::DestroyOnDestruction);
         CORRADE_VERIFY(wrapped->DestroyDevice);
 
         /* Specified version should be reported as supported but higher not
@@ -772,12 +1049,15 @@ void DeviceVkTest::wrap() {
         CORRADE_VERIFY(!wrapped.isExtensionEnabled<Extensions::KHR::maintenance1>());
         CORRADE_VERIFY(wrapped->TrimCommandPoolKHR);
 
+        /* Listed features should be reported as enabled */
+        CORRADE_COMPARE(wrapped.enabledFeatures(), DeviceFeature::RobustBufferAccess);
+
         /* Releasing won't destroy anything ... */
         CORRADE_COMPARE(wrapped.release(), device);
     }
 
     /* ...so we can wrap it again, non-owned, and then destroy it manually */
-    auto wrapped = Device::wrap(instance2, device, Version::Vk10, {});
+    auto wrapped = Device::wrap(instance2, device, Version::Vk10, {}, {});
     CORRADE_VERIFY(wrapped->DestroyDevice);
     wrapped->DestroyDevice(device, nullptr);
 }

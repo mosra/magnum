@@ -201,6 +201,65 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
         }
 
         /**
+         * @brief Add enabled device features
+         * @return Reference to self (for method chaining)
+         *
+         * All enabled features are expected to be reported as supported by the
+         * device and either their core version supported by the device or the
+         * corresponding extension enabled via @ref addEnabledExtensions(). Use
+         * @ref DeviceProperties::features() to check for feature support.
+         *
+         * Depending on what features are enabled, a subset of the following
+         * structures will be added to the `pNext` chain:
+         *
+         * -    @type_vk_keyword{PhysicalDeviceProtectedMemoryFeatures} (Vulkan
+         *      1.1)
+         * -    @type_vk_keyword{PhysicalDeviceMultiviewFeatures} (Vulkan 1.1,
+         *      @vk_extension{KHR,multiview})
+         * -    @type_vk_keyword{PhysicalDeviceShaderDrawParametersFeatures}
+         *      (Vulkan 1.1, @vk_extension{KHR,shader_draw_parameters})
+         * -    @type_vk_keyword{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT}
+         *      (@vk_extension{EXT,texture_compression_astc_hdr})
+         * -    @type_vk_keyword{PhysicalDeviceShaderFloat16Int8Features}
+         *      (Vulkan 1.2, @vk_extension{KHR,shader_float16_int8})
+         * -    @type_vk_keyword{PhysicalDevice16BitStorageFeatures} (Vulkan
+         *      1.1, @vk_extension{KHR,16bit_storage})
+         * -    @type_vk_keyword{PhysicalDeviceImagelessFramebufferFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,imageless_framebuffer})
+         * -    @type_vk_keyword{PhysicalDeviceVariablePointersFeatures}
+         *      (Vulkan 1.1, @vk_extension{KHR,variable_pointers})
+         * -    @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
+         *      (Vulkan 1.1, @vk_extension{KHR,sampler_ycbcr_conversion})
+         * -    @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
+         *      (Vulkan 1.2, @vk_extension{EXT,descriptor_indexing})
+         * -    @type_vk_keyword{PhysicalDeviceShaderSubgroupExtendedTypesFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,shader_subgroup_extended_types})
+         * -    @type_vk_keyword{PhysicalDevice8BitStorageFeatures} (Vulkan
+         *      1.2, @vk_extension{KHR,8bit_storage})
+         * -    @type_vk_keyword{PhysicalDeviceShaderAtomicInt64Features}
+         *      (Vulkan 1.2, @vk_extension{KHR,shader_atomic_int64})
+         * -    @type_vk_keyword{PhysicalDeviceTimelineSemaphoreFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,timeline_semaphore})
+         * -    @type_vk_keyword{PhysicalDeviceVulkanMemoryModelFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,vulkan_memory_model})
+         * -    @type_vk_keyword{PhysicalDeviceScalarBlockLayoutFeatures}
+         *      (Vulkan 1.2, @vk_extension{EXT,scalar_block_layout})
+         * -    @type_vk_keyword{PhysicalDeviceSeparateDepthStencilLayoutsFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,separate_depth_stencil_layouts})
+         * -    @type_vk_keyword{PhysicalDeviceUniformBufferStandardLayoutFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,uniform_buffer_standard_layout})
+         * -    @type_vk_keyword{PhysicalDeviceBufferDeviceAddressFeatures}
+         *      (Vulkan 1.2, @vk_extension{KHR,buffer_device_address})
+         * -    @type_vk_keyword{PhysicalDeviceHostQueryResetFeatures} (Vulkan
+         *      1.2, @vk_extension{EXT,host_query_reset})
+         * -    @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
+         *      (@vk_extension{EXT,index_type_uint8})
+         */
+        DeviceCreateInfo& setEnabledFeatures(const DeviceFeatures& features) &;
+        /** @overload */
+        DeviceCreateInfo&& setEnabledFeatures(const DeviceFeatures& features) &&;
+
+        /**
          * @brief Add queues
          * @param[in] family        Family index, smaller than
          *      @ref DeviceProperties::queueFamilyCount()

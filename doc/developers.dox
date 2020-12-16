@@ -868,7 +868,12 @@ pointers on a class that needs them:
         before. For some reason the Khronos validation layer doesn't check
         `sType` fields in this query so it's easy to make a hard-to-discover
         error
-9.  Add a link to the new Feature structure in `doc/vulkan-mapping.dox`
+9.  Extend @ref Vk::DeviceCreateInfo::setEnabledFeatures():
+    -   a similar addition as above, connecting the structure to the chain at
+        correct place,
+    -   to the correct place in the structureChainDisconnect() call,
+    -   and function documentation again
+10. Add a link to the new Feature structure in `doc/vulkan-mapping.dox`
 
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
