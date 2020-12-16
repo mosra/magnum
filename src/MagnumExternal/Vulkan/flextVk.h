@@ -268,7 +268,7 @@ extern "C" {
 // Vulkan 1.2 version number
 #define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 152
+#define VK_HEADER_VERSION 165
 // Complete version of this file
 #define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
@@ -1841,7 +1841,8 @@ typedef enum {
     VK_VENDOR_ID_VSI = 0x10002,
     VK_VENDOR_ID_KAZAN = 0x10003,
     VK_VENDOR_ID_CODEPLAY = 0x10004,
-    VK_VENDOR_ID_MESA = 0x10005
+    VK_VENDOR_ID_MESA = 0x10005,
+    VK_VENDOR_ID_POCL = 0x10006
 } VkVendorId;
 
 typedef enum {
@@ -3985,9 +3986,9 @@ typedef struct VkPhysicalDeviceDepthStencilResolveProperties {
 
 typedef struct VkSubpassDescriptionDepthStencilResolve {
     VkStructureType sType;
-    const void*                                              pNext;
-    VkResolveModeFlagBits                                    depthResolveMode;
-    VkResolveModeFlagBits                                    stencilResolveMode;
+    const void*                              pNext;
+    VkResolveModeFlagBits              depthResolveMode;
+    VkResolveModeFlagBits              stencilResolveMode;
     const VkAttachmentReference2*            pDepthStencilResolveAttachment;
 } VkSubpassDescriptionDepthStencilResolve;
 
