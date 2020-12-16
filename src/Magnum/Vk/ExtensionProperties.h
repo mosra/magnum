@@ -106,7 +106,8 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
          * Search complexity is @f$ \mathcal{O}(\log n) @f$ in the total
          * extension count; in contrast extension queries on a created instance
          * are @f$ \mathcal{O}(1) @f$.
-         * @see @ref revision()
+         * @see @ref revision(), @ref Instance::isExtensionEnabled(),
+         *      @ref Device::isExtensionEnabled()
          */
         bool isSupported(Containers::StringView extension) const;
 

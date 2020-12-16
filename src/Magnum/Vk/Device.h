@@ -82,7 +82,8 @@ As with device picking, you can also iterate through all
 @ref DeviceProperties::queueFamilyCount() and choose one manually.
 
 Same as with @ref Instance, the above won't enable any additional extensions
-except for what the engine itself needs or what's supplied on the command line. Use @ref DeviceCreateInfo::addEnabledExtensions() to enable them, you can use
+except for what the engine itself needs or what's supplied on the command line.
+Use @ref DeviceCreateInfo::addEnabledExtensions() to enable them, you can use
 both string names as well as predefined *device* extensions from the
 @ref Extensions namespace. Later on, presence of predefined extensions can be
 checked with @ref isExtensionEnabled().
@@ -150,9 +151,9 @@ class MAGNUM_VK_EXPORT Device {
          * @param instance      Vulkan instance the device is created on
          * @param handle        The @type_vk{Device} handle
          * @param version       Vulkan version that's assumed to be used on the
-         *      instance
+         *      device
          * @param enabledExtensions Extensions that are assumed to be enabled
-         *      on the instance
+         *      on the device
          * @param flags         Handle flags
          *
          * The @p handle is expected to be originating from @p instance. The
@@ -197,8 +198,8 @@ class MAGNUM_VK_EXPORT Device {
          *
          * Compared to @ref Device(Instance&, const DeviceCreateInfo&), it can
          * take ownership of the @ref DeviceProperties added to @p info earlier
-         * via @ref DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&&, const ExtensionProperties*, Flags) or any of the other r-value-taking
-         * constructors.
+         * via @ref DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&&, const ExtensionProperties*, Flags)
+         * or any of the other r-value-taking constructors.
          *
          * With that, the @ref properties() getter and any APIs relying on it
          * can reuse what was possibly already queried without having to repeat
