@@ -86,6 +86,10 @@ struct DeviceCreateInfo::State {
     Implementation::DeviceFeatures features{};
     DeviceFeatures enabledFeatures;
     void* firstEnabledFeature{};
+    /* Used for checking if the device enables extensions required by features */
+    #ifndef CORRADE_NO_ASSERT
+    Math::BoolVector<Implementation::ExtensionCount> featuresRequiredExtensions;
+    #endif
 
     Containers::String disabledExtensionsStorage;
     Containers::Array<Containers::StringView> disabledExtensions;
@@ -371,12 +375,28 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features2.sType = VkStructureType(1);                   \
             _state->features2.features.field = VK_TRUE;                     \
         }
+    #ifdef CORRADE_NO_ASSERT
     #define _cver(value, field, suffix, version)                            \
         if(features & DeviceFeature::value) {                               \
             _state->features.suffix.sType = VkStructureType(1);             \
             _state->features.suffix.field = VK_TRUE;                        \
         }
     #define _cext _cver
+    #else
+    /* Not checking anything for the version, since if a device doesn't support
+       given version, it simply won't report the feature as supported */
+    #define _cver(value, field, suffix, version)                            \
+        if(features & DeviceFeature::value) {                               \
+            _state->features.suffix.sType = VkStructureType(1);             \
+            _state->features.suffix.field = VK_TRUE;                        \
+        }
+    #define _cext(value, field, suffix, extension)                          \
+        if(features & DeviceFeature::value) {                               \
+            _state->features.suffix.sType = VkStructureType(1);             \
+            _state->features.suffix.field = VK_TRUE;                        \
+            _state->featuresRequiredExtensions.set(Extensions::extension::Index, true); \
+        }
+    #endif
     #include "Magnum/Vk/Implementation/deviceFeatureMapping.hpp"
     #undef _c
     #undef _cver
@@ -529,6 +549,17 @@ DeviceCreateInfo&& DeviceCreateInfo::addQueues(const VkDeviceQueueCreateInfo& in
     return std::move(addQueues(info));
 }
 
+namespace {
+
+constexpr Version KnownVersionsForExtensions[]{
+    Version::None,
+  /*Version::Vk10, has no extensions */
+    Version::Vk11,
+    Version::Vk12
+};
+
+}
+
 Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
     /* Compared to the constructor nothing is printed here as it would be just
        repeating what was passed to the constructor */
@@ -564,6 +595,20 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
     CORRADE_ASSERT(info._info.queueCreateInfoCount,
         "Vk::Device: needs to be created with at least one queue", );
 
+    /* Check that all enabled features were actually reported as supported.
+       I happily assumed the drivers would do that, but as far as my testing
+       goes it happens only for the VkPhysicalDeviceFeatures2, and not for
+       anything added by extensions after that, which is quite disappointing
+       -- I expected those to be checked as strictly as extensions, but not
+       even the validation layers seem to check those.
+
+       Making this silently pass isn't a good idea because it might (or might
+       not) fail later in an unpredictable way. Fortunately it's rather easy
+       to check thanks to how these are designed :D */
+    CORRADE_ASSERT(info._state->enabledFeatures <= _properties->features(),
+        "Vk::Device: some enabled features are not supported:" <<
+        (info._state->enabledFeatures & ~_properties->features()), );
+
     const Version version = info._state->version != Version::None ?
         info._state->version : _properties->version();
 
@@ -591,6 +636,22 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     initialize(instance, version, info._state->enabledFeatures);
+
+    #ifndef CORRADE_NO_ASSERT
+    /* This is a dumb O(n^2) search but in an assert that's completely fine */
+    const Math::BoolVector<Implementation::ExtensionCount> missingExtensions = ~_enabledExtensions & info._state->featuresRequiredExtensions;
+    if(missingExtensions.any()) {
+        for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i) {
+            if(!missingExtensions[i]) continue;
+            for(const Version version: KnownVersionsForExtensions) {
+                for(const Extension extension: Extension::extensions(version)) {
+                    if(extension.index() != i) continue;
+                    CORRADE_ASSERT_UNREACHABLE("Vk::Device: some enabled features need" << extension.string() << "enabled", );
+                }
+            }
+        }
+    }
+    #endif
 
     /* Extension-dependent state is initialized, now we can retrieve the queues
        from the device and save them to the outputs specified in addQueues().
@@ -658,12 +719,9 @@ Device& Device::operator=(Device&& other) noexcept {
 template<class T> void Device::initializeExtensions(const Containers::ArrayView<const T> enabledExtensions) {
     /* Mark all known extensions as enabled */
     for(const T extension: enabledExtensions) {
-        for(Containers::ArrayView<const Extension> knownExtensions: {
-            Extension::extensions(Version::None),
-          /*Extension::extensions(Version::Vk10), is empty */
-            Extension::extensions(Version::Vk11),
-            Extension::extensions(Version::Vk12)
-        }) {
+        for(const Version version: KnownVersionsForExtensions) {
+            const Containers::ArrayView<const Extension> knownExtensions =
+                Extension::extensions(version);
             auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });

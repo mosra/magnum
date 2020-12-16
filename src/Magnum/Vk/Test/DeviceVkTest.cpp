@@ -938,39 +938,34 @@ void DeviceVkTest::constructFeatureNotSupported() {
     DeviceProperties properties = pickDevice(instance());
     if(properties.features() & DeviceFeature::SparseBinding)
         CORRADE_SKIP("The SparseBinding feature is supported, can't test");
-    CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
+    if(properties.features() & DeviceFeature::SparseResidency16Samples)
+        CORRADE_SKIP("The SparseResidency16Samples feature is supported, can't test");
 
     std::ostringstream out;
     Error redirectError{&out};
     Queue queue{NoCreate};
     Device device{instance(), DeviceCreateInfo{properties}
         .addQueues(0, {0.0f}, {queue})
-        .setEnabledFeatures(DeviceFeature::SparseBinding)};
-    CORRADE_COMPARE(out.str(), "TODO");
+        .setEnabledFeatures(DeviceFeature::SparseBinding|DeviceFeature::SparseResidency16Samples)};
+    CORRADE_COMPARE(out.str(), "Vk::Device: some enabled features are not supported: Vk::DeviceFeature::SparseBinding|Vk::DeviceFeature::SparseResidency16Samples\n");
 }
 
 void DeviceVkTest::constructFeatureWithoutExtension() {
     DeviceProperties properties = pickDevice(instance());
     if((!instance().isVersionSupported(Version::Vk11) || !properties.isVersionSupported(Version::Vk11)) && !instance().isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>())
         CORRADE_SKIP("Neither Vulkan 1.1 nor KHR_get_physical_device_properties2 is supported, can't test");
-    if(properties.features() & DeviceFeature::TextureCompressionAstcHdr)
-        CORRADE_SKIP("The TextureCompressionAstcHdr feature is supported, can't test");
+    if(!(properties.features() & DeviceFeature::SamplerYcbcrConversion))
+        CORRADE_SKIP("The SamplerYcbcrConversion feature is not supported, can't test");
 
     Queue queue{NoCreate};
     DeviceCreateInfo info{properties};
     info.addQueues(0, {0.0f}, {queue})
-        .setEnabledFeatures(DeviceFeature::TextureCompressionAstcHdr);
-
-    /* Just to verify we're doing the correct thing */
-    CORRADE_VERIFY(info->pNext);
-    CORRADE_COMPARE(static_cast<const VkBaseInStructure*>(info->pNext)->sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT);
-    CORRADE_VERIFY(static_cast<const VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT*>(info->pNext)->textureCompressionASTC_HDR);
+        .setEnabledFeatures(DeviceFeature::SamplerYcbcrConversion);
 
     std::ostringstream out;
     Error redirectError{&out};
     Device device{instance(), info};
-    CORRADE_EXPECT_FAIL("For some reason it doesn't complain when a feature that needs an extension is enabled. Am I stupid?");
-    CORRADE_VERIFY(!out.str().empty());
+    CORRADE_COMPARE(out.str(), "Vk::Device: some enabled features need VK_KHR_sampler_ycbcr_conversion enabled\n");
 }
 
 void DeviceVkTest::constructNoQueue() {
