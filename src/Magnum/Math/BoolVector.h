@@ -30,6 +30,7 @@
  */
 
 #include <type_traits>
+#include <Corrade/Containers/sequenceHelpers.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
@@ -42,19 +43,6 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<std::size_t, class> struct BoolVectorConverter;
-
-    /** @todo C++14: use std::make_index_sequence and std::integer_sequence */
-    template<std::size_t ...> struct Sequence {};
-
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    /* E.g. GenerateSequence<3>::Type is Sequence<0, 1, 2> */
-    template<std::size_t N, std::size_t ...sequence> struct GenerateSequence:
-        GenerateSequence<N-1, N-1, sequence...> {};
-
-    template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
-        typedef Sequence<sequence...> Type;
-    };
-    #endif
 
     template<class T> constexpr T repeat(T value, std::size_t) { return value; }
 }
@@ -129,7 +117,7 @@ template<std::size_t size> class BoolVector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit BoolVector(T value) noexcept;
         #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value) noexcept: BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value) noexcept: BoolVector(typename Corrade::Containers::Implementation::GenerateSequence<DataSize>::Type{}, value ? FullSegmentMask : 0) {}
         #endif
 
         /** @brief Construct a boolean vector from external representation */
@@ -305,7 +293,7 @@ template<std::size_t size> class BoolVector {
         };
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit BoolVector(Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit BoolVector(Corrade::Containers::Implementation::Sequence<sequence...>, UnsignedByte value): _data{Implementation::repeat(value, sequence)...} {}
 
         UnsignedByte _data[(size-1)/8+1];
 };

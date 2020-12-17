@@ -1266,8 +1266,8 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
           right after the null-terminated string) makes them accessible in O(1)
           as well. */
         struct StringData {
-            template<std::size_t ...sequence> constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value, Math::Implementation::Sequence<sequence...>): type{type}, nameValue{(sequence < name.size() ? name[sequence] : (sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3) < value.size() ? value[sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3)] : '\0'))...}, size{UnsignedByte(value.size())} {}
-            constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value): StringData{type, name, value, typename Math::Implementation::GenerateSequence<Implementation::MaterialAttributeDataSize - 2>::Type{}} {}
+            template<std::size_t ...sequence> constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value, Containers::Implementation::Sequence<sequence...>): type{type}, nameValue{(sequence < name.size() ? name[sequence] : (sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3) < value.size() ? value[sequence - (Implementation::MaterialAttributeDataSize - value.size() - 3)] : '\0'))...}, size{UnsignedByte(value.size())} {}
+            constexpr explicit StringData(MaterialAttributeType type, Containers::StringView name, Containers::StringView value): StringData{type, name, value, typename Containers::Implementation::GenerateSequence<Implementation::MaterialAttributeDataSize - 2>::Type{}} {}
 
             MaterialAttributeType type;
             char nameValue[Implementation::MaterialAttributeDataSize - 2];
@@ -1309,8 +1309,8 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
             Math::RectangularMatrix<rows, cols, Float> b;
         };
         template<class T> struct Data {
-            template<class U, std::size_t ...sequence> constexpr explicit Data(MaterialAttributeType type, Containers::StringView name, const U& value, Math::Implementation::Sequence<sequence...>): type{type}, name{(sequence < name.size() ? name[sequence] : '\0')...}, value{value} {}
-            template<class U> constexpr explicit Data(MaterialAttributeType type, Containers::StringView name, const U& value): Data{type, name, value, typename Math::Implementation::GenerateSequence<63 - sizeof(T)>::Type{}} {}
+            template<class U, std::size_t ...sequence> constexpr explicit Data(MaterialAttributeType type, Containers::StringView name, const U& value, Containers::Implementation::Sequence<sequence...>): type{type}, name{(sequence < name.size() ? name[sequence] : '\0')...}, value{value} {}
+            template<class U> constexpr explicit Data(MaterialAttributeType type, Containers::StringView name, const U& value): Data{type, name, value, typename Containers::Implementation::GenerateSequence<63 - sizeof(T)>::Type{}} {}
 
             MaterialAttributeType type;
             char name[Implementation::MaterialAttributeDataSize - sizeof(MaterialAttributeType) - sizeof(T)];

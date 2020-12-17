@@ -90,7 +90,7 @@ namespace Implementation {
     template<std::size_t size> struct ScatterComponent<size, 'b', 2>: ScatterComponentOr<size, 2> {};
     template<std::size_t size> struct ScatterComponent<size, 'a', 3>: ScatterComponentOr<size, 3> {};
 
-    template<class T, char component, std::size_t ...sequence> constexpr T scatterComponentOr(const T& vector, const typename T::Type& value, Sequence<sequence...>) {
+    template<class T, char component, std::size_t ...sequence> constexpr T scatterComponentOr(const T& vector, const typename T::Type& value, Corrade::Containers::Implementation::Sequence<sequence...>) {
         return {ScatterComponent<T::Size, component, sequence>::value(vector, value)...};
     }
     template<class T, std::size_t valueSize> constexpr T scatterRecursive(const T& vector, const Vector<valueSize, typename T::Type>&, std::size_t) {
@@ -98,7 +98,7 @@ namespace Implementation {
     }
     template<class T, std::size_t valueSize, char component, char ...next> constexpr T scatterRecursive(const T& vector, const Vector<valueSize, typename T::Type>& values, std::size_t valueIndex) {
         return scatterRecursive<T, valueSize, next...>(
-            scatterComponentOr<T, component>(vector, values._data[valueIndex], typename GenerateSequence<T::Size>::Type{}),
+            scatterComponentOr<T, component>(vector, values._data[valueIndex], typename Corrade::Containers::Implementation::GenerateSequence<T::Size>::Type{}),
             values, valueIndex + 1);
     }
 }

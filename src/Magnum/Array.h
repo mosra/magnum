@@ -30,11 +30,16 @@
  */
 
 #include <type_traits>
+#include <Corrade/Containers/sequenceHelpers.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/BoolVector.h" /* for Math::Implementation::Sequence */
 
 namespace Magnum {
+
+namespace Implementation {
+    template<class T> constexpr T repeat(T value, std::size_t) { return value; }
+}
 
 /**
 @brief Array
@@ -77,7 +82,7 @@ template<UnsignedInt dimensions, class T> class Array {
         constexpr /*implicit*/ Array(T value);
         #else
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type>
-        constexpr /*implicit*/ Array(U value): Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value) {}
+        constexpr /*implicit*/ Array(U value): Array(typename Containers::Implementation::GenerateSequence<dimensions>::Type{}, value) {}
         #endif
 
         /** @brief Equality */
@@ -112,7 +117,7 @@ template<UnsignedInt dimensions, class T> class Array {
 
     private:
         /* Implementation for Array<dimensions, T>::Array(U) */
-        template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Array(Containers::Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
 };
 
 /**

@@ -102,17 +102,17 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *
          * Equivalent to @ref Bezier(ZeroInitT).
          */
-        constexpr /*implicit*/ Bezier() noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
+        constexpr /*implicit*/ Bezier() noexcept: Bezier<order, dimensions, T>{typename Corrade::Containers::Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
 
         /**
          * @brief Construct a zero curve
          *
          * All control points are zero vectors.
          */
-        constexpr explicit Bezier(ZeroInitT) noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
+        constexpr explicit Bezier(ZeroInitT) noexcept: Bezier<order, dimensions, T>{typename Corrade::Containers::Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
 
         /** @brief Construct Bézier without initializing the contents */
-        explicit Bezier(Magnum::NoInitT) noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, Magnum::NoInit} {}
+        explicit Bezier(Magnum::NoInitT) noexcept: Bezier<order, dimensions, T>{typename Corrade::Containers::Implementation::GenerateSequence<order + 1>::Type{}, Magnum::NoInit} {}
 
         /** @brief Construct Bézier curve with given array of control points */
         template<typename... U> constexpr /*implicit*/ Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
@@ -125,7 +125,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * Performs only default casting on the values, no rounding or
          * anything else.
          */
-        template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
+        template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Corrade::Containers::Implementation::GenerateSequence<order + 1>::Type{}, other} {}
 
         /** @brief Construct Bézier curve from external representation */
         template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
@@ -198,11 +198,11 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 
     private:
         /* Implementation for Bezier<order, dimensions, T>::Bezier(const Bezier<order, dimensions, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Corrade::Containers::Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
 
         /* Implementation for Bezier<order, dimensions, T>::Bezier(ZeroInitT) and Bezier<order, dimensions, T>::Bezier(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Corrade::Containers::Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         void calculateIntermediatePoints(Bezier<order, dimensions, T>(&iPoints)[order + 1], Float t) const {
