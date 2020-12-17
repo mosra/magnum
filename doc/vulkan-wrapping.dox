@@ -107,7 +107,9 @@ As opposed to device memory allocation, which is exposed through
 @type_vk{AllocationCallbacks} is not possible as use cases for overriding host
 memory allocators are quite rare. This pointer is thus always set to
 @cpp nullptr @ce in any `vkCreate*()` calls. If you want to supply your own
-callbacks,
+callbacks, you have to call these functions directly --- ideally through the
+instance- and device-level function pointers available through
+@ref Vk::Instance::operator->() and @ref Vk::Device::operator->().
 
 @section vulkan-wrapping-raw Common interfaces for interaction with raw Vulkan code
 
