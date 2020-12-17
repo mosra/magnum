@@ -1279,7 +1279,11 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
             constexpr explicit ErasedScalar(Rad value): f{Float(value)} {}
             constexpr explicit ErasedScalar(UnsignedInt value): u{value} {}
             constexpr explicit ErasedScalar(Int value): i{value} {}
-            constexpr explicit ErasedScalar(MaterialTextureSwizzle value): u{UnsignedInt(value)} {}
+            constexpr explicit ErasedScalar(MaterialTextureSwizzle value):
+                /* Interestingly enough, on GCC 4.8, using u{} will spam with
+                    warning: parameter ‘value’ set but not used [-Wunused-but-set-parameter]
+                   even though everything works as intended. Using () instead. */
+                u(UnsignedInt(value)) {}
 
             Float f;
             UnsignedInt u;
