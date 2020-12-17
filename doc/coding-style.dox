@@ -253,7 +253,8 @@ for specific extensions not part of the core OpenGL ES specification and
 WebGL specification. When there is more than just a single platform, first come
 desktop requirements, then ES requirements and WebGL requirements last.
 
-For Vulkan, the command is @c \@requires_vk_extension:
+For Vulkan, the command is @c \@requires_vkXX, @c \@requires_vk_extension, and
+because Vulkan contain feature bits, also @c \@requires_vk_feature.
 
 @snippet coding-style.h requires_vk_extension
 

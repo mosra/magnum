@@ -55,22 +55,48 @@ is usually supported everywhere, even if the drivers don't have Vulkan 1.2).
 -   @subpage requires-vk11
 -   @subpage requires-vk12
 -   @subpage requires-vk-extension
+-   @subpage requires-vk-feature
 
 */
 
 /** @page requires-vk11 Functionality requiring Vulkan 1.1
- * @m_footernavigation
- * @m_since_latest
- */
+@m_footernavigation
+@m_since_latest
+
+APIs listed here require a particular Vulkan version to be supported by the
+instance / device or, if specified, an extension to be supported and enabled on
+the instance / device using @ref Vk::InstanceCreateInfo::addEnabledExtensions()
+/ @ref Vk::DeviceCreateInfo::addEnabledExtensions().
+*/
 
 /** @page requires-vk12 Functionality requiring Vulkan 1.2
- * @m_footernavigation
- * @m_since_latest
- */
+@m_footernavigation
+@m_since_latest
 
-/** @page requires-vk-extension Functionality requiring specific Vulkan extension
- * @m_footernavigation
- * @m_since_latest
- */
+APIs listed here require a particular Vulkan version to be supported by the
+instance / device or, if specified, an extension to be supported and enabled on
+the instance / device using @ref Vk::InstanceCreateInfo::addEnabledExtensions()
+/ @ref Vk::DeviceCreateInfo::addEnabledExtensions().
+*/
+
+/** @page requires-vk-extension Functionality requiring a specific Vulkan extension
+@m_footernavigation
+@m_since_latest
+
+APIs listed here require a Vulkan extension to be supported and enabled on the
+instance / device using @ref Vk::InstanceCreateInfo::addEnabledExtensions() /
+@ref Vk::DeviceCreateInfo::addEnabledExtensions().
+*/
+
+/**
+@page requires-vk-feature Functionality requiring a specific Vulkan feature
+@m_footernavigation
+@m_since_latest
+
+APIs listed here require a Vulkan feature to be supported and enabled on the
+device using @ref Vk::DeviceCreateInfo::setEnabledFeatures(). Note that some
+features are coming from extensions and thus require also the corresponding
+extension to be enabled.
+*/
 
 }
