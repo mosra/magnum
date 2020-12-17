@@ -199,7 +199,7 @@ void ImageVkTest::wrap() {
         nullptr, &image)), Result::Success);
     CORRADE_VERIFY(image);
 
-    auto wrapped = Image::wrap(device(), image, HandleFlag::DestroyOnDestruction);
+    auto wrapped = Image::wrap(device(), image, VK_FORMAT_R8G8B8A8_UNORM, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), image);
 
     /* Release the handle again, destroy by hand */

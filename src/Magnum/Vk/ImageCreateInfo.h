@@ -239,7 +239,9 @@ CORRADE_ENUMSET_OPERATORS(ImageCreateInfo::Flags)
 
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_1D,ImageType} with the last two `size` components and
-`layers` set to @cpp 1 @ce.
+`layers` set to @cpp 1 @ce. You can use both @ref ImageViewCreateInfo1D and
+@ref ImageViewCreateInfo1DArray for view creation, although the array will need
+to have only one layer.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -264,7 +266,9 @@ class ImageCreateInfo1D: public ImageCreateInfo {
 
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_2D,ImageType} with the last `size` component and `layers`
-set to @cpp 1 @ce.
+set to @cpp 1 @ce. You can use both @ref ImageViewCreateInfo2D and
+@ref ImageViewCreateInfo2DArray for view creation, although the array will need
+to have only one layer.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -288,7 +292,8 @@ class ImageCreateInfo2D: public ImageCreateInfo {
 @m_since_latest
 
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
-@val_vk{IMAGE_TYPE_3D,ImageType} with `layers` set to @cpp 1 @ce.
+@val_vk{IMAGE_TYPE_3D,ImageType} with `layers` set to @cpp 1 @ce. Use
+@ref ImageViewCreateInfo3D for view creation.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -313,7 +318,9 @@ class ImageCreateInfo3D: public ImageCreateInfo {
 
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_1D,ImageType} with the last two `size` components set to
-@cpp 1 @ce and `layers` set to @cpp size.y() @ce.
+@cpp 1 @ce and `layers` set to @cpp size.y() @ce. You can use both
+@ref ImageViewCreateInfo1D and @ref ImageViewCreateInfo1DArray for view
+creation.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -338,7 +345,11 @@ class ImageCreateInfo1DArray: public ImageCreateInfo {
 
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_2D,ImageType} with the last `size` component set to
-@cpp 1 @ce and `layers` set to @cpp size.z() @ce.
+@cpp 1 @ce and `layers` set to @cpp size.z() @ce. You can use both
+@ref ImageViewCreateInfo2D, @ref ImageViewCreateInfo2DArray for view creation
+and if you set @ref Flag::CubeCompatible a @ref ImageViewCreateInfoCubeMap as
+well, although in that case it's better to use @ref ImageCreateInfoCubeMap that
+does this automatically.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -364,7 +375,11 @@ class ImageCreateInfo2DArray: public ImageCreateInfo {
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_2D,ImageType} with the last `size` component set to
 @cpp 1 @ce, `layers` set to @cpp 6 @ce and `flags` additionally having
-@ref Flag::CubeCompatible.
+@ref Flag::CubeCompatible. You can use any of @ref ImageViewCreateInfo2D,
+@ref ImageViewCreateInfo2DArray, @ref ImageViewCreateInfoCubeMap or
+@ref ImageViewCreateInfoCubeMapArray for view creation, although the last one
+will need to have exactly six layers, and requires
+@ref DeviceFeature::ImageCubeArray to be enabled.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
@@ -390,7 +405,10 @@ class ImageCreateInfoCubeMap: public ImageCreateInfo {
 Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @val_vk{IMAGE_TYPE_2D,ImageType} with the last `size` component set to
 @cpp 1 @ce, `layers` set to @cpp size.y() @ce and `flags` additionally having
-@ref Flag::CubeCompatible.
+@ref Flag::CubeCompatible. You can use any of @ref ImageViewCreateInfo2D,
+@ref ImageViewCreateInfo2DArray, @ref ImageViewCreateInfoCubeMap or
+@ref ImageViewCreateInfoCubeMapArray for view creation, note the last
+requires @ref DeviceFeature::ImageCubeArray to be enabled.
 
 Note that same as with the
 @ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)

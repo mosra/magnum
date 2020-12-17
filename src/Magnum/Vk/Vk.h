@@ -55,6 +55,9 @@ class Image;
 enum class ImageLayout: Int;
 class ImageCreateInfo;
 /* Not forward-declaring ImageCreateInfo1D etc right now, I see no need */
+class ImageView;
+class ImageViewCreateInfo;
+/* Not forward-declaring ImageViewCreateInfo1D etc right now, I see no need */
 class Instance;
 class InstanceCreateInfo;
 class InstanceExtension;

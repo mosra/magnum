@@ -60,15 +60,16 @@ ImageCreateInfo::ImageCreateInfo(const VkImageCreateInfo& info):
        member instead of doing a copy */
     _info(info) {}
 
-Image Image::wrap(Device& device, const VkImage handle, const HandleFlags flags) {
+Image Image::wrap(Device& device, const VkImage handle, const VkFormat format, const HandleFlags flags) {
     Image out{NoCreate};
     out._device = &device;
     out._handle = handle;
     out._flags = flags;
+    out._format = format;
     return out;
 }
 
-Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _dedicatedMemory{NoCreate} {
+Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _format{info->format}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateImage(device, info, nullptr, &_handle));
 }
 
@@ -80,9 +81,9 @@ Image::Image(Device& device, const ImageCreateInfo& info, const MemoryFlags memo
     }});
 }
 
-Image::Image(NoCreateT): _device{}, _handle{}, _dedicatedMemory{NoCreate} {}
+Image::Image(NoCreateT): _device{}, _handle{}, _format{}, _dedicatedMemory{NoCreate} {}
 
-Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
+Image::Image(Image&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _format{other._format}, _dedicatedMemory{std::move(other._dedicatedMemory)} {
     other._handle = {};
 }
 
@@ -96,6 +97,7 @@ Image& Image::operator=(Image&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
+    swap(other._format, _format);
     swap(other._dedicatedMemory, _dedicatedMemory);
     return *this;
 }

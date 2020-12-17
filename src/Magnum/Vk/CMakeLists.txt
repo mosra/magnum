@@ -48,6 +48,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp
     ExtensionProperties.cpp
     Image.cpp
+    ImageView.cpp
     LayerProperties.cpp
     Memory.cpp
     RenderPass.cpp)
@@ -69,6 +70,8 @@ set(MagnumVk_HEADERS
     Handle.h
     Image.h
     ImageCreateInfo.h
+    ImageView.h
+    ImageViewCreateInfo.h
     Instance.h
     InstanceCreateInfo.h
     Integration.h

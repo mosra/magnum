@@ -152,7 +152,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | |
 @fn_vk{CreateFramebuffer}, \n @fn_vk{DestroyFramebuffer} | |
 @fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | @ref Image constructor and destructor
-@fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | |
+@fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | @ref ImageView constructor and destructor
 @fn_vk{CreateInstance}, \n @fn_vk{DestroyInstance} | @ref Instance constructor and destructor
 @fn_vk{CreatePipeline}, \n @fn_vk{DestroyPipeline} | |
 @fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
@@ -492,14 +492,14 @@ Vulkan structure                        | Matching API
 @type_vk{ImageCreateInfo}               | @ref ImageCreateInfo
 @type_vk{ImageFormatListCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ImageFormatProperties}, \n @type_vk{ImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{ImageSubresourceRange}         | |
+@type_vk{ImageSubresourceRange}         | not exposed, internal to @ref ImageViewCreateInfo
 @type_vk{ImageMemoryBarrier}            | |
 @type_vk{ImageMemoryRequirementsInfo}, \n @type_vk{ImageMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Image::memoryRequirements()
 @type_vk{ImagePlaneMemoryRequirementsInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{ImageResolve}                  | |
 @type_vk{ImageSparseMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{ImageStencilUsageCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
-@type_vk{ImageViewCreateInfo}           | |
+@type_vk{ImageViewCreateInfo}           | @ref ImageViewCreateInfo
 @type_vk{ImageViewUsageCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{InputAttachmentAspectReference} | |
 @type_vk{InstanceCreateInfo}            | @ref InstanceCreateInfo

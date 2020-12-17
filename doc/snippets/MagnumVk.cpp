@@ -41,6 +41,7 @@
 #include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
+#include "Magnum/Vk/ImageViewCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Queue.h"
@@ -322,6 +323,23 @@ Vk::Memory memory{device, Vk::MemoryAllocateInfo{
 
 image.bindMemory(memory, 0);
 /* [Image-creation-custom-allocation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [ImageView-creation] */
+#include <Magnum/Vk/ImageViewCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Image image{device, Vk::ImageCreateInfo2DArray{ /* created before */
+        DOXYGEN_IGNORE(Vk::ImageUsage::Sampled, {}, {}, 1)
+    }, DOXYGEN_IGNORE(Vk::MemoryFlag::DeviceLocal)
+};
+
+Vk::ImageView view{device, Vk::ImageViewCreateInfo2DArray{image}};
+/* [ImageView-creation] */
 }
 
 {
