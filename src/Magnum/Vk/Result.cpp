@@ -41,6 +41,10 @@ Debug& operator<<(Debug& debug, const Result value) {
         _c(EventSet)
         _c(EventReset)
         _c(Incomplete)
+        _c(ThreadIdle)
+        _c(ThreadDone)
+        _c(OperationDeferred)
+        _c(OperationNotDeferred)
         _c(ErrorOutOfHostMemory)
         _c(ErrorOutOfDeviceMemory)
         _c(ErrorInitializationFailed)
@@ -54,6 +58,11 @@ Debug& operator<<(Debug& debug, const Result value) {
         _c(ErrorFormatNotSupported)
         _c(ErrorFragmentedPool)
         _c(ErrorUnknown)
+        _c(ErrorOutOfPoolMemory)
+        _c(ErrorInvalidExternalHandle)
+        _c(ErrorFragmentation)
+        _c(ErrorInvalidOpaqueCaptureAddress)
+        _c(ErrorValidationFailed)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

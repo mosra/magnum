@@ -64,10 +64,45 @@ enum class Result: Int {
     /** A return array was too small for the result */
     Incomplete = VK_INCOMPLETE,
 
-    /** A host memory allocation has failed */
+    /**
+     * A deferred operation is not complete but there is currently no work for
+     * this thread to do at the time of this call.
+     * @requires_vk_extension Extension @vk_extension{KHR,deferred_host_operations}
+     */
+    ThreadIdle = VK_THREAD_IDLE_KHR,
+
+    /**
+     * A deferred operation is not complete but there is no work remaining to
+     * assign to additional threads.
+     * @requires_vk_extension Extension @vk_extension{KHR,deferred_host_operations}
+     */
+    ThreadDone = VK_THREAD_DONE_KHR,
+
+    /**
+     * A deferred operation was requested and at least some of the work was
+     * deferred.
+     * @requires_vk_extension Extension @vk_extension{KHR,deferred_host_operations}
+     */
+    OperationDeferred = VK_OPERATION_DEFERRED_KHR,
+
+    /**
+     * A deferred operation was requested and no operations were deferred.
+     * @requires_vk_extension Extension @vk_extension{KHR,deferred_host_operations}
+     */
+    OperationNotDeferred = VK_OPERATION_NOT_DEFERRED_KHR,
+
+    /**
+     * A host memory allocation has failed.
+     * @see @ref Result::ErrorOutOfDeviceMemory,
+     *      @ref Result::ErrorOutOfPoolMemory
+     */
     ErrorOutOfHostMemory = VK_ERROR_OUT_OF_HOST_MEMORY,
 
-    /** A device memory allocation has failed */
+    /**
+     * A device memory allocation has failed.
+     * @see @ref Result::ErrorOutOfHostMemory,
+     *      @ref Result::ErrorOutOfPoolMemory
+     */
     ErrorOutOfDeviceMemory = VK_ERROR_OUT_OF_DEVICE_MEMORY,
 
     /**
@@ -112,7 +147,45 @@ enum class Result: Int {
      * An unknown error has occurred; either the application has provided
      * invalid input, or an implementation failure has occurred
      */
-    ErrorUnknown = VK_ERROR_UNKNOWN
+    ErrorUnknown = VK_ERROR_UNKNOWN,
+
+    /**
+     * A pool memory allocation has failed.
+     * @see @ref Result::ErrorOutOfHostMemory,
+     *      @ref Result::ErrorOutOfDeviceMemory
+     * @requires_vk11 Extension @vk_extension{KHR,maintenance1}
+     */
+    ErrorOutOfPoolMemory = VK_ERROR_OUT_OF_POOL_MEMORY,
+
+    /**
+     * An external handle is not a valid handle of the specified type.
+     * @requires_vk11 Extension @vk_extension{KHR,external_memory}
+     */
+    ErrorInvalidExternalHandle = VK_ERROR_INVALID_EXTERNAL_HANDLE,
+
+    /**
+     * A descriptor pool creation has failed due to fragmentation.
+     * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
+     */
+    ErrorFragmentation = VK_ERROR_FRAGMENTATION,
+
+    /**
+     * A buffer creation or memory allocation failed because the requested
+     * address is not available. A shader group handle assignment failed
+     * because the requested shader group handle information is no longer
+     * valid.
+     * @requires_vk12 Extension @vk_extension{EXT,buffer_device_address}
+     */
+    ErrorInvalidOpaqueCaptureAddress = VK_ERROR_INVALID_OPAQUE_CAPTURE_ADDRESS,
+
+    /**
+     * Validation failed.
+     * @todoc it's nice that docs for deprecated extensions are GONE from the
+     *      spec, how the fuck am I supposed to support these on old devices
+     *      then?!
+     * @requires_vk_extension Extension @vk_extension{EXT,debug_report}
+     */
+    ErrorValidationFailed = VK_ERROR_VALIDATION_FAILED_EXT
 };
 
 /**
