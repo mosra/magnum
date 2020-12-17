@@ -55,7 +55,7 @@ cmake .. \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=ON \
     -G Ninja
-ninja
+ninja $NINJA_JOBS
 CORRADE_TEST_COLOR=ON ctest -V
 if [ "$TARGET_GLES2" == "ON" ]; then CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="OES_vertex_array_object" ctest -V -R GLTest; fi
 Debug/bin/magnum-gl-info --limits > /dev/null

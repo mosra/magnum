@@ -47,6 +47,22 @@ commands:
           if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then export LCOV_PACKAGES="lcov curl"; fi
           apt install -y git ninja-build $LCOV_PACKAGES << parameters.extra >>
 
+  cap-ninja-jobs:
+    parameters:
+      count:
+        type: integer
+        # It reports 36 cores and ninja goes with 38 currently, still randomly
+        # dies with 32. RAM fluctuates from 10 to 20 GB.
+        default: 24
+    steps:
+    - run:
+        name: Query CPU cores, default Ninja parallelism and available RAM, cap jobs
+        command: |
+          nproc
+          ninja --help 2>&1 | grep "N jobs in parallel" || true
+          free
+          echo "export NINJA_JOBS=-j<< parameters.count >>" >> $BASH_ENV
+
   install-base-macos:
     parameters:
       extra:
@@ -215,6 +231,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -251,6 +271,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake-3_4
     - install-swiftshader-gles:
@@ -271,6 +295,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libsdl2-dev libglfw3-dev wget unzip
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake-3_4
     - install-swiftshader-gles:
@@ -292,6 +320,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
@@ -310,6 +342,10 @@ jobs:
     steps:
     - install-base-linux:
         extra: libgl1-mesa-dev libsdl2-dev libglfw3-dev libopenal-dev libvulkan-dev
+    # It crashes with the default setting. Only on GCC, usually when the huge
+    # TradeAbstractImporterTest / TradeMaterialDataTest get involved.
+    # TODO: revisit when we get rid of more STL
+    - cap-ninja-jobs
     - install-gcc-4_8
     - install-cmake-3_4
     - setup-null-openal-driver
