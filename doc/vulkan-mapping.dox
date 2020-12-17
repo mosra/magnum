@@ -65,6 +65,7 @@ Vulkan function                         | Matching API
 @fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | |
 @fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Buffer::bindMemory()
 @fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Image::bindMemory()
+@fn_vk{BuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 
 @subsection vulkan-mapping-functions-c C
 
@@ -80,13 +81,18 @@ Vulkan function                         | Matching API
 @fn_vk{CmdBindPipeline}                 | |
 @fn_vk{CmdBindVertexBuffers}            | |
 @fn_vk{CmdBlitImage}                    | |
+@fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CmdBuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdClearAttachments}             | |
 @fn_vk{CmdClearColorImage}              | |
 @fn_vk{CmdClearDepthStencilImage}       | |
+@fn_vk{CmdCopyAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CmdCopyAccelerationStructureToMemoryKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdCopyBuffer}                   | |
 @fn_vk{CmdCopyBufferToImage}            | |
 @fn_vk{CmdCopyImage}                    | |
 @fn_vk{CmdCopyImageToBuffer}            | |
+@fn_vk{CmdCopyMemoryToAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdCopyQueryPoolResults}         | |
 @fn_vk{CmdDebugMarkerBeginEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdDebugMarkerEndEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdDebugMarkerInsertEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
@@ -114,20 +120,30 @@ Vulkan function                         | Matching API
 @fn_vk{CmdSetDepthBounds}               | |
 @fn_vk{CmdSetEvent}                     | |
 @fn_vk{CmdSetLineWidth}                 | |
+@fn_vk{CmdSetRayTracingPipelineStackSizeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdSetScissor}                   | |
 @fn_vk{CmdSetStencilCompareMask}        | |
 @fn_vk{CmdSetStencilReference}          | |
 @fn_vk{CmdSetStencilWriteMask}          | |
 @fn_vk{CmdSetViewport}                  | |
+@fn_vk{CmdTraceRaysIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CmdTraceRaysKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdUpdateBuffer}                 | |
 @fn_vk{CmdWaitEvents}                   | |
+@fn_vk{CmdWriteAccelerationStructuresPropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdWriteTimestamp}               | |
+@fn_vk{CopyAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CopyAccelerationStructureToMemoryKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CopyMemoryToAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CreateAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateBuffer}, \n @fn_vk{DestroyBuffer} | @ref Buffer constructor and destructor
 @fn_vk{CreateBufferView}, \n @fn_vk{DestroyBufferView} | |
 @fn_vk{CreateCommandPool}, \n @fn_vk{DestroyCommandPool} | @ref CommandPool constructor and destructor
 @fn_vk{CreateComputePipelines}, \n @fn_vk{DestroyComputePipelines} | |
 @fn_vk{CreateDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CreateDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | |
 @fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | |
 @fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -142,6 +158,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
 @fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | |
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
+@fn_vk{CreateRayTracingPipelinesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
 @fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -158,6 +175,7 @@ Vulkan function                         | Matching API
 @fn_vk{DebugMarkerSetObjectNameEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{DebugMarkerSetObjectTagEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{DebugReportMessageEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{DeferredOperationJoinKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 
 @subsection vulkan-mapping-functions-e E
 
@@ -187,13 +205,18 @@ Vulkan function                         | Matching API
 
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
+@fn_vk{GetAccelerationStructureBuildSizesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{GetAccelerationStructureDeviceAddressKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{GetBufferDeviceAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{GetBufferOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@fn_vk{GetDeviceMemoryOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{GetBufferMemoryRequirements}, \n @fn_vk{GetBufferMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Buffer::memoryRequirements()
+@fn_vk{GetDeferredOperationMaxConcurrencyKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{GetDeferredOperationResultKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{GetDescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@fn_vk{GetDeviceAccelerationStructureCompatibilityKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{GetDeviceGroupPeerMemoryFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetDeviceMemoryCommitment}       | |
+@fn_vk{GetDeviceMemoryOpaqueCaptureAddress} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{GetDeviceProcAddr}               | @ref Device constructor
 @fn_vk{GetDeviceQueue}, \n @fn_vk{GetDeviceQueue2} @m_class{m-label m-flat m-success} **1.1** | @ref Device constructor
 @fn_vk{GetEventStatus}                  | |
@@ -213,6 +236,9 @@ Vulkan function                         | Matching API
 @fn_vk{GetPhysicalDeviceQueueFamilyProperties}, \n @fn_vk{GetPhysicalDeviceQueueFamilyProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties::queueFamilyProperties()
 @fn_vk{GetPhysicalDeviceSparseImageFormatProperties}, \n @fn_vk{GetPhysicalDeviceSparseImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{GetPipelineCacheData}            | |
+@fn_vk{GetRayTracingCaptureReplayShaderGroupHandlesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{GetRayTracingShaderGroupHandlesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{GetRayTracingShaderGroupStackSizeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{GetQueryPoolResults}             | |
 @fn_vk{GetRenderAreaGranularity}        | |
 @fn_vk{GetSemaphoreCounterValue} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
@@ -294,6 +320,7 @@ Vulkan function                         | Matching API
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{WaitForFences}                   | |
+@fn_vk{WriteAccelerationStructuresPropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 
 @section vulkan-mapping-structures Structures
 
@@ -303,6 +330,19 @@ Vulkan function                         | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{AabbPositionsKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureBuildGeometryInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureBuildRangeInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureBuildSizesInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureDeviceAddressInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureGeometryAabbsDataKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureGeometryDataKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureGeometryInstancesDataKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureGeometryKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureGeometryTrianglesDataKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureInstanceKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureVersionInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{AllocationCallbacks}           | intentionally @ref vulkan-wrapping-host-allocation "not exposed"
 @type_vk{ApplicationInfo}               | @ref InstanceCreateInfo
 @type_vk{AttachmentDescription}, \n @type_vk{AttachmentDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref AttachmentDescription
@@ -351,6 +391,9 @@ Vulkan structure                        | Matching API
 @type_vk{ComponentMapping}              | |
 @type_vk{ComputePipelineCreateInfo}     | |
 @type_vk{ConformanceVersion}            | |
+@type_vk{CopyAccelerationStructureInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{CopyAccelerationStructureToMemoryInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{CopyMemoryToAccelerationStructureInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{CopyDescriptorSet}             | |
 
 @subsection vulkan-mapping-structures-d D
@@ -382,6 +425,8 @@ Vulkan structure                        | Matching API
 @type_vk{DescriptorSetVariableDescriptorCountLayoutSupport} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{DescriptorUpdateTemplateEntry} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DescriptorUpdateTemplateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DeviceOrHostAddressConstKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{DeviceOrHostAddressKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{DeviceCreateInfo}              | @ref DeviceCreateInfo
 @type_vk{DeviceGroupBindSparseInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DeviceGroupCommandBufferBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -501,6 +546,8 @@ Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{PhysicalDevice8bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDevice16bitStorageFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceAccelerationStructureFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceAccelerationStructurePropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PhysicalDeviceBufferDeviceAddressFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceDepthStencilResolveProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{PhysicalDeviceDescriptorIndexingFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DeviceFeatures
@@ -528,6 +575,9 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceProperties}, \n @type_vk{PhysicalDeviceProperties2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
 @type_vk{PhysicalDeviceProtectedMemoryFeatures} @m_class{m-label m-flat m-success} **1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceProtectedMemoryProperties} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{PhysicalDeviceRayQueryFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceRayTracingPipelineFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceRayTracingPipelinePropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PhysicalDeviceSamplerFilterMinmaxProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{PhysicalDeviceSamplerYcbcrConversionFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceSeparateDepthStencilLayoutsFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
@@ -555,6 +605,7 @@ Vulkan structure                        | Matching API
 @type_vk{PipelineDynamicStateCreateInfo} | |
 @type_vk{PipelineInputAssemblyStateCreateInfo} | |
 @type_vk{PipelineLayoutCreateInfo}      | |
+@type_vk{PipelineLibraryCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PipelineMultisampleStateCreateInfo} | |
 @type_vk{PipelineRasterizationStateCreateInfo} | |
 @type_vk{PipelineShaderStageCreateInfo} | |
@@ -580,6 +631,9 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
+@type_vk{RayTracingPipelineCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{RayTracingPipelineInterfaceCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{RayTracingShaderGroupCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{Rect2D}                        | convertible from/to @ref Range2Di using @ref Magnum/Vk/Integration.h
 @type_vk{RenderPassBeginInfo}           | |
 @type_vk{RenderPassAttachmentBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
@@ -613,6 +667,7 @@ Vulkan structure                        | Matching API
 @type_vk{SpecializationInfo}            | |
 @type_vk{SpecializationMapEntry}        | |
 @type_vk{StencilOpState}                | |
+@type_vk{StridedDeviceAddressRegionKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{SubmitInfo}                    | |
 @type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
@@ -628,6 +683,8 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{TimelineSemaphoreSubmitInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{TraceRaysIndirectCommandKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{TransformMatrixKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 
 @subsection vulkan-mapping-structures-v V
 
@@ -647,6 +704,7 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{WriteDescriptorSet}            | |
+@type_vk{WriteDescriptorSetAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 
 */
 

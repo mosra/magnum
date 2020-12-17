@@ -303,6 +303,8 @@ const DeviceFeatures& DeviceProperties::features() {
             Implementation::structureConnect(next, features.imagelessFramebuffer, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGELESS_FRAMEBUFFER_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::KHR::variable_pointers>())
             Implementation::structureConnect(next, features.variablePointers, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::KHR::acceleration_structure>())
+            Implementation::structureConnect(next, features.accelerationStructure, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR);
         if(isOrVersionSupportedInternal<Extensions::KHR::sampler_ycbcr_conversion>())
             Implementation::structureConnect(next, features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::EXT::descriptor_indexing>())
@@ -329,6 +331,10 @@ const DeviceFeatures& DeviceProperties::features() {
             Implementation::structureConnect(next, features.hostQueryReset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::EXT::index_type_uint8>())
             Implementation::structureConnect(next, features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
+        if(isOrVersionSupportedInternal<Extensions::KHR::ray_tracing_pipeline>())
+            Implementation::structureConnect(next, features.rayTracingPipeline, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
+        if(isOrVersionSupportedInternal<Extensions::KHR::ray_query>())
+            Implementation::structureConnect(next, features.rayQuery, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR);
 
         _state->getFeaturesImplementation(*this, features2);
 

@@ -342,6 +342,7 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features._16BitStorage,
             _state->features.imagelessFramebuffer,
             _state->features.variablePointers,
+            _state->features.accelerationStructure,
             _state->features.samplerYcbcrConversion,
             _state->features.descriptorIndexing,
             _state->features.shaderSubgroupExtendedTypes,
@@ -354,7 +355,9 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features.uniformBufferStandardLayout,
             _state->features.bufferDeviceAddress,
             _state->features.hostQueryReset,
-            _state->features.indexTypeUint8
+            _state->features.indexTypeUint8,
+            _state->features.rayTracingPipeline,
+            _state->features.rayQuery
         });
 
         _state->firstEnabledFeature = {};
@@ -441,6 +444,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.variablePointers, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.accelerationStructure, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.descriptorIndexing, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES);
@@ -466,6 +471,10 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
         _state->features.hostQueryReset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.rayTracingPipeline, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.rayQuery, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR);
 
     return *this;
 }

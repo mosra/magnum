@@ -145,22 +145,27 @@ namespace EXT {
     _extension(47, KHR,relaxed_block_layout,                Vk10, Vk11) // #145
     _extension(48, KHR,get_memory_requirements2,            Vk10, Vk11) // #147
     _extension(49, KHR,image_format_list,                   Vk10, Vk12) // #148
-    _extension(50, KHR,sampler_ycbcr_conversion,            Vk10, Vk11) // #157
-    _extension(51, KHR,bind_memory2,                        Vk10, Vk11) // #158
-    _extension(52, KHR,maintenance3,                        Vk10, Vk11) // #169
-    _extension(53, KHR,draw_indirect_count,                 Vk10, Vk12) // #170
-    _extension(54, KHR,shader_subgroup_extended_types,      Vk11, Vk12) // #176
-   _extension_(55, KHR,8bit_storage,_8bit_storage,          Vk10, Vk12) // #178
-    _extension(56, KHR,shader_atomic_int64,                 Vk10, Vk12) // #181
-    _extension(57, KHR,driver_properties,                   Vk10, Vk12) // #197
-    _extension(58, KHR,shader_float_controls,               Vk10, Vk12) // #198
-    _extension(59, KHR,depth_stencil_resolve,               Vk10, Vk12) // #200
-    _extension(60, KHR,timeline_semaphore,                  Vk10, Vk12) // #208
-    _extension(61, KHR,vulkan_memory_model,                 Vk10, Vk12) // #212
-    _extension(62, KHR,spirv_1_4,                           Vk11, Vk12) // #237
-    _extension(63, KHR,separate_depth_stencil_layouts,      Vk10, Vk12) // #242
-    _extension(64, KHR,uniform_buffer_standard_layout,      Vk10, Vk12) // #254
-    _extension(65, KHR,buffer_device_address,               Vk10, Vk12) // #258
+    _extension(50, KHR,acceleration_structure,              Vk11, None) // #151
+    _extension(51, KHR,sampler_ycbcr_conversion,            Vk10, Vk11) // #157
+    _extension(52, KHR,bind_memory2,                        Vk10, Vk11) // #158
+    _extension(53, KHR,maintenance3,                        Vk10, Vk11) // #169
+    _extension(54, KHR,draw_indirect_count,                 Vk10, Vk12) // #170
+    _extension(55, KHR,shader_subgroup_extended_types,      Vk11, Vk12) // #176
+   _extension_(56, KHR,8bit_storage,_8bit_storage,          Vk10, Vk12) // #178
+    _extension(57, KHR,shader_atomic_int64,                 Vk10, Vk12) // #181
+    _extension(58, KHR,driver_properties,                   Vk10, Vk12) // #197
+    _extension(59, KHR,shader_float_controls,               Vk10, Vk12) // #198
+    _extension(60, KHR,depth_stencil_resolve,               Vk10, Vk12) // #200
+    _extension(61, KHR,timeline_semaphore,                  Vk10, Vk12) // #208
+    _extension(62, KHR,vulkan_memory_model,                 Vk10, Vk12) // #212
+    _extension(63, KHR,spirv_1_4,                           Vk11, Vk12) // #237
+    _extension(64, KHR,separate_depth_stencil_layouts,      Vk10, Vk12) // #242
+    _extension(65, KHR,uniform_buffer_standard_layout,      Vk10, Vk12) // #254
+    _extension(66, KHR,buffer_device_address,               Vk10, Vk12) // #258
+    _extension(67, KHR,deferred_host_operations,            Vk10, None) // #259
+    _extension(68, KHR,pipeline_library,                    Vk10, None) // #291
+    _extension(69, KHR,ray_tracing_pipeline,                Vk11, None) // #348
+    _extension(70, KHR,ray_query,                           Vk11, None) // #349
 }
 #undef _extension
 

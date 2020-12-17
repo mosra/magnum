@@ -71,6 +71,11 @@ constexpr Extension DeviceExtensions[] {
     Extensions::EXT::index_type_uint8{},
     Extensions::EXT::texture_compression_astc_hdr{},
     Extensions::IMG::format_pvrtc{},
+    Extensions::KHR::acceleration_structure{},
+    Extensions::KHR::deferred_host_operations{},
+    Extensions::KHR::pipeline_library{},
+    Extensions::KHR::ray_query{},
+    Extensions::KHR::ray_tracing_pipeline{},
 };
 constexpr Extension DeviceExtensions11[] {
     Extensions::KHR::_16bit_storage{},

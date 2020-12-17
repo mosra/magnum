@@ -54,6 +54,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 /* VK_EXT_host_query_reset */
 
 
+/* VK_KHR_acceleration_structure */
+
+
 /* VK_KHR_bind_memory2 */
 
 
@@ -61,6 +64,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 
 
 /* VK_KHR_create_renderpass2 */
+
+
+/* VK_KHR_deferred_host_operations */
 
 
 /* VK_KHR_descriptor_update_template */
@@ -105,6 +111,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 
 
 /* VK_KHR_maintenance3 */
+
+
+/* VK_KHR_ray_tracing_pipeline */
 
 
 /* VK_KHR_sampler_ycbcr_conversion */
@@ -174,6 +183,25 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
 #define vkResetQueryPoolEXT flextVkDevice.ResetQueryPoolEXT
 
+/* VK_KHR_acceleration_structure */
+
+#define vkBuildAccelerationStructuresKHR flextVkDevice.BuildAccelerationStructuresKHR
+#define vkCmdBuildAccelerationStructuresIndirectKHR flextVkDevice.CmdBuildAccelerationStructuresIndirectKHR
+#define vkCmdBuildAccelerationStructuresKHR flextVkDevice.CmdBuildAccelerationStructuresKHR
+#define vkCmdCopyAccelerationStructureKHR flextVkDevice.CmdCopyAccelerationStructureKHR
+#define vkCmdCopyAccelerationStructureToMemoryKHR flextVkDevice.CmdCopyAccelerationStructureToMemoryKHR
+#define vkCmdCopyMemoryToAccelerationStructureKHR flextVkDevice.CmdCopyMemoryToAccelerationStructureKHR
+#define vkCmdWriteAccelerationStructuresPropertiesKHR flextVkDevice.CmdWriteAccelerationStructuresPropertiesKHR
+#define vkCopyAccelerationStructureKHR flextVkDevice.CopyAccelerationStructureKHR
+#define vkCopyAccelerationStructureToMemoryKHR flextVkDevice.CopyAccelerationStructureToMemoryKHR
+#define vkCopyMemoryToAccelerationStructureKHR flextVkDevice.CopyMemoryToAccelerationStructureKHR
+#define vkCreateAccelerationStructureKHR flextVkDevice.CreateAccelerationStructureKHR
+#define vkDestroyAccelerationStructureKHR flextVkDevice.DestroyAccelerationStructureKHR
+#define vkGetAccelerationStructureBuildSizesKHR flextVkDevice.GetAccelerationStructureBuildSizesKHR
+#define vkGetAccelerationStructureDeviceAddressKHR flextVkDevice.GetAccelerationStructureDeviceAddressKHR
+#define vkGetDeviceAccelerationStructureCompatibilityKHR flextVkDevice.GetDeviceAccelerationStructureCompatibilityKHR
+#define vkWriteAccelerationStructuresPropertiesKHR flextVkDevice.WriteAccelerationStructuresPropertiesKHR
+
 /* VK_KHR_bind_memory2 */
 
 #define vkBindBufferMemory2KHR flextVkDevice.BindBufferMemory2KHR
@@ -191,6 +219,14 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 #define vkCmdEndRenderPass2KHR flextVkDevice.CmdEndRenderPass2KHR
 #define vkCmdNextSubpass2KHR flextVkDevice.CmdNextSubpass2KHR
 #define vkCreateRenderPass2KHR flextVkDevice.CreateRenderPass2KHR
+
+/* VK_KHR_deferred_host_operations */
+
+#define vkCreateDeferredOperationKHR flextVkDevice.CreateDeferredOperationKHR
+#define vkDeferredOperationJoinKHR flextVkDevice.DeferredOperationJoinKHR
+#define vkDestroyDeferredOperationKHR flextVkDevice.DestroyDeferredOperationKHR
+#define vkGetDeferredOperationMaxConcurrencyKHR flextVkDevice.GetDeferredOperationMaxConcurrencyKHR
+#define vkGetDeferredOperationResultKHR flextVkDevice.GetDeferredOperationResultKHR
 
 /* VK_KHR_descriptor_update_template */
 
@@ -237,6 +273,16 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 /* VK_KHR_maintenance3 */
 
 #define vkGetDescriptorSetLayoutSupportKHR flextVkDevice.GetDescriptorSetLayoutSupportKHR
+
+/* VK_KHR_ray_tracing_pipeline */
+
+#define vkCmdSetRayTracingPipelineStackSizeKHR flextVkDevice.CmdSetRayTracingPipelineStackSizeKHR
+#define vkCmdTraceRaysIndirectKHR flextVkDevice.CmdTraceRaysIndirectKHR
+#define vkCmdTraceRaysKHR flextVkDevice.CmdTraceRaysKHR
+#define vkCreateRayTracingPipelinesKHR flextVkDevice.CreateRayTracingPipelinesKHR
+#define vkGetRayTracingCaptureReplayShaderGroupHandlesKHR flextVkDevice.GetRayTracingCaptureReplayShaderGroupHandlesKHR
+#define vkGetRayTracingShaderGroupHandlesKHR flextVkDevice.GetRayTracingShaderGroupHandlesKHR
+#define vkGetRayTracingShaderGroupStackSizeKHR flextVkDevice.GetRayTracingShaderGroupStackSizeKHR
 
 /* VK_KHR_sampler_ycbcr_conversion */
 

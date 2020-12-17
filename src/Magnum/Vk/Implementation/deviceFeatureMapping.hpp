@@ -122,6 +122,14 @@ _ce(VariablePointersStorageBuffer, variablePointersStorageBuffer)
 _ce(VariablePointers, variablePointers)
 #undef _ce
 
+#define _ce(value, field) _cext(value, field, accelerationStructure, KHR::acceleration_structure)
+_ce(AccelerationStructure, accelerationStructure)
+_ce(AccelerationStructureCaptureReplay, accelerationStructureCaptureReplay)
+_ce(AccelerationStructureIndirectBuild, accelerationStructureIndirectBuild)
+_ce(AccelerationStructureHostCommands, accelerationStructureHostCommands)
+_ce(DescriptorBindingAccelerationStructureUpdateAfterBind, descriptorBindingAccelerationStructureUpdateAfterBind)
+#undef _ce
+
 _cext(SamplerYcbcrConversion, samplerYcbcrConversion, samplerYcbcrConversion, KHR::sampler_ycbcr_conversion)
 
 #define _ce(value, field) _cext(value, field, descriptorIndexing, EXT::descriptor_indexing)
@@ -183,4 +191,14 @@ _ce(BufferDeviceAddressMultiDevice, bufferDeviceAddressMultiDevice)
 _cext(HostQueryReset, hostQueryReset, hostQueryReset, EXT::host_query_reset)
 
 _cext(IndexTypeUint8, indexTypeUint8, indexTypeUint8, EXT::index_type_uint8)
+
+#define _ce(value, field) _cext(value, field, rayTracingPipeline, KHR::ray_tracing_pipeline)
+_ce(RayTracingPipeline, rayTracingPipeline)
+_ce(RayTracingPipelineShaderGroupHandleCaptureReplay, rayTracingPipelineShaderGroupHandleCaptureReplay)
+_ce(RayTracingPipelineShaderGroupHandleCaptureReplayMixed, rayTracingPipelineShaderGroupHandleCaptureReplayMixed)
+_ce(RayTracingPipelineTraceRaysIndirect, rayTracingPipelineTraceRaysIndirect)
+_ce(RayTraversalPrimitiveCulling, rayTraversalPrimitiveCulling)
+#undef _ce
+
+_cext(RayQuery, rayQuery, rayQuery, KHR::ray_query)
 #endif

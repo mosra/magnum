@@ -44,6 +44,7 @@ struct DeviceFeatures {
     VkPhysicalDevice16BitStorageFeatures _16BitStorage;
     VkPhysicalDeviceImagelessFramebufferFeatures imagelessFramebuffer;
     VkPhysicalDeviceVariablePointersFeatures variablePointers;
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructure;
     VkPhysicalDeviceSamplerYcbcrConversionFeatures samplerYcbcrConversion;
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexing;
     VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures shaderSubgroupExtendedTypes;
@@ -57,6 +58,8 @@ struct DeviceFeatures {
     VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddress;
     VkPhysicalDeviceHostQueryResetFeatures hostQueryReset;
     VkPhysicalDeviceIndexTypeUint8FeaturesEXT indexTypeUint8;
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipeline;
+    VkPhysicalDeviceRayQueryFeaturesKHR rayQuery;
 };
 
 }}}

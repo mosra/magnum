@@ -77,6 +77,7 @@ enum class BufferUsage: UnsignedInt {
     IndirectBuffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
 
     /** @todo VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 1.2 */
+    /** @todo RT-related usages */
 };
 
 /**

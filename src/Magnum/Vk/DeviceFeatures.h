@@ -530,6 +530,46 @@ enum class DeviceFeature: UnsignedShort {
      */
     VariablePointers,
 
+    /* VkPhysicalDeviceAccelerationStructureFeaturesKHR, #151 */
+
+    /**
+     * Whether acceleration structure functionality is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
+     */
+    AccelerationStructure,
+
+    /**
+     * Whether saving and reusing acceleration structure devices for trace
+     * capture and replay is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
+     */
+    AccelerationStructureCaptureReplay,
+
+    /**
+     * Whether indirect acceleration structure builds are supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
+     */
+    AccelerationStructureIndirectBuild,
+
+    /**
+     * Whether host-side acceleration structure commands are supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
+     */
+    AccelerationStructureHostCommands,
+
+    /**
+     * Whether acceleration structure descriptors can be updated after a set is
+     * bound.
+     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
+     */
+    DescriptorBindingAccelerationStructureUpdateAfterBind,
+
     /* VkPhysicalDeviceSamplerYcbcrConversionFeatures, #157 */
 
     /**
@@ -742,7 +782,8 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether uniform buffer descriptors can be updated after a set is bound.
-     * @see @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
@@ -753,7 +794,8 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether sampled image descriptors can be updated after a set is bound.
-     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
@@ -764,7 +806,8 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether storage image descriptors can be updated after a set is bound.
-     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
@@ -775,7 +818,8 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether storage buffer descriptors can be updated after a set is bound.
-     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
@@ -787,7 +831,8 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether uniform texel buffer descriptors can be updated after a set is
      * bound.
-     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
@@ -799,7 +844,8 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether storage texel buffer descriptors can be updated after a set is
      * bound.
-     * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
+     * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
+     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
      *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
@@ -1000,7 +1046,49 @@ enum class DeviceFeature: UnsignedShort {
      * @see @ref DeviceFeature::FullDrawIndexUint32
      * @requires_vk_extension Extension @vk_extension{EXT,index_type_uint8}
      */
-    IndexTypeUint8
+    IndexTypeUint8,
+
+    /* VkPhysicalDeviceRayTracingPipelineFeaturesKHR, #348 */
+
+    /**
+     * Whether ray tracing pipeline functionality is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_tracing_pipeline}
+     */
+    RayTracingPipeline,
+
+    /**
+     * Whether saving and reusing shader group handles for trace capture and
+     * replay is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_tracing_pipeline}
+     */
+    RayTracingPipelineShaderGroupHandleCaptureReplay,
+
+    /**
+     * Whether reused shader group handles can be arbitrarily mixed with
+     * creation of non-reused shader group handles.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_tracing_pipeline}
+     */
+    RayTracingPipelineShaderGroupHandleCaptureReplayMixed,
+
+    /**
+     * Whether indirect trace ray commands are supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_tracing_pipeline}
+     */
+    RayTracingPipelineTraceRaysIndirect,
+
+    /**
+     * Whether primitive culling during ray traversal is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_tracing_pipeline}
+     */
+    RayTraversalPrimitiveCulling,
+
+    /* VkPhysicalDeviceRayQueryFeaturesKHR, #349 */
+
+    /**
+     * Whether ray query functionality is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,ray_query}
+     */
+    RayQuery
 };
 
 /**

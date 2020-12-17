@@ -121,6 +121,11 @@ Extension                                           | Status
 @vk_extension{EXT,debug_utils} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
+@vk_extension{KHR,acceleration_structure}           | |
+@vk_extension{KHR,deferred_host_operations}         | |
+@vk_extension{KHR,pipeline_library}                 | |
+@vk_extension{KHR,ray_tracing_pipeline}             | |
+@vk_extension{KHR,ray_query}                        | |
 @vk_extension{IMG,format_pvrtc}                     | @ref Vk::vkFormat() only
 
 */

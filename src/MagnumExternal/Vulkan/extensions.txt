@@ -63,6 +63,11 @@ extension EXT_validation_features               optional
 extension EXT_texture_compression_astc_hdr      optional
 extension EXT_index_type_uint8                  optional
 extension IMG_format_pvrtc                      optional
+extension KHR_acceleration_structure            optional
+extension KHR_deferred_host_operations          optional
+extension KHR_pipeline_library                  optional
+extension KHR_ray_tracing_pipeline              optional
+extension KHR_ray_query                         optional
 
 begin functions blacklist
     # Deprecated since 1.0.13, not used
