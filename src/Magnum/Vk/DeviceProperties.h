@@ -445,6 +445,9 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If Vulkan 1.1 or the @vk_extension{KHR,sampler_ycbcr_conversion}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
+         * -    If the @vk_extension{KHR,acceleration_structure} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceAccelerationStructureFeaturesKHR}
          * -    If Vulkan 1.2 or the @vk_extension{EXT,descriptor_indexing}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
@@ -481,6 +484,12 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If the @vk_extension{EXT,index_type_uint8} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
+         * -    If the @vk_extension{KHR,ray_tracing_pipeline} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceRayTracingPipelineFeaturesKHR}
+         * -    If the @vk_extension{KHR,ray_query} extension is supported by
+         *      the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceRayQueryFeaturesKHR}
          *
          * @see @ref Device::enabledFeatures(),
          *      @fn_vk_keyword{GetPhysicalDeviceFeatures2},

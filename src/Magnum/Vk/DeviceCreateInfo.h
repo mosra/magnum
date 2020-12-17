@@ -228,6 +228,8 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      (Vulkan 1.2, @vk_extension{KHR,imageless_framebuffer})
          * -    @type_vk_keyword{PhysicalDeviceVariablePointersFeatures}
          *      (Vulkan 1.1, @vk_extension{KHR,variable_pointers})
+         * -    @type_vk_keyword{PhysicalDeviceAccelerationStructureFeaturesKHR}
+         *      (@vk_extension{KHR,acceleration_structure})
          * -    @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
          *      (Vulkan 1.1, @vk_extension{KHR,sampler_ycbcr_conversion})
          * -    @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
@@ -254,6 +256,10 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      1.2, @vk_extension{EXT,host_query_reset})
          * -    @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
          *      (@vk_extension{EXT,index_type_uint8})
+         * -    @type_vk_keyword{PhysicalDeviceRayTracingPipelineFeaturesKHR}
+         *      (@vk_extension{KHR,ray_tracing_pipeline})
+         * -    @type_vk_keyword{PhysicalDeviceRayQueryFeaturesKHR}
+         *      (@vk_extension{KHR,ray_query})
          */
         DeviceCreateInfo& setEnabledFeatures(const DeviceFeatures& features) &;
         /** @overload */
