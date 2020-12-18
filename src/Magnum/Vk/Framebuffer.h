@@ -72,15 +72,15 @@ class MAGNUM_VK_EXPORT Framebuffer {
 
         /**
          * @brief Constructor
-         * @param device    Vulkan device to create the image on
-         * @param info      Image creation info
+         * @param device    Vulkan device to create the framebuffer on
+         * @param info      Framebuffer creation info
          *
          * @see @fn_vk_keyword{CreateFramebuffer}
          */
         explicit Framebuffer(Device& device, const FramebufferCreateInfo& info);
 
         /**
-         * @brief Construct without creating the image
+         * @brief Construct without creating the framebuffer
          *
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move

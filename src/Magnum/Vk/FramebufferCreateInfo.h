@@ -45,7 +45,7 @@ namespace Magnum { namespace Vk {
 @brief Framebuffer creation info
 @m_since_latest
 
-Wraps a @type_vk{FramebufferCreateInfo}. See
+Wraps a @type_vk_keyword{FramebufferCreateInfo}. See
 @ref Vk-Framebuffer-creation "Framebuffer creation" for usage information.
 */
 class MAGNUM_VK_EXPORT FramebufferCreateInfo {
