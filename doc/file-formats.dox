@@ -184,6 +184,22 @@ Together with @ref file-formats-scene-importers "scene importers" derived from
 <tr><td colspan="6"></td></tr>
 
 <tr>
+<th rowspan="2">PSD<br/>(`*.psd`)</th>
+<td rowspan="2">`PsdImporter`</td>
+<td>@ref Trade::StbImageImporter "StbImageImporter"</td>
+<td class="m-text-center m-danger">@ref Trade-StbImageImporter-behavior-psd "severe"</td>
+<td class="m-text-center m-primary">bundled</td>
+<td class="m-text-center m-primary">public domain</td>
+</tr>
+<tr>
+<td>@ref Trade::DevIlImageImporter "DevIlImageImporter"</td>
+<td class="m-text-center m-danger">@ref Trade-DevIlImageImporter-behavior-psd "severe"</td>
+<td class="m-text-center m-danger">external</td>
+<td class="m-text-center m-warning">LGPLv2.1</td>
+</tr>
+<tr><td colspan="6"></td></tr>
+
+<tr>
 <th rowspan="3">Truevision TGA<br/>(`*.tga`, `*.vda`, `*.icb`, `*.vst`)</th>
 <td rowspan="3">`TgaImporter`</td>
 <td>@ref Trade::TgaImporter "TgaImporter"</td>
