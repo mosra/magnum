@@ -47,7 +47,7 @@ namespace Implementation { struct DeviceState; }
 Wraps a @type_vk_keyword{RenderPass}, represents a collection of attachment
 descriptions, subpasses and their dependencies. The render pass description is
 independent of any specific image views used for attachments, these two are
-connected together in a framebuffer.
+connected together in a @ref Framebuffer.
 
 @section Vk-RenderPass-creation Render pass creation
 

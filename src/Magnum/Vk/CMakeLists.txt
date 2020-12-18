@@ -30,6 +30,7 @@ set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
     Extensions.cpp
+    Framebuffer.cpp
     Handle.cpp
     Instance.cpp
     Result.cpp
@@ -67,6 +68,8 @@ set(MagnumVk_HEADERS
     Enums.h
     Extensions.h
     ExtensionProperties.h
+    Framebuffer.h
+    FramebufferCreateInfo.h
     Handle.h
     Image.h
     ImageCreateInfo.h

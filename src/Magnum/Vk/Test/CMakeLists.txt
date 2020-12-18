@@ -33,6 +33,7 @@ corrade_add_test(VkDeviceFeaturesTest DeviceFeaturesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkEnumsTest EnumsTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkExtensionsTest ExtensionsTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkExtensionPropertiesTest ExtensionPropertiesTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkFramebufferTest FramebufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkHandleTest HandleTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkImageTest ImageTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkImageViewTest ImageViewTest.cpp LIBRARIES MagnumVkTestLib)
@@ -122,6 +123,7 @@ set_target_properties(
     VkEnumsTest
     VkExtensionsTest
     VkExtensionPropertiesTest
+    VkFramebufferTest
     VkHandleTest
     VkImageTest
     VkImageViewTest
@@ -152,6 +154,7 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkDeviceVkTest DeviceVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkDevicePropertiesVkTest DevicePropertiesVkTest.cpp LIBRARIES  MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkExtensionPropertiesVkTest ExtensionPropertiesVkTest.cpp LIBRARIES MagnumVkTestLib)
+    corrade_add_test(VkFramebufferVkTest FramebufferVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkLayerPropertiesVkTest LayerPropertiesVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkImageVkTest ImageVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkImageViewVkTest ImageViewVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
@@ -169,6 +172,7 @@ if(BUILD_VK_TESTS)
         VkDeviceVkTest
         VkDevicePropertiesVkTest
         VkExtensionPropertiesVkTest
+        VkFramebufferVkTest
         VkLayerPropertiesVkTest
         VkImageVkTest
         VkImageViewVkTest

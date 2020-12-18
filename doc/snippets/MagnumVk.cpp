@@ -38,6 +38,7 @@
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
+#include "Magnum/Vk/FramebufferCreateInfo.h"
 #include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
@@ -289,6 +290,39 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
     // convert them to 16bit
 }
 /* [Device-isExtensionEnabled] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vector2i size;
+/* The include should be a no-op here since it was already included above */
+/* [Framebuffer-creation] */
+#include <Magnum/Vk/FramebufferCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Image color{device, Vk::ImageCreateInfo2D{               /* created before */
+    Vk::ImageUsage::ColorAttachment,
+    VK_FORMAT_R8G8B8A8_UNORM, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+Vk::Image depth{device, Vk::ImageCreateInfo2D{
+    Vk::ImageUsage::DepthStencilAttachment,
+    VK_FORMAT_D24_UNORM_S8_UINT, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+Vk::ImageView colorView{device, Vk::ImageViewCreateInfo2D{color}};
+Vk::ImageView depthView{device, Vk::ImageViewCreateInfo2D{depth}};
+
+Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{} /* created before */
+    .setAttachments({
+        color.format(),
+        depth.format()
+    })
+    DOXYGEN_IGNORE()
+};
+
+Vk::Framebuffer framebuffer{device, Vk::FramebufferCreateInfo{renderPass, {
+    colorView,
+    depthView
+}, size}};
+/* [Framebuffer-creation] */
 }
 
 {

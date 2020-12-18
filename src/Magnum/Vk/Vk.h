@@ -49,6 +49,8 @@ class DeviceProperties;
 enum class DeviceType: Int;
 class Extension;
 class ExtensionProperties;
+class Framebuffer;
+class FramebufferCreateInfo;
 enum class HandleFlag: UnsignedByte;
 typedef Containers::EnumSet<HandleFlag> HandleFlags;
 class Image;
