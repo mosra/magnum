@@ -799,8 +799,7 @@ class MAGNUM_VK_EXPORT SubpassDependency {
 @brief Render pass creation info
 @m_since_latest
 
-Wraps a @type_vk_keyword{RenderPassCreateInfo2} /
-@type_vk_keyword{RenderPassCreateInfo}. See
+Wraps a @type_vk_keyword{RenderPassCreateInfo2}. See
 @ref Vk-RenderPass-creation "Render pass creation" for usage information.
 
 @section Vk-RenderPassCreateInfo-compatibility Compatibility with VkRenderPassCreateInfo
