@@ -804,6 +804,12 @@ unless it doesn't affect public API at all.
     directly in `vkCreate*()` APIs (or alternatively returning a reference, if
     the structure is commonly used in arrays as is the case with
     @ref Vk::AttachmentReference for example)
+-   Classes should be implicitly copyable, with no copy/move constructors,
+    destructor or copy/move assignments listed. If a class needs to store some
+    heap-allocated state (such as @ref Vk::FramebufferCreateInfo image view
+    handles), it should be made move-only with the `other._info` members
+    pointing to the stolen state cleared so the old instance doesn't reference
+    state that's owned by something else after the move.
 
 @section developers-vk-extension-dependent Checklist for Vulkan extension-dependent code paths
 
