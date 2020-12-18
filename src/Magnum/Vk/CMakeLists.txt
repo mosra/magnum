@@ -30,6 +30,7 @@ set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
     Extensions.cpp
+    Fence.cpp
     Framebuffer.cpp
     Handle.cpp
     Instance.cpp
@@ -68,6 +69,8 @@ set(MagnumVk_HEADERS
     Enums.h
     Extensions.h
     ExtensionProperties.h
+    Fence.h
+    FenceCreateInfo.h
     Framebuffer.h
     FramebufferCreateInfo.h
     Handle.h

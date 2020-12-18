@@ -149,7 +149,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | @ref Device constructor and destructor
 @fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
-@fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | |
+@fn_vk{CreateFence}, \n @fn_vk{DestroyFence} | @ref Fence constructor and destructor
 @fn_vk{CreateFramebuffer}, \n @fn_vk{DestroyFramebuffer} | @ref Framebuffer constructor and destructor
 @fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | @ref Image constructor and destructor
 @fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | @ref ImageView constructor and destructor
@@ -467,7 +467,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{FenceCreateInfo}               | |
+@type_vk{FenceCreateInfo}               | @ref FenceCreateInfo
 @type_vk{FormatProperties}, \n @type_vk{FormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{FramebufferAttachmentsCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{FramebufferAttachmentImageInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |

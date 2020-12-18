@@ -38,6 +38,7 @@
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
+#include "Magnum/Vk/FenceCreateInfo.h"
 #include "Magnum/Vk/FramebufferCreateInfo.h"
 #include "Magnum/Vk/InstanceCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
@@ -290,6 +291,18 @@ if(device.isExtensionEnabled<Vk::Extensions::EXT::index_type_uint8>()) {
     // convert them to 16bit
 }
 /* [Device-isExtensionEnabled] */
+}
+
+{
+Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+/* The include should be a no-op here since it was already included above */
+/* [Fence-creation] */
+#include <Magnum/Vk/FenceCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Fence fence{device, Vk::FenceCreateInfo{Vk::FenceCreateInfo::Flag::Signaled}};
+/* [Fence-creation] */
 }
 
 {
