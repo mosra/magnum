@@ -656,7 +656,8 @@ Options controlling the build:
 -   `BUILD_PLUGINS_STATIC` --- Build plugins as static. By default, plugins are
     built as dynamic. Independent of the `BUILD_STATIC` option to allow having
     static libraries with dynamic plugins and vice versa. To some extent it's
-    also possible to have only a subset of plugins built as static --- set `MAGNUM_<PLUGIN>_BUILD_STATIC` for particular plugins to `ON` or `OFF` to
+    also possible to have only a subset of plugins built as static --- set
+    `MAGNUM_<PLUGIN>_BUILD_STATIC` for particular plugins to `ON` or `OFF` to
     override this option.
 -   `BUILD_DEPRECATED` --- Include deprecated APIs in the build. Enabled by
     default to preserve backwards compatibility, disabling it forces you to
