@@ -273,4 +273,4 @@ endif()
 
 # Magnum library target alias and configure file for superprojects
 add_library(Magnum::Magnum ALIAS Magnum)
-set(_MAGNUM_CONFIGURE_FILE ${CMAKE_CURRENT_BINARY_DIR}/configure.h CACHE INTERNAL "")
+set(_MAGNUM_CONFIGURE_FILE ${CMAKE_CURRENT_BINARY_DIR}/configure.h CACHE INTERNAL "" FORCE)
