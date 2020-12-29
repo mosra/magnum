@@ -741,6 +741,10 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * enabled. Fragments with alpha values smaller than the mask value
          * will be discarded. Initial value is @cpp 0.5f @ce. See the flag
          * documentation for further information.
+         *
+         * This corresponds to @m_class{m-doc-external} [glAlphaFunc()](https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glAlphaFunc.xml)
+         * in classic OpenGL.
+         * @m_keywords{glAlphaFunc()}
          */
         Phong& setAlphaMask(Float mask);
 
