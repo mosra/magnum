@@ -163,7 +163,8 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * @param type          Image type
          * @param usages        Desired image usage. At least one flag is
          *      required.
-         * @param format        Image format
+         * @param format        Image format. Available through
+         *      @ref Image::format() afterwards.
          * @param size          Image size
          * @param layers        Array layer count
          * @param levels        Mip level count

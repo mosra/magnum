@@ -118,7 +118,7 @@ class MAGNUM_VK_EXPORT ImageViewCreateInfo {
          * @brief Construct with format matching given image
          *
          * Compared to @ref ImageViewCreateInfo(VkImageViewType, VkImage, VkFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
-         * the @p format is taken from the passed @ref Image instance.
+         * the @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo(VkImageViewType type, Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
 
@@ -173,8 +173,7 @@ class ImageViewCreateInfo1D: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo1D(Image& image, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D, image, layerOffset, 1, levelOffset, levelCount, flags} {}
 };
@@ -200,8 +199,7 @@ class ImageViewCreateInfo2D: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo2D(Image& image, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image, layerOffset, 1, levelOffset, levelCount, flags} {}
 };
@@ -222,8 +220,7 @@ class ImageViewCreateInfo3D: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo3D(Image& image, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_3D, image, layerOffset, 1, levelOffset, levelCount, flags} {}
 };
@@ -245,8 +242,7 @@ class ImageViewCreateInfo1DArray: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo1DArray(Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D_ARRAY, image, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 };
@@ -272,8 +268,7 @@ class ImageViewCreateInfo2DArray: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo2DArray(Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D_ARRAY, image, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 };
@@ -296,8 +291,7 @@ class ImageViewCreateInfoCubeMap: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfoCubeMap(Image& image, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE, image, layerOffset, 6, levelOffset, levelCount, flags} {}
 };
@@ -321,8 +315,7 @@ class ImageViewCreateInfoCubeMapArray: public ImageViewCreateInfo {
 
         /** @overload
          *
-         * Compared to the above, @p format is taken from the passed @ref Image
-         * instance.
+         * Compared to the above, @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfoCubeMapArray(Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, image, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 };

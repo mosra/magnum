@@ -112,6 +112,11 @@ class MAGNUM_VK_EXPORT RenderPass {
          * @param device    Vulkan device to create the render pass on
          * @param info      Render pass creation info
          *
+         * If Vulkan 1.2 is not supported and the
+         * @vk_extension{KHR,create_renderpass2} extension is not enabled on
+         * @p device, only the subset provided by
+         * @ref RenderPassCreateInfo::vkRenderPassCreateInfo() is used to
+         * create the render pass.
          * @see @fn_vk_keyword{CreateRenderPass2},
          *      @fn_vk_keyword{CreateRenderPass}
          */

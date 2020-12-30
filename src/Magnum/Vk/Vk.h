@@ -81,6 +81,9 @@ enum class QueueFlag: UnsignedInt;
 typedef Containers::EnumSet<QueueFlag> QueueFlags;
 class RenderPass;
 class RenderPassCreateInfo;
+/* AttachmentDescription, AttachmentReference, SubpassDescription,
+   SubpassDependency are useful only to be passed directly to
+   RenderPassCreateInfo */
 enum class Result: Int;
 class Shader;
 class ShaderCreateInfo;

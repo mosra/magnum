@@ -192,7 +192,8 @@ class MAGNUM_VK_EXPORT Image {
          * @brief Wrap existing Vulkan handle
          * @param device            Vulkan device the image is created on
          * @param handle            The @type_vk{Image} handle
-         * @param format            Image format
+         * @param format            Image format. Available through
+         *      @ref format() afterwards.
          * @param flags             Handle flags
          *
          * The @p handle is expected to be originating from @p device. The
@@ -349,7 +350,7 @@ class MAGNUM_VK_EXPORT Image {
         VkImage _handle;
         HandleFlags _flags;
 
-        /* On 64-bit there would be a 7 byte padding after _flags otherwise, we
+        /* On 64-bit there would be a 7 byte padding after _flags anyway, we
            can use that to store information about image format for convenient
            view creation. On 32-bit it won't fit, but the extra memory use is
            still worth the advantages.
