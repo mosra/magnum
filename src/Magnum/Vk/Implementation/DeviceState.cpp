@@ -26,6 +26,7 @@
 #include "DeviceState.h"
 
 #include "Magnum/Vk/Buffer.h"
+#include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Image.h"
@@ -65,10 +66,19 @@ DeviceState::DeviceState(Device& device) {
 
     if(device.isVersionSupported(Version::Vk12)) {
         createRenderPassImplementation = &RenderPass::createImplementation12;
+        cmdBeginRenderPassImplementation = &CommandBuffer::beginRenderPassImplementation12;
+        cmdNextSubpassImplementation = &CommandBuffer::nextSubpassImplementation12;
+        cmdEndRenderPassImplementation = &CommandBuffer::endRenderPassImplementation12;
     } else if(device.isExtensionEnabled<Extensions::KHR::create_renderpass2>()) {
         createRenderPassImplementation = &RenderPass::createImplementationKHR;
+        cmdBeginRenderPassImplementation = &CommandBuffer::beginRenderPassImplementationKHR;
+        cmdNextSubpassImplementation = &CommandBuffer::nextSubpassImplementationKHR;
+        cmdEndRenderPassImplementation = &CommandBuffer::endRenderPassImplementationKHR;
     } else {
         createRenderPassImplementation = &RenderPass::createImplementationDefault;
+        cmdBeginRenderPassImplementation = &CommandBuffer::beginRenderPassImplementationDefault;
+        cmdNextSubpassImplementation = &CommandBuffer::nextSubpassImplementationDefault;
+        cmdEndRenderPassImplementation = &CommandBuffer::endRenderPassImplementationDefault;
     }
 }
 

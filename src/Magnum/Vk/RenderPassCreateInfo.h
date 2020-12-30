@@ -64,7 +64,10 @@ enum class AttachmentLoadOperation: Int {
 
     /**
      * Previous contents are cleared to a value specified when a render pass
-     * instance is begun.
+     * instance is begun. You're required to provide a clear value for this
+     * attachment index using @ref RenderPassBeginInfo::clearColor() or
+     * @ref RenderPassBeginInfo::clearDepthStencil() when you begin render pass
+     * recording using @ref CommandBuffer::beginRenderPass().
      *
      * @m_class{m-note m-success}
      *

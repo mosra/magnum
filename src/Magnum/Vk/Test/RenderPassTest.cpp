@@ -30,7 +30,10 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
@@ -92,6 +95,21 @@ struct RenderPassTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+
+    void beginInfoConstruct();
+    void beginInfoConstructNoInit();
+    void beginInfoConstructClears();
+    void beginInfoConstructFromVk();
+    void beginInfoConstructCopy();
+    void beginInfoConstructMove();
+
+    void subpassBeginInfoConstruct();
+    void subpassBeginInfoConstructNoInit();
+    void subpassBeginInfoConstructFromVk();
+
+    void subpassEndInfoConstruct();
+    void subpassEndInfoConstructNoInit();
+    void subpassEndInfoConstructFromVk();
 };
 
 RenderPassTest::RenderPassTest() {
@@ -164,7 +182,22 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::createInfoConvertToVk<VkRenderPassCreateInfo>,
 
               &RenderPassTest::constructNoCreate,
-              &RenderPassTest::constructCopy});
+              &RenderPassTest::constructCopy,
+
+              &RenderPassTest::beginInfoConstruct,
+              &RenderPassTest::beginInfoConstructNoInit,
+              &RenderPassTest::beginInfoConstructClears,
+              &RenderPassTest::beginInfoConstructFromVk,
+              &RenderPassTest::beginInfoConstructCopy,
+              &RenderPassTest::beginInfoConstructMove,
+
+              &RenderPassTest::subpassBeginInfoConstruct,
+              &RenderPassTest::subpassBeginInfoConstructNoInit,
+              &RenderPassTest::subpassBeginInfoConstructFromVk,
+
+              &RenderPassTest::subpassEndInfoConstruct,
+              &RenderPassTest::subpassEndInfoConstructNoInit,
+              &RenderPassTest::subpassEndInfoConstructFromVk});
 }
 
 template<class> struct Traits;
@@ -969,6 +1002,133 @@ void RenderPassTest::constructNoCreate() {
 void RenderPassTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<RenderPass>{});
     CORRADE_VERIFY(!std::is_copy_assignable<RenderPass>{});
+}
+
+void RenderPassTest::beginInfoConstruct() {
+    auto renderPass = reinterpret_cast<VkRenderPass>(0xbadbeef);
+    auto framebuffer = reinterpret_cast<VkFramebuffer>(0xdeadcafe);
+
+    RenderPassBeginInfo info{renderPass, framebuffer, Range2Di{{3, 7}, {15, 78}}};
+    CORRADE_COMPARE(info->renderPass, renderPass);
+    CORRADE_COMPARE(info->framebuffer, framebuffer);
+    CORRADE_COMPARE(Range2Di{info->renderArea}, (Range2Di{{3, 7}, {15, 78}}));
+    CORRADE_COMPARE(info->clearValueCount, 0);
+    CORRADE_VERIFY(!info->pClearValues);
+}
+
+void RenderPassTest::beginInfoConstructNoInit() {
+    RenderPassBeginInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) RenderPassBeginInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<RenderPassBeginInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, RenderPassBeginInfo>::value));
+}
+
+void RenderPassTest::beginInfoConstructClears() {
+    RenderPassBeginInfo info{{}, {}, {}};
+    info.clearColor(5, Color4{0.5f, 0.6f, 0.7f, 0.8f})
+        .clearColor(7, Vector4i{1, -2, 3, -4})
+        .clearColor(15, Vector4ui{8, 12, 33, 1})
+        /* Use one of the first IDs at last to verify the array doesn't get
+           shortened */
+        .clearDepthStencil(2, 15.0f, 1337);
+
+    CORRADE_COMPARE(info->clearValueCount, 16);
+    CORRADE_COMPARE(Color4{info->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
+    CORRADE_COMPARE(Vector4i{info->pClearValues[7].color}, (Vector4i{1, -2, 3, -4}));
+    CORRADE_COMPARE(Vector4ui{info->pClearValues[15].color}, (Vector4ui{8, 12, 33, 1}));
+    CORRADE_COMPARE(info->pClearValues[2].depthStencil.depth, 15.0f);
+    CORRADE_COMPARE(info->pClearValues[2].depthStencil.stencil, 1337);
+}
+
+void RenderPassTest::beginInfoConstructFromVk() {
+    VkRenderPassBeginInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    RenderPassBeginInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void RenderPassTest::beginInfoConstructCopy() {
+    CORRADE_VERIFY(!(std::is_copy_constructible<RenderPassBeginInfo>{}));
+    CORRADE_VERIFY(!(std::is_copy_assignable<RenderPassBeginInfo>{}));
+}
+
+void RenderPassTest::beginInfoConstructMove() {
+    RenderPassBeginInfo a{{}, {}, {}};
+    a.clearColor(5, Color4{0.5f, 0.6f, 0.7f, 0.8f});
+    CORRADE_COMPARE(a->clearValueCount, 6);
+    CORRADE_COMPARE(Color4{a->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
+
+    RenderPassBeginInfo b = std::move(a);
+    CORRADE_COMPARE(a->clearValueCount, 0);
+    CORRADE_VERIFY(!a->pClearValues);
+    CORRADE_COMPARE(b->clearValueCount, 6);
+    CORRADE_COMPARE(Color4{b->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
+
+    RenderPassBeginInfo c{VkRenderPassBeginInfo{}};
+    c = std::move(b);
+    CORRADE_COMPARE(b->clearValueCount, 0);
+    CORRADE_VERIFY(!b->pClearValues);
+    CORRADE_COMPARE(c->clearValueCount, 6);
+    CORRADE_COMPARE(Color4{c->pClearValues[5].color}, (Color4{0.5f, 0.6f, 0.7f, 0.8f}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<RenderPassBeginInfo>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<RenderPassBeginInfo>::value);
+}
+
+void RenderPassTest::subpassBeginInfoConstruct() {
+    SubpassBeginInfo info{SubpassContents::SecondaryCommandBuffers};
+    CORRADE_COMPARE(info->contents, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+}
+
+void RenderPassTest::subpassBeginInfoConstructNoInit() {
+    SubpassBeginInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) SubpassBeginInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassBeginInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassBeginInfo>::value));
+}
+
+void RenderPassTest::subpassBeginInfoConstructFromVk() {
+    VkSubpassBeginInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    SubpassBeginInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void RenderPassTest::subpassEndInfoConstruct() {
+    SubpassEndInfo info{};
+    CORRADE_VERIFY(info->sType);
+}
+
+void RenderPassTest::subpassEndInfoConstructNoInit() {
+    SubpassEndInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) SubpassEndInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<SubpassEndInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubpassEndInfo>::value));
+}
+
+void RenderPassTest::subpassEndInfoConstructFromVk() {
+    VkSubpassEndInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    SubpassEndInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
 }}}}

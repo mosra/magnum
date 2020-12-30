@@ -40,12 +40,19 @@ struct DeviceState {
     explicit DeviceState(Device& instance);
 
     void(*getDeviceQueueImplementation)(Device&, const VkDeviceQueueInfo2&, VkQueue&);
-    /** @todo put this eventually into a dedicated buffer / image state struct? */
+
+    /** @todo put the rest eventually into a dedicated buffer / image state /
+        ... struct? */
+
     void(*getBufferMemoryRequirementsImplementation)(Device&, const VkBufferMemoryRequirementsInfo2&, VkMemoryRequirements2&);
     void(*getImageMemoryRequirementsImplementation)(Device&, const VkImageMemoryRequirementsInfo2&, VkMemoryRequirements2&);
     VkResult(*bindBufferMemoryImplementation)(Device&, UnsignedInt, const VkBindBufferMemoryInfo*);
     VkResult(*bindImageMemoryImplementation)(Device&, UnsignedInt, const VkBindImageMemoryInfo*);
+
     VkResult(*createRenderPassImplementation)(Device&, const RenderPassCreateInfo&, const VkAllocationCallbacks*, VkRenderPass*);
+    void(*cmdBeginRenderPassImplementation)(CommandBuffer&, const VkRenderPassBeginInfo&, const VkSubpassBeginInfo&);
+    void(*cmdNextSubpassImplementation)(CommandBuffer&, const VkSubpassEndInfo&, const VkSubpassBeginInfo&);
+    void(*cmdEndRenderPassImplementation)(CommandBuffer&, const VkSubpassEndInfo&);
 };
 
 }}}

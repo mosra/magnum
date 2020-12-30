@@ -26,8 +26,10 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::RenderPass
+ * @brief Class @ref Magnum::Vk::RenderPass, @ref Magnum::Vk::RenderPassBeginInfo, @ref Magnum::Vk::SubpassBeginInfo, @ref Magnum::Vk::SubpassEndInfo, enum @ref Magnum::Vk::SubpassContents
  */
+
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -183,6 +185,253 @@ class MAGNUM_VK_EXPORT RenderPass {
 
         VkRenderPass _handle;
         HandleFlags _flags;
+};
+
+/**
+@brief Render pass begin info
+@m_since_latest
+
+Wraps a @type_vk_keyword{RenderPassBeginInfo}.
+@see @ref CommandBuffer::beginRenderPass()
+*/
+class MAGNUM_VK_EXPORT RenderPassBeginInfo {
+    public:
+        /**
+         * @brief Constructor
+         * @param renderPass        A @ref RenderPass or a raw Vulkan render
+         *      pass handle to begin an instance of
+         * @param framebuffer       A @ref Framebuffer or a raw Vulkan
+         *      framebuffer containing the attachments used with @p renderPass
+         * @param renderArea        Render area affected by the render pass
+         *      instance
+         *
+         * The following @type_vk{RenderPassBeginInfo} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `renderPass`
+         * -    `framebuffer`
+         * -    `renderArea`
+         *
+         * If there are attachments with @ref AttachmentLoadOperation::Clear
+         * passed to @ref RenderPassCreateInfo::setAttachments() of
+         * @p renderPass, you need to call @ref clearColor() /
+         * @ref clearDepthStencil() with an attachment index corresponding to
+         * each of them.
+         */
+        explicit RenderPassBeginInfo(VkRenderPass renderPass, VkFramebuffer framebuffer, const Range2Di& renderArea);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit RenderPassBeginInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit RenderPassBeginInfo(const VkRenderPassBeginInfo& info);
+
+        /** @brief Copying is not allowed */
+        RenderPassBeginInfo(const RenderPassBeginInfo&) = delete;
+
+        /** @brief Move constructor */
+        RenderPassBeginInfo(RenderPassBeginInfo&& other) noexcept;
+
+        ~RenderPassBeginInfo();
+
+        /** @brief Copying is not allowed */
+        RenderPassBeginInfo& operator=(const RenderPassBeginInfo&) = delete;
+
+        /** @brief Move assignment */
+        RenderPassBeginInfo& operator=(RenderPassBeginInfo&& other) noexcept;
+
+        /**
+         * @brief Clear a floating-point or normalized color attachment
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref AttachmentLoadOperation::Clear
+         */
+        RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Color4& color);
+
+        /**
+         * @brief Clear a signed integral color attachment
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref AttachmentLoadOperation::Clear
+         */
+        RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Vector4i& color);
+
+        /**
+         * @brief Clear an unsigned integral color attachment
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref AttachmentLoadOperation::Clear
+         */
+        RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Vector4ui& color);
+
+        /**
+         * @brief Clear a depth/stencil attachment
+         * @return Reference to self (for method chaining)
+         *
+         * If the attachment is not a combined depth/stencil format, the unused
+         * value is ignored.
+         * @see @ref AttachmentLoadOperation::Clear
+         */
+        RenderPassBeginInfo& clearDepthStencil(UnsignedInt attachment, Float depth, UnsignedInt stencil);
+
+        /** @brief Underlying @type_vk{RenderPassBeginInfo} structure */
+        VkRenderPassBeginInfo& operator*() { return _info; }
+        /** @overload */
+        const VkRenderPassBeginInfo& operator*() const { return _info; }
+        /** @overload */
+        VkRenderPassBeginInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkRenderPassBeginInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkRenderPassBeginInfo*() const { return &_info; }
+
+    private:
+        RenderPassBeginInfo& clearInternal(UnsignedInt attachment, const VkClearValue& value);
+
+        VkRenderPassBeginInfo _info;
+        struct State;
+        Containers::Pointer<State> _state;
+};
+
+/**
+@brief Subpass contents
+@m_since_latest
+
+Wraps @type_vk{SubpassContents}.
+@see @ref SubpassBeginInfo::SubpassBeginInfo(),
+    @ref CommandBuffer::beginRenderPass(), @ref CommandBuffer::nextSubpass()
+*/
+enum class SubpassContents: Int {
+    /**
+     * Contents of the subpass will be recorded inline in the primary command
+     * buffer. @ref CommandBufferLevel::Secondary command buffers must not
+     * be executed within the subpass. This is the default used in the
+     * @ref SubpassBeginInfo constructor and consequently
+     * @ref CommandBuffer::beginRenderPass() / @ref CommandBuffer::nextSubpass().
+     */
+    Inline = VK_SUBPASS_CONTENTS_INLINE,
+
+    /**
+     * Subpass contents are recorded in @ref CommandBufferLevel::Secondary
+     * command buffers that will be called from the primary command buffer.
+     * @todoc reference @fn_vk{CmdExecuteCommands} when exposed and mention
+     *      it's the only allowed command until nextsubpass / renderpass end
+     */
+    SecondaryCommandBuffers = VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS
+};
+
+/**
+@brief Subpass begin info
+@m_since_latest
+
+Wraps @type_vk{SubpassBeginInfo}.
+@see @ref CommandBuffer::beginRenderPass(), @ref CommandBuffer::nextSubpass()
+*/
+class MAGNUM_VK_EXPORT SubpassBeginInfo {
+    public:
+        /**
+         * @brief Constructor
+         * @param contents      How commands in the subpass will be provided
+         *
+         * The following @type_vk{SubpassBeginInfo} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `contents`
+         */
+        explicit SubpassBeginInfo(SubpassContents contents = SubpassContents::Inline);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit SubpassBeginInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit SubpassBeginInfo(const VkSubpassBeginInfo& info);
+
+        /** @brief Underlying @type_vk{SubpassBeginInfo} structure */
+        VkSubpassBeginInfo& operator*() { return _info; }
+        /** @overload */
+        const VkSubpassBeginInfo& operator*() const { return _info; }
+        /** @overload */
+        VkSubpassBeginInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkSubpassBeginInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkSubpassBeginInfo*() const { return &_info; }
+
+    private:
+        VkSubpassBeginInfo _info;
+};
+
+/**
+@brief Subpass end info
+@m_since_latest
+
+Wraps @type_vk{SubpassEndInfo}.
+@see @ref CommandBuffer::endRenderPass(), @ref CommandBuffer::nextSubpass()
+*/
+class MAGNUM_VK_EXPORT SubpassEndInfo {
+    public:
+        /**
+         * @brief Constructor
+         *
+         * The following @type_vk{SubpassEndInfo} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    *(none)*
+         */
+        explicit SubpassEndInfo();
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit SubpassEndInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit SubpassEndInfo(const VkSubpassEndInfo& info);
+
+        /** @brief Underlying @type_vk{SubpassEndInfo} structure */
+        VkSubpassEndInfo& operator*() { return _info; }
+        /** @overload */
+        const VkSubpassEndInfo& operator*() const { return _info; }
+        /** @overload */
+        VkSubpassEndInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkSubpassEndInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkSubpassEndInfo*() const { return &_info; }
+
+    private:
+        VkSubpassEndInfo _info;
 };
 
 }}

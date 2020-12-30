@@ -75,7 +75,7 @@ Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{CmdBeginQuery}, \n @fn_vk{CmdEndQuery} | |
 @fn_vk{CmdBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdEndebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref CommandBuffer::beginRenderPass(), \n @ref CommandBuffer::nextSubpass(), \n @ref CommandBuffer::endRenderPass()
 @fn_vk{CmdBindDescriptorSets}           | |
 @fn_vk{CmdBindIndexBuffer}              | |
 @fn_vk{CmdBindPipeline}                 | |
@@ -108,7 +108,6 @@ Vulkan function                         | Matching API
 @fn_vk{CmdExecuteCommands}              | |
 @fn_vk{CmdFillBuffer}                   | |
 @fn_vk{CmdInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{CmdPipelineBarrier}              | |
 @fn_vk{CmdPushConstants}                | |
 @fn_vk{CmdResetEvent}                   | |
@@ -635,7 +634,7 @@ Vulkan structure                        | Matching API
 @type_vk{RayTracingPipelineInterfaceCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{RayTracingShaderGroupCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{Rect2D}                        | convertible from/to @ref Range2Di using @ref Magnum/Vk/Integration.h
-@type_vk{RenderPassBeginInfo}           | |
+@type_vk{RenderPassBeginInfo}           | @ref RenderPassBeginInfo
 @type_vk{RenderPassAttachmentBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{RenderPassCreateInfo}, \n @type_vk{RenderPassCreateInfo2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref RenderPassCreateInfo
 @type_vk{RenderPassMultiviewCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -669,8 +668,8 @@ Vulkan structure                        | Matching API
 @type_vk{StencilOpState}                | |
 @type_vk{StridedDeviceAddressRegionKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{SubmitInfo}                    | |
-@type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassBeginInfo
+@type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassEndInfo
 @type_vk{SubpassDependency}, \n @type_vk{SubpassDependency2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassDependency
 @type_vk{SubpassDescription}, \n @type_vk{SubpassDescription2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassDescription
 @type_vk{SubpassDescriptionDepthStencilResolve} @m_class{m-label m-flat m-success} **KHR, 1.2** | |

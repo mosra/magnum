@@ -40,6 +40,8 @@
 
 namespace Magnum { namespace Vk {
 
+namespace Implementation { struct DeviceState; }
+
 /**
 @brief Command buffer begin info
 @m_since_latest
@@ -267,8 +269,80 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          */
         void end();
 
+        /**
+         * @brief Begin a new render pass
+         * @return Reference to self (for method chaining)
+         *
+         * If Vulkan 1.2 is not supported and the
+         * @vk_extension{KHR,create_renderpass2} extension is not enabled on
+         * the device, only the `contents` field from @p beginInfo is used to
+         * begin the render pass.
+         * @see @fn_vk_keyword{CmdBeginRenderPass2},
+         *      @fn_vk_keyword{CmdBeginRenderPass}
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        CommandBuffer& beginRenderPass(const RenderPassBeginInfo& info, const SubpassBeginInfo& beginInfo = SubpassBeginInfo{});
+        #else
+        /* To avoid dependency on RenderPass.h */
+        CommandBuffer& beginRenderPass(const RenderPassBeginInfo& info, const SubpassBeginInfo& beginInfo);
+        CommandBuffer& beginRenderPass(const RenderPassBeginInfo& info);
+        #endif
+
+        /**
+         * @brief Transition to the next subpass of a render pass
+         * @return Reference to self (for method chaining)
+         *
+         * If Vulkan 1.2 is not supported and the
+         * @vk_extension{KHR,create_renderpass2} extension is not enabled on
+         * the device, @p endInfo is ignored and only the `contents` field from
+         * @p beginInfo is used to begin the next subpass
+         * @see @fn_vk_keyword{CmdNextSubpass2},
+         *      @fn_vk_keyword{CmdNextSubpass}
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        CommandBuffer& nextSubpass(const SubpassEndInfo& endInfo = SubpassEndInfo{}, const SubpassBeginInfo& beginInfo = SubpassBeginInfo{});
+        /** @overload */
+        CommandBuffer& nextSubpass(const SubpassBeginInfo& beginInfo);
+        #else
+        /* To avoid dependency on RenderPass.h */
+        CommandBuffer& nextSubpass(const SubpassEndInfo& endInfo, const SubpassBeginInfo& beginInfo);
+        CommandBuffer& nextSubpass(const SubpassEndInfo& endInfo);
+        CommandBuffer& nextSubpass(const SubpassBeginInfo& beginInfo);
+        CommandBuffer& nextSubpass();
+        #endif
+
+        /**
+         * @brief Transition to the next subpass of a render pass
+         * @return Reference to self (for method chaining)
+         *
+         * If Vulkan 1.2 is not supported and the
+         * @vk_extension{KHR,create_renderpass2} extension is not enabled on
+         * the device, @p endInfo is ignored.
+         * @see @fn_vk_keyword{CmdEndRenderPass2},
+         *      @fn_vk_keyword{CmdEndRenderPass}
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        CommandBuffer& endRenderPass(const SubpassEndInfo& info = SubpassEndInfo{});
+        #else
+        CommandBuffer& endRenderPass(const SubpassEndInfo& info);
+        CommandBuffer& endRenderPass();
+        #endif
+
     private:
         friend CommandPool;
+        friend Implementation::DeviceState;
+
+        MAGNUM_VK_LOCAL static void beginRenderPassImplementationDefault(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo);
+        MAGNUM_VK_LOCAL static void beginRenderPassImplementationKHR(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo);
+        MAGNUM_VK_LOCAL static void beginRenderPassImplementation12(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo);
+
+        MAGNUM_VK_LOCAL static void nextSubpassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo);
+        MAGNUM_VK_LOCAL static void nextSubpassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo);
+        MAGNUM_VK_LOCAL static void nextSubpassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo);
+
+        MAGNUM_VK_LOCAL static void endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
+        MAGNUM_VK_LOCAL static void endRenderPassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
+        MAGNUM_VK_LOCAL static void endRenderPassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
 
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;

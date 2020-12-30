@@ -87,7 +87,7 @@ Extension                                           | Status
 @vk_extension{KHR,sampler_mirror_clamp_to_edge}     | @ref Vk::vkSamplerAddressMode() only
 @vk_extension{KHR,shader_float16_int8}              | |
 @vk_extension{KHR,imageless_framebuffer}            | |
-@vk_extension{KHR,create_renderpass2}               | only render pass creation
+@vk_extension{KHR,create_renderpass2}               | done
 @vk_extension{EXT,sampler_filter_minmax}            | |
 @vk_extension{KHR,image_format_list}                | |
 @vk_extension{EXT,descriptor_indexing}              | |

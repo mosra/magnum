@@ -30,10 +30,12 @@
 #include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Algorithms.h>
 
+#include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {
@@ -782,5 +784,103 @@ VkResult RenderPass::createImplementationKHR(Device& device, const RenderPassCre
 VkResult RenderPass::createImplementation12(Device& device, const RenderPassCreateInfo& info, const VkAllocationCallbacks* const callbacks, VkRenderPass* const handle) {
     return device->CreateRenderPass2(device, info, callbacks, handle);
 }
+
+struct RenderPassBeginInfo::State {
+    Containers::Array<VkClearValue> clearValues;
+};
+
+RenderPassBeginInfo::RenderPassBeginInfo(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const Range2Di& renderArea): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    _info.renderPass = renderPass;
+    _info.framebuffer = framebuffer;
+    _info.renderArea = VkRect2D(renderArea);
+}
+
+RenderPassBeginInfo::RenderPassBeginInfo(NoInitT) noexcept {}
+
+RenderPassBeginInfo::RenderPassBeginInfo(const VkRenderPassBeginInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+RenderPassBeginInfo::RenderPassBeginInfo(RenderPassBeginInfo&& other) noexcept:
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(other._info),
+    _state{std::move(other._state)}
+{
+    /* Ensure the previous instance doesn't reference state that's now ours */
+    /** @todo this is now more like a destructible move, do it more selectively
+        and clear only what's really ours and not external? */
+    other._info.pNext = nullptr;
+    other._info.clearValueCount = 0;
+    other._info.pClearValues = nullptr;
+}
+
+RenderPassBeginInfo::~RenderPassBeginInfo() = default;
+
+RenderPassBeginInfo& RenderPassBeginInfo::operator=(RenderPassBeginInfo&& other) noexcept {
+    using std::swap;
+    swap(other._info, _info);
+    swap(other._state, _state);
+    return *this;
+}
+
+RenderPassBeginInfo& RenderPassBeginInfo::clearColor(const UnsignedInt attachment, const Color4& color) {
+    VkClearValue value;
+    value.color = VkClearColorValue(color);
+    return clearInternal(attachment, value);
+}
+
+RenderPassBeginInfo& RenderPassBeginInfo::clearColor(const UnsignedInt attachment, const Vector4i& color) {
+    VkClearValue value;
+    value.color = VkClearColorValue(color);
+    return clearInternal(attachment, value);
+}
+
+RenderPassBeginInfo& RenderPassBeginInfo::clearColor(const UnsignedInt attachment, const Vector4ui& color) {
+    VkClearValue value;
+    value.color = VkClearColorValue(color);
+    return clearInternal(attachment, value);
+}
+
+RenderPassBeginInfo& RenderPassBeginInfo::clearDepthStencil(const UnsignedInt attachment, const Float depth, const UnsignedInt stencil) {
+    VkClearValue value;
+    value.depthStencil = {depth, stencil};
+    return clearInternal(attachment, value);
+}
+
+RenderPassBeginInfo& RenderPassBeginInfo::clearInternal(const UnsignedInt attachment, const VkClearValue& value) {
+    if(!_state) _state.emplace();
+    if(_state->clearValues.size() <= attachment)
+        arrayResize(_state->clearValues, Containers::NoInit, attachment + 1);
+    _state->clearValues[attachment] = value;
+    _info.clearValueCount = _state->clearValues.size();
+    _info.pClearValues = _state->clearValues;
+    return *this;
+}
+
+SubpassBeginInfo::SubpassBeginInfo(const SubpassContents contents): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_SUBPASS_BEGIN_INFO;
+    _info.contents = VkSubpassContents(contents);
+}
+
+SubpassBeginInfo::SubpassBeginInfo(NoInitT) noexcept {}
+
+SubpassBeginInfo::SubpassBeginInfo(const VkSubpassBeginInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+SubpassEndInfo::SubpassEndInfo(): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_SUBPASS_END_INFO;
+}
+
+SubpassEndInfo::SubpassEndInfo(NoInitT) noexcept {}
+
+SubpassEndInfo::SubpassEndInfo(const VkSubpassEndInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
 
 }}
