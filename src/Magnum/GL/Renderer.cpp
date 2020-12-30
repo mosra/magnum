@@ -408,7 +408,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
 
 void Renderer::initializeContextBasedFunctionality() {
     /* Set some "corporate identity" */
-    using namespace Magnum::Math::Literals;
+    using namespace Math::Literals;
     setClearColor(0x1f1f1f_rgbf);
 }
 
