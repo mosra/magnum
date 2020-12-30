@@ -83,6 +83,7 @@ void ImageVkTest::construct1D() {
             VK_FORMAT_R8G8B8A8_UNORM, 256, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -95,6 +96,7 @@ void ImageVkTest::construct2D() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -107,6 +109,7 @@ void ImageVkTest::construct3D() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -119,6 +122,7 @@ void ImageVkTest::construct1DArray() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -131,6 +135,7 @@ void ImageVkTest::construct2DArray() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -143,6 +148,7 @@ void ImageVkTest::constructCubeMap() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -155,6 +161,7 @@ void ImageVkTest::constructCubeMapArray() {
             VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 36}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
     }
 
     /* Shouldn't crash or anything */
@@ -174,6 +181,7 @@ void ImageVkTest::constructMove() {
     CORRADE_VERIFY(!a.hasDedicatedMemory());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(b.format(), VK_FORMAT_R8G8B8A8_UNORM);
     CORRADE_VERIFY(b.hasDedicatedMemory());
     CORRADE_COMPARE(b.dedicatedMemory().handle(), memoryHandle);
 
@@ -184,6 +192,7 @@ void ImageVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(c.format(), VK_FORMAT_R8G8B8A8_UNORM);
     CORRADE_VERIFY(c.hasDedicatedMemory());
     CORRADE_COMPARE(c.dedicatedMemory().handle(), memoryHandle);
 
@@ -201,6 +210,7 @@ void ImageVkTest::wrap() {
 
     auto wrapped = Image::wrap(device(), image, VK_FORMAT_R8G8B8A8_UNORM, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), image);
+    CORRADE_COMPARE(wrapped.format(), VK_FORMAT_R8G8B8A8_UNORM);
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), image);
