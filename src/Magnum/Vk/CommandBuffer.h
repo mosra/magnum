@@ -31,7 +31,6 @@
  */
 
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/Magnum.h"
