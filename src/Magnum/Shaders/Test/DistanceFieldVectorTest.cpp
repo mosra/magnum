@@ -58,6 +58,7 @@ template<UnsignedInt dimensions> void DistanceFieldVectorTest::constructNoCreate
     {
         DistanceFieldVector<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename DistanceFieldVector<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);

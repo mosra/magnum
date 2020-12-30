@@ -55,6 +55,8 @@ void PhongTest::constructNoCreate() {
     {
         Phong shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), Phong::Flags{});
+        CORRADE_COMPARE(shader.lightCount(), 0);
     }
 
     CORRADE_VERIFY(true);

@@ -1017,7 +1017,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         #endif
 
         Flags _flags;
-        UnsignedInt _lightCount;
+        UnsignedInt _lightCount{};
         Int _transformationMatrixUniform{0},
             _projectionMatrixUniform{1},
             _normalMatrixUniform{2},

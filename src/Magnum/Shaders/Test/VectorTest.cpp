@@ -58,6 +58,7 @@ template<UnsignedInt dimensions> void VectorTest::constructNoCreate() {
     {
         Vector<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename Vector<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);

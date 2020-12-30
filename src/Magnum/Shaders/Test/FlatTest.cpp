@@ -60,6 +60,7 @@ template<UnsignedInt dimensions> void FlatTest::constructNoCreate() {
     {
         Flat<dimensions> shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), typename Flat<dimensions>::Flags{});
     }
 
     CORRADE_VERIFY(true);

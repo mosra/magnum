@@ -67,6 +67,7 @@ void MeshVisualizerTest::constructNoCreate2D() {
     {
         MeshVisualizer2D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), MeshVisualizer2D::Flags{});
     }
 
     CORRADE_VERIFY(true);
@@ -76,6 +77,7 @@ void MeshVisualizerTest::constructNoCreate3D() {
     {
         MeshVisualizer3D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
+        CORRADE_COMPARE(shader.flags(), MeshVisualizer3D::Flags{});
     }
 
     CORRADE_VERIFY(true);
