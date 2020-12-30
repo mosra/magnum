@@ -810,6 +810,14 @@ unless it doesn't affect public API at all.
     handles), it should be made move-only with the `other._info` members
     pointing to the stolen state cleared so the old instance doesn't reference
     state that's owned by something else after the move.
+    -   Additionally, if a move-only class needs to be itself moved into a
+        containing structure (such as @ref Vk::SubpassDescription inside a
+        @ref Vk::RenderPassCreateInfo), all its setters should have @cpp & @ce
+        and @cpp && @ce overloads so it can be set up completely and passed to
+        its destination in a single expression without any explicit
+        @cpp std::move() @ce. The overloads can be tested for correctness
+        rather easily, see `RenderPassTest::subpassDescriptionRvalue()` for an
+        example.
 
 @section developers-vk-extension-dependent Checklist for Vulkan extension-dependent code paths
 
