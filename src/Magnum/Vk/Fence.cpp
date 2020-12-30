@@ -28,6 +28,7 @@
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Result.h"
 
 namespace Magnum { namespace Vk {
 
@@ -74,6 +75,22 @@ Fence& Fence::operator=(Fence&& other) noexcept {
     swap(other._handle, _handle);
     swap(other._flags, _flags);
     return *this;
+}
+
+bool Fence::status() {
+    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(NotReady, (**_device).GetFenceStatus(*_device, _handle)) == Result::Success;
+}
+
+void Fence::reset() {
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).ResetFences(*_device, 1, &_handle));
+}
+
+bool Fence::wait(const std::chrono::nanoseconds timeout) {
+    return MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Timeout, (**_device).WaitForFences(*_device, 1, &_handle, true, timeout.count())) == Result::Success;
+}
+
+void Fence::wait() {
+    CORRADE_INTERNAL_ASSERT_OUTPUT(wait(std::chrono::nanoseconds{~std::uint64_t{}}));
 }
 
 VkFence Fence::release() {

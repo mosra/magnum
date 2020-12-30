@@ -38,13 +38,25 @@ struct FenceVkTest: VulkanTester {
     void constructMove();
 
     void wrap();
+
+    void status();
+    void reset();
+    void wait100ms();
+    void wait();
 };
 
 FenceVkTest::FenceVkTest() {
     addTests({&FenceVkTest::construct,
               &FenceVkTest::constructMove,
 
-              &FenceVkTest::wrap});
+              &FenceVkTest::wrap,
+
+              &FenceVkTest::status,
+              &FenceVkTest::reset});
+
+    addBenchmarks({&FenceVkTest::wait100ms}, 1);
+
+    addTests({&FenceVkTest::wait});
 }
 
 void FenceVkTest::construct() {
@@ -91,6 +103,41 @@ void FenceVkTest::wrap() {
     CORRADE_COMPARE(wrapped.release(), fence);
     CORRADE_VERIFY(!wrapped.handle());
     device()->DestroyFence(device(), fence, nullptr);
+}
+
+void FenceVkTest::status() {
+    Fence a{device()};
+    CORRADE_VERIFY(!a.status());
+
+    Fence b{device(), FenceCreateInfo{FenceCreateInfo::Flag::Signaled}};
+    CORRADE_VERIFY(b.status());
+}
+
+void FenceVkTest::reset() {
+    Fence a{device(), FenceCreateInfo{FenceCreateInfo::Flag::Signaled}};
+    CORRADE_VERIFY(a.status());
+
+    a.reset();
+    CORRADE_VERIFY(!a.status());
+}
+
+void FenceVkTest::wait100ms() {
+    Fence a{device()};
+    CORRADE_VERIFY(!a.status());
+
+    /* A benchmark so we have at least some verification we're not terribly off
+       with the units */
+    CORRADE_BENCHMARK(1)
+        CORRADE_VERIFY(!a.wait(std::chrono::milliseconds{100}));
+
+    CORRADE_VERIFY(!a.status());
+}
+
+void FenceVkTest::wait() {
+    Fence a{device(), FenceCreateInfo{FenceCreateInfo::Flag::Signaled}};
+    CORRADE_VERIFY(a.status());
+    a.wait();
+    CORRADE_VERIFY(a.status());
 }
 
 }}}}

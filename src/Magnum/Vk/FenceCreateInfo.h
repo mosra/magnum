@@ -58,7 +58,11 @@ class MAGNUM_VK_EXPORT FenceCreateInfo {
          * @m_enum_values_as_keywords
          */
         enum class Flag: UnsignedInt {
-            /** Create the fence in a signaled state */
+            /**
+             * Create the fence in a signaled state.
+             *
+             * @ref Fence::status(), @ref Fence::reset()
+             */
             Signaled = VK_FENCE_CREATE_SIGNALED_BIT
         };
 

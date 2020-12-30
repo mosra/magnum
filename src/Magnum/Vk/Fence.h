@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+#include <chrono>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Vk/Handle.h"
@@ -53,6 +55,13 @@ the @p info parameter at its default. If you want to pass additional parameters
 to it, include the @ref FenceCreateInfo class as usual:
 
 @snippet MagnumVk.cpp Fence-creation
+
+@section Vk-Fence-usage Basic usage
+
+By default a fence is created unsignaled. It can be created in a signaled state
+using @ref FenceCreateInfo::Flag::Signaled and its signaled state reset back
+via @ref reset(). Fence status can be queried immediately via @ref status() and
+waited on using @ref wait().
 */
 class MAGNUM_VK_EXPORT Fence {
     public:
@@ -121,6 +130,50 @@ class MAGNUM_VK_EXPORT Fence {
 
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Reset the fence
+         *
+         * Sets the state of a fence to unsignaled from the host.
+         * @see @fn_vk_keyword{ResetFences}
+         * @todo batch version (needs `DynamicArray<N, VkFence>` to avoid an
+         *      allocation)
+         */
+        void reset();
+
+        /**
+         * @brief Fence status
+         *
+         * Returns @cpp true @ce if the fence is signaled and @cpp false @ce
+         * if unsignaled.
+         * @see @fn_vk_keyword{GetFenceStatus}
+         */
+        bool status();
+
+        /**
+         * @brief Wait for the fence to become signaled
+         *
+         * Blocks until the fence becomes signaled or @p timeout is elapsed,
+         * whichever happens sooner, returning @cpp true @ce is the fence
+         * became signaled. If the fence is already signaled, the function
+         * returns immediately, if the timeout happens before the fence
+         * becomes signaled, @cpp false @ce is returned.
+         *
+         * Calling this function with zero @p timeout is equivalent to calling
+         * @ref status().
+         * @see @fn_vk_keyword{WaitForFences}
+         * @todo batch version (needs DynamicArray<N, VkFence> to avoid an
+         *      allocation), expose `waitAll`
+         */
+        bool wait(std::chrono::nanoseconds timeout);
+
+        /**
+         * @brief Wait indefinitely for the fence to become signaled
+         *
+         * Equivalent to calling @ref wait(std::chrono::nanoseconds) with the
+         * largest representable 64-bit value.
+         */
+        void wait();
 
         /**
          * @brief Release the underlying Vulkan fence
