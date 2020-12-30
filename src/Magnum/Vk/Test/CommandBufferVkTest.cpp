@@ -40,6 +40,8 @@ struct CommandBufferVkTest: VulkanTester {
     void wrap();
 
     void reset();
+
+    void beginEnd();
 };
 
 CommandBufferVkTest::CommandBufferVkTest() {
@@ -47,7 +49,9 @@ CommandBufferVkTest::CommandBufferVkTest() {
               &CommandBufferVkTest::constructMove,
               &CommandBufferVkTest::wrap,
 
-              &CommandBufferVkTest::reset});
+              &CommandBufferVkTest::reset,
+
+              &CommandBufferVkTest::beginEnd});
 }
 
 void CommandBufferVkTest::construct() {
@@ -117,6 +121,20 @@ void CommandBufferVkTest::reset() {
     CommandBuffer a = pool.allocate();
 
     a.reset(CommandBufferResetFlag::ReleaseResources);
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
+}
+
+void CommandBufferVkTest::beginEnd() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    pool.allocate()
+        .begin(CommandBufferBeginInfo{
+            CommandBufferBeginInfo::Flag::OneTimeSubmit
+        })
+        .end();
 
     /* Does not do anything visible, so just test that it didn't blow up */
     CORRADE_VERIFY(true);

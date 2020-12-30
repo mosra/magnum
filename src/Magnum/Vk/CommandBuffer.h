@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::CommandBuffer, enum @ref Magnum::Vk::CommandPoolResetFlag, enum set @ref Magnum::Vk::CommandPoolResetFlags
+ * @brief Class @ref Magnum::Vk::CommandBuffer, @ref Magnum::Vk::CommandBufferBeginInfo, enum @ref Magnum::Vk::CommandPoolResetFlag, enum set @ref Magnum::Vk::CommandPoolResetFlags
  * @m_since_latest
  */
 
@@ -39,6 +39,106 @@
 #include "Magnum/Vk/visibility.h"
 
 namespace Magnum { namespace Vk {
+
+/**
+@brief Command buffer begin info
+@m_since_latest
+
+Wraps a @type_vk_keyword{CommandBufferBeginInfo}.
+@see @ref CommandBuffer::begin()
+*/
+class MAGNUM_VK_EXPORT CommandBufferBeginInfo {
+    public:
+        /**
+         * @brief Command buffer begin flag
+         *
+         * Wraps @type_vk_keyword{CommandBufferBeginFlagBits}.
+         * @see @ref Flags, @ref CommandBufferBeginInfo(Flags)
+         */
+        enum class Flag: UnsignedInt {
+            /**
+             * Each recording will be submitted only once and the command
+             * buffer will be reset and recorded again between each submission.
+             *
+             * @m_class{m-note m-success}
+             *
+             * @par
+             *      Setting this flag on single-use command buffers might help
+             *      drivers pick a better tradeoff between CPU time spent
+             *      optimizing the commands and GPU time spent executing them.
+             */
+            OneTimeSubmit = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+
+            /**
+             * Specifies that a @ref CommandBufferLevel::Secondary buffer is
+             * entirely inside a render pass. Ignored for
+             * @ref CommandBufferLevel::Primary command buffers (the default).
+             */
+            RenderPassContinue = VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT,
+
+            /**
+             * A command buffer can be resubmitted to a queue while it is in
+             * the pending state, and recorded into multiple primary command
+             * buffers.
+             */
+            SimultaneousUse = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+        };
+
+        /**
+         * @brief Command buffer begin flags
+         *
+         * Type-safe wrapper for @type_vk_keyword{CommandBufferBeginFlags}.
+         * @see @ref CommandBufferBeginInfo(Flags)
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /**
+         * @brief Constructor
+         * @param flags         Command buffer begin flags
+         *
+         * The following @type_vk{CommandBufferBeginInfo} fields are pre-filled
+         * in addition to `sType`, everything else is zero-filled:
+         *
+         * -    `flags`
+         */
+        /* cmd.begin(CommandBufferBeginInfo::Flag::OneTimeSubmit) doesn't work
+           anyway (would need an extra conversion from Flag to Flags), so no
+           point in making this implicit. */
+        explicit CommandBufferBeginInfo(Flags flags = {});
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit CommandBufferBeginInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit CommandBufferBeginInfo(const VkCommandBufferBeginInfo& info);
+
+        /** @brief Underlying @type_vk{CommandBufferBeginInfo} structure */
+        VkCommandBufferBeginInfo& operator*() { return _info; }
+        /** @overload */
+        const VkCommandBufferBeginInfo& operator*() const { return _info; }
+        /** @overload */
+        VkCommandBufferBeginInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkCommandBufferBeginInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkCommandBufferBeginInfo*() const { return &_info; }
+
+    private:
+        VkCommandBufferBeginInfo _info;
+};
+
+CORRADE_ENUMSET_OPERATORS(CommandBufferBeginInfo::Flags)
 
 /**
 @brief Command buffer reset flag
@@ -149,6 +249,23 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * @see @ref wrap()
          */
         VkCommandBuffer release();
+
+        /**
+         * @brief Begin command buffer recording
+         * @return Reference to self (for method chaining)
+         *
+         * @see @fn_vk_keyword{BeginCommandBuffer}
+         */
+        CommandBuffer& begin(const CommandBufferBeginInfo& info = CommandBufferBeginInfo{});
+
+        /**
+         * @brief End command buffer recording
+         *
+         * As this function is expected to be called last, it doesn't return a
+         * reference to self for method chaining.
+         * @see @fn_vk_keyword{EndCommandBuffer}
+         */
+        void end();
 
     private:
         friend CommandPool;

@@ -33,13 +33,46 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct CommandBufferTest: TestSuite::Tester {
     explicit CommandBufferTest();
 
+    void beginInfoConstruct();
+    void beginInfoConstructNoInit();
+    void beginInfoConstructFromVk();
+
     void constructNoCreate();
     void constructCopy();
 };
 
 CommandBufferTest::CommandBufferTest() {
-    addTests({&CommandBufferTest::constructNoCreate,
+    addTests({&CommandBufferTest::beginInfoConstruct,
+              &CommandBufferTest::beginInfoConstructNoInit,
+              &CommandBufferTest::beginInfoConstructFromVk,
+
+              &CommandBufferTest::constructNoCreate,
               &CommandBufferTest::constructCopy});
+}
+
+void CommandBufferTest::beginInfoConstruct() {
+    CommandBufferBeginInfo info{CommandBufferBeginInfo::Flag::OneTimeSubmit};
+    CORRADE_COMPARE(info->flags, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+}
+
+void CommandBufferTest::beginInfoConstructNoInit() {
+    CommandBufferBeginInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) CommandBufferBeginInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<CommandBufferBeginInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CommandBufferBeginInfo>::value));
+}
+
+void CommandBufferTest::beginInfoConstructFromVk() {
+    VkCommandBufferBeginInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    CommandBufferBeginInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
 void CommandBufferTest::constructNoCreate() {

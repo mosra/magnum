@@ -39,6 +39,7 @@ namespace Magnum { namespace Vk {
 class Buffer;
 class BufferCreateInfo;
 class CommandBuffer;
+/* CommandBufferBeginInfo is useful only in combination with CommandBuffer */
 class CommandPool;
 class CommandPoolCreateInfo;
 class Device;

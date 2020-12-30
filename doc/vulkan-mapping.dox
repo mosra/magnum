@@ -62,7 +62,7 @@ Vulkan function                         | Matching API
 
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
-@fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | |
+@fn_vk{BeginCommandBuffer}, \n \fn_vk{EndCommandBuffer} | @ref CommandBuffer::begin(), \n @ref CommandBuffer::end()
 @fn_vk{BindBufferMemory}, \n @fn_vk{BindBufferMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Buffer::bindMemory()
 @fn_vk{BindImageMemory}, \n @fn_vk{BindImageMemory2} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref Image::bindMemory()
 @fn_vk{BuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -385,7 +385,7 @@ Vulkan structure                        | Matching API
 @type_vk{ClearValue}                    | |
 @type_vk{ClearRect}                     | convertible from/to @ref Range3Di using @ref Magnum/Vk/Integration.h
 @type_vk{CommandBufferAllocateInfo}     | not exposed, internal to @ref CommandPool::allocate()
-@type_vk{CommandBufferBeginInfo}        | |
+@type_vk{CommandBufferBeginInfo}        | @ref CommandBufferBeginInfo
 @type_vk{CommandBufferInheritanceInfo}  | |
 @type_vk{CommandPoolCreateInfo}         | @ref CommandPoolCreateInfo
 @type_vk{ComponentMapping}              | |

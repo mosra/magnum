@@ -64,6 +64,27 @@ void CommandBuffer::reset(const CommandBufferResetFlags flags) {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).ResetCommandBuffer(_handle, VkCommandBufferResetFlags(flags)));
 }
 
+CommandBufferBeginInfo::CommandBufferBeginInfo(const Flags flags): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    _info.flags = VkCommandBufferUsageFlags(flags);
+}
+
+CommandBufferBeginInfo::CommandBufferBeginInfo(NoInitT) noexcept {}
+
+CommandBufferBeginInfo::CommandBufferBeginInfo(const VkCommandBufferBeginInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+CommandBuffer& CommandBuffer::begin(const CommandBufferBeginInfo& info) {
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).BeginCommandBuffer(_handle, info));
+    return *this;
+}
+
+void CommandBuffer::end() {
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).EndCommandBuffer(_handle));
+}
+
 VkCommandBuffer CommandBuffer::release() {
     const VkCommandBuffer handle = _handle;
     _handle = nullptr;
