@@ -77,9 +77,9 @@ MemoryTest::MemoryTest() {
 
 void MemoryTest::requirementsConstructNoInit() {
     MemoryRequirements requirements{NoInit};
-    requirements->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    requirements->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&requirements) MemoryRequirements{NoInit};
-    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<MemoryRequirements, NoInitT>::value));
 
@@ -89,10 +89,10 @@ void MemoryTest::requirementsConstructNoInit() {
 
 void MemoryTest::requirementsConstructFromVk() {
     VkMemoryRequirements2 vkRequirements;
-    vkRequirements.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    vkRequirements.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
 
     MemoryRequirements requirements{vkRequirements};
-    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
 void MemoryTest::requirementsAlignedSize() {

@@ -283,9 +283,9 @@ void RenderPassTest::attachmentDescriptionConstructImplicitLoadStoreLayout() {
 
 void RenderPassTest::attachmentDescriptionConstructNoInit() {
     AttachmentDescription description{NoInit};
-    description->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    description->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&description) AttachmentDescription{NoInit};
-    CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<AttachmentDescription, NoInitT>::value));
 
@@ -354,9 +354,9 @@ void RenderPassTest::attachmentReferenceConstructUnused() {
 
 void RenderPassTest::attachmentReferenceConstructNoInit() {
     AttachmentReference reference{NoInit};
-    reference->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    reference->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&reference) AttachmentReference{NoInit};
-    CORRADE_COMPARE(reference->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(reference->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<AttachmentReference, NoInitT>::value));
 
@@ -402,9 +402,9 @@ void RenderPassTest::subpassDescriptionConstruct() {
 
 void RenderPassTest::subpassDescriptionConstructNoInit() {
     SubpassDescription description{NoInit};
-    description->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    description->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&description) SubpassDescription{NoInit};
-    CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(description->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<SubpassDescription, NoInitT>::value));
 
@@ -691,9 +691,9 @@ void RenderPassTest::subpassDescriptionRvalue() {
 
 void RenderPassTest::subpassDependencyConstructNoInit() {
     SubpassDependency dependency{NoInit};
-    dependency->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    dependency->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&dependency) SubpassDependency{NoInit};
-    CORRADE_COMPARE(dependency->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(dependency->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<SubpassDependency, NoInitT>::value));
 
@@ -744,9 +744,9 @@ void RenderPassTest::createInfoConstruct() {
 
 void RenderPassTest::createInfoConstructNoInit() {
     RenderPassCreateInfo info{NoInit};
-    info->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     new(&info) RenderPassCreateInfo{NoInit};
-    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<RenderPassCreateInfo, NoInitT>::value));
 
@@ -798,7 +798,7 @@ void RenderPassTest::createInfoConstructDependencies() {
     RenderPassCreateInfo info;
     /** @todo update once we have a real API */
     VkSubpassDependency2 a{};
-    a.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    a.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
     VkSubpassDependency2 b{};
     b.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     info.setDependencies({
@@ -807,7 +807,7 @@ void RenderPassTest::createInfoConstructDependencies() {
     });
     CORRADE_COMPARE(info->dependencyCount, 2);
     CORRADE_VERIFY(info->pDependencies);
-    CORRADE_COMPARE(info->pDependencies[0].sType, VK_STRUCTURE_TYPE_APPLICATION_INFO);
+    CORRADE_COMPARE(info->pDependencies[0].sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
     CORRADE_COMPARE(info->pDependencies[1].sType, VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO);
 }
 
