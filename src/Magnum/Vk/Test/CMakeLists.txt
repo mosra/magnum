@@ -67,12 +67,12 @@ if(CORRADE_TARGET_ANDROID)
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorFragmentedPool at ")
-    corrade_add_test(VkAssertTestFailAssertSucce___Incomplete
+    corrade_add_test(VkAssertTestFailAssertSuccessOr
         $<TARGET_OBJECTS:VkAssertTestObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp
-        ARGUMENTS --fail-on-assert-success-or-incomplete true
+        ARGUMENTS --fail-on-assert-success-or true
         LIBRARIES MagnumVk)
-    set_tests_properties(VkAssertTestFailAssertSucce___Incomplete PROPERTIES
+    set_tests_properties(VkAssertTestFailAssertSuccessOr PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = r failed with Vk::Result::ErrorExtensionNotPresent at ")
     corrade_add_test(VkAssertTestFailAssertVkSuccess
         $<TARGET_OBJECTS:VkAssertTestObjects>
@@ -81,19 +81,19 @@ if(CORRADE_TARGET_ANDROID)
         LIBRARIES MagnumVk)
     set_tests_properties(VkAssertTestFailAssertVkSuccess PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorFragmentedPool at ")
-    corrade_add_test(VkAssertTestFailAssertVkSuc___Incomplete
+    corrade_add_test(VkAssertTestFailAssertVkSuccessOr
         $<TARGET_OBJECTS:VkAssertTestObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp
         ARGUMENTS --fail-on-assert-vk-success-or-incomplete true
         LIBRARIES MagnumVk)
-    set_tests_properties(VkAssertTestFailAssertVkSuc___Incomplete PROPERTIES
+    set_tests_properties(VkAssertTestFailAssertVkSuccessOr PROPERTIES
         PASS_REGULAR_EXPRESSION "Call a = s failed with Vk::Result::ErrorExtensionNotPresent at ")
 
     set_target_properties(
         VkAssertTestFailAssertSuccess
-        VkAssertTestFailAssertSucce___Incomplete
+        VkAssertTestFailAssertSuccessOr
         VkAssertTestFailAssertVkSuccess
-        VkAssertTestFailAssertVkSuc___Incomplete
+        VkAssertTestFailAssertVkSuccessOr
         PROPERTIES FOLDER "Magnum/Vk/Test")
 endif()
 

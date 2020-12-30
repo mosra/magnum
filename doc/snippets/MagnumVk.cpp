@@ -30,6 +30,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
@@ -48,6 +49,7 @@
 #include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
+#include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
@@ -131,6 +133,20 @@ DOXYGEN_IGNORE()
 /* Finally, be sure to move the info structure to the device as well */
 Vk::Device device{instance, std::move(info)};
 /* [wrapping-optimizing-properties-device-move] */
+}
+
+{
+Vk::Device device{NoCreate};
+VkFence fence{};
+/* [MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR] */
+const Vk::Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(NotReady,
+    vkGetFenceStatus(device, fence));
+if(result == Vk::Result::Success) {
+    // signaled
+} else {
+    // Vk::Result::NotReady, not signaled yet
+}
+/* [MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR] */
 }
 
 {

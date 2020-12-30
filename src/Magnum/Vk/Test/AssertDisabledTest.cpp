@@ -41,16 +41,16 @@ struct AssertDisabledTest: TestSuite::Tester {
     explicit AssertDisabledTest();
 
     void success();
-    void successOrIncomplete();
+    void successOr();
     void vkSuccess();
-    void vkSuccessOrIncomplete();
+    void vkSuccessOr();
 };
 
 AssertDisabledTest::AssertDisabledTest() {
     addTests({&AssertDisabledTest::success,
-              &AssertDisabledTest::successOrIncomplete,
+              &AssertDisabledTest::successOr,
               &AssertDisabledTest::vkSuccess,
-              &AssertDisabledTest::vkSuccessOrIncomplete});
+              &AssertDisabledTest::vkSuccessOr});
 
     #ifdef CORRADE_STANDARD_ASSERT
     setTestName("Magum::Vk::Test::AssertStandardDisabledTest");
@@ -69,16 +69,21 @@ void AssertDisabledTest::success() {
     CORRADE_COMPARE(out.str(), "");
 }
 
-void AssertDisabledTest::successOrIncomplete() {
+void AssertDisabledTest::successOr() {
     std::ostringstream out;
     Error redirectError{&out};
 
     Result a = Result::ErrorUnknown;
     Result r = Result::ErrorExtensionNotPresent;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = r);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = r);
     CORRADE_COMPARE(a, Result::ErrorExtensionNotPresent);
+    CORRADE_COMPARE(a2, a);
 
     CORRADE_COMPARE(out.str(), "");
+
+    /* Test also that a standalone macro won't cause warnings about unused
+       expression results */
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, Result::ErrorDeviceLost);
 }
 
 void AssertDisabledTest::vkSuccess() {
@@ -93,16 +98,21 @@ void AssertDisabledTest::vkSuccess() {
     CORRADE_COMPARE(out.str(), "");
 }
 
-void AssertDisabledTest::vkSuccessOrIncomplete() {
+void AssertDisabledTest::vkSuccessOr() {
     std::ostringstream out;
     Error redirectError{&out};
 
     VkResult b = VK_ERROR_UNKNOWN;
     VkResult s = VK_ERROR_EXTENSION_NOT_PRESENT;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(b = s);
+    Result b2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, b = s);
     CORRADE_COMPARE(Result(b), Result::ErrorExtensionNotPresent);
+    CORRADE_COMPARE(b2, Result(b));
 
     CORRADE_COMPARE(out.str(), "");
+
+    /* Test also that a standalone macro won't cause warnings about unused
+       expression results */
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, VK_ERROR_DEVICE_LOST);
 }
 
 }}}}

@@ -39,31 +39,31 @@ struct AssertTest: TestSuite::Tester {
     explicit AssertTest();
 
     void success();
-    void successOrIncomplete();
+    void successOr();
     void vkSuccess();
-    void vkSuccessOrIncomplete();
+    void vkSuccessOr();
 
-    bool _failAssertSuccess, _failAssertSuccessOrIncomplete,
-        _failAssertVkSuccess, _failAssertVkSuccessOrIncomplete;
+    bool _failAssertSuccess, _failAssertSuccessOr,
+        _failAssertVkSuccess, _failAssertVkSuccessOr;
 };
 
 AssertTest::AssertTest(): TestSuite::Tester{TesterConfiguration{}.setSkippedArgumentPrefixes({"fail-on"})} {
     addTests({&AssertTest::success,
-              &AssertTest::successOrIncomplete,
+              &AssertTest::successOr,
               &AssertTest::vkSuccess,
-              &AssertTest::vkSuccessOrIncomplete});
+              &AssertTest::vkSuccessOr});
 
     Utility::Arguments args{"fail-on"};
     args.addOption("assert-success", "false").setHelp("assert-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() with Vk::Result", "BOOL")
-        .addOption("assert-success-or-incomplete", "false").setHelp("assert-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE() with Vk::Result", "BOOL")
+        .addOption("assert-success-or", "false").setHelp("assert-success-or", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR() with Vk::Result", "BOOL")
         .addOption("assert-vk-success", "false").setHelp("assert-vk-success", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS() with VkResult", "BOOL")
-        .addOption("assert-vk-success-or-incomplete", "false").setHelp("assert-vk-success-or-incomplete", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE() with VkResult", "BOOL")
+        .addOption("assert-vk-success-or", "false").setHelp("assert-vk-success-or", "fail on MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR() with VkResult", "BOOL")
         .parse(arguments().first, arguments().second);
 
     _failAssertSuccess = args.value<bool>("assert-success");
-    _failAssertSuccessOrIncomplete = args.value<bool>("assert-success-or-incomplete");
+    _failAssertSuccessOr = args.value<bool>("assert-success-or");
     _failAssertVkSuccess = args.value<bool>("assert-vk-success");
-    _failAssertVkSuccessOrIncomplete = args.value<bool>("assert-vk-success-or-incomplete");
+    _failAssertVkSuccessOr = args.value<bool>("assert-vk-success-or");
 
     #ifdef CORRADE_STANDARD_ASSERT
     setTestName("Magum::Vk::Test::AssertStandardTest");
@@ -79,14 +79,20 @@ void AssertTest::success() {
     CORRADE_COMPARE(a, Result::Success);
 }
 
-void AssertTest::successOrIncomplete() {
+void AssertTest::successOr() {
     Result a = Result::ErrorUnknown;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = Result::Success);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = Result::Success);
+    CORRADE_COMPARE(a2, a);
 
-    Result r = _failAssertSuccessOrIncomplete ? Result::ErrorExtensionNotPresent : Result::Incomplete;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = r);
+    Result r = _failAssertSuccessOr ? Result::ErrorExtensionNotPresent : Result::Incomplete;
+    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = r);
 
     CORRADE_COMPARE(a, Result::Incomplete);
+    CORRADE_COMPARE(a3, a);
+
+    /* Test also that a standalone macro won't cause warnings about unused
+       expression results */
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, Result::ErrorDeviceLost);
 }
 
 void AssertTest::vkSuccess() {
@@ -98,14 +104,20 @@ void AssertTest::vkSuccess() {
     CORRADE_COMPARE(Result(a), Result::Success);
 }
 
-void AssertTest::vkSuccessOrIncomplete() {
+void AssertTest::vkSuccessOr() {
     VkResult a = VK_ERROR_UNKNOWN;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = VK_SUCCESS);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = VK_SUCCESS);
+    CORRADE_COMPARE(a2, Result(a));
 
-    VkResult s = _failAssertVkSuccessOrIncomplete ? VK_ERROR_EXTENSION_NOT_PRESENT : VK_INCOMPLETE;
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR_INCOMPLETE(a = s);
+    VkResult s = _failAssertVkSuccessOr ? VK_ERROR_EXTENSION_NOT_PRESENT : VK_INCOMPLETE;
+    Result a3 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = s);
 
     CORRADE_COMPARE(Result(a), Result::Incomplete);
+    CORRADE_COMPARE(a3, Result(a));
+
+    /* Test also that a standalone macro won't cause warnings about unused
+       expression results */
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, VK_ERROR_DEVICE_LOST);
 }
 
 }}}}
