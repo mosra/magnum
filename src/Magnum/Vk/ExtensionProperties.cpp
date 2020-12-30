@@ -29,6 +29,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Extensions.h"
@@ -81,8 +82,27 @@ ExtensionProperties::ExtensionProperties(const Containers::ArrayView<const Conta
         offset += count;
     }
 
-    /* Expect the total extension count didn't change between calls */
-    CORRADE_INTERNAL_ASSERT(offset == totalCount);
+    /* Expect the total extension count didn't change between calls. For some
+       reason, when using LunarG vkconfig to add VK_LAYER_KHRONOS_validation
+       to implicit layers, on NVidia Windows drivers the device extension count
+       (reported with nullptr pProperties) is one extension more than when
+       querying the actual data (124 vs 123). I suspect the driver (or the
+       loader (or the layer)) is doing some deduplication in one case but not
+       in the other. The offending extension is possibly VK_EXT_tooling_info
+       that seems to be included in "core" extensions even without the
+       validation layer enabled.
+
+       I couldn't reproduce on Mesa / Intel, but I suspect this is more
+       widespread, so I didn't want to do just a silent fix. OTOH using the
+       driver workaround framework (and listing this among used workarounds
+       instead of a warning that can't be disabled) is problematic because the
+       bug can't be reliably discovered at instance creation without doing the
+       costly enumeration. */
+    if(offset < totalCount) {
+        Warning{} << "Vk::ExtensionProperties: inconsistent extension count reported by the driver, expected" << totalCount << "but got only" << offset;
+        extensionNames = {extensionNames, offset};
+        extensionLayers = {extensionLayers, offset};
+    } else CORRADE_INTERNAL_ASSERT(offset == totalCount);
 
     /* Populate the views, sort them and remove duplicates so we can search in
        O(log n) later */
