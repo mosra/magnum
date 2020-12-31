@@ -25,7 +25,7 @@
 
 #include <sstream>
 
-#ifndef CORRADE_STANDARD_ASSERT
+#if !defined(CORRADE_STANDARD_ASSERT) && !defined(CORRADE_NO_ASSERT)
 #define CORRADE_NO_ASSERT
 #endif
 
