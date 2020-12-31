@@ -110,15 +110,14 @@ void FrameProfiler::setup(Containers::Array<Measurement>&& measurements, const U
     _measurements = std::move(measurements);
     arrayReserve(_data, maxFrameCount*_measurements.size());
 
-    /* Calculate the max delay, which signalizes when data will be available.
-       Non-delayed measurements are distinguished by _delay set to 0, so start
-       with 1 to exclude these. */
+    #ifndef CORRADE_NO_ASSERT
     for(const Measurement& measurement: _measurements) {
         /* Max frame count is always >= 1, so even if _delay is 0 the condition
            makes sense and we don't need to do a max() */
         CORRADE_ASSERT(maxFrameCount >= measurement._delay,
             "DebugTools::FrameProfiler::setup(): max delay" << measurement._delay << "is larger than max frame count" << maxFrameCount, );
     }
+    #endif
 
     /* Reset to have a clean slate in case we did some other measurements
        before */
