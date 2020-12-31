@@ -2721,7 +2721,9 @@ template<class T> T MaterialData::attribute(const UnsignedInt layer, const Unsig
     #ifdef CORRADE_GRACEFUL_ASSERT
     if(!value) return {};
     #endif
+    #ifndef CORRADE_NO_ASSERT
     const Trade::MaterialAttributeData& data = _data[layerOffset(layer) + id];
+    #endif
     CORRADE_ASSERT(Implementation::MaterialAttributeTypeFor<T>::type() == data._data.type,
         "Trade::MaterialData::attribute(): improper type requested for" << (data._data.data + 1) << "of" << data._data.type, {});
     return *reinterpret_cast<const T*>(value);

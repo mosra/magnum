@@ -366,7 +366,9 @@ UnsignedInt MaterialData::layerFactorTexture(const UnsignedInt layer) const {
 }
 
 UnsignedInt MaterialData::layerFactorTexture(const Containers::StringView layer) const {
+    #ifndef CORRADE_NO_ASSERT
     const UnsignedInt layerId = layerFor(layer);
+    #endif
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTexture(): layer" << layer << "not found", {});
     /* Not delegating into layerFactorTexture() in order to have layer name
@@ -389,7 +391,9 @@ MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const UnsignedInt
 }
 
 MaterialTextureSwizzle MaterialData::layerFactorTextureSwizzle(const Containers::StringView layer) const {
+    #ifndef CORRADE_NO_ASSERT
     const UnsignedInt layerId = layerFor(layer);
+    #endif
     CORRADE_ASSERT(layerId != ~UnsignedInt{},
         "Trade::MaterialData::layerFactorTextureSwizzle(): layer" << layer << "not found", {});
     CORRADE_ASSERT(hasAttribute(layerId, MaterialAttribute::LayerFactorTexture),
