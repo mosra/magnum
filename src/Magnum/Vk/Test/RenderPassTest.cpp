@@ -32,6 +32,8 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Framebuffer.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
@@ -97,6 +99,8 @@ struct RenderPassTest: TestSuite::Tester {
     void constructCopy();
 
     void beginInfoConstruct();
+    void beginInfoConstructImplicitSize();
+    void beginInfoConstructImplicitSizeUnknown();
     void beginInfoConstructNoInit();
     void beginInfoConstructClears();
     void beginInfoConstructFromVk();
@@ -185,6 +189,8 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::constructCopy,
 
               &RenderPassTest::beginInfoConstruct,
+              &RenderPassTest::beginInfoConstructImplicitSize,
+              &RenderPassTest::beginInfoConstructImplicitSizeUnknown,
               &RenderPassTest::beginInfoConstructNoInit,
               &RenderPassTest::beginInfoConstructClears,
               &RenderPassTest::beginInfoConstructFromVk,
@@ -1014,6 +1020,33 @@ void RenderPassTest::beginInfoConstruct() {
     CORRADE_COMPARE(Range2Di{info->renderArea}, (Range2Di{{3, 7}, {15, 78}}));
     CORRADE_COMPARE(info->clearValueCount, 0);
     CORRADE_VERIFY(!info->pClearValues);
+}
+
+void RenderPassTest::beginInfoConstructImplicitSize() {
+    auto renderPass = reinterpret_cast<VkRenderPass>(0xbadbeef);
+    Device device{NoCreate};
+    auto framebuffer = Framebuffer::wrap(device, reinterpret_cast<VkFramebuffer>(0xdeadcafe), {256, 384, 16});
+
+    RenderPassBeginInfo info{renderPass, framebuffer};
+    CORRADE_COMPARE(info->renderPass, renderPass);
+    CORRADE_COMPARE(info->framebuffer, framebuffer.handle());
+    CORRADE_COMPARE(Range2Di{info->renderArea}, (Range2Di{{}, {256, 384}}));
+    CORRADE_COMPARE(info->clearValueCount, 0);
+    CORRADE_VERIFY(!info->pClearValues);
+}
+
+void RenderPassTest::beginInfoConstructImplicitSizeUnknown() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Framebuffer framebuffer{NoCreate};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    RenderPassBeginInfo{VkRenderPass{}, framebuffer};
+    CORRADE_COMPARE(out.str(),
+        "Vk::RenderPassBeginInfo: the framebuffer has unknown size, you have to specify the render area explicitly\n");
 }
 
 void RenderPassTest::beginInfoConstructNoInit() {

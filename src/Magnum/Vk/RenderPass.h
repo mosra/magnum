@@ -221,6 +221,14 @@ class MAGNUM_VK_EXPORT RenderPassBeginInfo {
         explicit RenderPassBeginInfo(VkRenderPass renderPass, VkFramebuffer framebuffer, const Range2Di& renderArea);
 
         /**
+         * @brief Construct for a render pass spanning the whole framebuffer area
+         *
+         * Equivalent to calling @ref RenderPassBeginInfo(VkRenderPass, VkFramebuffer, const Range2Di&)
+         * with @p renderArea spanning the whole @ref Framebuffer::size().
+         */
+        explicit RenderPassBeginInfo(VkRenderPass renderPass, Framebuffer& framebuffer);
+
+        /**
          * @brief Construct without initializing the contents
          *
          * Note that not even the `sType` field is set --- the structure has to

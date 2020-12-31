@@ -78,6 +78,7 @@ void FramebufferVkTest::construct() {
         }, {256, 256}}};
         CORRADE_VERIFY(framebuffer.handle());
         CORRADE_COMPARE(framebuffer.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(framebuffer.size(), (Vector3i{256, 256, 1}));
     }
 
     /* Shouldn't crash or anything */
@@ -102,6 +103,7 @@ void FramebufferVkTest::constructMove() {
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(b.size(), (Vector3i{256, 256, 1}));
 
     Framebuffer c{NoCreate};
     c = std::move(b);
@@ -109,6 +111,7 @@ void FramebufferVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(c.size(), (Vector3i{256, 256, 1}));
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Framebuffer>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Framebuffer>::value);
@@ -128,8 +131,10 @@ void FramebufferVkTest::wrap() {
         FramebufferCreateInfo{renderPass, {colorView}, {256, 256}},
         nullptr, &framebuffer)), Result::Success);
 
-    auto wrapped = Framebuffer::wrap(device(), framebuffer, HandleFlag::DestroyOnDestruction);
+    /* The size is wrong, yes, but that's just for testing */
+    auto wrapped = Framebuffer::wrap(device(), framebuffer, {512, 384, 16}, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), framebuffer);
+    CORRADE_COMPARE(wrapped.size(), (Vector3i{512, 384, 16}));
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), framebuffer);

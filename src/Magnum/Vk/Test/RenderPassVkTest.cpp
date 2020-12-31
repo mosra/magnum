@@ -179,7 +179,7 @@ void RenderPassVkTest::cmdBeginEnd() {
     }, {256, 256}}};
 
     cmd.begin()
-       .beginRenderPass(RenderPassBeginInfo{renderPass, framebuffer, {{}, {256, 256}}}
+       .beginRenderPass(RenderPassBeginInfo{renderPass, framebuffer}
            .clearColor(0, 0x1f1f1f_rgbf)
            .clearDepthStencil(1, 1.0f, 0))
        .nextSubpass()

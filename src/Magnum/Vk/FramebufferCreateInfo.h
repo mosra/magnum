@@ -77,7 +77,8 @@ class MAGNUM_VK_EXPORT FramebufferCreateInfo {
          * @param attachments   Image views corresponding to all attachments
          *      listed in @ref RenderPassCreateInfo::setAttachments()
          * @param size          Width, height and layer count of the
-         *      framebuffer
+         *      framebuffer. Available through @ref Framebuffer::size()
+         *      afterwards.
          * @param flags         Framebuffer creation flags
          *
          * The following @type_vk{FramebufferCreateInfo} fields are pre-filled

@@ -33,6 +33,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Framebuffer.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Integration.h"
@@ -794,6 +795,11 @@ RenderPassBeginInfo::RenderPassBeginInfo(const VkRenderPass renderPass, const Vk
     _info.renderPass = renderPass;
     _info.framebuffer = framebuffer;
     _info.renderArea = VkRect2D(renderArea);
+}
+
+RenderPassBeginInfo::RenderPassBeginInfo(const VkRenderPass renderPass, Framebuffer& framebuffer): RenderPassBeginInfo{renderPass, framebuffer, {{}, framebuffer.size().xy()}} {
+    CORRADE_ASSERT(framebuffer.size().product(),
+        "Vk::RenderPassBeginInfo: the framebuffer has unknown size, you have to specify the render area explicitly", );
 }
 
 RenderPassBeginInfo::RenderPassBeginInfo(NoInitT) noexcept {}

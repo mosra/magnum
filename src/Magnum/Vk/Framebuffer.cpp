@@ -92,21 +92,34 @@ FramebufferCreateInfo& FramebufferCreateInfo::operator=(FramebufferCreateInfo&& 
     return *this;
 }
 
-Framebuffer Framebuffer::wrap(Device& device, const VkFramebuffer handle, const HandleFlags flags) {
+Framebuffer Framebuffer::wrap(Device& device, const VkFramebuffer handle, const Vector3i& size, const HandleFlags flags) {
     Framebuffer out{NoCreate};
     out._device = &device;
     out._handle = handle;
     out._flags = flags;
+
+    /* See the _size member for more information */
+    CORRADE_INTERNAL_ASSERT((size <= Vector3i{0xffff}).all());
+    out._size[0] = size.x();
+    out._size[1] = size.y();
+    out._size[2] = size.z();
+
     return out;
 }
 
 Framebuffer::Framebuffer(Device& device, const FramebufferCreateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateFramebuffer(device, info, nullptr, &_handle));
+
+    /* See the _size member for more information */
+    CORRADE_INTERNAL_ASSERT(info->width <= 0xffff && info->height <= 0xffff && info->layers <= 0xffff);
+    _size[0] = info->width;
+    _size[1] = info->height;
+    _size[2] = info->layers;
 }
 
-Framebuffer::Framebuffer(NoCreateT): _device{}, _handle{} {}
+Framebuffer::Framebuffer(NoCreateT): _device{}, _handle{}, _size{} {}
 
-Framebuffer::Framebuffer(Framebuffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+Framebuffer::Framebuffer(Framebuffer&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags}, _size{other._size[0], other._size[1], other._size[2]} {
     other._handle = {};
 }
 
@@ -120,7 +133,12 @@ Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     swap(other._flags, _flags);
+    swap(other._size, _size);
     return *this;
+}
+
+Vector3i Framebuffer::size() const {
+    return {_size[0], _size[1], _size[2]};
 }
 
 VkFramebuffer Framebuffer::release() {

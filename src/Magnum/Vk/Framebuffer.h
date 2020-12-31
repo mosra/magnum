@@ -60,15 +60,22 @@ class MAGNUM_VK_EXPORT Framebuffer {
          * @brief Wrap existing Vulkan handle
          * @param device            Vulkan device the framebuffer is created on
          * @param handle            The @type_vk{Framebuffer} handle
+         * @param size              Width, height and layer count of the
+         *      framebuffer. Available through @ref size() afterwards.
          * @param flags             Handle flags
          *
-         * The @p handle is expected to be originating from @p device. Unlike
-         * a framebuffer created using a constructor, the Vulkan framebuffer is
-         * by default not deleted on destruction, use @p flags for different
-         * behavior.
+         * The @p handle is expected to be originating from @p device. The
+         * @p size parameter is used for convenience @ref RenderPass recording
+         * later. If it's unknown, pass a default-constructed value --- you
+         * will then be able to only being a render pass by specifying a
+         * concrete size in @ref RenderPassBeginInfo.
+         *
+         * Unlike a framebuffer created using a constructor, the Vulkan
+         * framebuffer is by default not deleted on destruction, use @p flags
+         * for different behavior.
          * @see @ref release()
          */
-        static Framebuffer wrap(Device& device, VkFramebuffer handle, HandleFlags flags = {});
+        static Framebuffer wrap(Device& device, VkFramebuffer handle, const Vector3i& size, HandleFlags flags = {});
 
         /**
          * @brief Constructor
@@ -118,6 +125,9 @@ class MAGNUM_VK_EXPORT Framebuffer {
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
 
+        /** @brief Framebuffer size */
+        Vector3i size() const;
+
         /**
          * @brief Release the underlying Vulkan framebuffer
          *
@@ -134,6 +144,17 @@ class MAGNUM_VK_EXPORT Framebuffer {
 
         VkFramebuffer _handle;
         HandleFlags _flags;
+        /* This is probably extremely stupid and will fire back later,
+           nevertheless -- on 64bit there's 7 padding bytes after flags, which
+           we can reuse to store framebuffer size. According to gpuinfo.org,
+           maxFramebufferWidth/Height is 32768 in late 2020, which fits into
+           16 bits, and a framebuffer of that size is 4 GB of memory. I don't
+           expect this growing over 64k (16 GB) anytime soon.
+
+           Additionally (which is probably also stupid), this is not using
+           Vector3us but instead a plain array to avoid the include
+           dependency. */
+        UnsignedShort _size[3];
 };
 
 }}
