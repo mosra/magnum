@@ -483,7 +483,7 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
 
     /* For each attribute decide if it needs to be fuzzy-deduplicated or not,
        calculate the epsilon size and call the appropriate API */
-    const Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
+    Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
     for(UnsignedInt i = 0; i != owned.attributeCount(); ++i) {
         const VertexFormat format = owned.attributeFormat(i);
         CORRADE_ASSERT(!isVertexFormatImplementationSpecific(format),
@@ -579,20 +579,18 @@ Trade::MeshData removeDuplicatesFuzzy(const Trade::MeshData& data, const Float f
         indexType = owned.indexType();
     }
 
-    combinedIndices = combinedIndices.prefix(vertexCount);
-
     Trade::MeshData layout = interleavedLayout(owned, vertexCount);
     Trade::MeshIndexData indices{indexType, indexData};
     Trade::MeshData out{layout.primitive(),
         std::move(indexData), indices,
         layout.releaseVertexData(), layout.releaseAttributeData(), vertexCount};
 
-    {
-        /* Duplicate the attributes according to the combined index buffer */
-        const Containers::StridedArrayView2D<UnsignedInt> perAttributeIndices = combinedIndices.transposed<0, 1>();
-        for(UnsignedInt i = 0; i != owned.attributeCount(); ++i)
-            duplicateInto(perAttributeIndices[i].prefix(vertexCount), owned.attribute(i), out.mutableAttribute(i));
-    }
+    /* Trim the views to only the unique combinations, duplicate the attributes
+       according to the combined index buffer */
+    combinedIndices = combinedIndices.prefix(vertexCount);
+    perAttributeIndices = combinedIndices.transposed<0, 1>();
+    for(UnsignedInt i = 0; i != owned.attributeCount(); ++i)
+        duplicateInto(perAttributeIndices[i].prefix(vertexCount), owned.attribute(i), out.mutableAttribute(i));
 
     return out;
 }
