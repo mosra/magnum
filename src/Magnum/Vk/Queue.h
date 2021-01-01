@@ -67,6 +67,32 @@ class MAGNUM_VK_EXPORT Queue {
          */
         explicit Queue(NoCreateT);
 
+        /* The class *technically* doesn't need to be move-only, it's done only
+           for consistency and to make room for possible future move-only
+           state. If move-only proves to be annoying, it might get removed --
+           going the other way would be much more painful and breaking user
+           code. */
+
+        /** @brief Copying is not allowed */
+        Queue(const Queue&) = delete;
+
+        /** @brief Move constructor */
+        Queue(Queue&& other) noexcept;
+
+        /**
+         * @brief Destructor
+         *
+         * Queues are associated with the device they come from, so no explicit
+         * destruction is needed.
+         */
+        ~Queue();
+
+        /** @brief Copying is not allowed */
+        Queue& operator=(const Queue&) = delete;
+
+        /** @brief Move assignment */
+        Queue& operator=(Queue&& other) noexcept;
+
         /** @brief Underlying @type_vk{Queue} handle */
         VkQueue handle() { return _handle; }
         /** @overload */

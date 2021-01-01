@@ -39,4 +39,17 @@ Queue Queue::wrap(Device& device, VkQueue handle) {
 
 Queue::Queue(NoCreateT): _device{}, _handle{} {}
 
+Queue::Queue(Queue&& other) noexcept: _device{other._device}, _handle{other._handle} {
+    other._handle = {};
+}
+
+Queue::~Queue() = default;
+
+Queue& Queue::operator=(Queue&& other) noexcept {
+    using std::swap;
+    swap(other._device, _device);
+    swap(other._handle, _handle);
+    return *this;
+}
+
 }}

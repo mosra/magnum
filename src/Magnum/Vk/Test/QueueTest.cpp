@@ -34,12 +34,16 @@ struct QueueTest: TestSuite::Tester {
     explicit QueueTest();
 
     void constructNoCreate();
+    void constructCopy();
+    void constructMove();
 
     void wrap();
 };
 
 QueueTest::QueueTest() {
     addTests({&QueueTest::constructNoCreate,
+              &QueueTest::constructCopy,
+              &QueueTest::constructMove,
 
               &QueueTest::wrap});
 }
@@ -52,6 +56,30 @@ void QueueTest::constructNoCreate() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Queue>::value));
+}
+
+void QueueTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Queue>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Queue>{});
+}
+
+void QueueTest::constructMove() {
+    Device device{NoCreate};
+    Queue a = Queue::wrap(device, reinterpret_cast<VkQueue>(0xbadcafe));
+    VkQueue handle = a.handle();
+    CORRADE_VERIFY(a.handle());
+
+    Queue b = std::move(a);
+    CORRADE_VERIFY(!a.handle());
+    CORRADE_COMPARE(b.handle(), handle);
+
+    Queue c{NoCreate};
+    c = std::move(b);
+    CORRADE_VERIFY(!b.handle());
+    CORRADE_COMPARE(c.handle(), handle);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Queue>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Queue>::value);
 }
 
 void QueueTest::wrap() {
