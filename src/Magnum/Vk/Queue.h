@@ -57,12 +57,7 @@ class MAGNUM_VK_EXPORT Queue {
          * be destroyed at the end, so there's no equivalent of e.g.
          * @ref Device::release() or @ref Device::handleFlags().
          */
-        static Queue wrap(Device& device, VkQueue handle) {
-            Queue out{NoCreate};
-            out._device = &device;
-            out._handle = handle;
-            return out;
-        }
+        static Queue wrap(Device& device, VkQueue handle);
 
         /**
          * @brief Construct without creating the instance
@@ -70,7 +65,7 @@ class MAGNUM_VK_EXPORT Queue {
          * This is the expected way to create a queue that's later populated
          * on @ref Device creation through @ref DeviceCreateInfo::addQueues().
          */
-        explicit Queue(NoCreateT): _device{}, _handle{} {}
+        explicit Queue(NoCreateT);
 
         /** @brief Underlying @type_vk{Queue} handle */
         VkQueue handle() { return _handle; }

@@ -34,6 +34,7 @@ set(MagnumVk_SRCS
     Framebuffer.cpp
     Handle.cpp
     Instance.cpp
+    Queue.cpp
     Result.cpp
     Shader.cpp
     Version.cpp
