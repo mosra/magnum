@@ -137,7 +137,7 @@ class VulkanTester: public TestSuite::Tester {
         /**
          * @brief Vulkan queue
          *
-         * In case the calss was constructed using @ref VulkanTester(), the
+         * In case the class was constructed using @ref VulkanTester(), the
          * queue corresponds to @ref DeviceProperties::pickQueueFamily() with
          * @ref QueueFlag::Graphics called on @ref Device::properties().
          *
