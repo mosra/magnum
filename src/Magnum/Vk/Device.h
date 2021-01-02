@@ -175,7 +175,8 @@ moving a new instance over the empty one. Here you have to use the
 @snippet MagnumVk.cpp Device-delayed-creation
 
 Similar case is with @ref wrap() --- instead of being @cpp static @ce, you have
-to call it on a @ref Device(NoCreateT) "NoCreate"'d instance.
+to call it on a @ref Device(NoCreateT) "NoCreate"'d instance. The @ref Instance
+class behaves equivalently.
 */
 class MAGNUM_VK_EXPORT Device {
     public:

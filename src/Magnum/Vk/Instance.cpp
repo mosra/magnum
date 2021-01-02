@@ -37,6 +37,7 @@
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
@@ -258,22 +259,51 @@ InstanceCreateInfo& InstanceCreateInfo::addEnabledExtensions(const std::initiali
     return addEnabledExtensions(Containers::arrayView(extensions));
 }
 
-Instance Instance::wrap(const VkInstance handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
+void Instance::wrap(const VkInstance handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const HandleFlags flags) {
+    CORRADE_ASSERT(!_handle,
+        "Vk::Instance::wrap(): instance already created", );
+
     /* Compared to the constructor nothing is printed here as it would be just
        repeating what was passed to the constructor */
-    Instance out{NoCreate};
-    out._handle = handle;
-    out._flags = flags;
-    out.initializeExtensions(enabledExtensions);
-    out.initialize(version, 0, nullptr);
-    return out;
+    _handle = handle;
+    _flags = flags;
+    initializeExtensions(enabledExtensions);
+    initialize(version, 0, nullptr);
 }
 
-Instance Instance::wrap(const VkInstance handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const HandleFlags flags) {
-    return wrap(handle, version, Containers::arrayView(enabledExtensions), flags);
+void Instance::wrap(const VkInstance handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const HandleFlags flags) {
+    wrap(handle, version, Containers::arrayView(enabledExtensions), flags);
 }
 
-Instance::Instance(const InstanceCreateInfo& info): _flags{HandleFlag::DestroyOnDestruction} {
+Instance::Instance(const InstanceCreateInfo& info): Instance{NoCreate} {
+    create(info);
+}
+
+Instance::Instance(): Instance{NoCreate} {
+    create();
+}
+
+Instance::Instance(NoCreateT): _handle{}, _functionPointers{} {}
+
+Instance::~Instance() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        _functionPointers.DestroyInstance(_handle, nullptr);
+}
+
+void Instance::create(const InstanceCreateInfo& info) {
+    if(tryCreate(info) != Result::Success) std::exit(1);
+}
+
+void Instance::create() {
+    if(tryCreate() != Result::Success) std::exit(1);
+}
+
+Result Instance::tryCreate(const InstanceCreateInfo& info) {
+    CORRADE_ASSERT(!_handle,
+        "Vk::Instance::tryCreate(): instance already created", {});
+
+    _flags = HandleFlag::DestroyOnDestruction;
+
     const Version version = info._state && info._state->version != Version::None ? info._state->version : enumerateInstanceVersion();
 
     /* Print all enabled layers and extensions if we're not told to be quiet */
@@ -293,44 +323,22 @@ Instance::Instance(const InstanceCreateInfo& info): _flags{HandleFlag::DestroyOn
         }
     }
 
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(vkCreateInstance(info, nullptr, &_handle));
+    if(const VkResult result = vkCreateInstance(info, nullptr, &_handle)) {
+        Error{} << "Vk::Instance::tryCreate(): instance creation failed:" << Result(result);
+        return Result(result);
+    }
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     if(info._state)
         initialize(version, info._state->argc, info._state->argv);
     else
         initialize(version, 0, nullptr);
+
+    return Result::Success;
 }
 
-Instance::Instance(): Instance{InstanceCreateInfo{}} {}
-
-Instance::Instance(NoCreateT): _handle{}, _functionPointers{} {}
-
-Instance::Instance(Instance&& other) noexcept: _handle{other._handle},
-    _flags{other._flags}, _version{other._version},
-    _extensionStatus{other._extensionStatus}, _state{std::move(other._state)},
-    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
-       member instead of doing a copy */
-    _functionPointers(other._functionPointers)
-{
-    other._handle = nullptr;
-    other._functionPointers = {};
-}
-
-Instance::~Instance() {
-    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
-        _functionPointers.DestroyInstance(_handle, nullptr);
-}
-
-Instance& Instance::operator=(Instance&& other) noexcept {
-    using std::swap;
-    swap(other._handle, _handle);
-    swap(other._flags, _flags);
-    swap(other._version, _version);
-    swap(other._extensionStatus, _extensionStatus);
-    swap(other._state, _state);
-    swap(other._functionPointers, _functionPointers);
-    return *this;
+Result Instance::tryCreate() {
+    return tryCreate(InstanceCreateInfo{});
 }
 
 template<class T> void Instance::initializeExtensions(const Containers::ArrayView<const T> enabledExtensions) {

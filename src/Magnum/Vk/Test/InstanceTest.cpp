@@ -38,6 +38,7 @@ struct InstanceTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+    void constructMove();
 };
 
 InstanceTest::InstanceTest() {
@@ -45,7 +46,8 @@ InstanceTest::InstanceTest() {
               &InstanceTest::createInfoConstructFromVk,
 
               &InstanceTest::constructNoCreate,
-              &InstanceTest::constructCopy});
+              &InstanceTest::constructCopy,
+              &InstanceTest::constructMove});
 }
 
 void InstanceTest::createInfoConstructNoInit() {
@@ -87,6 +89,11 @@ void InstanceTest::constructNoCreate() {
 void InstanceTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Instance>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Instance>{});
+}
+
+void InstanceTest::constructMove() {
+    CORRADE_VERIFY(!std::is_move_constructible<Instance>{});
+    CORRADE_VERIFY(!std::is_move_assignable<Instance>{});
 }
 
 }}}}

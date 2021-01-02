@@ -56,10 +56,14 @@ struct InstanceVkTest: TestSuite::Tester {
     void constructLayerExtension();
     void constructCommandLineDisable();
     void constructCommandLineEnable();
-    void constructMove();
-    void constructUnknownLayer();
-    void constructUnknownExtension();
+
+    void tryCreateAlreadyCreated();
+    void tryCreateUnknownLayer();
+    void tryCreateUnknownExtension();
+
     void wrap();
+    void wrapAlreadyCreated();
+
     void populateGlobalFunctionPointers();
 };
 
@@ -161,10 +165,13 @@ InstanceVkTest::InstanceVkTest() {
                        &InstanceVkTest::constructCommandLineEnable},
         Containers::arraySize(ConstructCommandLineData));
 
-    addTests({&InstanceVkTest::constructMove,
-              &InstanceVkTest::constructUnknownLayer,
-              &InstanceVkTest::constructUnknownExtension,
+    addTests({&InstanceVkTest::tryCreateAlreadyCreated,
+              &InstanceVkTest::tryCreateUnknownLayer,
+              &InstanceVkTest::tryCreateUnknownExtension,
+
               &InstanceVkTest::wrap,
+              &InstanceVkTest::wrapAlreadyCreated,
+
               &InstanceVkTest::populateGlobalFunctionPointers});
 }
 
@@ -430,66 +437,38 @@ void InstanceVkTest::constructCommandLineEnable() {
     CORRADE_COMPARE(!!instance->CreateDebugReportCallbackEXT, data.debugReportEnabled);
 }
 
-void InstanceVkTest::constructMove() {
-    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
-        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+void InstanceVkTest::tryCreateAlreadyCreated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
 
-    InstanceExtensionProperties extensions = enumerateInstanceExtensionProperties();
-    if(!extensions.isSupported<Extensions::KHR::get_physical_device_properties2>())
-        CORRADE_SKIP("VK_KHR_get_physical_device_properties2 not supported, can't test");
-
-    Instance a{InstanceCreateInfo{}
-        .setApplicationInfo("InstanceVkTest", version(0, 0, 1))
-        .addEnabledExtensions<Extensions::KHR::get_physical_device_properties2>()};
-    VkInstance handle = a.handle();
-    Version version = a.version();
-    CORRADE_VERIFY(handle);
-    CORRADE_VERIFY(version != Version{});
-
-    Instance b = std::move(a);
-    CORRADE_VERIFY(!a.handle());
-    CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(b.handle(), handle);
-    CORRADE_COMPARE(b.version(), version);
-    CORRADE_VERIFY(b.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>());
-    /* Function pointers in a are left in whatever state they were before, as
-       that doesn't matter */
-    CORRADE_VERIFY(b->CreateDevice);
-
-    Instance c{NoCreate};
-    c = std::move(b);
-    CORRADE_VERIFY(!b.handle());
-    CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
-    CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(c.handle(), handle);
-    CORRADE_COMPARE(c.version(), version);
-    CORRADE_VERIFY(c.isExtensionEnabled<Extensions::KHR::get_physical_device_properties2>());
-    /* Everything is swapped, including function pointers */
-    CORRADE_VERIFY(!b->CreateDevice);
-    CORRADE_VERIFY(c->CreateDevice);
-
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<Instance>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<Instance>::value);
-}
-
-void InstanceVkTest::constructUnknownLayer() {
-    CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
+    Instance instance;
+    CORRADE_VERIFY(instance.handle());
 
     std::ostringstream out;
     Error redirectError{&out};
-    Instance instance{InstanceCreateInfo{}
-        .addEnabledLayers({"VK_LAYER_this_doesnt_exist"_s})};
-    CORRADE_COMPARE(out.str(), "TODO");
+    instance.tryCreate();
+    CORRADE_COMPARE(out.str(), "Vk::Instance::tryCreate(): instance already created\n");
 }
 
-void InstanceVkTest::constructUnknownExtension() {
-    CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
+void InstanceVkTest::tryCreateUnknownLayer() {
+    Instance instance{NoCreate};
 
     std::ostringstream out;
     Error redirectError{&out};
-    Instance instance{InstanceCreateInfo{}
-        .addEnabledExtensions({"VK_this_doesnt_exist"_s})};
-    CORRADE_COMPARE(out.str(), "TODO");
+    CORRADE_COMPARE(instance.tryCreate(InstanceCreateInfo{}
+        .addEnabledLayers({"VK_LAYER_this_doesnt_exist"_s})), Result::ErrorLayerNotPresent);
+    CORRADE_COMPARE(out.str(), "Vk::Instance::tryCreate(): instance creation failed: Vk::Result::ErrorLayerNotPresent\n");
+}
+
+void InstanceVkTest::tryCreateUnknownExtension() {
+    Instance instance{NoCreate};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(instance.tryCreate(InstanceCreateInfo{}
+        .addEnabledExtensions({"VK_this_doesnt_exist"_s})), Result::ErrorExtensionNotPresent);
+    CORRADE_COMPARE(out.str(), "Vk::Instance::tryCreate(): instance creation failed: Vk::Result::ErrorExtensionNotPresent\n");
 }
 
 void InstanceVkTest::wrap() {
@@ -515,7 +494,8 @@ void InstanceVkTest::wrap() {
 
     {
         /* Wrapping should load the basic function pointers */
-        auto wrapped = Instance::wrap(instance, Version::Vk11, {
+        Instance wrapped{NoCreate};
+        wrapped.wrap(instance, Version::Vk11, {
             Extensions::EXT::debug_report::string()
         }, HandleFlag::DestroyOnDestruction);
         CORRADE_VERIFY(wrapped->DestroyInstance);
@@ -540,9 +520,24 @@ void InstanceVkTest::wrap() {
     }
 
     /* ...so we can wrap it again, non-owned, and then destroy it manually */
-    auto wrapped = Instance::wrap(instance, Version::Vk10, {});
+    Instance wrapped{NoCreate};
+    wrapped.wrap(instance, Version::Vk10, {});
     CORRADE_VERIFY(wrapped->DestroyInstance);
     wrapped->DestroyInstance(instance, nullptr);
+}
+
+void InstanceVkTest::wrapAlreadyCreated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Instance instance;
+    CORRADE_VERIFY(instance.handle());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    instance.wrap({}, {}, {});
+    CORRADE_COMPARE(out.str(), "Vk::Instance::wrap(): instance already created\n");
 }
 
 void InstanceVkTest::populateGlobalFunctionPointers() {

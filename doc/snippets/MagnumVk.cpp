@@ -66,6 +66,26 @@ using namespace Magnum;
 
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
+/* [Instance-delayed-creation] */
+class MyApplication {
+    public:
+        explicit MyApplication();
+
+    private:
+        Vk::Instance _instance{NoCreate};
+};
+
+MyApplication::MyApplication() {
+    // decide on layers, extensions, ...
+
+    _instance.create(Vk::InstanceCreateInfo{DOXYGEN_IGNORE()}
+        DOXYGEN_IGNORE()
+    );
+}
+/* [Instance-delayed-creation] */
+
+namespace B {
+
 /* [Device-delayed-creation] */
 class MyApplication {
     public:
@@ -83,6 +103,8 @@ MyApplication::MyApplication(DOXYGEN_IGNORE(Vk::Instance& instance)) {
     );
 }
 /* [Device-delayed-creation] */
+
+}
 
 int main() {
 

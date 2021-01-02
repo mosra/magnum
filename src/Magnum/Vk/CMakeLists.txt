@@ -33,7 +33,6 @@ set(MagnumVk_SRCS
     Fence.cpp
     Framebuffer.cpp
     Handle.cpp
-    Instance.cpp
     Queue.cpp
     Result.cpp
     Shader.cpp
@@ -52,6 +51,7 @@ set(MagnumVk_GracefulAssert_SRCS
     ExtensionProperties.cpp
     Image.cpp
     ImageView.cpp
+    Instance.cpp
     LayerProperties.cpp
     Memory.cpp
     RenderPass.cpp)

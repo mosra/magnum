@@ -43,9 +43,9 @@ VulkanTester::VulkanTester(): VulkanTester{NoCreate} {
 }
 
 VulkanTester::VulkanTester(NoCreateT): VulkanTester{NoCreate, NoCreate} {
-    _instance = Vk::Instance{Vk::InstanceCreateInfo{arguments().first, arguments().second}
+    _instance.create(Vk::InstanceCreateInfo{arguments().first, arguments().second}
         .setApplicationInfo(testName(), {})
-    };
+    );
 }
 
 VulkanTester::VulkanTester(NoCreateT, NoCreateT): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _instance{NoCreate}, _device{NoCreate}, _queue{NoCreate} {}

@@ -171,6 +171,21 @@ Compared to the above, the same custom code would then look like this:
 
 Similarly you can use @ref Device::populateGlobalFunctionPointers() to populate
 device-level global function pointers.
+
+@section Vk-Instance-disabled-move Disabled move and delayed instances creation
+
+Similarly to @ref Device, for safety reasons as all instance-dependent objects
+internally have to keep a pointer to the originating @ref Instance to access
+Vulkan function pointers, the @ref Instance class is not movable. This leads to
+a difference compared to other Vulkan object wrappers, where you can use the
+@ref NoCreate tag to construct an empty instance (for example as a class
+member) and do a delayed creation by moving a new instance over the empty one.
+Here you have to use the @ref create() function instead:
+
+@snippet MagnumVk.cpp Instance-delayed-creation
+
+Similar case is with @ref wrap() --- instead of being @cpp static @ce, you have
+to call it on a @ref Instance(NoCreateT) "NoCreate"'d instance.
 */
 class MAGNUM_VK_EXPORT Instance {
     public:
@@ -182,6 +197,17 @@ class MAGNUM_VK_EXPORT Instance {
          * @param enabledExtensions Extensions that are assumed to be enabled
          *      on the instance
          * @param flags         Handle flags
+         *
+         * <b></b>
+         *
+         * @m_class{m-note m-warning}
+         *
+         * @par
+         *      Unlike with other Vulkan object wrappers, this isn't a
+         *      @cpp static @ce function returning a new @ref Instance, instead
+         *      it's expected to be called on a @ref NoCreate "NoCreate"'d
+         *      instance. See @ref Vk-Instance-disabled-move for more
+         *      information.
          *
          * The @p handle is expected to be of an existing Vulkan instance. The
          * @p version and @p enabledExtensions parameters populate internal
@@ -200,15 +226,16 @@ class MAGNUM_VK_EXPORT Instance {
          * behavior.
          * @see @ref release()
          */
-        static Instance wrap(VkInstance handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, HandleFlags flags = {});
+        void wrap(VkInstance handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, HandleFlags flags = {});
 
         /** @overload */
-        static Instance wrap(VkInstance handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, HandleFlags flags = {});
+        void wrap(VkInstance handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, HandleFlags flags = {});
 
         /**
          * @brief Constructor
          *
-         * @see @fn_vk_keyword{CreateInstance}
+         * Equivalent to calling @ref Instance(NoCreateT) followed by
+         * @ref create(const InstanceCreateInfo&).
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Instance(const InstanceCreateInfo& info = InstanceCreateInfo{});
@@ -230,8 +257,12 @@ class MAGNUM_VK_EXPORT Instance {
         /** @brief Copying is not allowed */
         Instance(const Instance&) = delete;
 
-        /** @brief Move constructor */
-        Instance(Instance&& other) noexcept;
+        /**
+         * @brief Moving is not allowed
+         *
+         * See @ref Vk-Instance-disabled-move for more information.
+         */
+        Instance(Instance&&) = delete;
 
         /**
          * @brief Destructor
@@ -246,8 +277,12 @@ class MAGNUM_VK_EXPORT Instance {
         /** @brief Copying is not allowed */
         Instance& operator=(const Instance&) = delete;
 
-        /** @brief Move assignment */
-        Instance& operator=(Instance&& other) noexcept;
+        /**
+         * @brief Moving is not allowed
+         *
+         * See @ref Vk-Instance-disabled-move for more information.
+         */
+        Instance& operator=(Instance&&) = delete;
 
         /** @brief Underlying @type_vk{Instance} handle */
         VkInstance handle() { return _handle; }
@@ -256,6 +291,44 @@ class MAGNUM_VK_EXPORT Instance {
 
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Create an instance
+         * @param info      Instance creation info
+         *
+         * Meant to be called on a @ref Instance(NoCreateT) "NoCreate"'d
+         * instance. After creating the instance, populates instance-level
+         * function pointers and runtime information about enabled extensions
+         * based on @p info.
+         *
+         * If instance creation fails, a message is printed to error output and
+         * the application exits --- if you need a different behavior, use
+         * @ref tryCreate() instead.
+         * @see @ref Instance(const InstanceCreateInfo&),
+         *      @see @fn_vk_keyword{CreateInstance}
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void create(const InstanceCreateInfo& info = InstanceCreateInfo{});
+        #else
+        /* To avoid dependency on InstanceCreateInfo.h */
+        void create(const InstanceCreateInfo& info);
+        void create();
+        #endif
+
+        /**
+         * @brief Try to create an instance
+         *
+         * Unlike @ref create(), instead of exiting on error, prints a message
+         * to error output and returns a corresponding result value. On success
+         * returns @ref Result::Success.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Result tryCreate(const InstanceCreateInfo& info = InstanceCreateInfo{});
+        #else
+        /* To avoid dependency on InstanceCreateInfo.h */
+        Result tryCreate(const InstanceCreateInfo& info);
+        Result tryCreate();
+        #endif
 
         /**
          * @brief Version supported by the instance
