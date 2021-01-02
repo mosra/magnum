@@ -729,30 +729,7 @@ unless it doesn't affect public API at all.
 
 @section developers-vk-extensions Checklist for adding / removing Vulkan versions and extensions
 
-1.  Install [flextGL](https://github.com/mosra/flextgl)
-2.  Go to `src/MagnumExternal/Vulkan/`:
-    -   Update `extensions.txt` (bump a version or add/remove extensions)
-    -   Run `./update-flexgl.sh` to update everything
-3.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
-4.  For every new added function and `CreateInfo` structure, add an entry to
-    `doc/vulkan-mapping.dox`
-5.  For every new `*Feature` structure, expand the @ref Vk::DeviceFeatures
-    enum according to @ref developers-vk-features
-6.  Add a table listing the new version and all new extensions in it to
-    `doc/vulkan-support.dox` (take a list of them from the changelog in the
-    official spec PDF). Some extensions might be already present in the general
-    extension list, move them out of there.
-7.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
-    `doc/vulkan-support.dox`, mention it as a @c \@subpage at a correct
-    position in the list
-8.  Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
-    `Doxyfile-public`, copypaste it from existing and change the numbers
-9.  Add new version enum value:
-    -   to `src/Magnum/Vk/Version.h`
-    -   to the list in `src/Magnum/Vk/vk-info.cpp`
-    -   to @ref Vk::InstanceExtension::extensions() and
-        @ref Vk::Extension::extensions() in `src/Magnum/Vk/Extensions.cpp`
-10. Add new extensions to `src/Magnum/Vk/Extensions.h`
+1. Add new extensions to `src/Magnum/Vk/Extensions.h`
     -   there's a separate list for instance and device extensions, ensure each
         in the right list
     -   order them by extension ID that is mentioned on every extension spec
@@ -763,10 +740,34 @@ unless it doesn't affect public API at all.
         @cpp Implementation::InstanceExtensionCount @ce /
         @cpp Implementation::DeviceExtensionCount @ce might needed to be
         increased
-11. Add them alphabetically ordered to the correct list in
+2.  Add them alphabetically ordered to the correct list in
     `src/Magnum/Vk/Extensions.cpp`
-12. Update existing extensions with version in which they become core (last
+3.  Update existing extensions with version in which they become core (last
     parameter of the `_extension()` macro)
+4.  Get [flextGL](https://github.com/mosra/flextgl) and go to
+    `src/MagnumExternal/Vulkan/`:
+    -   Update `extensions.txt` (bump a version or add/remove extensions),
+        in the same order as `Extensions.h`
+    -   Run `./update-flexgl.sh` to update everything
+5.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
+6.  For every new added function and structure, add an entry to
+    `doc/vulkan-mapping.dox`
+7.  For every new `*Feature` structure, expand the @ref Vk::DeviceFeatures
+    enum according to @ref developers-vk-features
+8.  Add a table listing the new version and all new extensions in it to
+    `doc/vulkan-support.dox` (take a list of them from the changelog in the
+    official spec PDF). Some extensions might be already present in the general
+    extension list, move them out of there.
+9.  Add a new `requires-vkXY` page with @c \@m_footernavigation to
+    `doc/vulkan-support.dox`, mention it as a @c \@subpage at a correct
+    position in the list
+10. Add a new `requires-vkXY` alias to `Doxyfile`, `Doxyfile-mcss` and
+    `Doxyfile-public`, copypaste it from existing and change the numbers
+11. Add new version enum value:
+    -   to `src/Magnum/Vk/Version.h`
+    -   to the list in `src/Magnum/Vk/vk-info.cpp`
+    -   to @ref Vk::InstanceExtension::extensions() and
+        @ref Vk::Extension::extensions() in `src/Magnum/Vk/Extensions.cpp`
 
 In order to remove Vulkan functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
