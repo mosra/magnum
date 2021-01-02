@@ -349,6 +349,7 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features.shaderSubgroupExtendedTypes,
             _state->features._8BitStorage,
             _state->features.shaderAtomicInt64,
+            _state->features.vertexAttributeDivisor,
             _state->features.timelineSemaphore,
             _state->features.vulkanMemoryModel,
             _state->features.scalarBlockLayout,
@@ -456,6 +457,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
         _state->features._8BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.shaderAtomicInt64, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.vertexAttributeDivisor, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.timelineSemaphore, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,

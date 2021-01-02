@@ -315,6 +315,8 @@ const DeviceFeatures& DeviceProperties::features() {
             Implementation::structureConnect(next, features._8BitStorage, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::KHR::shader_atomic_int64>())
             Implementation::structureConnect(next, features.shaderAtomicInt64, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES);
+        if(isOrVersionSupportedInternal<Extensions::EXT::vertex_attribute_divisor>())
+            Implementation::structureConnect(next, features.vertexAttributeDivisor, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT);
         if(isOrVersionSupportedInternal<Extensions::KHR::timeline_semaphore>())
             Implementation::structureConnect(next, features.timelineSemaphore, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::KHR::vulkan_memory_model>())

@@ -937,6 +937,21 @@ enum class DeviceFeature: UnsignedShort {
      */
     ShaderSharedInt64Atomics,
 
+    /* VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT, #191 */
+
+    /**
+     * Whether vertex attribute fetching may be repeated in case of instanced
+     * rendering.
+     * @requires_vk_extension Extension @vk_extension{EXT,vertex_attribute_divisor}
+     */
+    VertexAttributeInstanceRateDivisor,
+
+    /**
+     * Whether zero vertex attribute divisor is supported.
+     * @requires_vk_extension Extension @vk_extension{EXT,vertex_attribute_divisor}
+     */
+    VertexAttributeInstanceRateZeroDivisor,
+
     /* VkPhysicalDeviceTimelineSemaphoreFeatures, #208 */
 
     /**

@@ -460,6 +460,8 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If Vulkan 1.2 or the @vk_extension{KHR,shader_atomic_int64}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceShaderAtomicInt64Features}
+         * -    If the @vk_extension{EXT,vertex_attribute_divisor} extension is
+         *      supported by the device, the `pNext` chain contains @type_vk_keyword{PhysicalDeviceVertexAttributeDivisorFeaturesEXT}
          * -    If Vulkan 1.2 or the @vk_extension{KHR,timeline_semaphore}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceTimelineSemaphoreFeatures}

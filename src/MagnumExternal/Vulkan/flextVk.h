@@ -244,6 +244,11 @@ extern "C" {
 #define VK_EXT_TEXTURE_COMPRESSION_ASTC_HDR_SPEC_VERSION 1
 #define VK_EXT_TEXTURE_COMPRESSION_ASTC_HDR_EXTENSION_NAME "VK_EXT_texture_compression_astc_hdr"
 
+/* VK_EXT_vertex_attribute_divisor */
+
+#define VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_SPEC_VERSION 3
+#define VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME "VK_EXT_vertex_attribute_divisor"
+
 /* VK_EXT_index_type_uint8 */
 
 #define VK_EXT_INDEX_TYPE_UINT8_SPEC_VERSION 1
@@ -1526,6 +1531,9 @@ typedef enum {
     VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT = 1000128004,
     VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT = 1000247000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXTURE_COMPRESSION_ASTC_HDR_FEATURES_EXT = 1000066000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT = 1000190000,
+    VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT = 1000190001,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT = 1000190002,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT = 1000265000,
     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
@@ -4148,6 +4156,24 @@ typedef struct VkSemaphoreSignalInfo {
 
 typedef VkSemaphoreSignalInfo VkSemaphoreSignalInfoKHR;
 
+typedef struct VkVertexInputBindingDivisorDescriptionEXT {
+    uint32_t          binding;
+    uint32_t          divisor;
+} VkVertexInputBindingDivisorDescriptionEXT;
+
+typedef struct VkPipelineVertexInputDivisorStateCreateInfoEXT {
+    VkStructureType sType;
+    const void*                         pNext;
+    uint32_t                            vertexBindingDivisorCount;
+    const VkVertexInputBindingDivisorDescriptionEXT*      pVertexBindingDivisors;
+} VkPipelineVertexInputDivisorStateCreateInfoEXT;
+
+typedef struct VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT {
+    VkStructureType sType;
+    void*                  pNext;
+    uint32_t               maxVertexAttribDivisor;
+} VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT;
+
 typedef struct VkPhysicalDevice8BitStorageFeatures {
     VkStructureType sType;
     void*      pNext;
@@ -4170,6 +4196,13 @@ typedef struct VkPhysicalDeviceShaderAtomicInt64Features {
     VkBool32                            shaderBufferInt64Atomics;
     VkBool32                            shaderSharedInt64Atomics;
 } VkPhysicalDeviceShaderAtomicInt64Features;
+
+typedef struct VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT {
+    VkStructureType sType;
+    void*        pNext;
+    VkBool32                           vertexAttributeInstanceRateDivisor;
+    VkBool32                           vertexAttributeInstanceRateZeroDivisor;
+} VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT;
 
 typedef struct VkPhysicalDeviceDepthStencilResolveProperties {
     VkStructureType sType;

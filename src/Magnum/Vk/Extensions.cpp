@@ -70,6 +70,7 @@ constexpr Extension DeviceExtensions[] {
     Extensions::EXT::debug_marker{},
     Extensions::EXT::index_type_uint8{},
     Extensions::EXT::texture_compression_astc_hdr{},
+    Extensions::EXT::vertex_attribute_divisor{},
     Extensions::IMG::format_pvrtc{},
     Extensions::KHR::acceleration_structure{},
     Extensions::KHR::deferred_host_operations{},

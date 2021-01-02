@@ -240,6 +240,8 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      1.2, @vk_extension{KHR,8bit_storage})
          * -    @type_vk_keyword{PhysicalDeviceShaderAtomicInt64Features}
          *      (Vulkan 1.2, @vk_extension{KHR,shader_atomic_int64})
+         * -    @type_vk_keyword{PhysicalDeviceVertexAttributeDivisorFeaturesEXT}
+         *      (@vk_extension{EXT,vertex_attribute_divisor})
          * -    @type_vk_keyword{PhysicalDeviceTimelineSemaphoreFeatures}
          *      (Vulkan 1.2, @vk_extension{KHR,timeline_semaphore})
          * -    @type_vk_keyword{PhysicalDeviceVulkanMemoryModelFeatures}

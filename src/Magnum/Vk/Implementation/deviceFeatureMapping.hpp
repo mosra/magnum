@@ -168,6 +168,11 @@ _ce(ShaderBufferInt64Atomics, shaderBufferInt64Atomics)
 _ce(ShaderSharedInt64Atomics, shaderSharedInt64Atomics)
 #undef _ce
 
+#define _ce(value, field) _cext(value, field, vertexAttributeDivisor, EXT::vertex_attribute_divisor)
+_ce(VertexAttributeInstanceRateDivisor, vertexAttributeInstanceRateDivisor)
+_ce(VertexAttributeInstanceRateZeroDivisor, vertexAttributeInstanceRateZeroDivisor)
+#undef _ce
+
 _cext(TimelineSemaphore, timelineSemaphore, timelineSemaphore, KHR::timeline_semaphore)
 
 #define _ce(value, field) _cext(value, field, vulkanMemoryModel, KHR::vulkan_memory_model)

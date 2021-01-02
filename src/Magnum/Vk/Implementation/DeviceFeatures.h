@@ -50,6 +50,7 @@ struct DeviceFeatures {
     VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures shaderSubgroupExtendedTypes;
     VkPhysicalDevice8BitStorageFeatures _8BitStorage;
     VkPhysicalDeviceShaderAtomicInt64Features shaderAtomicInt64;
+    VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT vertexAttributeDivisor;
     VkPhysicalDeviceTimelineSemaphoreFeatures timelineSemaphore;
     VkPhysicalDeviceVulkanMemoryModelFeatures vulkanMemoryModel;
     VkPhysicalDeviceScalarBlockLayoutFeatures scalarBlockLayout;

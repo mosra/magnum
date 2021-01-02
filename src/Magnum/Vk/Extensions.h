@@ -118,10 +118,11 @@ namespace EXT {
     _extension(2,  EXT,sampler_filter_minmax,               Vk10, Vk12) // #131
     _extension(3,  EXT,descriptor_indexing,                 Vk10, Vk12) // #162
     _extension(4,  EXT,shader_viewport_index_layer,         Vk10, Vk12) // #163
-    _extension(5,  EXT,scalar_block_layout,                 Vk10, Vk12) // #222
-    _extension(6,  EXT,separate_stencil_usage,              Vk10, Vk12) // #247
-    _extension(7,  EXT,host_query_reset,                    Vk10, Vk12) // #262
-    _extension(8,  EXT,index_type_uint8,                    Vk10, None) // #266
+    _extension(5,  EXT,vertex_attribute_divisor,            Vk10, None) // #191
+    _extension(6,  EXT,scalar_block_layout,                 Vk10, Vk12) // #222
+    _extension(7,  EXT,separate_stencil_usage,              Vk10, Vk12) // #247
+    _extension(8,  EXT,host_query_reset,                    Vk10, Vk12) // #262
+    _extension(9,  EXT,index_type_uint8,                    Vk10, None) // #266
 } namespace IMG {
     _extension(20, IMG,format_pvrtc,                        Vk10, None) // #55
 } namespace KHR {

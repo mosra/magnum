@@ -592,6 +592,8 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceTimelineSemaphoreProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{PhysicalDeviceUniformBufferStandardLayoutFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceVariablePointersFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceVertexAttributeDivisorFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceVertexAttributeDivisorPropertiesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{PhysicalDeviceVulkan11Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkan11Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkan12Features} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
@@ -610,6 +612,7 @@ Vulkan structure                        | Matching API
 @type_vk{PipelineShaderStageCreateInfo} | |
 @type_vk{PipelineTessellationStateCreateInfo} | |
 @type_vk{PipelineTessellationDomainOriginStateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PipelineVertexInputDivisorStateCreateInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{PipelineVertexInputStateCreateInfo} | |
 @type_vk{PipelineViewportStateCreateInfo} | |
 @type_vk{ProtectedSubmitInfo}           | |
@@ -693,6 +696,7 @@ Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{ValidationFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{VertexInputBindingDescription} | |
+@type_vk{VertexInputBindingDivisorDescriptionEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{VertexInputAttributeDescription} | |
 @type_vk{Viewport}                      | convertible from/to @ref Range3D using @ref Magnum/Vk/Integration.h
 
