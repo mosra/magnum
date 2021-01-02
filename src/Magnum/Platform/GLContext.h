@@ -57,16 +57,8 @@ class GLContext: public GL::Context {
         /**
          * @brief Constructor
          *
-         * Parses command-line arguments, loads OpenGL function pointers using
-         * platform-specific API, does initial setup, detects available
-         * features and enables them throughout the engine. If detected version
-         * is unsupported or any other error occurs, a message is printed to
-         * output and the application exits. See
-         * @ref GLContext(NoCreateT, Int, char**) and @ref tryCreate() for
-         * an alternative.
-         * @see @ref GL-Context-command-line, @fn_gl{Get} with @def_gl{MAJOR_VERSION},
-         *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
-         *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with @def_gl{EXTENSIONS}
+         * Equivalent to calling @ref GLContext(NoCreateT, Int, const char**)
+         * followed by @ref create().
          */
         explicit GLContext(Int argc, const char** argv): GLContext{NoCreate, argc, argv} { create(); }
 
@@ -88,12 +80,12 @@ class GLContext: public GL::Context {
         explicit GLContext(): GLContext{0, nullptr} {}
 
         /**
-         * @brief Construct the class without doing complete setup
+         * @brief Construct without creating the context
          *
-         * Unlike @ref GLContext(Int, char**) just parses command-line
-         * arguments and sets @ref version() to @ref GL::Version::None,
-         * everything else is left in an empty state. Use @ref create() or
-         * @ref tryCreate() to complete the setup.
+         * Parses command-line arguments and sets @ref version() to
+         * @ref GL::Version::None, everything else is left in an empty state.
+         * Use @ref create() or @ref tryCreate() to create the context.
+         * @see @ref GLContext(Int, const char**)
          */
         explicit GLContext(NoCreateT, Int argc, const char** argv):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -121,7 +113,7 @@ class GLContext: public GL::Context {
         #endif
 
         /**
-         * @brief Construct the class without doing complete setup
+         * @brief Construct with creation delayed to later
          *
          * Equivalent to passing @cpp {NoCreate, 0, nullptr} @ce to
          * @ref GLContext(NoCreateT, Int, const char**). Even if the
@@ -132,21 +124,28 @@ class GLContext: public GL::Context {
         explicit GLContext(NoCreateT): GLContext{NoCreate, 0, nullptr} {}
 
         /**
-         * @brief Complete the context setup and exit on failure
+         * @brief Create the context
          *
-         * Finalizes the setup after the class was created using
-         * @ref GLContext(NoCreateT, Int, char**). If detected version is
-         * unsupported or any other error occurs, a message is printed to error
-         * output and the application exits. See @ref GLContext(Int, char**)
-         * for more information and @ref tryCreate() for an alternative.
+         * Meant to be called on a @ref GLContext(NoCreateT, Int, char**) "NoCreate"'d
+         * instance. Parses command-line arguments, loads OpenGL function
+         * pointers using a platform-specific API, does initial setup, detects
+         * available features and enables them throughout the engine. If
+         * detected version is unsupported or any other error occurs, a message
+         * is printed to output and the application exits. See @ref tryCreate()
+         * for an alternative.
+         * @see @ref GLContext(Int, char**), @ref GL-Context-command-line,
+         *      @fn_gl{Get} with @def_gl{MAJOR_VERSION},
+         *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
+         *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with
+         *      @def_gl{EXTENSIONS}
          */
         void create() { return GL::Context::create(); }
 
         /**
-         * @brief Complete the context setup
+         * @brief Try to create the context
          *
-         * Unlike @ref create() just prints a message to error output and
-         * returns `false` on error.
+         * Unlike @ref create(), instead of exiting prints a message to error
+         * output and returns `false` on error.
          */
         bool tryCreate() { return GL::Context::tryCreate(); }
 };
