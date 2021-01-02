@@ -268,7 +268,7 @@ Vulkan function                         | Matching API
 @fn_vk{QueueBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{QueueEndDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{QueueBindSparse}                 | |
 @fn_vk{QueueInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@fn_vk{QueueSubmit}                     | |
+@fn_vk{QueueSubmit}                     | @ref Queue::submit()
 @fn_vk{QueueWaitIdle}                   | |
 
 @subsection vulkan-mapping-functions-r R
@@ -667,7 +667,7 @@ Vulkan structure                        | Matching API
 @type_vk{SpecializationMapEntry}        | |
 @type_vk{StencilOpState}                | |
 @type_vk{StridedDeviceAddressRegionKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{SubmitInfo}                    | |
+@type_vk{SubmitInfo}                    | @ref SubmitInfo
 @type_vk{SubpassBeginInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassBeginInfo
 @type_vk{SubpassEndInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassEndInfo
 @type_vk{SubpassDependency}, \n @type_vk{SubpassDependency2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref SubpassDependency

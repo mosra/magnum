@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/Pointer.h>
+
 #include "Magnum/Tags.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
@@ -43,7 +45,7 @@ namespace Magnum { namespace Vk {
 
 Wraps a @type_vk_keyword{Queue}. See @ref Device class docs for an introduction
 on how to create a queue.
-@see @ref DeviceCreateInfo::addQueues()
+@see @ref DeviceCreateInfo::addQueues(), @ref submit()
 */
 class MAGNUM_VK_EXPORT Queue {
     public:
@@ -98,11 +100,113 @@ class MAGNUM_VK_EXPORT Queue {
         /** @overload */
         operator VkQueue() { return _handle; }
 
+        /**
+         * @brief Submit a sequence of semaphores or command buffers to a queue
+         * @param infos  Submit info structures, each specifying a command
+         *      buffer submission batch
+         * @param fence A @ref Fence or a raw Vulkan fence handle to be
+         *      signaled once all submitted command buffers have completed
+         *      execution. Pass a @cpp {} @ce or a
+         *      @ref Fence::Fence(NoCreateT) "NoCreate"'d @ref Fence to not
+         *      signal anything.
+         *
+         * @see @fn_vk_keyword{QueueSubmit}
+         */
+        void submit(Containers::ArrayView<const Containers::Reference<const SubmitInfo>> infos, VkFence fence);
+        /** @overload */
+        void submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos, VkFence fence);
+
     private:
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
 
         VkQueue _handle;
+};
+
+/**
+@brief Queue submit info
+@m_since_latest
+
+Wraps a @type_vk_keyword{SubmitInfo}.
+*/
+class MAGNUM_VK_EXPORT SubmitInfo {
+    public:
+        /**
+         * @brief Constructor
+         *
+         * The following @type_vk{SubmitInfo} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    *(none)*
+         *
+         * @see @ref setCommandBuffers()
+         */
+        explicit SubmitInfo();
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit SubmitInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit SubmitInfo(const VkSubmitInfo& info);
+
+        /** @brief Copying is not allowed */
+        SubmitInfo(const SubmitInfo&) = delete;
+
+        /** @brief Move constructor */
+        SubmitInfo(SubmitInfo&& other) noexcept;
+
+        ~SubmitInfo();
+
+        /** @brief Copying is not allowed */
+        SubmitInfo& operator=(const SubmitInfo&) = delete;
+
+        /** @brief Move assignment */
+        SubmitInfo& operator=(SubmitInfo&& other) noexcept;
+
+        /**
+         * @brief Set command buffers to execute in the batch
+         * @return Reference to self (for method chaining)
+         */
+        SubmitInfo& setCommandBuffers(Containers::ArrayView<const VkCommandBuffer> buffers);
+        /** @overload */
+        SubmitInfo& setCommandBuffers(std::initializer_list<VkCommandBuffer> buffers);
+
+        /** @brief Underlying @type_vk{SubmitInfo} structure */
+        VkSubmitInfo& operator*() { return _info; }
+        /** @overload */
+        const VkSubmitInfo& operator*() const { return _info; }
+        /** @overload */
+        VkSubmitInfo* operator->() { return &_info; }
+        /** @overload */
+        const VkSubmitInfo* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkSubmitInfo*() const { return &_info; }
+
+        /**
+         * @overload
+         *
+         * The class is implicitly convertible to a reference in addition to
+         * a pointer because the type is commonly used in arrays as well, which
+         * would be annoying to do with a pointer conversion.
+         */
+        operator const VkSubmitInfo&() const { return _info; }
+
+    private:
+        VkSubmitInfo _info;
+
+        struct State;
+        Containers::Pointer<State> _state;
 };
 
 }}

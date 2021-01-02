@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <new>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Vk/Device.h"
@@ -38,6 +39,13 @@ struct QueueTest: TestSuite::Tester {
     void constructMove();
 
     void wrap();
+
+    void submitInfoConstruct();
+    void submitInfoConstructNoInit();
+    void submitInfoConstructCommandBuffers();
+    void submitInfoConstructFromVk();
+    void submitInfoConstructCopy();
+    void submitInfoConstructMove();
 };
 
 QueueTest::QueueTest() {
@@ -45,7 +53,14 @@ QueueTest::QueueTest() {
               &QueueTest::constructCopy,
               &QueueTest::constructMove,
 
-              &QueueTest::wrap});
+              &QueueTest::wrap,
+
+              &QueueTest::submitInfoConstruct,
+              &QueueTest::submitInfoConstructNoInit,
+              &QueueTest::submitInfoConstructCommandBuffers,
+              &QueueTest::submitInfoConstructFromVk,
+              &QueueTest::submitInfoConstructCopy,
+              &QueueTest::submitInfoConstructMove});
 }
 
 void QueueTest::constructNoCreate() {
@@ -91,6 +106,70 @@ void QueueTest::wrap() {
 
     Queue queue = Queue::wrap(device, vkQueue);
     CORRADE_COMPARE(queue.handle(), vkQueue);
+}
+
+void QueueTest::submitInfoConstruct() {
+    SubmitInfo info;
+    CORRADE_COMPARE(info->commandBufferCount, 0);
+    CORRADE_VERIFY(!info->pCommandBuffers);
+}
+
+void QueueTest::submitInfoConstructNoInit() {
+    SubmitInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) SubmitInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<SubmitInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubmitInfo>::value));
+}
+
+void QueueTest::submitInfoConstructCommandBuffers() {
+    SubmitInfo info;
+    info.setCommandBuffers({
+        reinterpret_cast<VkCommandBuffer>(0xbadbeef),
+        reinterpret_cast<VkCommandBuffer>(0xcafecafe)
+    });
+
+    CORRADE_COMPARE(info->commandBufferCount, 2);
+    CORRADE_VERIFY(info->pCommandBuffers);
+    CORRADE_COMPARE(info->pCommandBuffers[0], reinterpret_cast<VkCommandBuffer>(0xbadbeef));
+    CORRADE_COMPARE(info->pCommandBuffers[1], reinterpret_cast<VkCommandBuffer>(0xcafecafe));
+}
+
+void QueueTest::submitInfoConstructFromVk() {
+    VkSubmitInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    SubmitInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void QueueTest::submitInfoConstructCopy() {
+    CORRADE_VERIFY(!(std::is_copy_constructible<SubmitInfo>{}));
+    CORRADE_VERIFY(!(std::is_copy_assignable<SubmitInfo>{}));
+}
+
+void QueueTest::submitInfoConstructMove() {
+    SubmitInfo a;
+    a.setCommandBuffers({{}, reinterpret_cast<VkCommandBuffer>(0xcafecafe)});
+
+    SubmitInfo b = std::move(a);
+    CORRADE_COMPARE(a->commandBufferCount, 0);
+    CORRADE_VERIFY(!a->pCommandBuffers);
+    CORRADE_COMPARE(b->commandBufferCount, 2);
+    CORRADE_VERIFY(b->pCommandBuffers);
+    CORRADE_COMPARE(b->pCommandBuffers[1], reinterpret_cast<VkCommandBuffer>(0xcafecafe));
+
+    SubmitInfo c{VkSubmitInfo{}};
+    c = std::move(b);
+    CORRADE_COMPARE(b->commandBufferCount, 0);
+    CORRADE_VERIFY(!b->pCommandBuffers);
+    CORRADE_COMPARE(c->commandBufferCount, 2);
+    CORRADE_VERIFY(c->pCommandBuffers);
+    CORRADE_COMPARE(c->pCommandBuffers[1], reinterpret_cast<VkCommandBuffer>(0xcafecafe));
 }
 
 }}}}

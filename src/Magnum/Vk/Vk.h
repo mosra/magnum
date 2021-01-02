@@ -88,6 +88,7 @@ class RenderPassCreateInfo;
 enum class Result: Int;
 class Shader;
 class ShaderCreateInfo;
+class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;
 enum class Version: UnsignedInt;

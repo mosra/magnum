@@ -26,7 +26,11 @@
 #include "Queue.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Algorithms.h>
+
+#include "Magnum/Vk/Assert.h"
+#include "Magnum/Vk/Device.h"
 
 namespace Magnum { namespace Vk {
 
@@ -50,6 +54,90 @@ Queue& Queue::operator=(Queue&& other) noexcept {
     swap(other._device, _device);
     swap(other._handle, _handle);
     return *this;
+}
+
+void Queue::submit(const Containers::ArrayView<const Containers::Reference<const SubmitInfo>> infos, const VkFence fence) {
+    /** @todo use DynamicArray here. I also thought about taking an ArrayView
+        of VkSubmitInfo structures directly and thus avoiding this whole hell,
+        but that feels kinda inconsistent in the public API (as everywhere else
+        we take only the structure wrappers, as opposed to handles which *are*
+        taken raw); plus once the SubmitInfo gets more complex it may not be
+        so easy to verify we don't use unsupported functionality / backport on
+        the raw structure (like done in RenderPassCreateInfo, e.g.) */
+
+    /* If we have just one item, we don't need to allocate. This will become
+       obsolete once DynamicArray can handle both cases efficiently */
+    if(infos.size() == 1) {
+        MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).QueueSubmit(_handle, 1, *infos[0], fence));
+        return;
+    }
+
+    Containers::Array<VkSubmitInfo> vkInfos{Containers::NoInit, infos.size()};
+    for(std::size_t i = 0; i != infos.size(); ++i)
+        vkInfos[i] = *infos[i];
+
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).QueueSubmit(_handle, vkInfos.size(), vkInfos, fence));
+}
+
+void Queue::submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos, VkFence fence) {
+    return submit(Containers::arrayView(infos), fence);
+}
+
+struct SubmitInfo::State {
+    Containers::Array<VkCommandBuffer> commandBuffers;
+};
+
+SubmitInfo::SubmitInfo(): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+}
+
+SubmitInfo::SubmitInfo(NoInitT) noexcept {}
+
+SubmitInfo::SubmitInfo(const VkSubmitInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+SubmitInfo::SubmitInfo(SubmitInfo&& other) noexcept:
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(other._info),
+    _state{std::move(other._state)}
+{
+    /* Ensure the previous instance doesn't reference state that's now ours */
+    /** @todo this is now more like a destructible move, do it more selectively
+        and clear only what's really ours and not external? */
+    other._info.pNext = nullptr;
+    other._info.waitSemaphoreCount = 0;
+    other._info.pWaitSemaphores = nullptr;
+    other._info.pWaitDstStageMask = nullptr;
+    other._info.commandBufferCount = 0;
+    other._info.pCommandBuffers = nullptr;
+    other._info.signalSemaphoreCount = 0;
+    other._info.pSignalSemaphores = nullptr;
+}
+
+SubmitInfo::~SubmitInfo() = default;
+
+SubmitInfo& SubmitInfo::operator=(SubmitInfo&& other) noexcept {
+    using std::swap;
+    swap(other._info, _info);
+    swap(other._state, _state);
+    return *this;
+}
+
+SubmitInfo& SubmitInfo::setCommandBuffers(Containers::ArrayView<const VkCommandBuffer> buffers) {
+    if(!_state) _state.emplace();
+
+    _state->commandBuffers = Containers::Array<VkCommandBuffer>{Containers::NoInit, buffers.size()};
+    Utility::copy(buffers, _state->commandBuffers);
+    _info.commandBufferCount = _state->commandBuffers.size();
+    _info.pCommandBuffers = _state->commandBuffers;
+    return *this;
+}
+
+SubmitInfo& SubmitInfo::setCommandBuffers(std::initializer_list<VkCommandBuffer> buffers) {
+    return setCommandBuffers(Containers::arrayView(buffers));
 }
 
 }}
