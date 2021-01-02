@@ -37,9 +37,9 @@ namespace Magnum { namespace Vk {
 VulkanTester::VulkanTester(): VulkanTester{NoCreate} {
     DeviceProperties deviceProperties = pickDevice(_instance);
     UnsignedInt graphicsQueue = deviceProperties.pickQueueFamily(Vk::QueueFlag::Graphics);
-    _device = Vk::Device{_instance, Vk::DeviceCreateInfo{std::move(deviceProperties)}
+    _device.create(_instance, Vk::DeviceCreateInfo{std::move(deviceProperties)}
         .addQueues(graphicsQueue, {0.0f}, {_queue})
-    };
+    );
 }
 
 VulkanTester::VulkanTester(NoCreateT): VulkanTester{NoCreate, NoCreate} {

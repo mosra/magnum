@@ -76,13 +76,15 @@ struct DeviceVkTest: VulkanTester {
     void constructExtensionsCommandLineEnable();
     void constructMultipleQueues();
     void constructRawQueue();
-    void constructMove();
-    void constructUnknownExtension();
     void constructFeatureNotSupported();
     void constructFeatureWithoutExtension();
     void constructNoQueue();
 
+    void tryCreateAlreadyCreated();
+    void tryCreateUnknownExtension();
+
     void wrap();
+    void wrapAlreadyCreated();
 
     void populateGlobalFunctionPointers();
 };
@@ -172,14 +174,16 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
 
     addTests({&DeviceVkTest::constructMultipleQueues,
               &DeviceVkTest::constructRawQueue,
-
-              &DeviceVkTest::constructMove,
-              &DeviceVkTest::constructUnknownExtension,
               &DeviceVkTest::constructFeatureNotSupported,
               &DeviceVkTest::constructFeatureWithoutExtension,
               &DeviceVkTest::constructNoQueue,
 
+              &DeviceVkTest::tryCreateAlreadyCreated,
+              &DeviceVkTest::tryCreateUnknownExtension,
+
               &DeviceVkTest::wrap,
+              &DeviceVkTest::wrapAlreadyCreated,
+
               &DeviceVkTest::populateGlobalFunctionPointers});
 }
 
@@ -874,66 +878,6 @@ void DeviceVkTest::constructRawQueue() {
     CORRADE_VERIFY(rawQueue);
 }
 
-void DeviceVkTest::constructMove() {
-    if(std::getenv("MAGNUM_VULKAN_VERSION"))
-        CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
-
-    DeviceProperties deviceProperties = pickDevice(instance());
-    ExtensionProperties extensions = deviceProperties.enumerateExtensionProperties();
-    if(!extensions.isSupported<Extensions::KHR::maintenance1>())
-        CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't test");
-
-    Queue queue{NoCreate};
-    Device a{instance(), DeviceCreateInfo{deviceProperties}
-        .addQueues(0, {0.0f}, {queue})
-        .addEnabledExtensions<Extensions::KHR::maintenance1>()
-    };
-    VkDevice handle = a.handle();
-    Version version = a.version();
-    CORRADE_VERIFY(handle);
-    CORRADE_VERIFY(version != Version{});
-    CORRADE_VERIFY(version != Version::None);
-
-    Device b = std::move(a);
-    CORRADE_VERIFY(!a.handle());
-    CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(b.handle(), handle);
-    CORRADE_COMPARE(b.version(), version);
-    CORRADE_COMPARE(b.properties().version(), version);
-    CORRADE_VERIFY(b.isExtensionEnabled<Extensions::KHR::maintenance1>());
-    /* Function pointers in a are left in whatever state they were before, as
-       that doesn't matter */
-    CORRADE_VERIFY(b->CreateBuffer);
-
-    Device c{NoCreate};
-    c = std::move(b);
-    CORRADE_VERIFY(!b.handle());
-    CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
-    CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(c.handle(), handle);
-    CORRADE_COMPARE(c.version(), version);
-    CORRADE_COMPARE(c.properties().version(), version);
-    CORRADE_VERIFY(c.isExtensionEnabled<Extensions::KHR::maintenance1>());
-    /* Everything is swapped, including function pointers */
-    CORRADE_VERIFY(!b->CreateBuffer);
-    CORRADE_VERIFY(c->CreateBuffer);
-
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<Device>::value);
-    CORRADE_VERIFY(std::is_nothrow_move_assignable<Device>::value);
-}
-
-void DeviceVkTest::constructUnknownExtension() {
-    CORRADE_SKIP("Currently this hits an internal assert, which can't be tested.");
-
-    std::ostringstream out;
-    Error redirectError{&out};
-    Queue queue{NoCreate};
-    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
-        .addQueues(0, {0.0f}, {queue})
-        .addEnabledExtensions({"VK_this_doesnt_exist"_s})};
-    CORRADE_COMPARE(out.str(), "TODO");
-}
-
 void DeviceVkTest::constructFeatureNotSupported() {
     DeviceProperties properties = pickDevice(instance());
     if(properties.features() & DeviceFeature::SparseBinding)
@@ -947,7 +891,7 @@ void DeviceVkTest::constructFeatureNotSupported() {
     Device device{instance(), DeviceCreateInfo{properties}
         .addQueues(0, {0.0f}, {queue})
         .setEnabledFeatures(DeviceFeature::SparseBinding|DeviceFeature::SparseResidency16Samples)};
-    CORRADE_COMPARE(out.str(), "Vk::Device: some enabled features are not supported: Vk::DeviceFeature::SparseBinding|Vk::DeviceFeature::SparseResidency16Samples\n");
+    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): some enabled features are not supported: Vk::DeviceFeature::SparseBinding|Vk::DeviceFeature::SparseResidency16Samples\n");
 }
 
 void DeviceVkTest::constructFeatureWithoutExtension() {
@@ -965,7 +909,7 @@ void DeviceVkTest::constructFeatureWithoutExtension() {
     std::ostringstream out;
     Error redirectError{&out};
     Device device{instance(), info};
-    CORRADE_COMPARE(out.str(), "Vk::Device: some enabled features need VK_KHR_sampler_ycbcr_conversion enabled\n");
+    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): some enabled features need VK_KHR_sampler_ycbcr_conversion enabled\n");
 }
 
 void DeviceVkTest::constructNoQueue() {
@@ -976,7 +920,36 @@ void DeviceVkTest::constructNoQueue() {
     std::ostringstream out;
     Error redirectError{&out};
     Device device{instance(), DeviceCreateInfo{pickDevice(instance())}};
-    CORRADE_COMPARE(out.str(), "Vk::Device: needs to be created with at least one queue\n");
+    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): needs at least one queue\n");
+}
+
+void DeviceVkTest::tryCreateAlreadyCreated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
+        .addQueues(0, {0.0f}, {queue})
+    };
+    CORRADE_VERIFY(device.handle());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    device.tryCreate(instance(), DeviceCreateInfo{pickDevice(instance())});
+    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): device already created\n");
+}
+
+void DeviceVkTest::tryCreateUnknownExtension() {
+    Queue queue{NoCreate};
+    Device device{NoCreate};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(device.tryCreate(instance(), DeviceCreateInfo{pickDevice(instance())}
+        .addQueues(0, {0.0f}, {queue})
+        .addEnabledExtensions({"VK_this_doesnt_exist"_s})), Result::ErrorExtensionNotPresent);
+    CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): device creation failed: Vk::Result::ErrorExtensionNotPresent\n");
 }
 
 void DeviceVkTest::wrap() {
@@ -1024,7 +997,8 @@ void DeviceVkTest::wrap() {
 
     {
         /* Wrapping should load the basic function pointers */
-        auto wrapped = Device::wrap(instance2, device, Version::Vk11, {
+        Device wrapped{NoCreate};
+        wrapped.wrap(instance2, device, Version::Vk11, {
             Extensions::EXT::debug_marker::string()
         }, DeviceFeature::RobustBufferAccess, HandleFlag::DestroyOnDestruction);
         CORRADE_VERIFY(wrapped->DestroyDevice);
@@ -1052,9 +1026,27 @@ void DeviceVkTest::wrap() {
     }
 
     /* ...so we can wrap it again, non-owned, and then destroy it manually */
-    auto wrapped = Device::wrap(instance2, device, Version::Vk10, {}, {});
+    Device wrapped{NoCreate};
+    wrapped.wrap(instance2, device, Version::Vk10, {}, {});
     CORRADE_VERIFY(wrapped->DestroyDevice);
     wrapped->DestroyDevice(device, nullptr);
+}
+
+void DeviceVkTest::wrapAlreadyCreated() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{pickDevice(instance())}
+        .addQueues(0, {0.0f}, {queue})
+    };
+    CORRADE_VERIFY(device.handle());
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    device.wrap(instance(), {}, {}, {}, {});
+    CORRADE_COMPARE(out.str(), "Vk::Device::wrap(): device already created\n");
 }
 
 void DeviceVkTest::populateGlobalFunctionPointers() {

@@ -160,6 +160,22 @@ Compared to the above, the same custom code would then look like this:
 
 Similarly you can use @ref Instance::populateGlobalFunctionPointers() to
 populate instance-level global function pointers.
+
+@section Vk-Device-disabled-move Disabled move and delayed device creation
+
+Due to the way @ref Queue instances are populated on device creation, and
+for safety reasons as all device-dependent objects internally have to keep a
+pointer to the originating @ref Device to access Vulkan function pointers, the
+@ref Device class is not movable. This leads to a difference compared to other
+Vulkan object wrappers, where you can use the @ref NoCreate tag to construct an
+empty instance (for example as a class member) and do a delayed creation by
+moving a new instance over the empty one. Here you have to use the
+@ref create() function instead:
+
+@snippet MagnumVk.cpp Device-delayed-creation
+
+Similar case is with @ref wrap() --- instead of being @cpp static @ce, you have
+to call it on a @ref Device(NoCreateT) "NoCreate"'d instance.
 */
 class MAGNUM_VK_EXPORT Device {
     public:
@@ -175,6 +191,17 @@ class MAGNUM_VK_EXPORT Device {
          *      the device
          * @param flags         Handle flags
          *
+         * <b></b>
+         *
+         * @m_class{m-note m-warning}
+         *
+         * @par
+         *      Unlike with other Vulkan object wrappers, this isn't a
+         *      @cpp static @ce function returning a new @ref Device, instead
+         *      it's expected to be called on a @ref NoCreate "NoCreate"'d
+         *      instance. See @ref Vk-Device-disabled-move for more
+         *      information.
+         *
          * The @p handle is expected to be originating from @p instance. The
          * @p version, @p enabledExtensions and @p enabledFeatures parameters
          * populate internal info about supported version, enabled extensions
@@ -189,59 +216,48 @@ class MAGNUM_VK_EXPORT Device {
          * not recommended to call this function repeatedly for creating
          * short-lived device instances, even though it's technically correct.
          *
-         * Unlike a device created using a constructor, the Vulkan device is by
-         * default not deleted on destruction, use @p flags for different
-         * behavior.
+         * Unlike a device created using the constructor or @ref create(), the
+         * Vulkan device is by default not deleted on destruction. Use @p flags
+         * for different behavior.
          * @see @ref release()
          */
-        static Device wrap(Instance& instance, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
+        void wrap(Instance& instance, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /** @overload */
-        static Device wrap(Instance& instance, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
+        void wrap(Instance& instance, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /**
          * @brief Constructor
-         * @param instance  Vulkan instance to create the device on
-         * @param info      Device creation info
          *
-         * After creating the device requests device queues added via
-         * @ref DeviceCreateInfo::addQueues(), populating the @ref Queue
-         * references.
-         * @see @fn_vk_keyword{CreateDevice}, @fn_vk_keyword{GetDeviceQueue2},
-         *      @fn_vk_keyword{GetDeviceQueue}
-         * @todoc link to a concrete addQueues() overload above once doxygen
-         *      finally GROWS UP and can link to &-qualified functions FFS
+         * Equivalent to calling @ref Device(NoCreateT) followed by
+         * @ref create(Instance&, const DeviceCreateInfo&).
          */
         explicit Device(Instance& instance, const DeviceCreateInfo& info);
 
         /**
-         * @brief Construct with reusing already populated device properties
+         * @brief Construct, reusing already populated device properties
          *
-         * Compared to @ref Device(Instance&, const DeviceCreateInfo&), it can
-         * take ownership of the @ref DeviceProperties added to @p info earlier
-         * via @ref DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&&, const ExtensionProperties*, Flags)
-         * or any of the other r-value-taking constructors.
-         *
-         * With that, the @ref properties() getter and any APIs relying on it
-         * can reuse what was possibly already queried without having to repeat
-         * the potentially complex queries second time.
+         * Equivalent to calling @ref Device(NoCreateT) followed by
+         * @ref create(Instance&, DeviceCreateInfo&&).
          */
         explicit Device(Instance& instance, DeviceCreateInfo&& info);
 
         /**
          * @brief Construct without creating the device
          *
-         * The constructed instance is equivalent to moved-from state. Useful
-         * in cases where you will overwrite the instance later anyway. Move
-         * another object over it to make it useful.
+         * Use @ref create() or @ref tryCreate() to create the device.
          */
         explicit Device(NoCreateT);
 
         /** @brief Copying is not allowed */
         Device(const Device&) = delete;
 
-        /** @brief Move constructor */
-        Device(Device&& other) noexcept;
+        /**
+         * @brief Moving is not allowed
+         *
+         * See @ref Vk-Device-disabled-move for more information.
+         */
+        Device(Device&& other) = delete;
 
         /**
          * @brief Destructor
@@ -256,8 +272,12 @@ class MAGNUM_VK_EXPORT Device {
         /** @brief Copying is not allowed */
         Device& operator=(const Device&) = delete;
 
-        /** @brief Move assignment */
-        Device& operator=(Device&& other) noexcept;
+        /**
+         * @brief Moving is not allowed
+         *
+         * See @ref Vk-Device-disabled-move for more information.
+         */
+        Device& operator=(Device&&) = delete;
 
         /** @brief Underlying @type_vk{Device} handle */
         VkDevice handle() { return _handle; }
@@ -266,6 +286,63 @@ class MAGNUM_VK_EXPORT Device {
 
         /** @brief Handle flags */
         HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Create a device
+         * @param instance  Vulkan instance to create the device on
+         * @param info      Device creation info
+         *
+         * Meant to be called on a @ref Device(NoCreateT) "NoCreate"'d
+         * instance. After creating the device populates device-level
+         * function pointers and runtime information about enabled extensions
+         * and features based on @p info, and finally requests device queues
+         * added via @ref DeviceCreateInfo::addQueues(), populating the
+         * @ref Queue references.
+         *
+         * If device creation fails, a message is printed to error output and
+         * the application exits --- if you need a different behavior, use
+         * @ref tryCreate() instead.
+         * @see @ref Device(Instance&, const DeviceCreateInfo&),
+         *      @fn_vk_keyword{CreateDevice}, @fn_vk_keyword{GetDeviceQueue2},
+         *      @fn_vk_keyword{GetDeviceQueue}
+         * @todoc link to a concrete addQueues() overload above once doxygen
+         *      finally GROWS UP and can link to &-qualified functions FFS
+         */
+        void create(Instance& instance, const DeviceCreateInfo& info);
+
+        /**
+         * @brief Create a device, reusing already populated device properties
+         *
+         * Compared to @ref create(Instance&, const DeviceCreateInfo&), it can
+         * take ownership of the @ref DeviceProperties added to @p info earlier
+         * via @ref DeviceCreateInfo::DeviceCreateInfo(DeviceProperties&&, const ExtensionProperties*, Flags)
+         * or any of the other r-value-taking constructors.
+         *
+         * With that, the @ref properties() getter and any APIs relying on it
+         * can reuse what was possibly already queried without having to repeat
+         * the potentially complex queries second time.
+         * @see @ref Device(Instance&, DeviceCreateInfo&&),
+         *      @ref tryCreate(Instance&, DeviceCreateInfo&&)
+         */
+        void create(Instance& instance, DeviceCreateInfo&& info);
+
+        /**
+         * @brief Try to create a device
+         *
+         * Unlike @ref create(Instance&, const DeviceCreateInfo&), instead of
+         * exiting on error, prints a message to error output and returns a
+         * corresponding result value. On success returns @ref Result::Success.
+         */
+        Result tryCreate(Instance& instance, const DeviceCreateInfo& info);
+
+        /**
+         * @brief Try to create a device, reusing already populated device properties
+         *
+         * Unlike @ref create(Instance&, DeviceCreateInfo&&), instead of
+         * exiting on error, prints a message to error output and returns a
+         * corresponding result value. On success returns @ref Result::Success.
+         */
+        Result tryCreate(Instance& instance, DeviceCreateInfo&& info);
 
         /**
          * @brief Device properties
@@ -368,9 +445,9 @@ class MAGNUM_VK_EXPORT Device {
     private:
         friend Implementation::DeviceState;
 
-        /* Common guts for Device(Instance&, DeviceCreateInfo&) and
-           Device(Instance&, DeviceCreateInfo&&) */
-        explicit Device(Instance& isntance, const DeviceCreateInfo&, DeviceProperties&&);
+        /* Common guts for tryCreate(Instance&, DeviceCreateInfo&) and
+           tryCreate(Instance&, DeviceCreateInfo&&) */
+        Result tryCreateInternal(Instance& isntance, const DeviceCreateInfo&, DeviceProperties&&);
 
         template<class T> MAGNUM_VK_LOCAL void initializeExtensions(Containers::ArrayView<const T> enabledExtensions);
         MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, const DeviceFeatures& enabledFeatures);

@@ -38,6 +38,7 @@ struct DeviceTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+    void constructMove();
 };
 
 DeviceTest::DeviceTest() {
@@ -45,7 +46,8 @@ DeviceTest::DeviceTest() {
               &DeviceTest::createInfoConstructFromVk,
 
               &DeviceTest::constructNoCreate,
-              &DeviceTest::constructCopy});
+              &DeviceTest::constructCopy,
+              &DeviceTest::constructMove});
 }
 
 void DeviceTest::createInfoConstructNoInit() {
@@ -83,6 +85,11 @@ void DeviceTest::constructNoCreate() {
 void DeviceTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Device>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Device>{});
+}
+
+void DeviceTest::constructMove() {
+    CORRADE_VERIFY(!std::is_move_constructible<Device>{});
+    CORRADE_VERIFY(!std::is_move_assignable<Device>{});
 }
 
 }}}}

@@ -44,6 +44,7 @@
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/ExtensionProperties.h"
 #include "Magnum/Vk/Queue.h"
+#include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/Arguments.h"
 #include "Magnum/Vk/Implementation/InstanceState.h"
@@ -569,40 +570,67 @@ constexpr Version KnownVersionsForExtensions[]{
 
 }
 
-Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+void Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+    CORRADE_ASSERT(!_handle,
+        "Vk::Device::wrap(): device already created", );
+
     /* Compared to the constructor nothing is printed here as it would be just
-       repeating what was passed to the constructor */
-    Device out{NoCreate};
-    out._handle = handle;
-    out._flags = flags;
-    out.initializeExtensions(enabledExtensions);
-    out.initialize(instance, version, enabledFeatures);
-    return out;
+       repeating what was passed via the arguments */
+    _handle = handle;
+    _flags = flags;
+    initializeExtensions(enabledExtensions);
+    initialize(instance, version, enabledFeatures);
 }
 
-Device Device::wrap(Instance& instance, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
-    return wrap(instance, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
+void Device::wrap(Instance& instance, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+    wrap(instance, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
 }
 
-Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{instance, info, DeviceProperties::wrap(instance, info._physicalDevice)} {}
+Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{NoCreate} {
+    create(instance, info);
+}
 
-Device::Device(Instance& instance, DeviceCreateInfo&& info): Device{instance, info, std::move(info._state->properties)} {}
+Device::Device(Instance& instance, DeviceCreateInfo&& info): Device{NoCreate} {
+    create(instance, std::move(info));
+}
 
-Device::Device(Instance& instance, const DeviceCreateInfo& info, DeviceProperties&& properties):
-    #ifdef CORRADE_GRACEFUL_ASSERT
-    _handle{}, /* Otherwise the destructor dies if we hit the queue assert */
-    #endif
-    _flags{HandleFlag::DestroyOnDestruction},
-    _properties{Containers::InPlaceInit, std::move(properties)}
-{
+Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
+
+Device::~Device() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        _functionPointers.DestroyDevice(_handle, nullptr);
+}
+
+void Device::create(Instance& instance, const DeviceCreateInfo& info) {
+    if(tryCreate(instance, info) != Result::Success) std::exit(1);
+}
+
+void Device::create(Instance& instance, DeviceCreateInfo&& info) {
+    if(tryCreate(instance, std::move(info)) != Result::Success) std::exit(1);
+}
+
+Result Device::tryCreate(Instance& instance, const DeviceCreateInfo& info) {
+    return tryCreateInternal(instance, info, DeviceProperties::wrap(instance, info._physicalDevice));
+}
+
+Result Device::tryCreate(Instance& instance, DeviceCreateInfo&& info) {
+    return tryCreateInternal(instance, info, std::move(info._state->properties));
+}
+
+Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& info, DeviceProperties&& properties) {
+    CORRADE_ASSERT(!_handle,
+        "Vk::Device::tryCreate(): device already created", {});
+    CORRADE_ASSERT(info._info.queueCreateInfoCount,
+        "Vk::Device::tryCreate(): needs at least one queue", {});
+
+    _flags = HandleFlag::DestroyOnDestruction;
+    _properties.emplace(std::move(properties));
+
     /* The properties should always be a valid instance, either moved from
        outside or created again from VkPhysicalDevice, in case it couldn't be
        moved. If it's not, something in DeviceCreateInfo or here got messed
        up. */
     CORRADE_INTERNAL_ASSERT(_properties->handle());
-
-    CORRADE_ASSERT(info._info.queueCreateInfoCount,
-        "Vk::Device: needs to be created with at least one queue", );
 
     /* Check that all enabled features were actually reported as supported.
        I happily assumed the drivers would do that, but as far as my testing
@@ -615,8 +643,8 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
        not) fail later in an unpredictable way. Fortunately it's rather easy
        to check thanks to how these are designed :D */
     CORRADE_ASSERT(info._state->enabledFeatures <= _properties->features(),
-        "Vk::Device: some enabled features are not supported:" <<
-        (info._state->enabledFeatures & ~_properties->features()), );
+        "Vk::Device::tryCreate(): some enabled features are not supported:" <<
+        (info._state->enabledFeatures & ~_properties->features()), {});
 
     const Version version = info._state->version != Version::None ?
         info._state->version : _properties->version();
@@ -641,7 +669,10 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
         }
     }
 
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(instance->CreateDevice(info._physicalDevice, info, nullptr, &_handle));
+    if(const VkResult result = instance->CreateDevice(info._physicalDevice, info, nullptr, &_handle)) {
+        Error{} << "Vk::Device::tryCreate(): device creation failed:" << Result(result);
+        return Result(result);
+    }
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
     initialize(instance, version, info._state->enabledFeatures);
@@ -655,7 +686,7 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
             for(const Version version: KnownVersionsForExtensions) {
                 for(const Extension extension: Extension::extensions(version)) {
                     if(extension.index() != i) continue;
-                    CORRADE_ASSERT_UNREACHABLE("Vk::Device: some enabled features need" << extension.string() << "enabled", );
+                    CORRADE_ASSERT_UNREACHABLE("Vk::Device::tryCreate(): some enabled features need" << extension.string() << "enabled", {});
                 }
             }
         }
@@ -693,36 +724,8 @@ Device::Device(Instance& instance, const DeviceCreateInfo& info, DevicePropertie
             *info._state->queueOutput[queueOutputIndex++] = Queue::wrap(*this, queue);
         }
     }
-}
 
-Device::Device(NoCreateT): _handle{}, _functionPointers{} {}
-
-Device::Device(Device&& other) noexcept: _handle{other._handle},
-    _flags{other._flags}, _version{other._version},
-    _enabledExtensions{other._enabledExtensions}, _properties{std::move(other._properties)}, _state{std::move(other._state)},
-    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
-       member instead of doing a copy */
-    _functionPointers(other._functionPointers)
-{
-    other._handle = nullptr;
-    other._functionPointers = {};
-}
-
-Device::~Device() {
-    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
-        _functionPointers.DestroyDevice(_handle, nullptr);
-}
-
-Device& Device::operator=(Device&& other) noexcept {
-    using std::swap;
-    swap(other._handle, _handle);
-    swap(other._flags, _flags);
-    swap(other._version, _version);
-    swap(other._enabledExtensions, _enabledExtensions);
-    swap(other._properties, _properties);
-    swap(other._state, _state);
-    swap(other._functionPointers, _functionPointers);
-    return *this;
+    return Result::Success;
 }
 
 template<class T> void Device::initializeExtensions(const Containers::ArrayView<const T> enabledExtensions) {
