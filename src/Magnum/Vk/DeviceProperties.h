@@ -442,12 +442,12 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If Vulkan 1.1 or the @vk_extension{KHR,variable_pointers}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceVariablePointersFeatures}
-         * -    If Vulkan 1.1 or the @vk_extension{KHR,sampler_ycbcr_conversion}
-         *      extension is supported by the device, the `pNext` chain
-         *      contains @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
          * -    If the @vk_extension{KHR,acceleration_structure} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceAccelerationStructureFeaturesKHR}
+         * -    If Vulkan 1.1 or the @vk_extension{KHR,sampler_ycbcr_conversion}
+         *      extension is supported by the device, the `pNext` chain
+         *      contains @type_vk_keyword{PhysicalDeviceSamplerYcbcrConversionFeatures}
          * -    If Vulkan 1.2 or the @vk_extension{EXT,descriptor_indexing}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
