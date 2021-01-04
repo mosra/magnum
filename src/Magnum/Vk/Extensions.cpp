@@ -75,6 +75,7 @@ constexpr Extension DeviceExtensions[] {
     Extensions::KHR::acceleration_structure{},
     Extensions::KHR::deferred_host_operations{},
     Extensions::KHR::pipeline_library{},
+    Extensions::KHR::portability_subset{},
     Extensions::KHR::ray_query{},
     Extensions::KHR::ray_tracing_pipeline{},
 };

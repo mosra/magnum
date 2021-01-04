@@ -155,6 +155,24 @@ _ce(DescriptorBindingVariableDescriptorCount, descriptorBindingVariableDescripto
 _ce(RuntimeDescriptorArray, runtimeDescriptorArray)
 #undef _ce
 
+#define _ce(value, field) _cext(value, field, portabilitySubset, KHR::portability_subset)
+_ce(ConstantAlphaColorBlendFactors, constantAlphaColorBlendFactors)
+_ce(Events, events)
+_ce(ImageViewFormatReinterpretation, imageViewFormatReinterpretation)
+_ce(ImageViewFormatSwizzle, imageViewFormatSwizzle)
+_ce(ImageView2DOn3DImage, imageView2DOn3DImage)
+_ce(MultisampleArrayImage, multisampleArrayImage)
+_ce(MutableComparisonSamplers, mutableComparisonSamplers)
+_ce(PointPolygons, pointPolygons)
+_ce(SamplerMipLodBias, samplerMipLodBias)
+_ce(SeparateStencilMaskRef, separateStencilMaskRef)
+_ce(ShaderSampleRateInterpolationFunctions, shaderSampleRateInterpolationFunctions)
+_ce(TessellationIsolines, tessellationIsolines)
+_ce(TessellationPointMode, tessellationPointMode)
+_ce(TriangleFans, triangleFans)
+_ce(VertexAttributeAccessBeyondStride, vertexAttributeAccessBeyondStride)
+#undef _ce
+
 _cext(ShaderSubgroupExtendedTypes, shaderSubgroupExtendedTypes, shaderSubgroupExtendedTypes, KHR::shader_subgroup_extended_types)
 
 #define _ce(value, field) _cext(value, field, _8BitStorage, KHR::_8bit_storage)

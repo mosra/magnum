@@ -880,6 +880,121 @@ enum class DeviceFeature: UnsignedShort {
      */
     RuntimeDescriptorArray,
 
+    /* VkPhysicalDevicePortabilitySubsetFeaturesKHR, #164 */
+
+    /**
+     * Whether constant alpha as source or destination blend color is
+     * supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    ConstantAlphaColorBlendFactors,
+
+    /**
+     * Whether synchronization using events is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    Events,
+
+    /**
+     * Whether an @ref ImageView can be created with a format containing
+     * different number of components or a different number of bits in each
+     * component than the format of the underlying @ref Image.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    ImageViewFormatReinterpretation,
+
+    /**
+     * Whether remapping format components in an @ref ImageView is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    ImageViewFormatSwizzle,
+
+    /**
+     * Whether a 2D view can be created on a 3D @ref Image can be created.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    ImageView2DOn3DImage,
+
+    /**
+     * Whether multisample 2D array @ref Image can be created.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    MultisampleArrayImage,
+
+    /**
+     * Whether descriptors with comparison samplers can be updated.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    MutableComparisonSamplers,
+
+    /**
+     * Whether rasterization using a point polygon mode is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    PointPolygons,
+
+    /**
+     * Whether setting a mipmap LOD bias when creating a sampler is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    SamplerMipLodBias,
+
+    /**
+     * Whether separate front and back stencil test reference values are
+     * supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    SeparateStencilMaskRef,
+
+    /**
+     * Whether interpolation at centroid, offset and sample is supported.
+     * Depends on @ref DeviceFeature::SampleRateShading.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    ShaderSampleRateInterpolationFunctions,
+
+    /**
+     * Whether isoline output from a tessellation shader stage is supported.
+     * Depends on @ref DeviceFeature::TessellationShader.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    TessellationIsolines,
+
+    /**
+     * Whether point output from a tessellation shader stage is supported.
+     * Depends on @ref DeviceFeature::TessellationShader.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    TessellationPointMode,
+
+    /**
+     * Whether triangle fan mesh primitives are supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    TriangleFans,
+
+    /**
+     * Whether accessing a vertex input attribute beyond the stride of
+     * corresponding vertex input binding is supported.
+     * @requires_vk_extension Extension @vk_extension{KHR,portability_subset},
+     *      see @ref Vk-Device-portability-subset for details.
+     */
+    VertexAttributeAccessBeyondStride,
+
     /* VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures, #176 */
 
     /**

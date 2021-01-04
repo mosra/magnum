@@ -86,6 +86,15 @@ struct DeviceCreateInfo::State {
     VkPhysicalDeviceFeatures2 features2{};
     Implementation::DeviceFeatures features{};
     DeviceFeatures enabledFeatures;
+    /* Some features are treated as implicitly enabled. Currently this includes
+       KHR_portability_subset features on devices that *don't* advertise the
+       extension, in the future it might be for example features unique to
+       Vulkan1[12]Features (which isn't present in the pNext chain), for which
+       the corresponding extension got enabled and thus implicitly enabled
+       those. For all those is common that those don't get explicitly marked as
+       enabled on device creation and are also not listed among enabled
+       features in the startup log. */
+    DeviceFeatures implicitFeatures;
     void* firstEnabledFeature{};
     /* Used for checking if the device enables extensions required by features */
     #ifndef CORRADE_NO_ASSERT
@@ -164,6 +173,22 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
         if(_state->version < Version::Vk12) {
             if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>())
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
+        }
+
+        /* Enable the KHR_portability_subset extension, which *has to be*
+           enabled when available. Not enabling any of its features though,
+           that responsibility lies on the user. */
+        if(extensionProperties->isSupported<Extensions::KHR::portability_subset>()) {
+            addEnabledExtensions<Extensions::KHR::portability_subset>();
+
+        /* Otherwise, if KHR_portability_subset is not supported, mark its
+           features as *implicitly* supported -- those don't get explicitly
+           enabled and are also not listed in the list of enabled features in
+           the startup log */
+        /** @todo wrap this under a NoImplicitFeatures flag? it doesn't actually
+            *do* anything though */
+        } else {
+            _state->implicitFeatures = Implementation::deviceFeaturesPortabilitySubset();
         }
     }
 
@@ -308,8 +333,14 @@ template<class T> void structureConnectIfUsed(Containers::Reference<const void*>
 
 }
 
-DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& features) & {
-    /* Remember the features to pass them to Device later */
+DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& features_) & {
+    /* Filter out implicit features as those are treated as being present even
+       if not explicitly enabled (such as KHR_portability_subset on devices
+       that *don't* advertise the extension */
+    const DeviceFeatures features = features_ & ~_state->implicitFeatures;
+
+    /* Remember the features to pass them to Device later. This gets combined
+       with implicitFeatures again for Device::enabledFeatures(). */
     _state->enabledFeatures = features;
 
     /* Clear any existing pointers to the feature structure chain. This needs
@@ -346,6 +377,7 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features.accelerationStructure,
             _state->features.samplerYcbcrConversion,
             _state->features.descriptorIndexing,
+            _state->features.portabilitySubset,
             _state->features.shaderSubgroupExtendedTypes,
             _state->features._8BitStorage,
             _state->features.shaderAtomicInt64,
@@ -451,6 +483,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
         _state->features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.descriptorIndexing, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.portabilitySubset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.shaderSubgroupExtendedTypes, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
@@ -652,7 +686,10 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     const Version version = info._state->version != Version::None ?
         info._state->version : _properties->version();
 
-    /* Print all enabled extensions if we're not told to be quiet */
+    /* Print all enabled extensions and features if we're not told to be quiet.
+       The implicit features (such as KHR_portability_subset features on
+       devices that *don't* advertise the extension) are not listed here but
+       are added to Device::enabledFeatures() below. */
     if(!info._state->quietLog) {
         Debug{} << "Device:" << _properties->name();
         Debug{} << "Device version:" << version;
@@ -678,7 +715,7 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
     }
 
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
-    initialize(instance, version, info._state->enabledFeatures);
+    initialize(instance, version, info._state->enabledFeatures | info._state->implicitFeatures);
 
     #ifndef CORRADE_NO_ASSERT
     /* This is a dumb O(n^2) search but in an assert that's completely fine */

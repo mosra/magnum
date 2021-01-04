@@ -65,6 +65,7 @@ extension EXT_vertex_attribute_divisor          optional
 extension EXT_index_type_uint8                  optional
 extension IMG_format_pvrtc                      optional
 extension KHR_acceleration_structure            optional
+extension KHR_portability_subset                optional
 extension KHR_deferred_host_operations          optional
 extension KHR_pipeline_library                  optional
 extension KHR_ray_tracing_pipeline              optional

@@ -44,6 +44,9 @@
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/VulkanTester.h"
 
+#include "Magnum/Vk/Implementation/DeviceFeatures.h"
+    /* for deviceFeaturesPortabilitySubset() */
+
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
 struct DevicePropertiesVkTest: VulkanTester {
@@ -66,6 +69,8 @@ struct DevicePropertiesVkTest: VulkanTester {
     void driverProperties();
 
     void features();
+    void featuresNoPortability();
+    void featuresPortability();
     void featureExpectedSupported();
     void featureExpectedUnsupported();
 
@@ -118,6 +123,8 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
               &DevicePropertiesVkTest::driverProperties,
 
               &DevicePropertiesVkTest::features,
+              &DevicePropertiesVkTest::featuresNoPortability,
+              &DevicePropertiesVkTest::featuresPortability,
               &DevicePropertiesVkTest::featureExpectedSupported,
               &DevicePropertiesVkTest::featureExpectedUnsupported,
 
@@ -252,6 +259,34 @@ void DevicePropertiesVkTest::features() {
             CORRADE_VERIFY(device->features() & DeviceFeature::ShaderSubgroupExtendedTypes);
         }
     }
+}
+
+void DevicePropertiesVkTest::featuresNoPortability() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    if(device->enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
+        CORRADE_SKIP("KHR_portability_subset supported, can't test");
+
+    /* All features should be marked as supported */
+    CORRADE_COMPARE_AS(device->features(), Implementation::deviceFeaturesPortabilitySubset(),
+        TestSuite::Compare::GreaterOrEqual);
+}
+
+void DevicePropertiesVkTest::featuresPortability() {
+    Containers::Optional<DeviceProperties> device = tryPickDevice(instance());
+    CORRADE_VERIFY(device);
+
+    if(!device->enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
+        CORRADE_SKIP("KHR_portability_subset not supported, can't test");
+
+    Debug{} << "Supported portability subset:" << (device->features() & Implementation::deviceFeaturesPortabilitySubset());
+
+    /* Not all features should be marked as supported */
+    CORRADE_VERIFY((device->features() & Implementation::deviceFeaturesPortabilitySubset()) != Implementation::deviceFeaturesPortabilitySubset());
+
+    /* But there should be at least one */
+    CORRADE_VERIFY(device->features() & Implementation::deviceFeaturesPortabilitySubset());
 }
 
 void DevicePropertiesVkTest::featureExpectedSupported() {

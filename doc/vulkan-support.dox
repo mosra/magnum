@@ -123,6 +123,7 @@ Extension                                           | Status
 @vk_extension{EXT,vertex_attribute_divisor}         | |
 @vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
 @vk_extension{KHR,acceleration_structure}           | |
+@vk_extension{KHR,portability_subset}               | done except properties
 @vk_extension{KHR,deferred_host_operations}         | |
 @vk_extension{KHR,pipeline_library}                 | |
 @vk_extension{KHR,ray_tracing_pipeline}             | |

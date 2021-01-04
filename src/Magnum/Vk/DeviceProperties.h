@@ -451,6 +451,9 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If Vulkan 1.2 or the @vk_extension{EXT,descriptor_indexing}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
+         * -    If the @vk_extension{KHR,portability_subset} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDevicePortabilitySubsetFeaturesKHR}
          * -    If Vulkan 1.2 or the @vk_extension{KHR,shader_subgroup_extended_types}
          *      extension is supported by the device, the `pNext` chain
          *      contains @type_vk_keyword{PhysicalDeviceShaderSubgroupExtendedTypesFeatures}
@@ -492,6 +495,11 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If the @vk_extension{KHR,ray_query} extension is supported by
          *      the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceRayQueryFeaturesKHR}
+         *
+         * If the @vk_extension{KHR,portability_subset} is *not* supported by
+         * the device, all features related to it are implicitly marked as
+         * supported to simplify portability-aware logic. See
+         * @ref Vk-Device-portability-subset for details.
          *
          * @see @ref Device::enabledFeatures(),
          *      @fn_vk_keyword{GetPhysicalDeviceFeatures2},

@@ -274,6 +274,11 @@ extern "C" {
 #define VK_KHR_ACCELERATION_STRUCTURE_SPEC_VERSION 11
 #define VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME "VK_KHR_acceleration_structure"
 
+/* VK_KHR_portability_subset */
+
+#define VK_KHR_PORTABILITY_SUBSET_SPEC_VERSION 1
+#define VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME "VK_KHR_portability_subset"
+
 /* VK_KHR_pipeline_library */
 
 #define VK_KHR_PIPELINE_LIBRARY_SPEC_VERSION 1
@@ -1555,6 +1560,8 @@ typedef enum {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR = 1000150014,
     VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR = 1000150017,
     VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR = 1000150020,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR = 1000163000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR = 1000163001,
     VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR = 1000290000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR = 1000347000,
@@ -4720,6 +4727,32 @@ typedef struct VkCopyMemoryToAccelerationStructureInfoKHR {
     VkAccelerationStructureKHR                             dst;
     VkCopyAccelerationStructureModeKHR                     mode;
 } VkCopyMemoryToAccelerationStructureInfoKHR;
+
+typedef struct VkPhysicalDevicePortabilitySubsetFeaturesKHR {
+    VkStructureType sType;
+    void*        pNext;
+    VkBool32                           constantAlphaColorBlendFactors;
+    VkBool32                           events;
+    VkBool32                           imageViewFormatReinterpretation;
+    VkBool32                           imageViewFormatSwizzle;
+    VkBool32                           imageView2DOn3DImage;
+    VkBool32                           multisampleArrayImage;
+    VkBool32                           mutableComparisonSamplers;
+    VkBool32                           pointPolygons;
+    VkBool32                           samplerMipLodBias;
+    VkBool32                           separateStencilMaskRef;
+    VkBool32                           shaderSampleRateInterpolationFunctions;
+    VkBool32                           tessellationIsolines;
+    VkBool32                           tessellationPointMode;
+    VkBool32                           triangleFans;
+    VkBool32                           vertexAttributeAccessBeyondStride;
+} VkPhysicalDevicePortabilitySubsetFeaturesKHR;
+
+typedef struct VkPhysicalDevicePortabilitySubsetPropertiesKHR {
+    VkStructureType sType;
+    void*        pNext;
+    uint32_t                           minVertexInputBindingStrideAlignment;
+} VkPhysicalDevicePortabilitySubsetPropertiesKHR;
 
 typedef struct VkAccelerationStructureBuildSizesInfoKHR {
     VkStructureType sType;

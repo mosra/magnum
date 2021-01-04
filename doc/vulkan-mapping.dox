@@ -571,6 +571,8 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceMultiviewFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceMultiviewProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDevicePointClippingProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDevicePortabilitySubsetFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
+@type_vk{PhysicalDevicePortabilitySubsetPropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PhysicalDeviceProperties}, \n @type_vk{PhysicalDeviceProperties2}  @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceProperties
 @type_vk{PhysicalDeviceProtectedMemoryFeatures} @m_class{m-label m-flat m-success} **1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceProtectedMemoryProperties} @m_class{m-label m-flat m-success} **1.1** | |

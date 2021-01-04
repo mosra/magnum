@@ -313,6 +313,26 @@ info.setEnabledFeatures(properties.features() & // mask away unsupported ones
 
 {
 Vk::Instance instance;
+/* [Device-creation-portability-subset] */
+Vk::DeviceProperties properties = DOXYGEN_IGNORE(Vk::pickDevice(instance));
+Vk::Device device{instance, Vk::DeviceCreateInfo{properties}
+    /* enable triangle fans only if actually supported */
+    .setEnabledFeatures(properties.features() & Vk::DeviceFeature::TriangleFans)
+    DOXYGEN_IGNORE()
+};
+
+DOXYGEN_IGNORE()
+
+if(device.enabledFeatures() & Vk::DeviceFeature::TriangleFans) {
+    // draw a triangle fan mesh
+} else {
+    // indexed draw fallback
+}
+/* [Device-creation-portability-subset] */
+}
+
+{
+Vk::Instance instance;
 VkQueryPool pool{};
 /* [Device-function-pointers] */
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};

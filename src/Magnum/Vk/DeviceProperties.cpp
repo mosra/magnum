@@ -309,6 +309,10 @@ const DeviceFeatures& DeviceProperties::features() {
             Implementation::structureConnect(next, features.samplerYcbcrConversion, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::EXT::descriptor_indexing>())
             Implementation::structureConnect(next, features.descriptorIndexing, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES);
+        /* See below as well -- the features are implicitly marked as supported
+           if the KHR_portability_subset extension is *not* present */
+        if(isOrVersionSupportedInternal<Extensions::KHR::portability_subset>())
+            Implementation::structureConnect(next, features.portabilitySubset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR);
         if(isOrVersionSupportedInternal<Extensions::KHR::shader_subgroup_extended_types>())
             Implementation::structureConnect(next, features.shaderSubgroupExtendedTypes, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::KHR::_8bit_storage>())
@@ -351,6 +355,11 @@ const DeviceFeatures& DeviceProperties::features() {
         #undef _c
         #undef _cver
         #undef _cext
+
+        /* If the KHR_portability_subset extension is not present, its features
+           are marked as being implicitly supported */
+        if(!isOrVersionSupportedInternal<Extensions::KHR::portability_subset>())
+            _state->features |= Implementation::deviceFeaturesPortabilitySubset();
     }
 
     return _state->features;

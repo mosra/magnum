@@ -115,6 +115,33 @@ explicitly enabled.
 With both @ref Instance and @ref Device created, you can proceed to setting up
 a @ref CommandPool.
 
+@subsection Vk-Device-portability-subset Vulkan portability subset
+
+To simplify porting to platforms with the Portability Subset, Magnum implicitly
+enables the @vk_extension{KHR,portability_subset} extension on all devices that
+advertise it, as required by the spec, so you don't need to handle that part.
+This behavior can be disabled with
+@ref DeviceCreateInfo::Flag::NoImplicitExtensions.
+
+For portability-related @ref DeviceFeatures, on conformant Vulkan
+implementations (which don't advertise @vk_extension{KHR,portability_subset})
+these are all implicitly marked as supported in @ref DeviceProperties::features()
+and then implicitly marked as enabled in @ref Device::enabledFeatures(),
+independently of whether you enable them or not. On devices having only the
+Portability Subset, the supported features are listed in
+@ref DeviceProperties::features() but you're expected to manually enable them
+on device creation --- that part is *not done implicitly* by the engine.
+
+A workflow that supports both conformant and Portability Subset devices with a
+single code path is outlined in the following snippet --- on device creation
+you request features that you want (which is a no-op on conformant
+implementations), and at runtime you query those features in appropriate cases
+(which will be always @cpp true @ce on conformant implementations). As with
+other features, all APIs that require a particular Portability Subset feature
+are marked as such and also listed among others at @ref requires-vk-feature.
+
+@snippet MagnumVk.cpp Device-creation-portability-subset
+
 @see @ref vulkan-wrapping-optimizing-properties
 
 @section Vk-Device-command-line Command-line options

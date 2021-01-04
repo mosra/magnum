@@ -69,6 +69,12 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
              * @vk_extension{KHR,get_memory_requirements2} to provide a broader
              * functionality. If you want to have a complete control over what
              * gets enabled, set this flag.
+             *
+             * This flag also affects enabling of
+             * @vk_extension{KHR,portability_subset},which is *required* to be
+             * enabled by the spec on any device that advertises it, and
+             * behavior of related @ref DeviceFeatures. See
+             * @ref Vk-Device-portability-subset for details.
              */
             NoImplicitExtensions = 1u << 31
         };
@@ -234,6 +240,8 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      (Vulkan 1.1, @vk_extension{KHR,sampler_ycbcr_conversion})
          * -    @type_vk_keyword{PhysicalDeviceDescriptorIndexingFeatures}
          *      (Vulkan 1.2, @vk_extension{EXT,descriptor_indexing})
+         * -    @type_vk_keyword{PhysicalDevicePortabilitySubsetFeaturesKHR}
+         *      (@vk_extension{KHR,portability_subset})
          * -    @type_vk_keyword{PhysicalDeviceShaderSubgroupExtendedTypesFeatures}
          *      (Vulkan 1.2, @vk_extension{KHR,shader_subgroup_extended_types})
          * -    @type_vk_keyword{PhysicalDevice8BitStorageFeatures} (Vulkan

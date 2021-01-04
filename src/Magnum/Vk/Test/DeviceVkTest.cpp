@@ -43,6 +43,9 @@
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/VulkanTester.h"
 
+#include "Magnum/Vk/Implementation/DeviceFeatures.h"
+    /* for deviceFeaturesPortabilitySubset() */
+
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
@@ -79,6 +82,10 @@ struct DeviceVkTest: VulkanTester {
     void constructFeatureNotSupported();
     void constructFeatureWithoutExtension();
     void constructNoQueue();
+
+    void constructNoPortability();
+    void constructNoPortabilityEnablePortabilityFeatures();
+    void constructPortability();
 
     void tryCreateAlreadyCreated();
     void tryCreateUnknownExtension();
@@ -177,6 +184,10 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
               &DeviceVkTest::constructFeatureNotSupported,
               &DeviceVkTest::constructFeatureWithoutExtension,
               &DeviceVkTest::constructNoQueue,
+
+              &DeviceVkTest::constructNoPortability,
+              &DeviceVkTest::constructNoPortabilityEnablePortabilityFeatures,
+              &DeviceVkTest::constructPortability,
 
               &DeviceVkTest::tryCreateAlreadyCreated,
               &DeviceVkTest::tryCreateUnknownExtension,
@@ -631,8 +642,10 @@ void DeviceVkTest::constructFeatures() {
         .setEnabledFeatures(DeviceFeature::RobustBufferAccess)};
     CORRADE_VERIFY(device.handle());
 
-    /* Features should be reported as enabled */
-    CORRADE_COMPARE(device.enabledFeatures(), DeviceFeature::RobustBufferAccess);
+    /* Features should be reported as enabled. Exclude portability subset
+       features that get implicitly marked as enabled on devices w/o
+       KHR_portability_subset. */
+    CORRADE_COMPARE(device.enabledFeatures() & ~Implementation::deviceFeaturesPortabilitySubset(), DeviceFeature::RobustBufferAccess);
 }
 
 void DeviceVkTest::constructFeaturesFromExtensions() {
@@ -652,8 +665,10 @@ void DeviceVkTest::constructFeaturesFromExtensions() {
         .setEnabledFeatures(DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion)};
     CORRADE_VERIFY(device.handle());
 
-    /* Features should be reported as enabled */
-    CORRADE_COMPARE(device.enabledFeatures(), DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion);
+    /* Features should be reported as enabled. Exclude portability subset
+       features that get implicitly marked as enabled on devices w/o
+       KHR_portability_subset. */
+    CORRADE_COMPARE(device.enabledFeatures() & ~Implementation::deviceFeaturesPortabilitySubset(), DeviceFeature::RobustBufferAccess|DeviceFeature::SamplerYcbcrConversion);
 }
 
 void DeviceVkTest::constructDeviceCreateInfoConstReference() {
@@ -921,6 +936,73 @@ void DeviceVkTest::constructNoQueue() {
     Error redirectError{&out};
     Device device{instance(), DeviceCreateInfo{pickDevice(instance())}};
     CORRADE_COMPARE(out.str(), "Vk::Device::tryCreate(): needs at least one queue\n");
+}
+
+void DeviceVkTest::constructNoPortability() {
+    DeviceProperties properties = pickDevice(instance());
+
+    if(properties.enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
+        CORRADE_SKIP("KHR_portability_subset supported, can't test");
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{properties}
+        .addQueues(0, {0.0f}, {queue})
+    };
+
+    /* The extension shouldn't be registered as enabled */
+    CORRADE_VERIFY(!device.isExtensionEnabled<Extensions::KHR::portability_subset>());
+
+    /* All features should be marked as enabled */
+    CORRADE_COMPARE_AS(device.enabledFeatures(), Implementation::deviceFeaturesPortabilitySubset(),
+        TestSuite::Compare::GreaterOrEqual);
+}
+
+void DeviceVkTest::constructNoPortabilityEnablePortabilityFeatures() {
+    DeviceProperties properties = pickDevice(instance());
+
+    if(properties.enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
+        CORRADE_SKIP("KHR_portability_subset supported, can't test");
+
+    Device device{NoCreate};
+
+    /* Explicitly enabling portability subset features shouldn't do anything
+       when the portability extension isn't present */
+    Queue queue{NoCreate};
+    CORRADE_COMPARE(device.tryCreate(instance(), DeviceCreateInfo{properties}
+        .addQueues(0, {0.0f}, {queue})
+        .setEnabledFeatures(Implementation::deviceFeaturesPortabilitySubset())
+    ), Result::Success);
+
+    /* All features should be marked as enabled */
+    CORRADE_COMPARE_AS(device.enabledFeatures(), Implementation::deviceFeaturesPortabilitySubset(),
+        TestSuite::Compare::GreaterOrEqual);
+}
+
+void DeviceVkTest::constructPortability() {
+    DeviceProperties properties = pickDevice(instance());
+
+    if(!properties.enumerateExtensionProperties().isSupported<Extensions::KHR::portability_subset>())
+        CORRADE_SKIP("KHR_portability_subset not supported, can't test");
+
+    /* (Same as in DevicePropertiesVkTest.) Not all features should be marked
+       as supported... */
+    CORRADE_VERIFY((properties.features() & Implementation::deviceFeaturesPortabilitySubset()) != Implementation::deviceFeaturesPortabilitySubset());
+
+    /* ... but there should be at least one feature */
+    CORRADE_VERIFY(properties.features() &
+Implementation::deviceFeaturesPortabilitySubset());
+
+    Queue queue{NoCreate};
+    Device device{instance(), DeviceCreateInfo{properties}
+        .addQueues(0, {0.0f}, {queue})
+        .setEnabledFeatures(properties.features() &
+Implementation::deviceFeaturesPortabilitySubset())
+    };
+
+    /* All requested features should be marked as enabled */
+    CORRADE_COMPARE_AS(device.enabledFeatures(), properties.features() &
+Implementation::deviceFeaturesPortabilitySubset(),
+        TestSuite::Compare::GreaterOrEqual);
 }
 
 void DeviceVkTest::tryCreateAlreadyCreated() {

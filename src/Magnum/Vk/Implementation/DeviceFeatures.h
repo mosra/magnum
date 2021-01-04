@@ -47,6 +47,7 @@ struct DeviceFeatures {
     VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructure;
     VkPhysicalDeviceSamplerYcbcrConversionFeatures samplerYcbcrConversion;
     VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexing;
+    VkPhysicalDevicePortabilitySubsetFeaturesKHR portabilitySubset;
     VkPhysicalDeviceShaderSubgroupExtendedTypesFeatures shaderSubgroupExtendedTypes;
     VkPhysicalDevice8BitStorageFeatures _8BitStorage;
     VkPhysicalDeviceShaderAtomicInt64Features shaderAtomicInt64;
@@ -62,6 +63,25 @@ struct DeviceFeatures {
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipeline;
     VkPhysicalDeviceRayQueryFeaturesKHR rayQuery;
 };
+
+constexpr Vk::DeviceFeatures deviceFeaturesPortabilitySubset() {
+    return
+        DeviceFeature::ConstantAlphaColorBlendFactors|
+        DeviceFeature::Events|
+        DeviceFeature::ImageViewFormatReinterpretation|
+        DeviceFeature::ImageViewFormatSwizzle|
+        DeviceFeature::ImageView2DOn3DImage|
+        DeviceFeature::MultisampleArrayImage|
+        DeviceFeature::MutableComparisonSamplers|
+        DeviceFeature::PointPolygons|
+        DeviceFeature::SamplerMipLodBias|
+        DeviceFeature::SeparateStencilMaskRef|
+        DeviceFeature::ShaderSampleRateInterpolationFunctions|
+        DeviceFeature::TessellationIsolines|
+        DeviceFeature::TessellationPointMode|
+        DeviceFeature::TriangleFans|
+        DeviceFeature::VertexAttributeAccessBeyondStride;
+}
 
 }}}
 
