@@ -100,7 +100,11 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 
         /* This isn't protected because having virtual destructor here is
            better than having it duplicated in all Object specializations */
+
+        /** @brief Constructor */
         explicit AbstractObject();
+
+        /** @brief Destructor */
         virtual ~AbstractObject();
 
         /**
