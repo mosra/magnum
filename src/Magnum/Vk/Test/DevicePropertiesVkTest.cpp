@@ -164,8 +164,10 @@ void DevicePropertiesVkTest::enumerate() {
         /* Device version is supported */
         CORRADE_VERIFY(device.isVersionSupported(device.version()));
         CORRADE_VERIFY(!device.isVersionSupported(Version::None));
-        CORRADE_COMPARE_AS(device.driverVersion(), Version::Vk10,
-            TestSuite::Compare::GreaterOrEqual);
+        /* Unlike Vulkan version reported in version(), driver version can be
+           anything but hopefully not 0. MoltenVk reports 0.2.1909. */
+        CORRADE_COMPARE_AS(device.driverVersion(), version(0, 0, 0),
+            TestSuite::Compare::Greater);
         CORRADE_VERIFY(device.type() != DeviceType::Other);
         CORRADE_VERIFY(!device.name().isEmpty());
     }
