@@ -88,8 +88,10 @@ void LayerPropertiesVkTest::enumerate() {
             TestSuite::Compare::Less);
     }
 
-    CORRADE_COMPARE_AS(properties.name(0).size(), "VK_LAYER_"_s.size(),
-        TestSuite::Compare::Greater);
+    /* MoltenVK Y U so weird!! */
+    if(properties.name(0) != "MoltenVK"_s)
+        CORRADE_COMPARE_AS(properties.name(0).size(), "VK_LAYER_"_s.size(),
+            TestSuite::Compare::Greater);
     CORRADE_COMPARE_AS(properties.revision(0), 0,
         TestSuite::Compare::Greater);
     CORRADE_COMPARE_AS(properties.version(0), Version::Vk10,
