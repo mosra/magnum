@@ -3,7 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
                 2020 Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2020 Erik Wijmans <etw@gatech.edu>
+    Copyright © 2020, 2021 Erik Wijmans <etw@gatech.edu>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),

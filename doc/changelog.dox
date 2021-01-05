@@ -72,6 +72,10 @@ See also:
 -   Exposed @gl_extension{ARB,buffer_storage} as
     @ref GL::Buffer::setStorage() together with additions to
     @ref GL::Buffer::MapFlag
+-   A new @cpp "nv-egl-crashy-query-device-attrib" @ce workaround for a crash
+    happening during EGL initialization in recent NVidia drivers.  See
+    @ref opengl-workarounds and [mosra/magnum#491](https://github.com/mosra/magnum/pull/491)
+    for more information.
 
 @subsubsection changelog-latest-new-math Math library
 
