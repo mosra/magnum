@@ -342,6 +342,17 @@ See also:
     @ref MAGNUM_BUILD_DEPRECATED is enabled, the returned type acts as a
     @ref Corrade::Containers::Optional but has (deprecated) implicit conversion
     to a @ref Corrade::Containers::Pointer to avoid breaking user code.
+-   @cpp Vk::hasVkFormat(Magnum::PixelFormat) @ce,
+    @cpp Vk::hasVkFormat(Magnum::CompressedPixelFormat) @ce,
+    @cpp Vk::vkFormat(Magnum::PixelFormat) @ce and
+    @cpp Vk::vkFormat(Magnum::CompressedPixelFormat) @ce returning a raw
+    @type_vk{Format} are deprecated in favor of
+    @ref Vk::hasPixelFormat(Magnum::PixelFormat),
+    @ref Vk::hasPixelFormat(Magnum::CompressedPixelFormat),
+    @ref Vk::pixelFormat(Magnum::PixelFormat) and
+    @ref Vk::pixelFormat(Magnum::CompressedPixelFormat) that return the new
+    @ref Vk::PixelFormat enum that contains only values suitable for a pixel
+    format
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

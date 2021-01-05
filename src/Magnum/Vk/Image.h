@@ -198,16 +198,20 @@ class MAGNUM_VK_EXPORT Image {
          *
          * The @p handle is expected to be originating from @p device. The
          * @p format parameter is used for convenience @ref ImageView creation.
-         * If it's unknown, use @val_vk{FORMAT_UNDEFINED,Format} --- you will
-         * then be able to only create image views by passing a concrete format
-         * to @ref ImageViewCreateInfo.
+         * If it's unknown, use a @cpp PixelFormat{} @ce --- you will then be
+         * able to only create image views by passing a concrete format to
+         * @ref ImageViewCreateInfo.
          *
          * Unlike an image created using a constructor, the Vulkan image is by
          * default not deleted on destruction, use @p flags for different
          * behavior.
          * @see @ref release()
          */
-        static Image wrap(Device& device, VkImage handle, VkFormat format, HandleFlags flags = {});
+        static Image wrap(Device& device, VkImage handle, PixelFormat format, HandleFlags flags = {});
+        /** @overload */
+        static Image wrap(Device& device, VkImage handle, Magnum::PixelFormat format, HandleFlags flags = {});
+        /** @overload */
+        static Image wrap(Device& device, VkImage handle, Magnum::CompressedPixelFormat format, HandleFlags flags = {});
 
         /**
          * @brief Construct an image without allocating
@@ -276,7 +280,7 @@ class MAGNUM_VK_EXPORT Image {
         HandleFlags handleFlags() const { return _flags; }
 
         /** @brief Image format */
-        VkFormat format() const { return _format; }
+        PixelFormat format() const { return _format; }
 
         /**
          * @brief Image memory requirements
@@ -360,7 +364,7 @@ class MAGNUM_VK_EXPORT Image {
            involved and not safe to rely on (e.g., implicit view type would be
            2D_ARRAY if there's more than one layer and then if you'd use just
            one layer it suddenly becomes just 2D, breaking everything). */
-        VkFormat _format;
+        PixelFormat _format;
 
         Memory _dedicatedMemory;
 };

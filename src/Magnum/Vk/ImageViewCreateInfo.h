@@ -57,7 +57,7 @@ class MAGNUM_VK_EXPORT ImageViewCreateInfo {
          * @brief Image view creation flag
          *
          * Wraps @type_vk_keyword{ImageViewCreateFlagBits}.
-         * @see @ref Flags, @ref ImageViewCreateInfo(VkImageViewType, VkImage, VkFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
+         * @see @ref Flags, @ref ImageViewCreateInfo(VkImageViewType, VkImage, PixelFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
          * @m_enum_values_as_keywords
          */
         enum class Flag: UnsignedInt {
@@ -68,7 +68,7 @@ class MAGNUM_VK_EXPORT ImageViewCreateInfo {
          * @brief ImageView creation flags
          *
          * Type-safe wrapper for @type_vk_keyword{ImageViewCreateFlags}.
-         * @see @ref ImageViewCreateInfo(VkImageViewType, VkImage, VkFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
+         * @see @ref ImageViewCreateInfo(VkImageViewType, VkImage, PixelFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -112,12 +112,16 @@ class MAGNUM_VK_EXPORT ImageViewCreateInfo {
          * @ref ImageViewCreateInfoCubeMapArray convenience classes instead of
          * this constructor.
          */
-        explicit ImageViewCreateInfo(VkImageViewType type, VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
+        explicit ImageViewCreateInfo(VkImageViewType type, VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
+        /** @overload */
+        explicit ImageViewCreateInfo(VkImageViewType type, VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
+        /** @overload */
+        explicit ImageViewCreateInfo(VkImageViewType type, VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
 
         /**
          * @brief Construct with format matching given image
          *
-         * Compared to @ref ImageViewCreateInfo(VkImageViewType, VkImage, VkFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
+         * Compared to @ref ImageViewCreateInfo(VkImageViewType, VkImage, PixelFormat, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt, Flags)
          * the @p format is taken from @ref Image::format().
          */
         explicit ImageViewCreateInfo(VkImageViewType type, Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {});
@@ -169,7 +173,11 @@ type @val_vk{IMAGE_VIEW_TYPE_1D,ImageViewType} with @p layerCount set to
 class ImageViewCreateInfo1D: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfo1D(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfo1D(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo1D(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo1D(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -195,7 +203,11 @@ type @val_vk{IMAGE_VIEW_TYPE_2D,ImageViewType} with @p layerCount set to
 class ImageViewCreateInfo2D: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfo2D(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfo2D(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo2D(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo2D(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -216,7 +228,11 @@ type @val_vk{IMAGE_VIEW_TYPE_3D,ImageViewType} with @p layerCount set to
 class ImageViewCreateInfo3D: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfo3D(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_3D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfo3D(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_3D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo3D(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_3D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo3D(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_3D, image, format, layerOffset, 1, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -238,7 +254,11 @@ to fit the required subrange.
 class ImageViewCreateInfo1DArray: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfo1DArray(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfo1DArray(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo1DArray(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo1DArray(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_1D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -264,7 +284,11 @@ subrange.
 class ImageViewCreateInfo2DArray: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfo2DArray(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfo2DArray(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo2DArray(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfo2DArray(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -287,7 +311,11 @@ set (e.g., created using @ref ImageCreateInfoCubeMap or
 class ImageViewCreateInfoCubeMap: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfoCubeMap(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE, image, format, layerOffset, 6, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfoCubeMap(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE, image, format, layerOffset, 6, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfoCubeMap(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE, image, format, layerOffset, 6, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfoCubeMap(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE, image, format, layerOffset, 6, levelOffset, levelCount, flags} {}
 
         /** @overload
          *
@@ -311,7 +339,11 @@ array layers to fit the required subrange.
 class ImageViewCreateInfoCubeMapArray: public ImageViewCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageViewCreateInfoCubeMapArray(VkImage image, VkFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        explicit ImageViewCreateInfoCubeMapArray(VkImage image, PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfoCubeMapArray(VkImage image, Magnum::PixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
+        /** @overload */
+        explicit ImageViewCreateInfoCubeMapArray(VkImage image, Magnum::CompressedPixelFormat format, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS, Flags flags = {}): ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, image, format, layerOffset, layerCount, levelOffset, levelCount, flags} {}
 
         /** @overload
          *

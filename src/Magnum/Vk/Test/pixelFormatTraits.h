@@ -1,3 +1,5 @@
+#ifndef Magnum_Vk_Test_pixelFormatTraits_h
+#define Magnum_Vk_Test_pixelFormatTraits_h
 /*
     This file is part of Magnum.
 
@@ -23,58 +25,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* See Magnum/Vk/Enums.cpp and Magnum/Vk/Test/EnumsTest.cpp */
-#ifdef _c
-_c(R8Unorm)
-_c(RG8Unorm)
-_c(RGB8Unorm)
-_c(RGBA8Unorm)
-_c(R8Snorm)
-_c(RG8Snorm)
-_c(RGB8Snorm)
-_c(RGBA8Snorm)
-_c(R8Srgb)
-_c(RG8Srgb)
-_c(RGB8Srgb)
-_c(RGBA8Srgb)
-_c(R8UI)
-_c(RG8UI)
-_c(RGB8UI)
-_c(RGBA8UI)
-_c(R8I)
-_c(RG8I)
-_c(RGB8I)
-_c(RGBA8I)
-_c(R16Unorm)
-_c(RG16Unorm)
-_c(RGB16Unorm)
-_c(RGBA16Unorm)
-_c(R16Snorm)
-_c(RG16Snorm)
-_c(RGB16Snorm)
-_c(RGBA16Snorm)
-_c(R16UI)
-_c(RG16UI)
-_c(RGB16UI)
-_c(RGBA16UI)
-_c(R16I)
-_c(RG16I)
-_c(RGB16I)
-_c(RGBA16I)
-_c(R32UI)
-_c(RG32UI)
-_c(RGB32UI)
-_c(RGBA32UI)
-_c(R32I)
-_c(RG32I)
-_c(RGB32I)
-_c(RGBA32I)
-_c(R16F)
-_c(RG16F)
-_c(RGB16F)
-_c(RGBA16F)
-_c(R32F)
-_c(RG32F)
-_c(RGB32F)
-_c(RGBA32F)
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Vk/PixelFormat.h"
+
+namespace Magnum { namespace Vk { namespace Test { namespace {
+
+template<class> struct PixelFormatTraits;
+template<> struct PixelFormatTraits<PixelFormat> {
+    static const char* name() { return "PixelFormat"; }
+    static PixelFormat format() { return PixelFormat::RGBA8Srgb; }
+    static VkFormat expected() { return VK_FORMAT_R8G8B8A8_SRGB; }
+};
+template<> struct PixelFormatTraits<Magnum::PixelFormat> {
+    static const char* name() { return "Magnum::PixelFormat"; }
+    static Magnum::PixelFormat format() { return Magnum::PixelFormat::RGBA8Srgb; }
+    static VkFormat expected() { return VK_FORMAT_R8G8B8A8_SRGB; }
+};
+template<> struct PixelFormatTraits<Magnum::CompressedPixelFormat> {
+    static const char* name() { return "Magnum::CompressedPixelFormat"; }
+    static Magnum::CompressedPixelFormat format() { return Magnum::CompressedPixelFormat::Bc3RGBASrgb; }
+    static VkFormat expected() { return VK_FORMAT_BC3_SRGB_BLOCK; }
+};
+
+}}}}
+
 #endif

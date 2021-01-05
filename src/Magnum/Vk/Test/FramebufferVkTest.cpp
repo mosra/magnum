@@ -28,6 +28,7 @@
 #include "Magnum/Vk/FramebufferCreateInfo.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/ImageViewCreateInfo.h"
+#include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
@@ -54,9 +55,9 @@ void FramebufferVkTest::construct() {
     /* Using a depth attachment as well even though not strictly necessary to
        catch potential unexpected bugs */
     Image color{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     Image depth{device(), ImageCreateInfo2D{ImageUsage::DepthStencilAttachment,
-        VK_FORMAT_D24_UNORM_S8_UINT, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::Depth24UnormStencil8UI, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     ImageView depthView{device(), ImageViewCreateInfo2D{depth}};
 
@@ -87,7 +88,7 @@ void FramebufferVkTest::construct() {
 
 void FramebufferVkTest::constructMove() {
     Image color{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     RenderPass renderPass{device(), RenderPassCreateInfo{}
         .setAttachments({color.format()})
@@ -119,7 +120,7 @@ void FramebufferVkTest::constructMove() {
 
 void FramebufferVkTest::wrap() {
     Image color{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     RenderPass renderPass{device(), RenderPassCreateInfo{}
         .setAttachments({color.format()})

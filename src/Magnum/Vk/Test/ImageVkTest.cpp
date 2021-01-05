@@ -33,6 +33,8 @@
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
+#include "Magnum/Vk/Test/pixelFormatTraits.h"
+
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
 struct ImageVkTest: VulkanTester {
@@ -47,7 +49,7 @@ struct ImageVkTest: VulkanTester {
     void constructCubeMapArray();
     void constructMove();
 
-    void wrap();
+    template<class T> void wrap();
 
     void memoryRequirements();
 
@@ -67,7 +69,9 @@ ImageVkTest::ImageVkTest() {
               &ImageVkTest::constructCubeMapArray,
               &ImageVkTest::constructMove,
 
-              &ImageVkTest::wrap,
+              &ImageVkTest::wrap<PixelFormat>,
+              &ImageVkTest::wrap<Magnum::PixelFormat>,
+              &ImageVkTest::wrap<Magnum::CompressedPixelFormat>,
 
               &ImageVkTest::memoryRequirements,
 
@@ -80,10 +84,10 @@ ImageVkTest::ImageVkTest() {
 void ImageVkTest::construct1D() {
     {
         Image image{device(), ImageCreateInfo1D{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, 256, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, 256, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -93,10 +97,10 @@ void ImageVkTest::construct1D() {
 void ImageVkTest::construct2D() {
     {
         Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 256}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -106,10 +110,10 @@ void ImageVkTest::construct2D() {
 void ImageVkTest::construct3D() {
     {
         Image image{device(), ImageCreateInfo3D{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 64}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -119,10 +123,10 @@ void ImageVkTest::construct3D() {
 void ImageVkTest::construct1DArray() {
     {
         Image image{device(), ImageCreateInfo1DArray{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 64}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -132,10 +136,10 @@ void ImageVkTest::construct1DArray() {
 void ImageVkTest::construct2DArray() {
     {
         Image image{device(), ImageCreateInfo2DArray{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 64}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 256, 64}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -145,10 +149,10 @@ void ImageVkTest::construct2DArray() {
 void ImageVkTest::constructCubeMap() {
     {
         Image image{device(), ImageCreateInfoCubeMap{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 256}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -158,10 +162,10 @@ void ImageVkTest::constructCubeMap() {
 void ImageVkTest::constructCubeMapArray() {
     {
         Image image{device(), ImageCreateInfoCubeMapArray{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 36}, 8}, NoAllocate};
+            PixelFormat::RGBA8Unorm, {256, 256, 36}, 8}, NoAllocate};
         CORRADE_VERIFY(image.handle());
         CORRADE_COMPARE(image.handleFlags(), HandleFlag::DestroyOnDestruction);
-        CORRADE_COMPARE(image.format(), VK_FORMAT_R8G8B8A8_UNORM);
+        CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
     }
 
     /* Shouldn't crash or anything */
@@ -171,7 +175,7 @@ void ImageVkTest::constructCubeMapArray() {
 void ImageVkTest::constructMove() {
     /* Verify that also the dedicated memory gets moved */
     Image a{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1},
+            PixelFormat::RGBA8Unorm, {256, 256}, 1},
         MemoryFlag::DeviceLocal};
     VkImage handle = a.handle();
     VkDeviceMemory memoryHandle = a.dedicatedMemory().handle();
@@ -181,7 +185,7 @@ void ImageVkTest::constructMove() {
     CORRADE_VERIFY(!a.hasDedicatedMemory());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(b.format(), VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGBA8Unorm);
     CORRADE_VERIFY(b.hasDedicatedMemory());
     CORRADE_COMPARE(b.dedicatedMemory().handle(), memoryHandle);
 
@@ -192,7 +196,7 @@ void ImageVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(c.format(), VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(c.format(), PixelFormat::RGBA8Unorm);
     CORRADE_VERIFY(c.hasDedicatedMemory());
     CORRADE_COMPARE(c.dedicatedMemory().handle(), memoryHandle);
 
@@ -200,17 +204,19 @@ void ImageVkTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Image>::value);
 }
 
-void ImageVkTest::wrap() {
+template<class T> void ImageVkTest::wrap() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
     VkImage image{};
     CORRADE_COMPARE(Result(device()->CreateImage(device(),
         ImageCreateInfo2D{ImageUsage::Sampled,
-            VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8},
+            PixelFormatTraits<T>::format(), {256, 256}, 8},
         nullptr, &image)), Result::Success);
     CORRADE_VERIFY(image);
 
-    auto wrapped = Image::wrap(device(), image, VK_FORMAT_R8G8B8A8_UNORM, HandleFlag::DestroyOnDestruction);
+    auto wrapped = Image::wrap(device(), image, PixelFormatTraits<T>::format(), HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), image);
-    CORRADE_COMPARE(wrapped.format(), VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(wrapped.format(), PixelFormat(PixelFormatTraits<T>::expected()));
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), image);
@@ -220,7 +226,7 @@ void ImageVkTest::wrap() {
 
 void ImageVkTest::memoryRequirements() {
     /* Use linear tiling for a deterministic memory size */
-    ImageCreateInfo2D info{ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_UNORM, {128, 64}, 1};
+    ImageCreateInfo2D info{ImageUsage::Sampled, PixelFormat::RGBA8Unorm, {128, 64}, 1};
     info->tiling = VK_IMAGE_TILING_LINEAR;
     Image image{device(), info, NoAllocate};
 
@@ -238,7 +244,7 @@ void ImageVkTest::memoryRequirements() {
 
 void ImageVkTest::bindMemory() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
+        PixelFormat::RGBA8Unorm, {256, 256}, 8}, NoAllocate};
     MemoryRequirements requirements = image.memoryRequirements();
 
     /* We're testing the offset, so ensure what we hardcode is correctly
@@ -258,7 +264,7 @@ void ImageVkTest::bindMemory() {
 
 void ImageVkTest::bindDedicatedMemory() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, NoAllocate};
+        PixelFormat::RGBA8Unorm, {256, 256}, 8}, NoAllocate};
     MemoryRequirements requirements = image.memoryRequirements();
 
     /** @todo expand once KHR_dedicated_allocation is implemented */
@@ -276,7 +282,7 @@ void ImageVkTest::bindDedicatedMemory() {
 
 void ImageVkTest::directAllocation() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 8}, MemoryFlag::DeviceLocal};
 
     /* Not sure what else to test here */
     CORRADE_VERIFY(image.hasDedicatedMemory());

@@ -33,6 +33,10 @@
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Vk {
 
 /**
@@ -107,37 +111,21 @@ vectors to consecutive attribute locations based on what
 */
 MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::VertexFormat format);
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief Check availability of a generic pixel format
-
-Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
-otherwise. Moreover, returns @cpp true @ce also for all formats that are
-@ref isPixelFormatImplementationSpecific(). The @p format value is expected to
-be valid.
-
-@note Support of some formats depends on presence of a particular Vulkan
-    extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such format.
-
-@see @ref vkFormat(Magnum::PixelFormat)
-*/
-MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::PixelFormat format);
+ * @brief @copybrief hasPixelFormat(Magnum::PixelFormat)
+ * @m_deprecated_since_latest Use @ref hasPixelFormat(Magnum::PixelFormat)
+ *      instead.
+ */
+CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::PixelFormat format);
 
 /**
-@brief Check availability of a generic compressed pixel format
-
-Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
-otherwise. Moreover, returns @cpp true @ce also for all formats that are
-@ref isCompressedPixelFormatImplementationSpecific(). The @p format value is
-expected to be valid.
-
-@note Support of some formats depends on presence of a particular Vulkan
-    extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such format.
-
-@see @ref vkFormat(Magnum::CompressedPixelFormat)
-*/
-MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::CompressedPixelFormat format);
+ * @brief @copybrief hasPixelFormat(Magnum::CompressedPixelFormat)
+ * @m_deprecated_since_latest Use @ref hasPixelFormat(Magnum::CompressedPixelFormat)
+ *      instead.
+ */
+CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::CompressedPixelFormat format);
+#endif
 
 /**
 @brief Convert a generic vertex format to Vulkan format
@@ -155,36 +143,21 @@ to query availability of given format.
 */
 MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::VertexFormat format);
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief Convert a generic pixel format to Vulkan format
-
-In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
-@p format, maps it to a corresponding Vulkan format. In case
-@ref isPixelFormatImplementationSpecific() returns @cpp true @ce, assumes
-@p format stores a Vulkan-specific format and returns @ref pixelFormatUnwrap()
-cast to @type_vk{Format}.
-
-Not all generic pixel formats have a Vulkan equivalent and this function
-expects that given format is available. Use @ref hasVkFormat(Magnum::PixelFormat)
-to query availability of given format.
-*/
-MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::PixelFormat format);
+ * @brief @copybrief pixelFormat(Magnum::PixelFormat)
+ * @m_deprecated_since_latest Use @ref pixelFormat(Magnum::PixelFormat)
+ *      instead.
+ */
+CORRADE_DEPRECATED("use pixelFormat() instead") MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::PixelFormat format);
 
 /**
-@brief Convert a generic pixel format to Vulkan format
-
-In case @ref isCompressedPixelFormatImplementationSpecific() returns
-@cpp false @ce for @p format, maps it to a corresponding Vulkan format. In case
-@ref isCompressedPixelFormatImplementationSpecific() returns @cpp true @ce,
-assumes @p format stores a Vulkan-specific format and returns
-@ref compressedPixelFormatUnwrap() cast to @type_vk{Format}.
-
-Not all generic pixel formats have a Vulkan equivalent and this function
-expects that given format is available. Use
-@ref hasVkFormat(Magnum::CompressedPixelFormat) to query availability of given
-format.
-*/
-MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::CompressedPixelFormat format);
+ * @brief @copybrief pixelFormat(Magnum::CompressedPixelFormat)
+ * @m_deprecated_since_latest Use @ref pixelFormat(Magnum::CompressedPixelFormat)
+ *      instead.
+ */
+CORRADE_DEPRECATED("use pixelFormat() instead") MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::CompressedPixelFormat format);
+#endif
 
 /**
 @brief Convert generic sampler filter to Vulkan filter

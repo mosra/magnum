@@ -32,15 +32,16 @@
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Integration.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
 namespace Magnum { namespace Vk {
 
-ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const VkFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const ImageLayout initialLayout, const Flags flags): _info{} {
+ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const PixelFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const ImageLayout initialLayout, const Flags flags): _info{} {
     _info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     _info.flags = VkImageCreateFlags(flags);
     _info.imageType = type;
-    _info.format = format;
+    _info.format = VkFormat(format);
     _info.extent = VkExtent3D(size);
     _info.mipLevels = levels;
     _info.arrayLayers = layers;
@@ -53,6 +54,10 @@ ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usage
     _info.initialLayout = VkImageLayout(initialLayout);
 }
 
+ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const Magnum::PixelFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const ImageLayout initialLayout, const Flags flags): ImageCreateInfo{type, usages, pixelFormat(format), size, layers, levels, samples, initialLayout, flags} {}
+
+ImageCreateInfo::ImageCreateInfo(const VkImageType type, const ImageUsages usages, const Magnum::CompressedPixelFormat format, const Vector3i& size, const Int layers, const Int levels, const Int samples, const ImageLayout initialLayout, const Flags flags): ImageCreateInfo{type, usages, pixelFormat(format), size, layers, levels, samples, initialLayout, flags} {}
+
 ImageCreateInfo::ImageCreateInfo(NoInitT) noexcept {}
 
 ImageCreateInfo::ImageCreateInfo(const VkImageCreateInfo& info):
@@ -60,7 +65,7 @@ ImageCreateInfo::ImageCreateInfo(const VkImageCreateInfo& info):
        member instead of doing a copy */
     _info(info) {}
 
-Image Image::wrap(Device& device, const VkImage handle, const VkFormat format, const HandleFlags flags) {
+Image Image::wrap(Device& device, const VkImage handle, const PixelFormat format, const HandleFlags flags) {
     Image out{NoCreate};
     out._device = &device;
     out._handle = handle;
@@ -69,7 +74,15 @@ Image Image::wrap(Device& device, const VkImage handle, const VkFormat format, c
     return out;
 }
 
-Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _format{info->format}, _dedicatedMemory{NoCreate} {
+Image Image::wrap(Device& device, const VkImage handle, const Magnum::PixelFormat format, const HandleFlags flags) {
+    return wrap(device, handle, pixelFormat(format), flags);
+}
+
+Image Image::wrap(Device& device, const VkImage handle, const Magnum::CompressedPixelFormat format, const HandleFlags flags) {
+    return wrap(device, handle, pixelFormat(format), flags);
+}
+
+Image::Image(Device& device, const ImageCreateInfo& info, NoAllocateT): _device{&device}, _flags{HandleFlag::DestroyOnDestruction}, _format{PixelFormat(info->format)}, _dedicatedMemory{NoCreate} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateImage(device, info, nullptr, &_handle));
 }
 

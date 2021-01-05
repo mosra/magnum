@@ -54,7 +54,7 @@ subpass.
 enum class AttachmentLoadOperation: Int {
     /**
      * Previous contents are preserved. This is the conservative default when
-     * using the @ref AttachmentDescription::AttachmentDescription(VkFormat, Int, Flags)
+     * using the @ref AttachmentDescription::AttachmentDescription(PixelFormat, Int, Flags)
      * constructor.
      *
      * This value is also guaranteed to be @cpp 0 @ce, which means you're
@@ -105,7 +105,7 @@ treated at the end of a subpass.
 enum class AttachmentStoreOperation: Int {
     /**
      * Generated contents are written to memory. This is the conservative
-     * default when using the @ref AttachmentDescription::AttachmentDescription(VkFormat, Int, Flags)
+     * default when using the @ref AttachmentDescription::AttachmentDescription(PixelFormat, Int, Flags)
      * constructor.
      *
      * This value is also guaranteed to be @cpp 0 @ce, which means you're
@@ -212,19 +212,27 @@ class MAGNUM_VK_EXPORT AttachmentDescription {
          * -    `initialLayout`
          * -    `finalLayout`
          *
-         * See also @ref AttachmentDescription(VkFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
+         * See also @ref AttachmentDescription(PixelFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
          * for a constructing a combined depth/stencil attachment description.
          */
-        /*implicit*/ AttachmentDescription(VkFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /*implicit*/ AttachmentDescription(PixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::PixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::CompressedPixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
 
         /**
          * @brief Construct with implicit conservative layout
          *
-         * Equivalent to calling @ref AttachmentDescription(VkFormat, AttachmentLoadOperation, AttachmentStoreOperation, ImageLayout, ImageLayout, Int, Flags)
+         * Equivalent to calling @ref AttachmentDescription(PixelFormat, AttachmentLoadOperation, AttachmentStoreOperation, ImageLayout, ImageLayout, Int, Flags)
          * with both @p initialLayout and @p finalLayout set to
          * @ref ImageLayout::General.
          */
-        /*implicit*/ AttachmentDescription(VkFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, Int samples = 1, Flags flags = {});
+        /*implicit*/ AttachmentDescription(PixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::PixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::CompressedPixelFormat format, AttachmentLoadOperation loadOperation, AttachmentStoreOperation storeOperation, Int samples = 1, Flags flags = {});
 
         /**
          * @brief Construct for a combined depth/stencil attachment
@@ -260,26 +268,38 @@ class MAGNUM_VK_EXPORT AttachmentDescription {
          * @todo Implement @vk_extension{KHR,separate_depth_stencil_layouts}
          *      and provide a pair of layouts as well
          */
-        /*implicit*/ AttachmentDescription(VkFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /*implicit*/ AttachmentDescription(PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::CompressedPixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, ImageLayout initialLayout, ImageLayout finalLayout, Int samples = 1, Flags flags = {});
 
         /**
          * @brief Construct for a combined depth/stencil attachment with implicit conservative layout
          *
-         * Equivalent to calling @ref AttachmentDescription(VkFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
+         * Equivalent to calling @ref AttachmentDescription(PixelFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
          * with both @p initialLayout and @p finalLayout set to
          * @ref ImageLayout::General.
          */
-        /*implicit*/ AttachmentDescription(VkFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, Int samples = 1, Flags flags = {});
+        /*implicit*/ AttachmentDescription(PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::PixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, Int samples = 1, Flags flags = {});
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::CompressedPixelFormat format, std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, Int samples = 1, Flags flags = {});
 
         /**
          * @brief Construct with implicit conservative load/store operation and layout
          *
-         * Equivalent to calling @ref AttachmentDescription(VkFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
+         * Equivalent to calling @ref AttachmentDescription(PixelFormat, std::pair<AttachmentLoadOperation, AttachmentLoadOperation>, std::pair<AttachmentStoreOperation, AttachmentStoreOperation>, ImageLayout, ImageLayout, Int, Flags)
          * with @ref AttachmentLoadOperation::Load and
          * @ref AttachmentStoreOperation::Store and both @p initialLayout and
          * @p finalLayout set to @ref ImageLayout::General.
          */
-        /*implicit*/ AttachmentDescription(VkFormat format, Int samples = 1, Flags flags = {}): AttachmentDescription{format, AttachmentLoadOperation{}, AttachmentStoreOperation{}, samples, flags} {}
+        /*implicit*/ AttachmentDescription(PixelFormat format, Int samples = 1, Flags flags = {}): AttachmentDescription{format, AttachmentLoadOperation{}, AttachmentStoreOperation{}, samples, flags} {}
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::PixelFormat format, Int samples = 1, Flags flags = {}): AttachmentDescription{format, AttachmentLoadOperation{}, AttachmentStoreOperation{}, samples, flags} {}
+        /** @overload */
+        /*implicit*/ AttachmentDescription(Magnum::CompressedPixelFormat format, Int samples = 1, Flags flags = {}): AttachmentDescription{format, AttachmentLoadOperation{}, AttachmentStoreOperation{}, samples, flags} {}
 
         /**
          * @brief Construct without initializing the contents

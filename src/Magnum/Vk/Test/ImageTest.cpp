@@ -28,22 +28,26 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/PixelFormat.h"
+
+#include "Magnum/Vk/Test/pixelFormatTraits.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
 struct ImageTest: TestSuite::Tester {
     explicit ImageTest();
 
-    void createInfoConstruct();
-    void createInfoConstruct1D();
-    void createInfoConstruct2D();
-    void createInfoConstruct3D();
-    void createInfoConstruct1DArray();
-    void createInfoConstruct2DArray();
-    void createInfoConstructCubeMap();
-    void createInfoConstructCubeMapArray();
+    template<class T> void createInfoConstruct();
+    template<class T> void createInfoConstruct1D();
+    template<class T> void createInfoConstruct2D();
+    template<class T> void createInfoConstruct3D();
+    template<class T> void createInfoConstruct1DArray();
+    template<class T> void createInfoConstruct2DArray();
+    template<class T> void createInfoConstructCubeMap();
+    template<class T> void createInfoConstructCubeMapArray();
     void createInfoConstructNoInit();
     void createInfoConstructFromVk();
 
@@ -54,14 +58,30 @@ struct ImageTest: TestSuite::Tester {
 };
 
 ImageTest::ImageTest() {
-    addTests({&ImageTest::createInfoConstruct,
-              &ImageTest::createInfoConstruct1D,
-              &ImageTest::createInfoConstruct2D,
-              &ImageTest::createInfoConstruct3D,
-              &ImageTest::createInfoConstruct1DArray,
-              &ImageTest::createInfoConstruct2DArray,
-              &ImageTest::createInfoConstructCubeMap,
-              &ImageTest::createInfoConstructCubeMapArray,
+    addTests({&ImageTest::createInfoConstruct<PixelFormat>,
+              &ImageTest::createInfoConstruct<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstruct1D<PixelFormat>,
+              &ImageTest::createInfoConstruct1D<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct1D<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstruct2D<PixelFormat>,
+              &ImageTest::createInfoConstruct2D<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct2D<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstruct3D<PixelFormat>,
+              &ImageTest::createInfoConstruct3D<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct3D<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstruct1DArray<PixelFormat>,
+              &ImageTest::createInfoConstruct1DArray<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct1DArray<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstruct2DArray<PixelFormat>,
+              &ImageTest::createInfoConstruct2DArray<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstruct2DArray<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstructCubeMap<PixelFormat>,
+              &ImageTest::createInfoConstructCubeMap<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstructCubeMap<Magnum::CompressedPixelFormat>,
+              &ImageTest::createInfoConstructCubeMapArray<PixelFormat>,
+              &ImageTest::createInfoConstructCubeMapArray<Magnum::PixelFormat>,
+              &ImageTest::createInfoConstructCubeMapArray<Magnum::CompressedPixelFormat>,
               &ImageTest::createInfoConstructNoInit,
               &ImageTest::createInfoConstructFromVk,
 
@@ -71,11 +91,13 @@ ImageTest::ImageTest() {
               &ImageTest::dedicatedMemoryNotDedicated});
 }
 
-void ImageTest::createInfoConstruct() {
-    ImageCreateInfo info{VK_IMAGE_TYPE_2D, ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_UNORM, {256, 128, 1}, 6, 8, 16, ImageLayout::Undefined, ImageCreateInfo::Flag::CubeCompatible};
+template<class T> void ImageTest::createInfoConstruct() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo info{VK_IMAGE_TYPE_2D, ImageUsage::Sampled, PixelFormatTraits<T>::format(), {256, 128, 1}, 6, 8, 16, ImageLayout::Undefined, ImageCreateInfo::Flag::CubeCompatible};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 128, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 6);
@@ -86,11 +108,13 @@ void ImageTest::createInfoConstruct() {
     CORRADE_COMPARE(info->initialLayout, VK_IMAGE_LAYOUT_UNDEFINED);
 }
 
-void ImageTest::createInfoConstruct1D() {
-    ImageCreateInfo1D info{ImageUsage::Storage, VK_FORMAT_R8G8B8A8_UNORM, 256, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstruct1D() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo1D info{ImageUsage::Storage, PixelFormatTraits<T>::format(), 256, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_1D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 1, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 1);
@@ -98,11 +122,13 @@ void ImageTest::createInfoConstruct1D() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_STORAGE_BIT);
 }
 
-void ImageTest::createInfoConstruct2D() {
-    ImageCreateInfo2D info{ImageUsage::TransferDestination, VK_FORMAT_R8G8B8A8_UNORM, {256, 64}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstruct2D() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo2D info{ImageUsage::TransferDestination, PixelFormatTraits<T>::format(), {256, 64}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 64, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 1);
@@ -110,11 +136,13 @@ void ImageTest::createInfoConstruct2D() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 }
 
-void ImageTest::createInfoConstruct3D() {
-    ImageCreateInfo3D info{ImageUsage::InputAttachment, VK_FORMAT_R8G8B8A8_UNORM, {256, 64, 32}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstruct3D() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo3D info{ImageUsage::InputAttachment, PixelFormatTraits<T>::format(), {256, 64, 32}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_3D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 64, 32}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 1);
@@ -122,11 +150,13 @@ void ImageTest::createInfoConstruct3D() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT);
 }
 
-void ImageTest::createInfoConstruct1DArray() {
-    ImageCreateInfo1DArray info{ImageUsage::TransferDestination, VK_FORMAT_R8G8B8A8_UNORM, {256, 64}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstruct1DArray() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo1DArray info{ImageUsage::TransferDestination, PixelFormatTraits<T>::format(), {256, 64}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_1D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 1, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 64);
@@ -134,11 +164,13 @@ void ImageTest::createInfoConstruct1DArray() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 }
 
-void ImageTest::createInfoConstruct2DArray() {
-    ImageCreateInfo2DArray info{ImageUsage::TransferDestination, VK_FORMAT_R8G8B8A8_UNORM, {256, 64, 32}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstruct2DArray() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfo2DArray info{ImageUsage::TransferDestination, PixelFormatTraits<T>::format(), {256, 64, 32}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 64, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 32);
@@ -146,11 +178,13 @@ void ImageTest::createInfoConstruct2DArray() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 }
 
-void ImageTest::createInfoConstructCubeMap() {
-    ImageCreateInfoCubeMap info{ImageUsage::TransferDestination, VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstructCubeMap() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfoCubeMap info{ImageUsage::TransferDestination, PixelFormatTraits<T>::format(), {256, 256}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT|VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 256, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 6);
@@ -158,11 +192,13 @@ void ImageTest::createInfoConstructCubeMap() {
     CORRADE_COMPARE(info->usage, VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 }
 
-void ImageTest::createInfoConstructCubeMapArray() {
-    ImageCreateInfoCubeMapArray info{ImageUsage::TransferDestination, VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 36}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
+template<class T> void ImageTest::createInfoConstructCubeMapArray() {
+    setTestCaseTemplateName(PixelFormatTraits<T>::name());
+
+    ImageCreateInfoCubeMapArray info{ImageUsage::TransferDestination, PixelFormatTraits<T>::format(), {256, 256, 36}, 8, 16, ImageCreateInfo::Flag::MutableFormat};
     CORRADE_COMPARE(info->flags, VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT|VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT);
     CORRADE_COMPARE(info->imageType, VK_IMAGE_TYPE_2D);
-    CORRADE_COMPARE(info->format, VK_FORMAT_R8G8B8A8_UNORM);
+    CORRADE_COMPARE(info->format, PixelFormatTraits<T>::expected());
     CORRADE_COMPARE(Vector3i(info->extent), (Vector3i{256, 256, 1}));
     CORRADE_COMPARE(info->mipLevels, 8);
     CORRADE_COMPARE(info->arrayLayers, 36);

@@ -117,7 +117,7 @@ Extension                                           | Status
 --------------------------------------------------- | ------
 @vk_extension{EXT,debug_report} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,debug_marker} @m_class{m-label m-danger} **deprecated** | |
-@vk_extension{EXT,texture_compression_astc_hdr}     | @ref Vk::vkFormat() only
+@vk_extension{EXT,texture_compression_astc_hdr}     | done
 @vk_extension{EXT,debug_utils} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,vertex_attribute_divisor}         | |
@@ -128,7 +128,7 @@ Extension                                           | Status
 @vk_extension{KHR,pipeline_library}                 | |
 @vk_extension{KHR,ray_tracing_pipeline}             | |
 @vk_extension{KHR,ray_query}                        | |
-@vk_extension{IMG,format_pvrtc}                     | @ref Vk::vkFormat() only
+@vk_extension{IMG,format_pvrtc}                     | done
 
 */
 

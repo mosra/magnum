@@ -132,21 +132,80 @@ enum class DeviceFeature: UnsignedShort {
     SamplerAnisotropy,
 
     /**
-     * Whether *all* ETC2 and EAC compressed texture formats are supported.
-     * @todoc link to the formats once we have our own PixelFormat enum
+     * Whether @ref PixelFormat::CompressedEacR11Unorm,
+     * @ref PixelFormat::CompressedEacR11Snorm,
+     * @ref PixelFormat::CompressedEacRG11Unorm,
+     * @ref PixelFormat::CompressedEacRG11Snorm,
+     * @ref PixelFormat::CompressedEtc2RGB8Unorm,
+     * @ref PixelFormat::CompressedEtc2RGB8Srgb,
+     * @ref PixelFormat::CompressedEtc2RGB8A1Unorm,
+     * @ref PixelFormat::CompressedEtc2RGB8A1Srgb,
+     * @ref PixelFormat::CompressedEtc2RGBA8Unorm,
+     * @ref PixelFormat::CompressedEtc2RGBA8Unorm ETC2 and EAC compressed
+     * texture formats are *all* supported.
+     * @see @ref DeviceFeature::TextureCompressionBc,
+     *      @ref DeviceFeature::TextureCompressionAstcLdr,
+     *      @ref DeviceFeature::TextureCompressionAstcHdr
      */
     TextureCompressionEtc2,
 
     /**
-     * Whether *all* ASTC LDR compressed texture formats are supported.
-     * @todoc link to the formats once we have our own PixelFormat enum
-     * @see @ref DeviceFeature::TextureCompressionAstcHdr
+     * Whether @ref PixelFormat::CompressedAstc4x4RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc4x4RGBASrgb,
+     * @ref PixelFormat::CompressedAstc5x4RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc5x4RGBASrgb,
+     * @ref PixelFormat::CompressedAstc5x5RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc5x5RGBASrgb,
+     * @ref PixelFormat::CompressedAstc6x5RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc6x5RGBASrgb,
+     * @ref PixelFormat::CompressedAstc6x6RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc6x6RGBASrgb,
+     * @ref PixelFormat::CompressedAstc8x5RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc8x5RGBASrgb,
+     * @ref PixelFormat::CompressedAstc8x6RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc8x6RGBASrgb,
+     * @ref PixelFormat::CompressedAstc8x8RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc8x8RGBASrgb,
+     * @ref PixelFormat::CompressedAstc10x5RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc10x5RGBASrgb,
+     * @ref PixelFormat::CompressedAstc10x6RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc10x6RGBASrgb,
+     * @ref PixelFormat::CompressedAstc10x8RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc10x8RGBASrgb,
+     * @ref PixelFormat::CompressedAstc10x10RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc10x10RGBASrgb,
+     * @ref PixelFormat::CompressedAstc12x10RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc12x10RGBASrgb,
+     * @ref PixelFormat::CompressedAstc12x12RGBAUnorm,
+     * @ref PixelFormat::CompressedAstc12x12RGBASrgb,
+     * ASTC LDR compressed texture formats are *all* supported.
+     * @see @ref DeviceFeature::TextureCompressionAstcHdr,
+     *      @ref DeviceFeature::TextureCompressionEtc2,
+     *      @ref DeviceFeature::TextureCompressionBc
      */
     TextureCompressionAstcLdr,
 
     /**
-     * Whether *all* BC compressed texture formats are supported.
-     * @todoc link to the formats once we have our own PixelFormat enum
+     * Whether @ref PixelFormat::CompressedBc1RGBUnorm,
+     * @ref PixelFormat::CompressedBc1RGBSrgb,
+     * @ref PixelFormat::CompressedBc1RGBAUnorm,
+     * @ref PixelFormat::CompressedBc1RGBASrgb,
+     * @ref PixelFormat::CompressedBc2RGBAUnorm,
+     * @ref PixelFormat::CompressedBc2RGBASrgb,
+     * @ref PixelFormat::CompressedBc3RGBAUnorm,
+     * @ref PixelFormat::CompressedBc3RGBASrgb,
+     * @ref PixelFormat::CompressedBc4RUnorm,
+     * @ref PixelFormat::CompressedBc4RSnorm,
+     * @ref PixelFormat::CompressedBc5RGUnorm,
+     * @ref PixelFormat::CompressedBc5RGSnorm,
+     * @ref PixelFormat::CompressedBc6hRGBUfloat,
+     * @ref PixelFormat::CompressedBc6hRGBSfloat,
+     * @ref PixelFormat::CompressedBc7RGBAUnorm,
+     * @ref PixelFormat::CompressedBc7RGBASrgb BC compressed texture formats
+     * are *all* supported.
+     * @see @ref DeviceFeature::TextureCompressionEtc2,
+     *      @ref DeviceFeature::TextureCompressionAstcLdr,
+     *      @ref DeviceFeature::TextureCompressionAstcHdr
      */
     TextureCompressionBc,
 
@@ -438,9 +497,24 @@ enum class DeviceFeature: UnsignedShort {
     /* VkPhysicalDeviceTextureCompressionASTCHDRFeaturesEXT, #67 */
 
     /**
-     * Whether *all* ASTC HDR compressed texture formats are supported.
-     * @todoc link to the formats once we have our own PixelFormat enum
-     * @see @ref DeviceFeature::TextureCompressionAstcLdr
+     * Whether @ref PixelFormat::CompressedAstc4x4RGBAF,
+     * @ref PixelFormat::CompressedAstc5x4RGBAF,
+     * @ref PixelFormat::CompressedAstc5x5RGBAF,
+     * @ref PixelFormat::CompressedAstc6x5RGBAF,
+     * @ref PixelFormat::CompressedAstc6x6RGBAF,
+     * @ref PixelFormat::CompressedAstc8x5RGBAF,
+     * @ref PixelFormat::CompressedAstc8x6RGBAF,
+     * @ref PixelFormat::CompressedAstc8x8RGBAF,
+     * @ref PixelFormat::CompressedAstc10x5RGBAF,
+     * @ref PixelFormat::CompressedAstc10x6RGBAF,
+     * @ref PixelFormat::CompressedAstc10x8RGBAF,
+     * @ref PixelFormat::CompressedAstc10x10RGBAF,
+     * @ref PixelFormat::CompressedAstc12x10RGBAF,
+     * @ref PixelFormat::CompressedAstc12x12RGBAF ASTC HDR compressed
+     * texture formats are *all* supported.
+     * @see @ref DeviceFeature::TextureCompressionAstcLdr,
+     *      @ref DeviceFeature::TextureCompressionEtc2,
+     *      @ref DeviceFeature::TextureCompressionBc
      * @requires_vk_extension Extension @vk_extension{EXT,texture_compression_astc_hdr}
      */
     TextureCompressionAstcHdr,

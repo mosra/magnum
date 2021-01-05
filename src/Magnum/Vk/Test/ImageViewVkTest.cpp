@@ -29,6 +29,7 @@
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/ImageViewCreateInfo.h"
+#include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
@@ -64,7 +65,7 @@ ImageViewVkTest::ImageViewVkTest() {
 
 void ImageViewVkTest::construct1D() {
     Image image{device(), ImageCreateInfo1D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, 256, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, 256, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfo1D{image}};
@@ -78,7 +79,7 @@ void ImageViewVkTest::construct1D() {
 
 void ImageViewVkTest::construct2D() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfo2D{image}};
@@ -92,7 +93,7 @@ void ImageViewVkTest::construct2D() {
 
 void ImageViewVkTest::construct3D() {
     Image image{device(), ImageCreateInfo3D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 10}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256, 10}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfo3D{image}};
@@ -106,7 +107,7 @@ void ImageViewVkTest::construct3D() {
 
 void ImageViewVkTest::construct1DArray() {
     Image image{device(), ImageCreateInfo1DArray{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 10}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 10}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfo1DArray{image}};
@@ -120,7 +121,7 @@ void ImageViewVkTest::construct1DArray() {
 
 void ImageViewVkTest::construct2DArray() {
     Image image{device(), ImageCreateInfo2DArray{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 10}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256, 10}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfo2DArray{image}};
@@ -134,7 +135,7 @@ void ImageViewVkTest::construct2DArray() {
 
 void ImageViewVkTest::constructCubeMap() {
     Image image{device(), ImageCreateInfoCubeMap{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device(), ImageViewCreateInfoCubeMap{image}};
@@ -156,7 +157,7 @@ void ImageViewVkTest::constructCubeMapArray() {
         .addQueues(0, {0.0f}, {queue2})
         .setEnabledFeatures(DeviceFeature::ImageCubeArray)};
     Image image{device2, ImageCreateInfoCubeMapArray{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256, 18}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256, 18}, 1}, MemoryFlag::DeviceLocal};
 
     {
         ImageView view{device2, ImageViewCreateInfoCubeMapArray{image}};
@@ -170,7 +171,7 @@ void ImageViewVkTest::constructCubeMapArray() {
 
 void ImageViewVkTest::constructMove() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView a{device(), ImageViewCreateInfo2D{image}};
     VkImageView handle = a.handle();
 
@@ -192,7 +193,7 @@ void ImageViewVkTest::constructMove() {
 
 void ImageViewVkTest::wrap() {
     Image image{device(), ImageCreateInfo2D{ImageUsage::Sampled,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
 
     VkImageView view{};
     CORRADE_COMPARE(Result(device()->CreateImageView(device(),

@@ -29,6 +29,7 @@
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/PixelFormat.h"
 
 namespace Magnum { namespace Vk {
 
@@ -36,15 +37,16 @@ namespace {
 
 /* Vulkan, it would kill you if 0 was a valid default, right?! ffs */
 /** @todo this might be useful elsewhere as well */
-VkImageAspectFlags aspectFor(const VkFormat format) {
-    if(format == VK_FORMAT_D16_UNORM_S8_UINT ||
-       format == VK_FORMAT_D24_UNORM_S8_UINT ||
-       format == VK_FORMAT_D32_SFLOAT_S8_UINT)
+VkImageAspectFlags aspectFor(const PixelFormat format) {
+    if(format == PixelFormat::Depth16UnormStencil8UI ||
+       format == PixelFormat::Depth24UnormStencil8UI ||
+       format == PixelFormat::Depth32FStencil8UI)
         return VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT;
-    if(format == VK_FORMAT_D16_UNORM ||
-       format == VK_FORMAT_D32_SFLOAT)
+    if(format == PixelFormat::Depth16Unorm ||
+       format == PixelFormat::Depth24Unorm ||
+       format == PixelFormat::Depth32F)
         return VK_IMAGE_ASPECT_DEPTH_BIT;
-    if(format == VK_FORMAT_S8_UINT)
+    if(format == PixelFormat::Stencil8UI)
         return VK_IMAGE_ASPECT_STENCIL_BIT;
 
     /** @todo planar formats */
@@ -54,12 +56,12 @@ VkImageAspectFlags aspectFor(const VkFormat format) {
 
 }
 
-ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const VkFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): _info{} {
+ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const PixelFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): _info{} {
     _info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     _info.flags = VkImageViewCreateFlags(flags);
     _info.image = image;
     _info.viewType = type;
-    _info.format = format;
+    _info.format = VkFormat(format);
     _info.subresourceRange.aspectMask = aspectFor(format);
     _info.subresourceRange.baseMipLevel = levelOffset;
     _info.subresourceRange.levelCount = levelCount;
@@ -67,8 +69,12 @@ ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkIma
     _info.subresourceRange.layerCount = layerCount;
 }
 
+ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const Magnum::PixelFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image, pixelFormat(format), layerOffset, layerCount, levelOffset, levelCount, flags} {}
+
+ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const Magnum::CompressedPixelFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image, pixelFormat(format), layerOffset, layerCount, levelOffset, levelCount, flags} {}
+
 ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, Image& image, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image, image.format(), layerOffset, layerCount, levelOffset, levelCount, flags} {
-    CORRADE_ASSERT(image.format(),
+    CORRADE_ASSERT(VkFormat(image.format()),
         "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly", );
 }
 

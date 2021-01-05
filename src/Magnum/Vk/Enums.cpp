@@ -28,9 +28,12 @@
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/PixelFormat.h"
 #include "Magnum/Sampler.h"
 #include "Magnum/VertexFormat.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Vk/PixelFormat.h"
+#endif
 
 namespace Magnum { namespace Vk {
 
@@ -63,24 +66,6 @@ constexpr VkFormat VertexFormatMapping[] {
     #define _c(input, format) VK_FORMAT_ ## format,
     #define _s(input) VkFormat{},
     #include "Magnum/Vk/Implementation/vertexFormatMapping.hpp"
-    #undef _s
-    #undef _c
-};
-
-constexpr VkFormat PixelFormatMapping[] {
-    /* GCC 4.8 doesn't like just a {} for default enum values */
-    #define _c(input, format) VK_FORMAT_ ## format,
-    #define _s(input) VkFormat{},
-    #include "Magnum/Vk/Implementation/pixelFormatMapping.hpp"
-    #undef _s
-    #undef _c
-};
-
-constexpr VkFormat CompressedPixelFormatMapping[] {
-    /* GCC 4.8 doesn't like just a {} for default enum values */
-    #define _c(input, format) VK_FORMAT_ ## format,
-    #define _s(input) VkFormat{},
-    #include "Magnum/Vk/Implementation/compressedPixelFormatMapping.hpp"
     #undef _s
     #undef _c
 };
@@ -152,23 +137,15 @@ bool hasVkFormat(const Magnum::VertexFormat format) {
     return UnsignedInt(VertexFormatMapping[UnsignedInt(format) - 1]);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkFormat(const Magnum::PixelFormat format) {
-    if(isPixelFormatImplementationSpecific(format))
-        return true;
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(PixelFormatMapping),
-        "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(PixelFormatMapping[UnsignedInt(format) - 1]);
+    return hasPixelFormat(format);
 }
 
 bool hasVkFormat(const Magnum::CompressedPixelFormat format) {
-    if(isCompressedPixelFormatImplementationSpecific(format))
-        return true;
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedPixelFormatMapping),
-        "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(CompressedPixelFormatMapping[UnsignedInt(format) - 1]);
+    return hasPixelFormat(format);
 }
+#endif
 
 VkFormat vkFormat(const Magnum::VertexFormat format) {
     if(isVertexFormatImplementationSpecific(format))
@@ -182,29 +159,15 @@ VkFormat vkFormat(const Magnum::VertexFormat format) {
     return out;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 VkFormat vkFormat(const Magnum::PixelFormat format) {
-    if(isPixelFormatImplementationSpecific(format))
-        return pixelFormatUnwrap<VkFormat>(format);
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(PixelFormatMapping),
-        "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = PixelFormatMapping[UnsignedInt(format) - 1];
-    CORRADE_ASSERT(UnsignedInt(out),
-        "Vk::vkFormat(): unsupported format" << format, {});
-    return out;
+    return VkFormat(pixelFormat(format));
 }
 
 VkFormat vkFormat(const Magnum::CompressedPixelFormat format) {
-    if(isCompressedPixelFormatImplementationSpecific(format))
-        return compressedPixelFormatUnwrap<VkFormat>(format);
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedPixelFormatMapping),
-        "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = CompressedPixelFormatMapping[UnsignedInt(format) - 1];
-    CORRADE_ASSERT(UnsignedInt(out),
-        "Vk::vkFormat(): unsupported format" << format, {});
-    return out;
+    return VkFormat(pixelFormat(format));
 }
+#endif
 
 VkFilter vkFilter(const Magnum::SamplerFilter filter) {
     CORRADE_ASSERT(UnsignedInt(filter) < Containers::arraySize(FilterMapping),

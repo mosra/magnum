@@ -70,18 +70,28 @@ enum class ImageUsage: UnsignedInt {
     TransferDestination = VK_IMAGE_USAGE_TRANSFER_DST_BIT,
 
     /**
-     * Sampled by a shader
+     * Sampled by a shader.
      *
+     * Not all pixel formats support sampling, see @ref PixelFormat for more
+     * information.
      * @see @ref ImageLayout::ShaderReadOnly
      */
     Sampled = VK_IMAGE_USAGE_SAMPLED_BIT,
 
-    /** Shader storage */
+    /**
+     * Shader storage.
+     *
+     * Not all pixel formats support shader storage, with some requiring the
+     * @ref DeviceFeature::ShaderStorageImageExtendedFormats feature. See
+     * @ref PixelFormat for more information.
+     */
     Storage = VK_IMAGE_USAGE_STORAGE_BIT,
 
     /**
      * Color attachment
      *
+     * Not all pixel formats support color attachment, see @ref PixelFormat for
+     * more information.
      * @see @ref ImageLayout::ColorAttachment
      */
     ColorAttachment = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -89,6 +99,10 @@ enum class ImageUsage: UnsignedInt {
     /**
      * Depth/stencil attachment
      *
+     * Note that only one of @ref PixelFormat::Depth24Unorm /
+     * @ref PixelFormat::Depth32F and @ref PixelFormat::Depth24UnormStencil8UI
+     * / @ref PixelFormat::Depth32FStencil8UI is guaranteed to support
+     * depth/stencil attachment.
      * @see @ref ImageLayout::DepthStencilAttachment
      */
     DepthStencilAttachment = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -131,7 +145,7 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * @brief Image creation flag
          *
          * Wraps @type_vk_keyword{ImageCreateFlagBits}.
-         * @see @ref Flags, @ref ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+         * @see @ref Flags, @ref ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
          * @m_enum_values_as_keywords
          */
         enum class Flag: UnsignedInt {
@@ -154,7 +168,7 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * @brief Image creation flags
          *
          * Type-safe wrapper for @type_vk_keyword{ImageCreateFlags}.
-         * @see @ref ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+         * @see @ref ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
          */
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -196,7 +210,12 @@ class MAGNUM_VK_EXPORT ImageCreateInfo {
          * @ref ImageCreateInfoCubeMapArray convenience classes instead of
          * this constructor.
          */
-        explicit ImageCreateInfo(VkImageType type, ImageUsages usages, VkFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
+        explicit ImageCreateInfo(VkImageType type, ImageUsages usages, PixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
+        /** @overload */
+        explicit ImageCreateInfo(VkImageType type, ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
+        /** @overload */
+        explicit ImageCreateInfo(VkImageType type, ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int layers, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {});
+
         /* No overload w/o initialLayout here as the general public is expected
            to use the convenience classes anyway */
 
@@ -245,20 +264,28 @@ Compared to the base @ref ImageCreateInfo constructor creates an image of type
 to have only one layer.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfo1D: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfo1D(ImageUsages usages, VkFormat format, Int size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size, 1, 1}, 1, levels, samples, initialLayout, flags} {}
+        explicit ImageCreateInfo1D(ImageUsages usages, PixelFormat format, Int size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size, 1, 1}, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1D(ImageUsages usages, Magnum::PixelFormat format, Int size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size, 1, 1}, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1D(ImageUsages usages, Magnum::CompressedPixelFormat format, Int size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size, 1, 1}, 1, levels, samples, initialLayout, flags} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfo1D(ImageUsages usages, VkFormat format, Int size, Int levels, Int samples, Flags flags): ImageCreateInfo1D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfo1D(ImageUsages usages, PixelFormat format, Int size, Int levels, Int samples, Flags flags): ImageCreateInfo1D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1D(ImageUsages usages, Magnum::PixelFormat format, Int size, Int levels, Int samples, Flags flags): ImageCreateInfo1D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1D(ImageUsages usages, Magnum::CompressedPixelFormat format, Int size, Int levels, Int samples, Flags flags): ImageCreateInfo1D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -272,20 +299,28 @@ set to @cpp 1 @ce. You can use both @ref ImageViewCreateInfo2D and
 to have only one layer.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfo2D: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfo2D(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 1, levels, samples, initialLayout, flags} {}
+        explicit ImageCreateInfo2D(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2D(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2D(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 1, levels, samples, initialLayout, flags} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfo2D(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfo2D(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2D(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2D(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -297,20 +332,28 @@ Compared to the base @ref ImageCreateInfo constructor creates an image of type
 @ref ImageViewCreateInfo3D for view creation.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfo3D: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfo3D(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_3D, usages, format, size, 1, levels, samples, initialLayout, flags} {}
+        explicit ImageCreateInfo3D(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_3D, usages, format, size, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo3D(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_3D, usages, format, size, 1, levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo3D(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_3D, usages, format, size, 1, levels, samples, initialLayout, flags} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfo3D(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo3D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfo3D(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo3D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo3D(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo3D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo3D(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo3D{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -324,20 +367,28 @@ Compared to the base @ref ImageCreateInfo constructor creates an image of type
 creation.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfo1DArray: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfo1DArray(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size.x(), 1, 1}, size.y(), levels, samples, initialLayout, flags} {}
+        explicit ImageCreateInfo1DArray(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size.x(), 1, 1}, size.y(), levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1DArray(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size.x(), 1, 1}, size.y(), levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1DArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_1D, usages, format, {size.x(), 1, 1}, size.y(), levels, samples, initialLayout, flags} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfo1DArray(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo1DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfo1DArray(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo1DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1DArray(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo1DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo1DArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfo1DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -353,20 +404,28 @@ well, although in that case it's better to use @ref ImageCreateInfoCubeMap that
 does this automatically.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfo2DArray: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfo2DArray(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags} {}
+        explicit ImageCreateInfo2DArray(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2DArray(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2DArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfo2DArray(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfo2DArray(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2DArray(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfo2DArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfo2DArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -383,20 +442,28 @@ will need to have exactly six layers, and requires
 @ref DeviceFeature::ImageCubeArray to be enabled.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfoCubeMap: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfoCubeMap(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 6, levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 6, levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 6, levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size, 1}, 6, levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfoCubeMap(ImageUsages usages, VkFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMap{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMap{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, Magnum::PixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMap{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMap(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector2i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMap{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 /**
@@ -412,20 +479,28 @@ Compared to the base @ref ImageCreateInfo constructor creates an image of type
 requires @ref DeviceFeature::ImageCubeArray to be enabled.
 
 Note that same as with the
-@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, VkFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
+@ref ImageCreateInfo::ImageCreateInfo(VkImageType, ImageUsages, PixelFormat, const Vector3i&, Int, Int, Int, ImageLayout, Flags)
 constructor, at least one @ref ImageUsage value is required.
 */
 class ImageCreateInfoCubeMapArray: public ImageCreateInfo {
     public:
         /** @brief Constructor */
-        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples = 1, ImageLayout initialLayout = ImageLayout::Undefined, Flags flags = {}): ImageCreateInfo{VK_IMAGE_TYPE_2D, usages, format, {size.xy(), 1}, size.z(), levels, samples, initialLayout, flags|Flag::CubeCompatible} {}
 
         /** @overload
          *
          * Equivalent to the above with @p initialLayout set to
          * @ref ImageLayout::Undefined.
          */
-        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, VkFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMapArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMapArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, Magnum::PixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMapArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
+        /** @overload */
+        explicit ImageCreateInfoCubeMapArray(ImageUsages usages, Magnum::CompressedPixelFormat format, const Vector3i& size, Int levels, Int samples, Flags flags): ImageCreateInfoCubeMapArray{usages, format, size, levels, samples, ImageLayout::Undefined, flags} {}
 };
 
 }}

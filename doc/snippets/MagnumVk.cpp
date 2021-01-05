@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/BufferCreateInfo.h"
@@ -47,6 +48,7 @@
 #include "Magnum/Vk/ImageViewCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
@@ -392,10 +394,10 @@ DOXYGEN_IGNORE()
 
 Vk::Image color{device, Vk::ImageCreateInfo2D{               /* created before */
     Vk::ImageUsage::ColorAttachment,
-    VK_FORMAT_R8G8B8A8_UNORM, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+    Vk::PixelFormat::RGBA8Unorm, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
 Vk::Image depth{device, Vk::ImageCreateInfo2D{
     Vk::ImageUsage::DepthStencilAttachment,
-    VK_FORMAT_D24_UNORM_S8_UINT, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
+    Vk::PixelFormat::Depth24UnormStencil8UI, size, 1}, DOXYGEN_IGNORE(NoAllocate)};
 Vk::ImageView colorView{device, Vk::ImageViewCreateInfo2D{color}};
 Vk::ImageView depthView{device, Vk::ImageViewCreateInfo2D{depth}};
 
@@ -423,7 +425,7 @@ Vk::Device device{NoCreate};
 DOXYGEN_IGNORE()
 
 Vk::Image image{device, Vk::ImageCreateInfo2D{
-        Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
+        Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
     }, Vk::MemoryFlag::DeviceLocal
 };
 /* [Image-creation] */
@@ -433,7 +435,7 @@ Vk::Image image{device, Vk::ImageCreateInfo2D{
 Vk::Device device{NoCreate};
 /* [Image-creation-custom-allocation] */
 Vk::Image image{device, Vk::ImageCreateInfo2D{
-        Vk::ImageUsage::Sampled, VK_FORMAT_R8G8B8A8_SRGB, {1024, 1024}, 1
+        Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
     }, NoAllocate
 };
 
@@ -457,7 +459,7 @@ Vk::Device device{NoCreate};
 DOXYGEN_IGNORE()
 
 Vk::Image image{device, Vk::ImageCreateInfo2DArray{ /* created before */
-        DOXYGEN_IGNORE(Vk::ImageUsage::Sampled, {}, {}, 1)
+        DOXYGEN_IGNORE(Vk::ImageUsage::Sampled, PixelFormat{}, {}, 1)
     }, DOXYGEN_IGNORE(Vk::MemoryFlag::DeviceLocal)
 };
 
@@ -628,8 +630,8 @@ DOXYGEN_IGNORE()
 
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
-        VK_FORMAT_R8G8B8A8_SRGB,
-        VK_FORMAT_D24_UNORM_S8_UINT
+        Vk::PixelFormat::RGBA8Srgb,
+        Vk::PixelFormat::Depth24UnormStencil8UI
     })
     .addSubpass(Vk::SubpassDescription{}
         .setColorAttachments({0})
@@ -644,8 +646,8 @@ Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 /* [RenderPass-creation-load-store] */
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
-        {VK_FORMAT_R8G8B8A8_SRGB, Vk::AttachmentLoadOperation::Clear, {}},
-        {VK_FORMAT_D24_UNORM_S8_UINT, Vk::AttachmentLoadOperation::Clear, {}},
+        {Vk::PixelFormat::RGBA8Srgb, Vk::AttachmentLoadOperation::Clear, {}},
+        {Vk::PixelFormat::Depth24UnormStencil8UI, Vk::AttachmentLoadOperation::Clear, {}},
     })
     DOXYGEN_IGNORE()
 };
@@ -657,11 +659,11 @@ Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 /* [RenderPass-creation-layout] */
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
-        {VK_FORMAT_R8G8B8A8_SRGB,
+        {Vk::PixelFormat::RGBA8Srgb,
          Vk::AttachmentLoadOperation::Clear, {},
          Vk::ImageLayout::ColorAttachment,
          Vk::ImageLayout::ColorAttachment},
-        {VK_FORMAT_D24_UNORM_S8_UINT,
+        {Vk::PixelFormat::Depth24UnormStencil8UI,
          Vk::AttachmentLoadOperation::Clear, {},
          Vk::ImageLayout::DepthStencilAttachment,
          Vk::ImageLayout::DepthStencilAttachment},

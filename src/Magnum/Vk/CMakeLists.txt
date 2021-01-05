@@ -54,6 +54,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Instance.cpp
     LayerProperties.cpp
     Memory.cpp
+    PixelFormat.cpp
     RenderPass.cpp)
 
 set(MagnumVk_HEADERS

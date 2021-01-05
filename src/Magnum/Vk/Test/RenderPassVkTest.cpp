@@ -36,6 +36,7 @@
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/ImageViewCreateInfo.h"
+#include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
@@ -69,7 +70,7 @@ RenderPassVkTest::RenderPassVkTest() {
 void RenderPassVkTest::construct() {
     {
         RenderPass renderPass{device(), RenderPassCreateInfo{}
-            .setAttachments({VK_FORMAT_R8G8B8A8_SNORM})
+            .setAttachments({PixelFormat::RGBA8Unorm})
             .addSubpass(SubpassDescription{}.setColorAttachments({0}))
         };
         CORRADE_VERIFY(renderPass.handle());
@@ -102,7 +103,7 @@ void RenderPassVkTest::constructSubpassNoAttachments() {
 
 void RenderPassVkTest::constructMove() {
     RenderPass a{device(), RenderPassCreateInfo{}
-        .setAttachments({VK_FORMAT_R8G8B8A8_SNORM})
+        .setAttachments({PixelFormat::RGBA8Unorm})
         .addSubpass(SubpassDescription{}.setColorAttachments({0}))
     };
     VkRenderPass handle = a.handle();
@@ -127,7 +128,7 @@ void RenderPassVkTest::wrap() {
     VkRenderPass renderPass{};
     CORRADE_COMPARE(Result(device()->CreateRenderPass(device(),
         RenderPassCreateInfo{}
-            .setAttachments({VK_FORMAT_R8G8B8A8_SNORM})
+            .setAttachments({PixelFormat::RGBA8Unorm})
             .addSubpass(SubpassDescription{}.setColorAttachments({0}))
         .vkRenderPassCreateInfo(),
         nullptr, &renderPass)), Result::Success);
@@ -151,9 +152,9 @@ void RenderPassVkTest::cmdBeginEnd() {
     /* Using a depth attachment as well even though not strictly necessary to
        catch potential unexpected bugs */
     Image color{device(), ImageCreateInfo2D{ImageUsage::ColorAttachment,
-        VK_FORMAT_R8G8B8A8_UNORM, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     Image depth{device(), ImageCreateInfo2D{ImageUsage::DepthStencilAttachment,
-        VK_FORMAT_D24_UNORM_S8_UINT, {256, 256}, 1}, MemoryFlag::DeviceLocal};
+        PixelFormat::Depth24UnormStencil8UI, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     ImageView depthView{device(), ImageViewCreateInfo2D{depth}};
 

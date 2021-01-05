@@ -76,6 +76,7 @@ enum class MemoryFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryFlag> MemoryFlags;
 enum class MemoryHeapFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
+enum class PixelFormat: Int;
 class Queue;
 enum class QueueFlag: UnsignedInt;
 typedef Containers::EnumSet<QueueFlag> QueueFlags;
