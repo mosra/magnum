@@ -180,8 +180,17 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                 /* Go through the EGL devices and find one that has the desired
                    CUDA device number */
                 for(selectedDevice = 0; selectedDevice < UnsignedInt(count); ++selectedDevice) {
+                    /* On nv driver 450.80.02, eglQueryDeviceAttribEXT segfaults when query GPUs that 
+                       the user does not have access to (i.e. via cgroup).  Instead, always call 
+                       eglQueryDeviceStringEXT as that doesn't segfault and sets an error that can be 
+                       retrieved via eglGetError to see if the user has access to that device. On well 
+                       behaved driver versions, eglQueryDeviceAttribEXT returns false instead of segfaulting. */
+                    const char* const eglExtensions = eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
+                    if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"))
+                        continue;
+
                     if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog))
-                        Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
+                        Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglExtensions;
 
                     EGLAttrib cudaDeviceNumber;
                     if(eglQueryDeviceAttribEXT(devices[selectedDevice], EGL_CUDA_DEVICE_NV, &cudaDeviceNumber) && UnsignedInt(cudaDeviceNumber) == configuration.cudaDevice())
