@@ -618,7 +618,7 @@ enum class PixelFormat: UnsignedInt {
     RGBA16F,
 
     /**
-     * Red component, half float.
+     * Red component, float.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
      * @ref GL::PixelType::Float, @ref GL::TextureFormat::R32F;
@@ -630,7 +630,7 @@ enum class PixelFormat: UnsignedInt {
     R32F,
 
     /**
-     * Red and green component, half float.
+     * Red and green component, float.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
      * @ref GL::PixelType::Float, @ref GL::TextureFormat::RG32F;
@@ -642,7 +642,7 @@ enum class PixelFormat: UnsignedInt {
     RG32F,
 
     /**
-     * RGB, half float.
+     * RGB, float.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
      * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGB32F;
@@ -654,7 +654,7 @@ enum class PixelFormat: UnsignedInt {
     RGB32F,
 
     /**
-     * RGBA, half float.
+     * RGBA, float.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
      * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGBA32F;
@@ -751,7 +751,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed RGB, normalized unsigned byte (DXT1).
+     * compressed RGB, normalized unsigned (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBS3tcDxt1,
      * @ref GL::TextureFormat::CompressedRGBS3tcDxt1 or
@@ -762,7 +762,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed sRGB, normalized unsigned byte (DXT1).
+     * compressed sRGB, normalized unsigned (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBS3tcDxt1,
      * @ref GL::TextureFormat::CompressedSRGBS3tcDxt1 or
@@ -774,7 +774,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed RGBA, normalized unsigned byte (DXT1).
+     * compressed RGBA, normalized unsigned (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt1,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt1;
@@ -787,7 +787,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
-     * compressed sRGB + linear alpha, normalized unsigned byte (DXT1).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt1,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt1;
@@ -801,7 +801,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
-     * compressed RGBA, normalized unsigned byte (DXT3).
+     * compressed RGBA, normalized unsigned (DXT3).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt3,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt3;
@@ -814,7 +814,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
-     * compressed sRGB + linear alpha, normalized unsigned byte (DXT3).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT3).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt3,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt3;
@@ -828,7 +828,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
-     * compressed RGBA, normalized unsigned byte (DXT5).
+     * compressed RGBA, normalized unsigned (DXT5).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt5,
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt5;
@@ -841,7 +841,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
-     * compressed sRGB + linear alpha, normalized unsigned byte (DXT5).
+     * compressed sRGB + linear alpha, normalized unsigned (DXT5).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt5,
      * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt5;
@@ -1107,7 +1107,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 4x4 blocks.
+     * compressed RGBA, normalized unsigned with 4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4;
@@ -1121,8 +1121,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4;
@@ -1136,7 +1135,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 4x4 blocks.
+     * compressed RGBA, float with 4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4;
@@ -1150,7 +1149,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 5x4 blocks.
+     * compressed RGBA, normalized unsigned with 5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x4;
@@ -1164,8 +1163,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 5x4
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x4,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x4;
@@ -1179,7 +1177,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 5x4 blocks.
+     * compressed RGBA, float with 5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x4;
@@ -1193,7 +1191,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 5x5 blocks.
+     * compressed RGBA, normalized unsigned with 5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5;
@@ -1207,8 +1205,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5;
@@ -1222,7 +1219,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 5x5 blocks.
+     * compressed RGBA, float with 5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5;
@@ -1236,7 +1233,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 6x5 blocks.
+     * compressed RGBA, normalized unsigned with 6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x5;
@@ -1250,8 +1247,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 6x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x5;
@@ -1265,7 +1261,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 6x5 blocks.
+     * compressed RGBA, float with 6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x5;
@@ -1279,7 +1275,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 6x6 blocks.
+     * compressed RGBA, normalized unsigned with 6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6;
@@ -1293,8 +1289,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6;
@@ -1308,7 +1303,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 6x6 blocks.
+     * compressed RGBA, float with 6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6;
@@ -1322,7 +1317,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 8x5 blocks.
+     * compressed RGBA, normalized unsigned with 8x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x5;
@@ -1336,8 +1331,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 8x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 8x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x5;
@@ -1351,7 +1345,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 8x5 blocks.
+     * compressed RGBA, float with 8x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x5;
@@ -1365,7 +1359,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 8x6 blocks.
+     * compressed RGBA, normalized unsigned with 8x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x6;
@@ -1379,8 +1373,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 8x6
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 8x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x6,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x6;
@@ -1394,7 +1387,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 8x6 blocks.
+     * compressed RGBA, float with 8x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x6;
@@ -1408,7 +1401,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 8x8 blocks.
+     * compressed RGBA, normalized unsigned with 8x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x8;
@@ -1422,8 +1415,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 8x8
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 8x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x8,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x8;
@@ -1437,7 +1429,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 8x8 blocks.
+     * compressed RGBA, float with 8x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x8;
@@ -1451,7 +1443,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 10x5 blocks.
+     * compressed RGBA, normalized unsigned with 10x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x5;
@@ -1465,8 +1457,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 10x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 10x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x5;
@@ -1480,7 +1471,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 10x5 blocks.
+     * compressed RGBA, float with 10x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x5;
@@ -1494,7 +1485,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 10x6 blocks.
+     * compressed RGBA, normalized unsigned with 10x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x6;
@@ -1508,8 +1499,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 10x6
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 10x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x6,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x6;
@@ -1523,7 +1513,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 10x6 blocks.
+     * compressed RGBA, float with 10x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x6;
@@ -1537,7 +1527,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 10x8 blocks.
+     * compressed RGBA, normalized unsigned with 10x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x8;
@@ -1551,8 +1541,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 10x8
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 10x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x8,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x8;
@@ -1566,7 +1555,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 10x8 blocks.
+     * compressed RGBA, float with 10x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x8;
@@ -1580,7 +1569,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 10x10 blocks.
+     * compressed RGBA, normalized unsigned with 10x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x10;
@@ -1594,8 +1583,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 10x10
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 10x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x10,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x10;
@@ -1609,7 +1597,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 10x10 blocks.
+     * compressed RGBA, float with 10x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x10;
@@ -1623,7 +1611,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 12x10 blocks.
+     * compressed RGBA, normalized unsigned with 12x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x10;
@@ -1637,8 +1625,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 12x10
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 12x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc12x10,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc12x10;
@@ -1652,7 +1639,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 12x10 blocks.
+     * compressed RGBA, float with 12x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x10;
@@ -1666,7 +1653,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 12x12 blocks.
+     * compressed RGBA, normalized unsigned with 12x12 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x12;
@@ -1680,8 +1667,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 12x12
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 12x12 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc12x12,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc12x12;
@@ -1695,7 +1681,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 12x12 blocks.
+     * compressed RGBA, float with 12x12 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x12;
@@ -1709,7 +1695,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 3x3x3 blocks.
+     * compressed RGBA, normalized unsigned with 3x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc3x3x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc3x3x3;
@@ -1722,8 +1708,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 3x3x3
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 3x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc3x3x3,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc3x3x3;
@@ -1736,7 +1721,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 3x3x3 blocks.
+     * compressed RGBA, float with 3x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc3x3x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc3x3x3;
@@ -1749,7 +1734,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 4x3x3 blocks.
+     * compressed RGBA, normalized unsigned with 4x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x3x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x3x3;
@@ -1762,8 +1747,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 4x3x3
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 4x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x3x3,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x3x3;
@@ -1776,7 +1760,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 4x3x3 blocks.
+     * compressed RGBA, float with 4x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x3x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x3x3;
@@ -1789,7 +1773,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 4x4x3 blocks.
+     * compressed RGBA, normalized unsigned with 4x4x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4x3;
@@ -1802,8 +1786,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x3
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 4x4x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4x3,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4x3;
@@ -1816,7 +1799,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 4x4x3 blocks.
+     * compressed RGBA, float with 4x4x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x3,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4x3;
@@ -1829,7 +1812,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 4x4x4 blocks.
+     * compressed RGBA, normalized unsigned with 4x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4x4;
@@ -1842,8 +1825,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x4
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 4x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4x4,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4x4;
@@ -1856,7 +1838,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 4x4x4 blocks.
+     * compressed RGBA, float with 4x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4x4;
@@ -1869,7 +1851,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 5x4x4 blocks.
+     * compressed RGBA, normalized unsigned with 5x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x4x4;
@@ -1882,8 +1864,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 5x4x4
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 5x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x4x4,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x4x4;
@@ -1896,7 +1877,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 5x4x4 blocks.
+     * compressed RGBA, float with 5x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x4x4;
@@ -1909,7 +1890,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 5x5x4 blocks.
+     * compressed RGBA, normalized unsigned with 5x5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5x4;
@@ -1922,8 +1903,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x4
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 5x5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5x4,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5x4;
@@ -1936,7 +1916,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 5x5x4 blocks.
+     * compressed RGBA, float with 5x5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5x4;
@@ -1949,7 +1929,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 5x5x5 blocks.
+     * compressed RGBA, normalized unsigned with 5x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5x5;
@@ -1962,8 +1942,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 5x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5x5;
@@ -1976,7 +1955,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 5x5x5 blocks.
+     * compressed RGBA, float with 5x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5x5;
@@ -1989,7 +1968,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 6x5x5 blocks.
+     * compressed RGBA, normalized unsigned with 6x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x5x5;
@@ -2002,8 +1981,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 6x5x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 6x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x5x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x5x5;
@@ -2016,7 +1994,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 6x5x5 blocks.
+     * compressed RGBA, float with 6x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x5x5;
@@ -2029,7 +2007,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 6x6x5 blocks.
+     * compressed RGBA, normalized unsigned with 6x6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6x5;
@@ -2042,8 +2020,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x5
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 6x6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6x5,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6x5;
@@ -2056,7 +2033,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 6x6x5 blocks.
+     * compressed RGBA, float with 6x6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6x5;
@@ -2069,7 +2046,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, normalized unsigned byte with 6x6x6 blocks.
+     * compressed RGBA, normalized unsigned with 6x6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6x6;
@@ -2082,8 +2059,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x6
-     * blocks.
+     * compressed sRGB + linear alpha, normalized unsigned with 6x6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6x6,
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6x6;
@@ -2096,7 +2072,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
-     * compressed RGBA, half float with 6x6x6 blocks.
+     * compressed RGBA, float with 6x6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6x6;
