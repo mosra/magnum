@@ -161,6 +161,14 @@ const char* KnownWorkarounds[]{
    possible to get driver version through EGL, so enabling this unconditionally
    on all EGL NV contexts. */
 "nv-egl-incorrect-gl11-function-pointers",
+
+/* On NV driver 450.80.02, eglQueryDeviceAttribEXT() segfaults when querying
+   GPUs that the user does not have access to (i.e. via cgroup). Instead,
+   always call eglQueryDeviceStringEXT() as that doesn't segfault and sets an
+   error that can be retrieved via eglGetError() to see if the user has access
+   to that device. On well-behaved driver versions, eglQueryDeviceAttribEXT()
+   returns false instead of segfaulting. */
+"nv-egl-crashy-query-device-attrib",
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
