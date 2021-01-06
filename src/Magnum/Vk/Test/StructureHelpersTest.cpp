@@ -32,6 +32,7 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct StructureHelpersTest: TestSuite::Tester {
     explicit StructureHelpersTest();
 
+    template<class T> void connectOne();
     template<class T> void connect();
     template<class T> void find();
     template<class T> void disconnectChain();
@@ -39,6 +40,8 @@ struct StructureHelpersTest: TestSuite::Tester {
 
 StructureHelpersTest::StructureHelpersTest() {
     addTests<StructureHelpersTest>({
+        &StructureHelpersTest::connectOne<VkDeviceCreateInfo>,
+        &StructureHelpersTest::connectOne<VkPhysicalDeviceFeatures2>,
         &StructureHelpersTest::connect<VkDeviceCreateInfo>,
         &StructureHelpersTest::connect<VkPhysicalDeviceFeatures2>,
         &StructureHelpersTest::find<VkDeviceCreateInfo>,
@@ -54,6 +57,23 @@ template<> struct Type<const void*> {
 template<> struct Type<void*> {
     static const char* name() { return "void*"; }
 };
+
+template<class T> void StructureHelpersTest::connectOne() {
+    typedef typename std::remove_reference<decltype(T{}.pNext)>::type NextType;
+    setTestCaseTemplateName(Type<NextType>::name());
+
+    VkPhysicalDeviceVariablePointersFeatures variableFeatures{};
+
+    T info{};
+    info.pNext = &variableFeatures;
+
+    VkPhysicalDeviceMultiviewFeatures multiviewFeatures{};
+    Implementation::structureConnectOne(info.pNext, multiviewFeatures, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES);
+    CORRADE_COMPARE(info.pNext, &multiviewFeatures);
+    CORRADE_COMPARE(multiviewFeatures.sType, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES);
+    /* The pre-existing next pointer should be preserved */
+    CORRADE_COMPARE(multiviewFeatures.pNext, &variableFeatures);
+}
 
 template<class T> void StructureHelpersTest::connect() {
     typedef typename std::remove_reference<decltype(T{}.pNext)>::type NextType;

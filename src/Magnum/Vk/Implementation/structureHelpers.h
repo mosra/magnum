@@ -39,24 +39,36 @@ namespace Magnum { namespace Vk { namespace Implementation {
    accident. Thus no "give me the first structure of this type" or "remove any
    structure of this type from the chain". */
 
-/* Meant to be used for connecting a longer chain of structures. Anything
-   that was connected to the `next` pointer before is reconnected to
-   `structure.pNext`; the `next` reference is rebound to the `structure.pNext`
-   field connected so it can be passed to another structureConnect() again. */
-template<class T> inline void structureConnect(Containers::Reference<void*>& next, T& structure, VkStructureType type) {
+/* Connecting one structure to a pNext chain. Anything that was connected to
+   the `next` pointer before is reconnected to `structure.pNext` */
+template<class T> inline void structureConnectOne(void*& next, T& structure, VkStructureType type) {
     void* const previousNext = next;
-    *next = &structure;
+    next = &structure;
     structure.sType = type;
     structure.pNext = previousNext;
-    next = structure.pNext;
 }
 
-template<class T> inline void structureConnect(Containers::Reference<const void*>& next, T& structure, VkStructureType type) {
+template<class T> inline void structureConnectOne(const void*& next, T& structure, VkStructureType type) {
     /* There's no better way as the pNext are either const void* or void*
        and it's a mess. For example VkDeviceCreateInfo has const void* but it
        can point to VkPhysicalDeviceFeatures2 which then has void* as it's
        primarily an output structure. So we'll just drop all const-correctness
        and operate on void*. */
+    structureConnectOne(const_cast<void*&>(next), structure, type);
+}
+
+/* Meant to be used for connecting a longer chain of structures. Anything
+   that was connected to the `next` pointer before is reconnected to
+   `structure.pNext`; the `next` reference is rebound to the `structure.pNext`
+   field connected so it can be passed to another structureConnect() again. */
+template<class T> inline void structureConnect(Containers::Reference<void*>& next, T& structure, VkStructureType type) {
+    structureConnectOne(*next, structure, type);
+    next = structure.pNext;
+}
+
+template<class T> inline void structureConnect(Containers::Reference<const void*>& next, T& structure, VkStructureType type) {
+    /* Same reasoning as in structureConnectOne(), we just drop all
+       const-correctness and operate on void*. */
     structureConnect(reinterpret_cast<Containers::Reference<void*>&>(next), structure, type);
 }
 
