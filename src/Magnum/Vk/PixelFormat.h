@@ -641,7 +641,7 @@ enum class PixelFormat: Int {
     CompressedBc1RGBSrgb = VK_FORMAT_BC1_RGB_SRGB_BLOCK,
 
     /**
-     * S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
      * compressed RGBA, normalized unsigned.
      *
      * Sampling, blit source and linear filtering has guaranteed support with
