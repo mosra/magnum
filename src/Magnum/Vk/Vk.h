@@ -113,6 +113,7 @@ class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;
 enum class Version: UnsignedInt;
+enum class VertexFormat: Int;
 #endif
 
 }}

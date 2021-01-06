@@ -48,6 +48,7 @@ corrade_add_test(VkQueueTest QueueTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkRenderPassTest RenderPassTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkShaderTest ShaderTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkVertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumVkTestLib)
 
 corrade_add_test(VkStructureHelpersTest StructureHelpersTest.cpp)
 target_include_directories(VkStructureHelpersTest PRIVATE $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -144,6 +145,7 @@ set_target_properties(
     VkShaderTest
     VkStructureHelpersTest
     VkVersionTest
+    VkVertexFormatTest
     PROPERTIES FOLDER "Magnum/Vk/Test")
 
 if(BUILD_VK_TESTS)

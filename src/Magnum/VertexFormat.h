@@ -56,11 +56,10 @@ See documentation of each value for more information about the mapping. Note
 that not every format is available on all targets, use
 @ref GL::hasVertexFormat() to check for its presence.
 
-In case of Vulkan, corresponds to @type_vk_keyword{Format} and is convertible
-to it using @ref Vk::vkFormat(Magnum::VertexFormat). See documentation of each
-value for more information about the mapping. Note that not every format may be
-available, use @ref Vk::hasVkFormat(Magnum::VertexFormat) to check for its
-presence.
+In case of Vulkan, corresponds to @ref Vk::VertexFormat and is convertible to
+it using @ref Vk::vertexFormat(). See documentation of each value for more
+information about the mapping. Note that not every format may be available, use
+@ref Vk::hasVertexFormat() to check for its presence.
 
 For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format);
 for Metal, corresponds to @m_class{m-doc-external} [MTLVertexFormat](https://developer.apple.com/documentation/metal/mtlvertexformat?language=objc).
@@ -75,8 +74,7 @@ enum class VertexFormat: UnsignedInt {
      * @ref Float.
      *
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
-     * @ref GL::DynamicAttribute::DataType::Float;
-     * @val_vk_keyword{FORMAT_R32_SFLOAT,Format};
+     * @ref GL::DynamicAttribute::DataType::Float; @ref Vk::VertexFormat::Float;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatFloat](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatfloat?language=objc).
      * @m_keywords{DXGI_FORMAT_R32_FLOAT MTLVertexFormatFloat}
@@ -87,8 +85,7 @@ enum class VertexFormat: UnsignedInt {
      * @ref Half.
      *
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
-     * @ref GL::DynamicAttribute::DataType::Half;
-     * @val_vk_keyword{FORMAT_R16_SFLOAT,Format};
+     * @ref GL::DynamicAttribute::DataType::Half; @ref Vk::VertexFormat::Half;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatHalf](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformathalf?language=objc).
      * @m_keywords{DXGI_FORMAT_R16_FLOAT MTLVertexFormatHalf}
@@ -101,7 +98,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Long
      * @ref GL::DynamicAttribute::DataType::Double;
-     * @val_vk_keyword{FORMAT_R64_SFLOAT,Format}. No D3D or Metal equivalent.
+     * @ref Vk::VertexFormat::Double. No D3D or Metal equivalent.
      */
     Double,
 
@@ -111,7 +108,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8_UINT,Format};
+     * @ref Vk::VertexFormat::UnsignedByte;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar?language=objc)
      * @m_keywords{DXGI_FORMAT_R8_UINT MTLVertexFormatUChar}
@@ -125,7 +122,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8_UNORM,Format};
+     * @ref Vk::VertexFormat::UnsignedByteNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUCharNormalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatucharnormalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8_UNORM MTLVertexFormatUCharNormalized}
@@ -137,8 +134,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
-     * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8_SINT,Format};
+     * @ref GL::DynamicAttribute::DataType::Byte; @ref Vk::VertexFormat::Byte;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar?language=objc).
      * @m_keywords{DXGI_FORMAT_R8_SINT MTLVertexFormatChar}
@@ -152,7 +148,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8_SNORM,Format};
+     * @ref Vk::VertexFormat::ByteNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatCharNormalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatcharnormalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8_SNORM MTLVertexFormatCharNormalized}
@@ -165,7 +161,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedShort;
-     * @val_vk_keyword{FORMAT_R16_UINT,Format};
+     * @ref Vk::VertexFormat::UnsignedShort;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort?language=objc).
      * @m_keywords{DXGI_FORMAT_R16_UINT MTLVertexFormatUShort}
@@ -179,7 +175,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R16_UNORM,Format};
+     * @ref Vk::VertexFormat::UnsignedShortNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShortNormalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushortnormalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16_UNORM MTLVertexFormatUShortNormalized}
@@ -192,7 +188,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16_SINT,Format};
+     * @ref Vk::VertexFormat::Short;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort?language=objc).
      * @m_keywords{DXGI_FORMAT_R16_SINT MTLVertexFormatShort}
@@ -206,7 +202,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16_SNORM,Format};
+     * @ref Vk::VertexFormat::ShortNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShortNormalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshortnormalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16_SNORM MTLVertexFormatShortNormalized}
@@ -219,7 +215,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedInt;
-     * @val_vk_keyword{FORMAT_R32_UINT,Format};
+     * @ref Vk::VertexFormat::UnsignedInt;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUInt](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuint?language=objc).
      * @m_keywords{DXGI_FORMAT_R32_UINT MTLVertexFormatUInt}
@@ -231,8 +227,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to single-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
-     * @ref GL::DynamicAttribute::DataType::Int;
-     * @val_vk_keyword{FORMAT_R32_SINT,Format};
+     * @ref GL::DynamicAttribute::DataType::Int; @ref Vk::VertexFormat::Int;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatInt](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatint?language=objc).
      * @m_keywords{DXGI_FORMAT_R32_SINT MTLVertexFormatInt}
@@ -244,7 +239,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Float;
-     * @val_vk_keyword{FORMAT_R32G32_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector2;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatFloat2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatfloat2?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32_FLOAT MTLVertexFormatFloat2}
@@ -257,7 +252,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Half;
-     * @val_vk_keyword{FORMAT_R16G16_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector2h;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatHalf2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformathalf2?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16_FLOAT MTLVertexFormatHalf2}
@@ -270,8 +265,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Long
      * @ref GL::DynamicAttribute::DataType::Double;
-     * @val_vk_keyword{FORMAT_R64G64_SFLOAT,Format}. No D3D or Metal
-     * equivalent.
+     * @ref Vk::VertexFormat::Vector2d. No D3D or Metal equivalent.
      */
     Vector2d,
 
@@ -283,7 +277,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8_UINT,Format};
+     * @ref Vk::VertexFormat::Vector2ub;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar2?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8_UINT MTLVertexFormatUChar2}
@@ -298,7 +292,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector2ubNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar2Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar2normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8_UNORM MTLVertexFormatUChar2Normalized}
@@ -313,7 +307,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8_SINT,Format};
+     * @ref Vk::VertexFormat::Vector2b;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar2?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8_SINT MTLVertexFormatChar2}
@@ -328,7 +322,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector2bNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar2Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar2normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8_SNORM MTLVertexFormatChar2Normalized}
@@ -343,7 +337,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedShort;
-     * @val_vk_keyword{FORMAT_R16G16_UINT,Format};
+     * @ref Vk::VertexFormat::Vector2usNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort2?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16_UINT MTLVertexFormatUShort2}
@@ -358,7 +352,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R16G16_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector2usNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort2Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort2normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16_UNORM MTLVertexFormatUShort2Normalized}
@@ -373,7 +367,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16_SINT,Format};
+     * @ref Vk::VertexFormat::Vector2s;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort2?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16_SINT MTLVertexFormatShort2}
@@ -388,7 +382,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector2sNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort2Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort2normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16_SNORM MTLVertexFormatShort2Normalized}
@@ -401,7 +395,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedInt;
-     * @val_vk_keyword{FORMAT_R32G32_UINT,Format};
+     * @ref Vk::VertexFormat::Vector2ui;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUInt2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuint2?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32_UINT MTLVertexFormatUInt2}
@@ -414,7 +408,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to two-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Int;
-     * @val_vk_keyword{FORMAT_R32G32_SINT,Format};
+     * @ref Vk::VertexFormat::Vector2i;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatInt2](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatint2?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32_SINT MTLVertexFormatInt2}
@@ -427,7 +421,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Float;
-     * @val_vk_keyword{FORMAT_R32G32B32_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector3;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatFloat3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatfloat3?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32_FLOAT MTLVertexFormatFloat3}
@@ -441,7 +435,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Half;
-     * @val_vk_keyword{FORMAT_R16G16B16_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector3h;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatHalf3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformathalf3?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16_FLOAT MTLVertexFormatHalf3}
@@ -454,8 +448,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Long
      * @ref GL::DynamicAttribute::DataType::Double;
-     * @val_vk_keyword{FORMAT_R64G64B64_SFLOAT,Format}. No D3D or Metal
-     * equivalent.
+     * @ref Vk::VertexFormat::Vector3d. No D3D or Metal equivalent.
      */
     Vector3d,
 
@@ -467,7 +460,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8B8_UINT,Format};
+     * @ref Vk::VertexFormat::Vector3ub;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar3?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8_UINT MTLVertexFormatUChar3}
@@ -482,7 +475,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8B8_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector3ubNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar3Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar3normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8_UNORM MTLVertexFormatUChar3Normalized}
@@ -497,7 +490,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8B8_SINT,Format};
+     * @ref Vk::VertexFormat::Vector3b;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar3?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8_SINT MTLVertexFormatChar3}
@@ -512,7 +505,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8B8_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector3bNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar3Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar3normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8_SNORM MTLVertexFormatChar3Normalized}
@@ -527,7 +520,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedShort;
-     * @val_vk_keyword{FORMAT_R16G16B16_UINT,Format};
+     * @ref Vk::VertexFormat::Vector3us;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort3?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16_UINT MTLVertexFormatUShort3}
@@ -543,7 +536,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R16G16B16_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector3usNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort3Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort3normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16_UNORM MTLVertexFormatUShort3Normalized}
@@ -558,7 +551,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16B16_SINT,Format};
+     * @ref Vk::VertexFormat::Vector3s;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort3?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16_SINT MTLVertexFormatShort3}
@@ -573,7 +566,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16B16_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector3sNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort3Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort3normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16_SNORM MTLVertexFormatShort3Normalized}
@@ -586,7 +579,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedInt;
-     * @val_vk_keyword{FORMAT_R32G32B32_UINT,Format};
+     * @ref Vk::VertexFormat::Vector3ui;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUInt3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuint3?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32_UINT MTLVertexFormatUInt3}
@@ -599,7 +592,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to three-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Int;
-     * @val_vk_keyword{FORMAT_R32G32B32_SINT,Format};
+     * @ref Vk::VertexFormat::Vector3i;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatInt3](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatint3?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32_SINT MTLVertexFormatInt3}
@@ -611,7 +604,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Float;
-     * @val_vk_keyword{FORMAT_R32G32B32A32_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector4;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32A32_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatFloat4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatfloat4?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32A32_FLOAT MTLVertexFormatFloat4}
@@ -624,7 +617,7 @@ enum class VertexFormat: UnsignedInt {
      *
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * @ref GL::DynamicAttribute::DataType::Half;
-     * @val_vk_keyword{FORMAT_R16G16B16A16_SFLOAT,Format};
+     * @ref Vk::VertexFormat::Vector4h;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_FLOAT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatHalf4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformathalf4?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16A16_FLOAT MTLVertexFormatHalf4}
@@ -637,8 +630,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Long
      * @ref GL::DynamicAttribute::DataType::Double;
-     * @val_vk_keyword{FORMAT_R64G64B64A64_SFLOAT,Format}. No D3D or Metal
-     * equivalent.
+     * @ref Vk::VertexFormat::Vector4d. No D3D or Metal equivalent.
      */
     Vector4d,
 
@@ -648,7 +640,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8B8A8_UINT,Format};
+     * @ref Vk::VertexFormat::Vector4ub;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar4?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_UINT MTLVertexFormatUChar4}
@@ -663,7 +655,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R8G8B8A8_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector4ubNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUChar4Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuchar4normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_UNORM MTLVertexFormatUChar4Normalized}
@@ -676,7 +668,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8B8A8_SINT,Format};
+     * @ref Vk::VertexFormat::Vector4b;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar4?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_SINT MTLVertexFormatChar4}
@@ -690,7 +682,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Byte;
-     * @val_vk_keyword{FORMAT_R8G8B8A8_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector4bNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatChar4Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatchar4normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_SNORM MTLVertexFormatChar4Normalized}
@@ -703,7 +695,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedShort;
-     * @val_vk_keyword{FORMAT_R16G16B16A16_UINT,Format};
+     * @ref Vk::VertexFormat::Vector4us;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort4?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16A16_UINT MTLVertexFormatUShort4}
@@ -718,7 +710,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::UnsignedByte;
-     * @val_vk_keyword{FORMAT_R16G16B16A16_UNORM,Format};
+     * @ref Vk::VertexFormat::Vector4usNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUShort4Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatushort4normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16A16_UNORM MTLVertexFormatUShort4Normalized}
@@ -731,7 +723,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16B16A16_SINT,Format};
+     * @ref Vk::VertexFormat::Vector4s;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort4?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16A16_SINT MTLVertexFormatShort4}
@@ -745,7 +737,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component
      * @ref GL::DynamicAttribute::Kind::GenericNormalized
      * @ref GL::DynamicAttribute::DataType::Short;
-     * @val_vk_keyword{FORMAT_R16G16B16A16_SNORM,Format};
+     * @ref Vk::VertexFormat::Vector4sNormalized;
      * @m_class{m-doc-external} [DXGI_FORMAT_R16G16B16A16_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatShort4Normalized](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatshort4normalized?language=objc).
      * @m_keywords{DXGI_FORMAT_R16G16B16A16_SNORM MTLVertexFormatShort4Normalized}
@@ -758,7 +750,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::UnsignedInt;
-     * @val_vk_keyword{FORMAT_R32G32B32A16_UINT,Format};
+     * @ref Vk::VertexFormat::Vector4ui;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32A32_UINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatUInt4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatuint4?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32A32_UINT MTLVertexFormatUInt4}
@@ -771,7 +763,7 @@ enum class VertexFormat: UnsignedInt {
      * Corresponds to four-component @ref GL::DynamicAttribute::Kind::Generic
      * or @ref GL::DynamicAttribute::Kind::Integral
      * @ref GL::DynamicAttribute::DataType::Int;
-     * @val_vk_keyword{FORMAT_R32G32B32A32_SINT,Format};
+     * @ref Vk::VertexFormat::Vector4i;
      * @m_class{m-doc-external} [DXGI_FORMAT_R32G32B32A32_SINT](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLVertexFormatInt4](https://developer.apple.com/documentation/metal/mtlvertexformat/mtlvertexformatint4?language=objc).
      * @m_keywords{DXGI_FORMAT_R32G32B32A32_SINT MTLVertexFormatInt4}

@@ -57,7 +57,8 @@ set(MagnumVk_GracefulAssert_SRCS
     LayerProperties.cpp
     Memory.cpp
     PixelFormat.cpp
-    RenderPass.cpp)
+    RenderPass.cpp
+    VertexFormat.cpp)
 
 set(MagnumVk_HEADERS
     Assert.h
@@ -98,6 +99,7 @@ set(MagnumVk_HEADERS
     ShaderCreateInfo.h
     TypeTraits.h
     Version.h
+    VertexFormat.h
     Vk.h
     Vulkan.h
 

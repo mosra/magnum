@@ -47,11 +47,6 @@ struct EnumsTest: TestSuite::Tester {
     void mapVkIndexTypeUnsupported();
     void mapVkIndexTypeInvalid();
 
-    void mapVkFormatVertexFormat();
-    void mapVkFormatVertexFormatImplementationSpecific();
-    void mapVkFormatVertexFormatUnsupported();
-    void mapVkFormatVertexFormatInvalid();
-
     void mapVkFilter();
     void mapVkFilterInvalid();
 
@@ -73,11 +68,6 @@ EnumsTest::EnumsTest() {
               &EnumsTest::mapVkIndexType,
               &EnumsTest::mapVkIndexTypeUnsupported,
               &EnumsTest::mapVkIndexTypeInvalid,
-
-              &EnumsTest::mapVkFormatVertexFormat,
-              &EnumsTest::mapVkFormatVertexFormatImplementationSpecific,
-              &EnumsTest::mapVkFormatVertexFormatUnsupported,
-              &EnumsTest::mapVkFormatVertexFormatInvalid,
 
               &EnumsTest::mapVkFilter,
               &EnumsTest::mapVkFilterInvalid,
@@ -241,108 +231,6 @@ void EnumsTest::mapVkIndexTypeInvalid() {
         "Vk::hasVkIndexType(): invalid type MeshIndexType(0x12)\n"
         "Vk::vkIndexType(): invalid type MeshIndexType(0x0)\n"
         "Vk::vkIndexType(): invalid type MeshIndexType(0x12)\n");
-}
-
-void EnumsTest::mapVkFormatVertexFormat() {
-    /* Touchstone verification */
-    CORRADE_VERIFY(hasVkFormat(Magnum::VertexFormat::Vector3us));
-    CORRADE_COMPARE(vkFormat(Magnum::VertexFormat::Vector3us), VK_FORMAT_R16G16B16_UINT);
-    CORRADE_COMPARE(vkFormat(Magnum::VertexFormat::Matrix2x3bNormalizedAligned), VK_FORMAT_R8G8B8_SNORM);
-
-    /* This goes through the first 16 bits, which should be enough. Going
-       through 32 bits takes 8 seconds, too much. */
-    UnsignedInt firstUnhandled = 0xffff;
-    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
-    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
-        const auto format = Magnum::VertexFormat(i);
-        /* Each case verifies:
-           - that the entries are ordered by number by comparing a function to
-             expected result (so insertion here is done in proper place)
-           - that there was no gap (unhandled value inside the range)
-           - that a particular vertex format maps to a particular VkFormat */
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic error "-Wswitch"
-        #endif
-        switch(format) {
-            #define _c(format, expectedFormat) \
-                case Magnum::VertexFormat::format: \
-                    CORRADE_COMPARE(nextHandled, i); \
-                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
-                    CORRADE_VERIFY(hasVkFormat(Magnum::VertexFormat::format)); \
-                    CORRADE_COMPARE(vkFormat(Magnum::VertexFormat::format), VK_FORMAT_ ## expectedFormat); \
-                    ++nextHandled; \
-                    continue;
-            #define _s(format) \
-                case Magnum::VertexFormat::format: { \
-                    CORRADE_COMPARE(nextHandled, i); \
-                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
-                    CORRADE_VERIFY(!hasVkFormat(Magnum::VertexFormat::format)); \
-                    std::ostringstream out; \
-                    { /* Redirected otherwise graceful assert would abort */ \
-                        Error redirectError{&out}; \
-                        vkFormat(Magnum::VertexFormat::format); \
-                    } \
-                    Debug{Debug::Flag::NoNewlineAtTheEnd} << out.str(); \
-                    ++nextHandled; \
-                    continue; \
-                }
-            #include "Magnum/Vk/Implementation/vertexFormatMapping.hpp"
-            #undef _s
-            #undef _c
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #endif
-
-        /* Not handled by any value, remember -- we might either be at the end
-           of the enum range (which is okay) or some value might be unhandled
-           here */
-        firstUnhandled = i;
-    }
-
-    CORRADE_COMPARE(firstUnhandled, 0xffff);
-}
-
-void EnumsTest::mapVkFormatVertexFormatImplementationSpecific() {
-    CORRADE_VERIFY(hasVkFormat(Magnum::vertexFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)));
-    CORRADE_COMPARE(vkFormat(Magnum::vertexFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)),
-        VK_FORMAT_A8B8G8R8_SINT_PACK32);
-}
-
-void EnumsTest::mapVkFormatVertexFormatUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    #if 1
-    CORRADE_SKIP("All vertex formats are supported.");
-    #else
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    vkFormat(Magnum::VertexFormat::Vector3d);
-    CORRADE_COMPARE(out.str(), "Vk::vkFormat(): unsupported format VertexFormat::Vector3d\n");
-    #endif
-}
-
-void EnumsTest::mapVkFormatVertexFormatInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    hasVkFormat(Magnum::VertexFormat{});
-    hasVkFormat(Magnum::VertexFormat(0x123));
-    vkFormat(Magnum::VertexFormat{});
-    vkFormat(Magnum::VertexFormat(0x123));
-    CORRADE_COMPARE(out.str(),
-        "Vk::hasVkFormat(): invalid format VertexFormat(0x0)\n"
-        "Vk::hasVkFormat(): invalid format VertexFormat(0x123)\n"
-        "Vk::vkFormat(): invalid format VertexFormat(0x0)\n"
-        "Vk::vkFormat(): invalid format VertexFormat(0x123)\n");
 }
 
 void EnumsTest::mapVkFilter() {

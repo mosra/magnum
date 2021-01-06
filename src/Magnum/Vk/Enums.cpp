@@ -29,10 +29,10 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Sampler.h"
-#include "Magnum/VertexFormat.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Vk/PixelFormat.h"
+#include "Magnum/Vk/VertexFormat.h"
 #endif
 
 namespace Magnum { namespace Vk {
@@ -57,19 +57,6 @@ constexpr VkIndexType IndexTypeMapping[]{
     VK_INDEX_TYPE_UINT16,
     VK_INDEX_TYPE_UINT32
 };
-
-#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
-static_assert(VK_FORMAT_UNDEFINED == 0, "VK_FORMAT_UNDEFINED is assumed to be 0");
-
-constexpr VkFormat VertexFormatMapping[] {
-    /* GCC 4.8 doesn't like just a {} for default enum values */
-    #define _c(input, format) VK_FORMAT_ ## format,
-    #define _s(input) VkFormat{},
-    #include "Magnum/Vk/Implementation/vertexFormatMapping.hpp"
-    #undef _s
-    #undef _c
-};
-#endif
 
 constexpr VkFilter FilterMapping[]{
     VK_FILTER_NEAREST,
@@ -128,16 +115,11 @@ VkIndexType vkIndexType(const Magnum::MeshIndexType type) {
     return out;
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkFormat(const Magnum::VertexFormat format) {
-    if(isVertexFormatImplementationSpecific(format))
-        return true;
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(VertexFormatMapping),
-        "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(VertexFormatMapping[UnsignedInt(format) - 1]);
+    return hasVertexFormat(format);
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkFormat(const Magnum::PixelFormat format) {
     return hasPixelFormat(format);
 }
@@ -147,19 +129,11 @@ bool hasVkFormat(const Magnum::CompressedPixelFormat format) {
 }
 #endif
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 VkFormat vkFormat(const Magnum::VertexFormat format) {
-    if(isVertexFormatImplementationSpecific(format))
-        return vertexFormatUnwrap<VkFormat>(format);
-
-    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(VertexFormatMapping),
-        "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = VertexFormatMapping[UnsignedInt(format) - 1];
-    CORRADE_ASSERT(UnsignedInt(out),
-        "Vk::vkFormat(): unsupported format" << format, {});
-    return out;
+    return VkFormat(vertexFormat(format));
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 VkFormat vkFormat(const Magnum::PixelFormat format) {
     return VkFormat(pixelFormat(format));
 }

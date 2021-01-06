@@ -91,27 +91,13 @@ of given index type.
 */
 MAGNUM_VK_EXPORT VkIndexType vkIndexType(Magnum::MeshIndexType type);
 
-/**
-@brief Check availability of a generic vertex format
-@m_since{2020,06}
-
-Returns @cpp false @ce if Vulkan doesn't support such format, @cpp true @ce
-otherwise. Moreover, returns @cpp true @ce also for all formats that are
-@ref isVertexFormatImplementationSpecific(). The @p format value is expected
-to be valid. Note that for matrix formats the function only returns a
-corresponding vector type, and the user is expected to bind the remaining
-vectors to consecutive attribute locations based on what
-@ref vertexFormatVectorCount() and @ref vertexFormatVectorStride() return.
-
-@note Support of some formats depends on presence of a particular Vulkan
-    extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such format.
-
-@see @ref vkFormat(Magnum::VertexFormat)
-*/
-MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::VertexFormat format);
-
 #ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief hasVertexFormat()
+ * @m_deprecated_since_latest Use @ref hasVertexFormat() instead.
+ */
+CORRADE_DEPRECATED("use hasVertexFormat() instead") MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::VertexFormat format);
+
 /**
  * @brief @copybrief hasPixelFormat(Magnum::PixelFormat)
  * @m_deprecated_since_latest Use @ref hasPixelFormat(Magnum::PixelFormat)
@@ -127,23 +113,13 @@ CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFo
 CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::CompressedPixelFormat format);
 #endif
 
-/**
-@brief Convert a generic vertex format to Vulkan format
-@m_since{2020,06}
-
-In case @ref isVertexFormatImplementationSpecific() returns @cpp false @ce for
-@p format, maps it to a corresponding Vulkan format. In case
-@ref isVertexFormatImplementationSpecific() returns @cpp true @ce, assumes
-@p format stores a Vulkan-specific format and returns @ref vertexFormatUnwrap()
-cast to @type_vk{Format}.
-
-Not all generic vertex formats have a Vulkan equivalent and this function
-expects that given format is available. Use @ref hasVkFormat(Magnum::VertexFormat)
-to query availability of given format.
-*/
-MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::VertexFormat format);
-
 #ifdef MAGNUM_BUILD_DEPRECATED
+/**
+ * @brief @copybrief vertexFormat()
+ * @m_deprecated_since_latest Use @ref vertexFormat() instead.
+ */
+CORRADE_DEPRECATED("use vertexFormat() instead") MAGNUM_VK_EXPORT VkFormat vkFormat(Magnum::VertexFormat format);
+
 /**
  * @brief @copybrief pixelFormat(Magnum::PixelFormat)
  * @m_deprecated_since_latest Use @ref pixelFormat(Magnum::PixelFormat)
