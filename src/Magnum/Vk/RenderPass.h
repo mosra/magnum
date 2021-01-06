@@ -406,7 +406,7 @@ class MAGNUM_VK_EXPORT SubpassEndInfo {
          * The following @type_vk{SubpassEndInfo} fields are pre-filled in
          * addition to `sType`, everything else is zero-filled:
          *
-         * -    *(none)*
+         * -    <em>(none)</em>
          */
         explicit SubpassEndInfo();
 
