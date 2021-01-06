@@ -87,7 +87,8 @@ enum class MeshPrimitive: UnsignedInt {
     Lines,
 
     /**
-     * Line strip, last and first vertex are connected together.
+     * Like @ref MeshPrimitive::LineStrip, but with last and first vertex
+     * connected together.
      *
      * Corresponds to @ref GL::MeshPrimitive::LineLoop. Not supported on
      * Vulkan, D3D or Metal.
