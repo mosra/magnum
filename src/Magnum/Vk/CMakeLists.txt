@@ -55,6 +55,7 @@ set(MagnumVk_GracefulAssert_SRCS
     ImageView.cpp
     Instance.cpp
     LayerProperties.cpp
+    MeshLayout.cpp
     Memory.cpp
     PixelFormat.cpp
     RenderPass.cpp
@@ -89,6 +90,7 @@ set(MagnumVk_HEADERS
     LayerProperties.h
     Memory.h
     MemoryAllocateInfo.h
+    MeshLayout.h
     Pipeline.h
     PixelFormat.h
     Queue.h

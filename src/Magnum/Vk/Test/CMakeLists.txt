@@ -42,6 +42,7 @@ corrade_add_test(VkInstanceTest InstanceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVkTestLib)
+corrade_add_test(VkMeshLayoutTest MeshLayoutTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkPipelineTest PipelineTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkQueueTest QueueTest.cpp LIBRARIES MagnumVk)
@@ -137,6 +138,7 @@ set_target_properties(
     VkIntegrationTest
     VkLayerPropertiesTest
     VkMemoryTest
+    VkMeshLayoutTest
     VkPipelineTest
     VkPixelFormatTest
     VkQueueTest

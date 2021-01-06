@@ -373,6 +373,11 @@ See also:
     @ref Vk::pixelFormat(Magnum::CompressedPixelFormat) that return the new
     @ref Vk::PixelFormat enum that contains only values suitable for a pixel
     format
+-   @cpp Vk::hasVkPrimitiveTopology() @ce and
+    @cpp Vk::vkPrimitiveTopology() @ce returning a raw
+    @type_vk{PrimitiveToplogy} are deprecated in favor of
+    @ref Vk::hasMeshPrimitive() and @ref Vk::meshPrimitive() that return the
+    new @ref Vk::MeshPrimitive enum
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

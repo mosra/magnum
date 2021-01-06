@@ -38,11 +38,6 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct EnumsTest: TestSuite::Tester {
     explicit EnumsTest();
 
-    void mapVkPrimitiveTopology();
-    void mapVkPrimitiveTopologyImplementationSpecific();
-    void mapVkPrimitiveTopologyUnsupported();
-    void mapVkPrimitiveTopologyInvalid();
-
     void mapVkIndexType();
     void mapVkIndexTypeUnsupported();
     void mapVkIndexTypeInvalid();
@@ -60,12 +55,7 @@ struct EnumsTest: TestSuite::Tester {
 };
 
 EnumsTest::EnumsTest() {
-    addTests({&EnumsTest::mapVkPrimitiveTopology,
-              &EnumsTest::mapVkPrimitiveTopologyImplementationSpecific,
-              &EnumsTest::mapVkPrimitiveTopologyUnsupported,
-              &EnumsTest::mapVkPrimitiveTopologyInvalid,
-
-              &EnumsTest::mapVkIndexType,
+    addTests({&EnumsTest::mapVkIndexType,
               &EnumsTest::mapVkIndexTypeUnsupported,
               &EnumsTest::mapVkIndexTypeInvalid,
 
@@ -79,90 +69,6 @@ EnumsTest::EnumsTest() {
               &EnumsTest::mapVkSamplerAddressModeArray,
               &EnumsTest::mapVkSamplerAddressModeUnsupported,
               &EnumsTest::mapVkSamplerAddressModeInvalid});
-}
-
-void EnumsTest::mapVkPrimitiveTopology() {
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::Points));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::Points), VK_PRIMITIVE_TOPOLOGY_POINT_LIST);
-
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::Lines));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::Lines), VK_PRIMITIVE_TOPOLOGY_LINE_LIST);
-
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::LineStrip));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::LineStrip), VK_PRIMITIVE_TOPOLOGY_LINE_STRIP);
-
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::Triangles));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::Triangles), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::TriangleStrip));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::TriangleStrip), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
-
-    CORRADE_VERIFY(hasVkPrimitiveTopology(Magnum::MeshPrimitive::TriangleFan));
-    CORRADE_COMPARE(vkPrimitiveTopology(Magnum::MeshPrimitive::TriangleFan), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN);
-
-    /* Ensure all generic primitives are handled. This goes through the first
-       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
-       too much. */
-    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
-        const auto primitive = Magnum::MeshPrimitive(i);
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic error "-Wswitch"
-        #endif
-        switch(primitive) {
-            #define _c(primitive) \
-                case Magnum::MeshPrimitive::primitive: \
-                    if(hasVkPrimitiveTopology(Magnum::MeshPrimitive::primitive))  \
-                        CORRADE_VERIFY(UnsignedInt(vkPrimitiveTopology(Magnum::MeshPrimitive::primitive)) >= 0); \
-                    break;
-            #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
-            #undef _c
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #endif
-    }
-}
-
-void EnumsTest::mapVkPrimitiveTopologyImplementationSpecific() {
-    CORRADE_VERIFY(hasVkPrimitiveTopology(meshPrimitiveWrap(VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY)));
-    CORRADE_COMPARE(vkPrimitiveTopology(meshPrimitiveWrap(VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY)),
-        VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY);
-}
-
-void EnumsTest::mapVkPrimitiveTopologyUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    CORRADE_VERIFY(!hasVkPrimitiveTopology(Magnum::MeshPrimitive::LineLoop));
-
-    std::ostringstream out;
-    {
-        Error redirectError{&out};
-        vkPrimitiveTopology(Magnum::MeshPrimitive::LineLoop);
-    }
-    CORRADE_COMPARE(out.str(),
-        "Vk::vkPrimitiveTopology(): unsupported primitive MeshPrimitive::LineLoop\n");
-}
-
-void EnumsTest::mapVkPrimitiveTopologyInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    hasVkPrimitiveTopology(Magnum::MeshPrimitive{});
-    hasVkPrimitiveTopology(Magnum::MeshPrimitive(0x12));
-    vkPrimitiveTopology(Magnum::MeshPrimitive{});
-    vkPrimitiveTopology(Magnum::MeshPrimitive(0x12));
-    CORRADE_COMPARE(out.str(),
-        "Vk::hasVkPrimitiveTopology(): invalid primitive MeshPrimitive(0x0)\n"
-        "Vk::hasVkPrimitiveTopology(): invalid primitive MeshPrimitive(0x12)\n"
-        "Vk::vkPrimitiveTopology(): invalid primitive MeshPrimitive(0x0)\n"
-        "Vk::vkPrimitiveTopology(): invalid primitive MeshPrimitive(0x12)\n");
 }
 
 void EnumsTest::mapVkIndexType() {

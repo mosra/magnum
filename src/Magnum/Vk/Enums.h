@@ -39,33 +39,19 @@
 
 namespace Magnum { namespace Vk {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief Check availability of a generic mesh primitive
-
-In particular, Vulkan doesn't support the @ref MeshPrimitive::LineLoop
-primitive. Returns @cpp false @ce if Vulkan doesn't support such primitive,
-@cpp true @ce otherwise. Moreover, returns @cpp true @ce also for all types
-that are @ref isMeshPrimitiveImplementationSpecific(). The @p primitive value
-is expected to be valid.
-@see @ref vkPrimitiveTopology()
-*/
-MAGNUM_VK_EXPORT bool hasVkPrimitiveTopology(Magnum::MeshPrimitive primitive);
+ * @brief @copybrief hasMeshPrimitive()
+ * @m_deprecated_since_latest Use @ref hasMeshPrimitive() instead.
+ */
+CORRADE_DEPRECATED("use hasMeshPrimitive() instead") MAGNUM_VK_EXPORT bool hasVkPrimitiveTopology(Magnum::MeshPrimitive primitive);
 
 /**
-@brief Convert generic mesh primitive to Vulkan primitive topology
-
-In case @ref isMeshPrimitiveImplementationSpecific() returns @cpp false @ce for
-@p primitive, maps it to a corresponding Vulkan primitive topology. In case
-@ref isMeshPrimitiveImplementationSpecific() returns @cpp true @ce, assumes
-@p primitive stores a Vulkan-specific primitive topology and returns
-@ref meshPrimitiveUnwrap() cast to @type_vk{PrimitiveTopology}.
-
-Not all generic mesh primitives have a Vulkan equivalent and this function
-expects that given primitive is available. Use @ref hasVkPrimitiveTopology() to
-query availability of given primitive.
-@see @ref vkIndexType()
-*/
-MAGNUM_VK_EXPORT VkPrimitiveTopology vkPrimitiveTopology(Magnum::MeshPrimitive primitive);
+ * @brief @copybrief meshPrimitive()
+ * @m_deprecated_since_latest Use @ref meshPrimitive() instead.
+ */
+CORRADE_DEPRECATED("use meshPrimitive() instead") MAGNUM_VK_EXPORT VkPrimitiveTopology vkPrimitiveTopology(Magnum::MeshPrimitive primitive);
+#endif
 
 /**
 @brief Check availability of a generic index type

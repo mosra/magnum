@@ -29,7 +29,9 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/VertexFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/BufferCreateInfo.h"
@@ -48,6 +50,7 @@
 #include "Magnum/Vk/ImageViewCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
@@ -763,6 +766,27 @@ indices.bindMemory(memory, indicesOffset);
         mapped.slice(indicesOffset, indicesOffset + indexData.size()));
 }
 /* [Memory-mapping] */
+}
+
+{
+/* [MeshLayout-usage] */
+constexpr UnsignedInt BufferBinding = 0;
+
+constexpr UnsignedInt PositionLocation = 0;
+constexpr UnsignedInt TextureCoordinateLocation = 1;
+constexpr UnsignedInt NormalLocation = 5;
+
+Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
+meshLayout
+    .addBinding(BufferBinding,
+        sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3))
+    .addAttribute(PositionLocation, BufferBinding, VertexFormat::Vector3,
+        0)
+    .addAttribute(TextureCoordinateLocation, BufferBinding, VertexFormat::Vector2,
+        sizeof(Vector3))
+    .addAttribute(NormalLocation, BufferBinding, VertexFormat::Vector3,
+        sizeof(Vector3) + sizeof(Vector2));
+/* [MeshLayout-usage] */
 }
 
 {

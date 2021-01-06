@@ -120,7 +120,7 @@ Extension                                           | Status
 @vk_extension{EXT,texture_compression_astc_hdr}     | done
 @vk_extension{EXT,debug_utils} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
-@vk_extension{EXT,vertex_attribute_divisor}         | |
+@vk_extension{EXT,vertex_attribute_divisor}         | done
 @vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
 @vk_extension{KHR,acceleration_structure}           | |
 @vk_extension{KHR,portability_subset}               | done except properties

@@ -31,6 +31,7 @@
 #include "Magnum/Sampler.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/VertexFormat.h"
 #endif
@@ -38,19 +39,6 @@
 namespace Magnum { namespace Vk {
 
 namespace {
-
-constexpr VkPrimitiveTopology PrimitiveTopologyMapping[]{
-    VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
-    VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
-    VkPrimitiveTopology(~UnsignedInt{}),
-    VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
-    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,
-    VkPrimitiveTopology(~UnsignedInt{}), /* Instances */
-    VkPrimitiveTopology(~UnsignedInt{}), /* Faces */
-    VkPrimitiveTopology(~UnsignedInt{})  /* Edges */
-};
 
 constexpr VkIndexType IndexTypeMapping[]{
     VK_INDEX_TYPE_UINT8_EXT,
@@ -79,26 +67,15 @@ constexpr VkSamplerAddressMode SamplerAddressModeMapping[]{
 
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
-    if(isMeshPrimitiveImplementationSpecific(primitive))
-        return true;
-
-    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
-        "Vk::hasVkPrimitiveTopology(): invalid primitive" << primitive, {});
-    return UnsignedInt(PrimitiveTopologyMapping[UnsignedInt(primitive) - 1]) != ~UnsignedInt{};
+    return hasMeshPrimitive(primitive);
 }
 
 VkPrimitiveTopology vkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
-    if(isMeshPrimitiveImplementationSpecific(primitive))
-        return meshPrimitiveUnwrap<VkPrimitiveTopology>(primitive);
-
-    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
-        "Vk::vkPrimitiveTopology(): invalid primitive" << primitive, {});
-    const VkPrimitiveTopology out = PrimitiveTopologyMapping[UnsignedInt(primitive) - 1];
-    CORRADE_ASSERT(out != VkPrimitiveTopology(~UnsignedInt{}),
-        "Vk::vkPrimitiveTopology(): unsupported primitive" << primitive, {});
-    return out;
+    return VkPrimitiveTopology(meshPrimitive(primitive));
 }
+#endif
 
 bool hasVkIndexType(const Magnum::MeshIndexType type) {
     CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
