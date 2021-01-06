@@ -135,6 +135,7 @@ set_target_properties(
     VkIntegrationTest
     VkLayerPropertiesTest
     VkMemoryTest
+    VkPixelFormatTest
     VkQueueTest
     VkResultTest
     VkRenderPassTest
