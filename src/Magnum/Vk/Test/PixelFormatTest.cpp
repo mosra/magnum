@@ -78,7 +78,8 @@ void PixelFormatTest::map() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular vkFormat */
+           - that a particular generic format maps to a particular format
+           - that the debug output matches what was converted */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -90,6 +91,11 @@ void PixelFormatTest::map() {
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::PixelFormat::format), PixelFormat::format); \
+                    { \
+                        std::ostringstream out; \
+                        Debug{&out} << pixelFormat(Magnum::PixelFormat::format); \
+                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::" #format "\n"); \
+                    } \
                     ++nextHandled; \
                     continue;
             #define _s(format) \
@@ -180,7 +186,8 @@ void PixelFormatTest::mapCompressed() {
            - that the entries are ordered by number by comparing a function to
              expected result (so insertion here is done in proper place)
            - that there was no gap (unhandled value inside the range)
-           - that a particular pixel format maps to a particular VkFormat */
+           - that a particular generic format maps to a particular format
+           - that the debug output matches what was converted */
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic error "-Wswitch"
@@ -192,6 +199,11 @@ void PixelFormatTest::mapCompressed() {
                     CORRADE_COMPARE(firstUnhandled, 0xffff); \
                     CORRADE_VERIFY(hasPixelFormat(Magnum::CompressedPixelFormat::format)); \
                     CORRADE_COMPARE(pixelFormat(Magnum::CompressedPixelFormat::format), PixelFormat::Compressed ## expectedFormat); \
+                    { \
+                        std::ostringstream out; \
+                        Debug{&out} << pixelFormat(Magnum::CompressedPixelFormat::format); \
+                        CORRADE_COMPARE(out.str(), "Vk::PixelFormat::Compressed" #expectedFormat "\n"); \
+                    } \
                     ++nextHandled; \
                     continue;
             #define _s(format) \
