@@ -238,6 +238,8 @@ See also:
     inside a CMake subproject
 -   Suppressed a warning specific to MinGW GCC 8+ (see
     [mosra/magnum#474](https://github.com/mosra/magnum/issues/474))
+-   Switched Emscripten build from macOS to Ubuntu + Docker for 2x faster build
+    times (see [mosra/magnum#350](https://github.com/mosra/magnum/issues/350))
 -   Linux, Emscripten and macOS builds were migrated from Travis to Circle CI
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
     an explicit exception-enabling flag when built with Emscripten 1.39.0 and
@@ -440,7 +442,8 @@ See also:
 @subsection changelog-latest-documentation Documentation
 
 -   Added a note about MinGW GCC and Clang ABI incompatibility to
-    @ref platforms-windows "Windows platform docs" (see [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
+    @ref platforms-windows "Windows platform docs" (see [mosra/magnum#227](https://github.com/mosra/magnum/issues/227) and
+    [mosra/magnum#439](https://github.com/mosra/magnum/issues/439))
 
 @section changelog-2020-06 2020.06
 
