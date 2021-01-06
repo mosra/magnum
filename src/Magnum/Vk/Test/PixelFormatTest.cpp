@@ -35,34 +35,34 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct PixelFormatTest: TestSuite::Tester {
     explicit PixelFormatTest();
 
-    void mapPixelFormat();
-    void mapPixelFormatImplementationSpecific();
-    void mapPixelFormatUnsupported();
-    void mapPixelFormatInvalid();
+    void map();
+    void mapImplementationSpecific();
+    void mapUnsupported();
+    void mapInvalid();
 
-    void mapCompressedPixelFormat();
-    void mapCompressedPixelFormatImplementationSpecific();
-    void mapCompressedPixelFormatUnsupported();
-    void mapCompressedPixelFormatInvalid();
+    void mapCompressed();
+    void mapCompressedImplementationSpecific();
+    void mapCompressedUnsupported();
+    void mapCompressedInvalid();
 
     void debug();
 };
 
 PixelFormatTest::PixelFormatTest() {
-    addTests({&PixelFormatTest::mapPixelFormat,
-              &PixelFormatTest::mapPixelFormatImplementationSpecific,
-              &PixelFormatTest::mapPixelFormatUnsupported,
-              &PixelFormatTest::mapPixelFormatInvalid,
+    addTests({&PixelFormatTest::map,
+              &PixelFormatTest::mapImplementationSpecific,
+              &PixelFormatTest::mapUnsupported,
+              &PixelFormatTest::mapInvalid,
 
-              &PixelFormatTest::mapCompressedPixelFormat,
-              &PixelFormatTest::mapCompressedPixelFormatImplementationSpecific,
-              &PixelFormatTest::mapCompressedPixelFormatUnsupported,
-              &PixelFormatTest::mapCompressedPixelFormatInvalid,
+              &PixelFormatTest::mapCompressed,
+              &PixelFormatTest::mapCompressedImplementationSpecific,
+              &PixelFormatTest::mapCompressedUnsupported,
+              &PixelFormatTest::mapCompressedInvalid,
 
               &PixelFormatTest::debug});
 }
 
-void PixelFormatTest::mapPixelFormat() {
+void PixelFormatTest::map() {
     /* Touchstone verification. Using Vulkan enums directly to sidestep
        potential problems in enum mapping as well. */
     CORRADE_VERIFY(hasPixelFormat(Magnum::PixelFormat::RGBA8Unorm));
@@ -123,13 +123,13 @@ void PixelFormatTest::mapPixelFormat() {
     CORRADE_COMPARE(firstUnhandled, 0xffff);
 }
 
-void PixelFormatTest::mapPixelFormatImplementationSpecific() {
+void PixelFormatTest::mapImplementationSpecific() {
     CORRADE_VERIFY(hasPixelFormat(Magnum::pixelFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)));
     CORRADE_COMPARE(pixelFormat(Magnum::pixelFormatWrap(VK_FORMAT_A8B8G8R8_SINT_PACK32)),
         PixelFormat(VK_FORMAT_A8B8G8R8_SINT_PACK32));
 }
 
-void PixelFormatTest::mapPixelFormatUnsupported() {
+void PixelFormatTest::mapUnsupported() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -145,7 +145,7 @@ void PixelFormatTest::mapPixelFormatUnsupported() {
     #endif
 }
 
-void PixelFormatTest::mapPixelFormatInvalid() {
+void PixelFormatTest::mapInvalid() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -164,7 +164,7 @@ void PixelFormatTest::mapPixelFormatInvalid() {
         "Vk::pixelFormat(): invalid format PixelFormat(0x123)\n");
 }
 
-void PixelFormatTest::mapCompressedPixelFormat() {
+void PixelFormatTest::mapCompressed() {
     /* Touchstone verification. Using Vulkan enums directly to sidestep
        potential problems in enum mapping as well. */
     CORRADE_VERIFY(hasPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
@@ -225,13 +225,13 @@ void PixelFormatTest::mapCompressedPixelFormat() {
     CORRADE_COMPARE(firstUnhandled, 0xffff);
 }
 
-void PixelFormatTest::mapCompressedPixelFormatImplementationSpecific() {
+void PixelFormatTest::mapCompressedImplementationSpecific() {
     CORRADE_VERIFY(hasPixelFormat(Magnum::compressedPixelFormatWrap(VK_FORMAT_ASTC_10x6_UNORM_BLOCK)));
     CORRADE_COMPARE(pixelFormat(Magnum::compressedPixelFormatWrap(VK_FORMAT_ASTC_10x6_UNORM_BLOCK)),
         PixelFormat(VK_FORMAT_ASTC_10x6_UNORM_BLOCK));
 }
 
-void PixelFormatTest::mapCompressedPixelFormatUnsupported() {
+void PixelFormatTest::mapCompressedUnsupported() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
@@ -244,7 +244,7 @@ void PixelFormatTest::mapCompressedPixelFormatUnsupported() {
     CORRADE_COMPARE(out.str(), "Vk::pixelFormat(): unsupported format CompressedPixelFormat::Astc3x3x3RGBAUnorm\n");
 }
 
-void PixelFormatTest::mapCompressedPixelFormatInvalid() {
+void PixelFormatTest::mapCompressedInvalid() {
     #ifdef CORRADE_NO_ASSERT
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
