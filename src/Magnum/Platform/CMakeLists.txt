@@ -345,7 +345,7 @@ if(WITH_SDL2APPLICATION)
     # help people running the apps
     if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (SDL2_DLL_DEBUG OR SDL2_DLL_RELEASE))
         if(SDL2_DLL_DEBUG AND SDL2_DLL_RELEASE)
-            set(sdl2_dll_input $<$<CONFIG:Debug>:${SDL2_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>,${SDL2_DLL_RELEASE}>)
+            set(sdl2_dll_input $<$<CONFIG:Debug>:${SDL2_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${SDL2_DLL_RELEASE}>)
         elseif(SDL2_DLL_DEBUG)
             set(sdl2_dll_input ${SDL2_DLL_DEBUG})
         else()
