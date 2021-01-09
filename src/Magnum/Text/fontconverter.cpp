@@ -173,10 +173,14 @@ int FontConverter::exec() {
     Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
-    /* Load font converter */
+    /* Register the image converter manager for potential dependencies
+       (MagnumFontConverter needs TgaImageConverter, for example) */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths()[0])};
+    converterManager.registerExternalManager(imageConverterManager);
+
+    /* Load font converter */
     Containers::Pointer<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 
