@@ -155,6 +155,13 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .parse(arguments.argc, arguments.argv);
 
+    /* Useful for bisecting Emscripten regressions, because they happen WAY TOO
+       OFTEN!!! */
+    Debug{} << "Emscripten version:"
+        << __EMSCRIPTEN_major__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_minor__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_tiny__ << Debug::nospace;
+
     if(args.isSet("exit-immediately")) {
         exit();
         return;
