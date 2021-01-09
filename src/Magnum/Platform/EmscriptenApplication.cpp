@@ -799,9 +799,35 @@ void EmscriptenApplication::redraw() {
         var drawEvent = function() {
             var id = window.requestAnimationFrame(drawEvent);
 
-            /* Call our callback via function pointer returning int with two
-            int params */
-            if(!dynCall('ii', $0, [$1])) {
+            /* Call our callback via function pointer taking an int and
+               returning int as well. This used to be
+
+                if(!dynCall('ii', $0, [$1])) {
+
+               but since 2.0.10 the dynCall isn't exported by default anymore:
+                https://github.com/emscripten-core/emscripten/commit/496967e00735c1523299e116dc692572d3d6d082
+               and making it exported again doing so involves crazy shit with
+               CMake 3.13-only features and a ton of backslashes:
+
+                target_link_options(MagnumEmscriptenApplication INTERFACE
+                    "SHELL:-s \"DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=['\${xylophone}dynCall']\""
+                    "SHELL:-s \"EXPORTED_FUNCTIONS=['_main', 'dynCall']\"")
+
+               (the ${xylophone} is needed because CMake expands that to
+               `\$${xylophone}dynCall` for some reason, which then the shell
+               collapses to `$dynCall` (assuming a $xylophone env var doesn't
+               exist, which it shoulndn't, but also it's 2021 and so everything
+               is possible), and no amount of \\\\$$$ helps avoiding that
+               xylophone); but doing so means we forever hardcode what
+               functions are exported and thus whatever extra Emscripten needs
+               to export will be overriden by this, causing only pain and
+               misery.
+
+               So instead we rely on the implementation details of dynCall,
+               which are actually really simple:
+                https://github.com/emscripten-core/emscripten/blob/496967e00735c1523299e116dc692572d3d6d082/src/library.js#L3730-L3747
+               and PRAY it doesn't change again in the future. */
+            if(!wasmTable.get($0).apply(null, [$1])) {
                 window.cancelAnimationFrame(id);
             }
         };
