@@ -292,6 +292,10 @@ See also:
     @ref SceneGraph::BasicRigidMatrixTransformation3D were broken in the
     @ref Magnum::Double "Double" variant. To prevent such cases from happening
     in the future, the whole library is now tested for both floats and doubles.
+-   Fixed @ref magnum-fontconverter "magnum-fontconverter" to properly hook up
+    image converter plugin manager for cross-manager dependencies, broken since
+    the removal of global shared manager state in 2020.06 (see
+    [mosra/magnum#489](https://github.com/mosra/magnum/issues/489))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
