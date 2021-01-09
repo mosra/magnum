@@ -359,8 +359,9 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Whether given extension is supported
          *
-         * Extensions usable with this function are listed in @ref Extensions
-         * namespace in header @ref Extensions.h. Example usage:
+         * Extensions usable with this function are listed in the
+         * @ref Extensions namespace in the @ref Magnum/Audio/Extensions.h
+         * header. Example usage:
          *
          * @snippet MagnumAudio.cpp Context-isExtensionSupported
          *

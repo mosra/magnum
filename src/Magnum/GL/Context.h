@@ -634,8 +634,9 @@ class MAGNUM_GL_EXPORT Context {
          * @brief Whether given extension is supported
          *
          * Extensions usable with this function are listed in the
-         * @ref Extensions namespace in the @ref Extensions.h header and in the
-         * @ref opengl-support "OpenGL support tables". Example usage:
+         * @ref Extensions namespace in the @ref Magnum/GL/Extensions.h header
+         * and in the @ref opengl-support "OpenGL support tables". Example
+         * usage:
          *
          * @snippet MagnumGL.cpp Context-isExtensionSupported
          *
