@@ -104,15 +104,15 @@ class MAGNUM_GL_EXPORT Extension {
 };
 
 /**
-@brief Magnum context
+@brief Magnum OpenGL context
 
-Provides access to version and extension information. Instance available
-through @ref Context::current() is automatically created during construction of
-`*Application` classes in @ref Platform namespace. You can safely assume that
-the instance is available during whole lifetime of `*Application` object. It's
-also possible to create the context without using any `*Application` class
-using @ref Platform::GLContext subclass, see @ref platform documentation for
-more information.
+Provides access to OpenGL version and extension information and manages
+Magnum's internal OpenGL state tracker. An instance available through
+@ref Context::current() is automatically created during construction of
+`Platform::*Application` classes and you can safely assume the instance is
+available during the whole `*Application` lifetime. It's also possible to
+create the context without using any `*Application` class using the
+@ref Platform::GLContext subclass, see @ref platform for more information.
 
 @section GL-Context-command-line Command-line options
 
