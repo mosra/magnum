@@ -246,6 +246,8 @@ See also:
 -   Switched Emscripten build from macOS to Ubuntu + Docker for 2x faster build
     times (see [mosra/magnum#350](https://github.com/mosra/magnum/issues/350))
 -   Linux, Emscripten and macOS builds were migrated from Travis to Circle CI
+-   `UseEmscripten` is no longer implicitly included on Emscripten as it's not
+    needed for anything (see [mosra/magnum#490](https://github.com/mosra/magnum/issues/490))
 -   @ref Trade::ObjImporter "ObjImporter" uses exceptions internally and needs
     an explicit exception-enabling flag when built with Emscripten 1.39.0 and
     newer
