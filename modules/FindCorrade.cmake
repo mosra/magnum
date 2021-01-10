@@ -267,7 +267,8 @@
 #   This file is part of Corrade.
 #
 #   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
-#               2017, 2018, 2019, 2020 Vladimír Vondruš <mosra@centrum.cz>
+#               2017, 2018, 2019, 2020, 2021
+#             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -367,9 +368,9 @@ set(_CORRADE_IMPLICITLY_ENABLED_COMPONENTS
 
 # Inter-component dependencies
 set(_CORRADE_Containers_DEPENDENCIES Utility)
-set(_CORRADE_Interconnect_DEPENDENCIES Utility)
+set(_CORRADE_Interconnect_DEPENDENCIES Containers Utility)
 set(_CORRADE_PluginManager_DEPENDENCIES Containers Utility rc)
-set(_CORRADE_TestSuite_DEPENDENCIES Utility Main) # see below
+set(_CORRADE_TestSuite_DEPENDENCIES Containers Utility Main) # see below
 set(_CORRADE_Utility_DEPENDENCIES Containers rc)
 
 # Ensure that all inter-component dependencies are specified as well
@@ -387,7 +388,7 @@ endforeach()
 # Main is linked only in corrade_add_test(), not to everything that depends on
 # TestSuite, so remove it from the list again once we filled the above
 # variables
-set(_CORRADE_TestSuite_DEPENDENCIES Utility)
+set(_CORRADE_TestSuite_DEPENDENCIES Containers Utility)
 
 # Join the lists, remove duplicate components
 set(_CORRADE_ORIGINAL_FIND_COMPONENTS ${Corrade_FIND_COMPONENTS})
@@ -573,7 +574,7 @@ endforeach()
 # For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
 # useful info about the failed components.
 if(NOT CMAKE_VERSION VERSION_LESS 3.16)
-    set(_CORRADE_REASON_FAILURE_MESSAGE)
+    set(_CORRADE_REASON_FAILURE_MESSAGE )
     # Go only through the originally specified find_package() components, not
     # the dependencies added by us afterwards
     foreach(_component ${_CORRADE_ORIGINAL_FIND_COMPONENTS})
