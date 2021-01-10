@@ -253,6 +253,9 @@ See also:
     newer
 -   On CMake 3.16 and newer, `FindMagnum.cmake` can provide additional details
     if some component is not found.
+-   The Homebrew package now uses `std_cmake_args` instead of hardcoded build
+    type and install prefix, which resolves certain build issues (see
+    [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
