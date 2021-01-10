@@ -238,17 +238,13 @@ or can be retreived from Homebrew logs):
 clang++ … -I/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX11.0.sdk[0m/usr/include[0m … -o CMakeFiles/PngImageConverter.dir/PngImageConverter.cpp.o -c ../src/MagnumPlugins/PngImageConverter/PngImageConverter.cpp -isysroot/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX10.15.sdk[0m --sysroot=/Library/Developer/CommandLineTools/SDKs/[1;34mMacOSX10.15.sdk[0m -isystem/usr/local/include
 @endcode
 
-One often suggested magic incantation that sometimes removes the curse is the
-following:
+A magic incantation that should remove the curse, often suggested by Homebrew
+itself, is the following:
 
 @code{.sh}
-xcode-select --install # try with sudo maybe
+sudo rm -rf /Library/Developer/CommandLineTools
+sudo xcode-select --install
 @endcode
-
-If that doesn't help, the next step is to prevent multiple SDKs getting mixed
-together by removing all folders inside `/Library/Developer/CommandLineTools/SDKs`
-except the latest one. Simply [deleting them is the designated way](https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-HOW_CAN_I_UNINSTALL_THE_COMMAND_LINE_TOOLS_)
-to do this.
 
 @subsection platforms-macos-troubleshooting-gl Mac-specific OpenGL behavior
 
