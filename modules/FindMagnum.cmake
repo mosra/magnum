@@ -1049,7 +1049,7 @@ endif()
 # For CMake 3.16+ with REASON_FAILURE_MESSAGE, provide additional potentially
 # useful info about the failed components.
 if(NOT CMAKE_VERSION VERSION_LESS 3.16)
-    set(_MAGNUM_REASON_FAILURE_MESSAGE)
+    set(_MAGNUM_REASON_FAILURE_MESSAGE )
     # Go only through the originally specified find_package() components, not
     # the dependencies added by us afterwards
     foreach(_component ${_MAGNUM_ORIGINAL_FIND_COMPONENTS})
