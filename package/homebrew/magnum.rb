@@ -15,8 +15,7 @@ class Magnum < Formula
     system "mkdir build"
     cd "build" do
       system "cmake",
-        "-DCMAKE_BUILD_TYPE=Release",
-        "-DCMAKE_INSTALL_PREFIX=#{prefix}",
+        *std_cmake_args,
         "-DMAGNUM_PLUGINS_DIR=#{HOMEBREW_PREFIX}/lib/magnum",
         "-DWITH_AUDIO=ON",
         "-DWITH_GLFWAPPLICATION=ON",
