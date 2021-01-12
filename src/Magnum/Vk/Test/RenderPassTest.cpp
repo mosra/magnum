@@ -52,10 +52,7 @@ struct RenderPassTest: TestSuite::Tester {
        structures. */
 
     template<class T> void attachmentDescriptionConstruct();
-    template<class T> void attachmentDescriptionConstructImplicitLayout();
     template<class T> void attachmentDescriptionConstructDepthStencil();
-    template<class T> void attachmentDescriptionConstructDepthStencilImplicitLayout();
-    template<class T> void attachmentDescriptionConstructImplicitLoadStoreLayout();
     void attachmentDescriptionConstructNoInit();
     template<class From, class To> void attachmentDescriptionConstructFromVk();
     template<class T> void attachmentDescriptionConvertToVk();
@@ -122,18 +119,9 @@ RenderPassTest::RenderPassTest() {
     addTests({&RenderPassTest::attachmentDescriptionConstruct<PixelFormat>,
               &RenderPassTest::attachmentDescriptionConstruct<Magnum::PixelFormat>,
               &RenderPassTest::attachmentDescriptionConstruct<Magnum::CompressedPixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLayout<PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLayout<Magnum::PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLayout<Magnum::CompressedPixelFormat>,
               &RenderPassTest::attachmentDescriptionConstructDepthStencil<PixelFormat>,
               &RenderPassTest::attachmentDescriptionConstructDepthStencil<Magnum::PixelFormat>,
               &RenderPassTest::attachmentDescriptionConstructDepthStencil<Magnum::CompressedPixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructDepthStencilImplicitLayout<PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructDepthStencilImplicitLayout<Magnum::PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructDepthStencilImplicitLayout<Magnum::CompressedPixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLoadStoreLayout<PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLoadStoreLayout<Magnum::PixelFormat>,
-              &RenderPassTest::attachmentDescriptionConstructImplicitLoadStoreLayout<Magnum::CompressedPixelFormat>,
               &RenderPassTest::attachmentDescriptionConstructNoInit,
               &RenderPassTest::attachmentDescriptionConstructFromVk<VkAttachmentDescription2, VkAttachmentDescription2>,
               &RenderPassTest::attachmentDescriptionConstructFromVk<VkAttachmentDescription, VkAttachmentDescription2>,
@@ -272,23 +260,6 @@ template<class T> void RenderPassTest::attachmentDescriptionConstruct() {
     CORRADE_COMPARE(description->finalLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 }
 
-template<class T> void RenderPassTest::attachmentDescriptionConstructImplicitLayout() {
-    setTestCaseTemplateName(PixelFormatTraits<T>::name());
-
-    AttachmentDescription description{PixelFormatTraits<T>::format(),
-        AttachmentLoadOperation::Clear, AttachmentStoreOperation::DontCare,
-        4, AttachmentDescription::Flag::MayAlias};
-    CORRADE_COMPARE(description->flags, VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT);
-    CORRADE_COMPARE(description->format, PixelFormatTraits<T>::expected());
-    CORRADE_COMPARE(description->samples, VK_SAMPLE_COUNT_4_BIT);
-    CORRADE_COMPARE(description->loadOp, VK_ATTACHMENT_LOAD_OP_CLEAR);
-    CORRADE_COMPARE(description->stencilLoadOp, VK_ATTACHMENT_LOAD_OP_LOAD);
-    CORRADE_COMPARE(description->storeOp, VK_ATTACHMENT_STORE_OP_DONT_CARE);
-    CORRADE_COMPARE(description->stencilStoreOp, VK_ATTACHMENT_STORE_OP_STORE);
-    CORRADE_COMPARE(description->initialLayout, VK_IMAGE_LAYOUT_GENERAL);
-    CORRADE_COMPARE(description->finalLayout, VK_IMAGE_LAYOUT_GENERAL);
-}
-
 template<class T> void RenderPassTest::attachmentDescriptionConstructDepthStencil() {
     setTestCaseTemplateName(PixelFormatTraits<T>::name());
 
@@ -306,40 +277,6 @@ template<class T> void RenderPassTest::attachmentDescriptionConstructDepthStenci
     CORRADE_COMPARE(description->stencilStoreOp, VK_ATTACHMENT_STORE_OP_DONT_CARE);
     CORRADE_COMPARE(description->initialLayout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
     CORRADE_COMPARE(description->finalLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-}
-
-template<class T> void RenderPassTest::attachmentDescriptionConstructDepthStencilImplicitLayout() {
-    setTestCaseTemplateName(PixelFormatTraits<T>::name());
-
-    AttachmentDescription description{PixelFormatTraits<T>::format(),
-        {AttachmentLoadOperation::Clear, AttachmentLoadOperation::DontCare},
-        {AttachmentStoreOperation::Store, AttachmentStoreOperation::DontCare},
-        4, AttachmentDescription::Flag::MayAlias};
-    CORRADE_COMPARE(description->flags, VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT);
-    CORRADE_COMPARE(description->format, PixelFormatTraits<T>::expected());
-    CORRADE_COMPARE(description->samples, VK_SAMPLE_COUNT_4_BIT);
-    CORRADE_COMPARE(description->loadOp, VK_ATTACHMENT_LOAD_OP_CLEAR);
-    CORRADE_COMPARE(description->stencilLoadOp, VK_ATTACHMENT_LOAD_OP_DONT_CARE);
-    CORRADE_COMPARE(description->storeOp, VK_ATTACHMENT_STORE_OP_STORE);
-    CORRADE_COMPARE(description->stencilStoreOp, VK_ATTACHMENT_STORE_OP_DONT_CARE);
-    CORRADE_COMPARE(description->initialLayout, VK_IMAGE_LAYOUT_GENERAL);
-    CORRADE_COMPARE(description->finalLayout, VK_IMAGE_LAYOUT_GENERAL);
-}
-
-template<class T> void RenderPassTest::attachmentDescriptionConstructImplicitLoadStoreLayout() {
-    setTestCaseTemplateName(PixelFormatTraits<T>::name());
-
-    AttachmentDescription description{PixelFormatTraits<T>::format(),
-        4, AttachmentDescription::Flag::MayAlias};
-    CORRADE_COMPARE(description->flags, VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT);
-    CORRADE_COMPARE(description->format, PixelFormatTraits<T>::expected());
-    CORRADE_COMPARE(description->samples, VK_SAMPLE_COUNT_4_BIT);
-    CORRADE_COMPARE(description->loadOp, VK_ATTACHMENT_LOAD_OP_LOAD);
-    CORRADE_COMPARE(description->stencilLoadOp, VK_ATTACHMENT_LOAD_OP_LOAD);
-    CORRADE_COMPARE(description->storeOp, VK_ATTACHMENT_STORE_OP_STORE);
-    CORRADE_COMPARE(description->stencilStoreOp, VK_ATTACHMENT_STORE_OP_STORE);
-    CORRADE_COMPARE(description->initialLayout, VK_IMAGE_LAYOUT_GENERAL);
-    CORRADE_COMPARE(description->finalLayout, VK_IMAGE_LAYOUT_GENERAL);
 }
 
 void RenderPassTest::attachmentDescriptionConstructNoInit() {
@@ -475,17 +412,25 @@ void RenderPassTest::subpassDescriptionConstructNoInit() {
 
 void RenderPassTest::subpassDescriptionConstructInputAttachments() {
     SubpassDescription description;
-    description.setInputAttachments({15, {}, 2});
+    description.setInputAttachments({
+        AttachmentReference{15, ImageLayout::ShaderReadOnly},
+        {},
+        AttachmentReference{2, ImageLayout::ShaderReadOnly}
+    });
     CORRADE_COMPARE(description->inputAttachmentCount, 3);
     CORRADE_VERIFY(description->pInputAttachments);
     CORRADE_COMPARE(description->pInputAttachments[0].attachment, 15);
+    CORRADE_COMPARE(description->pInputAttachments[0].layout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
     CORRADE_COMPARE(description->pInputAttachments[1].attachment, VK_ATTACHMENT_UNUSED);
     CORRADE_COMPARE(description->pInputAttachments[2].attachment, 2);
 }
 
 void RenderPassTest::subpassDescriptionConstructColorAttachments() {
     SubpassDescription description;
-    description.setColorAttachments({{}, 23});
+    description.setColorAttachments({
+        {},
+        AttachmentReference{23, ImageLayout::ColorAttachment}
+    });
     CORRADE_COMPARE(description->colorAttachmentCount, 2);
     CORRADE_VERIFY(description->pColorAttachments);
     CORRADE_VERIFY(!description->pResolveAttachments);
@@ -495,7 +440,13 @@ void RenderPassTest::subpassDescriptionConstructColorAttachments() {
 
 void RenderPassTest::subpassDescriptionConstructColorResolveAttachments() {
     SubpassDescription description;
-    description.setColorAttachments({{}, 23}, {1, 0});
+    description.setColorAttachments({
+        {},
+        AttachmentReference{23, ImageLayout::ColorAttachment}
+    }, {
+        AttachmentReference{1, ImageLayout::ColorAttachment},
+        AttachmentReference{0, ImageLayout::ColorAttachment}
+    });
 
     CORRADE_COMPARE(description->colorAttachmentCount, 2);
     CORRADE_VERIFY(description->pColorAttachments);
@@ -515,14 +466,16 @@ void RenderPassTest::subpassDescriptionConstructColorResolveAttachmentsWrongCoun
 
     std::ostringstream out;
     Error redirectError{&out};
-    description.setColorAttachments({0, 1}, {2, 3, 5});
+    description.setColorAttachments({{}, {}}, {{}, {}, {}});
     CORRADE_COMPARE(out.str(),
         "Vk::SubpassDescription::setColorAttachments(): resolve attachments expected to be either empty or have a size of 2 but got 3\n");
 }
 
 void RenderPassTest::subpassDescriptionConstructDepthStencilAttachment() {
     SubpassDescription description;
-    description.setDepthStencilAttachment(11);
+    description.setDepthStencilAttachment(
+        AttachmentReference{11, ImageLayout::DepthStencilAttachment}
+    );
     CORRADE_VERIFY(description->pDepthStencilAttachment);
     CORRADE_COMPARE(description->pDepthStencilAttachment->attachment, 11);
 }
@@ -633,7 +586,10 @@ void RenderPassTest::subpassDescriptionConstructCopy() {
 
 void RenderPassTest::subpassDescriptionConstructMove() {
     SubpassDescription a;
-    a.setInputAttachments({24, 35});
+    a.setInputAttachments({
+        AttachmentReference{24, ImageLayout::ShaderReadOnly},
+        AttachmentReference{35, ImageLayout::ShaderReadOnly}
+    });
     CORRADE_COMPARE(a->inputAttachmentCount, 2);
     CORRADE_COMPARE(a->pInputAttachments[1].attachment, 35);
 
@@ -659,10 +615,20 @@ template<class T> void RenderPassTest::subpassDescriptionConvertToVk() {
 
     SubpassDescription description{};
     description.setInputAttachments({
-            24, {35, ImageLayout::ShaderReadOnly}, 17
+            AttachmentReference{24, ImageLayout::ShaderReadOnly},
+            AttachmentReference{35, ImageLayout::ShaderReadOnly},
+            AttachmentReference{17, ImageLayout::ShaderReadOnly},
         })
-        .setColorAttachments({1, 3}, {{25, ImageLayout::ColorAttachment}, 12})
-        .setDepthStencilAttachment({5, ImageLayout::DepthStencilAttachment})
+        .setColorAttachments({
+            AttachmentReference{1, ImageLayout::ColorAttachment},
+            AttachmentReference{3, ImageLayout::ColorAttachment},
+        }, {
+            AttachmentReference{25, ImageLayout::ColorAttachment},
+            AttachmentReference{12, ImageLayout::ColorAttachment}
+        })
+        .setDepthStencilAttachment(
+            AttachmentReference{5, ImageLayout::DepthStencilAttachment}
+        )
         .setPreserveAttachments({0, 15, 23, 17});
 
     Containers::Array<T> array = Traits<T>::convert(description);
@@ -720,7 +686,10 @@ template<class T> void RenderPassTest::subpassDescriptionConvertToVkNoResolveAtt
     setTestCaseTemplateName(Traits<T>::name());
 
     SubpassDescription description{};
-    description.setColorAttachments({1, 3});
+    description.setColorAttachments({
+        AttachmentReference{1, ImageLayout::ColorAttachment},
+        AttachmentReference{3, ImageLayout::ColorAttachment}
+    });
 
     Containers::Array<T> array = Traits<T>::convert(description);
     const T& to = array[0];
@@ -818,14 +787,23 @@ void RenderPassTest::createInfoConstructNoInit() {
 void RenderPassTest::createInfoConstructAttachments() {
     RenderPassCreateInfo info;
     info.setAttachments({
-        {PixelFormat::RGBA16F, AttachmentLoadOperation::Clear, AttachmentStoreOperation::DontCare},
-        {PixelFormat::RGB8Snorm, 4}
+        AttachmentDescription{PixelFormat::RGBA16F,
+            AttachmentLoadOperation::Clear,
+            AttachmentStoreOperation::Store,
+            ImageLayout::Undefined,
+            ImageLayout::ColorAttachment},
+        AttachmentDescription{PixelFormat::RGB8Snorm,
+            AttachmentLoadOperation::Clear,
+            AttachmentStoreOperation::Store,
+            ImageLayout::Undefined,
+            ImageLayout::General,
+            4}
     });
     CORRADE_COMPARE(info->attachmentCount, 2);
     CORRADE_VERIFY(info->pAttachments);
     CORRADE_COMPARE(info->pAttachments[0].format, VK_FORMAT_R16G16B16A16_SFLOAT);
-    CORRADE_COMPARE(info->pAttachments[0].loadOp, VK_ATTACHMENT_LOAD_OP_CLEAR);
-    CORRADE_COMPARE(info->pAttachments[0].storeOp, VK_ATTACHMENT_STORE_OP_DONT_CARE);
+    CORRADE_COMPARE(info->pAttachments[0].initialLayout, VK_IMAGE_LAYOUT_UNDEFINED);
+    CORRADE_COMPARE(info->pAttachments[0].finalLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     CORRADE_COMPARE(info->pAttachments[1].format, VK_FORMAT_R8G8B8_SNORM);
     CORRADE_COMPARE(info->pAttachments[1].samples, VK_SAMPLE_COUNT_4_BIT);
 }
@@ -833,12 +811,19 @@ void RenderPassTest::createInfoConstructAttachments() {
 void RenderPassTest::createInfoConstructSubpasses() {
     RenderPassCreateInfo info;
     info.addSubpass(SubpassDescription{}
-        .setColorAttachments({15, 34, 1})
+        .setColorAttachments({
+            AttachmentReference{15, ImageLayout::ColorAttachment},
+            AttachmentReference{34, ImageLayout::ColorAttachment},
+            AttachmentReference{1, ImageLayout::ColorAttachment}
+        })
         .setPreserveAttachments({22})
     );
     info.addSubpass(SubpassDescription{}
-        .setInputAttachments({17, {}})
-        .setDepthStencilAttachment(1)
+        .setInputAttachments({
+            AttachmentReference{17, ImageLayout::ShaderReadOnly},
+            {}
+        })
+        .setDepthStencilAttachment(AttachmentReference{1, ImageLayout::DepthStencilAttachment})
     );
     CORRADE_COMPARE(info->subpassCount, 2);
     CORRADE_VERIFY(info->pSubpasses);
@@ -953,7 +938,14 @@ void RenderPassTest::createInfoConstructCopy() {
 
 void RenderPassTest::createInfoConstructMove() {
     RenderPassCreateInfo a;
-    a.setAttachments({PixelFormat::Depth32F, PixelFormat::RGB8Snorm});
+    a.setAttachments({
+        AttachmentDescription{PixelFormat::Depth32F,
+            {}, {},
+            {}, {}},
+        AttachmentDescription{PixelFormat::RGB8Snorm,
+            {}, {},
+            {}, {}}
+    });
     CORRADE_COMPARE(a->attachmentCount, 2);
     CORRADE_COMPARE(a->pAttachments[1].format, VK_FORMAT_R8G8B8_SNORM);
 
@@ -980,11 +972,18 @@ template<class T> void RenderPassTest::createInfoConvertToVk() {
 
     RenderPassCreateInfo info;
     info.setAttachments({
-            AttachmentDescription{PixelFormat::RGB16UI},
-            AttachmentDescription{PixelFormat{}, {}, {AttachmentStoreOperation::Store, AttachmentStoreOperation::DontCare}}
+            AttachmentDescription{PixelFormat::RGB16UI,
+                AttachmentLoadOperation{}, AttachmentStoreOperation{},
+                ImageLayout{}, ImageLayout{}},
+            AttachmentDescription{PixelFormat{}, {}, {AttachmentStoreOperation::Store, AttachmentStoreOperation::DontCare}, ImageLayout{}, ImageLayout{}}
         })
-        .addSubpass(SubpassDescription{}.setColorAttachments({1, {15, ImageLayout::ShaderReadOnly}}))
-        .addSubpass(SubpassDescription{}.setDepthStencilAttachment({15, ImageLayout::ShaderReadOnly}))
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{1, ImageLayout{}},
+            AttachmentReference{15, ImageLayout::ShaderReadOnly}
+        }))
+        .addSubpass(SubpassDescription{}.setDepthStencilAttachment(
+            AttachmentReference{15, ImageLayout::ShaderReadOnly}
+        ))
         .addSubpass(SubpassDescription{}.setPreserveAttachments({57}))
         .setDependencies({SubpassDependency{dependency}});
     Containers::Array<T> array = Traits<T>::convert(info);

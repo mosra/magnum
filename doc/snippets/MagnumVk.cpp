@@ -403,8 +403,8 @@ Vk::ImageView depthView{device, Vk::ImageViewCreateInfo2D{depth}};
 
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{} /* created before */
     .setAttachments({
-        color.format(),
-        depth.format()
+        Vk::AttachmentDescription{color.format(), DOXYGEN_IGNORE({}, {}, {}, {})},
+        Vk::AttachmentDescription{depth.format(), DOXYGEN_IGNORE({}, {}, {}, {})},
     })
     DOXYGEN_IGNORE()
 };
@@ -621,7 +621,7 @@ indices.bindMemory(memory, indicesOffset);
 }
 
 {
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{NoCreate};
 /* The include should be a no-op here since it was already included above */
 /* [RenderPass-creation] */
 #include <Magnum/Vk/RenderPassCreateInfo.h>
@@ -630,50 +630,27 @@ DOXYGEN_IGNORE()
 
 Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     .setAttachments({
-        Vk::PixelFormat::RGBA8Srgb,
-        Vk::PixelFormat::Depth24UnormStencil8UI
+        Vk::AttachmentDescription{Vk::PixelFormat::RGBA8Srgb,
+            Vk::AttachmentLoadOperation::Clear,
+            Vk::AttachmentStoreOperation::Store,
+            Vk::ImageLayout::Undefined,
+            Vk::ImageLayout::ColorAttachment},
+        Vk::AttachmentDescription{Vk::PixelFormat::Depth24UnormStencil8UI,
+            Vk::AttachmentLoadOperation::Clear,
+            Vk::AttachmentStoreOperation::DontCare,
+            Vk::ImageLayout::Undefined,
+            Vk::ImageLayout::DepthStencilAttachment}
     })
     .addSubpass(Vk::SubpassDescription{}
-        .setColorAttachments({0})
-        .setDepthStencilAttachment(1)
+        .setColorAttachments({
+            Vk::AttachmentReference{0, Vk::ImageLayout::ColorAttachment}
+        })
+        .setDepthStencilAttachment(
+            Vk::AttachmentReference{1, Vk::ImageLayout::DepthStencilAttachment}
+        )
     )
 };
 /* [RenderPass-creation] */
-}
-
-{
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [RenderPass-creation-load-store] */
-Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
-    .setAttachments({
-        {Vk::PixelFormat::RGBA8Srgb, Vk::AttachmentLoadOperation::Clear, {}},
-        {Vk::PixelFormat::Depth24UnormStencil8UI, Vk::AttachmentLoadOperation::Clear, {}},
-    })
-    DOXYGEN_IGNORE()
-};
-/* [RenderPass-creation-load-store] */
-}
-
-{
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
-/* [RenderPass-creation-layout] */
-Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
-    .setAttachments({
-        {Vk::PixelFormat::RGBA8Srgb,
-         Vk::AttachmentLoadOperation::Clear, {},
-         Vk::ImageLayout::ColorAttachment,
-         Vk::ImageLayout::ColorAttachment},
-        {Vk::PixelFormat::Depth24UnormStencil8UI,
-         Vk::AttachmentLoadOperation::Clear, {},
-         Vk::ImageLayout::DepthStencilAttachment,
-         Vk::ImageLayout::DepthStencilAttachment},
-    })
-    .addSubpass(Vk::SubpassDescription{}
-        .setColorAttachments({{0, Vk::ImageLayout::ColorAttachment}})
-        .setDepthStencilAttachment({1, Vk::ImageLayout::ColorAttachment})
-    )
-};
-/* [RenderPass-creation-layout] */
 }
 
 {

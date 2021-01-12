@@ -57,12 +57,6 @@ AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, c
 
 AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const AttachmentLoadOperation loadOperation, const AttachmentStoreOperation storeOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), loadOperation, storeOperation, initialLayout, finalLayout, samples, flags} {}
 
-AttachmentDescription::AttachmentDescription(const PixelFormat format, const AttachmentLoadOperation loadOperation, const AttachmentStoreOperation storeOperation, const Int samples, const Flags flags): AttachmentDescription{format, loadOperation, storeOperation, ImageLayout::General, ImageLayout::General, samples, flags} {}
-
-AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, const AttachmentLoadOperation loadOperation, const AttachmentStoreOperation storeOperation, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), loadOperation, storeOperation, samples, flags} {}
-
-AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const AttachmentLoadOperation loadOperation, const AttachmentStoreOperation storeOperation, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), loadOperation, storeOperation, samples, flags} {}
-
 AttachmentDescription::AttachmentDescription(const PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): _description{} {
     _description.sType = VK_STRUCTURE_TYPE_ATTACHMENT_DESCRIPTION_2;
     _description.flags = VkAttachmentDescriptionFlags(flags);
@@ -79,12 +73,6 @@ AttachmentDescription::AttachmentDescription(const PixelFormat format, const std
 AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
 
 AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const ImageLayout initialLayout, const ImageLayout finalLayout, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, initialLayout, finalLayout, samples, flags} {}
-
-AttachmentDescription::AttachmentDescription(const PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const Int samples, const Flags flags): AttachmentDescription{format, depthStencilLoadOperation, depthStencilStoreOperation, ImageLayout::General, ImageLayout::General, samples, flags} {}
-
-AttachmentDescription::AttachmentDescription(const Magnum::PixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, samples, flags} {}
-
-AttachmentDescription::AttachmentDescription(const Magnum::CompressedPixelFormat format, const std::pair<AttachmentLoadOperation, AttachmentLoadOperation> depthStencilLoadOperation, const std::pair<AttachmentStoreOperation, AttachmentStoreOperation> depthStencilStoreOperation, const Int samples, const Flags flags): AttachmentDescription{pixelFormat(format), depthStencilLoadOperation, depthStencilStoreOperation, samples, flags} {}
 
 AttachmentDescription::AttachmentDescription(NoInitT) noexcept {}
 

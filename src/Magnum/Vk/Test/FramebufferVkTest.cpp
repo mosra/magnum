@@ -63,12 +63,24 @@ void FramebufferVkTest::construct() {
 
     RenderPass renderPass{device(), RenderPassCreateInfo{}
         .setAttachments({
-            color.format(),
-            depth.format()
+            AttachmentDescription{color.format(),
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment},
+            AttachmentDescription{depth.format(),
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::DepthStencilAttachment}
         })
         .addSubpass(SubpassDescription{}
-            .setColorAttachments({0})
-            .setDepthStencilAttachment(1)
+            .setColorAttachments({
+                AttachmentReference{0, ImageLayout::ColorAttachment}
+            })
+            .setDepthStencilAttachment(
+                AttachmentReference{1, ImageLayout::DepthStencilAttachment}
+            )
         )
     };
 
@@ -91,8 +103,16 @@ void FramebufferVkTest::constructMove() {
         PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     RenderPass renderPass{device(), RenderPassCreateInfo{}
-        .setAttachments({color.format()})
-        .addSubpass(SubpassDescription{}.setColorAttachments({0}))
+        .setAttachments({
+            AttachmentDescription{color.format(),
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
     };
 
     Framebuffer a{device(), FramebufferCreateInfo{renderPass, {
@@ -123,8 +143,16 @@ void FramebufferVkTest::wrap() {
         PixelFormat::RGBA8Unorm, {256, 256}, 1}, MemoryFlag::DeviceLocal};
     ImageView colorView{device(), ImageViewCreateInfo2D{color}};
     RenderPass renderPass{device(), RenderPassCreateInfo{}
-        .setAttachments({color.format()})
-        .addSubpass(SubpassDescription{}.setColorAttachments({0}))
+        .setAttachments({
+            AttachmentDescription{color.format(),
+                AttachmentLoadOperation::Load,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
     };
 
     VkFramebuffer framebuffer{};

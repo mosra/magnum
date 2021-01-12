@@ -49,9 +49,11 @@ namespace Implementation { struct DeviceState; }
 */
 enum class ImageLayout: Int {
     /**
-     * Undefined. Can only be used as the initial layout in
-     * @ref ImageCreateInfo structures (and there it's the default). Images in
-     * this layout are not accessible by the device, the image has to be
+     * Undefined. Can be used as the initial layout in @ref ImageCreateInfo
+     * structures (and there it's the default) and as the initial layout in
+     * render pass @ref AttachmentDescription (in which case it tells the
+     * driver that we don't care about the previous contents). Images in this
+     * layout are not accessible by the device, the image has to be
      * transitioned to a defined layout such as @ref ImageLayout::General
      * first; contents of the memory are not guaranteed to be preserved during
      * the transition.
@@ -84,9 +86,7 @@ enum class ImageLayout: Int {
     Preinitialized = VK_IMAGE_LAYOUT_PREINITIALIZED,
 
     /**
-     * General layout, supports all types of device access. This is the
-     * conservative default used everywhere except the @ref ImageCreateInfo
-     * structures, which uses @ref ImageLayout::Undefined.
+     * General layout, supports all types of device access.
      *
      * @m_class{m-note m-success}
      *

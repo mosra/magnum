@@ -53,45 +53,45 @@ connected together in a @ref Framebuffer.
 
 @section Vk-RenderPass-creation Render pass creation
 
-@ref RenderPassCreateInfo is a set of attachments, described by
-@ref AttachmentDescription instances, subpasses operating on those attachments,
-described by a @ref SubpassDescription using @ref AttachmentReference
-instances, and subpass dependencies, described by @ref SubpassDependency.
+A @ref RenderPassCreateInfo consists of:
+
+-   a set of attachments, described by @ref AttachmentDescription instances,
+-   subpasses operating on those attachments, described by a
+    @ref SubpassDescription using @ref AttachmentReference instances,
+-   and subpass dependencies, described by @ref SubpassDependency.
 
 A render pass has to have at least one subpass. It's common to have just one
-subpass but while the subpass isn't required to operate on any attachments,
+subpass, but while the subpass isn't required to operate on any attachments,
 such case is rather rare. Following is a simple setup for one subpass operating
-on a color and a combined depth/stencil attachment. The main parameter an
-@ref AttachmentDescription needs is attachment format; the numbers passed to
-@ref SubpassDescription::setColorAttachments() and
-@ref SubpassDescription::setDepthStencilAttachment() are indices into the
-@ref RenderPassCreateInfo::setAttachments() array, and it's actually
-@ref AttachmentReference instances:
+on a color and a combined depth/stencil attachment. Each
+@ref AttachmentDescription describes a concrete attachment and particular
+@ref SubpassDescription::setColorAttachments() /
+@ref SubpassDescription::setDepthStencilAttachment() "setColorAttachments()"
+then reference it by an index.
+
+In addition to a format, each @ref AttachmentDescription has to specify an
+@ref AttachmentLoadOperation that happens at the render pass begin --- whether
+we want to preserve the contents, clear them or discard --- and similarly an
+@ref AttachmentStoreOperation at the end. Then, the @ref ImageLayout parameters
+specify what implicit layout transitions (if any) need to happen between start
+of the render pass and the first subpass, between subpasses and between last
+subpass and end of the render pass.
 
 @snippet MagnumVk.cpp RenderPass-creation
 
-The above again does a conservative estimate that you'd want to preserve the
-attachment contents between render passes. Usually you'd want to clear the
-framebuffer first instead of reusing its previous contents, which is done by
-passing appropriate @ref AttachmentLoadOperation /
-@ref AttachmentStoreOperation to the @ref AttachmentDescription constructor.
-@ref AttachmentLoadOperation::Load and @ref AttachmentStoreOperation::Store are
-conveniently the zero values, which means you can use @cpp {} @ce instead of
-typing them out in full:
+<b></b>
 
-@snippet MagnumVk.cpp RenderPass-creation-load-store
+@m_class{m-note m-info}
 
-Vulkan makes heavy use of image layouts for optimal memory access
-and in all the cases above, @ref ImageLayout::General is used as an implicit
-conservative layout. It's guaranteed to work for all device access, but it
-might not always be optimal. A complete description of image layouts and their
-use is out of scope of this reference, but for example, if the attached images
-would be always only used as a render target, the above setup could be made
-more optimal by explicitly specifying both a concrete initial and final layout
-in the @ref AttachmentDescription constructors and in
-each @link AttachmentReference @endlink:
-
-@snippet MagnumVk.cpp RenderPass-creation-layout
+@par
+    @ref ImageLayout::Undefined also doubles as a way of saying "transition
+    from whatever layout is there" --- when we render to an attachment for the
+    first time, it will most probably be in @ref ImageLayout::Undefined, but
+    subsequently it won't anymore and instead be
+    @ref ImageLayout::ColorAttachment,
+    @ref ImageLayout::DepthStencilAttachment "DepthStencilAttachment" or just
+    any other. With @ref ImageLayout::Undefined we don't need to explicitly
+    handle that case.
 */
 class MAGNUM_VK_EXPORT RenderPass {
     public:

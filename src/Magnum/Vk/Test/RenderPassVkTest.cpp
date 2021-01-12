@@ -70,8 +70,16 @@ RenderPassVkTest::RenderPassVkTest() {
 void RenderPassVkTest::construct() {
     {
         RenderPass renderPass{device(), RenderPassCreateInfo{}
-            .setAttachments({PixelFormat::RGBA8Unorm})
-            .addSubpass(SubpassDescription{}.setColorAttachments({0}))
+            .setAttachments({
+                AttachmentDescription{PixelFormat::RGBA8Unorm,
+                    AttachmentLoadOperation::Clear,
+                    AttachmentStoreOperation::Store,
+                    ImageLayout::Undefined,
+                    ImageLayout::General}
+            })
+            .addSubpass(SubpassDescription{}.setColorAttachments({
+                AttachmentReference{0, ImageLayout::General}
+            }))
         };
         CORRADE_VERIFY(renderPass.handle());
         CORRADE_COMPARE(renderPass.handleFlags(), HandleFlag::DestroyOnDestruction);
@@ -103,8 +111,16 @@ void RenderPassVkTest::constructSubpassNoAttachments() {
 
 void RenderPassVkTest::constructMove() {
     RenderPass a{device(), RenderPassCreateInfo{}
-        .setAttachments({PixelFormat::RGBA8Unorm})
-        .addSubpass(SubpassDescription{}.setColorAttachments({0}))
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
     };
     VkRenderPass handle = a.handle();
 
@@ -128,8 +144,16 @@ void RenderPassVkTest::wrap() {
     VkRenderPass renderPass{};
     CORRADE_COMPARE(Result(device()->CreateRenderPass(device(),
         RenderPassCreateInfo{}
-            .setAttachments({PixelFormat::RGBA8Unorm})
-            .addSubpass(SubpassDescription{}.setColorAttachments({0}))
+            .setAttachments({
+                AttachmentDescription{PixelFormat::RGBA8Unorm,
+                    AttachmentLoadOperation::Clear,
+                    AttachmentStoreOperation::Store,
+                    ImageLayout::Undefined,
+                    ImageLayout::ColorAttachment}
+            })
+            .addSubpass(SubpassDescription{}.setColorAttachments({
+                AttachmentReference{0, ImageLayout::ColorAttachment}
+            }))
         .vkRenderPassCreateInfo(),
         nullptr, &renderPass)), Result::Success);
 
@@ -160,12 +184,22 @@ void RenderPassVkTest::cmdBeginEnd() {
 
     RenderPass renderPass{device(), RenderPassCreateInfo{}
         .setAttachments({
-            {color.format(), AttachmentLoadOperation::Clear, {}},
-            {depth.format(), AttachmentLoadOperation::Clear, {}},
+            AttachmentDescription{color.format(),
+                AttachmentLoadOperation::Clear, {},
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment},
+            AttachmentDescription{depth.format(),
+                AttachmentLoadOperation::Clear, {},
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment},
         })
         .addSubpass(SubpassDescription{}
-            .setColorAttachments({0})
-            .setDepthStencilAttachment(1)
+            .setColorAttachments({
+                AttachmentReference{0, ImageLayout::ColorAttachment}
+            })
+            .setDepthStencilAttachment(
+                AttachmentReference{1, ImageLayout::DepthStencilAttachment}
+            )
         )
         /* Further subpasses with no attachments so we can test nextSubpass()
            but don't need to specify subpass dependencies (which I have no idea
