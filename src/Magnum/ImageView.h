@@ -214,8 +214,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
-         * @param size              Image size
+         * @param pixelSize         Size of a pixel in given format, in bytes
+         * @param size              Image size, in pixels
          * @param data              Image data
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<ErasedType>),
@@ -242,8 +242,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
-         * @param size              Image size
+         * @param pixelSize         Size of a pixel in given format, in bytes
+         * @param size              Image size, in pixels
          *
          * Unlike with @ref ImageView(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&),
          * where pixel size is calculated automatically using
@@ -403,13 +403,13 @@ template<UnsignedInt dimensions, class T> class ImageView {
         UnsignedInt formatExtra() const { return _formatExtra; }
 
         /**
-         * @brief Pixel size (in bytes)
+         * @brief Size of a pixel in bytes
          *
          * @see @ref pixelSize(PixelFormat)
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
@@ -775,7 +775,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         CompressedPixelFormat format() const { return _format; }
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**

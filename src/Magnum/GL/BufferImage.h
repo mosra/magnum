@@ -273,13 +273,13 @@ template<UnsignedInt dimensions> class BufferImage {
         PixelType type() const { return _type; }
 
         /**
-         * @brief Pixel size (in bytes)
+         * @brief Size of a pixel in bytes
          *
          * @see @ref Magnum::pixelSize(), @ref GL::pixelSize()
          */
         UnsignedInt pixelSize() const;
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /**

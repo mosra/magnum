@@ -172,8 +172,8 @@ template<UnsignedInt dimensions> class Image {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
-         * @param size              Image size
+         * @param pixelSize         Size of a pixel in given format, in bytes
+         * @param size              Image size, in pixels
          * @param data              Image data
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&),
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> class Image {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
+         * @param pixelSize         Size of a pixel in given format, in bytes
          *
          * Unlike with @ref Image(PixelStorage, PixelFormat), where pixel size
          * is calculated automatically using @ref pixelSize(PixelFormat), this
@@ -362,13 +362,13 @@ template<UnsignedInt dimensions> class Image {
         UnsignedInt formatExtra() const { return _formatExtra; }
 
         /**
-         * @brief Pixel size (in bytes)
+         * @brief Size of a pixel in bytes
          *
          * @see @ref pixelSize(PixelFormat)
          */
         UnsignedInt pixelSize() const { return _pixelSize; }
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
@@ -632,7 +632,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          */
         CompressedPixelFormat format() const { return _format; }
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**

@@ -681,7 +681,7 @@ to query availability of given format.
 MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt extra = 0);
 
 /**
-@brief Pixel size for given format/type combination (in bytes)
+@brief Size of a pixel for given format/type combination in bytes
 
 @see @ref Magnum::pixelSize(), @ref PixelStorage::dataProperties()
 */

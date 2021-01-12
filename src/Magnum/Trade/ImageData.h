@@ -179,8 +179,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
-         * @param size              Image size
+         * @param pixelSize         Size of a pixel in given format, in bytes
+         * @param size              Image size, in pixels
          * @param data              Image data
          * @param importerState     Importer-specific state
          *
@@ -211,8 +211,8 @@ template<UnsignedInt dimensions> class ImageData {
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
-         * @param pixelSize         Size of a pixel in given format
-         * @param size              Image size
+         * @param pixelSize         Size of a pixel in given format, in bytes
+         * @param size              Image size, in pixels
          * @param dataFlags         Data flags
          * @param data              View on image data
          * @param importerState     Importer-specific state
@@ -516,14 +516,14 @@ template<UnsignedInt dimensions> class ImageData {
         CompressedPixelFormat compressedFormat() const;
 
         /**
-         * @brief Pixel size (in bytes)
+         * @brief Size of a pixel in bytes
          *
          * The image is expected to be uncompressed.
          * @see @ref isCompressed(), @ref Magnum::pixelSize()
          */
         UnsignedInt pixelSize() const;
 
-        /** @brief Image size */
+        /** @brief Image size in pixels */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**

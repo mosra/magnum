@@ -667,7 +667,7 @@ enum class PixelFormat: UnsignedInt {
 };
 
 /**
-@brief Pixel size
+@brief Size of a pixel
 
 Expects that the pixel format is *not* implementation-specific.
 @see @ref isPixelFormatImplementationSpecific(), @ref GL::pixelSize()
