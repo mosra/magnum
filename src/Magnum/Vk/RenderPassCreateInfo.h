@@ -187,7 +187,7 @@ class MAGNUM_VK_EXPORT AttachmentDescription {
          * @param samples           Sample count
          * @param flags             Attachment description flags
          *
-         * The following @type_vk{AttachmentDescription} fields are pre-filled
+         * The following @type_vk{AttachmentDescription2} fields are pre-filled
          * in addition to `sType`, everything else is zero-filled:
          *
          * -    `flags`
@@ -356,7 +356,7 @@ class MAGNUM_VK_EXPORT AttachmentReference {
          *      @ref RenderPassCreateInfo::setAttachments()
          * @param layout        Image layout. Should correspond to what's
          *      passed to @p initialLayout and @p finalLayout in
-         *      @ref AttachmentDescription constructor
+         *      @ref AttachmentDescription constructor.
          *
          * The following @type_vk{AttachmentReference2} fields are pre-filled
          * in addition to `sType`, everything else is zero-filled:
@@ -554,6 +554,12 @@ class MAGNUM_VK_EXPORT SubpassDescription {
         /**
          * @brief Set input attachments
          * @return Reference to self (for method chaining)
+         *
+         * Attachments that are being read from in this subpass. The elements
+         * correspond to shader input attachment indices, i.e. a shader input
+         * attachment index @cpp 5 @ce will read from the attachment specified
+         * at offset @cpp 5 @ce in this list. Use a default-constructed
+         * @ref AttachmentReference to specify that given input will be unused.
          */
         SubpassDescription& setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) &;
         /** @overload */
@@ -567,9 +573,16 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * @brief Set color attachments
          * @return Reference to self (for method chaining)
          *
-         * The @p resolveAttachments list is expected to be either empty or
-         * have the same size as @p attachments. If non-empty, each item has to
-         * have the same format as the corresponding item in @p attachments.
+         * Color attachments that are being written to in this subpass. The
+         * @p resolveAttachments list is expected to be either empty or have
+         * the same size as @p attachments. If non-empty, each item has to have
+         * the same format as the corresponding item in @p attachments.
+         *
+         * The elements correspond to shader color attachment indices, i.e. a
+         * shader output attachment index @cpp 5 @ce will write from the
+         * attachment specified at offset @cpp 5 @ce in this list. Use a
+         * default-constructed @ref AttachmentReference to specify that given
+         * output will be unused.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         SubpassDescription& setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments, Containers::ArrayView<const AttachmentReference> resolveAttachments = {}) &;
@@ -591,6 +604,7 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * @brief Set depth/stencil attachment
          * @return Reference to self (for method chaining)
          *
+         * Depth/stencil attachment that is being written to in this subpass.
          * Calling this function with a default-constructed
          * @ref AttachmentReference is equivalent to not calling it at all, and
          * both mean there's no depth/stencil attachment.
@@ -603,8 +617,10 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * @brief Set preserve attachments
          * @return Reference to self (for method chaining)
          *
-         * The @p attachment values are indices into the list passed to
-         *      @ref RenderPassCreateInfo::setAttachments()
+         * Attachments that are not read or written by the subpass but have to
+         * be preserved throughout the subpass. The @p attachment values are
+         * indices into the list passed to
+         * @ref RenderPassCreateInfo::setAttachments().
          */
         SubpassDescription& setPreserveAttachments(Containers::ArrayView<const UnsignedInt> attachments) &;
         /** @overload */
