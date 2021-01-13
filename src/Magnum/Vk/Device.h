@@ -44,7 +44,7 @@
 namespace Magnum { namespace Vk {
 
 namespace Implementation {
-    enum: std::size_t { ExtensionCount = 72 };
+    enum: std::size_t { ExtensionCount = 96 };
 
     struct DeviceState;
 }

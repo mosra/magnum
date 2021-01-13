@@ -63,6 +63,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 /* VK_KHR_buffer_device_address */
 
 
+/* VK_KHR_copy_commands2 */
+
+
 /* VK_KHR_create_renderpass2 */
 
 
@@ -212,6 +215,15 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 #define vkGetBufferDeviceAddressKHR flextVkDevice.GetBufferDeviceAddressKHR
 #define vkGetBufferOpaqueCaptureAddressKHR flextVkDevice.GetBufferOpaqueCaptureAddressKHR
 #define vkGetDeviceMemoryOpaqueCaptureAddressKHR flextVkDevice.GetDeviceMemoryOpaqueCaptureAddressKHR
+
+/* VK_KHR_copy_commands2 */
+
+#define vkCmdBlitImage2KHR flextVkDevice.CmdBlitImage2KHR
+#define vkCmdCopyBuffer2KHR flextVkDevice.CmdCopyBuffer2KHR
+#define vkCmdCopyBufferToImage2KHR flextVkDevice.CmdCopyBufferToImage2KHR
+#define vkCmdCopyImage2KHR flextVkDevice.CmdCopyImage2KHR
+#define vkCmdCopyImageToBuffer2KHR flextVkDevice.CmdCopyImageToBuffer2KHR
+#define vkCmdResolveImage2KHR flextVkDevice.CmdResolveImage2KHR
 
 /* VK_KHR_create_renderpass2 */
 

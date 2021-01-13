@@ -284,6 +284,11 @@ extern "C" {
 #define VK_KHR_PIPELINE_LIBRARY_SPEC_VERSION 1
 #define VK_KHR_PIPELINE_LIBRARY_EXTENSION_NAME "VK_KHR_pipeline_library"
 
+/* VK_KHR_copy_commands2 */
+
+#define VK_KHR_COPY_COMMANDS_2_SPEC_VERSION 1
+#define VK_KHR_COPY_COMMANDS_2_EXTENSION_NAME "VK_KHR_copy_commands2"
+
 /* VK_KHR_shader_float_controls */
 
 #define VK_KHR_SHADER_FLOAT_CONTROLS_SPEC_VERSION 4
@@ -319,7 +324,7 @@ extern "C" {
 // Vulkan 1.2 version number
 #define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 165
+#define VK_HEADER_VERSION 166
 // Complete version of this file
 #define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
@@ -1563,6 +1568,17 @@ typedef enum {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR = 1000163000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR = 1000163001,
     VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR = 1000290000,
+    VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR = 1000337000,
+    VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR = 1000337001,
+    VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR = 1000337002,
+    VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2_KHR = 1000337003,
+    VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2_KHR = 1000337004,
+    VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2_KHR = 1000337005,
+    VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR = 1000337006,
+    VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR = 1000337007,
+    VK_STRUCTURE_TYPE_IMAGE_BLIT_2_KHR = 1000337008,
+    VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR = 1000337009,
+    VK_STRUCTURE_TYPE_IMAGE_RESOLVE_2_KHR = 1000337010,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR = 1000347000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR = 1000347001,
@@ -4754,6 +4770,117 @@ typedef struct VkPhysicalDevicePortabilitySubsetPropertiesKHR {
     uint32_t                           minVertexInputBindingStrideAlignment;
 } VkPhysicalDevicePortabilitySubsetPropertiesKHR;
 
+typedef struct VkBufferCopy2KHR {
+    VkStructureType sType;
+    const void*  pNext;
+    VkDeviceSize srcOffset;
+    VkDeviceSize dstOffset;
+    VkDeviceSize size;
+} VkBufferCopy2KHR;
+
+typedef struct VkImageCopy2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkImageSubresourceLayers srcSubresource;
+    VkOffset3D srcOffset;
+    VkImageSubresourceLayers dstSubresource;
+    VkOffset3D dstOffset;
+    VkExtent3D extent;
+} VkImageCopy2KHR;
+
+typedef struct VkImageBlit2KHR {
+    VkStructureType sType;
+    const void*  pNext;
+    VkImageSubresourceLayers srcSubresource;
+    VkOffset3D srcOffsets[2];
+    VkImageSubresourceLayers dstSubresource;
+    VkOffset3D dstOffsets[2];
+} VkImageBlit2KHR;
+
+typedef struct VkBufferImageCopy2KHR {
+    VkStructureType sType;
+    const void*  pNext;
+    VkDeviceSize bufferOffset;
+    uint32_t bufferRowLength;
+    uint32_t bufferImageHeight;
+    VkImageSubresourceLayers imageSubresource;
+    VkOffset3D imageOffset;
+    VkExtent3D imageExtent;
+} VkBufferImageCopy2KHR;
+
+typedef struct VkImageResolve2KHR {
+    VkStructureType sType;
+    const void*  pNext;
+    VkImageSubresourceLayers srcSubresource;
+    VkOffset3D srcOffset;
+    VkImageSubresourceLayers dstSubresource;
+    VkOffset3D dstOffset;
+    VkExtent3D extent;
+} VkImageResolve2KHR;
+
+typedef struct VkCopyBufferInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkBuffer srcBuffer;
+    VkBuffer dstBuffer;
+    uint32_t regionCount;
+    const VkBufferCopy2KHR* pRegions;
+} VkCopyBufferInfo2KHR;
+
+typedef struct VkCopyImageInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkImage srcImage;
+    VkImageLayout srcImageLayout;
+    VkImage dstImage;
+    VkImageLayout dstImageLayout;
+    uint32_t regionCount;
+    const VkImageCopy2KHR* pRegions;
+} VkCopyImageInfo2KHR;
+
+typedef struct VkBlitImageInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkImage srcImage;
+    VkImageLayout srcImageLayout;
+    VkImage dstImage;
+    VkImageLayout dstImageLayout;
+    uint32_t regionCount;
+    const VkImageBlit2KHR* pRegions;
+    VkFilter filter;
+} VkBlitImageInfo2KHR;
+
+typedef struct VkCopyBufferToImageInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkBuffer srcBuffer;
+    VkImage dstImage;
+    VkImageLayout dstImageLayout;
+    uint32_t regionCount;
+    const VkBufferImageCopy2KHR* pRegions;
+} VkCopyBufferToImageInfo2KHR;
+
+typedef struct VkCopyImageToBufferInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkImage srcImage;
+    VkImageLayout srcImageLayout;
+    VkBuffer dstBuffer;
+    uint32_t regionCount;
+    const VkBufferImageCopy2KHR* pRegions;
+} VkCopyImageToBufferInfo2KHR;
+
+typedef struct VkResolveImageInfo2KHR {
+    VkStructureType sType;
+    const void* pNext;
+    VkImage srcImage;
+    VkImageLayout srcImageLayout;
+    VkImage dstImage;
+    VkImageLayout dstImageLayout;
+    uint32_t regionCount;
+    const VkImageResolve2KHR* pRegions;
+} VkResolveImageInfo2KHR;
+
 typedef struct VkAccelerationStructureBuildSizesInfoKHR {
     VkStructureType sType;
     const void*        pNext;
@@ -4806,6 +4933,9 @@ struct FlextVkInstance {
 
 
     /* VK_KHR_buffer_device_address */
+
+
+    /* VK_KHR_copy_commands2 */
 
 
     /* VK_KHR_create_renderpass2 */
@@ -4961,6 +5091,15 @@ struct FlextVkDevice {
     VkDeviceAddress    (VKAPI_PTR *GetBufferDeviceAddressKHR)(VkDevice, const VkBufferDeviceAddressInfo*);
     uint64_t    (VKAPI_PTR *GetBufferOpaqueCaptureAddressKHR)(VkDevice, const VkBufferDeviceAddressInfo*);
     uint64_t    (VKAPI_PTR *GetDeviceMemoryOpaqueCaptureAddressKHR)(VkDevice, const VkDeviceMemoryOpaqueCaptureAddressInfo*);
+
+    /* VK_KHR_copy_commands2 */
+
+    void    (VKAPI_PTR *CmdBlitImage2KHR)(VkCommandBuffer, const VkBlitImageInfo2KHR*);
+    void    (VKAPI_PTR *CmdCopyBuffer2KHR)(VkCommandBuffer, const VkCopyBufferInfo2KHR*);
+    void    (VKAPI_PTR *CmdCopyBufferToImage2KHR)(VkCommandBuffer, const VkCopyBufferToImageInfo2KHR*);
+    void    (VKAPI_PTR *CmdCopyImage2KHR)(VkCommandBuffer, const VkCopyImageInfo2KHR*);
+    void    (VKAPI_PTR *CmdCopyImageToBuffer2KHR)(VkCommandBuffer, const VkCopyImageToBufferInfo2KHR*);
+    void    (VKAPI_PTR *CmdResolveImage2KHR)(VkCommandBuffer, const VkResolveImageInfo2KHR*);
 
     /* VK_KHR_create_renderpass2 */
 

@@ -737,9 +737,9 @@ unless it doesn't affect public API at all.
     -   update the numbering to stay monotonic and unique, round up start index
         of next section to nearest ten to make the updates bearable
     -   in case there's a lot of new extensions,
-        @cpp Implementation::InstanceExtensionCount @ce /
-        @cpp Implementation::DeviceExtensionCount @ce might needed to be
-        increased
+        @cpp Implementation::InstanceExtensionCount @ce in `Instance.h` /
+        @cpp Implementation::DeviceExtensionCount @ce in `Device.h` might
+        need to be increased
 2.  Add them alphabetically ordered to the correct list in
     `src/Magnum/Vk/Extensions.cpp`
 3.  Update existing extensions with version in which they become core (last

@@ -73,6 +73,7 @@ constexpr Extension DeviceExtensions[] {
     Extensions::EXT::vertex_attribute_divisor{},
     Extensions::IMG::format_pvrtc{},
     Extensions::KHR::acceleration_structure{},
+    Extensions::KHR::copy_commands2{},
     Extensions::KHR::deferred_host_operations{},
     Extensions::KHR::pipeline_library{},
     Extensions::KHR::portability_subset{},

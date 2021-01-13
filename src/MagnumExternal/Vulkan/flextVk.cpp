@@ -111,6 +111,12 @@ void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(
     data->GetBufferDeviceAddressKHR = reinterpret_cast<VkDeviceAddress(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferDeviceAddressKHR"));
     data->GetBufferOpaqueCaptureAddressKHR = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkBufferDeviceAddressInfo*)>(getDeviceProcAddr(device, "vkGetBufferOpaqueCaptureAddressKHR"));
     data->GetDeviceMemoryOpaqueCaptureAddressKHR = reinterpret_cast<uint64_t(VKAPI_PTR*)(VkDevice, const VkDeviceMemoryOpaqueCaptureAddressInfo*)>(getDeviceProcAddr(device, "vkGetDeviceMemoryOpaqueCaptureAddressKHR"));
+    data->CmdBlitImage2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkBlitImageInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdBlitImage2KHR"));
+    data->CmdCopyBuffer2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkCopyBufferInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdCopyBuffer2KHR"));
+    data->CmdCopyBufferToImage2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkCopyBufferToImageInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdCopyBufferToImage2KHR"));
+    data->CmdCopyImage2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkCopyImageInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdCopyImage2KHR"));
+    data->CmdCopyImageToBuffer2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkCopyImageToBufferInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdCopyImageToBuffer2KHR"));
+    data->CmdResolveImage2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkResolveImageInfo2KHR*)>(getDeviceProcAddr(device, "vkCmdResolveImage2KHR"));
     data->CmdBeginRenderPass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkRenderPassBeginInfo*, const VkSubpassBeginInfo*)>(getDeviceProcAddr(device, "vkCmdBeginRenderPass2KHR"));
     data->CmdEndRenderPass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdEndRenderPass2KHR"));
     data->CmdNextSubpass2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, const VkSubpassBeginInfo*, const VkSubpassEndInfo*)>(getDeviceProcAddr(device, "vkCmdNextSubpass2KHR"));

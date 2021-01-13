@@ -166,8 +166,9 @@ namespace EXT {
     _extension(67, KHR,buffer_device_address,               Vk10, Vk12) // #258
     _extension(68, KHR,deferred_host_operations,            Vk10, None) // #259
     _extension(69, KHR,pipeline_library,                    Vk10, None) // #291
-    _extension(70, KHR,ray_tracing_pipeline,                Vk11, None) // #348
-    _extension(71, KHR,ray_query,                           Vk11, None) // #349
+    _extension(70, KHR,copy_commands2,                      Vk10, None) // #338
+    _extension(71, KHR,ray_tracing_pipeline,                Vk11, None) // #348
+    _extension(72, KHR,ray_query,                           Vk11, None) // #349
 }
 #undef _extension
 

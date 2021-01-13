@@ -126,6 +126,7 @@ Extension                                           | Status
 @vk_extension{KHR,portability_subset}               | done except properties
 @vk_extension{KHR,deferred_host_operations}         | |
 @vk_extension{KHR,pipeline_library}                 | |
+@vk_extension{KHR,copy_commands2}                   | |
 @vk_extension{KHR,ray_tracing_pipeline}             | |
 @vk_extension{KHR,ray_query}                        | |
 @vk_extension{IMG,format_pvrtc}                     | done
