@@ -46,7 +46,8 @@ namespace Implementation { struct DeviceState; }
 @brief Command buffer begin info
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandBufferBeginInfo}.
+Wraps a @type_vk_keyword{CommandBufferBeginInfo}. See
+@ref Vk-CommandBuffer-usage "Command buffer usage" for more information.
 @see @ref CommandBuffer::begin()
 */
 class MAGNUM_VK_EXPORT CommandBufferBeginInfo {
@@ -172,8 +173,34 @@ CORRADE_ENUMSET_OPERATORS(CommandBufferResetFlags)
 @brief Command buffer
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandBuffer}. A command buffer instance is usually
-allocated from a @ref CommandPool, see its documentation for usage information.
+Wraps a @type_vk_keyword{CommandBuffer}.
+
+@section Vk-CommandBuffer-allocation Command buffer allocation and recycling
+
+A command buffer instance is allocated from a @ref CommandPool as shown below.
+Each command buffers is freed at the end of the @ref CommandBuffer instance
+lifetime, you can also put all allocated buffers back to initial state by
+calling @ref CommandPool::reset(), or alternatively reset each buffer
+separately using @ref reset(), if the pool was created with
+@ref CommandPoolCreateInfo::Flag::ResetCommandBuffer.
+
+@snippet MagnumVk.cpp CommandBuffer-allocation
+
+@section Vk-CommandBuffer-usage Command buffer recording and submit
+
+A command buffer recording is initiated with @ref begin(), after which you can
+execute commands that are allowed outside a render pass. A render pass is
+delimited with @ref beginRenderPass() and @ref endRenderPass(), see
+@ref Vk-RenderPass-usage for details. Once a recording is done, call
+@ref end(). You can (but don't have to) use method chaining:
+
+@snippet MagnumVk.cpp CommandBuffer-usage
+
+Once recorded, the command buffer can be submitted to a compatible @ref Queue
+that was set up at @ref Vk-Device-creation "device creation time". Usually
+you'd want to wait on the submit completion with a @link Fence @endlink:
+
+@snippet MagnumVk.cpp CommandBuffer-usage-submit
 */
 class MAGNUM_VK_EXPORT CommandBuffer {
     public:

@@ -62,6 +62,9 @@ By default a fence is created unsignaled. It can be created in a signaled state
 using @ref FenceCreateInfo::Flag::Signaled and its signaled state reset back
 via @ref reset(). Fence status can be queried immediately via @ref status() and
 waited on using @ref wait().
+
+See @ref Vk-CommandBuffer-usage for an example usage in command buffer
+submission.
 */
 class MAGNUM_VK_EXPORT Fence {
     public:

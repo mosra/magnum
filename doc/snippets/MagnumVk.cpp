@@ -66,6 +66,7 @@
 /* [wrapping-include-both] */
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
@@ -235,16 +236,33 @@ DOXYGEN_IGNORE()
 
 Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
 
-Vk::CommandPool graphicsCommandPool{device, Vk::CommandPoolCreateInfo{
+Vk::CommandPool commandPool{device, Vk::CommandPoolCreateInfo{
     device.properties().pickQueueFamily(Vk::QueueFlag::Graphics)
 }};
 /* [CommandPool-creation] */
+}
 
-/* [CommandPool-allocation] */
-Vk::CommandBuffer commandBuffer = graphicsCommandPool.allocate();
+{
+Vk::Device device{NoCreate};
+/* [CommandBuffer-allocation] */
+Vk::CommandPool commandPool{device, DOXYGEN_IGNORE(Vk::CommandPoolCreateInfo{0})};
 
-// fill the buffer, submit …
-/* [CommandPool-allocation] */
+Vk::CommandBuffer cmd = commandPool.allocate();
+/* [CommandBuffer-allocation] */
+
+/* [CommandBuffer-usage] */
+cmd.begin()
+   DOXYGEN_IGNORE()
+   .end();
+/* [CommandBuffer-usage] */
+
+/* [CommandBuffer-usage-submit] */
+Vk::Queue queue{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::Fence fence{device};
+queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
+fence.wait();
+/* [CommandBuffer-usage-submit] */
 }
 
 {
@@ -664,6 +682,21 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
     })
 };
 /* [RenderPass-dependencies] */
+
+Vk::Framebuffer framebuffer{NoCreate};
+/* [RenderPass-usage-begin] */
+Vk::CommandBuffer cmd = DOXYGEN_IGNORE(Vk::CommandBuffer{NoCreate});
+cmd.begin()
+   DOXYGEN_IGNORE()
+   .beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
+        .clearColor(0, 0x1f1f1f_rgbf)
+        .clearDepthStencil(1, 1.0f, 0))
+/* [RenderPass-usage-begin] */
+/* [RenderPass-usage-end] */
+   .endRenderPass()
+   DOXYGEN_IGNORE()
+   .end();
+/* [RenderPass-usage-end] */
 }
 
 {

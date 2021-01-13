@@ -121,6 +121,26 @@ it to happen before the actual transfer command, and thus an explicit
 dependency is needed:
 
 @snippet MagnumVk.cpp RenderPass-dependencies
+
+@section Vk-RenderPass-usage Render pass recording
+
+A render pass recording inside a @ref CommandBuffer is begun with
+@ref CommandBuffer::beginRenderPass(), to which point Vulkan schedules all
+implicit layout transitions. Together with a render pass you need to supply a
+compatible @ref Framebuffer containing actual image views for each attachment
+and a clear value for each attachment that had
+@ref AttachmentLoadOperation::Clear specified. After that you can execute
+@ref CommandBuffer commands that are allowed inside a render pass:
+
+@snippet MagnumVk.cpp RenderPass-usage-begin
+
+Advancing to the next subpass (if any) can be done with
+@ref CommandBuffer::nextSubpass() "nextSubpass()", and finally
+@ref CommandBuffer::endRenderPass() "endRenderPass()" ends the render pass. As
+with render pass begin, these make Vulkan schedule implicit layout transitions
+between subpasses and at render pass end.
+
+@snippet MagnumVk.cpp RenderPass-usage-end
 */
 class MAGNUM_VK_EXPORT RenderPass {
     public:
@@ -220,7 +240,8 @@ class MAGNUM_VK_EXPORT RenderPass {
 @brief Render pass begin info
 @m_since_latest
 
-Wraps a @type_vk_keyword{RenderPassBeginInfo}.
+Wraps a @type_vk_keyword{RenderPassBeginInfo}. See @ref Vk-RenderPass-usage for
+more information.
 @see @ref CommandBuffer::beginRenderPass()
 */
 class MAGNUM_VK_EXPORT RenderPassBeginInfo {
@@ -372,7 +393,8 @@ enum class SubpassContents: Int {
 @brief Subpass begin info
 @m_since_latest
 
-Wraps @type_vk{SubpassBeginInfo}.
+Wraps @type_vk{SubpassBeginInfo}. See @ref Vk-RenderPass-usage for more
+information.
 @see @ref CommandBuffer::beginRenderPass(), @ref CommandBuffer::nextSubpass()
 */
 class MAGNUM_VK_EXPORT SubpassBeginInfo {
@@ -424,7 +446,8 @@ class MAGNUM_VK_EXPORT SubpassBeginInfo {
 @brief Subpass end info
 @m_since_latest
 
-Wraps @type_vk{SubpassEndInfo}.
+Wraps @type_vk{SubpassEndInfo}. See @ref Vk-RenderPass-usage for more
+information.
 @see @ref CommandBuffer::endRenderPass(), @ref CommandBuffer::nextSubpass()
 */
 class MAGNUM_VK_EXPORT SubpassEndInfo {
