@@ -990,6 +990,9 @@ inverse.
 5.  Update other occurences by hand:
     -   `package/debian/copyright`
     -   `doc/conf.py`
+    -   All flextGL `*.template` files in `src/external/OpenGL` and
+        `src/external/Vulkan` because wheezy template needs the `@` escaped to
+        `@@`
 6.  Use @cb{.sh} git diff @ce to verify the change went well and the new year
     is specified exactly once everywhere
 7.  Do a local verification build, push to `master`
