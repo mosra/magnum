@@ -279,16 +279,12 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
         resolveWrappers;
     Containers::ArrayView<VkAttachmentReference2> vkAttachments2,
         vkResolveAttachments2;
-    Containers::ArrayView<VkAttachmentReference> vkAttachments,
-        vkResolveAttachments;
 
     _state->colorAttachments = Containers::ArrayTuple{
         {NoInit, attachments.size(), wrappers},
         {NoInit, resolveAttachments.size(), resolveWrappers},
         {NoInit, attachments.size(), vkAttachments2},
-        {NoInit, resolveAttachments.size(), vkResolveAttachments2},
-        {NoInit, attachments.size(), vkAttachments},
-        {NoInit, resolveAttachments.size(), vkResolveAttachments}
+        {NoInit, resolveAttachments.size(), vkResolveAttachments2}
     };
 
     for(std::size_t i = 0; i != attachments.size(); ++i) {
@@ -296,10 +292,6 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
         new(vkAttachments2 + i) VkAttachmentReference2(*wrappers[i]);
-        new(vkAttachments + i) VkAttachmentReference{
-            vkAttachments2[i].attachment,
-            vkAttachments2[i].layout
-        };
     }
 
     if(!resolveAttachments.empty()) for(std::size_t i = 0; i != attachments.size(); ++i) {
@@ -307,10 +299,6 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
         new(vkResolveAttachments2 + i) VkAttachmentReference2(*resolveWrappers[i]);
-        new(vkResolveAttachments + i) VkAttachmentReference{
-            vkResolveAttachments2[i].attachment,
-            vkResolveAttachments2[i].layout
-        };
     }
 
     _description.colorAttachmentCount = attachments.size();
