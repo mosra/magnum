@@ -36,6 +36,7 @@
 #include "Magnum/Vk/Framebuffer.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 
 #include "Magnum/Vk/Test/pixelFormatTraits.h"
@@ -80,6 +81,7 @@ struct RenderPassTest: TestSuite::Tester {
     template<class T> void subpassDescriptionConvertToVkNoResolveAttachments();
     void subpassDescriptionRvalue();
 
+    void subpassDependencyConstruct();
     void subpassDependencyConstructNoInit();
     template<class From, class To> void subpassDependencyConstructFromVk();
     template<class T> void subpassDependencyConvertToVk();
@@ -163,6 +165,7 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::subpassDescriptionConvertToVkNoResolveAttachments<VkSubpassDescription>,
               &RenderPassTest::subpassDescriptionRvalue,
 
+              &RenderPassTest::subpassDependencyConstruct,
               &RenderPassTest::subpassDependencyConstructNoInit,
               &RenderPassTest::subpassDependencyConstructFromVk<VkSubpassDependency2, VkSubpassDependency2>,
               &RenderPassTest::subpassDependencyConstructFromVk<VkSubpassDependency, VkSubpassDependency2>,
@@ -719,6 +722,26 @@ void RenderPassTest::subpassDescriptionRvalue() {
     CORRADE_VERIFY(&description);
 }
 
+void RenderPassTest::subpassDependencyConstruct() {
+    SubpassDependency dependency{
+        15,
+        PipelineStage::ComputeShader|PipelineStage::Transfer,
+        Access::TransferRead|Access::UniformRead,
+
+        SubpassDependency::External,
+        PipelineStage::AllGraphics,
+        Access::MemoryWrite,
+
+        DependencyFlag::ByRegion};
+    CORRADE_COMPARE(dependency->srcSubpass, 15);
+    CORRADE_COMPARE(dependency->dstSubpass, VK_SUBPASS_EXTERNAL);
+    CORRADE_COMPARE(dependency->srcStageMask, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT|VK_PIPELINE_STAGE_TRANSFER_BIT);
+    CORRADE_COMPARE(dependency->dstStageMask, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+    CORRADE_COMPARE(dependency->srcAccessMask, VK_ACCESS_TRANSFER_READ_BIT|VK_ACCESS_UNIFORM_READ_BIT);
+    CORRADE_COMPARE(dependency->dstAccessMask, VK_ACCESS_MEMORY_WRITE_BIT);
+    CORRADE_COMPARE(dependency->dependencyFlags, VK_DEPENDENCY_BY_REGION_BIT);
+}
+
 void RenderPassTest::subpassDependencyConstructNoInit() {
     SubpassDependency dependency{NoInit};
     dependency->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
@@ -757,7 +780,24 @@ template<class From, class To> void RenderPassTest::subpassDependencyConstructFr
 template<class T> void RenderPassTest::subpassDependencyConvertToVk() {
     setTestCaseTemplateName(Traits<T>::name());
 
-    CORRADE_SKIP("No SubpassDependency APIs to test.");
+    SubpassDependency dependency{
+        15,
+        PipelineStage::ComputeShader|PipelineStage::Transfer,
+        Access::TransferRead|Access::UniformRead,
+
+        SubpassDependency::External,
+        PipelineStage::AllGraphics,
+        Access::MemoryWrite,
+
+        DependencyFlag::ByRegion};
+    T out = Traits<T>::convert(dependency);
+    CORRADE_COMPARE(out.srcSubpass, 15);
+    CORRADE_COMPARE(out.dstSubpass, VK_SUBPASS_EXTERNAL);
+    CORRADE_COMPARE(out.srcStageMask, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT|VK_PIPELINE_STAGE_TRANSFER_BIT);
+    CORRADE_COMPARE(out.dstStageMask, VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT);
+    CORRADE_COMPARE(out.srcAccessMask, VK_ACCESS_TRANSFER_READ_BIT|VK_ACCESS_UNIFORM_READ_BIT);
+    CORRADE_COMPARE(out.dstAccessMask, VK_ACCESS_MEMORY_WRITE_BIT);
+    CORRADE_COMPARE(out.dependencyFlags, VK_DEPENDENCY_BY_REGION_BIT);
 }
 
 void RenderPassTest::createInfoConstruct() {

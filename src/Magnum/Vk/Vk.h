@@ -36,12 +36,16 @@
 namespace Magnum { namespace Vk {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+enum class Access: UnsignedInt;
+typedef Containers::EnumSet<Access> Accesses;
 class Buffer;
 class BufferCreateInfo;
 class CommandBuffer;
 /* CommandBufferBeginInfo is useful only in combination with CommandBuffer */
 class CommandPool;
 class CommandPoolCreateInfo;
+enum class DependencyFlag: UnsignedInt;
+typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
 class Device;
 class DeviceCreateInfo;
 enum class DeviceFeature: UnsignedShort;
@@ -76,6 +80,8 @@ enum class MemoryFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryFlag> MemoryFlags;
 enum class MemoryHeapFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
+enum class PipelineStage: UnsignedInt;
+typedef Containers::EnumSet<PipelineStage> PipelineStages;
 enum class PixelFormat: Int;
 class Queue;
 enum class QueueFlag: UnsignedInt;

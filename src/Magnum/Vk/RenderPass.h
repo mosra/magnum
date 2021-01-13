@@ -77,6 +77,12 @@ specify what implicit layout transitions (if any) need to happen between start
 of the render pass and the first subpass, between subpasses and between last
 subpass and end of the render pass.
 
+The following snippet shows attachment and subpass setup for a single-pass
+color/depth render. Commonly the image is used in some way after the render
+pass, in this case it'll get transferred to the host, as indicated by
+@ref ImageLayout::TransferSource. That will also need an explicit subpass
+dependency, as explained below.
+
 @snippet MagnumVk.cpp RenderPass-creation
 
 <b></b>
@@ -92,6 +98,29 @@ subpass and end of the render pass.
     @ref ImageLayout::DepthStencilAttachment "DepthStencilAttachment" or just
     any other. With @ref ImageLayout::Undefined we don't need to explicitly
     handle that case.
+
+@subsection Vk-RenderPass-creation-subpass-dependencies Subpass dependencies
+
+As shown above, the application is required to specify @ref ImageLayout at the
+start and end of the render pass as well as layouts in which the attachments
+are expected to be inside a particular subpass, and Vulkan then takes care of
+doing layout transitions at a proper time. If a transition from one layout to
+another needs to occur, a @ref SubpassDependency defines when, and if none is
+explicitly specified, an implicit dependency is added by Vulkan. The above
+setup can be visualized as this, with implicit transitions shown as arrows:
+
+@dotfile vk-renderpass-layouts.dot
+
+The implicit dependencies added by Vulkan only ensure that the transition from
+@ref ImageLayout::Undefined to @ref ImageLayout::ColorAttachment "ColorAttachment"
+/ @ref ImageLayout::DepthStencilAttachment "DepthStencilAttachment" happen *at
+some point* before the start of the renderpass, and the transition to
+@ref ImageLayout::TransferSource "TransferSource" is *eventually* done as well.
+In this case the initial transition is fine; for the transfer we however need
+it to happen before the actual transfer command, and thus an explicit
+dependency is needed:
+
+@snippet MagnumVk.cpp RenderPass-dependencies
 */
 class MAGNUM_VK_EXPORT RenderPass {
     public:

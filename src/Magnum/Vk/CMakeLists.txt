@@ -86,6 +86,7 @@ set(MagnumVk_HEADERS
     LayerProperties.h
     Memory.h
     MemoryAllocateInfo.h
+    Pipeline.h
     PixelFormat.h
     Queue.h
     RenderPass.h

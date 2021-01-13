@@ -716,6 +716,48 @@ fields that were left out.
 */
 class MAGNUM_VK_EXPORT SubpassDependency {
     public:
+        enum: UnsignedInt {
+            /** Subpass index identifying an external dependency */
+            External = VK_SUBPASS_EXTERNAL,
+        };
+
+        /**
+         * @brief Constructor
+         * @param sourceSubpass         Source subpass index or @ref External
+         * @param sourceStages          Source stages. Has to contain at least
+         *      one stage.
+         * @param sourceAccesses        Source memory access types
+         *      participating in a dependency. Each has to be supported by at
+         *      least one stage in @p sourceStages.
+         * @param destinationSubpass    Destination subpass index or
+         *      @ref External
+         * @param destinationStages     Destination stages. Has to contain at
+         *      least one stage.
+         * @param destinationAccesses   Destination memory access types
+         *      participating in a dependency. Each has to be supported by at
+         *      least one stage in @p destinationStages.
+         * @param flags                 Flags
+         *
+         * The @p sourceSubpass has to be less than or equal to
+         * @p destinationSubpass to avoid cyclic dependencies and ensure a
+         * valid execution order. One of them (but not both) can be also
+         * @ref External to specify an external dependency.
+         *
+         * The following @type_vk{SubpassDependency2} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled. Note that the
+         * parameter order is shuffled here to group source and destination
+         * parameters together instead of grouping by data type:
+         *
+         * -    `srcSubpass` to @p sourceSubpass
+         * -    `dstSubpass` to @p destinationSubpass
+         * -    `srcStageMask` to @p sourceStages
+         * -    `dstStageMask` to @p destinationStages
+         * -    `srcAccessMask` to @p sourceAccesses
+         * -    `dstAccessMask` to @p destinationAccesses
+         * -    `dependencyFlags` to @p flags
+         */
+        explicit SubpassDependency(UnsignedInt sourceSubpass, PipelineStages sourceStages, Accesses sourceAccesses, UnsignedInt destinationSubpass, PipelineStages destinationStages, Accesses destinationAccesses, DependencyFlags flags = {});
+
         /**
          * @brief Construct without initializing the contents
          *

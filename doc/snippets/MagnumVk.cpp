@@ -48,6 +48,7 @@
 #include "Magnum/Vk/ImageViewCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
@@ -634,7 +635,7 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
             Vk::AttachmentLoadOperation::Clear,
             Vk::AttachmentStoreOperation::Store,
             Vk::ImageLayout::Undefined,
-            Vk::ImageLayout::ColorAttachment},
+            Vk::ImageLayout::TransferSource},
         Vk::AttachmentDescription{Vk::PixelFormat::Depth24UnormStencil8UI,
             Vk::AttachmentLoadOperation::Clear,
             Vk::AttachmentStoreOperation::DontCare,
@@ -649,8 +650,20 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
             Vk::AttachmentReference{1, Vk::ImageLayout::DepthStencilAttachment}
         )
     )
-};
 /* [RenderPass-creation] */
+/* [RenderPass-dependencies] */
+    .setDependencies({
+        Vk::SubpassDependency{
+            0,
+            Vk::PipelineStage::ColorAttachmentOutput,
+            Vk::Access::ColorAttachmentWrite,
+
+            Vk::SubpassDependency::External,
+            Vk::PipelineStage::Transfer,
+            Vk::Access::TransferRead}
+    })
+};
+/* [RenderPass-dependencies] */
 }
 
 {

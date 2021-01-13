@@ -450,6 +450,17 @@ Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription
     };
 }
 
+SubpassDependency::SubpassDependency(const UnsignedInt sourceSubpass, const PipelineStages sourceStages, const Accesses sourceAccesses, const UnsignedInt destinationSubpass, const PipelineStages destinationStages, const Accesses destinationAccesses, const DependencyFlags flags): _dependency{} {
+    _dependency.sType = VK_STRUCTURE_TYPE_SUBPASS_DEPENDENCY_2;
+    _dependency.srcSubpass = sourceSubpass;
+    _dependency.dstSubpass = destinationSubpass;
+    _dependency.srcStageMask = VkPipelineStageFlags(sourceStages);
+    _dependency.dstStageMask = VkPipelineStageFlags(destinationStages);
+    _dependency.srcAccessMask = VkAccessFlags(sourceAccesses);
+    _dependency.dstAccessMask = VkAccessFlags(destinationAccesses);
+    _dependency.dependencyFlags = VkDependencyFlags(flags);
+}
+
 SubpassDependency::SubpassDependency(NoInitT) noexcept {}
 
 SubpassDependency::SubpassDependency(const VkSubpassDependency2& dependency):
