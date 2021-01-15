@@ -47,7 +47,9 @@ namespace Implementation {
 /**
 @brief N-dimensional range
 
-Axis-aligned line (in 1D), rectangle (in 2D) or cube (in 3D). The minimal
+@m_keywords{AABB}
+
+Axis-aligned line (in 1D), rectangle (in 2D) or box (in 3D). The minimal
 coordinate is inclusive, maximal exclusive. See @ref Range1D, @ref Range2D and
 @ref Range3D specializations for given dimension count.
 
