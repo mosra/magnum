@@ -90,11 +90,9 @@ class MAGNUM_VK_EXPORT ImageViewCreateInfo {
          * -    `image`
          * -    `viewType` to @p type
          * -    `format`
-         * -    `subresourceRange.aspectMask` to
-         *      @val_vk{IMAGE_ASPECT_DEPTH_BIT,ImageAspectFlagBits} /
-         *      @val_vk{IMAGE_ASPECT_STENCIL_BIT,ImageAspectFlagBits} if
-         *      @p format is depth / stencil or both and
-         *      @val_vk{IMAGE_ASPECT_COLOR_BIT,ImageAspectFlagBits} otherwise
+         * -    `subresourceRange.aspectMask` to @ref ImageAspect::Depth /
+         *      @ref ImageAspect::Stencil if @p format is depth / stencil or
+         *      both and @ref ImageAspect::Color otherwise
          * -    `subresourceRange.levelOffset` to @p levelOffset
          * -    `subresourceRange.levelCount` to @p levelCount
          * -    `subresourceRange.baseArrayLayer` to @p layerOffset

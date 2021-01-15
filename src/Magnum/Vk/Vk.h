@@ -61,6 +61,8 @@ class FramebufferCreateInfo;
 enum class HandleFlag: UnsignedByte;
 typedef Containers::EnumSet<HandleFlag> HandleFlags;
 class Image;
+enum class ImageAspect: UnsignedInt;
+typedef Containers::EnumSet<ImageAspect> ImageAspects;
 enum class ImageLayout: Int;
 class ImageCreateInfo;
 /* Not forward-declaring ImageCreateInfo1D etc right now, I see no need */

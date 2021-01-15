@@ -37,21 +37,21 @@ namespace {
 
 /* Vulkan, it would kill you if 0 was a valid default, right?! ffs */
 /** @todo this might be useful elsewhere as well */
-VkImageAspectFlags aspectFor(const PixelFormat format) {
+ImageAspects aspectFor(const PixelFormat format) {
     if(format == PixelFormat::Depth16UnormStencil8UI ||
        format == PixelFormat::Depth24UnormStencil8UI ||
        format == PixelFormat::Depth32FStencil8UI)
-        return VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT;
+        return ImageAspect::Depth|ImageAspect::Stencil;
     if(format == PixelFormat::Depth16Unorm ||
        format == PixelFormat::Depth24Unorm ||
        format == PixelFormat::Depth32F)
-        return VK_IMAGE_ASPECT_DEPTH_BIT;
+        return ImageAspect::Depth;
     if(format == PixelFormat::Stencil8UI)
-        return VK_IMAGE_ASPECT_STENCIL_BIT;
+        return ImageAspect::Stencil;
 
     /** @todo planar formats */
 
-    return VK_IMAGE_ASPECT_COLOR_BIT;
+    return ImageAspect::Color;
 }
 
 }
@@ -62,7 +62,7 @@ ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkIma
     _info.image = image;
     _info.viewType = type;
     _info.format = VkFormat(format);
-    _info.subresourceRange.aspectMask = aspectFor(format);
+    _info.subresourceRange.aspectMask = VkImageAspectFlags(aspectFor(format));
     _info.subresourceRange.baseMipLevel = levelOffset;
     _info.subresourceRange.levelCount = levelCount;
     _info.subresourceRange.baseArrayLayer = layerOffset;

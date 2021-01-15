@@ -861,7 +861,7 @@ Vulkan enum                             | Matching API
 
 Vulkan enum                             | Matching API
 --------------------------------------- | ------------
-@type_vk{ImageAspectFlagBits}, \n @type_vk{ImageAspectFlags} | |
+@type_vk{ImageAspectFlagBits}, \n @type_vk{ImageAspectFlags} | @ref ImageAspect, \n @ref ImageAspects
 @type_vk{ImageCreateFlagBits}, \n @type_vk{ImageCreateFlags} | @ref ImageCreateInfo::Flag, \n @ref ImageCreateInfo::Flags
 @type_vk{ImageLayout}                   | @ref ImageLayout
 @type_vk{ImageTiling}                   | |

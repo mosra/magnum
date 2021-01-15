@@ -149,6 +149,33 @@ enum class ImageLayout: Int {
 };
 
 /**
+@brief Image aspect
+@m_since_latest
+
+Wraps @type_vk_keyword{ImageAspectFlagBits}.
+@see @ref ImageAspects, @ref ImageViewCreateInfo::ImageViewCreateInfo()
+@m_enum_values_as_keywords
+*/
+enum class ImageAspect: UnsignedInt {
+    Color = VK_IMAGE_ASPECT_COLOR_BIT,      /**< Color */
+    Depth = VK_IMAGE_ASPECT_DEPTH_BIT,      /**< Depth */
+    Stencil = VK_IMAGE_ASPECT_STENCIL_BIT   /**< Stencil */
+
+    /** @todo metadata (sparse?), YCbCr properties */
+};
+
+/**
+@brief Image aspects
+@m_since_latest
+
+Type-safe wrapper for @type_vk_keyword{ImageAspectFlags}.
+@see @ref ImageViewCreateInfo::ImageViewCreateInfo()
+*/
+typedef Containers::EnumSet<ImageAspect> ImageAspects;
+
+CORRADE_ENUMSET_OPERATORS(ImageAspects)
+
+/**
 @brief Image
 @m_since_latest
 
