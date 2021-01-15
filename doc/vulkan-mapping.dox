@@ -25,8 +25,8 @@
 
 namespace Magnum { namespace Vk {
 
-/** @page vulkan-mapping Command and structure mapping
-@brief List of Vulkan commands and structures corresponding to particular Magnum APIs.
+/** @page vulkan-mapping APi mapping
+@brief List of Vulkan handles, functions, enums and structures corresponding to particular Magnum APIs.
 @m_since_latest
 
 @tableofcontents
@@ -43,6 +43,42 @@ Legend:
     exposed though an ABC extension
 -   @m_class{m-label m-danger} **deprecated** --- given feature is deprecated
     in newer versions of Vulkan and replaced by different functionality
+
+@section vulkan-mapping-handles Handles
+
+@m_class{m-fullwidth}
+
+Vulkan handle                           | Matching API
+--------------------------------------- | ------------
+@type_vk{AccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{Buffer}                        | @ref Buffer
+@type_vk{BufferView}                    | |
+@type_vk{CommandBuffer}                 | @ref CommandBuffer
+@type_vk{CommandPool}                   | @ref CommandPool
+@type_vk{DeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{DebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DescriptorPool}                | |
+@type_vk{DescriptorSet}                 | |
+@type_vk{DescriptorSetLayout}           | |
+@type_vk{DescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{Device}                        | @ref Device
+@type_vk{DeviceMemory}                  | @ref Memory
+@type_vk{Fence}                         | @ref Fence
+@type_vk{Framebuffer}                   | @ref Framebuffer
+@type_vk{Image}                         | @ref Image
+@type_vk{ImageView}                     | @ref ImageView
+@type_vk{Instance}                      | @ref Instance
+@type_vk{PhysicalDevice}                | @ref DeviceProperties
+@type_vk{Pipeline}                      | |
+@type_vk{PipelineLayout}                | |
+@type_vk{QueryPool}                     | |
+@type_vk{Queue}                         | @ref Queue
+@type_vk{RenderPass}                    | @ref RenderPass
+@type_vk{Sampler}                       | |
+@type_vk{SamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{Semaphore}                     | |
+@type_vk{ShaderModule}                  | @ref Shader
 
 @section vulkan-mapping-functions Functions
 
@@ -716,6 +752,240 @@ Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{WriteDescriptorSet}            | |
 @type_vk{WriteDescriptorSetAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+
+@section vulkan-mapping-enums Enums
+
+@subsection vulkan-mapping-enums-a A
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{AccelerationStructureBuildTypeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureCompatibilityKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureCreateFlagBitsKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @type_vk{AccelerationStructureCreateFlagsKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccelerationStructureTypeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{AccessFlagBits}, \n @type_vk{AccessFlags} | @ref Access, \n @ref Accesses
+@type_vk{AttachmentDescriptionFlagBits}, \n @type_vk{AttachmentDescriptionFlags} | @ref AttachmentDescription::Flag, \n @ref AttachmentDescription::Flags
+@type_vk{AttachmentLoadOp}              | @ref AttachmentLoadOperation
+@type_vk{AttachmentStoreOp}             | @ref AttachmentStoreOperation
+
+@subsection vulkan-mapping-enums-b B
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{BlendFactor}                   | |
+@type_vk{BlendOp}                       | |
+@type_vk{BorderColor}                   | |
+@type_vk{BufferCreateFlagBits}, \n @type_vk{BufferCreateFlags} | @ref BufferCreateInfo::Flag, \n @ref BufferCreateInfo::Flags
+@type_vk{BufferUsageFlagBits}, \n @type_vk{BufferUsageFlags} | @ref BufferUsage, \n @ref BufferUsages
+@type_vk{BuildAccelerationStructureFlagBitsKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @type_vk{BuildAccelerationStructureFlagsKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{BuildAccelerationStructureModeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+
+@subsection vulkan-mapping-enums-c C
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{ChromaLocation} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ColorComponentFlagBits}, \n @type_vk{ColorComponentFlags} | |
+@type_vk{CommandBufferLevel}            | @ref CommandBufferLevel
+@type_vk{CommandBufferUsageFlagBits}, \n @type_vk{CommandBufferUsageFlags} | @ref CommandBufferBeginInfo::Flag, \n @ref CommandBufferBeginInfo::Flags
+@type_vk{CommandBufferResetFlagBits}, \n @type_vk{CommandBufferResetFlags} | @ref CommandBufferResetFlag, \n @ref CommandBufferResetFlags
+@type_vk{CommandPoolCreateFlagBits}, \n @type_vk{CommandPoolCreateFlags} | @ref CommandPoolCreateInfo::Flag, \n @ref CommandPoolCreateInfo::Flags
+@type_vk{CommandPoolResetFlagBits}, \n @type_vk{CommandPoolResetFlags} | @ref CommandPoolResetFlag, \n @ref CommandPoolResetFlags
+@type_vk{CompareOp}                     | |
+@type_vk{ComponentSwizzle}              | |
+@type_vk{CopyAccelerationStructureModeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{CullModeFlagBits}, \n @type_vk{CullModeFlags} | |
+
+@subsection vulkan-mapping-enums-d D
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{DebugReportFlagBits} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @type_vk{DebugReportFlags} @m_class{m-label m-danger} **deprecated**  @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugReportObjectTypeEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DebugUtilsMessageSeverityFlagBitsEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @type_vk{DebugUtilsMessageTypeFlagsEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{DependencyFlagBits}, \n @type_vk{DependencyFlags} | @ref DependencyFlag, \n @ref DependencyFlags
+@type_vk{DescriptorBindingFlagBits} @m_class{m-label m-flat m-success} **EXT, 1.2**, \n @type_vk{DescriptorBindingFlags} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorPoolCreateFlagBits}, \n @type_vk{DescriptorPoolCreateFlags} | |
+@type_vk{DescriptorSetLayoutCreateFlagBits}, \n @type_vk{DescriptorSetLayoutCreateFlags} | |
+@type_vk{DescriptorUpdateTemplateType} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{DescriptorType}                | |
+@type_vk{DeviceQueueCreateFlagBits}, \n @type_vk{DeviceQueueCreateFlags} | |
+@type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{DynamicState}                  | |
+
+@subsection vulkan-mapping-enums-e E
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{ExternalFenceFeatureFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalFenceFeatureFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalFenceHandleTypeFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalFenceHandleTypeFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalMemoryFeatureFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalMemoryFeatureFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalMemoryHandleTypeFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalMemoryHandleTypeFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalSemaphoreFeatureFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalSemaphireFeatureFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{ExternalSemaphoreHandleTypeFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{ExternalSemaphoreHandleTypeFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-enums-f F
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{Filter}                        | only @ref vkFilter()
+@type_vk{Format}                        | @ref PixelFormat, @ref VertexFormat
+@type_vk{FormatFeatureFlagBits}, \n @type_vk{FormatFeatureFlags} | |
+@type_vk{FramebufferCreateFlagBits}, \n @type_vk{FramebufferCreateFlags} | @ref FramebufferCreateInfo::Flag, \n @ref FramebufferCreateInfo::Flags
+@type_vk{FrontFace}                     | |
+
+@subsection vulkan-mapping-enums-g G
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{GeometryFlagBitsKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @type_vk{GeometryFlagsKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{GeometryTypeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+
+@subsection vulkan-mapping-enums-i I
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{ImageAspectFlagBits}, \n @type_vk{ImageAspectFlags} | |
+@type_vk{ImageCreateFlagBits}, \n @type_vk{ImageCreateFlags} | @ref ImageCreateInfo::Flag, \n @ref ImageCreateInfo::Flags
+@type_vk{ImageLayout}                   | @ref ImageLayout
+@type_vk{ImageTiling}                   | |
+@type_vk{ImageType}                     | not exposed, internal to @ref ImageCreateInfo subclasses
+@type_vk{ImageUsageFlagBits}, \n @type_vk{ImageUsageFlags} | @ref ImageUsage, \n @ref ImageUsages
+@type_vk{ImageViewType}                 | not exposed, internal to @ref ImageViewCreateInfo subclasses
+@type_vk{IndexType}                     | only @ref vkIndexType()
+@type_vk{InternalAllocationType}        | @ref vulkan-wrapping-host-allocation "not exposed"
+
+@subsection vulkan-mapping-enums-l L
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{LogicOp}                       | |
+
+@subsection vulkan-mapping-enums-m M
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{MemoryAllocateFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{MemoryAllocateFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{MemoryHeapFlagBits}, \n @type_vk{MemoryHeapFlags} | @ref MemoryHeapFlag, \n @ref MemoryHeapFlags
+@type_vk{MemoryPropertyFlagBits}, \n @type_vk{MemoryPropertyFlags} | @ref MemoryFlag, \n @ref MemoryFlags
+
+@subsection vulkan-mapping-enums-o O
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{ObjectType}                    | |
+
+@subsection vulkan-mapping-enums-p P
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{PeerMemoryFeatureFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{PeerMemoryFeatureFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PhysicalDeviceType}            | @ref DeviceType
+@type_vk{PipelineBindPoint}             | |
+@type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
+@type_vk{PipelineCacheHeaderVersion}    | |
+@type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
+@type_vk{PipelineCreateFlagBits}, \n @type_vk{PipelineCreateFlags} | |
+@type_vk{PipelineShaderStageCreateFlagBits}, \n @type_vk{PipelineShaderStageCreateFlags} | |
+@type_vk{PipelineStageFlagBits}, \n @type_vk{PipelineStageFlags} | @ref PipelineStage, \n @ref PipelineStages
+@type_vk{PointClippingBehavior} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{PolygonMode}                   | |
+@type_vk{PrimitveTopology}              | only @ref vkPrimitiveTopology()
+
+@subsection vulkan-mapping-enums-q Q
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{QueryControlFlagBits}, \n @type_vk{QueryControlFlags} | |
+@type_vk{QueryPipelineStatisticFlagBits}, \n @type_vk{QueryPipelineStatisticFlags} | |
+@type_vk{QueryResultFlagBits}, \n @type_vk{QueryResultFlags} | |
+@type_vk{QueryType}                     | |
+@type_vk{QueueFlagBits}, \n @type_vk{QueueFlags} | |
+
+@subsection vulkan-mapping-enums-r R
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{RayTracingShaderGroupTypeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{RenderPassCreateFlagBits}, \n @type_vk{RenderPassCreateFlags} | @ref RenderPassCreateInfo::Flag, \n @ref RenderPassCreateInfo::Flags
+@type_vk{ResolveModeFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @type_vk{ResolveModeFlags} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{Result}                        | @ref Result
+
+@subsection vulkan-mapping-enums-s S
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{SampleCountFlagBits}, \n @type_vk{SampleCountFlags} | not exposed, using plain integers instead
+@type_vk{SamplerAddressMode}            | only @ref vkSamplerAddressMode()
+@type_vk{SamplerMipmapMode}             | only @ref vkSamplerMipmapMode()
+@type_vk{SamplerCreateFlagBits}, \n @type_vk{SamplerCreateFlags} | |
+@type_vk{SamplerReductionMode} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{SamplerYcbcrModelConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SamplerYcbcrRange} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+@type_vk{SemaphoreType} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{SemaphoreWaitFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @type_vk{SemaphoreWaitFlags} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{ShaderFloatControlsIndependence} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{ShaderGroupShaderKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flags
+@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | |
+@type_vk{SharingMode}                   | |
+@type_vk{SparseImageFormatFlagBits}, \n @type_vk{SparseImageFormatFlags} | |
+@type_vk{SparseMemoryBindFlagBits}, \n @type_vk{SparseMemoryBindFlags} | |
+@type_vk{StencilFaceFlagBits}, \n @type_vk{StencilFaceFlags} | |
+@type_vk{StencilOp}                     | |
+@type_vk{StructureType}                 | not exposed, used only internally
+@type_vk{SubgroupFeatureFlagBits} @m_class{m-label m-flat m-success} **1.1**, \n @type_vk{SubgroupFeatureFlags} @m_class{m-label m-flat m-success} **1.1** | |
+@type_vk{SubpassContents}               | @ref SubpassContents
+@type_vk{SystemAllocationScope}         | @ref vulkan-wrapping-host-allocation "not exposed"
+
+@subsection vulkan-mapping-enums-t T
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{TessellationDomainOrigin} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
+
+@subsection vulkan-mapping-enums-v V
+
+@m_class{m-fullwidth}
+
+Vulkan enum                             | Matching API
+--------------------------------------- | ------------
+@type_vk{ValidationFeaturesDisableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{ValidationFeaturesEnableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@type_vk{VendorId}                      | |
+@type_vk{VertexInputRate}               | |
 
 */
 
