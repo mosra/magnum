@@ -55,7 +55,7 @@ class MAGNUM_VK_EXPORT CommandBufferBeginInfo {
         /**
          * @brief Command buffer begin flag
          *
-         * Wraps @type_vk_keyword{CommandBufferBeginFlagBits}.
+         * Wraps @type_vk_keyword{CommandBufferUsageFlagBits}.
          * @see @ref Flags, @ref CommandBufferBeginInfo(Flags)
          */
         enum class Flag: UnsignedInt {
@@ -90,7 +90,7 @@ class MAGNUM_VK_EXPORT CommandBufferBeginInfo {
         /**
          * @brief Command buffer begin flags
          *
-         * Type-safe wrapper for @type_vk_keyword{CommandBufferBeginFlags}.
+         * Type-safe wrapper for @type_vk_keyword{CommandBufferUsageFlags}.
          * @see @ref CommandBufferBeginInfo(Flags)
          */
         typedef Containers::EnumSet<Flag> Flags;
