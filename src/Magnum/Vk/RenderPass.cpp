@@ -25,6 +25,7 @@
 
 #include "RenderPass.h"
 #include "RenderPassCreateInfo.h"
+#include "CommandBuffer.h"
 
 #include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/GrowableArray.h>
@@ -892,5 +893,76 @@ SubpassEndInfo::SubpassEndInfo(const VkSubpassEndInfo& info):
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(info) {}
+
+CommandBuffer& CommandBuffer::beginRenderPass(const RenderPassBeginInfo& info, const SubpassBeginInfo& beginInfo) {
+    _device->state().cmdBeginRenderPassImplementation(*this, *info, *beginInfo);
+    return *this;
+}
+
+void CommandBuffer::beginRenderPassImplementationDefault(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdBeginRenderPass(self, &info, beginInfo.contents);
+}
+
+void CommandBuffer::beginRenderPassImplementationKHR(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdBeginRenderPass2KHR(self, &info, &beginInfo);
+}
+
+void CommandBuffer::beginRenderPassImplementation12(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdBeginRenderPass2(self, &info, &beginInfo);
+}
+
+CommandBuffer& CommandBuffer::beginRenderPass(const RenderPassBeginInfo& info) {
+    return beginRenderPass(info, SubpassBeginInfo{});
+}
+
+CommandBuffer& CommandBuffer::nextSubpass(const SubpassEndInfo& endInfo, const SubpassBeginInfo& beginInfo) {
+    _device->state().cmdNextSubpassImplementation(*this, *endInfo, *beginInfo);
+    return *this;
+}
+
+void CommandBuffer::nextSubpassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo&, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdNextSubpass(self, beginInfo.contents);
+}
+
+void CommandBuffer::nextSubpassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdNextSubpass2KHR(self, &beginInfo, &endInfo);
+}
+
+void CommandBuffer::nextSubpassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo) {
+    return (**self._device).CmdNextSubpass2(self, &beginInfo, &endInfo);
+}
+
+CommandBuffer& CommandBuffer::nextSubpass(const SubpassEndInfo& endInfo) {
+    return nextSubpass(endInfo, SubpassBeginInfo{});
+}
+
+CommandBuffer& CommandBuffer::nextSubpass(const SubpassBeginInfo& beginInfo) {
+    return nextSubpass(SubpassEndInfo{}, beginInfo);
+}
+
+CommandBuffer& CommandBuffer::nextSubpass() {
+    return nextSubpass(SubpassBeginInfo{});
+}
+
+CommandBuffer& CommandBuffer::endRenderPass(const SubpassEndInfo& endInfo) {
+    _device->state().cmdEndRenderPassImplementation(*this, *endInfo);
+    return *this;
+}
+
+void CommandBuffer::endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo&) {
+    return (**self._device).CmdEndRenderPass(self);
+}
+
+void CommandBuffer::endRenderPassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo) {
+    return (**self._device).CmdEndRenderPass2KHR(self, &endInfo);
+}
+
+void CommandBuffer::endRenderPassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo) {
+    return (**self._device).CmdEndRenderPass2(self, &endInfo);
+}
+
+CommandBuffer& CommandBuffer::endRenderPass() {
+    return endRenderPass(SubpassEndInfo{});
+}
 
 }}
