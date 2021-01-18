@@ -234,9 +234,12 @@ SubpassDescription& SubpassDescription::operator=(SubpassDescription&& other) no
 template<class T> void SubpassDescription::setInputAttachmentsInternal(Containers::ArrayView<const T> attachments) {
     if(!_state) _state.emplace();
 
+    /* While not strictly needed right now, storing the original
+       AttachmentReference instances as well to prepare for a future case where
+       VkAttachmentReference2::pNext will reference something stored there
+       (such as separate depth/stencil layouts) */
     Containers::ArrayView<AttachmentReference> wrappers;
     Containers::ArrayView<VkAttachmentReference2> vkAttachments2;
-
     _state->inputAttachments = Containers::ArrayTuple{
         {NoInit, attachments.size(), wrappers},
         {NoInit, attachments.size(), vkAttachments2}
@@ -276,11 +279,14 @@ template<class T> void SubpassDescription::setColorAttachmentsInternal(Container
     CORRADE_ASSERT(!resolveAttachments.size() || resolveAttachments.size() == attachments.size(),
         "Vk::SubpassDescription::setColorAttachments(): resolve attachments expected to be either empty or have a size of" << attachments.size() << "but got" << resolveAttachments.size(), );
 
+    /* While not strictly needed right now, storing the original
+       AttachmentReference instances as well to prepare for a future case where
+       VkAttachmentReference2::pNext will reference something stored there
+       (such as separate depth/stencil layouts) */
     Containers::ArrayView<AttachmentReference> wrappers,
         resolveWrappers;
     Containers::ArrayView<VkAttachmentReference2> vkAttachments2,
         vkResolveAttachments2;
-
     _state->colorAttachments = Containers::ArrayTuple{
         {NoInit, attachments.size(), wrappers},
         {NoInit, resolveAttachments.size(), resolveWrappers},
@@ -579,6 +585,10 @@ RenderPassCreateInfo& RenderPassCreateInfo::operator=(RenderPassCreateInfo&& oth
 template<class T> void RenderPassCreateInfo::setAttachmentsInternal(Containers::ArrayView<const T> attachments) {
     if(!_state) _state.emplace();
 
+    /* While not strictly needed right now, storing the original
+       SubpassDependency instances as well to prepare for a future case where
+       VkSubpassDependency2::pNext will reference something stored there (such
+       as separate depth/stencil layouts) */
     Containers::ArrayView<AttachmentDescription> wrappers;
     Containers::ArrayView<VkAttachmentDescription2> vkAttachments2;
     _state->attachments = Containers::ArrayTuple{
@@ -627,18 +637,19 @@ RenderPassCreateInfo& RenderPassCreateInfo::addSubpass(SubpassDescription&& subp
 template<class T> void RenderPassCreateInfo::setDependenciesInternal(Containers::ArrayView<const T> dependencies) {
     if(!_state) _state.emplace();
 
-    Containers::ArrayView<SubpassDependency> wrappers;
+    /* Vulkan 1.2.166 doesn't allow anything in VkSubpassDependency2::pNext yet
+       so there's no point in storing the original SubpassDependency wrapper */
+    static_assert(sizeof(VkSubpassDependency2) == sizeof(SubpassDependency),
+        "expecting SubpassDependency to have no extra members referenced from pNext");
     Containers::ArrayView<VkSubpassDependency2> vkDependencies2;
     _state->dependencies = Containers::ArrayTuple{
-        {NoInit, dependencies.size(), wrappers},
         {NoInit, dependencies.size(), vkDependencies2}
     };
 
     for(std::size_t i = 0; i != dependencies.size(); ++i) {
-        new(wrappers + i) SubpassDependency{dependencies[i]};
         /* Can't use {} with GCC 4.8 here because it tries to initialize the
            first member instead of doing a copy */
-        new(vkDependencies2 + i) VkSubpassDependency2(wrappers[i]);
+        new(vkDependencies2 + i) VkSubpassDependency2(SubpassDependency{dependencies[i]});
     }
 
     _info.dependencyCount = dependencies.size();
