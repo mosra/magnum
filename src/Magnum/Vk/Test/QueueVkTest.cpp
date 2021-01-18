@@ -41,11 +41,13 @@ struct QueueVkTest: VulkanTester {
 
     void submit();
     void submitOne();
+    void submitImplicitFence();
 };
 
 QueueVkTest::QueueVkTest() {
     addTests({&QueueVkTest::submit,
-              &QueueVkTest::submitOne});
+              &QueueVkTest::submitOne,
+              &QueueVkTest::submitImplicitFence});
 }
 
 void QueueVkTest::submit() {
@@ -95,6 +97,18 @@ void QueueVkTest::submitOne() {
     }, fence);
 
     CORRADE_VERIFY(fence.wait(std::chrono::milliseconds{1000}));
+}
+
+void QueueVkTest::submitImplicitFence() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    CommandBuffer a = pool.allocate();
+    a.begin()
+     .end();
+
+    CORRADE_VERIFY(queue().submit({SubmitInfo{}.setCommandBuffers({a})})
+        .wait(std::chrono::milliseconds{1000}));
 }
 
 }}}}

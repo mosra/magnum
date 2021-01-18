@@ -118,6 +118,24 @@ class MAGNUM_VK_EXPORT Queue {
         /** @overload */
         void submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos, VkFence fence);
 
+        /**
+         * @brief Submit a sequence of semaphores or command buffers to a queue and return a new fence to wait on
+         *
+         * Compared to @ref submit(Containers::ArrayView<const Containers::Reference<const SubmitInfo>>, VkFence)
+         * creates a new @ref Fence and returns it for a more convenient
+         * one-off submission.
+         *
+         * @m_class{m-note m-success}
+         *
+         * @par
+         *      When submitting multiple times it's recommended to
+         *      @ref Fence::reset() "reset()" an existing fence and reuse it
+         *      instead of letting this function create a new one every time.
+         */
+        Fence submit(Containers::ArrayView<const Containers::Reference<const SubmitInfo>> infos);
+        /** @overload */
+        Fence submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos);
+
     private:
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
@@ -144,6 +162,10 @@ class MAGNUM_VK_EXPORT SubmitInfo {
          * @see @ref setCommandBuffers()
          */
         explicit SubmitInfo();
+
+        /** @todo implicit constructor taking the command buffer list directly,
+            needs AnyReference first because queue.submit({{a}}) would now fail
+            on deleted Reference(T&&) */
 
         /**
          * @brief Construct without initializing the contents

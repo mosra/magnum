@@ -31,6 +31,7 @@
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Fence.h"
 
 namespace Magnum { namespace Vk {
 
@@ -81,6 +82,16 @@ void Queue::submit(const Containers::ArrayView<const Containers::Reference<const
 
 void Queue::submit(std::initializer_list<Containers::Reference<const SubmitInfo>> infos, VkFence fence) {
     return submit(Containers::arrayView(infos), fence);
+}
+
+Fence Queue::submit(const Containers::ArrayView<const Containers::Reference<const SubmitInfo>> infos) {
+    Vk::Fence fence{*_device};
+    submit(infos, fence);
+    return fence;
+}
+
+Fence Queue::submit(const std::initializer_list<Containers::Reference<const SubmitInfo>> infos) {
+    return submit(Containers::arrayView(infos));
 }
 
 struct SubmitInfo::State {
