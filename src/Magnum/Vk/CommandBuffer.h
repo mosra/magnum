@@ -302,8 +302,8 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *
          * If Vulkan 1.2 is not supported and the
          * @vk_extension{KHR,create_renderpass2} extension is not enabled on
-         * the device, only the `contents` field from @p beginInfo is used to
-         * begin the render pass.
+         * the device, @p beginInfo has to have the `pNext` chain empty and
+         * only the `contents` field from it is used to begin the render pass.
          * @see @fn_vk_keyword{CmdBeginRenderPass2},
          *      @fn_vk_keyword{CmdBeginRenderPass}
          */
@@ -321,8 +321,9 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *
          * If Vulkan 1.2 is not supported and the
          * @vk_extension{KHR,create_renderpass2} extension is not enabled on
-         * the device, @p endInfo is ignored and only the `contents` field from
-         * @p beginInfo is used to begin the next subpass
+         * the device, both @p endInfo and @p beginInfo have to have the
+         * `pNext` chain empty and only the `contents` field from @p beginInfo
+         * is used to begin the next subpass.
          * @see @fn_vk_keyword{CmdNextSubpass2},
          *      @fn_vk_keyword{CmdNextSubpass}
          */
@@ -344,7 +345,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *
          * If Vulkan 1.2 is not supported and the
          * @vk_extension{KHR,create_renderpass2} extension is not enabled on
-         * the device, @p endInfo is ignored.
+         * the device, @p endInfo has to have the `pNext` chain empty.
          * @see @fn_vk_keyword{CmdEndRenderPass2},
          *      @fn_vk_keyword{CmdEndRenderPass}
          */

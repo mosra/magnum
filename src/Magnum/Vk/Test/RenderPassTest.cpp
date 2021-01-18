@@ -57,12 +57,14 @@ struct RenderPassTest: TestSuite::Tester {
     void attachmentDescriptionConstructNoInit();
     template<class From, class To> void attachmentDescriptionConstructFromVk();
     template<class T> void attachmentDescriptionConvertToVk();
+    void attachmentDescriptionConvertDisallowed();
 
     void attachmentReferenceConstruct();
     void attachmentReferenceConstructUnused();
     void attachmentReferenceConstructNoInit();
     template<class From, class To> void attachmentReferenceConstructFromVk();
     template<class T> void attachmentReferenceConvertToVk();
+    void attachmentReferenceConvertDisallowed();
 
     void subpassDescriptionConstruct();
     void subpassDescriptionConstructNoInit();
@@ -79,12 +81,14 @@ struct RenderPassTest: TestSuite::Tester {
     template<class T> void subpassDescriptionConvertToVk();
     template<class T> void subpassDescriptionConvertToVkNoAttachments();
     template<class T> void subpassDescriptionConvertToVkNoResolveAttachments();
+    void subpassDescriptionConvertDisallowed();
     void subpassDescriptionRvalue();
 
     void subpassDependencyConstruct();
     void subpassDependencyConstructNoInit();
     template<class From, class To> void subpassDependencyConstructFromVk();
     template<class T> void subpassDependencyConvertToVk();
+    void subpassDependencyConvertDisallowed();
 
     void createInfoConstruct();
     void createInfoConstructNoInit();
@@ -131,6 +135,7 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::attachmentDescriptionConstructFromVk<VkAttachmentDescription, VkAttachmentDescription>,
               &RenderPassTest::attachmentDescriptionConvertToVk<VkAttachmentDescription2>,
               &RenderPassTest::attachmentDescriptionConvertToVk<VkAttachmentDescription>,
+              &RenderPassTest::attachmentDescriptionConvertDisallowed,
 
               &RenderPassTest::attachmentReferenceConstruct,
               &RenderPassTest::attachmentReferenceConstructUnused,
@@ -141,6 +146,7 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::attachmentReferenceConstructFromVk<VkAttachmentReference, VkAttachmentReference>,
               &RenderPassTest::attachmentReferenceConvertToVk<VkAttachmentReference2>,
               &RenderPassTest::attachmentReferenceConvertToVk<VkAttachmentReference>,
+              &RenderPassTest::attachmentReferenceConvertDisallowed,
 
               &RenderPassTest::subpassDescriptionConstruct,
               &RenderPassTest::subpassDescriptionConstructNoInit,
@@ -163,6 +169,7 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::subpassDescriptionConvertToVkNoAttachments<VkSubpassDescription>,
               &RenderPassTest::subpassDescriptionConvertToVkNoResolveAttachments<VkSubpassDescription2>,
               &RenderPassTest::subpassDescriptionConvertToVkNoResolveAttachments<VkSubpassDescription>,
+              &RenderPassTest::subpassDescriptionConvertDisallowed,
               &RenderPassTest::subpassDescriptionRvalue,
 
               &RenderPassTest::subpassDependencyConstruct,
@@ -173,6 +180,7 @@ RenderPassTest::RenderPassTest() {
               &RenderPassTest::subpassDependencyConstructFromVk<VkSubpassDependency, VkSubpassDependency>,
               &RenderPassTest::subpassDependencyConvertToVk<VkSubpassDependency2>,
               &RenderPassTest::subpassDependencyConvertToVk<VkSubpassDependency>,
+              &RenderPassTest::subpassDependencyConvertDisallowed,
 
               &RenderPassTest::createInfoConstruct,
               &RenderPassTest::createInfoConstructNoInit,
@@ -341,6 +349,20 @@ template<class T> void RenderPassTest::attachmentDescriptionConvertToVk() {
     CORRADE_COMPARE(out.finalLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 }
 
+void RenderPassTest::attachmentDescriptionConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    AttachmentDescription description{PixelFormat{}, AttachmentLoadOperation{}, AttachmentStoreOperation{}, ImageLayout{}, ImageLayout{}};
+    description->pNext = &description;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    description.vkAttachmentDescription();
+    CORRADE_COMPARE(out.str(), "Vk::AttachmentDescription: disallowing conversion to VkAttachmentDescription with non-empty pNext to prevent information loss\n");
+}
+
 void RenderPassTest::attachmentReferenceConstruct() {
     AttachmentReference reference{3, ImageLayout::ColorAttachment};
     CORRADE_COMPARE(reference->attachment, 3);
@@ -385,6 +407,20 @@ template<class T> void RenderPassTest::attachmentReferenceConvertToVk() {
     T out = Traits<T>::convert(reference);
     CORRADE_COMPARE(out.attachment, 3);
     CORRADE_COMPARE(out.layout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
+
+void RenderPassTest::attachmentReferenceConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    AttachmentReference reference{0, ImageLayout{}};
+    reference->pNext = &reference;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    reference.vkAttachmentReference();
+    CORRADE_COMPARE(out.str(), "Vk::AttachmentReference: disallowing conversion to VkAttachmentReference with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::subpassDescriptionConstruct() {
@@ -703,6 +739,20 @@ template<class T> void RenderPassTest::subpassDescriptionConvertToVkNoResolveAtt
     CORRADE_VERIFY(!to.pResolveAttachments);
 }
 
+void RenderPassTest::subpassDescriptionConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SubpassDescription description;
+    description->pNext = &description;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    description.vkSubpassDescription();
+    CORRADE_COMPARE(out.str(), "Vk::SubpassDescription: disallowing conversion to VkSubpassDescription with non-empty pNext to prevent information loss\n");
+}
+
 void RenderPassTest::subpassDescriptionRvalue() {
     SubpassDescription&& description = SubpassDescription{}
         .setInputAttachments(Containers::ArrayView<const AttachmentReference>{})
@@ -798,6 +848,20 @@ template<class T> void RenderPassTest::subpassDependencyConvertToVk() {
     CORRADE_COMPARE(out.srcAccessMask, VK_ACCESS_TRANSFER_READ_BIT|VK_ACCESS_UNIFORM_READ_BIT);
     CORRADE_COMPARE(out.dstAccessMask, VK_ACCESS_MEMORY_WRITE_BIT);
     CORRADE_COMPARE(out.dependencyFlags, VK_DEPENDENCY_BY_REGION_BIT);
+}
+
+void RenderPassTest::subpassDependencyConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    SubpassDependency dependency{0, PipelineStages{}, Accesses{}, 1, PipelineStages{}, Accesses{}};
+    dependency->pNext = &dependency;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    dependency.vkSubpassDependency();
+    CORRADE_COMPARE(out.str(), "Vk::SubpassDependency: disallowing conversion to VkSubpassDependency with non-empty pNext to prevent information loss\n");
 }
 
 void RenderPassTest::createInfoConstruct() {

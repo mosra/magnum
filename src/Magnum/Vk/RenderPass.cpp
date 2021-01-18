@@ -100,6 +100,8 @@ namespace {
 
 /* Used by RenderPassCreateInfo::vkRenderPassCreateInfo() as well */
 VkAttachmentDescription vkAttachmentDescription(const VkAttachmentDescription2& description) {
+    CORRADE_ASSERT(!description.pNext,
+        "Vk::AttachmentDescription: disallowing conversion to VkAttachmentDescription with non-empty pNext to prevent information loss", {});
     return {
         description.flags,
         description.format,
@@ -150,6 +152,8 @@ namespace {
 
 /* Used in SubpassDescription::vkSubpassDescription() as well */
 VkAttachmentReference vkAttachmentReference(const VkAttachmentReference2& reference) {
+    CORRADE_ASSERT(!reference.pNext,
+        "Vk::AttachmentReference: disallowing conversion to VkAttachmentReference with non-empty pNext to prevent information loss", {});
     return {
         reference.attachment,
         reference.layout
@@ -437,6 +441,10 @@ std::pair<VkSubpassDescription, std::size_t> vkSubpassDescriptionExtrasInto(cons
 }
 
 Containers::Array<VkSubpassDescription> SubpassDescription::vkSubpassDescription() const {
+    /* pNext in nested structures checked in other helpers */
+    CORRADE_ASSERT(!_description.pNext,
+        "Vk::SubpassDescription: disallowing conversion to VkSubpassDescription with non-empty pNext to prevent information loss", {});
+
     /* Allocate an array to fit VkSubpassDescription together with all
        converted VkAttachmentReference instances it needs. Expect the default
        deleter is used so we don't need to wrap some other below. */
@@ -492,6 +500,8 @@ namespace {
 
 /* Used by RenderPassCreateInfo::vkRenderPassCreateInfo() as well */
 VkSubpassDependency vkSubpassDependency(const VkSubpassDependency2& dependency) {
+    CORRADE_ASSERT(!dependency.pNext,
+        "Vk::SubpassDependency: disallowing conversion to VkSubpassDependency with non-empty pNext to prevent information loss", {});
     return {
         dependency.srcSubpass,
         dependency.dstSubpass,
@@ -666,6 +676,9 @@ RenderPassCreateInfo& RenderPassCreateInfo::setDependencies(std::initializer_lis
 }
 
 Containers::Array<VkRenderPassCreateInfo> RenderPassCreateInfo::vkRenderPassCreateInfo() const {
+    /* pNext exists in the "V1" structure as well, thus no "information loss"
+       assert here. For nested structures it's checked in other helpers. */
+
     /* Check that all the structs we copy into the contiguous array have the
        expected alignment requirements. Subpass descriptions have the largest
        (on 64bit) due to the internal pointers, so they'll go first. */
@@ -911,6 +924,8 @@ CommandBuffer& CommandBuffer::beginRenderPass(const RenderPassBeginInfo& info, c
 }
 
 void CommandBuffer::beginRenderPassImplementationDefault(CommandBuffer& self, const VkRenderPassBeginInfo& info, const VkSubpassBeginInfo& beginInfo) {
+    CORRADE_ASSERT(!beginInfo.pNext,
+        "Vk::CommandBuffer::beginRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss", );
     return (**self._device).CmdBeginRenderPass(self, &info, beginInfo.contents);
 }
 
@@ -931,7 +946,11 @@ CommandBuffer& CommandBuffer::nextSubpass(const SubpassEndInfo& endInfo, const S
     return *this;
 }
 
-void CommandBuffer::nextSubpassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo&, const VkSubpassBeginInfo& beginInfo) {
+void CommandBuffer::nextSubpassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo, const VkSubpassBeginInfo& beginInfo) {
+    CORRADE_ASSERT(!endInfo.pNext,
+        "Vk::CommandBuffer::nextRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss", );
+    CORRADE_ASSERT(!beginInfo.pNext,
+        "Vk::CommandBuffer::nextRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss", );
     return (**self._device).CmdNextSubpass(self, beginInfo.contents);
 }
 
@@ -960,7 +979,9 @@ CommandBuffer& CommandBuffer::endRenderPass(const SubpassEndInfo& endInfo) {
     return *this;
 }
 
-void CommandBuffer::endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo&) {
+void CommandBuffer::endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo) {
+    CORRADE_ASSERT(!endInfo.pNext,
+        "Vk::CommandBuffer::endRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss", );
     return (**self._device).CmdEndRenderPass(self);
 }
 

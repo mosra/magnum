@@ -32,6 +32,7 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
+#include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/FramebufferCreateInfo.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
@@ -54,6 +55,7 @@ struct RenderPassVkTest: VulkanTester {
     void wrap();
 
     void cmdBeginEnd();
+    void cmdBeginEndDisallowedConversion();
 };
 
 RenderPassVkTest::RenderPassVkTest() {
@@ -64,7 +66,8 @@ RenderPassVkTest::RenderPassVkTest() {
 
               &RenderPassVkTest::wrap,
 
-              &RenderPassVkTest::cmdBeginEnd});
+              &RenderPassVkTest::cmdBeginEnd,
+              &RenderPassVkTest::cmdBeginEndDisallowedConversion});
 }
 
 void RenderPassVkTest::construct() {
@@ -225,6 +228,37 @@ void RenderPassVkTest::cmdBeginEnd() {
 
     /* Err there's not really anything visible to verify */
     CORRADE_VERIFY(cmd.handle());
+}
+
+void RenderPassVkTest::cmdBeginEndDisallowedConversion() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    if(device().isVersionSupported(Version::Vk12) ||device().isExtensionEnabled<Extensions::KHR::create_renderpass2>())
+        CORRADE_SKIP("KHR_create_renderpass2 enabled on the device, can't test");
+
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+    SubpassEndInfo endInfo;
+    endInfo->pNext = &endInfo;
+    SubpassBeginInfo beginInfo;
+    beginInfo->pNext = &beginInfo;
+
+    /* The commands shouldn't do anything, so it should be fine to just call
+       them without any render pass set up */
+    std::ostringstream out;
+    Error redirectError{&out};
+    cmd.beginRenderPass(RenderPassBeginInfo{NoInit}, beginInfo)
+       .nextSubpass(beginInfo)
+       .nextSubpass(endInfo)
+       .endRenderPass(endInfo);
+    CORRADE_COMPARE(out.str(),
+        "Vk::CommandBuffer::beginRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss\n"
+        "Vk::CommandBuffer::nextRenderPass(): disallowing conversion of SubpassBeginInfo to VkSubpassContents with non-empty pNext to prevent information loss\n"
+        "Vk::CommandBuffer::nextRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss\n"
+        "Vk::CommandBuffer::endRenderPass(): disallowing omission of SubpassEndInfo with non-empty pNext to prevent information loss\n");
 }
 
 }}}}

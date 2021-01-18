@@ -133,7 +133,9 @@ then get a @type_vk{AttachmentDescription} back again using
 
 For direct editing of the Vulkan structure, it's recommended to edit the
 @type_vk{AttachmentDescription2} fields and then perform the conversion
-instead of editing the resulting @type_vk{AttachmentDescription}.
+instead of editing the resulting @type_vk{AttachmentDescription}, as additional
+safety checks may be done during the conversion to ensure no information is
+lost.
 
 Please note that the conversion to @type_vk{AttachmentDescription} will ignore
 all fields that are present only in @type_vk{AttachmentDescription2} and its
@@ -340,7 +342,8 @@ back again using @ref vkAttachmentReference().
 
 For direct editing of the Vulkan structure, it's recommended to edit the
 @type_vk{AttachmentReference2} fields and then perform the conversion instead
-of editing the resulting @type_vk{AttachmentReference}.
+of editing the resulting @type_vk{AttachmentReference}, as additional safety
+checks may be done during the conversion to ensure no information is lost.
 
 Please note that the conversion to @type_vk{AttachmentReference} will ignore
 all fields that are present only in @type_vk{AttachmentReference2} --- in
@@ -467,7 +470,8 @@ so be sure to keep it in scope for as long as needed.
 
 For direct editing of the Vulkan structure, it's recommended to edit the
 @type_vk{SubpassDescription2} fields and then perform the conversion instead of
-editing the resulting @type_vk{SubpassDescription}.
+editing the resulting @type_vk{SubpassDescription}, as additional safety checks
+may be done during the conversion to ensure no information is lost.
 
 Please note that the conversion to @type_vk{SubpassDescription} will ignore all
 fields that are present only in @type_vk{SubpassDescription2} and its
@@ -706,7 +710,8 @@ using @ref vkSubpassDependency().
 
 For direct editing of the Vulkan structure, it's recommended to edit the
 @type_vk{SubpassDependency2} fields and then perform the conversion instead
-of editing the resulting @type_vk{SubpassDependency}.
+of editing the resulting @type_vk{SubpassDependency}, as additional safety
+checks may be done during the conversion to ensure no information is lost.
 
 Please note that the conversion to @type_vk{SubpassDependency} will ignore
 all fields that are present only in @type_vk{SubpassDependency2} --- in
@@ -845,7 +850,8 @@ so be sure to keep it in scope for as long as needed.
 
 For direct editing of the Vulkan structure, it's recommended to edit the
 @type_vk{RenderPassCreateInfo2} fields and then perform the conversion instead
-of editing the resulting @type_vk{RenderPassCreateInfo}.
+of editing the resulting @type_vk{RenderPassCreateInfo}, as additional safety
+checks may be done during the conversion to ensure no information is lost.
 
 Please note that the conversion to @type_vk{RenderPassCreateInfo} will ignore
 all fields that are present only in @type_vk{RenderPassCreateInfo2} and its
