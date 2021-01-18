@@ -126,7 +126,7 @@ SubmitInfo& SubmitInfo::operator=(SubmitInfo&& other) noexcept {
     return *this;
 }
 
-SubmitInfo& SubmitInfo::setCommandBuffers(Containers::ArrayView<const VkCommandBuffer> buffers) {
+SubmitInfo& SubmitInfo::setCommandBuffers(const Containers::ArrayView<const VkCommandBuffer> buffers) {
     if(!_state) _state.emplace();
 
     _state->commandBuffers = Containers::Array<VkCommandBuffer>{Containers::NoInit, buffers.size()};
@@ -136,7 +136,7 @@ SubmitInfo& SubmitInfo::setCommandBuffers(Containers::ArrayView<const VkCommandB
     return *this;
 }
 
-SubmitInfo& SubmitInfo::setCommandBuffers(std::initializer_list<VkCommandBuffer> buffers) {
+SubmitInfo& SubmitInfo::setCommandBuffers(const std::initializer_list<VkCommandBuffer> buffers) {
     return setCommandBuffers(Containers::arrayView(buffers));
 }
 
