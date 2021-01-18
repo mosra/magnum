@@ -110,7 +110,7 @@ Vulkan function                         | Matching API
 Vulkan function                         | Matching API
 --------------------------------------- | ------------
 @fn_vk{CmdBeginQuery}, \n @fn_vk{CmdEndQuery} | |
-@fn_vk{CmdBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdEndebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdEndDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref CommandBuffer::beginRenderPass(), \n @ref CommandBuffer::nextSubpass(), \n @ref CommandBuffer::endRenderPass()
 @fn_vk{CmdBindDescriptorSets}           | |
 @fn_vk{CmdBindIndexBuffer}              | |

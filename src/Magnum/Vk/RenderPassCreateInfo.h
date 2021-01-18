@@ -125,7 +125,7 @@ information.
 
 While the class operates on the @type_vk{AttachmentDescription2} structure
 that's new in Vulkan 1.2 or is provided by the
-@vk_extension{KHR,create_renderpass2} extenstion, conversion from and to
+@vk_extension{KHR,create_renderpass2} extension, conversion from and to
 @type_vk{AttachmentDescription} is provided to some extent --- you can create
 an @ref AttachmentDescription from it, call various methods on the instance and
 then get a @type_vk{AttachmentDescription} back again using
@@ -333,7 +333,7 @@ inside a @ref SubpassDescription, which is subsequently passed to a
 
 While the class operates on the @type_vk{AttachmentReference2} structure that's
 new in Vulkan 1.2 or is provided by the @vk_extension{KHR,create_renderpass2}
-extenstion, conversion from and to @type_vk{AttachmentReference} is provided to
+extension, conversion from and to @type_vk{AttachmentReference} is provided to
 some extent --- you can create an @ref AttachmentReference from it, call
 various methods on the instance and then get a @type_vk{AttachmentReference}
 back again using @ref vkAttachmentReference().
@@ -458,7 +458,7 @@ information.
 
 While the class operates on the @type_vk{SubpassDescription2} structure that's
 new in Vulkan 1.2 or is provided by the @vk_extension{KHR,create_renderpass2}
-extenstion, conversion from and to @type_vk{SubpassDescription} is provided to
+extension, conversion from and to @type_vk{SubpassDescription} is provided to
 some extent --- you can create a @ref SubpassDescription from it, call various
 methods on the instance and then get a @type_vk{SubpassDescription} back again
 using @ref vkSubpassDescription(). Note that, because of the nested data
@@ -699,7 +699,7 @@ information.
 
 While the class operates on the @type_vk{SubpassDependency2} structure that's
 new in Vulkan 1.2 or is provided by the @vk_extension{KHR,create_renderpass2}
-extenstion, conversion from and to @type_vk{SubpassDependency} is provided to
+extension, conversion from and to @type_vk{SubpassDependency} is provided to
 some extent --- you can create a @ref SubpassDependency from it, call various
 methods on the instance and then get a @type_vk{SubpassDependency} back again
 using @ref vkSubpassDependency().
@@ -835,7 +835,7 @@ Wraps a @type_vk_keyword{RenderPassCreateInfo2}. See
 
 While the class operates on the @type_vk{RenderPassCreateInfo2} structure
 that's new in Vulkan 1.2 or is provided by the
-@vk_extension{KHR,create_renderpass2} extenstion, conversion from and to
+@vk_extension{KHR,create_renderpass2} extension, conversion from and to
 @type_vk{RenderPassCreateInfo} is provided to some extent ---- you can create a
 @ref RenderPassCreateInfo from it, call various methods on the instance and
 then get a @type_vk{RenderPassCreateInfo} back again using

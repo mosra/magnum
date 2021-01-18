@@ -349,9 +349,9 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *      @fn_vk_keyword{CmdEndRenderPass}
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        CommandBuffer& endRenderPass(const SubpassEndInfo& info = SubpassEndInfo{});
+        CommandBuffer& endRenderPass(const SubpassEndInfo& endInfo = SubpassEndInfo{});
         #else
-        CommandBuffer& endRenderPass(const SubpassEndInfo& info);
+        CommandBuffer& endRenderPass(const SubpassEndInfo& endInfo);
         CommandBuffer& endRenderPass();
         #endif
 
