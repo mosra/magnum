@@ -33,6 +33,7 @@ set(MagnumVk_SRCS
     Fence.cpp
     Framebuffer.cpp
     Handle.cpp
+    Pipeline.cpp
     Queue.cpp
     Result.cpp
     Shader.cpp

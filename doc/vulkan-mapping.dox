@@ -144,7 +144,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdExecuteCommands}              | |
 @fn_vk{CmdFillBuffer}                   | |
 @fn_vk{CmdInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
-@fn_vk{CmdPipelineBarrier}              | |
+@fn_vk{CmdPipelineBarrier}              | @ref CommandBuffer::pipelineBarrier()
 @fn_vk{CmdPushConstants}                | |
 @fn_vk{CmdResetEvent}                   | |
 @fn_vk{CmdResetQueryPool}               | |
@@ -404,7 +404,7 @@ Vulkan structure                        | Matching API
 @type_vk{BufferCreateInfo}              | @ref BufferCreateInfo
 @type_vk{BufferDeviceAddressInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{BufferImageCopy}, \n @type_vk{BufferImageCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{BufferMemoryBarrier}           | |
+@type_vk{BufferMemoryBarrier}           | @ref BufferMemoryBarrier
 @type_vk{BufferMemoryRequirementsInfo}, \n @type_vk{BufferMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Buffer::memoryRequirements()
 @type_vk{BufferOpaqueCaptureAddressCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{BufferViewCreateInfo}          | |
@@ -533,7 +533,7 @@ Vulkan structure                        | Matching API
 @type_vk{ImageFormatListCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ImageFormatProperties}, \n @type_vk{ImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{ImageSubresourceRange}         | not exposed, internal to @ref ImageViewCreateInfo
-@type_vk{ImageMemoryBarrier}            | |
+@type_vk{ImageMemoryBarrier}            | @ref ImageMemoryBarrier
 @type_vk{ImageMemoryRequirementsInfo}, \n @type_vk{ImageMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Image::memoryRequirements()
 @type_vk{ImagePlaneMemoryRequirementsInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{ImageResolve}, \n @type_vk{ImageResolve2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -561,7 +561,7 @@ Vulkan structure                        | Matching API
 @type_vk{MappedMemoryRange}             | |
 @type_vk{MemoryAllocateInfo}            | @ref MemoryAllocateInfo
 @type_vk{MemoryAllocateFlagsInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{MemoryBarrier}                 | |
+@type_vk{MemoryBarrier}                 | @ref MemoryBarrier
 @type_vk{MemoryDedicatedAllocateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{MemoryDedicatedRequirements} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{MemoryHeap}                    | @ref DeviceProperties::memoryHeapSize(), \n @ref DeviceProperties::memoryHeapFlags()

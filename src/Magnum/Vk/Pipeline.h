@@ -26,13 +26,15 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
+ * @brief Class @ref Magnum::Vk::MemoryBarrier, @ref Magnum::Vk::BufferMemoryBarrier, @ref Magnum::Vk::ImageMemoryBarrier, enum @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
  * @m_since_latest
  */
 
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
+#include "Magnum/Vk/visibility.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 
@@ -393,6 +395,207 @@ Type-safe wrapper for @type_vk_keyword{DependencyFlags}.
 typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
 
 CORRADE_ENUMSET_OPERATORS(DependencyFlags)
+
+/**
+@brief Global memory barrier
+@m_since_latest
+
+Wraps a @type_vk_keyword{MemoryBarrier}. This class is subsequently used in
+@ref CommandBuffer::pipelineBarrier().
+*/
+class MAGNUM_VK_EXPORT MemoryBarrier {
+    public:
+        /**
+         * @brief Constructor
+         * @param sourceAccesses        Source memory access types
+         *      participating in a dependency
+         * @param destinationAccesses   Destination memory access types
+         *      participating in a dependency
+         *
+         * The following @type_vk{MemoryBarrier} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `srcAccessMask` to @p sourceAccesses
+         * -    `dstAccessMask` to @p destinationAccesses
+         */
+        /*implicit*/ MemoryBarrier(Accesses sourceAccesses, Accesses destinationAccesses);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit MemoryBarrier(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit MemoryBarrier(const VkMemoryBarrier& barrier);
+
+        /** @brief Underlying @type_vk{MemoryBarrier} structure */
+        VkMemoryBarrier& operator*() { return _barrier; }
+        /** @overload */
+        const VkMemoryBarrier& operator*() const { return _barrier; }
+        /** @overload */
+        VkMemoryBarrier* operator->() { return &_barrier; }
+        /** @overload */
+        const VkMemoryBarrier* operator->() const { return &_barrier; }
+        /** @overload */
+        operator const VkMemoryBarrier*() const { return &_barrier; }
+
+    private:
+        VkMemoryBarrier _barrier;
+};
+
+/**
+@brief Memory barrier affecting a single buffer
+@m_since_latest
+
+Wraps a @type_vk_keyword{BufferMemoryBarrier}. Compared to @ref MemoryBarrier
+only affects a single buffer. This class is subsequently used in
+@ref CommandBuffer::pipelineBarrier().
+*/
+class MAGNUM_VK_EXPORT BufferMemoryBarrier {
+    public:
+        /**
+         * @brief Constructor
+         * @param sourceAccesses        Source memory access types
+         *      participating in a dependency
+         * @param destinationAccesses   Destination memory access types
+         *      participating in a dependency
+         * @param buffer                A @ref Buffer or a raw Vulkan buffer
+         *      handle affected by the barrier
+         * @param offset                Buffer memory offset affected by the
+         *      barrier, in bytes
+         * @param size                  Buffer memory size affected by the
+         *      barrier, in bytes
+         *
+         * The following @type_vk{BufferMemoryBarrier} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `srcAccessMask` to @p sourceAccesses
+         * -    `dstAccessMask` to @p destinationAccesses
+         * -    `buffer`
+         * -    `offset`
+         * -    `size`
+         */
+        /*implicit*/ BufferMemoryBarrier(Accesses sourceAccesses, Accesses destinationAccesses, VkBuffer buffer, UnsignedLong offset = 0, UnsignedLong size = VK_WHOLE_SIZE);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit BufferMemoryBarrier(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit BufferMemoryBarrier(const VkBufferMemoryBarrier& barrier);
+
+        /** @brief Underlying @type_vk{BufferMemoryBarrier} structure */
+        VkBufferMemoryBarrier& operator*() { return _barrier; }
+        /** @overload */
+        const VkBufferMemoryBarrier& operator*() const { return _barrier; }
+        /** @overload */
+        VkBufferMemoryBarrier* operator->() { return &_barrier; }
+        /** @overload */
+        const VkBufferMemoryBarrier* operator->() const { return &_barrier; }
+        /** @overload */
+        operator const VkBufferMemoryBarrier*() const { return &_barrier; }
+
+    private:
+        VkBufferMemoryBarrier _barrier;
+};
+
+/**
+@brief Memory barrier affecting a single image
+@m_since_latest
+
+Wraps a @type_vk_keyword{ImageMemoryBarrier}. Compared to @ref MemoryBarrier
+only affects a single image and additionally performs @ref ImageLayout
+transitions. This class is subsequently used in
+@ref CommandBuffer::pipelineBarrier().
+*/
+class MAGNUM_VK_EXPORT ImageMemoryBarrier {
+    public:
+        /**
+         * @brief Constructor
+         * @param sourceAccesses        Source memory access types
+         *      participating in a dependency
+         * @param oldLayout             Old layout in an image layout
+         *      transition
+         * @param destinationAccesses   Destination memory access types
+         *      participating in a dependency
+         * @param newLayout             New layout in an image layout
+         *      transition
+         * @param image                 An @ref Image or a raw Vulkan image
+         *      handle affected by the barrier
+         * @param aspects               Image aspects affected by the barrier
+         * @param layerOffset           Offset to the first layer affected by
+         *      the barrier
+         * @param layerCount            Layer count affected by the barrier
+         * @param levelOffset           Offset to the first mip level affected
+         *      by the barrier
+         * @param levelCount            Mip level count affected by the barrier
+         *
+         * The following @type_vk{ImageMemoryBarrier} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `srcAccessMask` to @p sourceAccesses
+         * -    `dstAccessMask` to @p destinationAccesses
+         * -    `oldLayout`
+         * -    `newLayout`
+         * -    `image`
+         * -    `subresourceRange.aspectMask` to @p aspects
+         * -    `subresourceRange.levelOffset` to @p levelOffset
+         * -    `subresourceRange.levelCount` to @p levelCount
+         * -    `subresourceRange.baseArrayLayer` to @p layerOffset
+         * -    `subresourceRange.layerCount` to @p layerCount
+         */
+        /*implicit*/ ImageMemoryBarrier(Accesses sourceAccesses, Accesses destinationAccesses, ImageLayout oldLayout, ImageLayout newLayout, VkImage image, ImageAspects aspects, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit ImageMemoryBarrier(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit ImageMemoryBarrier(const VkImageMemoryBarrier& barrier);
+
+        /** @brief Underlying @type_vk{ImageMemoryBarrier} structure */
+        VkImageMemoryBarrier& operator*() { return _barrier; }
+        /** @overload */
+        const VkImageMemoryBarrier& operator*() const { return _barrier; }
+        /** @overload */
+        VkImageMemoryBarrier* operator->() { return &_barrier; }
+        /** @overload */
+        const VkImageMemoryBarrier* operator->() const { return &_barrier; }
+        /** @overload */
+        operator const VkImageMemoryBarrier*() const { return &_barrier; }
+
+    private:
+        VkImageMemoryBarrier _barrier;
+};
 
 }}
 

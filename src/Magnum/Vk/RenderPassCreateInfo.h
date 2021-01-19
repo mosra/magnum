@@ -718,6 +718,9 @@ all fields that are present only in @type_vk{SubpassDependency2} --- in
 particular, the whole `pNext` pointer chain is omitted. When performing the
 conversion it's your responsibility to ensure nothing significant was in the
 fields that were left out.
+
+@see @ref MemoryBarrier, @ref ImageMemoryBarrier,
+    @ref CommandBuffer::pipelineBarrier()
 */
 class MAGNUM_VK_EXPORT SubpassDependency {
     public:

@@ -30,6 +30,7 @@
  * @m_since_latest
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Tags.h"
@@ -355,6 +356,42 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer& endRenderPass(const SubpassEndInfo& endInfo);
         CommandBuffer& endRenderPass();
         #endif
+
+        /**
+         * @brief Insert a memory dependency
+         * @param sourceStages          Source stages. Has to contain at least
+         *      one stage.
+         * @param destinationStages     Destination stages. Has to contain at
+         *      least one stage.
+         * @param memoryBarriers        Global memory barriers, affecting all
+         *      memory
+         * @param bufferMemoryBarriers  Buffer memory barriers, restricted to
+         *      a particular buffer
+         * @param imageMemoryBarriers   Image memory barriers, restricted to a
+         *      particular image. These are also used for performing
+         *      @ref ImageLayout transitions.
+         * @param dependencyFlags       Dependency flags
+         * @return Reference to self (for method chaining)
+         *
+         * Can be called both inside and outside a render pass. When called
+         * inside a render pass:
+         *
+         * -    the render pass has to contain at least one
+         *      @ref SubpassDependency to itself, with scopes that are a
+         *      superset of scopes defined here
+         * -    @p bufferMemoryBarriers has to be empty,
+         * -    all images in @p imageMemoryBarriers have to be contained
+         *      in both @ref SubpassDescription::setInputAttachments() and
+         *      @ref SubpassDescription::setColorAttachments() /
+         *      @ref SubpassDescription::setDepthStencilAttachment(),
+         * -    and old and new @ref ImageLayout in @p imageMemoryBarriers have
+         *      to be equal
+         *
+         * @see @fn_vk_keyword{CmdPipelineBarrier}
+         */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const MemoryBarrier> memoryBarriers, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
+        /** @overload */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<MemoryBarrier> memoryBarriers, std::initializer_list<BufferMemoryBarrier> bufferMemoryBarriers, std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
 
     private:
         friend CommandPool;

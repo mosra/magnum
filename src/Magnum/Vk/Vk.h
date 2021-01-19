@@ -40,6 +40,7 @@ enum class Access: UnsignedInt;
 typedef Containers::EnumSet<Access> Accesses;
 class Buffer;
 class BufferCreateInfo;
+class BufferMemoryBarrier;
 class CommandBuffer;
 /* CommandBufferBeginInfo is useful only in combination with CommandBuffer */
 class CommandPool;
@@ -66,6 +67,7 @@ typedef Containers::EnumSet<ImageAspect> ImageAspects;
 enum class ImageLayout: Int;
 class ImageCreateInfo;
 /* Not forward-declaring ImageCreateInfo1D etc right now, I see no need */
+class ImageMemoryBarrier;
 class ImageView;
 class ImageViewCreateInfo;
 /* Not forward-declaring ImageViewCreateInfo1D etc right now, I see no need */
@@ -76,6 +78,7 @@ class InstanceExtensionProperties;
 class LayerProperties;
 class Memory;
 class MemoryAllocateInfo;
+class MemoryBarrier;
 class MemoryMapDeleter;
 class MemoryRequirements;
 enum class MemoryFlag: UnsignedInt;
