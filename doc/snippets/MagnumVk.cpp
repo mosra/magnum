@@ -228,6 +228,20 @@ buffer.bindMemory(memory, 0);
 }
 
 {
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+/* [Buffer-usage-fill] */
+Vk::Buffer buffer{device, Vk::BufferCreateInfo{
+    Vk::BufferUsage::TransferDestination|DOXYGEN_IGNORE(Vk::BufferUsage{}), DOXYGEN_IGNORE(0)
+}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
+
+DOXYGEN_IGNORE()
+
+cmd.fillBuffer(buffer, 0x00000000);
+/* [Buffer-usage-fill] */
+}
+
+{
 /* The include should be a no-op here since it was already included above */
 /* [CommandPool-creation] */
 #include <Magnum/Vk/CommandPoolCreateInfo.h>

@@ -142,7 +142,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdDrawIndirect}                 | |
 @fn_vk{CmdDrawIndirectCount} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{CmdExecuteCommands}              | |
-@fn_vk{CmdFillBuffer}                   | |
+@fn_vk{CmdFillBuffer}                   | @ref CommandBuffer::fillBuffer()
 @fn_vk{CmdInsertDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdPipelineBarrier}              | @ref CommandBuffer::pipelineBarrier()
 @fn_vk{CmdPushConstants}                | |

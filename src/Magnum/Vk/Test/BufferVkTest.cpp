@@ -23,12 +23,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Vk/BufferCreateInfo.h"
+#include "Magnum/Vk/CommandBuffer.h"
+#include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
+#include "Magnum/Vk/Fence.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
@@ -48,6 +55,8 @@ struct BufferVkTest: VulkanTester {
     void bindDedicatedMemory();
 
     void directAllocation();
+
+    void cmdFillBuffer();
 };
 
 BufferVkTest::BufferVkTest() {
@@ -61,8 +70,12 @@ BufferVkTest::BufferVkTest() {
               &BufferVkTest::bindMemory,
               &BufferVkTest::bindDedicatedMemory,
 
-              &BufferVkTest::directAllocation});
+              &BufferVkTest::directAllocation,
+
+              &BufferVkTest::cmdFillBuffer});
 }
+
+using namespace Containers::Literals;
 
 void BufferVkTest::construct() {
     {
@@ -167,6 +180,39 @@ void BufferVkTest::directAllocation() {
     /* Not sure what else to test here */
     CORRADE_VERIFY(buffer.hasDedicatedMemory());
     CORRADE_VERIFY(buffer.dedicatedMemory().handle());
+}
+
+void BufferVkTest::cmdFillBuffer() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource|BufferUsage::TransferDestination, 16
+    }, MemoryFlag::HostVisible};
+    Utility::copy("0123456789abcdef"_s, a.dedicatedMemory().map());
+
+    cmd.begin()
+       .fillBuffer(a, 4, 8, 0x2e2e2e2e)
+       .pipelineBarrier(
+           PipelineStage::Transfer, PipelineStage::Host,
+           {{Access::TransferWrite, Access::HostRead}},
+           {}, {})
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+    CORRADE_COMPARE(arrayView(a.dedicatedMemory().mapRead()), "0123........cdef"_s);
+
+    /* Test the full fill as well */
+    pool.reset();
+    cmd.begin()
+       .fillBuffer(a, 0x2e2e2e2e)
+       .pipelineBarrier(
+           PipelineStage::Transfer, PipelineStage::Host,
+           {{Access::TransferWrite, Access::HostRead}},
+           {}, {})
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+    CORRADE_COMPARE(arrayView(a.dedicatedMemory().mapRead()), "................"_s);
 }
 
 }}}}

@@ -25,6 +25,7 @@
 
 #include "Buffer.h"
 #include "BufferCreateInfo.h"
+#include "CommandBuffer.h"
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
@@ -157,6 +158,11 @@ VkResult Buffer::bindMemoryImplementationKHR(Device& device, UnsignedInt count, 
 
 VkResult Buffer::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindBufferMemoryInfo* const infos) {
     return device->BindBufferMemory2(device, count, infos);
+}
+
+CommandBuffer& CommandBuffer::fillBuffer(const VkBuffer buffer, const UnsignedLong offset, const UnsignedLong size, UnsignedInt value) {
+    (**_device).CmdFillBuffer(_handle, buffer, offset, size, value);
+    return *this;
 }
 
 }}

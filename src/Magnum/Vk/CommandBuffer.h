@@ -426,6 +426,36 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         /** @overload */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
 
+        /**
+         * @brief Fill a buffer region with a fixed value
+         * @param buffer    Source @p Buffer or a raw Vulkan buffer handle to
+         *      fill. Expected to have been created with
+         *      @ref BufferUsage::TransferDestination.
+         * @param offset    Offset of the region to fill, in bytes
+         * @param size      Size of the region to fill, in bytes
+         * @param value     A 4-byte value to repeat in the region, interpreted
+         *      accoding to the machine endianness. If @p size is not divisible
+         *      by 4, the last remaining bytes are not filled.
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. See @ref Vk-Buffer-usage-fill
+         * for a usage example.
+         * @see @fn_vk_keyword{CmdFillBuffer}
+         */
+        CommandBuffer& fillBuffer(VkBuffer buffer, UnsignedLong offset, UnsignedLong size, UnsignedInt value);
+
+        /**
+         * @brief Fill the whole buffer with a fixed value
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. Equivalent to
+         * @ref fillBuffer(VkBuffer, UnsignedLong, UnsignedLong, UnsignedInt)
+         * with @p offset set to @cpp 0 @ce and @p size to @def_vk{WHOLE_SIZE}.
+         */
+        CommandBuffer& fillBuffer(VkBuffer buffer, UnsignedInt value) {
+            return fillBuffer(buffer, 0, VK_WHOLE_SIZE, value);
+        }
+
     private:
         friend CommandPool;
         friend Implementation::DeviceState;

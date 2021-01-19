@@ -76,6 +76,15 @@ available through @ref dedicatedMemory(). This matches current behavior of the
 above, except that you have more control over choosing and allocating the
 memory.
 
+@section Vk-Buffer-usage Buffer usage
+
+@subsection Vk-Buffer-usage-fill Clearing / filling buffer data
+
+The following snippet shows zero-filling the whole buffer using
+@ref CommandBuffer::fillBuffer():
+
+@snippet MagnumVk.cpp Buffer-usage-fill
+
 @see @ref Image
 */
 class MAGNUM_VK_EXPORT Buffer {
