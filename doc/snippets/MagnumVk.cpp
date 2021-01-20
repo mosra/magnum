@@ -672,12 +672,14 @@ Vk::RenderPass renderPass{device, Vk::RenderPassCreateInfo{}
 /* [RenderPass-dependencies] */
     .setDependencies({
         Vk::SubpassDependency{
-            0,
+            /* An operation external to the render pass depends on the first
+               subpass */
+            0, Vk::SubpassDependency::External,
+            /* where transfer gets executed only after color output is done */
             Vk::PipelineStage::ColorAttachmentOutput,
-            Vk::Access::ColorAttachmentWrite,
-
-            Vk::SubpassDependency::External,
             Vk::PipelineStage::Transfer,
+            /* and color data written are available for the transfer to read */
+            Vk::Access::ColorAttachmentWrite,
             Vk::Access::TransferRead}
     })
 };

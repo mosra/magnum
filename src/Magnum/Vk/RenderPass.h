@@ -116,9 +116,8 @@ The implicit dependencies added by Vulkan only ensure that the transition from
 / @ref ImageLayout::DepthStencilAttachment "DepthStencilAttachment" happen *at
 some point* before the start of the renderpass, and the transition to
 @ref ImageLayout::TransferSource "TransferSource" is *eventually* done as well.
-In this case the initial transition is fine; for the transfer we however need
-it to happen before the actual transfer command, and thus an explicit
-dependency is needed:
+In this case the initial transition is fine; for the transfer layout transition
+we however need it to happen before we do the actual transfer:
 
 @snippet MagnumVk.cpp RenderPass-dependencies
 

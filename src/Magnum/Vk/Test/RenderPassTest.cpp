@@ -774,14 +774,11 @@ void RenderPassTest::subpassDescriptionRvalue() {
 
 void RenderPassTest::subpassDependencyConstruct() {
     SubpassDependency dependency{
-        15,
+        15, SubpassDependency::External,
         PipelineStage::ComputeShader|PipelineStage::Transfer,
-        Access::TransferRead|Access::UniformRead,
-
-        SubpassDependency::External,
         PipelineStage::AllGraphics,
+        Access::TransferRead|Access::UniformRead,
         Access::MemoryWrite,
-
         DependencyFlag::ByRegion};
     CORRADE_COMPARE(dependency->srcSubpass, 15);
     CORRADE_COMPARE(dependency->dstSubpass, VK_SUBPASS_EXTERNAL);
@@ -831,14 +828,11 @@ template<class T> void RenderPassTest::subpassDependencyConvertToVk() {
     setTestCaseTemplateName(Traits<T>::name());
 
     SubpassDependency dependency{
-        15,
+        15, SubpassDependency::External,
         PipelineStage::ComputeShader|PipelineStage::Transfer,
-        Access::TransferRead|Access::UniformRead,
-
-        SubpassDependency::External,
         PipelineStage::AllGraphics,
+        Access::TransferRead|Access::UniformRead,
         Access::MemoryWrite,
-
         DependencyFlag::ByRegion};
     T out = Traits<T>::convert(dependency);
     CORRADE_COMPARE(out.srcSubpass, 15);
@@ -855,7 +849,7 @@ void RenderPassTest::subpassDependencyConvertDisallowed() {
     CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
     #endif
 
-    SubpassDependency dependency{0, PipelineStages{}, Accesses{}, 1, PipelineStages{}, Accesses{}};
+    SubpassDependency dependency{0, 1, PipelineStages{}, PipelineStages{}, Accesses{}, Accesses{}};
     dependency->pNext = &dependency;
 
     std::ostringstream out;

@@ -732,15 +732,15 @@ class MAGNUM_VK_EXPORT SubpassDependency {
         /**
          * @brief Constructor
          * @param sourceSubpass         Source subpass index or @ref External
+         * @param destinationSubpass    Destination subpass index or
+         *      @ref External
          * @param sourceStages          Source stages. Has to contain at least
          *      one stage.
+         * @param destinationStages     Destination stages. Has to contain at
+         *      least one stage.
          * @param sourceAccesses        Source memory access types
          *      participating in a dependency. Each has to be supported by at
          *      least one stage in @p sourceStages.
-         * @param destinationSubpass    Destination subpass index or
-         *      @ref External
-         * @param destinationStages     Destination stages. Has to contain at
-         *      least one stage.
          * @param destinationAccesses   Destination memory access types
          *      participating in a dependency. Each has to be supported by at
          *      least one stage in @p destinationStages.
@@ -751,10 +751,15 @@ class MAGNUM_VK_EXPORT SubpassDependency {
          * valid execution order. One of them (but not both) can be also
          * @ref External to specify an external dependency.
          *
+         * The @p sourceStages / @p destinationStages specify an *execution*
+         * dependency --- what stages need to have finished execution before
+         * starting execution of the others --- but alone isn't enough. The
+         * @p sourceAccesses and @p destinationAccesses then specify *memory*
+         * dependencies between the two sets --- what memory operations need to
+         * be made available for the second set so it has everything it needs.
+         *
          * The following @type_vk{SubpassDependency2} fields are pre-filled in
-         * addition to `sType`, everything else is zero-filled. Note that the
-         * parameter order is shuffled here to group source and destination
-         * parameters together instead of grouping by data type:
+         * addition to `sType`, everything else is zero-filled:
          *
          * -    `srcSubpass` to @p sourceSubpass
          * -    `dstSubpass` to @p destinationSubpass
@@ -764,7 +769,7 @@ class MAGNUM_VK_EXPORT SubpassDependency {
          * -    `dstAccessMask` to @p destinationAccesses
          * -    `dependencyFlags` to @p flags
          */
-        explicit SubpassDependency(UnsignedInt sourceSubpass, PipelineStages sourceStages, Accesses sourceAccesses, UnsignedInt destinationSubpass, PipelineStages destinationStages, Accesses destinationAccesses, DependencyFlags flags = {});
+        explicit SubpassDependency(UnsignedInt sourceSubpass, UnsignedInt destinationSubpass, PipelineStages sourceStages, PipelineStages destinationStages, Accesses sourceAccesses, Accesses destinationAccesses, DependencyFlags flags = {});
 
         /**
          * @brief Construct without initializing the contents
