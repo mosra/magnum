@@ -77,8 +77,8 @@ void FenceTest::createInfoConstructFromVk() {
 
 void FenceTest::constructNoCreate() {
     {
-        Fence view{NoCreate};
-        CORRADE_VERIFY(!view.handle());
+        Fence fence{NoCreate};
+        CORRADE_VERIFY(!fence.handle());
     }
 
     /* Implicit construction is not allowed */
