@@ -49,20 +49,25 @@ things:
 
 @section troubleshooting-rendering Rendering issues
 
-If you are experiencing so-called "black screen of death", weird behavior or
-crashes on GL calls, you might want to try these things:
+If you are experiencing the so-called "black screen of death", weird behavior
+or crashes on GL calls, you might want to try these things:
 
--   Verify that @ref GL::Renderer::error() "no OpenGL error was emitted".
--   Check that you use only extensions that are
-    @ref GL::Context::isExtensionSupported() "available on your system".
--   Check that you didn't exceed any implementation-defined limit (see
-    @ref magnum-gl-info output for list of all of them).
 -   Enable @ref GL::DebugOutput "debug output" to see more detailed errors,
     warnings and performance hints. You can do that easily through the
     `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     or an environment variable.
+    -   If you are on Mac, the native OpenGL implementation doesn't support
+        this. Instead you can manually verify that
+        @ref GL::Renderer::error() "no OpenGL error was emitted".
+-   Check that you use only extensions that are
+    @ref GL::Context::isExtensionSupported() "available on your system".
+-   Check that you didn't exceed any implementation-defined limit (see
+    @ref magnum-gl-info output for a list of all of them).
 -   If using framebuffer objects,
     @ref GL::Framebuffer::checkStatus() "check that they are complete".
+    -   Rendering to three-component @ref GL::TextureFormat works on some GPUs
+        but not others. TO avoid platform-dependent issues, always use one-,
+        two- or four-component formats.
 -   Change @ref GL::Renderer::setClearColor() "framebuffer clear color" to
     something else than black to verify that at least something is drawn. The
     engine sets it to @cpp 0x1f1f1f_rgbf @ce by default to help you a bit in
@@ -75,31 +80,32 @@ crashes on GL calls, you might want to try these things:
     properly set up @ref GL::Mesh::setIndexBuffer() "index buffer" and index
     count for indexed mesh. If you specified index range, be sure that all
     indices fall into it, otherwise you would get undefined behavior.
--   Try disabling @ref GL::Renderer::Feature::DepthTest "depth test",
+-   Try disabling the @ref GL::Renderer::Feature::DepthTest "depth test",
     @ref GL::Renderer::Feature::FaceCulling "face culling" and other renderer
-    features that might affect the fragments.
--   Verify that your projection and transformation matrix is properly set up ---
-    try drawing points instead of triangles, to see if they are at least at
-    proper places.
--   @ref GL::AbstractShaderProgram::validate() "Validate the shader", check
-    that all used uniforms and attributes have proper locations. Try reducing
-    it until it is able to draw something, possibly also with some simpler
-    mesh.
+    features that might cause fragments to be discarded.
+-   Verify that your projection and transformation matrix is properly set up
+    --- try drawing points instead of triangles, to see if they are in proper
+    places at least.
+-   For custom shaders you can @ref GL::AbstractShaderProgram::validate() "Validate them".
+    Check that all used uniforms and attributes have proper locations. Try
+    reducing it until it is able to draw something, possibly also with some
+    simpler mesh.
 -   Magnum tracks the OpenGL state to improve performance, but the tracker can
     get confused if you or any other library are doing OpenGL calls outside of
-    Magnum. You can use @ref GL::Context::resetState() to reset the internal
-    state tracker. The other library also needs to be aware of this fact
-    (either setting all state explicitly every time or having similar ability
-    to reset its state tracker), otherwise you may need to save and restore GL
-    state manually for that library to work.
+    Magnum. For that to work, you need to
+    @ref opengl-state-tracking "reset the state tracker" on boundaries between
+    3rd party and Magnum calls into GL. The other library also needs to be
+    aware of this fact (either setting all state explicitly every time or
+    having similar ability to reset its state tracker), otherwise you may need
+    to save and restore GL state manually for that library to work.
 
 @section troubleshooting-debugging Debugging rendering
 
 -   Use @ref GL::TimeQuery to find hot spots in the rendering code.
 -   @ref GL::DebugMessage::insert() "Mark relevant parts of code" to find them
     easier in the debugger.
--   Use ApiTrace to trace the program call by call, verify buffer and texture
-    contents, vertex binding and count of generated primitives, rendered
-    fragments and time spent in various calls.
+-   Use ApiTrace or RenderDoc to trace the program call by call, verify buffer
+    and texture contents, vertex binding and count of generated primitives,
+    rendered fragments and time spent in various calls.
 */
 }
