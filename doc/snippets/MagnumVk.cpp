@@ -482,9 +482,8 @@ Vk::Device device{NoCreate};
 DOXYGEN_IGNORE()
 
 Vk::Image image{device, Vk::ImageCreateInfo2D{
-        Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
-    }, Vk::MemoryFlag::DeviceLocal
-};
+    Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
+}, Vk::MemoryFlag::DeviceLocal};
 /* [Image-creation] */
 }
 
@@ -492,9 +491,8 @@ Vk::Image image{device, Vk::ImageCreateInfo2D{
 Vk::Device device{NoCreate};
 /* [Image-creation-custom-allocation] */
 Vk::Image image{device, Vk::ImageCreateInfo2D{
-        Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
-    }, NoAllocate
-};
+    Vk::ImageUsage::Sampled, PixelFormat::RGBA8Srgb, {1024, 1024}, 1
+}, NoAllocate};
 
 Vk::MemoryRequirements requirements = image.memoryRequirements();
 Vk::Memory memory{device, Vk::MemoryAllocateInfo{
@@ -607,9 +605,8 @@ Vk::Device device{NoCreate};
 DOXYGEN_IGNORE()
 
 Vk::Image image{device, Vk::ImageCreateInfo2DArray{ /* created before */
-        DOXYGEN_IGNORE(Vk::ImageUsage::Sampled, PixelFormat{}, {}, 1)
-    }, DOXYGEN_IGNORE(Vk::MemoryFlag::DeviceLocal)
-};
+    DOXYGEN_IGNORE(Vk::ImageUsage{}, PixelFormat{}, {}, 1)
+}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
 
 Vk::ImageView view{device, Vk::ImageViewCreateInfo2DArray{image}};
 /* [ImageView-creation] */
