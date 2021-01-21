@@ -98,4 +98,28 @@ CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages,
     return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(memoryBarriers), Containers::arrayView(bufferMemoryBarriers), Containers::arrayView(imageMemoryBarriers), dependencyFlags);
 }
 
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const Containers::ArrayView<const MemoryBarrier> memoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, memoryBarriers, {}, {}, dependencyFlags);
+}
+
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const std::initializer_list<MemoryBarrier> memoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(memoryBarriers), dependencyFlags);
+}
+
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, {}, bufferMemoryBarriers, {}, dependencyFlags);
+}
+
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const std::initializer_list<BufferMemoryBarrier> bufferMemoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(bufferMemoryBarriers), dependencyFlags);
+}
+
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, {}, {}, imageMemoryBarriers, dependencyFlags);
+}
+
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(imageMemoryBarriers), dependencyFlags);
+}
+
 }}

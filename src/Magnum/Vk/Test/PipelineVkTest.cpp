@@ -38,10 +38,16 @@ struct PipelineVkTest: VulkanTester {
     explicit PipelineVkTest();
 
     void pipelineBarrier();
+    void pipelineBarrierGeneral();
+    void pipelineBarrierBuffer();
+    void pipelineBarrierImage();
 };
 
 PipelineVkTest::PipelineVkTest() {
-    addTests({&PipelineVkTest::pipelineBarrier});
+    addTests({&PipelineVkTest::pipelineBarrier,
+              &PipelineVkTest::pipelineBarrierGeneral,
+              &PipelineVkTest::pipelineBarrierBuffer,
+              &PipelineVkTest::pipelineBarrierImage});
 }
 
 void PipelineVkTest::pipelineBarrier() {
@@ -63,6 +69,64 @@ void PipelineVkTest::pipelineBarrier() {
         }, {
             {Access::TransferWrite, Access::VertexAttributeRead, buffer}
         }, {
+            {Access::TransferWrite, Access::ShaderRead,
+             ImageLayout::Preinitialized, ImageLayout::ShaderReadOnly,
+             image, ImageAspect::Color}
+        })
+        .end();
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineVkTest::pipelineBarrierGeneral() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    /* A subset of the above, just to test the convenience overloads */
+
+    pool.allocate()
+        .begin()
+        .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+            {Access::TransferWrite, Access::HostRead}
+        })
+        .end();
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineVkTest::pipelineBarrierBuffer() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    Buffer buffer{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination|BufferUsage::VertexBuffer, 16
+    }, MemoryFlag::DeviceLocal};
+
+    pool.allocate()
+        .begin()
+        .pipelineBarrier(PipelineStage::Transfer, PipelineStage::VertexInput, {
+            {Access::TransferWrite, Access::VertexAttributeRead, buffer}
+        })
+        .end();
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineVkTest::pipelineBarrierImage() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    Image image{device(), ImageCreateInfo2D{
+        ImageUsage::TransferDestination|ImageUsage::Sampled,
+        PixelFormat::RGBA8Unorm, {4, 4}, 1
+    }, MemoryFlag::DeviceLocal};
+
+    pool.allocate()
+        .begin()
+        .pipelineBarrier(PipelineStage::Transfer, PipelineStage::FragmentShader, {
             {Access::TransferWrite, Access::ShaderRead,
              ImageLayout::Preinitialized, ImageLayout::ShaderReadOnly,
              image, ImageAspect::Color}

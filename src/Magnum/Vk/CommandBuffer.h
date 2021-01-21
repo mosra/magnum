@@ -393,6 +393,39 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         /** @overload */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<MemoryBarrier> memoryBarriers, std::initializer_list<BufferMemoryBarrier> bufferMemoryBarriers, std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
 
+        /**
+         * @brief Insert a global memory dependency
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
+         * with empty @p bufferBarriers and @p imageBarriers.
+         */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const MemoryBarrier> memoryBarriers, DependencyFlags dependencyFlags = {});
+        /** @overload */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<MemoryBarrier> memoryBarriers, DependencyFlags dependencyFlags = {});
+
+        /**
+         * @brief Insert a buffer memory dependency
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
+         * with empty @p memoryBarriers and @p imageBarriers.
+         */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, DependencyFlags dependencyFlags = {});
+        /** @overload */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<BufferMemoryBarrier> bufferMemoryBarriers, DependencyFlags dependencyFlags = {});
+
+        /**
+         * @brief Insert an image memory dependency
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
+         * with empty @p memoryBarriers and @p bufferBarriers.
+         */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
+        /** @overload */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
+
     private:
         friend CommandPool;
         friend Implementation::DeviceState;
