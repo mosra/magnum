@@ -75,7 +75,12 @@ class MAGNUM_VK_EXPORT FramebufferCreateInfo {
          * @param renderPass    A @ref RenderPass or a raw Vulkan render pass
          *      handle the framebuffer is compatible with
          * @param attachments   Image views corresponding to all attachments
-         *      listed in @ref RenderPassCreateInfo::setAttachments()
+         *      listed in @ref RenderPassCreateInfo::setAttachments(). All
+         *      images the views are created from are expected to have been
+         *      created with @ref ImageUsage::ColorAttachment /
+         *      @ref ImageUsage::DepthStencilAttachment /
+         *      @ref ImageUsage::InputAttachment based on what they are
+         *      attached to.
          * @param size          Width, height and layer count of the
          *      framebuffer. Available through @ref Framebuffer::size()
          *      afterwards.
