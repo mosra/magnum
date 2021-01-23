@@ -51,10 +51,17 @@ struct ImageTest: TestSuite::Tester {
     void createInfoConstructNoInit();
     void createInfoConstructFromVk();
 
+    void aspectsFor();
+    void aspectsForInvalidFormat();
+    void aspectsForGenericFormat();
+
     void constructNoCreate();
     void constructCopy();
 
     void dedicatedMemoryNotDedicated();
+
+    void debugAspect();
+    void debugAspects();
 };
 
 ImageTest::ImageTest() {
@@ -85,10 +92,17 @@ ImageTest::ImageTest() {
               &ImageTest::createInfoConstructNoInit,
               &ImageTest::createInfoConstructFromVk,
 
+              &ImageTest::aspectsFor,
+              &ImageTest::aspectsForInvalidFormat,
+              &ImageTest::aspectsForGenericFormat,
+
               &ImageTest::constructNoCreate,
               &ImageTest::constructCopy,
 
-              &ImageTest::dedicatedMemoryNotDedicated});
+              &ImageTest::dedicatedMemoryNotDedicated,
+
+              &ImageTest::debugAspect,
+              &ImageTest::debugAspects});
 }
 
 template<class T> void ImageTest::createInfoConstruct() {
@@ -226,6 +240,29 @@ void ImageTest::createInfoConstructFromVk() {
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
+void ImageTest::aspectsFor() {
+    CORRADE_COMPARE(imageAspectsFor(PixelFormat::RGBA8Unorm), ImageAspect::Color);
+    CORRADE_COMPARE(imageAspectsFor(PixelFormat::Depth32FStencil8UI), ImageAspect::Depth|ImageAspect::Stencil);
+    CORRADE_COMPARE(imageAspectsFor(PixelFormat::Depth16Unorm), ImageAspect::Depth);
+    CORRADE_COMPARE(imageAspectsFor(PixelFormat::Stencil8UI), ImageAspect::Stencil);
+}
+
+void ImageTest::aspectsForInvalidFormat() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    imageAspectsFor(PixelFormat{});
+    CORRADE_COMPARE(out.str(), "Vk::imageAspectsFor(): can't get an aspect for Vk::PixelFormat(0)\n");
+}
+
+void ImageTest::aspectsForGenericFormat() {
+    /* No generic depth/stencil formats yet, can't test */
+    CORRADE_COMPARE(imageAspectsFor(Magnum::PixelFormat::R16I), ImageAspect::Color);
+}
+
 void ImageTest::constructNoCreate() {
     {
         Image image{NoCreate};
@@ -253,6 +290,18 @@ void ImageTest::dedicatedMemoryNotDedicated() {
     Error redirectError{&out};
     image.dedicatedMemory();
     CORRADE_COMPARE(out.str(), "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory\n");
+}
+
+void ImageTest::debugAspect() {
+    std::ostringstream out;
+    Debug{&out} << ImageAspect::Depth << ImageAspect(0xdeadcafe);
+    CORRADE_COMPARE(out.str(), "Vk::ImageAspect::Depth Vk::ImageAspect(0xdeadcafe)\n");
+}
+
+void ImageTest::debugAspects() {
+    std::ostringstream out;
+    Debug{&out} << (ImageAspect::Stencil|ImageAspect(0xf0)) << ImageAspects{};
+    CORRADE_COMPARE(out.str(), "Vk::ImageAspect::Stencil|Vk::ImageAspect(0xf0) Vk::ImageAspects{}\n");
 }
 
 }}}}

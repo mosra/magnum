@@ -45,7 +45,7 @@ struct ImageViewTest: TestSuite::Tester {
     template<class T> void createInfoConstruct1D();
     void createInfoConstruct1DFromImage();
     template<class T> void createInfoConstruct2D();
-    void createInfoConstruct2DAspect();
+    void createInfoConstruct2DDepth();
     void createInfoConstruct2DFromImage();
     template<class T> void createInfoConstruct3D();
     void createInfoConstruct3DFromImage();
@@ -64,17 +64,6 @@ struct ImageViewTest: TestSuite::Tester {
     void constructCopy();
 };
 
-const struct {
-    const char* name;
-    PixelFormat format;
-    VkImageAspectFlags aspect;
-} View2DFormatData[] {
-    {"color", PixelFormat::RGBA8Unorm, VK_IMAGE_ASPECT_COLOR_BIT},
-    {"depth + stencil", PixelFormat::Depth32FStencil8UI, VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT},
-    {"depth", PixelFormat::Depth16Unorm, VK_IMAGE_ASPECT_DEPTH_BIT},
-    {"stencil", PixelFormat::Stencil8UI, VK_IMAGE_ASPECT_STENCIL_BIT}
-};
-
 ImageViewTest::ImageViewTest() {
     addTests({&ImageViewTest::createInfoConstruct<PixelFormat>,
               &ImageViewTest::createInfoConstruct<Magnum::PixelFormat>,
@@ -87,12 +76,10 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::createInfoConstruct1DFromImage,
               &ImageViewTest::createInfoConstruct2D<PixelFormat>,
               &ImageViewTest::createInfoConstruct2D<Magnum::PixelFormat>,
-              &ImageViewTest::createInfoConstruct2D<Magnum::CompressedPixelFormat>});
+              &ImageViewTest::createInfoConstruct2D<Magnum::CompressedPixelFormat>,
+              &ImageViewTest::createInfoConstruct2DDepth,
 
-    addInstancedTests({&ImageViewTest::createInfoConstruct2DAspect},
-        Containers::arraySize(View2DFormatData));
-
-    addTests({&ImageViewTest::createInfoConstruct2DFromImage,
+              &ImageViewTest::createInfoConstruct2DFromImage,
               &ImageViewTest::createInfoConstruct3D<PixelFormat>,
               &ImageViewTest::createInfoConstruct3D<Magnum::PixelFormat>,
               &ImageViewTest::createInfoConstruct3D<Magnum::CompressedPixelFormat>,
@@ -165,7 +152,11 @@ void ImageViewTest::createInfoConstructFromImageFormatUknown() {
     Error redirectError{&out};
     ImageViewCreateInfo{VK_IMAGE_VIEW_TYPE_2D, image};
     CORRADE_COMPARE(out.str(),
-        "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly\n");
+        "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly\n"
+        /* The second assert won't appear for the user, it's here only because
+           the graceful assert can'ŧ do an early exist in a delegeated
+           constructor call */
+        "Vk::imageAspectsFor(): can't get an aspect for Vk::PixelFormat(0)\n");
 }
 
 template<class T> void ImageViewTest::createInfoConstruct1D() {
@@ -217,13 +208,13 @@ template<class T> void ImageViewTest::createInfoConstruct2D() {
     CORRADE_COMPARE(info->subresourceRange.levelCount, 9);
 }
 
-void ImageViewTest::createInfoConstruct2DAspect() {
-    auto&& data = View2DFormatData[testCaseInstanceId()];
-    setTestCaseDescription(data.name);
+void ImageViewTest::createInfoConstruct2DDepth() {
+    /* Just to verify proper aspect is chosen. The rest is tested in
+       ImageTest::aspectFor() */
 
-    ImageViewCreateInfo2D info{imageHandle, data.format};
-    CORRADE_COMPARE(info->format, VkFormat(data.format));
-    CORRADE_COMPARE(info->subresourceRange.aspectMask, data.aspect);
+    ImageViewCreateInfo2D info{imageHandle, PixelFormat::Depth24Unorm};
+    CORRADE_COMPARE(info->format, VK_FORMAT_X8_D24_UNORM_PACK32);
+    CORRADE_COMPARE(info->subresourceRange.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 
 void ImageViewTest::createInfoConstruct2DFromImage() {

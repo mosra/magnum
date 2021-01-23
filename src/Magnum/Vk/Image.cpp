@@ -26,6 +26,8 @@
 #include "Image.h"
 #include "ImageCreateInfo.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
+
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -64,6 +66,55 @@ ImageCreateInfo::ImageCreateInfo(const VkImageCreateInfo& info):
     /* Can't use {} with GCC 4.8 here because it tries to initialize the first
        member instead of doing a copy */
     _info(info) {}
+
+Debug& operator<<(Debug& debug, const ImageAspect value) {
+    debug << "Vk::ImageAspect" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::ImageAspect::value: return debug << "::" << Debug::nospace << #value;
+        _c(Color)
+        _c(Depth)
+        _c(Stencil)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Flag bits should be in hex, unlike plain values */
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const ImageAspects value) {
+    return Containers::enumSetDebugOutput(debug, value, "Vk::ImageAspects{}", {
+        Vk::ImageAspect::Color,
+        Vk::ImageAspect::Depth,
+        Vk::ImageAspect::Stencil});
+}
+
+/* Vulkan, it would kill you if 0 was a valid default, right?! ffs */
+ImageAspects imageAspectsFor(const PixelFormat format) {
+    /** @todo expand somehow to catch any invalid values? */
+    CORRADE_ASSERT(Int(format), "Vk::imageAspectsFor(): can't get an aspect for" << format, {});
+
+    if(format == PixelFormat::Depth16UnormStencil8UI ||
+       format == PixelFormat::Depth24UnormStencil8UI ||
+       format == PixelFormat::Depth32FStencil8UI)
+        return ImageAspect::Depth|ImageAspect::Stencil;
+    if(format == PixelFormat::Depth16Unorm ||
+       format == PixelFormat::Depth24Unorm ||
+       format == PixelFormat::Depth32F)
+        return ImageAspect::Depth;
+    if(format == PixelFormat::Stencil8UI)
+        return ImageAspect::Stencil;
+
+    /** @todo planar formats */
+
+    return ImageAspect::Color;
+}
+
+ImageAspects imageAspectsFor(const Magnum::PixelFormat format) {
+    return imageAspectsFor(pixelFormat(format));
+}
 
 Image Image::wrap(Device& device, const VkImage handle, const PixelFormat format, const HandleFlags flags) {
     Image out{NoCreate};

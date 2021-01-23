@@ -153,7 +153,8 @@ enum class ImageLayout: Int {
 @m_since_latest
 
 Wraps @type_vk_keyword{ImageAspectFlagBits}.
-@see @ref ImageAspects, @ref ImageViewCreateInfo::ImageViewCreateInfo()
+@see @ref ImageAspects, @ref imageAspectsFor(),
+    @ref ImageViewCreateInfo::ImageViewCreateInfo()
 @m_enum_values_as_keywords
 */
 enum class ImageAspect: UnsignedInt {
@@ -165,15 +166,44 @@ enum class ImageAspect: UnsignedInt {
 };
 
 /**
+@debugoperatorenum{ImageAspect}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& out, ImageAspect value);
+
+/**
 @brief Image aspects
 @m_since_latest
 
 Type-safe wrapper for @type_vk_keyword{ImageAspectFlags}.
-@see @ref ImageViewCreateInfo::ImageViewCreateInfo()
+@see @ref imageAspectsFor(), @ref ImageViewCreateInfo::ImageViewCreateInfo()
 */
 typedef Containers::EnumSet<ImageAspect> ImageAspects;
 
 CORRADE_ENUMSET_OPERATORS(ImageAspects)
+
+/**
+@debugoperatorenum{ImageAspects}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& out, ImageAspects value);
+
+/**
+@brief Image aspects corresponding to given pixel format
+@m_since_latest
+
+Returns @ref ImageAspect::Depth for a depth format, @ref ImageAspect::Stencil
+for a stencil format, a combination of both for a combined depth/stencil format
+and @ref ImageAspect::Color otherwise. Expects that the format is not
+undefined.
+*/
+MAGNUM_VK_EXPORT ImageAspects imageAspectsFor(PixelFormat format);
+
+/**
+@overload
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT ImageAspects imageAspectsFor(Magnum::PixelFormat format);
 
 /**
 @brief Image

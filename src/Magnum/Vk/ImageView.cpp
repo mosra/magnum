@@ -33,36 +33,13 @@
 
 namespace Magnum { namespace Vk {
 
-namespace {
-
-/* Vulkan, it would kill you if 0 was a valid default, right?! ffs */
-/** @todo this might be useful elsewhere as well */
-ImageAspects aspectFor(const PixelFormat format) {
-    if(format == PixelFormat::Depth16UnormStencil8UI ||
-       format == PixelFormat::Depth24UnormStencil8UI ||
-       format == PixelFormat::Depth32FStencil8UI)
-        return ImageAspect::Depth|ImageAspect::Stencil;
-    if(format == PixelFormat::Depth16Unorm ||
-       format == PixelFormat::Depth24Unorm ||
-       format == PixelFormat::Depth32F)
-        return ImageAspect::Depth;
-    if(format == PixelFormat::Stencil8UI)
-        return ImageAspect::Stencil;
-
-    /** @todo planar formats */
-
-    return ImageAspect::Color;
-}
-
-}
-
 ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const PixelFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): _info{} {
     _info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     _info.flags = VkImageViewCreateFlags(flags);
     _info.image = image;
     _info.viewType = type;
     _info.format = VkFormat(format);
-    _info.subresourceRange.aspectMask = VkImageAspectFlags(aspectFor(format));
+    _info.subresourceRange.aspectMask = VkImageAspectFlags(imageAspectsFor(format));
     _info.subresourceRange.baseMipLevel = levelOffset;
     _info.subresourceRange.levelCount = levelCount;
     _info.subresourceRange.baseArrayLayer = layerOffset;
@@ -73,10 +50,12 @@ ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkIma
 
 ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, const VkImage image, const Magnum::CompressedPixelFormat format, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image, pixelFormat(format), layerOffset, layerCount, levelOffset, levelCount, flags} {}
 
-ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, Image& image, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image, image.format(), layerOffset, layerCount, levelOffset, levelCount, flags} {
-    CORRADE_ASSERT(VkFormat(image.format()),
-        "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly", );
-}
+ImageViewCreateInfo::ImageViewCreateInfo(const VkImageViewType type, Image& image, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount, const Flags flags): ImageViewCreateInfo{type, image,
+    /* Assert here instead of inside the constructor to avoid the
+       imageAspectsFor() assert on invalid format blow up first */
+    (CORRADE_CONSTEXPR_ASSERT(VkFormat(image.format()),
+        "Vk::ImageViewCreateInfo: the image has unknown format, you have to specify it explicitly"), image.format()),
+    layerOffset, layerCount, levelOffset, levelCount, flags} {}
 
 ImageViewCreateInfo::ImageViewCreateInfo(NoInitT) noexcept {}
 
