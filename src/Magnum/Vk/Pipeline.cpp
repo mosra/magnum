@@ -29,6 +29,7 @@
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Image.h"
 
 namespace Magnum { namespace Vk {
 
@@ -74,6 +75,8 @@ ImageMemoryBarrier::ImageMemoryBarrier(const Accesses sourceAccesses, const Acce
     _barrier.subresourceRange.baseArrayLayer = layerOffset;
     _barrier.subresourceRange.layerCount = layerCount;
 }
+
+ImageMemoryBarrier::ImageMemoryBarrier(const Accesses sourceAccesses, const Accesses destinationAccesses, const ImageLayout oldLayout, const ImageLayout newLayout, Image& image, const UnsignedInt layerOffset, const UnsignedInt layerCount, const UnsignedInt levelOffset, const UnsignedInt levelCount): ImageMemoryBarrier{sourceAccesses, destinationAccesses, oldLayout, newLayout, image, imageAspectsFor(image.format()), layerOffset, layerCount, levelOffset, levelCount} {}
 
 ImageMemoryBarrier::ImageMemoryBarrier(NoInitT) noexcept {}
 

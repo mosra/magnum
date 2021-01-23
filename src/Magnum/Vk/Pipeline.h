@@ -566,6 +566,15 @@ class MAGNUM_VK_EXPORT ImageMemoryBarrier {
         /*implicit*/ ImageMemoryBarrier(Accesses sourceAccesses, Accesses destinationAccesses, ImageLayout oldLayout, ImageLayout newLayout, VkImage image, ImageAspects aspects, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS);
 
         /**
+         * @brief Construct with an implicit image aspect
+         *
+         * Compared to @ref ImageMemoryBarrier(Accesses, Accesses, ImageLayout, ImageLayout, VkImage, ImageAspects, UnsignedInt, UnsignedInt, UnsignedInt, UnsignedInt)
+         * the @ref ImageAspects are chosen implicitly using
+         * @ref imageAspectsFor() from @ref Image::format().
+         */
+        /*implicit*/ ImageMemoryBarrier(Accesses sourceAccesses, Accesses destinationAccesses, ImageLayout oldLayout, ImageLayout newLayout, Image& image, UnsignedInt layerOffset = 0, UnsignedInt layerCount = VK_REMAINING_ARRAY_LAYERS, UnsignedInt levelOffset = 0, UnsignedInt levelCount = VK_REMAINING_MIP_LEVELS);
+
+        /**
          * @brief Construct without initializing the contents
          *
          * Note that not even the `sType` field is set --- the structure has to

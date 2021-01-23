@@ -26,8 +26,10 @@
 #include <new>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Pipeline.h"
+#include "Magnum/Vk/PixelFormat.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
@@ -43,6 +45,7 @@ struct PipelineTest: TestSuite::Tester {
     void bufferMemoryBarrierConstructFromVk();
 
     void imageMemoryBarrierConstruct();
+    void imageMemoryBarrierConstructImplicitAspect();
     void imageMemoryBarrierConstructNoInit();
     void imageMemoryBarrierConstructFromVk();
 };
@@ -57,6 +60,7 @@ PipelineTest::PipelineTest() {
               &PipelineTest::bufferMemoryBarrierConstructFromVk,
 
               &PipelineTest::imageMemoryBarrierConstruct,
+              &PipelineTest::imageMemoryBarrierConstructImplicitAspect,
               &PipelineTest::imageMemoryBarrierConstructNoInit,
               &PipelineTest::imageMemoryBarrierConstructFromVk});
 }
@@ -124,6 +128,26 @@ void PipelineTest::imageMemoryBarrierConstruct() {
     CORRADE_COMPARE(barrier->newLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
     CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(0xdead));
     CORRADE_COMPARE(barrier->subresourceRange.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(barrier->subresourceRange.baseMipLevel, 7);
+    CORRADE_COMPARE(barrier->subresourceRange.levelCount, 9);
+    CORRADE_COMPARE(barrier->subresourceRange.baseArrayLayer, 3);
+    CORRADE_COMPARE(barrier->subresourceRange.layerCount, 5);
+}
+
+void PipelineTest::imageMemoryBarrierConstructImplicitAspect() {
+    Device device{NoCreate};
+    Image image = Image::wrap(device, reinterpret_cast<VkImage>(0xdead), PixelFormat::Depth24UnormStencil8UI);
+
+    ImageMemoryBarrier barrier{
+        Access::ColorAttachmentRead, Access::TransferWrite,
+        ImageLayout::ColorAttachment, ImageLayout::TransferDestination,
+        image, 3, 5, 7, 9};
+    CORRADE_COMPARE(barrier->srcAccessMask, VK_ACCESS_COLOR_ATTACHMENT_READ_BIT);
+    CORRADE_COMPARE(barrier->dstAccessMask, VK_ACCESS_TRANSFER_WRITE_BIT);
+    CORRADE_COMPARE(barrier->oldLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+    CORRADE_COMPARE(barrier->newLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CORRADE_COMPARE(barrier->image, reinterpret_cast<VkImage>(0xdead));
+    CORRADE_COMPARE(barrier->subresourceRange.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT);
     CORRADE_COMPARE(barrier->subresourceRange.baseMipLevel, 7);
     CORRADE_COMPARE(barrier->subresourceRange.levelCount, 9);
     CORRADE_COMPARE(barrier->subresourceRange.baseArrayLayer, 3);

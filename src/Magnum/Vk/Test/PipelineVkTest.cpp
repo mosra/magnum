@@ -71,7 +71,7 @@ void PipelineVkTest::pipelineBarrier() {
         }, {
             {Access::TransferWrite, Access::ShaderRead,
              ImageLayout::Preinitialized, ImageLayout::ShaderReadOnly,
-             image, ImageAspect::Color}
+             image}
         })
         .end();
 
@@ -129,7 +129,7 @@ void PipelineVkTest::pipelineBarrierImage() {
         .pipelineBarrier(PipelineStage::Transfer, PipelineStage::FragmentShader, {
             {Access::TransferWrite, Access::ShaderRead,
              ImageLayout::Preinitialized, ImageLayout::ShaderReadOnly,
-             image, ImageAspect::Color}
+             image}
         })
         .end();
 
