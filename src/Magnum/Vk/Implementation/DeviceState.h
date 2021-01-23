@@ -37,7 +37,7 @@ class RenderPassCreateInfo;
 namespace Implementation {
 
 struct DeviceState {
-    explicit DeviceState(Device& instance);
+    explicit DeviceState(Device& device);
 
     void(*getDeviceQueueImplementation)(Device&, const VkDeviceQueueInfo2&, VkQueue&);
 
