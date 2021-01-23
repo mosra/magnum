@@ -312,7 +312,8 @@ class MAGNUM_VK_EXPORT RenderPassBeginInfo {
          * @brief Clear a floating-point or normalized color attachment
          * @return Reference to self (for method chaining)
          *
-         * @see @ref AttachmentLoadOperation::Clear
+         * @see @ref AttachmentLoadOperation::Clear,
+         *      @ref CommandBuffer::clearColorImage(VkImage, ImageLayout, const Color4&)
          */
         RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Color4& color);
 
@@ -320,7 +321,8 @@ class MAGNUM_VK_EXPORT RenderPassBeginInfo {
          * @brief Clear a signed integral color attachment
          * @return Reference to self (for method chaining)
          *
-         * @see @ref AttachmentLoadOperation::Clear
+         * @see @ref AttachmentLoadOperation::Clear,
+         *      @ref CommandBuffer::clearColorImage(VkImage, ImageLayout, const Vector4i&)
          */
         RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Vector4i& color);
 
@@ -328,7 +330,8 @@ class MAGNUM_VK_EXPORT RenderPassBeginInfo {
          * @brief Clear an unsigned integral color attachment
          * @return Reference to self (for method chaining)
          *
-         * @see @ref AttachmentLoadOperation::Clear
+         * @see @ref AttachmentLoadOperation::Clear,
+         *      @ref CommandBuffer::clearColorImage(VkImage, ImageLayout, const Vector4ui&)
          */
         RenderPassBeginInfo& clearColor(UnsignedInt attachment, const Vector4ui& color);
 
@@ -338,7 +341,10 @@ class MAGNUM_VK_EXPORT RenderPassBeginInfo {
          *
          * If the attachment is not a combined depth/stencil format, the unused
          * value is ignored.
-         * @see @ref AttachmentLoadOperation::Clear
+         * @see @ref AttachmentLoadOperation::Clear,
+         *      @ref CommandBuffer::clearDepthStencilImage(VkImage, ImageLayout, Float, UnsignedInt),
+         *      @ref CommandBuffer::clearDepthImage(VkImage, ImageLayout, Float),
+         *      @ref CommandBuffer::clearStencilImage(VkImage, ImageLayout, UnsignedInt)
          */
         RenderPassBeginInfo& clearDepthStencil(UnsignedInt attachment, Float depth, UnsignedInt stencil);
 

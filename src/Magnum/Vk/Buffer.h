@@ -30,6 +30,8 @@
  * @m_since_latest
  */
 
+#include <initializer_list>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
@@ -84,6 +86,23 @@ The following snippet shows zero-filling the whole buffer using
 @ref CommandBuffer::fillBuffer():
 
 @snippet MagnumVk.cpp Buffer-usage-fill
+
+@subsection Vk-Buffer-usage-copy Copying buffer data
+
+Most common buffer copy operation is uploading vertex data from a host-visible
+to device-local memory. This is the preferred workflow for static data over
+using a host-visible memory directly, since it usually isn't the fastest for
+device access.
+
+The copy is done using @ref CommandBuffer::copyBuffer(). In most cases you'll
+want to combine it with a @ref CommandBuffer::pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const BufferMemoryBarrier>, DependencyFlags) "pipelineBarrier()"
+after to make the memory visible for subsequent operations. The following
+snippet shows populating a device-local vertex buffer from host-visible memory:
+
+@snippet MagnumVk.cpp Buffer-usage-copy
+
+It's also possible to copy data between buffers and images, see
+@ref Vk-Image-usage-copy for examples.
 
 @see @ref Image
 */
@@ -239,6 +258,201 @@ class MAGNUM_VK_EXPORT Buffer {
         VkBuffer _handle;
         HandleFlags _flags;
         Memory _dedicatedMemory;
+};
+
+/**
+@brief Buffer copy region
+@m_since_latest
+
+Wraps a @type_vk_keyword{BufferCopy2KHR}. This class is subsequently passed to
+a @ref CopyBufferInfo and then used in @ref CommandBuffer::copyBuffer(). See
+@ref Vk-Buffer-usage-copy for usage information and examples.
+
+@section Vk-BufferCopy-compatibility Compatibility with VkBufferCopy
+
+While the class operates on the @type_vk{BufferCopy2KHR} structure that's
+provided by the @vk_extension{KHR,copy_commands2} extension, conversion from
+and to @type_vk{BufferCopy} is provided to some extent --- you can create a
+@ref BufferCopy from it, call various methods on the instance and then get a
+@type_vk{BufferCopy} back again using @ref vkBufferCopy().
+
+For direct editing of the Vulkan structure, it's recommended to edit the
+@type_vk{BufferCopy2KHR} fields and then perform the conversion instead of
+editing the resulting @type_vk{BufferCopy}, as additional safety checks may be
+done during the conversion to ensure no information is lost.
+
+@see @ref ImageCopy, @ref BufferImageCopy
+*/
+class MAGNUM_VK_EXPORT BufferCopy {
+    public:
+        /**
+         * @brief Constructor
+         * @param sourceOffset      Source buffer offset in bytes
+         * @param destinationOffset Destination buffer offset in bytes
+         * @param size              Size to copy in bytes
+         *
+         * The following @type_vk{BufferCopy2KHR} fields are pre-filled in
+         * addition to `sType`, everything else is zero-filled:
+         *
+         * -    `srcOffset` to @p sourceOffset
+         * -    `dstOffset` to @p destinationOffset
+         * -    `size`
+         */
+        /*implicit*/ BufferCopy(UnsignedLong sourceOffset, UnsignedLong destinationOffset, UnsignedLong size);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit BufferCopy(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit BufferCopy(const VkBufferCopy2KHR& copy);
+
+        /**
+         * @brief Construct from a @type_vk{BufferCopy}
+         *
+         * Compared to the above, fills the common subset of
+         * @type_vk{BufferCopy2KHR}, sets `sType` and zero-fills `pNext`.
+         * @see @ref vkBufferCopy()
+         */
+        explicit BufferCopy(const VkBufferCopy& copy);
+
+        /**
+         * @brief Corresponding @type_vk{BufferCopy} structure
+         *
+         * Provided for compatibility with Vulkan implementations that don't
+         * support the @vk_extension{KHR,copy_commands2} extensions. See
+         * @ref Vk-BufferCopy-compatibility for more information.
+         * @see @ref BufferCopy(const VkBufferCopy&),
+         *      @ref CopyBufferInfo::vkBufferCopies(),
+         *      @ref CopyImageInfo::vkImageCopies(),
+         *      @ref ImageCopy::vkImageCopy(),
+         *      @ref CopyImageToBufferInfo::vkBufferImageCopies(),
+         *      @ref CopyBufferToImageInfo::vkBufferImageCopies(),
+         *      @ref BufferImageCopy::vkBufferImageCopy()
+         */
+        VkBufferCopy vkBufferCopy() const;
+
+        /** @brief Underlying @type_vk{BufferCopy2KHR} structure */
+        VkBufferCopy2KHR& operator*() { return _copy; }
+        /** @overload */
+        const VkBufferCopy2KHR& operator*() const { return _copy; }
+        /** @overload */
+        VkBufferCopy2KHR* operator->() { return &_copy; }
+        /** @overload */
+        const VkBufferCopy2KHR* operator->() const { return &_copy; }
+        /** @overload */
+        operator const VkBufferCopy2KHR*() const { return &_copy; }
+
+        /**
+         * @overload
+         *
+         * The class is implicitly convertible to a reference in addition to
+         * a pointer because the type is commonly used in arrays as well, which
+         * would be annoying to do with a pointer conversion.
+         */
+        operator const VkBufferCopy2KHR&() const { return _copy; }
+
+    private:
+        VkBufferCopy2KHR _copy;
+};
+
+/**
+@brief Buffer copy command
+@m_since_latest
+
+Wraps a @type_vk_keyword{CopyBufferInfo2KHR}. This class is subsequently used
+in @ref CommandBuffer::copyBuffer(). See @ref Vk-Buffer-usage-copy for more
+information.
+
+@section Vk-CopyBufferInfo-compatibility Compatibility with vkCmdCopyBuffer()
+
+While the class operates on the @type_vk{CopyBufferInfo2KHR} structure that's
+provided by the @vk_extension{KHR,copy_commands2} extension, conversion from
+and to the set of parameters accepted by @fn_vk{CmdCopyBuffer} is provided to
+some extent --- you can create @ref BufferCopy instances out of
+@type_vk{BufferCopy} structures, pass them together with the rest to
+@ref CopyBufferInfo and then get a @type_vk{BufferCopy} list back again using
+@ref vkBufferCopies().
+
+For direct editing of the Vulkan structure, it's recommended to edit the
+@type_vk{CopyBufferInfo2KHR} fields and then perform the conversion instead of
+editing the resulting @type_vk{BufferCopy} list, as additional safety checks
+may be done during the conversion to ensure no information is lost.
+
+@see @ref CopyImageInfo, @ref CopyBufferToImageInfo, @ref CopyImageToBufferInfo
+*/
+class MAGNUM_VK_EXPORT CopyBufferInfo {
+    public:
+        /**
+         * @brief Constructor
+         * @param source        Source @ref Buffer or a raw Vulkan buffer
+         *      handle. Expected to have been created with
+         *      @ref BufferUsage::TransferSource.
+         * @param destination   Destination @ref Buffer or a raw Vulkan buffer
+         *      handle. Expected to have been created with
+         *      @ref BufferUsage::TransferDestination.
+         * @param regions       Regions to copy. There has to be at least one.
+         */
+        /*implicit*/ CopyBufferInfo(VkBuffer source, VkBuffer destination, Containers::ArrayView<const BufferCopy> regions);
+        /** @overload */
+        /*implicit*/ CopyBufferInfo(VkBuffer source, VkBuffer destination, std::initializer_list<BufferCopy> regions);
+
+        /**
+         * @brief Construct without initializing the contents
+         *
+         * Note that not even the `sType` field is set --- the structure has to
+         * be fully initialized afterwards in order to be usable.
+         */
+        explicit CopyBufferInfo(NoInitT) noexcept;
+
+        /**
+         * @brief Construct from existing data
+         *
+         * Copies the existing values verbatim, pointers are kept unchanged
+         * without taking over the ownership. Modifying the newly created
+         * instance will not modify the original data nor the pointed-to data.
+         */
+        explicit CopyBufferInfo(const VkCopyBufferInfo2KHR& info);
+
+        /**
+         * @brief Corresponding @type_vk{BufferCopy} structures
+         *
+         * Provided for compatibility with Vulkan implementations that don't
+         * support the @vk_extension{KHR,copy_commands2} extension. See
+         * @ref Vk-CopyBufferInfo-compatibility for more information.
+         * @see @ref BufferImageCopy::vkBufferImageCopy(),
+         *      @ref BufferCopy::vkBufferCopy(),
+         *      @ref CopyImageInfo::vkImageCopies(),
+         *      @ref ImageCopy::vkImageCopy(),
+         *      @ref CopyImageToBufferInfo::vkBufferImageCopies(),
+         *      @ref BufferImageCopy::vkBufferImageCopy()
+         */
+        Containers::Array<VkBufferCopy> vkBufferCopies() const;
+
+        /** @brief Underlying @type_vk{CopyBufferInfo2KHR} structure */
+        VkCopyBufferInfo2KHR& operator*() { return _info; }
+        /** @overload */
+        const VkCopyBufferInfo2KHR& operator*() const { return _info; }
+        /** @overload */
+        VkCopyBufferInfo2KHR* operator->() { return &_info; }
+        /** @overload */
+        const VkCopyBufferInfo2KHR* operator->() const { return &_info; }
+        /** @overload */
+        operator const VkCopyBufferInfo2KHR*() const { return &_info; }
+
+    private:
+        VkCopyBufferInfo2KHR _info;
+        Containers::ArrayTuple _data;
 };
 
 }}

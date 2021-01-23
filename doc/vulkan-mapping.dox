@@ -120,14 +120,14 @@ Vulkan function                         | Matching API
 @fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdClearAttachments}             | |
-@fn_vk{CmdClearColorImage}              | |
-@fn_vk{CmdClearDepthStencilImage}       | |
+@fn_vk{CmdClearColorImage}              | @ref CommandBuffer::clearColorImage()
+@fn_vk{CmdClearDepthStencilImage}       | @ref CommandBuffer::clearDepthStencilImage(), \n @ref CommandBuffer::clearDepthImage(), \n @ref CommandBuffer::clearStencilImage()
 @fn_vk{CmdCopyAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdCopyAccelerationStructureToMemoryKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@fn_vk{CmdCopyBuffer}, \n @fn_vk{CmdCopyBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@fn_vk{CmdCopyBufferToImage}, \n @fn_vk{CmdCopyBufferToImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@fn_vk{CmdCopyImage}, \n @fn_vk{CmdCopyImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@fn_vk{CmdCopyImageToBuffer}, \n @fn_vk{CmdCopyImageToBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@fn_vk{CmdCopyBuffer}, \n @fn_vk{CmdCopyBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CommandBuffer::copyBuffer()
+@fn_vk{CmdCopyBufferToImage}, \n @fn_vk{CmdCopyBufferToImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CommandBuffer::copyBufferToImage()
+@fn_vk{CmdCopyImage}, \n @fn_vk{CmdCopyImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CommandBuffer::copyImage()
+@fn_vk{CmdCopyImageToBuffer}, \n @fn_vk{CmdCopyImageToBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CommandBuffer::copyImageToBuffer()
 @fn_vk{CmdCopyMemoryToAccelerationStructureKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdCopyQueryPoolResults}         | |
 @fn_vk{CmdDebugMarkerBeginEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdDebugMarkerEndEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
@@ -400,10 +400,10 @@ Vulkan structure                        | Matching API
 @type_vk{BaseOutStructure}              | |
 @type_vk{BindSparseInfo}                | |
 @type_vk{BlitImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{BufferCopy}, \n @type_vk{BufferCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{BufferCopy}, \n @type_vk{BufferCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref BufferCopy
 @type_vk{BufferCreateInfo}              | @ref BufferCreateInfo
 @type_vk{BufferDeviceAddressInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{BufferImageCopy}, \n @type_vk{BufferImageCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{BufferImageCopy}, \n @type_vk{BufferImageCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref BufferImageCopy
 @type_vk{BufferMemoryBarrier}           | @ref BufferMemoryBarrier
 @type_vk{BufferMemoryRequirementsInfo}, \n @type_vk{BufferMemoryRequirementsInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | not exposed, internal to @ref Buffer::memoryRequirements()
 @type_vk{BufferOpaqueCaptureAddressCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
@@ -427,10 +427,10 @@ Vulkan structure                        | Matching API
 @type_vk{ComponentMapping}              | |
 @type_vk{ComputePipelineCreateInfo}     | |
 @type_vk{ConformanceVersion}            | |
-@type_vk{CopyBufferInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{CopyBufferToImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{CopyImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{CopyImageToBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{CopyBufferInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyBufferInfo
+@type_vk{CopyBufferToImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyBufferToImageInfo
+@type_vk{CopyImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyImageInfo
+@type_vk{CopyImageToBuffer2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyImageToBufferInfo
 @type_vk{CopyAccelerationStructureInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{CopyAccelerationStructureToMemoryInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{CopyMemoryToAccelerationStructureInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -528,7 +528,7 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{ImageBlit}, \n @type_vk{ImageBlit2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{ImageCopy}, \n @type_vk{ImageCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{ImageCopy}, \n @type_vk{ImageCopy2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref ImageCopy
 @type_vk{ImageCreateInfo}               | @ref ImageCreateInfo
 @type_vk{ImageFormatListCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ImageFormatProperties}, \n @type_vk{ImageFormatProperties2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |

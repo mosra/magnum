@@ -53,6 +53,11 @@ struct DeviceState {
     void(*cmdBeginRenderPassImplementation)(CommandBuffer&, const VkRenderPassBeginInfo&, const VkSubpassBeginInfo&);
     void(*cmdNextSubpassImplementation)(CommandBuffer&, const VkSubpassEndInfo&, const VkSubpassBeginInfo&);
     void(*cmdEndRenderPassImplementation)(CommandBuffer&, const VkSubpassEndInfo&);
+
+    void(*cmdCopyBufferImplementation)(CommandBuffer&, const CopyBufferInfo&);
+    void(*cmdCopyImageImplementation)(CommandBuffer&, const CopyImageInfo&);
+    void(*cmdCopyBufferToImageImplementation)(CommandBuffer&, const CopyBufferToImageInfo&);
+    void(*cmdCopyImageToBufferImplementation)(CommandBuffer&, const CopyImageToBufferInfo&);
 };
 
 }}}

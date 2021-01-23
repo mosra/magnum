@@ -387,6 +387,8 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * -    and old and new @ref ImageLayout in @p imageMemoryBarriers have
          *      to be equal
          *
+         * See @ref Vk-Buffer-usage-copy, @ref Vk-Image-usage-clear and
+         * @ref Vk-Image-usage-copy for usage examples.
          * @see @fn_vk_keyword{CmdPipelineBarrier}
          */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const MemoryBarrier> memoryBarriers, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
@@ -409,7 +411,8 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
-         * with empty @p memoryBarriers and @p imageBarriers.
+         * with empty @p memoryBarriers and @p imageBarriers. See
+         * @ref Vk-Buffer-usage-copy for usage examples.
          */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, DependencyFlags dependencyFlags = {});
         /** @overload */
@@ -420,7 +423,9 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
-         * with empty @p memoryBarriers and @p bufferBarriers.
+         * with empty @p memoryBarriers and @p bufferBarriers. See
+         * @ref Vk-Image-usage-clear and @ref Vk-Image-usage-copy for usage
+         * examples.
          */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
         /** @overload */
@@ -440,7 +445,9 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *
          * Allowed only outside of a render pass. See @ref Vk-Buffer-usage-fill
          * for a usage example.
-         * @see @fn_vk_keyword{CmdFillBuffer}
+         * @see @ref clearColorImage(), @ref clearDepthStencilImage(),
+         *      @ref clearDepthImage(), @ref clearStencilImage(),
+         *      @fn_vk_keyword{CmdFillBuffer}
          */
         CommandBuffer& fillBuffer(VkBuffer buffer, UnsignedLong offset, UnsignedLong size, UnsignedInt value);
 
@@ -455,6 +462,249 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer& fillBuffer(VkBuffer buffer, UnsignedInt value) {
             return fillBuffer(buffer, 0, VK_WHOLE_SIZE, value);
         }
+
+        /**
+         * @brief Clear a floating-point or normalized color image
+         * @param image         An @ref Image or a raw Vulkan image handle to
+         *      clear. Expected to have been created with
+         *      @ref ImageUsage::TransferDestination and a floating-point or
+         *      normalized non-compressed @ref PixelFormat usable for transfer
+         *      destination.
+         * @param layout        Image layout. Can be either
+         *      @ref ImageLayout::General or
+         *      @ref ImageLayout::TransferDestination.
+         * @param color         Color to clear the image with
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. For clearing inside a render
+         * pass you can either specify @ref AttachmentLoadOperation::Clear for
+         * a particular attachment, which will clear it on render pass begin
+         * (see @ref Vk-RenderPass-usage for an example), or use
+         * @fn_vk{CmdClearAttachments} which allows you to clear at any time
+         * inside a render pass. See @ref Vk-Image-usage-clear for a usage
+         * example.
+         *
+         * A single @type_vk{ImageSubresourceRange} is passed to the command,
+         * with the following fields are set:
+         *
+         * -    `aspectMask` to @val_vk{IMAGE_ASPECT_COLOR,ImageAspectFlagBits}
+         * -    `baseMipLevel` to @cpp 0 @ce
+         * -    `levelCount` to @def_vk{REMAINING_MIP_LEVELS}
+         * -    `baseArrayLayer` to @cpp 0 @ce
+         * -    `layerCount` to @def_vk{REMAINING_ARRAY_LAYERS}
+         *
+         * @attention This function currently clears all layers and mip levels
+         *      of the image, with no ability to specify particular layer/level
+         *      ranges. For that please use the Vulkan API directly.
+         *
+         * @see @fn_vk_keyword{CmdClearColorImage}
+         *
+         * @todoc mention ImageLayout::SharedPresent being allowed once the
+         *      extension is exposed
+         */
+        CommandBuffer& clearColorImage(VkImage image, ImageLayout layout, const Color4& color);
+
+        /**
+         * @brief Clear a signed integral color image
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. Behaves like
+         * @ref clearColorImage(VkImage, ImageLayout, const Color4&), except
+         * that it's meant for images with a signed integral non-compressed
+         * @ref PixelFormat.
+         */
+        CommandBuffer& clearColorImage(VkImage image, ImageLayout layout, const Vector4i& color);
+
+        /**
+         * @brief Clear an unsigned integral color image
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. Behaves like
+         * @ref clearColorImage(VkImage, ImageLayout, const Color4&), except
+         * that it's meant for images with an unsigned integral non-compressed
+         * @ref PixelFormat.
+         */
+        CommandBuffer& clearColorImage(VkImage image, ImageLayout layout, const Vector4ui& color);
+
+        /**
+         * @brief Clear a combined depth/stencil image
+         * @param image         An @ref Image or a raw Vulkan image handle to
+         *      clear. Expected to have been be created with
+         *      @ref ImageUsage::TransferDestination and a combined
+         *      depth/stencil @ref PixelFormat usable for transfer destination.
+         * @param layout        Image layout. Can be either
+         *      @ref ImageLayout::General or
+         *      @ref ImageLayout::TransferDestination.
+         * @param depth         Depth value to clear with
+         * @param stencil       Stencil value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. For clearing inside a render
+         * pass you can either specify @ref AttachmentLoadOperation::Clear for
+         * a particular attachment, which will clear it on render pass begin
+         * (see @ref Vk-RenderPass-usage for an example), or use
+         * @fn_vk{CmdClearAttachments} which allows you to clear at any point
+         * inside a render pass. For clearing a depth-only or a stencil-only
+         * image (or just a depth orstencil buffer of a combined depth/stencil
+         * image) use @ref clearDepthImage() or @ref clearStencilImage()
+         * instead. See @ref Vk-Image-usage-clear for a usage example.
+         *
+         * A single @type_vk{ImageSubresourceRange} is passed to the command,
+         * with the following fields are set:
+         *
+         * -    `aspectMask` to @val_vk{IMAGE_ASPECT_DEPTH,ImageAspectFlagBits}
+         *      and @val_vk{IMAGE_ASPECT_STENCIL,ImageAspectFlagBits}
+         * -    `baseMipLevel` to @cpp 0 @ce
+         * -    `levelCount` to @def_vk{REMAINING_MIP_LEVELS}
+         * -    `baseArrayLayer` to @cpp 0 @ce
+         * -    `layerCount` to @def_vk{REMAINING_ARRAY_LAYERS}
+         *
+         * @attention This function currently clears all layers and mip levels
+         *      of the image, with no ability to specify particular layer/level
+         *      ranges. For that please use the Vulkan API directly.
+         *
+         * @see @fn_vk_keyword{CmdClearDepthStencilImage}
+         */
+        CommandBuffer& clearDepthStencilImage(VkImage image, ImageLayout layout, Float depth, UnsignedInt stencil);
+
+        /**
+         * @brief Clear a depth-only image
+         * @param image         An @ref Image or a raw Vulkan image handle to
+         *      clear. Expected to have been be created with
+         *      @ref ImageUsage::TransferDestination and a depth-only
+         *      @ref PixelFormat usable for transfer destination.
+         * @param layout        Image layout. Can be either
+         *      @ref ImageLayout::General or
+         *      @ref ImageLayout::TransferDestination.
+         * @param depth         Depth value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. For clearing inside a render
+         * pass you can either specify @ref AttachmentLoadOperation::Clear for
+         * a particular attachment, which will clear it on render pass begin
+         * (see @ref Vk-RenderPass-usage for an example), or use
+         * @fn_vk{CmdClearAttachments} which allows you to clear at any point
+         * inside a render pass. For clearing a combined depth/stencil image
+         * use @ref clearDepthStencilImage(), for clearing a stencil-only image
+         * or just the stencil buffer of a combined depth/stencil image use
+         * @ref clearStencilImage() instead. See @ref Vk-Image-usage-clear for
+         * a usage example.
+         *
+         * A single @type_vk{ImageSubresourceRange} is passed to the command,
+         * with the following fields are set:
+         *
+         * -    `aspectMask` to @val_vk{IMAGE_ASPECT_DEPTH,ImageAspectFlagBits}
+         * -    `baseMipLevel` to @cpp 0 @ce
+         * -    `levelCount` to @def_vk{REMAINING_MIP_LEVELS}
+         * -    `baseArrayLayer` to @cpp 0 @ce
+         * -    `layerCount` to @def_vk{REMAINING_ARRAY_LAYERS}
+         *
+         * @attention This function currently clears all layers and mip levels
+         *      of the image, with no ability to specify particular layer/level
+         *      ranges. For that please use the Vulkan API directly.
+         *
+         * @see @fn_vk_keyword{CmdClearDepthStencilImage}
+         */
+        CommandBuffer& clearDepthImage(VkImage image, ImageLayout layout, Float depth);
+
+        /**
+         * @brief Clear a stencil-only image
+         * @param image         An @ref Image or a raw Vulkan image handle to
+         *      clear. Expected to have been be created with
+         *      @ref ImageUsage::TransferDestination and a stencil-only
+         *      @ref PixelFormat usable for transfer destination.
+         * @param layout        Image layout. Can be either
+         *      @ref ImageLayout::General or
+         *      @ref ImageLayout::TransferDestination.
+         * @param stencil       Stencil value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. For clearing inside a render
+         * pass you can either specify @ref AttachmentLoadOperation::Clear for
+         * a particular attachment, which will clear it on render pass begin
+         * (see @ref Vk-RenderPass-usage for an example), or use
+         * @fn_vk{CmdClearAttachments} which allows you to clear at any point
+         * inside a render pass. For clearing a combined depth/stencil image
+         * use @ref clearDepthStencilImage(), for clearing a depth-only image
+         * or just the depth buffer of a combined depth/stencil image use
+         * @ref clearDepthImage() instead. See @ref Vk-Image-usage-clear for a
+         * usage example.
+         *
+         * A single @type_vk{ImageSubresourceRange} is passed to the command,
+         * with the following fields set:
+         *
+         * -    `aspectMask` to @val_vk{IMAGE_ASPECT_STENCIL,ImageAspectFlagBits}
+         * -    `baseMipLevel` to @cpp 0 @ce
+         * -    `levelCount` to @def_vk{REMAINING_MIP_LEVELS}
+         * -    `baseArrayLayer` to @cpp 0 @ce
+         * -    `layerCount` to @def_vk{REMAINING_ARRAY_LAYERS}
+         *
+         * @attention This function currently clears all layers and mip levels
+         *      of the image, with no ability to specify particular layer/level
+         *      ranges. For that please use the Vulkan API directly.
+         *
+         * @see @fn_vk_keyword{CmdClearDepthStencilImage}
+         */
+        CommandBuffer& clearStencilImage(VkImage image, ImageLayout layout, UnsignedInt stencil);
+
+        /** @todo clearAttachments(), I'm too lazy to expose all the needed
+            structures right now */
+
+        /**
+         * @brief Copy data between buffer regions
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. If the
+         * @vk_extension{KHR,copy_commands2} extension is not supported and
+         * enabled on the device, the `pNext` chain in @p info and its
+         * substructures has to be empty. See @ref Vk-Buffer-usage-copy for
+         * details and usage examples.
+         * @see @fn_vk_keyword{CmdCopyBuffer2KHR},
+         *      @fn_vk_keyword{CmdCopyBuffer}
+         */
+        CommandBuffer& copyBuffer(const CopyBufferInfo& info);
+
+        /**
+         * @brief Copy data between images
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. If the
+         * @vk_extension{KHR,copy_commands2} extension is not supported
+         * and enabled on the device, the `pNext` chain in @p info and its
+         * substructures has to be empty. See @ref Vk-Image-usage-copy for
+         * details and usage examples.
+         * @see @fn_vk_keyword{CmdCopyImage2KHR},
+         *      @fn_vk_keyword{CmdCopyImage}
+         */
+        CommandBuffer& copyImage(const CopyImageInfo& info);
+
+        /**
+         * @brief Copy data from a buffer into an image
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. If the
+         * @vk_extension{KHR,copy_commands2} extension is not supported and
+         * enabled on the device, the `pNext` chain in @p info and its
+         * substructures has to be empty. See @ref Vk-Image-usage-copy for
+         * details and usage examples.
+         * @see @fn_vk_keyword{CmdCopyBufferToImage2KHR},
+         *      @fn_vk_keyword{CmdCopyBufferToImage}
+         */
+        CommandBuffer& copyBufferToImage(const CopyBufferToImageInfo& info);
+
+        /**
+         * @brief Copy image data into a buffer
+         * @return Reference to self (for method chaining)
+         *
+         * Allowed only outside of a render pass. If the
+         * @vk_extension{KHR,copy_commands2} extension is not supported and
+         * enabled on the device, the `pNext` chain in @p info and its
+         * substructures has to be empty. See @ref Vk-Image-usage-copy for
+         * details and usage examples.
+         * @see @fn_vk_keyword{CmdCopyImageToBuffer2KHR},
+         *      @fn_vk_keyword{CmdCopyImageToBuffer}
+         */
+        CommandBuffer& copyImageToBuffer(const CopyImageToBufferInfo& info);
 
     private:
         friend CommandPool;
@@ -471,6 +721,18 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         MAGNUM_VK_LOCAL static void endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
         MAGNUM_VK_LOCAL static void endRenderPassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
         MAGNUM_VK_LOCAL static void endRenderPassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
+
+        MAGNUM_VK_LOCAL static void copyBufferImplementationDefault(CommandBuffer& self, const CopyBufferInfo& info);
+        MAGNUM_VK_LOCAL static void copyBufferImplementationKHR(CommandBuffer& self, const CopyBufferInfo& info);
+
+        MAGNUM_VK_LOCAL static void copyImageImplementationDefault(CommandBuffer& self, const CopyImageInfo& info);
+        MAGNUM_VK_LOCAL static void copyImageImplementationKHR(CommandBuffer& self, const CopyImageInfo& info);
+
+        MAGNUM_VK_LOCAL static void copyBufferToImageImplementationDefault(CommandBuffer& self, const CopyBufferToImageInfo& info);
+        MAGNUM_VK_LOCAL static void copyBufferToImageImplementationKHR(CommandBuffer& self, const CopyBufferToImageInfo& info);
+
+        MAGNUM_VK_LOCAL static void copyImageToBufferImplementationDefault(CommandBuffer& self, const CopyImageToBufferInfo& info);
+        MAGNUM_VK_LOCAL static void copyImageToBufferImplementationKHR(CommandBuffer& self, const CopyImageToBufferInfo& info);
 
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;

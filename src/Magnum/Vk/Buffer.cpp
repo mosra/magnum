@@ -27,6 +27,8 @@
 #include "BufferCreateInfo.h"
 #include "CommandBuffer.h"
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -160,9 +162,105 @@ VkResult Buffer::bindMemoryImplementation11(Device& device, UnsignedInt count, c
     return device->BindBufferMemory2(device, count, infos);
 }
 
+BufferCopy::BufferCopy(const UnsignedLong sourceOffset, const UnsignedLong destinationOffset, const UnsignedLong size): _copy{} {
+    _copy.sType = VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR;
+    _copy.srcOffset = sourceOffset;
+    _copy.dstOffset = destinationOffset;
+    _copy.size = size;
+}
+
+BufferCopy::BufferCopy(NoInitT) noexcept {}
+
+BufferCopy::BufferCopy(const VkBufferCopy2KHR& copy):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _copy(copy) {}
+
+BufferCopy::BufferCopy(const VkBufferCopy& copy): _copy{
+    VK_STRUCTURE_TYPE_BUFFER_COPY_2_KHR,
+    nullptr,
+    copy.srcOffset,
+    copy.dstOffset,
+    copy.size
+} {}
+
+namespace {
+
+/* Used by CopyBufferInfo::vkBufferCopies() as well */
+VkBufferCopy vkBufferCopy(const VkBufferCopy2KHR& copy) {
+    CORRADE_ASSERT(!copy.pNext,
+        "Vk::BufferCopy: disallowing conversion to VkBufferCopy with non-empty pNext to prevent information loss", {});
+    return {
+        copy.srcOffset,
+        copy.dstOffset,
+        copy.size
+    };
+}
+
+}
+
+VkBufferCopy BufferCopy::vkBufferCopy() const {
+    return Vk::vkBufferCopy(_copy);
+}
+
+CopyBufferInfo::CopyBufferInfo(const VkBuffer source, const VkBuffer destination, const Containers::ArrayView<const BufferCopy> regions): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2_KHR;
+    _info.srcBuffer = source;
+    _info.dstBuffer = destination;
+
+    /* Vulkan 1.2.166 doesn't allow anything in VkBufferCopy2KHR::pNext yet so
+       there's no point in storing the original BufferCopy wrapper */
+    static_assert(sizeof(VkBufferCopy2KHR) == sizeof(BufferCopy),
+        "expecting BufferCopy to have no extra members referenced from pNext");
+    Containers::ArrayView<VkBufferCopy2KHR> vkBufferCopies2;
+    _data = Containers::ArrayTuple{
+        {NoInit, regions.size(), vkBufferCopies2}
+    };
+
+    for(std::size_t i = 0; i != regions.size(); ++i) {
+        /* Can't use {} with GCC 4.8 here because it tries to initialize the
+           first member instead of doing a copy */
+        new(vkBufferCopies2 + i) VkBufferCopy2KHR(BufferCopy{regions[i]});
+    }
+
+    _info.regionCount = regions.size();
+    _info.pRegions = vkBufferCopies2;
+}
+
+CopyBufferInfo::CopyBufferInfo(const VkBuffer source, const VkBuffer destination, const std::initializer_list<BufferCopy> regions): CopyBufferInfo{source, destination, Containers::arrayView(regions)} {}
+
+CopyBufferInfo::CopyBufferInfo(NoInitT) noexcept {}
+
+CopyBufferInfo::CopyBufferInfo(const VkCopyBufferInfo2KHR& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+Containers::Array<VkBufferCopy> CopyBufferInfo::vkBufferCopies() const {
+    Containers::Array<VkBufferCopy> out{NoInit, _info.regionCount};
+    for(std::size_t i = 0; i != _info.regionCount; ++i)
+        new(out + i) VkBufferCopy(vkBufferCopy(_info.pRegions[i]));
+    return out;
+}
+
 CommandBuffer& CommandBuffer::fillBuffer(const VkBuffer buffer, const UnsignedLong offset, const UnsignedLong size, UnsignedInt value) {
     (**_device).CmdFillBuffer(_handle, buffer, offset, size, value);
     return *this;
+}
+
+CommandBuffer& CommandBuffer::copyBuffer(const CopyBufferInfo& info) {
+    _device->state().cmdCopyBufferImplementation(*this, info);
+    return *this;
+}
+
+void CommandBuffer::copyBufferImplementationDefault(CommandBuffer& self, const CopyBufferInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyBuffer(): disallowing extraction of CopyBufferInfo with non-empty pNext to prevent information loss", );
+    return (**self._device).CmdCopyBuffer(self, info->srcBuffer, info->dstBuffer, info->regionCount, info.vkBufferCopies());
+}
+
+void CommandBuffer::copyBufferImplementationKHR(CommandBuffer& self, const CopyBufferInfo& info) {
+    return (**self._device).CmdCopyBuffer2KHR(self, info);
 }
 
 }}

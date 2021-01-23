@@ -401,7 +401,9 @@ CORRADE_ENUMSET_OPERATORS(DependencyFlags)
 @m_since_latest
 
 Wraps a @type_vk_keyword{MemoryBarrier}. This class is subsequently used in
-@ref CommandBuffer::pipelineBarrier().
+@ref CommandBuffer::pipelineBarrier(), see @ref Vk-Image-usage-copy and
+@ref Vk-Buffer-usage-copy for usage examples.
+@see @ref BufferMemoryBarrier, @ref ImageMemoryBarrier
 */
 class MAGNUM_VK_EXPORT MemoryBarrier {
     public:
@@ -458,7 +460,8 @@ class MAGNUM_VK_EXPORT MemoryBarrier {
 
 Wraps a @type_vk_keyword{BufferMemoryBarrier}. Compared to @ref MemoryBarrier
 only affects a single buffer. This class is subsequently used in
-@ref CommandBuffer::pipelineBarrier().
+@ref CommandBuffer::pipelineBarrier(), see @ref Vk-Buffer-usage-copy for usage
+examples.
 */
 class MAGNUM_VK_EXPORT BufferMemoryBarrier {
     public:
@@ -525,7 +528,8 @@ class MAGNUM_VK_EXPORT BufferMemoryBarrier {
 Wraps a @type_vk_keyword{ImageMemoryBarrier}. Compared to @ref MemoryBarrier
 only affects a single image and additionally performs @ref ImageLayout
 transitions. This class is subsequently used in
-@ref CommandBuffer::pipelineBarrier().
+@ref CommandBuffer::pipelineBarrier(), see @ref Vk-Image-usage-copy for usage
+examples.
 */
 class MAGNUM_VK_EXPORT ImageMemoryBarrier {
     public:

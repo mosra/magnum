@@ -175,6 +175,11 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
         }
 
+        /* Enable the KHR_copy_commands2 extension. Not in any Vulkan version
+           yet. */
+        if(extensionProperties->isSupported<Extensions::KHR::copy_commands2>())
+            addEnabledExtensions<Extensions::KHR::copy_commands2>();
+
         /* Enable the KHR_portability_subset extension, which *has to be*
            enabled when available. Not enabling any of its features though,
            that responsibility lies on the user. */

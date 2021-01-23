@@ -25,9 +25,12 @@
 
 #include "Image.h"
 #include "ImageCreateInfo.h"
+#include "CommandBuffer.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Array.h>
 
+#include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -231,6 +234,444 @@ VkResult Image::bindMemoryImplementationKHR(Device& device, UnsignedInt count, c
 
 VkResult Image::bindMemoryImplementation11(Device& device, UnsignedInt count, const VkBindImageMemoryInfo* const infos) {
     return device->BindImageMemory2(device, count, infos);
+}
+
+ImageCopy::ImageCopy(const ImageAspects aspects, const Int sourceLevel, const Int sourceLayerOffset, const Int sourceLayerCount, const Vector3i& sourceOffset, const Int destinationLevel, const Int destinationLayerOffset, const Int destinationLayerCount, const Vector3i& destinationOffset, const Vector3i& size): _copy{} {
+    _copy.sType = VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR;
+    _copy.srcSubresource.aspectMask = VkImageAspectFlags(aspects);
+    _copy.srcSubresource.mipLevel = sourceLevel;
+    _copy.srcSubresource.baseArrayLayer = sourceLayerOffset;
+    _copy.srcSubresource.layerCount = sourceLayerCount;
+    _copy.srcOffset = VkOffset3D(sourceOffset);
+    _copy.dstSubresource.aspectMask = VkImageAspectFlags(aspects);
+    _copy.dstSubresource.mipLevel = destinationLevel;
+    _copy.dstSubresource.baseArrayLayer = destinationLayerOffset;
+    _copy.dstSubresource.layerCount = destinationLayerCount;
+    _copy.dstOffset = VkOffset3D(destinationOffset);
+    _copy.extent = VkExtent3D(size);
+}
+
+ImageCopy::ImageCopy(NoInitT) noexcept {}
+
+ImageCopy::ImageCopy(const VkImageCopy2KHR& copy):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _copy(copy) {}
+
+ImageCopy::ImageCopy(const VkImageCopy& copy): _copy{
+    VK_STRUCTURE_TYPE_IMAGE_COPY_2_KHR,
+    nullptr,
+    copy.srcSubresource,
+    copy.srcOffset,
+    copy.dstSubresource,
+    copy.dstOffset,
+    copy.extent
+} {}
+
+namespace {
+
+/* Used by CopyImageInfo::vkCopyImageInfo() as well */
+VkImageCopy vkImageCopy(const VkImageCopy2KHR& copy) {
+    CORRADE_ASSERT(!copy.pNext,
+        "Vk::ImageCopy: disallowing conversion to VkImageCopy with non-empty pNext to prevent information loss", {});
+    return {
+        copy.srcSubresource,
+        copy.srcOffset,
+        copy.dstSubresource,
+        copy.dstOffset,
+        copy.extent
+    };
+}
+
+}
+
+VkImageCopy ImageCopy::vkImageCopy() const {
+    return Vk::vkImageCopy(_copy);
+}
+
+CopyImageInfo::CopyImageInfo(const VkImage source, const ImageLayout sourceLayout, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const ImageCopy> regions): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2_KHR;
+    _info.srcImage = source;
+    _info.srcImageLayout = VkImageLayout(sourceLayout);
+    _info.dstImage = destination;
+    _info.dstImageLayout = VkImageLayout(destinationLayout);
+
+    /* Vulkan 1.2.166 doesn't allow anything in VkImageCopy2KHR::pNext yet
+       so there's no point in storing the original ImageCopy wrapper */
+    static_assert(sizeof(VkImageCopy2KHR) == sizeof(ImageCopy),
+        "expecting ImageCopy to have no extra members referenced from pNext");
+    Containers::ArrayView<VkImageCopy2KHR> vkImageCopies2;
+    _data = Containers::ArrayTuple{
+        {NoInit, regions.size(), vkImageCopies2}
+    };
+
+    for(std::size_t i = 0; i != regions.size(); ++i) {
+        /* Can't use {} with GCC 4.8 here because it tries to initialize the
+           first member instead of doing a copy */
+        new(vkImageCopies2 + i) VkImageCopy2KHR(ImageCopy{regions[i]});
+    }
+
+    _info.regionCount = regions.size();
+    _info.pRegions = vkImageCopies2;
+}
+
+CopyImageInfo::CopyImageInfo(const VkImage source, const ImageLayout sourceLayout, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<ImageCopy> regions): CopyImageInfo{source, sourceLayout, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyImageInfo::CopyImageInfo(NoInitT) noexcept {}
+
+CopyImageInfo::CopyImageInfo(const VkCopyImageInfo2KHR& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+Containers::Array<VkImageCopy> CopyImageInfo::vkImageCopies() const {
+    Containers::Array<VkImageCopy> out{NoInit, _info.regionCount};
+    for(std::size_t i = 0; i != _info.regionCount; ++i)
+        new(out + i) VkImageCopy(vkImageCopy(_info.pRegions[i]));
+    return out;
+}
+
+BufferImageCopy::BufferImageCopy(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const UnsignedInt bufferImageHeight, const ImageAspect imageAspect, const Int imageLevel, const Int imageLayerOffset, const Int imageLayerCount, const Range3Di& imageRange): _copy{} {
+    _copy.sType = VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR;
+    _copy.bufferOffset = bufferOffset;
+    _copy.bufferRowLength = bufferRowLength;
+    _copy.bufferImageHeight = bufferImageHeight;
+    _copy.imageSubresource.aspectMask = VkImageAspectFlags(imageAspect);
+    _copy.imageSubresource.mipLevel = imageLevel;
+    _copy.imageSubresource.baseArrayLayer = imageLayerOffset;
+    _copy.imageSubresource.layerCount = imageLayerCount;
+    _copy.imageOffset = VkOffset3D(imageRange.min());
+    _copy.imageExtent = VkExtent3D(imageRange.size());
+}
+
+BufferImageCopy::BufferImageCopy(NoInitT) noexcept {}
+
+BufferImageCopy::BufferImageCopy(const VkBufferImageCopy2KHR& copy):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _copy(copy) {}
+
+BufferImageCopy::BufferImageCopy(const VkBufferImageCopy& copy): _copy{
+    VK_STRUCTURE_TYPE_BUFFER_IMAGE_COPY_2_KHR,
+    nullptr,
+    copy.bufferOffset,
+    copy.bufferRowLength,
+    copy.bufferImageHeight,
+    copy.imageSubresource,
+    copy.imageOffset,
+    copy.imageExtent
+} {}
+
+namespace {
+
+/* Used by CopyImageToBufferInfo::vkImageCopies() and
+   CopyImageToBufferInfo::vkImageCopies() as well */
+VkBufferImageCopy vkBufferImageCopy(const VkBufferImageCopy2KHR& copy) {
+    CORRADE_ASSERT(!copy.pNext,
+        "Vk::BufferImageCopy: disallowing conversion to VkBufferImageCopy with non-empty pNext to prevent information loss", {});
+    return {
+        copy.bufferOffset,
+        copy.bufferRowLength,
+        copy.bufferImageHeight,
+        copy.imageSubresource,
+        copy.imageOffset,
+        copy.imageExtent
+    };
+}
+
+}
+
+VkBufferImageCopy BufferImageCopy::vkBufferImageCopy() const {
+    return Vk::vkBufferImageCopy(_copy);
+}
+
+BufferImageCopy1D::BufferImageCopy1D(const UnsignedLong bufferOffset, const ImageAspect aspect, const Int level, const Range1Di& range): BufferImageCopy{bufferOffset, 0, 0, aspect, level, 0, 1, {{range.min(), 0, 0}, {range.max(), 1, 1}}} {}
+
+BufferImageCopy2D::BufferImageCopy2D(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const ImageAspect aspect, const Int level, const Range2Di& range): BufferImageCopy{bufferOffset, bufferRowLength, 0, aspect, level, 0, 1, {{range.min(), 0}, {range.max(), 1}}} {}
+
+BufferImageCopy3D::BufferImageCopy3D(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const UnsignedInt bufferImageHeight, const ImageAspect aspect, const Int level, const Range3Di& range): BufferImageCopy{bufferOffset, bufferRowLength, bufferImageHeight, aspect, level, 0, 1, range} {}
+
+BufferImageCopy1DArray::BufferImageCopy1DArray(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const ImageAspect aspect, const Int level, const Range2Di& range): BufferImageCopy{bufferOffset, bufferRowLength, 0, aspect, level, range.min().y(), range.sizeY(), {{range.min().x(), 0, 0}, {range.max().x(), 1, 1}}} {}
+
+BufferImageCopy2DArray::BufferImageCopy2DArray(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const UnsignedInt bufferImageHeight, const ImageAspect aspect, const Int level, const Range3Di& range): BufferImageCopy{bufferOffset, bufferRowLength, bufferImageHeight, aspect, level, range.min().z(), range.sizeZ(), {{range.min().xy(), 0}, {range.max().xy(), 1}}} {}
+
+BufferImageCopyCubeMap::BufferImageCopyCubeMap(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const UnsignedInt bufferImageHeight, const ImageAspect aspect, const Int level, const Range2Di& range): BufferImageCopy{bufferOffset, bufferRowLength, bufferImageHeight, aspect, level, 0, 6, {{range.min(), 0}, {range.max(), 1}}} {}
+
+BufferImageCopyCubeMapArray::BufferImageCopyCubeMapArray(const UnsignedLong bufferOffset, const UnsignedInt bufferRowLength, const UnsignedInt bufferImageHeight, const ImageAspect aspect, const Int level, const Range3Di& range): BufferImageCopy{bufferOffset, bufferRowLength, bufferImageHeight, aspect, level, range.min().z(), range.sizeZ(), {{range.min().xy(), 0}, {range.max().xy(), 1}}} {}
+
+CopyBufferToImageInfo::CopyBufferToImageInfo(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy> regions): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2_KHR;
+    _info.srcBuffer = source;
+    _info.dstImage = destination;
+    _info.dstImageLayout = VkImageLayout(destinationLayout);
+
+    /* While not strictly needed right now, storing the original
+       BufferImageCopy instances as well to prepare for a future case where
+       VkBufferImageCopy2KHR::pNext will reference something stored there (such
+       as copy transformation) */
+    Containers::ArrayView<BufferImageCopy> wrappers;
+    Containers::ArrayView<VkBufferImageCopy2KHR> vkBufferImageCopies2;
+    _data = Containers::ArrayTuple{
+        {NoInit, regions.size(), wrappers},
+        {NoInit, regions.size(), vkBufferImageCopies2}
+    };
+
+    for(std::size_t i = 0; i != regions.size(); ++i) {
+        new(wrappers + i) BufferImageCopy{regions[i]};
+        /* Can't use {} with GCC 4.8 here because it tries to initialize the
+           first member instead of doing a copy */
+        new(vkBufferImageCopies2 + i) VkBufferImageCopy2KHR(wrappers[i]);
+    }
+
+    _info.regionCount = regions.size();
+    _info.pRegions = vkBufferImageCopies2;
+}
+
+CopyBufferToImageInfo::CopyBufferToImageInfo(NoInitT) noexcept {}
+
+CopyBufferToImageInfo::CopyBufferToImageInfo(const VkCopyBufferToImageInfo2KHR& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+CopyBufferToImageInfo::CopyBufferToImageInfo(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+Containers::Array<VkBufferImageCopy> CopyBufferToImageInfo::vkBufferImageCopies() const {
+    Containers::Array<VkBufferImageCopy> out{NoInit, _info.regionCount};
+    for(std::size_t i = 0; i != _info.regionCount; ++i)
+        new(out + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
+    return out;
+}
+
+CopyBufferToImageInfo1D::CopyBufferToImageInfo1D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy1D> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfo1D::CopyBufferToImageInfo1D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy1D> regions): CopyBufferToImageInfo1D{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfo2D::CopyBufferToImageInfo2D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy2D> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfo2D::CopyBufferToImageInfo2D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy2D> regions): CopyBufferToImageInfo2D{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfo3D::CopyBufferToImageInfo3D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy3D> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfo3D::CopyBufferToImageInfo3D(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy3D> regions): CopyBufferToImageInfo3D{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfo1DArray::CopyBufferToImageInfo1DArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy1DArray> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfo1DArray::CopyBufferToImageInfo1DArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy1DArray> regions): CopyBufferToImageInfo1DArray{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfo2DArray::CopyBufferToImageInfo2DArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopy2DArray> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfo2DArray::CopyBufferToImageInfo2DArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopy2DArray> regions): CopyBufferToImageInfo2DArray{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfoCubeMap::CopyBufferToImageInfoCubeMap(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopyCubeMap> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfoCubeMap::CopyBufferToImageInfoCubeMap(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopyCubeMap> regions): CopyBufferToImageInfoCubeMap{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyBufferToImageInfoCubeMapArray::CopyBufferToImageInfoCubeMapArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const Containers::ArrayView<const BufferImageCopyCubeMapArray> regions): CopyBufferToImageInfo{source, destination, destinationLayout, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyBufferToImageInfoCubeMapArray::CopyBufferToImageInfoCubeMapArray(const VkBuffer source, const VkImage destination, const ImageLayout destinationLayout, const std::initializer_list<BufferImageCopyCubeMapArray> regions): CopyBufferToImageInfoCubeMapArray{source, destination, destinationLayout, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo::CopyImageToBufferInfo(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy> regions): _info{} {
+    _info.sType = VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2_KHR;
+    _info.srcImage = source;
+    _info.srcImageLayout = VkImageLayout(sourceLayout);
+    _info.dstBuffer = destination;
+
+    /* While not strictly needed right now, storing the original
+       BufferImageCopy instances as well to prepare for a future case where
+       VkBufferImageCopy2KHR::pNext will reference something stored there (such
+       as copy transformation) */
+    Containers::ArrayView<BufferImageCopy> wrappers;
+    Containers::ArrayView<VkBufferImageCopy2KHR> vkBufferImageCopies2;
+    _data = Containers::ArrayTuple{
+        {NoInit, regions.size(), wrappers},
+        {NoInit, regions.size(), vkBufferImageCopies2}
+    };
+
+    for(std::size_t i = 0; i != regions.size(); ++i) {
+        new(wrappers + i) BufferImageCopy{regions[i]};
+        /* Can't use {} with GCC 4.8 here because it tries to initialize the
+           first member instead of doing a copy */
+        new(vkBufferImageCopies2 + i) VkBufferImageCopy2KHR(wrappers[i]);
+    }
+
+    _info.regionCount = regions.size();
+    _info.pRegions = vkBufferImageCopies2;
+}
+
+CopyImageToBufferInfo::CopyImageToBufferInfo(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo::CopyImageToBufferInfo(NoInitT) noexcept {}
+
+CopyImageToBufferInfo::CopyImageToBufferInfo(const VkCopyImageToBufferInfo2KHR& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
+Containers::Array<VkBufferImageCopy> CopyImageToBufferInfo::vkBufferImageCopies() const {
+    Containers::Array<VkBufferImageCopy> out{NoInit, _info.regionCount};
+    for(std::size_t i = 0; i != _info.regionCount; ++i)
+        new(out + i) VkBufferImageCopy(vkBufferImageCopy(_info.pRegions[i]));
+    return out;
+}
+
+CopyImageToBufferInfo1D::CopyImageToBufferInfo1D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy1D> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfo1D::CopyImageToBufferInfo1D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy1D> regions): CopyImageToBufferInfo1D{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo2D::CopyImageToBufferInfo2D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy2D> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfo2D::CopyImageToBufferInfo2D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy2D> regions): CopyImageToBufferInfo2D{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo3D::CopyImageToBufferInfo3D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy3D> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfo3D::CopyImageToBufferInfo3D(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy3D> regions): CopyImageToBufferInfo3D{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo1DArray::CopyImageToBufferInfo1DArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy1DArray> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfo1DArray::CopyImageToBufferInfo1DArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy1DArray> regions): CopyImageToBufferInfo1DArray{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfo2DArray::CopyImageToBufferInfo2DArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopy2DArray> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfo2DArray::CopyImageToBufferInfo2DArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopy2DArray> regions): CopyImageToBufferInfo2DArray{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfoCubeMap::CopyImageToBufferInfoCubeMap(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopyCubeMap> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfoCubeMap::CopyImageToBufferInfoCubeMap(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopyCubeMap> regions): CopyImageToBufferInfoCubeMap{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CopyImageToBufferInfoCubeMapArray::CopyImageToBufferInfoCubeMapArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const Containers::ArrayView<const BufferImageCopyCubeMapArray> regions): CopyImageToBufferInfo{source, sourceLayout, destination, Containers::arrayCast<const BufferImageCopy>(regions)} {}
+
+CopyImageToBufferInfoCubeMapArray::CopyImageToBufferInfoCubeMapArray(const VkImage source, const ImageLayout sourceLayout, const VkBuffer destination, const std::initializer_list<BufferImageCopyCubeMapArray> regions): CopyImageToBufferInfoCubeMapArray{source, sourceLayout, destination, Containers::arrayView(regions)} {}
+
+CommandBuffer& CommandBuffer::clearColorImage(const VkImage image, const ImageLayout layout, const Color4& color) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! */
+    const VkClearColorValue clear(color);
+    (**_device).CmdClearColorImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::clearColorImage(const VkImage image, const ImageLayout layout, const Vector4i& color) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! */
+    const VkClearColorValue clear(color);
+    (**_device).CmdClearColorImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::clearColorImage(const VkImage image, const ImageLayout layout, const Vector4ui& color) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! */
+    const VkClearColorValue clear(color);
+    (**_device).CmdClearColorImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::clearDepthStencilImage(const VkImage image, const ImageLayout layout, const Float depth, const UnsignedInt stencil) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT|VK_IMAGE_ASPECT_STENCIL_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! */
+    const VkClearDepthStencilValue clear{depth, stencil};
+    (**_device).CmdClearDepthStencilImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::clearDepthImage(const VkImage image, const ImageLayout layout, const Float depth) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! */
+    const VkClearDepthStencilValue clear{depth, 0};
+    (**_device).CmdClearDepthStencilImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::clearStencilImage(const VkImage image, const ImageLayout layout, const UnsignedInt stencil) {
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;
+    range.baseMipLevel = 0;
+    range.levelCount = VK_REMAINING_MIP_LEVELS;
+    range.baseArrayLayer = 0;
+    range.layerCount = VK_REMAINING_ARRAY_LAYERS;
+
+    /* Why this is passed via a pointer, why?! Also, the depth value will get
+       unused anyway, but I think it's good to maintain the fact that default
+       depth clear value is 1.0. */
+    const VkClearDepthStencilValue clear{1.0f, stencil};
+    (**_device).CmdClearDepthStencilImage(_handle, image, VkImageLayout(layout), &clear, 1, &range);
+    return *this;
+}
+
+CommandBuffer& CommandBuffer::copyImage(const CopyImageInfo& info) {
+    _device->state().cmdCopyImageImplementation(*this, info);
+    return *this;
+}
+
+void CommandBuffer::copyImageImplementationDefault(CommandBuffer& self, const CopyImageInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss", );
+    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, info.vkImageCopies());
+}
+
+void CommandBuffer::copyImageImplementationKHR(CommandBuffer& self, const CopyImageInfo& info) {
+    return (**self._device).CmdCopyImage2KHR(self, info);
+}
+
+CommandBuffer& CommandBuffer::copyBufferToImage(const CopyBufferToImageInfo& info) {
+    _device->state().cmdCopyBufferToImageImplementation(*this, info);
+    return *this;
+}
+
+void CommandBuffer::copyBufferToImageImplementationDefault(CommandBuffer& self, const CopyBufferToImageInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyBufferToImage(): disallowing extraction of CopyBufferToImageInfo with non-empty pNext to prevent information loss", );
+    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, info.vkBufferImageCopies());
+}
+
+void CommandBuffer::copyBufferToImageImplementationKHR(CommandBuffer& self, const CopyBufferToImageInfo& info) {
+    return (**self._device).CmdCopyBufferToImage2KHR(self, info);
+}
+
+CommandBuffer& CommandBuffer::copyImageToBuffer(const CopyImageToBufferInfo& info) {
+    _device->state().cmdCopyImageToBufferImplementation(*this, info);
+    return *this;
+}
+
+void CommandBuffer::copyImageToBufferImplementationDefault(CommandBuffer& self, const CopyImageToBufferInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss", );
+    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, info.vkBufferImageCopies());
+}
+
+void CommandBuffer::copyImageToBufferImplementationKHR(CommandBuffer& self, const CopyImageToBufferInfo& info) {
+    return (**self._device).CmdCopyImageToBuffer2KHR(self, info);
 }
 
 }}

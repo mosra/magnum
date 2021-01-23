@@ -25,6 +25,7 @@
 
 #include <new>
 #include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
@@ -59,6 +60,46 @@ struct ImageTest: TestSuite::Tester {
     void constructCopy();
 
     void dedicatedMemoryNotDedicated();
+
+    /* While *ConstructFromVk() tests that going from VkFromThing -> Vk::Thing
+       -> VkToThing doesn't result in information loss, the *ConvertToVk()
+       tests additionally check that all calls both on our APIs and by editing
+       the contained structure are correctly propagated to the resulting
+       structures. */
+
+    void imageCopyConstruct();
+    void imageCopyConstructNoInit();
+    template<class From, class To> void imageCopyConstructFromVk();
+    template<class T> void imageCopyConvertToVk();
+    void imageCopyConvertDisallowed();
+
+    void copyImageInfoConstruct();
+    void copyImageInfoConstructNoInit();
+    void copyImageInfoConstructFromVk();
+    void copyImageInfoConvertToVk();
+
+    void bufferImageCopyConstruct();
+    void bufferImageCopyConstruct1D();
+    void bufferImageCopyConstruct2D();
+    void bufferImageCopyConstruct3D();
+    void bufferImageCopyConstruct1DArray();
+    void bufferImageCopyConstruct2DArray();
+    void bufferImageCopyConstructCubeMap();
+    void bufferImageCopyConstructCubeMapArray();
+    void bufferImageCopyConstructNoInit();
+    template<class From, class To> void bufferImageCopyConstructFromVk();
+    template<class T> void bufferImageCopyConvertToVk();
+    void bufferImageCopyConvertDisallowed();
+
+    void copyBufferToImageInfoConstruct();
+    void copyBufferToImageInfoConstructNoInit();
+    void copyBufferToImageInfoConstructFromVk();
+    void copyBufferToImageInfoConvertToVk();
+
+    void copyImageToBufferInfoConstruct();
+    void copyImageToBufferInfoConstructNoInit();
+    void copyImageToBufferInfoConstructFromVk();
+    void copyImageToBufferInfoConvertToVk();
 
     void debugAspect();
     void debugAspects();
@@ -101,9 +142,69 @@ ImageTest::ImageTest() {
 
               &ImageTest::dedicatedMemoryNotDedicated,
 
+              &ImageTest::imageCopyConstruct,
+              &ImageTest::imageCopyConstructNoInit,
+              &ImageTest::imageCopyConstructFromVk<VkImageCopy2KHR, VkImageCopy2KHR>,
+              &ImageTest::imageCopyConstructFromVk<VkImageCopy, VkImageCopy2KHR>,
+              &ImageTest::imageCopyConstructFromVk<VkImageCopy2KHR, VkImageCopy>,
+              &ImageTest::imageCopyConstructFromVk<VkImageCopy, VkImageCopy>,
+              &ImageTest::imageCopyConvertToVk<VkImageCopy2KHR>,
+              &ImageTest::imageCopyConvertToVk<VkImageCopy>,
+              &ImageTest::imageCopyConvertDisallowed,
+
+              &ImageTest::copyImageInfoConstruct,
+              &ImageTest::copyImageInfoConstructNoInit,
+              &ImageTest::copyImageInfoConstructFromVk,
+              &ImageTest::copyImageInfoConvertToVk,
+
+              &ImageTest::bufferImageCopyConstruct,
+              &ImageTest::bufferImageCopyConstruct1D,
+              &ImageTest::bufferImageCopyConstruct2D,
+              &ImageTest::bufferImageCopyConstruct3D,
+              &ImageTest::bufferImageCopyConstruct1DArray,
+              &ImageTest::bufferImageCopyConstruct2DArray,
+              &ImageTest::bufferImageCopyConstructCubeMap,
+              &ImageTest::bufferImageCopyConstructCubeMapArray,
+              &ImageTest::bufferImageCopyConstructNoInit,
+              &ImageTest::bufferImageCopyConstructFromVk<VkBufferImageCopy2KHR, VkBufferImageCopy2KHR>,
+              &ImageTest::bufferImageCopyConstructFromVk<VkBufferImageCopy, VkBufferImageCopy2KHR>,
+              &ImageTest::bufferImageCopyConstructFromVk<VkBufferImageCopy2KHR, VkBufferImageCopy>,
+              &ImageTest::bufferImageCopyConstructFromVk<VkBufferImageCopy, VkBufferImageCopy>,
+              &ImageTest::bufferImageCopyConvertToVk<VkBufferImageCopy2KHR>,
+              &ImageTest::bufferImageCopyConvertToVk<VkBufferImageCopy>,
+              &ImageTest::bufferImageCopyConvertDisallowed,
+
+              &ImageTest::copyBufferToImageInfoConstruct,
+              &ImageTest::copyBufferToImageInfoConstructNoInit,
+              &ImageTest::copyBufferToImageInfoConstructFromVk,
+              &ImageTest::copyBufferToImageInfoConvertToVk,
+
+              &ImageTest::copyImageToBufferInfoConstruct,
+              &ImageTest::copyImageToBufferInfoConstructNoInit,
+              &ImageTest::copyImageToBufferInfoConstructFromVk,
+              &ImageTest::copyImageToBufferInfoConvertToVk,
+
               &ImageTest::debugAspect,
               &ImageTest::debugAspects});
 }
+
+template<class> struct Traits;
+#define _c(type)                                                            \
+    template<> struct Traits<Vk ## type> {                                  \
+        static const char* name() { return #type; }                         \
+        static Vk ## type convert(const type& instance) {                   \
+            return instance.vk ## type ();                                  \
+        }                                                                   \
+    };                                                                      \
+    template<> struct Traits<Vk ## type ## 2KHR> {                          \
+        static const char* name() { return #type "2KHR"; }                  \
+        static Vk ## type ## 2KHR convert(const type& instance) {           \
+            return instance;                                                \
+        }                                                                   \
+    };
+_c(ImageCopy)
+_c(BufferImageCopy)
+#undef _c
 
 template<class T> void ImageTest::createInfoConstruct() {
     setTestCaseTemplateName(PixelFormatTraits<T>::name());
@@ -290,6 +391,438 @@ void ImageTest::dedicatedMemoryNotDedicated() {
     Error redirectError{&out};
     image.dedicatedMemory();
     CORRADE_COMPARE(out.str(), "Vk::Image::dedicatedMemory(): image doesn't have a dedicated memory\n");
+}
+
+void ImageTest::imageCopyConstruct() {
+    ImageCopy copy{ImageAspect::Color|ImageAspect::Depth, 3, 5, 7, {9, 11, 13}, 4, 6, 8, {10, 12, 14}, {1, 2, 15}};
+    CORRADE_COMPARE(copy->srcSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(copy->srcSubresource.mipLevel, 3);
+    CORRADE_COMPARE(copy->srcSubresource.baseArrayLayer, 5);
+    CORRADE_COMPARE(copy->srcSubresource.layerCount, 7);
+    CORRADE_COMPARE(Vector3i{copy->srcOffset}, (Vector3i{9, 11, 13}));
+    CORRADE_COMPARE(copy->dstSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(copy->dstSubresource.mipLevel, 4);
+    CORRADE_COMPARE(copy->dstSubresource.baseArrayLayer, 6);
+    CORRADE_COMPARE(copy->dstSubresource.layerCount, 8);
+    CORRADE_COMPARE(Vector3i{copy->dstOffset}, (Vector3i{10, 12, 14}));
+    CORRADE_COMPARE(Vector3i{copy->extent}, (Vector3i{1, 2, 15}));
+}
+
+void ImageTest::imageCopyConstructNoInit() {
+    ImageCopy copy{NoInit};
+    copy->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&copy) ImageCopy{NoInit};
+    CORRADE_COMPARE(copy->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<ImageCopy, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ImageCopy>::value));
+}
+
+template<class From, class To> void ImageTest::imageCopyConstructFromVk() {
+    setTestCaseTemplateName({Traits<From>::name(), Traits<To>::name()});
+
+    From from{};
+    from.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    from.srcSubresource.mipLevel = 3;
+    from.srcSubresource.baseArrayLayer = 5;
+    from.srcSubresource.layerCount = 7;
+    from.srcOffset = {9, 11, 13};
+    /* Deliberately using a different src/dst aspect to verify it's not
+       conflated */
+    from.dstSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+    from.dstSubresource.mipLevel = 4;
+    from.dstSubresource.baseArrayLayer = 6;
+    from.dstSubresource.layerCount = 8;
+    from.dstOffset = {10, 12, 14};
+    from.extent = {1, 2, 15};
+
+    ImageCopy copy{from};
+    To to = Traits<To>::convert(copy);
+    CORRADE_COMPARE(to.srcSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(to.srcSubresource.mipLevel, 3);
+    CORRADE_COMPARE(to.srcSubresource.baseArrayLayer, 5);
+    CORRADE_COMPARE(to.srcSubresource.layerCount, 7);
+    CORRADE_COMPARE(Vector3i{to.srcOffset}, (Vector3i{9, 11, 13}));
+    CORRADE_COMPARE(to.dstSubresource.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(to.dstSubresource.mipLevel, 4);
+    CORRADE_COMPARE(to.dstSubresource.baseArrayLayer, 6);
+    CORRADE_COMPARE(to.dstSubresource.layerCount, 8);
+    CORRADE_COMPARE(Vector3i{to.dstOffset}, (Vector3i{10, 12, 14}));
+    CORRADE_COMPARE(Vector3i{to.extent}, (Vector3i{1, 2, 15}));
+}
+
+template<class T> void ImageTest::imageCopyConvertToVk() {
+    ImageCopy copy{ImageAspect::Color|ImageAspect::Depth, 3, 5, 7, {9, 11, 13}, 4, 6, 8, {10, 12, 14}, {1, 2, 15}};
+
+    T out = Traits<T>::convert(copy);
+    CORRADE_COMPARE(out.srcSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(out.srcSubresource.mipLevel, 3);
+    CORRADE_COMPARE(out.srcSubresource.baseArrayLayer, 5);
+    CORRADE_COMPARE(out.srcSubresource.layerCount, 7);
+    CORRADE_COMPARE(Vector3i{out.srcOffset}, (Vector3i{9, 11, 13}));
+    CORRADE_COMPARE(out.dstSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT|VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(out.dstSubresource.mipLevel, 4);
+    CORRADE_COMPARE(out.dstSubresource.baseArrayLayer, 6);
+    CORRADE_COMPARE(out.dstSubresource.layerCount, 8);
+    CORRADE_COMPARE(Vector3i{out.dstOffset}, (Vector3i{10, 12, 14}));
+    CORRADE_COMPARE(Vector3i{out.extent}, (Vector3i{1, 2, 15}));
+}
+
+void ImageTest::imageCopyConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    ImageCopy copy{ImageAspect{}, 0, 0, 0, {}, 0, 0, 0, {}, {}};
+    copy->pNext = &copy;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    copy.vkImageCopy();
+    CORRADE_COMPARE(out.str(), "Vk::ImageCopy: disallowing conversion to VkImageCopy with non-empty pNext to prevent information loss\n");
+}
+
+void ImageTest::copyImageInfoConstruct() {
+    auto a = reinterpret_cast<VkImage>(0xdead);
+    auto b = reinterpret_cast<VkImage>(0xcafe);
+
+    CopyImageInfo info{a, ImageLayout::Preinitialized, b, ImageLayout::General, {
+        {ImageAspect::Color, 3, 0, 0, {}, 0, 0, 0, {}, {}},
+        {ImageAspect::Depth, 0, 5, 0, {}, 0, 0, 0, {}, {}}
+    }};
+    CORRADE_COMPARE(info->srcImage, a);
+    CORRADE_COMPARE(info->srcImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
+    CORRADE_COMPARE(info->dstImage, b);
+    CORRADE_COMPARE(info->dstImageLayout, VK_IMAGE_LAYOUT_GENERAL);
+    CORRADE_COMPARE(info->regionCount, 2);
+    CORRADE_VERIFY(info->pRegions);
+    CORRADE_COMPARE(info->pRegions[0].srcSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(info->pRegions[0].srcSubresource.mipLevel, 3);
+    CORRADE_COMPARE(info->pRegions[1].dstSubresource.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(info->pRegions[1].srcSubresource.baseArrayLayer, 5);
+}
+
+void ImageTest::copyImageInfoConstructNoInit() {
+    CopyImageInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) CopyImageInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<CopyImageInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyImageInfo>::value));
+}
+
+void ImageTest::copyImageInfoConstructFromVk() {
+    VkCopyImageInfo2KHR vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    CopyImageInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void ImageTest::copyImageInfoConvertToVk() {
+    CopyImageInfo info{VkImage{}, ImageLayout{}, VkImage{}, ImageLayout{}, {
+        {ImageAspect::Color, 3, 0, 0, {}, 0, 0, 0, {}, {}},
+        {ImageAspect::Depth, 0, 5, 0, {}, 0, 0, 0, {}, {}}
+    }};
+
+    Containers::Array<VkImageCopy> copies = info.vkImageCopies();
+    CORRADE_COMPARE(copies.size(), 2);
+    CORRADE_COMPARE(copies[0].srcSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(copies[0].srcSubresource.mipLevel, 3);
+    CORRADE_COMPARE(copies[1].dstSubresource.aspectMask, VK_IMAGE_ASPECT_DEPTH_BIT);
+    CORRADE_COMPARE(copies[1].srcSubresource.baseArrayLayer, 5);
+}
+
+void ImageTest::bufferImageCopyConstruct() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy copy{3, 5, 7, ImageAspect::Stencil, 9, 11, 13, {{2, 4, 6}, {10, 14, 18}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 7);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 6}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 12}));
+}
+
+void ImageTest::bufferImageCopyConstruct1D() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy1D copy{3, ImageAspect::Stencil, 9, {2, 10}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 0);
+    CORRADE_COMPARE(copy->bufferImageHeight, 0);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 0);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 1);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 0, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 1, 1}));
+}
+
+void ImageTest::bufferImageCopyConstruct2D() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy2D copy{3, 5, ImageAspect::Stencil, 9, {{2, 4}, {10, 14}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 0);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 0);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 1);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 1}));
+}
+
+void ImageTest::bufferImageCopyConstruct3D() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy3D copy{3, 5, 7, ImageAspect::Stencil, 9, {{2, 4, 6}, {10, 14, 18}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 7);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 0);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 1);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 6}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 12}));
+}
+
+void ImageTest::bufferImageCopyConstruct1DArray() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy1DArray copy{3, 5, ImageAspect::Stencil, 9, {{2, 11}, {10, 24}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 0);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 0, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 1, 1}));
+}
+
+void ImageTest::bufferImageCopyConstruct2DArray() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy2DArray copy{3, 5, 7, ImageAspect::Stencil, 9, {{2, 4, 11}, {10, 14, 24}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 7);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 1}));
+}
+
+void ImageTest::bufferImageCopyConstructCubeMap() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopyCubeMap copy{3, 5, 7, ImageAspect::Stencil, 9, {{2, 4}, {10, 14}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 7);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 0);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 6);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 1}));
+}
+
+void ImageTest::bufferImageCopyConstructCubeMapArray() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopyCubeMapArray copy{3, 5, 7, ImageAspect::Stencil, 9, {{2, 4, 11}, {10, 14, 24}}};
+    CORRADE_COMPARE(copy->bufferOffset, 3);
+    CORRADE_COMPARE(copy->bufferRowLength, 5);
+    CORRADE_COMPARE(copy->bufferImageHeight, 7);
+    CORRADE_COMPARE(copy->imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copy->imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(copy->imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(copy->imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{copy->imageOffset}, (Vector3i{2, 4, 0}));
+    CORRADE_COMPARE(Vector3i{copy->imageExtent}, (Vector3i{8, 10, 1}));
+}
+
+void ImageTest::bufferImageCopyConstructNoInit() {
+    BufferImageCopy copy{NoInit};
+    copy->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&copy) BufferImageCopy{NoInit};
+    CORRADE_COMPARE(copy->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<BufferImageCopy, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BufferImageCopy>::value));
+}
+
+template<class From, class To> void ImageTest::bufferImageCopyConstructFromVk() {
+    setTestCaseTemplateName({Traits<From>::name(), Traits<To>::name()});
+
+    From from{};
+    from.bufferOffset = 3;
+    from.bufferRowLength = 5;
+    from.bufferImageHeight = 7;
+    from.imageSubresource.aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;
+    from.imageSubresource.mipLevel = 9;
+    from.imageSubresource.baseArrayLayer = 11;
+    from.imageSubresource.layerCount = 13;
+    from.imageOffset = {2, 4, 6};
+    from.imageExtent = {8, 10, 12};
+
+    BufferImageCopy copy{from};
+    To to = Traits<To>::convert(copy);
+    CORRADE_COMPARE(to.bufferOffset, 3);
+    CORRADE_COMPARE(to.bufferRowLength, 5);
+    CORRADE_COMPARE(to.bufferImageHeight, 7);
+    CORRADE_COMPARE(to.imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(to.imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(to.imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(to.imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{to.imageOffset}, (Vector3i{2, 4, 6}));
+    CORRADE_COMPARE(Vector3i{to.imageExtent}, (Vector3i{8, 10, 12}));
+}
+
+template<class T> void ImageTest::bufferImageCopyConvertToVk() {
+    /* It's min/max, not offset + size in the default Range constructor */
+    BufferImageCopy copy{3, 5, 7, ImageAspect::Stencil, 9, 11, 13, {{2, 4, 6}, {10, 14, 18}}};
+
+    T out = Traits<T>::convert(copy);
+    CORRADE_COMPARE(out.bufferOffset, 3);
+    CORRADE_COMPARE(out.bufferRowLength, 5);
+    CORRADE_COMPARE(out.bufferImageHeight, 7);
+    CORRADE_COMPARE(out.imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(out.imageSubresource.mipLevel, 9);
+    CORRADE_COMPARE(out.imageSubresource.baseArrayLayer, 11);
+    CORRADE_COMPARE(out.imageSubresource.layerCount, 13);
+    CORRADE_COMPARE(Vector3i{out.imageOffset}, (Vector3i{2, 4, 6}));
+    CORRADE_COMPARE(Vector3i{out.imageExtent}, (Vector3i{8, 10, 12}));
+}
+
+void ImageTest::bufferImageCopyConvertDisallowed() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    BufferImageCopy copy{0, 0, 0, ImageAspect{}, 0, 0, 0, {}};
+    copy->pNext = &copy;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    copy.vkBufferImageCopy();
+    CORRADE_COMPARE(out.str(), "Vk::BufferImageCopy: disallowing conversion to VkBufferImageCopy with non-empty pNext to prevent information loss\n");
+}
+
+void ImageTest::copyBufferToImageInfoConstruct() {
+    auto a = reinterpret_cast<VkBuffer>(0xdead);
+    auto b = reinterpret_cast<VkImage>(0xcafe);
+
+    CopyBufferToImageInfo info{a, b, ImageLayout::TransferDestination, {
+        BufferImageCopy1D{5, ImageAspect::Color, 0, {}},
+        BufferImageCopy1D{0, ImageAspect::Stencil, 3, {}}
+    }};
+    CORRADE_COMPARE(info->srcBuffer, a);
+    CORRADE_COMPARE(info->dstImage, b);
+    CORRADE_COMPARE(info->dstImageLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+    CORRADE_COMPARE(info->regionCount, 2);
+    CORRADE_VERIFY(info->pRegions);
+    CORRADE_COMPARE(info->pRegions[0].bufferOffset, 5);
+    CORRADE_COMPARE(info->pRegions[0].imageSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(info->pRegions[1].imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(info->pRegions[1].imageSubresource.mipLevel, 3);
+}
+
+void ImageTest::copyBufferToImageInfoConstructNoInit() {
+    CopyBufferToImageInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) CopyBufferToImageInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<CopyBufferToImageInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyBufferToImageInfo>::value));
+}
+
+void ImageTest::copyBufferToImageInfoConstructFromVk() {
+    VkCopyBufferToImageInfo2KHR vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    CopyBufferToImageInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void ImageTest::copyBufferToImageInfoConvertToVk() {
+    CopyBufferToImageInfo info{VkBuffer{}, VkImage{}, ImageLayout{}, {
+        BufferImageCopy1D{5, ImageAspect::Color, 0, {}},
+        BufferImageCopy1D{0, ImageAspect::Stencil, 3, {}},
+    }};
+
+    Containers::Array<VkBufferImageCopy> copies = info.vkBufferImageCopies();
+    CORRADE_COMPARE(copies.size(), 2);
+    CORRADE_COMPARE(copies[0].bufferOffset, 5);
+    CORRADE_COMPARE(copies[0].imageSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(copies[1].imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copies[1].imageSubresource.mipLevel, 3);
+}
+
+void ImageTest::copyImageToBufferInfoConstruct() {
+    auto a = reinterpret_cast<VkImage>(0xcafe);
+    auto b = reinterpret_cast<VkBuffer>(0xdead);
+
+    CopyImageToBufferInfo info{a, ImageLayout::TransferSource, b, {
+        BufferImageCopy1D{5, ImageAspect::Color, 0, {}},
+        BufferImageCopy1D{0, ImageAspect::Stencil, 3, {}}
+    }};
+    CORRADE_COMPARE(info->srcImage, a);
+    CORRADE_COMPARE(info->srcImageLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+    CORRADE_COMPARE(info->dstBuffer, b);
+    CORRADE_COMPARE(info->regionCount, 2);
+    CORRADE_VERIFY(info->pRegions);
+    CORRADE_COMPARE(info->pRegions[0].bufferOffset, 5);
+    CORRADE_COMPARE(info->pRegions[0].imageSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(info->pRegions[1].imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(info->pRegions[1].imageSubresource.mipLevel, 3);
+}
+
+void ImageTest::copyImageToBufferInfoConstructNoInit() {
+    CopyImageToBufferInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) CopyImageToBufferInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<CopyImageToBufferInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, CopyImageToBufferInfo>::value));
+}
+
+void ImageTest::copyImageToBufferInfoConstructFromVk() {
+    VkCopyImageToBufferInfo2KHR vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    CopyImageToBufferInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void ImageTest::copyImageToBufferInfoConvertToVk() {
+    CopyImageToBufferInfo info{VkImage{}, ImageLayout{}, VkBuffer{}, {
+        BufferImageCopy1D{5, ImageAspect::Color, 0, {}},
+        BufferImageCopy1D{0, ImageAspect::Stencil, 3, {}},
+    }};
+
+    Containers::Array<VkBufferImageCopy> copies = info.vkBufferImageCopies();
+    CORRADE_COMPARE(copies.size(), 2);
+    CORRADE_COMPARE(copies[0].bufferOffset, 5);
+    CORRADE_COMPARE(copies[0].imageSubresource.aspectMask, VK_IMAGE_ASPECT_COLOR_BIT);
+    CORRADE_COMPARE(copies[1].imageSubresource.aspectMask, VK_IMAGE_ASPECT_STENCIL_BIT);
+    CORRADE_COMPARE(copies[1].imageSubresource.mipLevel, 3);
 }
 
 void ImageTest::debugAspect() {

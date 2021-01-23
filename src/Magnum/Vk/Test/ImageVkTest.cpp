@@ -23,13 +23,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StringView.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/Vk/BufferCreateInfo.h"
+#include "Magnum/Vk/CommandPoolCreateInfo.h"
+#include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/DeviceProperties.h"
+#include "Magnum/Vk/Extensions.h"
+#include "Magnum/Vk/Fence.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"
 
@@ -57,6 +70,25 @@ struct ImageVkTest: VulkanTester {
     void bindDedicatedMemory();
 
     void directAllocation();
+
+    void cmdClearColorImageFloat();
+    void cmdClearColorImageSignedIntegral();
+    void cmdClearColorImageUnsignedIntegral();
+    void cmdClearDepthStencilImage();
+    void cmdClearDepthImage();
+    void cmdClearStencilImage();
+
+    void cmdCopyImage2D();
+    void cmdCopyImageDisallowedConversion();
+
+    void cmdCopyBufferImage1D();
+    void cmdCopyBufferImage2D();
+    void cmdCopyBufferImage3D();
+    void cmdCopyBufferImage1DArray();
+    void cmdCopyBufferImage2DArray();
+    void cmdCopyBufferImageCubeMap();
+    void cmdCopyBufferImageCubeMapArray();
+    void cmdCopyBufferImageDisallowedConversion();
 };
 
 ImageVkTest::ImageVkTest() {
@@ -78,8 +110,30 @@ ImageVkTest::ImageVkTest() {
               &ImageVkTest::bindMemory,
               &ImageVkTest::bindDedicatedMemory,
 
-              &ImageVkTest::directAllocation});
+              &ImageVkTest::directAllocation,
+
+              &ImageVkTest::cmdClearColorImageFloat,
+              &ImageVkTest::cmdClearColorImageSignedIntegral,
+              &ImageVkTest::cmdClearColorImageUnsignedIntegral,
+              &ImageVkTest::cmdClearDepthStencilImage,
+              &ImageVkTest::cmdClearDepthImage,
+              &ImageVkTest::cmdClearStencilImage,
+
+              &ImageVkTest::cmdCopyImage2D,
+              &ImageVkTest::cmdCopyImageDisallowedConversion,
+
+              &ImageVkTest::cmdCopyBufferImage1D,
+              &ImageVkTest::cmdCopyBufferImage2D,
+              &ImageVkTest::cmdCopyBufferImage3D,
+              &ImageVkTest::cmdCopyBufferImage1DArray,
+              &ImageVkTest::cmdCopyBufferImage2DArray,
+              &ImageVkTest::cmdCopyBufferImageCubeMap,
+              &ImageVkTest::cmdCopyBufferImageCubeMapArray,
+              &ImageVkTest::cmdCopyBufferImageDisallowedConversion});
 }
+
+using namespace Containers::Literals;
+using namespace Math::Literals;
 
 void ImageVkTest::construct1D() {
     {
@@ -287,6 +341,905 @@ void ImageVkTest::directAllocation() {
     /* Not sure what else to test here */
     CORRADE_VERIFY(image.hasDedicatedMemory());
     CORRADE_VERIFY(image.dedicatedMemory().handle());
+}
+
+void ImageVkTest::cmdClearColorImageFloat() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* To avoid going through a buffer which can guarantee the packing we want,
+       the tests uses a linear tiling image. These are poorly supported, have
+       weird paddings and the required allocation size is usually much larger
+       than expected. To prevent issues as much as possible, we'll thus create
+       images with non-insane sizes, 4-byte-aligned pixel format and explicitly
+       slice the mapped memory. */
+
+    /* Source image */
+    ImageCreateInfo2D aInfo{ImageUsage::TransferDestination,
+        PixelFormat::RGBA8Unorm, {4, 4}, 1, 1, ImageLayout::Undefined};
+    aInfo->tiling = VK_IMAGE_TILING_LINEAR;
+    Image a{device(), aInfo, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearColorImage(a, ImageLayout::TransferDestination, 0xdeadc0de_rgbaf)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Color4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView({
+        0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
+        0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
+        0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba,
+        0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba, 0xdeadc0de_rgba
+    }), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdClearColorImageSignedIntegral() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* To avoid going through a buffer which can guarantee the packing we want,
+       the tests uses a linear tiling image. These are poorly supported, have
+       weird paddings and the required allocation size is usually much larger
+       than expected. To prevent issues as much as possible, we'll thus create
+       images with non-insane sizes, 4-byte pixel format and explicitly slice
+       the mapped memory. */
+
+    /* Source image */
+    ImageCreateInfo2D aInfo{ImageUsage::TransferDestination,
+        PixelFormat::RGBA8I, {4, 4}, 1, 1, ImageLayout::Undefined};
+    aInfo->tiling = VK_IMAGE_TILING_LINEAR;
+    Image a{device(), aInfo, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearColorImage(a, ImageLayout::TransferDestination, Vector4i{15, -7, 2, -1})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4b>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4b>({
+        {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
+        {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
+        {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
+        {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1}, {15, -7, 2, -1},
+    }), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdClearColorImageUnsignedIntegral() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* To avoid going through a buffer which can guarantee the packing we want,
+       the tests uses a linear tiling image. These are poorly supported, have
+       weird paddings and the required allocation size is usually much larger
+       than expected. To prevent issues as much as possible, we'll thus create
+       images with non-insane sizes, 4-byte pixel format and explicitly slice
+       the mapped memory. */
+
+    /* Source image */
+    ImageCreateInfo2D aInfo{ImageUsage::TransferDestination,
+        PixelFormat::RGBA8UI, {4, 4}, 1, 1, ImageLayout::Undefined};
+    aInfo->tiling = VK_IMAGE_TILING_LINEAR;
+    Image a{device(), aInfo, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearColorImage(a, ImageLayout::TransferDestination, Vector4ui{15, 37, 2, 1})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Vector4ub>(a.dedicatedMemory().mapRead().prefix(4*4*4)), Containers::arrayView<Vector4ub>({
+        {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
+        {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
+        {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
+        {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1}, {15, 37, 2, 1},
+    }), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdClearDepthStencilImage() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Depth/stencil images aren't supported in a linear tiling, so do the
+       verification through a buffer copy */
+
+    /* Source image */
+    Image a{device(), ImageCreateInfo2D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::Depth32FStencil8UI, {4, 4}, 1, 1, ImageLayout::Undefined
+    }, MemoryFlag::DeviceLocal};
+
+    /* Destination buffers */
+    Buffer depth{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 4*4*4
+    }, MemoryFlag::HostVisible};
+    Buffer stencil{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 4*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearDepthStencilImage(a, ImageLayout::TransferDestination, 0.75f, 133)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, a},
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo2D{a, ImageLayout::TransferSource, depth, {
+           {0, ImageAspect::Depth, 0, {{}, {4, 4}}}
+        }})
+       .copyImageToBuffer(CopyImageToBufferInfo2D{a, ImageLayout::TransferSource, stencil, {
+           {0, ImageAspect::Stencil, 0, {{}, {4, 4}}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS((Containers::arrayCast<const Float>(depth.dedicatedMemory().mapRead().prefix(4*4*4))), (Containers::arrayView<Float>({
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f
+    })), TestSuite::Compare::Container);
+
+    CORRADE_COMPARE_AS((Containers::arrayCast<const UnsignedByte>(stencil.dedicatedMemory().mapRead().prefix(4*4))), (Containers::arrayView<UnsignedByte>({
+        133, 133, 133, 133,
+        133, 133, 133, 133,
+        133, 133, 133, 133,
+        133, 133, 133, 133
+    })), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdClearDepthImage() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Depth/stencil images aren't supported in a linear tiling, so do the
+       verification through a buffer copy */
+
+    /* Source image */
+    Image a{device(), ImageCreateInfo2D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::Depth32F, {4, 4}, 1, 1, ImageLayout::Undefined
+    }, MemoryFlag::DeviceLocal};
+
+    /* Destination buffers */
+    Buffer depth{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 4*4*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearDepthImage(a, ImageLayout::TransferDestination, 0.75f)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, a},
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo2D{a, ImageLayout::TransferSource, depth, {
+           {0, ImageAspect::Depth, 0, {{}, {4, 4}}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS((Containers::arrayCast<const Float>(depth.dedicatedMemory().mapRead().prefix(4*4*4))), (Containers::arrayView<Float>({
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f,
+        0.75f, 0.75f, 0.75f, 0.75f
+    })), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdClearStencilImage() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Depth/stencil images aren't supported in a linear tiling, so do the
+       verification through a buffer copy */
+
+    /* Source image */
+    Image a{device(), ImageCreateInfo2D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::Stencil8UI, {4, 4}, 1, 1, ImageLayout::Undefined
+    }, MemoryFlag::DeviceLocal};
+
+    /* Destination buffers */
+    Buffer stencil{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 4*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, a},
+        })
+       .clearStencilImage(a, ImageLayout::TransferDestination, 133)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, a},
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo2D{a, ImageLayout::TransferSource, stencil, {
+           {0, ImageAspect::Stencil, 0, {{}, {4, 4}}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE_AS((Containers::arrayCast<const UnsignedByte>(stencil.dedicatedMemory().mapRead().prefix(4*4))), (Containers::arrayView<UnsignedByte>({
+        133, 133, 133, 133,
+        133, 133, 133, 133,
+        133, 133, 133, 133,
+        133, 133, 133, 133
+    })), TestSuite::Compare::Container);
+}
+
+void ImageVkTest::cmdCopyImage2D() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* To avoid going through a buffer which can guarantee the packing we want,
+       the tests uses a linear tiling image. These are poorly supported, have
+       weird paddings and the required allocation size is usually much larger
+       than expected. To prevent issues as much as possible, we'll thus create
+       images with non-insane sizes (so not 6 or 7 pixels wide, but 8), 4-byte
+       pixel format and explicitly slice the mapped memory. */
+
+    /* Source image */
+    ImageCreateInfo2D aInfo{ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {8, 10}, 1, 1, ImageLayout::Preinitialized};
+    aInfo->tiling = VK_IMAGE_TILING_LINEAR;
+    Image a{device(), aInfo, MemoryFlag::HostVisible};
+    Utility::copy("________________________________"
+                  "________________________________"
+                  "________________________________"
+                  "________________________________"
+                  "____________AaaaAaaaAaaaAaaa____"
+                  "____________BbbbBbbbBbbbBbbb____"
+                  "____________CcccCcccCcccCccc____"
+                  "____________DdddDdddDdddDddd____"
+                  "________________________________"
+                  "________________________________"_s, a.dedicatedMemory().map().prefix(8*10*4));
+
+    /* Destination image */
+    ImageCreateInfo2D bInfo{ImageUsage::TransferDestination,
+        PixelFormat::RGBA8UI, {8, 5}, 1};
+    bInfo->tiling = VK_IMAGE_TILING_LINEAR;
+    Image b{device(), bInfo, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferRead,
+             ImageLayout::Preinitialized, ImageLayout::TransferSource, a},
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b},
+        })
+       .clearColorImage(b, ImageLayout::TransferDestination, Vector4ui{'-'})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferWrite,
+             ImageLayout::TransferDestination, ImageLayout::TransferDestination, b}
+        })
+       .copyImage({a, ImageLayout::TransferSource, b, ImageLayout::TransferDestination, {
+            {ImageAspect::Color, 0, 0, 1, {3, 4, 0}, 0, 0, 1, {1, 1, 0}, {4, 4, 1}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+            {Access::TransferWrite, Access::HostRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferDestination, b}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(b.dedicatedMemory().mapRead().prefix(8*5*4),
+        "--------------------------------"
+        "----AaaaAaaaAaaaAaaa------------"
+        "----BbbbBbbbBbbbBbbb------------"
+        "----CcccCcccCcccCccc------------"
+        "----DdddDdddDdddDddd------------"_s);
+}
+
+void ImageVkTest::cmdCopyImageDisallowedConversion() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    if(device().isExtensionEnabled<Extensions::KHR::copy_commands2>())
+        CORRADE_SKIP("KHR_copy_commands2 enabled on the device, can't test");
+
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    CopyImageInfo a{{}, {}, {}, {}, {}};
+    a->pNext = &a;
+
+    /* The commands shouldn't do anything, so it should be fine to just call
+       them without any render pass set up */
+    std::ostringstream out;
+    Error redirectError{&out};
+    cmd.copyImage(a);
+    CORRADE_COMPARE(out.str(),
+        "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss\n");
+}
+
+void ImageVkTest::cmdCopyBufferImage1D() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 7*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________AaaaBbbbCcccDddd____"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfo1D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, 6, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer, clear as well */
+    Buffer c{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 7*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("............................"_s, c.dedicatedMemory().map());
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfo1D{a, b, ImageLayout::TransferDestination, {
+           {2*4, ImageAspect::Color, 0, Range1Di::fromSize(2, 4)}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo1D{b, ImageLayout::TransferSource, c, {
+           {2*4, ImageAspect::Color, 0, Range1Di::fromSize(2, 4)}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "........AaaaBbbbCcccDddd...."_s);
+}
+
+void ImageVkTest::cmdCopyBufferImage2D() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 7*10*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("____________________________"
+                  "____________________________"
+                  "____________________________"
+                  "____________________________"
+                  "________AaaaAaaaAaaaAaaa____"
+                  "________BbbbBbbbBbbbBbbb____"
+                  "________CcccCcccCcccCccc____"
+                  "________DdddDdddDdddDddd____"
+                  "____________________________"
+                  "____________________________"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfo2D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {6, 5}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 7*10*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfo2D{a, b, ImageLayout::TransferDestination, {
+           {(4*7 + 2)*4, 7, ImageAspect::Color, 0, Range2Di::fromSize({2, 1}, {4, 4})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo2D{b, ImageLayout::TransferSource, c, {
+           {(4*7 + 2)*4, 7, ImageAspect::Color, 0, Range2Di::fromSize({2, 1}, {4, 4})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "............................"
+        "............................"
+        "............................"
+        "............................"
+        "........AaaaAaaaAaaaAaaa...."
+        "........BbbbBbbbBbbbBbbb...."
+        "........CcccCcccCcccCccc...."
+        "........DdddDdddDdddDddd...."
+        "............................"
+        "............................"_s);
+}
+
+void ImageVkTest::cmdCopyBufferImage3D() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 6*7*2*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________________________"
+                  "________________________"
+                  "________________________"
+                  "________AaaaAaaaAaaa____"
+                  "________BbbbBbbbBbbb____"
+                  "________CcccCcccCccc____"
+                  "________________________"
+
+                  "________________________"
+                  "________________________"
+                  "________________________"
+                  "________DdddDdddDddd____"
+                  "________EeeeEeeeEeee____"
+                  "________FfffFfffFfff____"
+                  "________________________"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfo3D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {5, 4, 3}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 6*7*2*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfo3D{a, b, ImageLayout::TransferDestination, {
+           {(3*6 + 2)*4, 6, 7, ImageAspect::Color, 0, Range3Di::fromSize({2, 1, 1}, {3, 3, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo3D{b, ImageLayout::TransferSource, c, {
+           {(3*6 + 2)*4, 6, 7, ImageAspect::Color, 0, Range3Di::fromSize({2, 1, 1}, {3, 3, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "........................"
+        "........................"
+        "........................"
+        "........AaaaAaaaAaaa...."
+        "........BbbbBbbbBbbb...."
+        "........CcccCcccCccc...."
+        "........................"
+
+        "........................"
+        "........................"
+        "........................"
+        "........DdddDdddDddd...."
+        "........EeeeEeeeEeee...."
+        "........FfffFfffFfff...."
+        "........................"_s);
+}
+
+void ImageVkTest::cmdCopyBufferImage1DArray() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 6*5*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________________________"
+                  "________________________"
+                  "________AaaaAaaaAaaa____"
+                  "________BbbbBbbbBbbb____"
+                  "________________________"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfo1DArray{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {4, 3}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 6*5*4}, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfo1DArray{a, b, ImageLayout::TransferDestination, {
+           {(2*6 + 2)*4, 6, ImageAspect::Color, 0, Range2Di::fromSize({1, 1}, {3, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo1DArray{b, ImageLayout::TransferSource, c, {
+           {(2*6 + 2)*4, 6, ImageAspect::Color, 0, Range2Di::fromSize({1, 1}, {3, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "........................"
+        "........................"
+        "........AaaaAaaaAaaa...."
+        "........BbbbBbbbBbbb...."
+        "........................"_s);
+}
+
+void ImageVkTest::cmdCopyBufferImage2DArray() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 4*5*2*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("____________________"
+                  "________AaaaAaaa____"
+                  "________BbbbBbbb____"
+                  "____________________"
+
+                  "____________________"
+                  "________CcccCccc____"
+                  "________DdddDddd____"
+                  "____________________"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfo2DArray{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {4, 4, 3}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 4*5*2*4}, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfo2DArray{a, b, ImageLayout::TransferDestination, {
+           {(1*5 + 2)*4, 5, 4, ImageAspect::Color, 0, Range3Di::fromSize({2, 1, 1}, {2, 2, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfo2DArray{b, ImageLayout::TransferSource, c, {
+           {(1*5 + 2)*4, 5, 4, ImageAspect::Color, 0, Range3Di::fromSize({2, 1, 1}, {2, 2, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "...................."
+        "........AaaaAaaa...."
+        "........BbbbBbbb...."
+        "...................."
+
+        "...................."
+        "........CcccCccc...."
+        "........DdddDddd...."
+        "...................."_s);
+}
+
+void ImageVkTest::cmdCopyBufferImageCubeMap() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 3*4*6*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________________"
+                  "________Aaaa____"
+                  "________Bbbb____"
+
+                  "________________"
+                  "________Cccc____"
+                  "________Dddd____"
+
+                  "________________"
+                  "________Eeee____"
+                  "________Ffff____"
+
+                  "________________"
+                  "________Gggg____"
+                  "________Hhhh____"
+
+                  "________________"
+                  "________Iiii____"
+                  "________Jjjj____"
+
+                  "________________"
+                  "________Kkkk____"
+                  "________Llll____"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfoCubeMap{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {4, 4}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 3*4*6*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfoCubeMap{a, b, ImageLayout::TransferDestination, {
+           {(1*4 + 2)*4, 4, 3, ImageAspect::Color, 0, Range2Di::fromSize({3, 1}, {1, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfoCubeMap{b, ImageLayout::TransferSource, c, {
+           {(1*4 + 2)*4, 4, 3, ImageAspect::Color, 0, Range2Di::fromSize({3, 1}, {1, 2})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "................"
+        "........Aaaa...."
+        "........Bbbb...."
+
+        "................"
+        "........Cccc...."
+        "........Dddd...."
+
+        "................"
+        "........Eeee...."
+        "........Ffff...."
+
+        "................"
+        "........Gggg...."
+        "........Hhhh...."
+
+        "................"
+        "........Iiii...."
+        "........Jjjj...."
+
+        "................"
+        "........Kkkk...."
+        "........Llll...."_s);
+}
+
+void ImageVkTest::cmdCopyBufferImageCubeMapArray() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 3*4*7*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________________"
+                  "________Aaaa____"
+                  "________Bbbb____"
+
+                  "________________"
+                  "________Cccc____"
+                  "________Dddd____"
+
+                  "________________"
+                  "________Eeee____"
+                  "________Ffff____"
+
+                  "________________"
+                  "________Gggg____"
+                  "________Hhhh____"
+
+                  "________________"
+                  "________Iiii____"
+                  "________Jjjj____"
+
+                  "________________"
+                  "________Kkkk____"
+                  "________Llll____"
+
+                  "________________"
+                  "________Mmmm____"
+                  "________Nnnn____"_s, a.dedicatedMemory().map());
+
+    /* Destination & source image */
+    Image b{device(), ImageCreateInfoCubeMapArray{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {4, 4, 8}, 1
+    }, MemoryFlag::HostVisible};
+
+    /* Destination buffer */
+    Buffer c{device(), BufferCreateInfo{BufferUsage::TransferDestination, 3*4*7*4}, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b}
+        })
+       .fillBuffer(c, 0x2e2e2e2e)
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead, c}
+        })
+       .copyBufferToImage(CopyBufferToImageInfoCubeMapArray{a, b, ImageLayout::TransferDestination, {
+           {(1*4 + 2)*4, 4, 3, ImageAspect::Color, 0, Range3Di::fromSize({3, 1, 1}, {1, 2, 7})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b}
+        })
+       .copyImageToBuffer(CopyImageToBufferInfoCubeMapArray{b, ImageLayout::TransferSource, c, {
+           {(1*4 + 2)*4, 4, 3, ImageAspect::Color, 0, Range3Di::fromSize({3, 1, 1}, {1, 2, 7})}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead, c}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(c.dedicatedMemory().mapRead()),
+        "................"
+        "........Aaaa...."
+        "........Bbbb...."
+
+        "................"
+        "........Cccc...."
+        "........Dddd...."
+
+        "................"
+        "........Eeee...."
+        "........Ffff...."
+
+        "................"
+        "........Gggg...."
+        "........Hhhh...."
+
+        "................"
+        "........Iiii...."
+        "........Jjjj...."
+
+        "................"
+        "........Kkkk...."
+        "........Llll...."
+
+        "................"
+        "........Mmmm...."
+        "........Nnnn...."_s);
+}
+
+void ImageVkTest::cmdCopyBufferImageDisallowedConversion() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    if(device().isExtensionEnabled<Extensions::KHR::copy_commands2>())
+        CORRADE_SKIP("KHR_copy_commands2 enabled on the device, can't test");
+
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    CopyBufferToImageInfo a{{}, {}, {}, {}};
+    a->pNext = &a;
+    CopyImageToBufferInfo b{{}, {}, {}, {}};
+    b->pNext = &b;
+
+    /* The commands shouldn't do anything, so it should be fine to just call
+       them without any render pass set up */
+    std::ostringstream out;
+    Error redirectError{&out};
+    cmd.copyBufferToImage(a)
+       .copyImageToBuffer(b);
+    CORRADE_COMPARE(out.str(),
+        "Vk::CommandBuffer::copyBufferToImage(): disallowing extraction of CopyBufferToImageInfo with non-empty pNext to prevent information loss\n"
+        "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss\n");
 }
 
 }}}}

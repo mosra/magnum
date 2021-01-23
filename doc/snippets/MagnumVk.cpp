@@ -242,6 +242,30 @@ cmd.fillBuffer(buffer, 0x00000000);
 }
 
 {
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+UnsignedLong size{};
+/* [Buffer-usage-copy] */
+Vk::Buffer input{device, Vk::BufferCreateInfo{
+    Vk::BufferUsage::TransferSource, size
+}, Vk::MemoryFlag::HostVisible};
+Vk::Buffer vertices{device, Vk::BufferCreateInfo{
+    Vk::BufferUsage::TransferDestination|Vk::BufferUsage::VertexBuffer, size
+}, Vk::MemoryFlag::DeviceLocal};
+
+DOXYGEN_IGNORE()
+
+cmd.copyBuffer({input, vertices, {
+        {0, 0, size} /* Copy the whole buffer */
+    }})
+   .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::VertexInput, {
+        /* Make the buffer memory available for vertex input */
+        {Vk::Access::TransferWrite, Vk::Access::VertexAttributeRead, vertices}
+    });
+/* [Buffer-usage-copy] */
+}
+
+{
 /* The include should be a no-op here since it was already included above */
 /* [CommandPool-creation] */
 #include <Magnum/Vk/CommandPoolCreateInfo.h>
@@ -481,6 +505,97 @@ Vk::Memory memory{device, Vk::MemoryAllocateInfo{
 
 image.bindMemory(memory, 0);
 /* [Image-creation-custom-allocation] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+/* [Image-usage-clear] */
+Vk::Image image{device, Vk::ImageCreateInfo2D{
+    Vk::ImageUsage::TransferDestination|DOXYGEN_IGNORE(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, DOXYGEN_IGNORE({}, 1)
+}, DOXYGEN_IGNORE(Vk::MemoryFlag{})};
+
+DOXYGEN_IGNORE()
+
+cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
+        /* Transition the image to a layout required by the clear operation */
+        {Vk::Accesses{}, Vk::Access::TransferWrite,
+         Vk::ImageLayout::Undefined, Vk::ImageLayout::TransferDestination, image}
+    })
+   .clearColorImage(image, Vk::ImageLayout::TransferDestination, 0x1f1f1f_srgbf);
+/* [Image-usage-clear] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+/* [Image-usage-copy-from-buffer] */
+Vk::Buffer input{device, Vk::BufferCreateInfo{
+    Vk::BufferUsage::TransferSource, 256*256*4 DOXYGEN_IGNORE()
+}, Vk::MemoryFlag::HostVisible};
+Vk::Image texture{device, Vk::ImageCreateInfo2D{
+    Vk::ImageUsage::TransferDestination|Vk::ImageUsage::Sampled,
+    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
+}, Vk::MemoryFlag::DeviceLocal};
+
+DOXYGEN_IGNORE()
+
+cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
+        /* Transition the image to a layout required by the copy operation */
+        {Vk::Accesses{}, Vk::Access::TransferWrite,
+         Vk::ImageLayout::Undefined, Vk::ImageLayout::TransferDestination, texture}
+    })
+   .copyBufferToImage({input, texture, Vk::ImageLayout::TransferDestination, {
+        /* Copy the whole buffer to the first level of the image */
+        Vk::BufferImageCopy2D{0, Vk::ImageAspect::Color, 0, {{}, {256, 256}}}
+    }})
+   .pipelineBarrier(Vk::PipelineStage::Transfer, Vk::PipelineStage::FragmentShader, {
+        /* Make the image memory available for fragment shader sampling */
+        {Vk::Access::TransferWrite, Vk::Access::ShaderRead,
+         Vk::ImageLayout::TransferDestination, Vk::ImageLayout::ShaderReadOnly, texture}
+    });
+/* [Image-usage-copy-from-buffer] */
+
+/* [Image-usage-copy-from-buffer-multiple] */
+cmd.copyBufferToImage(Vk::CopyBufferToImageInfo2D{
+    input, texture, Vk::ImageLayout::Undefined, {
+        /* Assuming mip levels are tightly packed after each other */
+        {     0, Vk::ImageAspect::Color, 0, {{}, {256, 256}}},
+        {262144, Vk::ImageAspect::Color, 1, {{}, {128, 128}}},
+        {327680, Vk::ImageAspect::Color, 2, {{}, { 64,  64}}},
+        DOXYGEN_IGNORE()
+    }
+});
+/* [Image-usage-copy-from-buffer-multiple] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+/* [Image-usage-copy-from-image] */
+Vk::Image a{device, Vk::ImageCreateInfo2D{
+    Vk::ImageUsage::TransferSource|DOXYGEN_IGNORE(Vk::ImageUsage{}),
+    Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
+}, DOXYGEN_IGNORE({})};
+Vk::Image b{device, Vk::ImageCreateInfo2D{
+    Vk::ImageUsage::TransferDestination|DOXYGEN_IGNORE(Vk::ImageUsage{}), Vk::PixelFormat::RGBA8Srgb, {256, 256}, DOXYGEN_IGNORE(1)
+}, DOXYGEN_IGNORE({})};
+
+DOXYGEN_IGNORE()
+
+cmd.pipelineBarrier(Vk::PipelineStage::TopOfPipe, Vk::PipelineStage::Transfer, {
+        /* Transfer both images to a layout required by the copy operation */
+        {Vk::Accesses{}, Vk::Access::TransferRead,
+            Vk::ImageLayout::DOXYGEN_IGNORE(Undefined), Vk::ImageLayout::TransferSource, a},
+        {Vk::Accesses{}, Vk::Access::TransferWrite,
+            Vk::ImageLayout::Undefined, Vk::ImageLayout::TransferDestination, b}
+    })
+   .copyImage({a, Vk::ImageLayout::TransferSource,
+               b, Vk::ImageLayout::TransferDestination, {
+        /* Copy the whole first layer/level between the images */
+        {Vk::ImageAspect::Color, 0, 0, 1, {}, 0, 0, 1, {}, {256, 256, 1}}
+    }});
+/* [Image-usage-copy-from-image] */
 }
 
 {

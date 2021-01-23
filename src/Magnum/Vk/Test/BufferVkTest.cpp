@@ -23,15 +23,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
+#include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Fence.h"
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
@@ -57,6 +60,8 @@ struct BufferVkTest: VulkanTester {
     void directAllocation();
 
     void cmdFillBuffer();
+    void cmdCopyBuffer();
+    void cmdCopyBufferDisallowedConversion();
 };
 
 BufferVkTest::BufferVkTest() {
@@ -72,7 +77,9 @@ BufferVkTest::BufferVkTest() {
 
               &BufferVkTest::directAllocation,
 
-              &BufferVkTest::cmdFillBuffer});
+              &BufferVkTest::cmdFillBuffer,
+              &BufferVkTest::cmdCopyBuffer,
+              &BufferVkTest::cmdCopyBufferDisallowedConversion});
 }
 
 using namespace Containers::Literals;
@@ -194,10 +201,9 @@ void BufferVkTest::cmdFillBuffer() {
 
     cmd.begin()
        .fillBuffer(a, 4, 8, 0x2e2e2e2e)
-       .pipelineBarrier(
-           PipelineStage::Transfer, PipelineStage::Host,
-           {{Access::TransferWrite, Access::HostRead}},
-           {}, {})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        }, {}, {})
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
     CORRADE_COMPARE(arrayView(a.dedicatedMemory().mapRead()), "0123........cdef"_s);
@@ -206,13 +212,61 @@ void BufferVkTest::cmdFillBuffer() {
     pool.reset();
     cmd.begin()
        .fillBuffer(a, 0x2e2e2e2e)
-       .pipelineBarrier(
-           PipelineStage::Transfer, PipelineStage::Host,
-           {{Access::TransferWrite, Access::HostRead}},
-           {}, {})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        }, {}, {})
        .end();
     queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
     CORRADE_COMPARE(arrayView(a.dedicatedMemory().mapRead()), "................"_s);
+}
+
+void BufferVkTest::cmdCopyBuffer() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{BufferUsage::TransferSource, 7}, MemoryFlag::HostVisible};
+    Utility::copy("__ABCD_"_s, a.dedicatedMemory().map());
+
+    /* Destination buffer, clear it to have predictable output */
+    Buffer b{device(), BufferCreateInfo{BufferUsage::TransferDestination, 10}, MemoryFlag::HostVisible};
+    Utility::copy(".........."_s, b.dedicatedMemory().map());
+
+    cmd.begin()
+       .copyBuffer({a, b, {{2, 5, 4}}})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+           {Access::TransferWrite, Access::HostRead}
+        }, {}, {})
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(b.dedicatedMemory().mapRead()),
+        ".....ABCD."_s);
+}
+
+void BufferVkTest::cmdCopyBufferDisallowedConversion() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    if(device().isExtensionEnabled<Extensions::KHR::copy_commands2>())
+        CORRADE_SKIP("KHR_copy_commands2 enabled on the device, can't test");
+
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    CopyBufferInfo a{{}, {}, {}};
+    a->pNext = &a;
+
+    /* The commands shouldn't do anything, so it should be fine to just call
+       them without any render pass set up */
+    std::ostringstream out;
+    Error redirectError{&out};
+    cmd.copyBuffer(a);
+    CORRADE_COMPARE(out.str(),
+        "Vk::CommandBuffer::copyBuffer(): disallowing extraction of CopyBufferInfo with non-empty pNext to prevent information loss\n");
 }
 
 }}}}

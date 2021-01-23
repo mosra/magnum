@@ -80,6 +80,18 @@ DeviceState::DeviceState(Device& device) {
         cmdNextSubpassImplementation = &CommandBuffer::nextSubpassImplementationDefault;
         cmdEndRenderPassImplementation = &CommandBuffer::endRenderPassImplementationDefault;
     }
+
+    if(device.isExtensionEnabled<Extensions::KHR::copy_commands2>()) {
+        cmdCopyBufferImplementation = &CommandBuffer::copyBufferImplementationKHR;
+        cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationKHR;
+        cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationKHR;
+        cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationKHR;
+    } else {
+        cmdCopyBufferImplementation = &CommandBuffer::copyBufferImplementationDefault;
+        cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationDefault;
+        cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationDefault;
+        cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationDefault;
+    }
 }
 
 }}}

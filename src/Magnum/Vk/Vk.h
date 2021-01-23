@@ -45,6 +45,15 @@ class CommandBuffer;
 /* CommandBufferBeginInfo is useful only in combination with CommandBuffer */
 class CommandPool;
 class CommandPoolCreateInfo;
+/* BufferCopy used only directly inside CopyBufferInfo */
+class CopyBufferInfo;
+/* ImageCopy used only directly inside CopyImageInfo */
+class CopyImageInfo;
+/* BufferImageCopy used only directly inside CopyBufferToImageInfo /
+   CopyImageToBufferInfo */
+class CopyBufferToImageInfo;
+class CopyImageToBufferInfo;
+/* Not forward-declaring CopyBufferToImageInfo1D etc right now, I see no need */
 enum class DependencyFlag: UnsignedInt;
 typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
 class Device;
