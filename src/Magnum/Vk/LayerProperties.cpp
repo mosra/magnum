@@ -42,19 +42,19 @@ LayerProperties::~LayerProperties() = default;
 
 LayerProperties& LayerProperties::operator=(LayerProperties&&) noexcept = default;
 
-Containers::ArrayView<const Containers::StringView> LayerProperties::names() {
+Containers::ArrayView<const Containers::StringView> LayerProperties::names() const {
     return _names;
 }
 
-bool LayerProperties::isSupported(const Containers::StringView layer) {
+bool LayerProperties::isSupported(const Containers::StringView layer) const {
     return std::binary_search(_names.begin(), _names.end(), layer);
 }
 
-UnsignedInt LayerProperties::count() {
+UnsignedInt LayerProperties::count() const {
     return UnsignedInt(_layers.size());
 }
 
-Containers::StringView LayerProperties::name(const UnsignedInt id) {
+Containers::StringView LayerProperties::name(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _layers.size(),
         "Vk::LayerProperties::name(): index" << id << "out of range for" << _layers.size() << "entries", {});
     /* Not returning the string views at the end because those are in a
@@ -62,19 +62,19 @@ Containers::StringView LayerProperties::name(const UnsignedInt id) {
     return _layers[id].layerName;
 }
 
-UnsignedInt LayerProperties::revision(const UnsignedInt id) {
+UnsignedInt LayerProperties::revision(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _layers.size(),
         "Vk::LayerProperties::revision(): index" << id << "out of range for" << _layers.size() << "entries", {});
     return _layers[id].implementationVersion;
 }
 
-Version LayerProperties::version(const UnsignedInt id) {
+Version LayerProperties::version(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _layers.size(),
         "Vk::LayerProperties::version(): index" << id << "out of range for" << _layers.size() << "entries", {});
     return Version(_layers[id].specVersion);
 }
 
-Containers::StringView LayerProperties::description(const UnsignedInt id) {
+Containers::StringView LayerProperties::description(const UnsignedInt id) const {
     CORRADE_ASSERT(id < _layers.size(),
         "Vk::LayerProperties::description(): index" << id << "out of range for" << _layers.size() << "entries", {});
     return _layers[id].description;

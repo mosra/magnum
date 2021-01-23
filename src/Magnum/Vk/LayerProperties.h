@@ -95,7 +95,7 @@ class MAGNUM_VK_EXPORT LayerProperties {
          * The returned views are owned by the @ref LayerProperties instance
          * (i.e., *not* a global memory).
          */
-        Containers::ArrayView<const Containers::StringView> names();
+        Containers::ArrayView<const Containers::StringView> names() const;
 
         /**
          * @brief Whether given layer is supported
@@ -103,10 +103,10 @@ class MAGNUM_VK_EXPORT LayerProperties {
          * Search complexity is @f$ \mathcal{O}(\log n) @f$ in the total layer
          * count.
          */
-        bool isSupported(Containers::StringView layer);
+        bool isSupported(Containers::StringView layer) const;
 
         /** @brief Count of layers reported by the driver */
-        UnsignedInt count();
+        UnsignedInt count() const;
 
         /**
          * @brief Layer name
@@ -115,19 +115,19 @@ class MAGNUM_VK_EXPORT LayerProperties {
          * The returned view is owned by the @ref LayerProperties instance
          * (i.e., *not* a global memory).
          */
-        Containers::StringView name(UnsignedInt id);
+        Containers::StringView name(UnsignedInt id) const;
 
         /**
          * @brief Layer revision
          * @param id Layer index, expected to be smaller than @ref count()
          */
-        UnsignedInt revision(UnsignedInt id);
+        UnsignedInt revision(UnsignedInt id) const;
 
         /**
          * @brief Vulkan version the layer is implemented against
          * @param id Layer index, expected to be smaller than @ref count()
          */
-        Version version(UnsignedInt id);
+        Version version(UnsignedInt id) const;
 
         /**
          * @brief Layer description
@@ -136,7 +136,7 @@ class MAGNUM_VK_EXPORT LayerProperties {
          * The returned view is owned by the @ref LayerProperties instance
          * (i.e., *not* a global memory).
          */
-        Containers::StringView description(UnsignedInt id);
+        Containers::StringView description(UnsignedInt id) const;
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
