@@ -192,6 +192,16 @@ could look like this:
 
 The `BufferBinding` is then subsequently used as a binding index for a concrete
 vertex buffer when drawing.
+
+@subsection Vk-MeshLayout-usage-comparison Layout comparison
+
+Because a pipeline is tied to a particular mesh layout (apart from certain
+aspects that can be controlled via dynamic state), new pipelines should be
+created only when the layout is actually different. For that, the class
+provides a @ref operator==(), which returns @cpp true @ce when the two layouts
+match.
+
+@todo provide a hash function
 */
 class MAGNUM_VK_EXPORT MeshLayout {
     public:
@@ -248,6 +258,33 @@ class MAGNUM_VK_EXPORT MeshLayout {
 
         /** @brief Move assignment */
         MeshLayout& operator=(MeshLayout&& other) noexcept;
+
+        /**
+         * @brief Equality comparison
+         *
+         * Expects that neither instance has external `pNext` or other data
+         * pointers, as otherwise the implementation would have to be too
+         * complex and slow --- in short that means all bindings and attributes
+         * should be added via @ref addBinding(), @ref addInstancedBinding()
+         * and @ref addAttribute(), not by conversion from raw Vulkan
+         * structures or by direct editing of the underlying data.
+         *
+         * Given that @ref addBinding(), @ref addInstancedBinding() and
+         * @ref addAttribute() enforce monotonically increasing order,
+         * comparison is simple with a @f$ \mathcal{O}(n) @f$ complexity in the
+         * total number of bindings and attachments.
+         */
+        bool operator==(const MeshLayout& other) const;
+
+        /**
+         * @brief Non-equality comparison
+         *
+         * Inverse of @ref operator==(), see its documentation for more
+         * information.
+         */
+        bool operator!=(const MeshLayout& other) const {
+            return !operator==(other);
+        }
 
         /**
          * @brief Add a buffer binding
@@ -367,6 +404,10 @@ class MAGNUM_VK_EXPORT MeshLayout {
         }
 
     private:
+        #ifndef CORRADE_NO_ASSERT
+        MAGNUM_VK_LOCAL bool hasNoExternalPointers() const;
+        #endif
+
         VkPipelineVertexInputStateCreateInfo _vertexInfo;
         VkPipelineInputAssemblyStateCreateInfo _assemblyInfo;
 

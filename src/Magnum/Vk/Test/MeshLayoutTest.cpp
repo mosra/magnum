@@ -57,6 +57,9 @@ struct MeshLayoutTest: TestSuite::Tester {
     template<class T> void addAttribute();
     void addAttributeWrongOrder();
 
+    void compare();
+    void compareExternalPointers();
+
     void debugMeshPrimitive();
 };
 
@@ -80,6 +83,9 @@ MeshLayoutTest::MeshLayoutTest() {
               &MeshLayoutTest::addAttribute<VertexFormat>,
               &MeshLayoutTest::addAttribute<Magnum::VertexFormat>,
               &MeshLayoutTest::addAttributeWrongOrder,
+
+              &MeshLayoutTest::compare,
+              &MeshLayoutTest::compareExternalPointers,
 
               &MeshLayoutTest::debugMeshPrimitive});
 }
@@ -375,6 +381,235 @@ void MeshLayoutTest::addAttributeWrongOrder() {
     layout.addAttribute(5, 25, VertexFormat{}, 1);
     CORRADE_COMPARE(out.str(),
         "Vk::MeshLayout::addAttribute(): location 5 can't be ordered after 5\n");
+}
+
+void MeshLayoutTest::compare() {
+    MeshLayout emptyTriangles1{MeshPrimitive::Triangles};
+    MeshLayout emptyTriangles2{MeshPrimitive::Triangles};
+    CORRADE_VERIFY(emptyTriangles1 == emptyTriangles1);
+    CORRADE_VERIFY(emptyTriangles1 == emptyTriangles2);
+    CORRADE_VERIFY(emptyTriangles2 == emptyTriangles1);
+    CORRADE_VERIFY(!(emptyTriangles1 != emptyTriangles2));
+
+    MeshLayout emptyLines{MeshPrimitive::Lines};
+    CORRADE_VERIFY(emptyLines != emptyTriangles1);
+    CORRADE_VERIFY(emptyTriangles1 != emptyLines);
+
+    MeshLayout basic1{MeshPrimitive::Triangles};
+    basic1.addBinding(7, 25)
+        .addBinding(8, 3)
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2b, 27);
+    MeshLayout basic2{MeshPrimitive::Triangles};
+    basic2.addBinding(7, 25)
+        .addBinding(8, 3)
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2b, 27);
+    CORRADE_VERIFY(basic1 == basic1);
+    CORRADE_VERIFY(basic1 == basic2);
+    CORRADE_VERIFY(basic2 == basic1);
+
+    MeshLayout different1{MeshPrimitive::Triangles};
+    different1.addBinding(7, 25)
+        .addBinding(8, 3)
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2h, 27); /* different format */
+    CORRADE_VERIFY(basic1 != different1);
+
+    MeshLayout different2{MeshPrimitive::Triangles};
+    different2.addBinding(7, 25)
+        .addBinding(8, 4) /* different stride */
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2b, 27);
+    CORRADE_VERIFY(basic1 != different2);
+
+    MeshLayout larger1{MeshPrimitive::Triangles};
+    larger1.addBinding(7, 25)
+        .addBinding(8, 3)
+        .addBinding(9, 27) /* new entry */
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2b, 27);
+    CORRADE_VERIFY(basic1 != larger1);
+
+    /* It should take this value into account, not the internal array size */
+    larger1.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount = 2;
+    CORRADE_VERIFY(basic1 == larger1);
+
+    MeshLayout larger2{MeshPrimitive::Triangles};
+    larger2.addBinding(7, 25)
+        .addBinding(8, 3)
+        .addAttribute(0, 3, VertexFormat::Vector2h, 26)
+        .addAttribute(1, 7, VertexFormat::Vector2b, 27)
+        .addAttribute(2, 15, VertexFormat::Vector2, 3); /* new entry */
+    CORRADE_VERIFY(basic1 != larger2);
+
+    /* It should take this value into account, not the internal array size */
+    larger2.vkPipelineVertexInputStateCreateInfo().vertexAttributeDescriptionCount = 2;
+    CORRADE_VERIFY(basic1 == larger2);
+
+    MeshLayout instanced1{MeshPrimitive::Triangles};
+    instanced1.addInstancedBinding(15, 35)
+        .addBinding(17, 25);
+    MeshLayout instanced2{MeshPrimitive::Triangles};
+    instanced2.addInstancedBinding(15, 35)
+        .addBinding(17, 25);
+    CORRADE_VERIFY(instanced1 == instanced1);
+    CORRADE_VERIFY(instanced1 == instanced2);
+    CORRADE_VERIFY(instanced2 == instanced1);
+
+    MeshLayout nonInstanced{MeshPrimitive::Triangles};
+    nonInstanced.addBinding(15, 35) /* not instanced, but same otherwise */
+        .addBinding(17, 25);
+    CORRADE_VERIFY(instanced1 != nonInstanced);
+
+    MeshLayout divisor1{MeshPrimitive::Triangles};
+    divisor1.addInstancedBinding(15, 35)
+        .addInstancedBinding(16, 8, 75)
+        .addBinding(17, 25);
+    MeshLayout divisor2{MeshPrimitive::Triangles};
+    divisor2.addInstancedBinding(15, 35)
+        .addInstancedBinding(16, 8, 75)
+        .addBinding(17, 25);
+    CORRADE_VERIFY(divisor1 == divisor1);
+    CORRADE_VERIFY(divisor1 == divisor2);
+    CORRADE_VERIFY(divisor2 == divisor1);
+
+    MeshLayout larger3{MeshPrimitive::Triangles};
+    larger3.addInstancedBinding(15, 35)
+        .addInstancedBinding(16, 8, 75)
+        .addBinding(17, 25)
+        .addInstancedBinding(18, 2, 11); /* new entry */
+    CORRADE_VERIFY(divisor1 != larger3);
+
+    /* It should take this value into account, not the internal array size */
+    CORRADE_VERIFY(larger3.vkPipelineVertexInputStateCreateInfo().pNext);
+    static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(larger3.vkPipelineVertexInputStateCreateInfo().pNext))->vertexBindingDivisorCount = 1;
+    larger3.vkPipelineVertexInputStateCreateInfo().vertexBindingDescriptionCount = 3;
+    CORRADE_VERIFY(divisor1 == larger3);
+
+    MeshLayout divisor3{MeshPrimitive::Triangles};
+    divisor3.addInstancedBinding(15, 35, 75) /* divisor here instead of 2nd */
+        .addInstancedBinding(16, 8)
+        .addBinding(17, 25);
+    CORRADE_VERIFY(divisor1 != divisor3);
+}
+
+void MeshLayoutTest::compareExternalPointers() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    /* Disallowed pNext inside one struct */
+    {
+        MeshLayout empty{MeshPrimitive::Lines};
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineVertexInputStateCreateInfo().pNext = &layout;
+
+        /* Test both comparison directions to verify the check is done for
+           both */
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(empty); /* to avoid unused expression warnings */
+        empty.operator==(layout);
+        CORRADE_COMPARE(out.str(),
+            "Vk::MeshLayout: can't compare structures with external pointers\n"
+            "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* Disallowed pNext inside the other */
+    } {
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineInputAssemblyStateCreateInfo().pNext = &layout;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* Disallowed pNext inside the divisor struct */
+    } {
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.addInstancedBinding(3, 5, 7);
+        /* At this point it should still work */
+        CORRADE_VERIFY(layout == layout);
+        CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
+        static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pNext = &layout;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* External vertex bindings */
+    } {
+        VkVertexInputBindingDescription bindingData;
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineVertexInputStateCreateInfo().pVertexBindingDescriptions = &bindingData;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* Null vertex bindings but non-zero size */
+    } {
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineVertexInputStateCreateInfo().vertexAttributeDescriptionCount = 3;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* External vertex divisors */
+    } {
+        VkVertexInputBindingDivisorDescriptionEXT bindingDivisorData;
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.addInstancedBinding(3, 5, 7);
+        /* At this point it should still work */
+        CORRADE_VERIFY(layout == layout);
+        CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
+        static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pVertexBindingDivisors = &bindingDivisorData;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* Null vertex divisors but non-zero size */
+    } {
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.addInstancedBinding(3, 5, 7);
+        /* At this point it should still work */
+        CORRADE_VERIFY(layout == layout);
+        CORRADE_VERIFY(layout.vkPipelineVertexInputStateCreateInfo().pNext);
+        static_cast<VkPipelineVertexInputDivisorStateCreateInfoEXT*>(const_cast<void*>(layout.vkPipelineVertexInputStateCreateInfo().pNext))->pVertexBindingDivisors = nullptr;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused expression warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* External attributes */
+    } {
+        VkVertexInputAttributeDescription attributeData;
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineVertexInputStateCreateInfo().pVertexAttributeDescriptions = &attributeData;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+
+    /* Null attributes but non-zero size */
+    } {
+        MeshLayout layout{MeshPrimitive::Lines};
+        layout.vkPipelineVertexInputStateCreateInfo().vertexAttributeDescriptionCount = 3;
+
+        std::ostringstream out;
+        Error redirectError{&out};
+        layout.operator==(layout); /* to avoid unused warnings */
+        CORRADE_COMPARE(out.str(), "Vk::MeshLayout: can't compare structures with external pointers\n");
+    }
 }
 
 void MeshLayoutTest::debugMeshPrimitive() {

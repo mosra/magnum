@@ -122,6 +122,56 @@ MeshLayout& MeshLayout::operator=(MeshLayout&& other) noexcept {
     return *this;
 }
 
+#ifndef CORRADE_NO_ASSERT
+bool MeshLayout::hasNoExternalPointers() const {
+    return
+        /* Vertex info should only point to the vertex divisor info */
+        (!_vertexInfo.pNext || (_state && _vertexInfo.pNext == &_state->vertexDivisorInfo)) &&
+        /* Vertex divisor info should not point anywhere, if it exists */
+        (!_state || !_state->vertexDivisorInfo.pNext) &&
+        /* Assembly info should not point anywhere */
+        !_assemblyInfo.pNext &&
+
+        /* Vertex binding descriptions should point to our data, if any,
+           otherwise it should be null and the count zero */
+        ((!_vertexInfo.vertexBindingDescriptionCount && !_vertexInfo.pVertexBindingDescriptions) || (_state && _vertexInfo.pVertexBindingDescriptions == _state->bindings)) &&
+        /* Attribute descriptions should point to our data, if any,
+           otherwise it should be null and the count zero */
+        ((!_vertexInfo.vertexAttributeDescriptionCount && !_vertexInfo.pVertexAttributeDescriptions) || (_state && _vertexInfo.pVertexAttributeDescriptions == _state->attributes)) &&
+        /* Vertex divisor descriptions should point to our data, if any */
+        (!_state || _state->vertexDivisorInfo.pVertexBindingDivisors == _state->bindingDivisors);
+}
+#endif
+
+bool MeshLayout::operator==(const MeshLayout& other) const {
+    CORRADE_ASSERT(hasNoExternalPointers() && other.hasNoExternalPointers(),
+        "Vk::MeshLayout: can't compare structures with external pointers", {});
+
+    #define _c(field) other.field == field
+    /* First compare the top-level fields */
+    if(!(_c(_vertexInfo.flags) &&
+         _c(_vertexInfo.vertexBindingDescriptionCount) &&
+         _c(_vertexInfo.vertexAttributeDescriptionCount) &&
+         _c(_assemblyInfo.flags) &&
+         _c(_assemblyInfo.topology) &&
+         _c(_assemblyInfo.primitiveRestartEnable))) return false;
+
+    /* Then continue only if both have the state struct -- if only one has it,
+       it can be still equal if the counts are zero for both (which is verified
+       by the assert above) */
+    if(!other._state || !_state) return true;
+
+    return _c(_state->vertexDivisorInfo.vertexBindingDivisorCount) &&
+        /* These assume the bindings and locations are sorted (as the asserts
+           enforce), otherwise this wouldn't be enough */
+        /** @todo use Utility::equal() once it exists, this is way too
+            error-prone */
+        std::memcmp(other._state->bindings, _state->bindings, _vertexInfo.vertexBindingDescriptionCount*sizeof(decltype(_state->bindings)::Type)) == 0 &&
+        std::memcmp(other._state->bindingDivisors, _state->bindingDivisors, _state->vertexDivisorInfo.vertexBindingDivisorCount*sizeof(decltype(_state->bindingDivisors)::Type)) == 0 &&
+        std::memcmp(other._state->attributes, _state->attributes, _vertexInfo.vertexAttributeDescriptionCount*sizeof(decltype(_state->attributes)::Type)) == 0;
+    #undef _c
+}
+
 MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) {
     if(!_state) _state.emplace();
 
