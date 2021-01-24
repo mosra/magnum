@@ -282,7 +282,7 @@ template<class T> void ImageVkTest::wrap() {
 
 void ImageVkTest::memoryRequirements() {
     /* Use linear tiling for a deterministic memory size */
-    ImageCreateInfo2D info{ImageUsage::Sampled, PixelFormat::RGBA8Unorm, {128, 64}, 1};
+    ImageCreateInfo2D info{ImageUsage::TransferDestination, PixelFormat::RGBA8Unorm, {128, 64}, 1};
     info->tiling = VK_IMAGE_TILING_LINEAR;
     Image image{device(), info, NoAllocate};
 
