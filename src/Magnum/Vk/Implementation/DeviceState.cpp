@@ -28,14 +28,18 @@
 #include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/RenderPass.h"
 #include "Magnum/Vk/Version.h"
+#include "Magnum/Vk/Implementation/DriverWorkaround.h"
 
 namespace Magnum { namespace Vk { namespace Implementation {
 
-DeviceState::DeviceState(Device& device) {
+using namespace Containers::Literals;
+
+DeviceState::DeviceState(Device& device, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds) {
     if(device.isVersionSupported(Version::Vk11)) {
         getDeviceQueueImplementation = &Device::getQueueImplementation11;
     } else {
@@ -88,9 +92,20 @@ DeviceState::DeviceState(Device& device) {
         cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationKHR;
     } else {
         cmdCopyBufferImplementation = &CommandBuffer::copyBufferImplementationDefault;
-        cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationDefault;
-        cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationDefault;
-        cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationDefault;
+
+        /* SwiftShader doesn't implement KHR_copy_commands2 yet so we only need
+           to work around the classical code path. When it will, the image
+           array tests will blow up, notifying about this omission (though I
+           hope the bug gets fixed before KHR_copy_commands2 are implemented). */
+        if(device.properties().name().hasPrefix("SwiftShader"_s) && !Implementation::isDriverWorkaroundDisabled(encounteredWorkarounds, "swiftshader-image-copy-extent-instead-of-layers"_s)) {
+            cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationSwiftShader;
+            cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationSwiftShader;
+            cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationSwiftShader;
+        } else {
+            cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationDefault;
+            cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationDefault;
+            cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationDefault;
+        }
     }
 }
 

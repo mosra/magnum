@@ -41,6 +41,7 @@ set(MagnumVk_SRCS
 
     Implementation/Arguments.cpp
     Implementation/DeviceState.cpp
+    Implementation/DriverWorkaround.cpp
     Implementation/InstanceState.cpp)
 
 set(MagnumVk_GracefulAssert_SRCS
@@ -106,6 +107,7 @@ set(MagnumVk_PRIVATE_HEADERS
     Implementation/Arguments.h
     Implementation/DeviceFeatures.h
     Implementation/DeviceState.h
+    Implementation/DriverWorkaround.h
     Implementation/InstanceState.h
 
     Implementation/compressedPixelFormatMapping.hpp

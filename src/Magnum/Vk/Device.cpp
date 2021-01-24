@@ -50,6 +50,7 @@
 #include "Magnum/Vk/Implementation/InstanceState.h"
 #include "Magnum/Vk/Implementation/DeviceFeatures.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
+#include "Magnum/Vk/Implementation/DriverWorkaround.h"
 #include "Magnum/Vk/Implementation/structureHelpers.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
@@ -103,6 +104,9 @@ struct DeviceCreateInfo::State {
 
     Containers::String disabledExtensionsStorage;
     Containers::Array<Containers::StringView> disabledExtensions;
+    /* .second = true means the workaround is disabled; the views always point
+       to the internal KnownWorkarounds array */
+    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds;
     Containers::Array<VkDeviceQueueCreateInfo> queues;
     Containers::StaticArray<32, Float> queuePriorities;
     Containers::StaticArray<32, Queue*> queueOutput;
@@ -130,6 +134,18 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
        smaller than a device version happens mainly if there's a forced Vulkan
        version via --magnum-vulkan-version, which will be later used to cap available features. */
     _state->version = Version(Math::min(UnsignedInt(deviceProperties._instance->version()), UnsignedInt(deviceProperties.version())));
+
+    /* If there are any disabled workarounds, save them until initialize() uses
+       them on device creation. The disableWorkaround() function saves the
+       internal string view instead of the one passed from the command line so
+       we don't need to bother with String allocations. */
+    Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
+    if(!disabledWorkarounds.isEmpty()) {
+        Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        arrayReserve(_state->encounteredWorkarounds, split.size());
+        for(Containers::StringView workaround: split)
+            Implementation::disableWorkaround(_state->encounteredWorkarounds, workaround);
+    }
 
     /* If there are any disabled extensions, sort them and save for later --
        we'll use them to filter the ones added by the app */
@@ -622,7 +638,11 @@ void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, con
     _flags = flags;
     _properties.emplace(DeviceProperties::wrap(instance, physicalDevice));
     initializeExtensions(enabledExtensions);
-    initialize(instance, version, enabledFeatures);
+
+    /* Because we have no control over extensions / features, no workarounds
+       are used here -- better to just do nothing than just a partial attempt */
+    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds = Implementation::disableAllWorkarounds();
+    initialize(instance, version, encounteredWorkarounds, enabledFeatures);
 }
 
 void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
@@ -720,8 +740,34 @@ Result Device::tryCreateInternal(Instance& instance, const DeviceCreateInfo& inf
         return Result(result);
     }
 
+    /* Make a copy of the workarounds list coming from DeviceCreateInfo as
+       initialize() may modify it */
+    /** @todo switch to Containers::Pair once it exists and use Utility::copy()
+        (std::pair isn't trivially copyable, ffs) */
+    Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds{info._state->encounteredWorkarounds.size()};
+    for(std::size_t i = 0; i != encounteredWorkarounds.size(); ++i)
+        encounteredWorkarounds[i] = info._state->encounteredWorkarounds[i];
+
+    /* Initialize the enabled extension list and feature-, extension-,
+       workaround-dependent function pointers */
     initializeExtensions<const char*>({info->ppEnabledExtensionNames, info->enabledExtensionCount});
-    initialize(instance, version, info._state->enabledFeatures | info._state->implicitFeatures);
+    initialize(instance, version, encounteredWorkarounds, info._state->enabledFeatures | info._state->implicitFeatures);
+
+    /* Print a list of used workarounds */
+    if(!info._state->quietLog) {
+        bool workaroundHeaderPrinted = false;
+        for(const auto& workaround: encounteredWorkarounds) {
+            /* Skip disabled workarounds */
+            if(workaround.second) continue;
+
+            if(!workaroundHeaderPrinted) {
+                workaroundHeaderPrinted = true;
+                Debug{} << "Using device driver workarounds:";
+            }
+
+            Debug{} << "   " << workaround.first;
+        }
+    }
 
     #ifndef CORRADE_NO_ASSERT
     /* This is a dumb O(n^2) search but in an assert that's completely fine */
@@ -789,14 +835,14 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
     }
 }
 
-void Device::initialize(Instance& instance, const Version version, const DeviceFeatures& enabledFeatures) {
+void Device::initialize(Instance& instance, const Version version, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures) {
     /* Init version, features, function pointers */
     _version = version;
     _enabledFeatures = enabledFeatures;
     flextVkInitDevice(_handle, &_functionPointers, instance->GetDeviceProcAddr);
 
     /* Set up extension-dependent functionality */
-    _state.emplace(*this);
+    _state.emplace(*this, encounteredWorkarounds);
 }
 
 bool Device::isExtensionEnabled(const Extension& extension) const {

@@ -482,8 +482,10 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
 void Context::disableDriverWorkaround(const std::string& workaround) {
     /* Ignore unknown workarounds */
+    /** @todo this will probably cause false positives when both GL and Vulkan
+        is used together? */
     if(std::find(std::begin(KnownWorkarounds), std::end(KnownWorkarounds), workaround) == std::end(KnownWorkarounds)) {
-        Warning() << "Unknown workaround" << workaround;
+        Warning() << "GL: unknown workaround" << workaround;
         return;
     }
     _driverWorkarounds.emplace_back(workaround, true);

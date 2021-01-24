@@ -110,6 +110,7 @@ is reused by a subsequently created @ref Device as well.
 
 @code{.sh}
 <application> [--magnum-help]
+    [--magnum-disable-workarounds LIST]
     [--magnum-disable-layers LIST]
     [--magnum-disable-extensions LIST]
     [--magnum-enable-layers LIST]
@@ -124,6 +125,9 @@ Arguments:
 
 -   `...` --- main application arguments (see `-h` or `--help` for details)
 -   `--magnum-help` --- display this help message and exit
+-   `--magnum-disable-workarounds LIST` --- Vulkan driver workarounds to
+    disable (see @ref vulkan-workarounds for detailed info) (environment:
+    `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-layers LIST` --- Vulkan layers to disable, meaning
     @ref InstanceCreateInfo::addEnabledLayers() will skip them (environment:
     `MAGNUM_DISABLE_LAYERS`)
@@ -215,6 +219,15 @@ class MAGNUM_VK_EXPORT Instance {
          * @ref isVersionSupported() and @ref isExtensionEnabled(), among other
          * things. If @p enabledExtensions empty, the instance will behave as
          * if no extensions were enabled.
+         *
+         * @m_class{m-note m-danger}
+         *
+         * @par
+         *      Due to the extension and layer list being outside of library
+         *      control here, driver bug workarounds are not detected and
+         *      enabled when using this function. Depending on bug severity,
+         *      that may lead to crashes and unexpected behavior that wouldn't
+         *      otherwise happen with an @ref Instance created the usual way.
          *
          * Note that this function retrieves all instance-specific Vulkan
          * function pointers, which is a relatively costly operation. It's thus

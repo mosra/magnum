@@ -78,6 +78,7 @@ struct DeviceVkTest: VulkanTester {
     void constructTransferDeviceProperties();
     void constructExtensionsCommandLineDisable();
     void constructExtensionsCommandLineEnable();
+    void constructWorkaroundsCommandLineDisable();
     void constructMultipleQueues();
     void constructRawQueue();
     void constructFeatureNotSupported();
@@ -104,8 +105,8 @@ struct {
     bool driverVersionSupported, debugMarkerEnabled, maintenance1Enabled;
     const char* log;
 } ConstructCommandLineData[] {
-    /* Shouldn't print anything about version, enabled layers/exts if quier
-       output is enabled. */
+    /* Shouldn't print anything about device/version, enabled layers/exts if
+       quiet output is enabled. */
     {"quiet", "quiet, enabled extensions",
         Containers::array({"", "--magnum-log", "quiet"}),
         Containers::array({"", "--magnum-log", "quiet",
@@ -152,6 +153,29 @@ struct {
         "Device version: Vulkan {}.{}{}\n"},
 };
 
+struct {
+    const char* name;
+    bool shouldPassAlways;
+    Containers::Array<const char*> args;
+    const char* log;
+} ConstructWorkaroundsCommandLineData[] {
+    {"default", false, nullptr,
+        "Device: {}\n"
+        "Device version: Vulkan {}.{}{}\n"
+        "Using device driver workarounds:\n"
+        "    swiftshader-image-copy-extent-instead-of-layers\n"},
+    /* Shouldn't print anything if quiet output is enabled */
+    {"quiet", true,
+        Containers::array({"",
+            "--magnum-log", "quiet"}),
+        ""},
+    {"disabled workarounds", true,
+        Containers::array({"",
+            "--magnum-disable-workarounds", "swiftshader-image-copy-extent-instead-of-layers"}),
+        "Device: {}\n"
+        "Device version: Vulkan {}.{}{}\n"}
+};
+
 DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
     addTests({&DeviceVkTest::createInfoConstruct,
               &DeviceVkTest::createInfoConstructNoImplicitExtensions,
@@ -179,6 +203,9 @@ DeviceVkTest::DeviceVkTest(): VulkanTester{NoCreate} {
     addInstancedTests({&DeviceVkTest::constructExtensionsCommandLineDisable,
                        &DeviceVkTest::constructExtensionsCommandLineEnable},
         Containers::arraySize(ConstructCommandLineData));
+
+    addInstancedTests({&DeviceVkTest::constructWorkaroundsCommandLineDisable},
+        Containers::arraySize(ConstructWorkaroundsCommandLineData));
 
     addTests({&DeviceVkTest::constructMultipleQueues,
               &DeviceVkTest::constructRawQueue,
@@ -750,7 +777,10 @@ void DeviceVkTest::constructExtensionsCommandLineDisable() {
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "");
+    /* The output might contain a device workaround list, cut that away.
+       That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
+    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */
@@ -804,12 +834,47 @@ void DeviceVkTest::constructExtensionsCommandLineEnable() {
     UnsignedInt minor = versionMinor(deviceProperties.version());
     UnsignedInt patch = versionPatch(deviceProperties.version());
     /* SwiftShader reports just 1.1 with no patch version, special-case that */
-    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
+    std::string expected = Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : "");
+    /* The output might contain a device workaround list, cut that away.
+       That's tested thoroughly in constructWorkaroundsCommandLineDisable(). */
+    CORRADE_COMPARE(out.str().substr(0, expected.size()), expected);
 
     /* Verify that the entrypoint is actually (not) loaded as expected, to
        avoid all the above reporting being just smoke & mirrors */
     CORRADE_COMPARE(!!device->CmdDebugMarkerInsertEXT, data.debugMarkerEnabled);
     CORRADE_COMPARE(!!device->TrimCommandPoolKHR, data.maintenance1Enabled);
+}
+
+void DeviceVkTest::constructWorkaroundsCommandLineDisable() {
+    auto&& data = ConstructWorkaroundsCommandLineData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    if(std::getenv("MAGNUM_VULKAN_VERSION"))
+        CORRADE_SKIP("Can't test with the MAGNUM_VULKAN_VERSION environment variable set");
+
+    /* Creating a dedicated instance so we can pass custom args */
+    Instance instance2{InstanceCreateInfo{Int(data.args.size()), data.args}};
+
+    DeviceProperties deviceProperties = pickDevice(instance2);
+
+    if(!deviceProperties.name().hasPrefix("SwiftShader"_s) && !data.shouldPassAlways)
+        CORRADE_SKIP("Workarounds only available on SwiftShader, can't test.");
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Queue queue{NoCreate};
+    Device device{instance2, DeviceCreateInfo{deviceProperties, DeviceCreateInfo::Flag::NoImplicitExtensions}
+        .addQueues(0, {0.0f}, {queue})
+    };
+
+    CORRADE_VERIFY(device.handle());
+
+    /** @todo cleanup when Debug::toString() or some similar utility exists */
+    UnsignedInt major = versionMajor(deviceProperties.version());
+    UnsignedInt minor = versionMinor(deviceProperties.version());
+    UnsignedInt patch = versionPatch(deviceProperties.version());
+    /* SwiftShader reports just 1.1 with no patch version, special-case that */
+    CORRADE_COMPARE(out.str(), Utility::formatString(data.log, deviceProperties.name(), major, minor, patch ? Utility::formatString(".{}", patch) : ""));
 }
 
 void DeviceVkTest::constructMultipleQueues() {

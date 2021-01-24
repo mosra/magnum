@@ -726,12 +726,15 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         MAGNUM_VK_LOCAL static void copyBufferImplementationKHR(CommandBuffer& self, const CopyBufferInfo& info);
 
         MAGNUM_VK_LOCAL static void copyImageImplementationDefault(CommandBuffer& self, const CopyImageInfo& info);
+        MAGNUM_VK_LOCAL static void copyImageImplementationSwiftShader(CommandBuffer& self, const CopyImageInfo& info);
         MAGNUM_VK_LOCAL static void copyImageImplementationKHR(CommandBuffer& self, const CopyImageInfo& info);
 
         MAGNUM_VK_LOCAL static void copyBufferToImageImplementationDefault(CommandBuffer& self, const CopyBufferToImageInfo& info);
+        MAGNUM_VK_LOCAL static void copyBufferToImageImplementationSwiftShader(CommandBuffer& self, const CopyBufferToImageInfo& info);
         MAGNUM_VK_LOCAL static void copyBufferToImageImplementationKHR(CommandBuffer& self, const CopyBufferToImageInfo& info);
 
         MAGNUM_VK_LOCAL static void copyImageToBufferImplementationDefault(CommandBuffer& self, const CopyImageToBufferInfo& info);
+        MAGNUM_VK_LOCAL static void copyImageToBufferImplementationSwiftShader(CommandBuffer& self, const CopyImageToBufferInfo& info);
         MAGNUM_VK_LOCAL static void copyImageToBufferImplementationKHR(CommandBuffer& self, const CopyImageToBufferInfo& info);
 
         /* Can't be a reference because of the NoCreate constructor */

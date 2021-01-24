@@ -151,6 +151,9 @@ The @ref Device inherits a subset of the
 the following. If the @ref Instance didn't get `argc` / `argv` passed, only the
 environment variables are used.
 
+-   `--magnum-disable-workarounds LIST` --- Vulkan driver workarounds to
+    disable (see @ref vulkan-workarounds for detailed info) (environment:
+    `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-extensions LIST` --- Vulkan instance or device extensions
     to disable, meaning @ref DeviceCreateInfo::addEnabledExtensions() will skip
     them (environment: `MAGNUM_DISABLE_EXTENSIONS`)
@@ -240,6 +243,15 @@ class MAGNUM_VK_EXPORT Device {
          * and @ref enabledFeatures(), among other things. If
          * @p enabledExtensions / @p enabledFeatures is empty, the device will
          * behave as if no extensions / no features were enabled.
+         *
+         * @m_class{m-note m-danger}
+         *
+         * @par
+         *      Due to the extension / feature list being outside of library
+         *      control here, driver bug workarounds are not detected and
+         *      enabled when using this function. Depending on bug severity,
+         *      that may lead to crashes and unexpected behavior that wouldn't
+         *      otherwise happen with a @ref Device created the usual way.
          *
          * Note that this function retrieves all device-specific Vulkan
          * function pointers, which is a relatively costly operation. It's thus
@@ -480,7 +492,7 @@ class MAGNUM_VK_EXPORT Device {
         Result tryCreateInternal(Instance& isntance, const DeviceCreateInfo&, DeviceProperties&&);
 
         template<class T> MAGNUM_VK_LOCAL void initializeExtensions(Containers::ArrayView<const T> enabledExtensions);
-        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, const DeviceFeatures& enabledFeatures);
+        MAGNUM_VK_LOCAL void initialize(Instance& instance, Version version, Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, const DeviceFeatures& enabledFeatures);
 
         MAGNUM_VK_LOCAL static void getQueueImplementationDefault(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);
         MAGNUM_VK_LOCAL static void getQueueImplementation11(Device& self, const VkDeviceQueueInfo2& info, VkQueue& queue);

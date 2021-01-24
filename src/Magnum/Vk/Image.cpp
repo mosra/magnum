@@ -634,10 +634,51 @@ CommandBuffer& CommandBuffer::copyImage(const CopyImageInfo& info) {
     return *this;
 }
 
+namespace {
+
+/* See the "swiftshader-image-copy-extent-instead-of-layers" workaround for
+   more info */
+void fixupImageCopySwiftShader(VkImageSubresourceLayers& subresource, VkOffset3D& offset, VkExtent3D& extent) {
+    /* Not a layered image, nothing to do */
+    if(subresource.baseArrayLayer == 0 && subresource.layerCount == 1) return;
+
+    /* When copying 2D array to 3D, depth is already at the value we want it to
+       be */
+    CORRADE_INTERNAL_ASSERT(offset.z == 0 && (extent.depth == 1 || extent.depth == subresource.layerCount));
+
+    /* Put the layer info into the third extent dimension instead of the layer
+       fields, as those seem to be interpreted in a wrong way. However those
+       still need to be set to values that make sense in total, otherwise nasty
+       crashes happen.
+
+       Fortunately this works for 1D array images as well, and we don't need to
+       do extra voodoo to detect if the image is 1D to use y / width instead of
+       z / depth. */
+    offset.z = subresource.baseArrayLayer;
+    extent.depth = subresource.layerCount;
+    subresource.baseArrayLayer = 0;
+    subresource.layerCount = 1;
+}
+
+}
+
 void CommandBuffer::copyImageImplementationDefault(CommandBuffer& self, const CopyImageInfo& info) {
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss", );
     return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, info.vkImageCopies());
+}
+
+void CommandBuffer::copyImageImplementationSwiftShader(CommandBuffer& self, const CopyImageInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyImage(): disallowing extraction of CopyImageInfo with non-empty pNext to prevent information loss", );
+
+    Containers::Array<VkImageCopy> copies = info.vkImageCopies();
+    for(VkImageCopy& copy: copies) {
+        fixupImageCopySwiftShader(copy.srcSubresource, copy.srcOffset, copy.extent);
+        fixupImageCopySwiftShader(copy.dstSubresource, copy.dstOffset, copy.extent);
+    }
+
+    return (**self._device).CmdCopyImage(self, info->srcImage, info->srcImageLayout, info->dstImage, info->dstImageLayout, info->regionCount, copies);
 }
 
 void CommandBuffer::copyImageImplementationKHR(CommandBuffer& self, const CopyImageInfo& info) {
@@ -655,6 +696,18 @@ void CommandBuffer::copyBufferToImageImplementationDefault(CommandBuffer& self, 
     return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, info.vkBufferImageCopies());
 }
 
+void CommandBuffer::copyBufferToImageImplementationSwiftShader(CommandBuffer& self, const CopyBufferToImageInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyBufferToImage(): disallowing extraction of CopyBufferToImageInfo with non-empty pNext to prevent information loss", );
+
+    Containers::Array<VkBufferImageCopy> copies = info.vkBufferImageCopies();
+    for(VkBufferImageCopy& copy: copies) {
+        fixupImageCopySwiftShader(copy.imageSubresource, copy.imageOffset, copy.imageExtent);
+    }
+
+    return (**self._device).CmdCopyBufferToImage(self, info->srcBuffer, info->dstImage, info->dstImageLayout, info->regionCount, copies);
+}
+
 void CommandBuffer::copyBufferToImageImplementationKHR(CommandBuffer& self, const CopyBufferToImageInfo& info) {
     return (**self._device).CmdCopyBufferToImage2KHR(self, info);
 }
@@ -668,6 +721,18 @@ void CommandBuffer::copyImageToBufferImplementationDefault(CommandBuffer& self, 
     CORRADE_ASSERT(!info->pNext,
         "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss", );
     return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, info.vkBufferImageCopies());
+}
+
+void CommandBuffer::copyImageToBufferImplementationSwiftShader(CommandBuffer& self, const CopyImageToBufferInfo& info) {
+    CORRADE_ASSERT(!info->pNext,
+        "Vk::CommandBuffer::copyImageToBuffer(): disallowing extraction of CopyImageToBufferInfo with non-empty pNext to prevent information loss", );
+
+    Containers::Array<VkBufferImageCopy> copies = info.vkBufferImageCopies();
+    for(VkBufferImageCopy& copy: copies) {
+        fixupImageCopySwiftShader(copy.imageSubresource, copy.imageOffset, copy.imageExtent);
+    }
+
+    return (**self._device).CmdCopyImageToBuffer(self, info->srcImage, info->srcImageLayout, info->dstBuffer, info->regionCount, copies);
 }
 
 void CommandBuffer::copyImageToBufferImplementationKHR(CommandBuffer& self, const CopyImageToBufferInfo& info) {

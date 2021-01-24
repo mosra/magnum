@@ -43,6 +43,12 @@ following table.
 
 -   @subpage vulkan-support
 
+While not as bad as with OpenGL, neither the Vulkan driver world is ideal. In
+order to work on majority of platforms, the engine has to work around some
+driver bugs. An exhaustive list is here:
+
+-   @subpage vulkan-workarounds
+
 @section vulkan-required-extensions Version and extension requirements
 
 The engine can work on unextended Vulkan 1.0, but some specific functionality

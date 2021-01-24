@@ -79,6 +79,7 @@ struct ImageVkTest: VulkanTester {
     void cmdClearStencilImage();
 
     void cmdCopyImage2D();
+    void cmdCopyImage2DArrayTo3D();
     void cmdCopyImageDisallowedConversion();
 
     void cmdCopyBufferImage1D();
@@ -120,6 +121,7 @@ ImageVkTest::ImageVkTest() {
               &ImageVkTest::cmdClearStencilImage,
 
               &ImageVkTest::cmdCopyImage2D,
+              &ImageVkTest::cmdCopyImage2DArrayTo3D,
               &ImageVkTest::cmdCopyImageDisallowedConversion,
 
               &ImageVkTest::cmdCopyBufferImage1D,
@@ -670,6 +672,95 @@ void ImageVkTest::cmdCopyImage2D() {
         "----BbbbBbbbBbbbBbbb------------"
         "----CcccCcccCcccCccc------------"
         "----DdddDdddDdddDddd------------"_s);
+}
+
+void ImageVkTest::cmdCopyImage2DArrayTo3D() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+    CommandBuffer cmd = pool.allocate();
+
+    /* Mostly just to test the assertions in the
+       swiftshader-image-copy-extent-instead-of-layers workaround, but also if
+       I actually understand the overcomplicated ambiguous parameters
+       correctly. Apparently array/3D images can't be linear on SwiftShader,
+       so going through a buffer instead. */
+
+    /* Source buffer */
+    Buffer a{device(), BufferCreateInfo{
+        BufferUsage::TransferSource, 8*4*2*4
+    }, MemoryFlag::HostVisible};
+    Utility::copy("________________________________"
+                  "________________________________"
+
+                  "____________AaaaAaaaAaaaAaaa____"
+                  "____________BbbbBbbbBbbbBbbb____"
+
+                  "____________CcccCcccCcccCccc____"
+                  "____________DdddDdddDdddDddd____"
+
+                  "________________________________"
+                  "________________________________"_s, a.dedicatedMemory().map());
+
+    /* Source 2D array image, created from the buffer */
+    Image b{device(), ImageCreateInfo2DArray{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {8, 2, 4}, 1
+    }, MemoryFlag::DeviceLocal};
+
+    /* Destination 3D image, copied to a destination buffer */
+    Image c{device(), ImageCreateInfo3D{
+        ImageUsage::TransferDestination|ImageUsage::TransferSource,
+        PixelFormat::RGBA8UI, {8, 4, 2}, 1
+    }, MemoryFlag::DeviceLocal};
+
+    /* Destination buffer */
+    Buffer d{device(), BufferCreateInfo{
+        BufferUsage::TransferDestination, 8*4*2*4
+    }, MemoryFlag::HostVisible};
+
+    cmd.begin()
+       .pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::Transfer, {
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, b},
+            {Accesses{}, Access::TransferWrite,
+             ImageLayout::Undefined, ImageLayout::TransferDestination, c}
+        })
+       .copyBufferToImage({a, b, ImageLayout::TransferDestination, {
+            BufferImageCopy2DArray{0, ImageAspect::Color, 0, {{}, {8, 2, 4}}}
+        }})
+       .clearColorImage(c, ImageLayout::TransferDestination, Vector4ui{'-'})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, b},
+            {Access::TransferWrite, Access::TransferWrite,
+             ImageLayout::TransferDestination, ImageLayout::TransferDestination, c}
+        })
+       .copyImage({b, ImageLayout::TransferSource, c, ImageLayout::TransferDestination, {
+            {ImageAspect::Color, 0, 1, 2, {3, 0, 0}, 0, 0, 1, {1, 1, 0}, {4, 2, 2}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Transfer, {
+            {Access::TransferWrite, Access::TransferRead,
+             ImageLayout::TransferDestination, ImageLayout::TransferSource, c}
+        })
+       .copyImageToBuffer({c, ImageLayout::TransferSource, d, {
+           BufferImageCopy3D{0, ImageAspect::Color, 0, {{}, {8, 4, 2}}}
+        }})
+       .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host, {
+            {Access::TransferWrite, Access::HostRead, d}
+        })
+       .end();
+    queue().submit({SubmitInfo{}.setCommandBuffers({cmd})}).wait();
+
+    CORRADE_COMPARE(arrayView(d.dedicatedMemory().mapRead()),
+        "--------------------------------"
+        "----AaaaAaaaAaaaAaaa------------"
+        "----BbbbBbbbBbbbBbbb------------"
+        "--------------------------------"
+
+        "--------------------------------"
+        "----CcccCcccCcccCccc------------"
+        "----DdddDdddDdddDddd------------"
+        "--------------------------------"_s);
 }
 
 void ImageVkTest::cmdCopyImageDisallowedConversion() {

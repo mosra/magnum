@@ -31,7 +31,8 @@ namespace Magnum { namespace Vk { namespace Implementation {
 
 Utility::Arguments arguments() {
     Utility::Arguments args{"magnum"};
-    args.addOption("disable-layers").setHelp("disable-layers", "Vulkan layers to disable", "LIST")
+    args.addOption("disable-workarounds").setHelp("disable-workarounds", "Vulkan driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/vulkan-workarounds.html for detailed info)", "LIST")
+        .addOption("disable-layers").setHelp("disable-layers", "Vulkan layers to disable", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "Vulkan instance or device extensions to disable", "LIST")
         .addOption("enable-layers").setHelp("enable-layers", "Vulkan layers to enable in addition to the defaults and what the application requests", "LIST")
         .addOption("enable-instance-extensions").setHelp("enable-instance-extensions", "Vulkan instance extensions to enable in addition to the defaults and what the application requests", "LIST")
@@ -39,6 +40,7 @@ Utility::Arguments arguments() {
         .addOption("vulkan-version").setHelp("vulkan-version", "force Vulkan version", "X.Y")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .addOption("device").setHelp("device", "device to use", "ID|integrated|discrete|virtual|cpu")
+        .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-layers")
         .setFromEnvironment("disable-extensions")
         .setFromEnvironment("enable-layers")

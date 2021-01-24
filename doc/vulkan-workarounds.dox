@@ -24,8 +24,9 @@
 */
 
 namespace Magnum {
-/** @page opengl-workarounds Driver workarounds
-@brief List of OpenGL driver workarounds used by Magnum
+/** @page vulkan-workarounds Driver workarounds
+@brief List of Vulkan driver workarounds used by Magnum
+@m_since_latest
 
 @m_footernavigation
 
@@ -33,29 +34,25 @@ Driver workarounds used by a particular app are listed in the engine startup
 log such as here:
 
 @code{.shell-session}
-Renderer: GeForce GT 740M/PCIe/SSE2 by NVIDIA Corporation
-OpenGL version: 4.6.0 NVIDIA 390.25
-Using optional features:
-    GL_ARB_ES2_compatibility
-    GL_ARB_direct_state_access
+Device: SwiftShader Device (LLVM 10.0.0)
+Device version: Vulkan 1.1
+Enabled device extensions:
+    VK_KHR_create_renderpass2
     ...
 Using driver workarounds:
-    no-forward-compatible-core-context
-    no-layout-qualifiers-on-old-glsl
-    nv-zero-context-profile-mask
+    swiftshader-image-copy-extent-instead-of-layers
     ...
 @endcode
 
 These identifiers correspond to the strings in the listing below. For debugging
 and diagnostic purposes it's possible to disable particular workarounds by
 passing their identifier string to the `--magnum-disable-workarounds`
-command-line option. See @ref GL-Context-command-line for more information.
+command-line option. See @ref Vk-Instance-command-line for more information.
 
 @m_class{m-console-wrap}
 
-@snippet src/Magnum/GL/Implementation/driverSpecific.cpp workarounds
+@snippet src/Magnum/Vk/Implementation/DriverWorkaround.cpp workarounds
 
-Chromium has a similar list: https://cs.chromium.org/chromium/src/gpu/config/gpu_driver_bug_list.json . See also @ref vulkan-workarounds "Vulkan driver workarounds".
-
+@see @ref opengl-workarounds
 */
 }

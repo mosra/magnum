@@ -1,3 +1,5 @@
+#ifndef Magnum_Vk_Implementation_DriverWorkaround_h
+#define Magnum_Vk_Implementation_DriverWorkaround_h
 /*
     This file is part of Magnum.
 
@@ -23,39 +25,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
-/** @page opengl-workarounds Driver workarounds
-@brief List of OpenGL driver workarounds used by Magnum
+#include "Magnum/Magnum.h"
 
-@m_footernavigation
+namespace Magnum { namespace Vk { namespace Implementation {
 
-Driver workarounds used by a particular app are listed in the engine startup
-log such as here:
+void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
 
-@code{.shell-session}
-Renderer: GeForce GT 740M/PCIe/SSE2 by NVIDIA Corporation
-OpenGL version: 4.6.0 NVIDIA 390.25
-Using optional features:
-    GL_ARB_ES2_compatibility
-    GL_ARB_direct_state_access
-    ...
-Using driver workarounds:
-    no-forward-compatible-core-context
-    no-layout-qualifiers-on-old-glsl
-    nv-zero-context-profile-mask
-    ...
-@endcode
+bool isDriverWorkaroundDisabled(Containers::Array<std::pair<Containers::StringView, bool>>& encounteredWorkarounds, Containers::StringView workaround);
 
-These identifiers correspond to the strings in the listing below. For debugging
-and diagnostic purposes it's possible to disable particular workarounds by
-passing their identifier string to the `--magnum-disable-workarounds`
-command-line option. See @ref GL-Context-command-line for more information.
+/* Used by Device::wrap() -- because device extension setup is outside of our
+   control and the function doesn't print anything on the output, it's better
+   to just do nothing at all than silently enabling some subset */
+Containers::Array<std::pair<Containers::StringView, bool>> disableAllWorkarounds();
 
-@m_class{m-console-wrap}
+}}}
 
-@snippet src/Magnum/GL/Implementation/driverSpecific.cpp workarounds
-
-Chromium has a similar list: https://cs.chromium.org/chromium/src/gpu/config/gpu_driver_bug_list.json . See also @ref vulkan-workarounds "Vulkan driver workarounds".
-
-*/
-}
+#endif

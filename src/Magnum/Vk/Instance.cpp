@@ -91,6 +91,11 @@ InstanceCreateInfo::InstanceCreateInfo(const Int argc, const char** const argv, 
         _state->version = enumerateInstanceVersion();
     _applicationInfo.apiVersion = UnsignedInt(_state ? _state->version : enumerateInstanceVersion());
 
+    /** @todo handle disabled workarounds once we need them on the instance
+       level as well -- also ensure that warnings about unknown workarounds are
+       printed just once (silence the output on one side), or not? since we're
+       printing two lists anyway */
+
     /* If there are any disabled layers or extensions, sort them and save for
        later -- we'll use them to filter the ones added by the app */
     Containers::String disabledLayers = args.value<Containers::String>("disable-layers");
