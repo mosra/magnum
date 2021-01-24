@@ -1081,7 +1081,7 @@ void DeviceVkTest::wrap() {
     {
         /* Wrapping should load the basic function pointers */
         Device wrapped{NoCreate};
-        wrapped.wrap(instance2, device, Version::Vk11, {
+        wrapped.wrap(instance2, deviceProperties, device, Version::Vk11, {
             Extensions::EXT::debug_marker::string()
         }, DeviceFeature::RobustBufferAccess, HandleFlag::DestroyOnDestruction);
         CORRADE_VERIFY(wrapped->DestroyDevice);
@@ -1113,7 +1113,7 @@ void DeviceVkTest::wrap() {
 
     /* ...so we can wrap it again, non-owned, and then destroy it manually */
     Device wrapped{NoCreate};
-    wrapped.wrap(instance2, device, Version::Vk10, {}, {});
+    wrapped.wrap(instance2, deviceProperties, device, Version::Vk10, {}, {});
     CORRADE_VERIFY(wrapped->DestroyDevice);
     wrapped->DestroyDevice(device, nullptr);
 }
@@ -1131,7 +1131,7 @@ void DeviceVkTest::wrapAlreadyCreated() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    device.wrap(instance(), {}, {}, {}, {});
+    device.wrap(instance(), {}, {}, {}, {}, {});
     CORRADE_COMPARE(out.str(), "Vk::Device::wrap(): device already created\n");
 }
 

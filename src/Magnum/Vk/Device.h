@@ -209,15 +209,17 @@ class MAGNUM_VK_EXPORT Device {
     public:
         /**
          * @brief Wrap existing Vulkan handle
-         * @param instance      Vulkan instance the device is created on
-         * @param handle        The @type_vk{Device} handle
-         * @param version       Vulkan version that's assumed to be used on the
-         *      device
+         * @param instance          Vulkan instance the device is created on
+         * @param physicalDevice    Physical device the @type_vk{VkDevice} was
+         *      created from. Used to populate @ref properties().
+         * @param handle            The @type_vk{Device} handle
+         * @param version           Vulkan version that's assumed to be used on
+         *      the device
          * @param enabledExtensions Extensions that are assumed to be enabled
          *      on the device
-         * @param enabledFeatures Features that are assumed to be enabled on
+         * @param enabledFeatures   Features that are assumed to be enabled on
          *      the device
-         * @param flags         Handle flags
+         * @param flags             Handle flags
          *
          * <b></b>
          *
@@ -230,14 +232,14 @@ class MAGNUM_VK_EXPORT Device {
          *      instance. See @ref Vk-Device-disabled-move for more
          *      information.
          *
-         * The @p handle is expected to be originating from @p instance. The
-         * @p version, @p enabledExtensions and @p enabledFeatures parameters
-         * populate internal info about supported version, enabled extensions
-         * and enabled features and will be reflected in
-         * @ref isVersionSupported(), @ref isExtensionEnabled() and
-         * @ref enabledFeatures(), among other things. If @p enabledExtensions
-         * / @p enabledFeatures is empty, the device will behave as if no
-         * extensions / no features were enabled.
+         * The @p handle is expected to be originating from @p instance and
+         * @p physicalDevice. The @p version, @p enabledExtensions and
+         * @p enabledFeatures parameters populate internal info about supported
+         * version, enabled extensions and enabled features and will be
+         * reflected in @ref isVersionSupported(), @ref isExtensionEnabled()
+         * and @ref enabledFeatures(), among other things. If
+         * @p enabledExtensions / @p enabledFeatures is empty, the device will
+         * behave as if no extensions / no features were enabled.
          *
          * Note that this function retrieves all device-specific Vulkan
          * function pointers, which is a relatively costly operation. It's thus
@@ -249,10 +251,10 @@ class MAGNUM_VK_EXPORT Device {
          * for different behavior.
          * @see @ref release()
          */
-        void wrap(Instance& instance, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
+        void wrap(Instance& instance, VkPhysicalDevice physicalDevice, VkDevice handle, Version version, Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /** @overload */
-        void wrap(Instance& instance, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
+        void wrap(Instance& instance, VkPhysicalDevice physicalDevice, VkDevice handle, Version version, std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, HandleFlags flags = {});
 
         /**
          * @brief Constructor

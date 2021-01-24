@@ -612,7 +612,7 @@ constexpr Version KnownVersionsForExtensions[]{
 
 }
 
-void Device::wrap(Instance& instance, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const Containers::ArrayView<const Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
     CORRADE_ASSERT(!_handle,
         "Vk::Device::wrap(): device already created", );
 
@@ -620,12 +620,13 @@ void Device::wrap(Instance& instance, const VkDevice handle, const Version versi
        repeating what was passed via the arguments */
     _handle = handle;
     _flags = flags;
+    _properties.emplace(DeviceProperties::wrap(instance, physicalDevice));
     initializeExtensions(enabledExtensions);
     initialize(instance, version, enabledFeatures);
 }
 
-void Device::wrap(Instance& instance, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
-    wrap(instance, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
+void Device::wrap(Instance& instance, const VkPhysicalDevice physicalDevice, const VkDevice handle, const Version version, const std::initializer_list<Containers::StringView> enabledExtensions, const DeviceFeatures& enabledFeatures, const HandleFlags flags) {
+    wrap(instance, physicalDevice, handle, version, Containers::arrayView(enabledExtensions), enabledFeatures, flags);
 }
 
 Device::Device(Instance& instance, const DeviceCreateInfo& info): Device{NoCreate} {
