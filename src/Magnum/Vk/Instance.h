@@ -172,7 +172,7 @@ Compared to the above, the same custom code would then look like this:
 Similarly you can use @ref Device::populateGlobalFunctionPointers() to populate
 device-level global function pointers.
 
-@section Vk-Instance-disabled-move Disabled move and delayed instances creation
+@section Vk-Instance-disabled-move Disabled move and delayed instance creation
 
 Similarly to @ref Device, for safety reasons as all instance-dependent objects
 internally have to keep a pointer to the originating @ref Instance to access

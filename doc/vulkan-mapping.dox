@@ -25,7 +25,7 @@
 
 namespace Magnum { namespace Vk {
 
-/** @page vulkan-mapping APi mapping
+/** @page vulkan-mapping API mapping
 @brief List of Vulkan handles, functions, enums and structures corresponding to particular Magnum APIs.
 @m_since_latest
 
