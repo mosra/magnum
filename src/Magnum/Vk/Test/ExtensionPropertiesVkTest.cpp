@@ -208,6 +208,9 @@ void ExtensionPropertiesVkTest::namedRevision() {
 
     /* Unknown extensions return 0 */
     CORRADE_COMPARE(properties.revision("VK_this_doesnt_exist"), 0);
+    /* Verify that we don't dereference garbage when std::lower_bound() returns
+       `last` */
+    CORRADE_COMPARE(properties.revision("ZZZZZ"), 0);
 
     /* Verify the overloads that take our extension wrappers work as well */
     CORRADE_COMPARE_AS(properties.revision<Extensions::KHR::get_physical_device_properties2>(), 0,

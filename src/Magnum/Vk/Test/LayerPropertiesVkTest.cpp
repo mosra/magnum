@@ -125,6 +125,9 @@ void LayerPropertiesVkTest::isSupported() {
     LayerProperties properties = enumerateLayerProperties();
 
     CORRADE_VERIFY(!properties.isSupported("this layer doesn't exist"));
+    /* Verify that we don't dereference garbage when std::lower_bound() returns
+       `last` */
+    CORRADE_VERIFY(!properties.isSupported("ZZZZZ"));
 
     if(!properties.count())
         CORRADE_SKIP("The driver reported no instance layers, can't fully test.");

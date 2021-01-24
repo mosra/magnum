@@ -145,7 +145,7 @@ UnsignedInt ExtensionProperties::revision(const Containers::StringView extension
     /* Thanks, C++, for forcing me to have a larger bug surface instead of
        providing a library helper to find the damn thing. */
     auto found = std::lower_bound(_names.begin(), _names.end(), extension);
-    if(*found != extension) return 0;
+    if(found == _names.end() || *found != extension) return 0;
 
     /* The view target is contents of the VkExtensionProperties structure,
        the revision is stored nearby */
