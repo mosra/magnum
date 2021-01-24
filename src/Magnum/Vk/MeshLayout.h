@@ -253,7 +253,9 @@ class MAGNUM_VK_EXPORT MeshLayout {
          * @brief Add a buffer binding
          * @param binding   Binding index, to which a buffer subrange will be
          *      bound when drawing the mesh. Has to be unique among all
-         *      @ref addBinding() and @ref addInstancedBinding() calls.
+         *      @ref addBinding() and @ref addInstancedBinding() calls, and
+         *      monotonically increasing in order to make the layouts
+         *      efficiently comparable.
          * @param stride    Binding stride, in bytes
          * @return Reference to self (for method chaining)
          *
@@ -273,7 +275,9 @@ class MAGNUM_VK_EXPORT MeshLayout {
          * @brief Add an instanced buffer binding
          * @param binding   Binding index, to which a buffer subrange will be
          *      bound when drawing the mesh. Has to be unique among all
-         *      @ref addBinding() and @ref addInstancedBinding() calls.
+         *      @ref addBinding() and @ref addInstancedBinding() calls, and
+         *      monotonically increasing in order to make the layouts
+         *      efficiently comparable.
          * @param stride    Binding stride, in bytes
          * @param divisor   Attribute divisor. @cpp 1 @ce means the attribute
          *      will be advanced for each instance, larger values will mean
@@ -306,7 +310,9 @@ class MAGNUM_VK_EXPORT MeshLayout {
 
         /**
          * @brief Add an attribute
-         * @param location      Attribute location, matching a shader input
+         * @param location      Attribute location, matching a shader input.
+         *      Has to be monotonically increasing in order to make the layouts
+         *      efficiently comparable.
          * @param binding       Binding index, corresponding to the @p binding
          *      parameter of one of the @ref addBinding() /
          *      @ref addInstancedBinding() calls.

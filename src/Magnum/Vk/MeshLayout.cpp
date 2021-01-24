@@ -125,6 +125,10 @@ MeshLayout& MeshLayout::operator=(MeshLayout&& other) noexcept {
 MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) {
     if(!_state) _state.emplace();
 
+    /* Ensure order for efficient comparisons */
+    CORRADE_ASSERT(_state->bindings.empty() || _state->bindings.back().binding < binding,
+        "Vk::MeshLayout::addBinding(): binding" << binding << "can't be ordered after" << _state->bindings.back().binding, *this);
+
     VkVertexInputBindingDescription description{};
     description.binding = binding;
     description.stride = stride;
@@ -138,6 +142,10 @@ MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt 
 
 MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) {
     if(!_state) _state.emplace();
+
+    /* Ensure order for efficient comparisons */
+    CORRADE_ASSERT(_state->bindings.empty() || _state->bindings.back().binding < binding,
+        "Vk::MeshLayout::addInstancedBinding(): binding" << binding << "can't be ordered after" << _state->bindings.back().binding, *this);
 
     VkVertexInputBindingDescription description{};
     description.binding = binding;
@@ -165,6 +173,10 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
 
 MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) {
     if(!_state) _state.emplace();
+
+    /* Ensure order for efficient comparisons */
+    CORRADE_ASSERT(_state->attributes.empty() || _state->attributes.back().location < location,
+        "Vk::MeshLayout::addAttribute(): location" << location << "can't be ordered after" << _state->attributes.back().location, *this);
 
     VkVertexInputAttributeDescription description{};
     description.location = location;
