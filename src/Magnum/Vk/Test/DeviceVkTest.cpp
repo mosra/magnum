@@ -1104,6 +1104,9 @@ void DeviceVkTest::wrap() {
         /* Listed features should be reported as enabled */
         CORRADE_COMPARE(wrapped.enabledFeatures(), DeviceFeature::RobustBufferAccess);
 
+        /* Device properties should be available */
+        CORRADE_COMPARE(wrapped.properties().handle(), deviceProperties.handle());
+
         /* Releasing won't destroy anything ... */
         CORRADE_COMPARE(wrapped.release(), device);
     }
