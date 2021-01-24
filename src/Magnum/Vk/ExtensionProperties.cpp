@@ -113,12 +113,18 @@ Containers::ArrayView<const Containers::StringView> ExtensionProperties::names()
     return _names;
 }
 
-bool ExtensionProperties::isSupported(const Containers::StringView extension) const {
-    return std::binary_search(_names.begin(), _names.end(), extension);
+bool ExtensionProperties::isSupported(const Containers::StringView extension, const UnsignedInt revision) const {
+    /* Thanks, C++, for forcing me to have a larger bug surface instead of
+       providing a library helper to find the damn thing. */
+    auto found = std::lower_bound(_names.begin(), _names.end(), extension);
+
+    /* The view target is contents of the VkExtensionProperties structure,
+       the revision is stored nearby */
+    return found != _names.end() && *found == extension && reinterpret_cast<const VkExtensionProperties*>(found->data() - offsetof(VkExtensionProperties, extensionName))->specVersion >= revision;
 }
 
-bool ExtensionProperties::isSupported(const Extension& extension) const {
-    return isSupported(extension.string());
+bool ExtensionProperties::isSupported(const Extension& extension, const UnsignedInt revision) const {
+    return isSupported(extension.string(), revision);
 }
 
 Containers::StringView ExtensionProperties::name(const UnsignedInt id) const {
@@ -164,12 +170,12 @@ InstanceExtensionProperties::~InstanceExtensionProperties() = default;
 
 InstanceExtensionProperties& InstanceExtensionProperties::operator=(InstanceExtensionProperties&&) noexcept = default;
 
-bool InstanceExtensionProperties::isSupported(Containers::StringView extension) const {
-    return ExtensionProperties::isSupported(extension);
+bool InstanceExtensionProperties::isSupported(Containers::StringView extension, const UnsignedInt revision) const {
+    return ExtensionProperties::isSupported(extension, revision);
 }
 
-bool InstanceExtensionProperties::isSupported(const InstanceExtension& extension) const {
-    return isSupported(extension.string());
+bool InstanceExtensionProperties::isSupported(const InstanceExtension& extension, const UnsignedInt revision) const {
+    return isSupported(extension.string(), revision);
 }
 
 UnsignedInt InstanceExtensionProperties::revision(Containers::StringView extension) const {

@@ -99,10 +99,14 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
 
         /**
          * @brief Whether given extension is supported
+         * @param extension     Extension string
+         * @param revision      Minimal required revision. If the extension is
+         *      present but in an older revision, the function returns
+         *      @cpp false @ce.
          *
-         * Accepts extensions from the @ref Extension namespace as a template
-         * parameter. Use the other overloads to query support of a runtime
-         * extension or a plain extension string.
+         * Since extension strings are easy to mistype, you're encouraged to
+         * use the other overloads such as @ref isSupported(UnsignedInt) const
+         * together with extensions from the @ref Extensions namespace.
          *
          * Search complexity is @f$ \mathcal{O}(\log n) @f$ in the total
          * extension count; in contrast extension queries on a created instance
@@ -110,15 +114,15 @@ class MAGNUM_VK_EXPORT ExtensionProperties {
          * @see @ref revision(), @ref Instance::isExtensionEnabled(),
          *      @ref Device::isExtensionEnabled()
          */
-        bool isSupported(Containers::StringView extension) const;
+        bool isSupported(Containers::StringView extension, UnsignedInt revision = 1) const;
 
         /** @overload */
-        bool isSupported(const Extension& extension) const;
+        bool isSupported(const Extension& extension, UnsignedInt revision = 1) const;
 
         /** @overload */
-        template<class E> bool isSupported() const {
-            static_assert(Implementation::IsExtension<E>::value, "expected a Vulkan deviceension");
-            return isSupported(E::string());
+        template<class E> bool isSupported(UnsignedInt revision = 1) const {
+            static_assert(Implementation::IsExtension<E>::value, "expected a Vulkan device extension");
+            return isSupported(E::string(), revision);
         }
 
         /**
@@ -219,16 +223,16 @@ class MAGNUM_VK_EXPORT InstanceExtensionProperties: public ExtensionProperties {
         /** @brief Move assignment */
         InstanceExtensionProperties& operator=(InstanceExtensionProperties&&) noexcept;
 
-        /** @copydoc ExtensionProperties::isSupported(Containers::StringView) const */
-        bool isSupported(Containers::StringView extension) const;
+        /** @copydoc ExtensionProperties::isSupported(Containers::StringView, UnsignedInt) const */
+        bool isSupported(Containers::StringView extension, UnsignedInt revision = 1) const;
 
         /** @overload */
-        bool isSupported(const InstanceExtension& extension) const;
+        bool isSupported(const InstanceExtension& extension, UnsignedInt revision = 1) const;
 
         /** @overload */
-        template<class E> bool isSupported() const {
+        template<class E> bool isSupported(UnsignedInt revision = 1) const {
             static_assert(Implementation::IsInstanceExtension<E>::value, "expected a Vulkan instance extension");
-            return isSupported(E::string());
+            return isSupported(E::string(), revision);
         }
 
         /** @copydoc ExtensionProperties::revision(UnsignedInt) const */

@@ -1173,7 +1173,8 @@ enum class DeviceFeature: UnsignedShort {
      * chains with more than one element.
      * @see @ref DeviceFeature::VulkanMemoryModel,
      *      @ref DeviceFeature::VulkanMemoryModelDeviceScope
-     * @requires_vk12 Extension @vk_extension{KHR,vulkan_memory_model}
+     * @requires_vk12 Extension @vk_extension{KHR,vulkan_memory_model} since
+     *      revision 3
      */
     VulkanMemoryModelAvailabilityVisibilityChains,
 

@@ -64,6 +64,7 @@ struct DevicePropertiesVkTest: VulkanTester {
 
     void extensionConstructMove();
     void extensionIsSupported();
+    void extensionIsSupportedRevision();
     void extensionNamedRevision();
 
     void driverProperties();
@@ -118,6 +119,7 @@ DevicePropertiesVkTest::DevicePropertiesVkTest(): VulkanTester{NoCreate} {
 
               &DevicePropertiesVkTest::extensionConstructMove,
               &DevicePropertiesVkTest::extensionIsSupported,
+              &DevicePropertiesVkTest::extensionIsSupportedRevision,
               &DevicePropertiesVkTest::extensionNamedRevision,
 
               &DevicePropertiesVkTest::driverProperties,
@@ -396,6 +398,26 @@ void DevicePropertiesVkTest::extensionIsSupported() {
     /* Verify the overloads that take our extension wrappers work as well */
     CORRADE_VERIFY(properties.isSupported<Extensions::KHR::maintenance1>());
     CORRADE_VERIFY(properties.isSupported(Extensions::KHR::maintenance1{}));
+}
+
+void DevicePropertiesVkTest::extensionIsSupportedRevision() {
+    Containers::Array<DeviceProperties> devices = enumerateDevices(instance());
+    CORRADE_VERIFY(!devices.empty());
+
+    ExtensionProperties properties = devices[0].enumerateExtensionProperties();
+
+    /* This extension should be available almost always */
+    if(!properties.isSupported("VK_KHR_maintenance1"))
+        CORRADE_SKIP("VK_KHR_maintenance1 not supported, can't fully test");
+
+    UnsignedInt revision = properties.revision("VK_KHR_maintenance1");
+
+    CORRADE_VERIFY(properties.isSupported("VK_KHR_maintenance1", revision));
+    CORRADE_VERIFY(properties.isSupported<Extensions::KHR::maintenance1>(revision));
+    CORRADE_VERIFY(properties.isSupported(Extensions::KHR::maintenance1{}, revision));
+    CORRADE_VERIFY(!properties.isSupported("VK_KHR_maintenance1", revision + 1));
+    CORRADE_VERIFY(!properties.isSupported<Extensions::KHR::maintenance1>(revision + 1));
+    CORRADE_VERIFY(!properties.isSupported(Extensions::KHR::maintenance1{}, revision + 1));
 }
 
 void DevicePropertiesVkTest::extensionNamedRevision() {

@@ -47,6 +47,7 @@ struct ExtensionPropertiesVkTest: TestSuite::Tester {
     void enumerateInstanceWithKhronosValidationLayer();
     void enumerateInstanceNonexistentLayer();
     void instanceExtensionIsSupported();
+    void instanceExtensionIsSupportedRevision();
 
     /* Device extensions tested in DevicePropertiesVkTest */
     void outOfRange();
@@ -60,6 +61,7 @@ ExtensionPropertiesVkTest::ExtensionPropertiesVkTest() {
               &ExtensionPropertiesVkTest::enumerateInstanceWithKhronosValidationLayer,
               &ExtensionPropertiesVkTest::enumerateInstanceNonexistentLayer,
               &ExtensionPropertiesVkTest::instanceExtensionIsSupported,
+              &ExtensionPropertiesVkTest::instanceExtensionIsSupportedRevision,
 
               &ExtensionPropertiesVkTest::outOfRange,
               &ExtensionPropertiesVkTest::namedRevision});
@@ -161,6 +163,9 @@ void ExtensionPropertiesVkTest::instanceExtensionIsSupported() {
     }
 
     CORRADE_VERIFY(!properties.isSupported("VK_this_doesnt_exist"));
+    /* Verify that we don't dereference garbage when std::lower_bound() returns
+       `last` */
+    CORRADE_VERIFY(!properties.isSupported("ZZZZZ"));
 
     /* Verify that we're not just comparing a prefix */
     const std::string extension = std::string(properties.name(0)) + "_hello";
@@ -173,6 +178,22 @@ void ExtensionPropertiesVkTest::instanceExtensionIsSupported() {
     /* Verify the overloads that take our extension wrappers work as well */
     CORRADE_VERIFY(properties.isSupported<Extensions::KHR::get_physical_device_properties2>());
     CORRADE_VERIFY(properties.isSupported(Extensions::KHR::get_physical_device_properties2{}));
+}
+
+void ExtensionPropertiesVkTest::instanceExtensionIsSupportedRevision() {
+    InstanceExtensionProperties properties = enumerateInstanceExtensionProperties();
+    /** @todo use Extensions::KHR::surface once the extension is recognized */
+    if(!properties.isSupported("VK_KHR_get_physical_device_properties2"))
+        CORRADE_SKIP("VK_KHR_get_physical_device_properties2 not supported, can't test");
+
+    UnsignedInt revision = properties.revision("VK_KHR_get_physical_device_properties2");
+
+    CORRADE_VERIFY(properties.isSupported("VK_KHR_get_physical_device_properties2", revision));
+    CORRADE_VERIFY(properties.isSupported<Extensions::KHR::get_physical_device_properties2>(revision));
+    CORRADE_VERIFY(properties.isSupported(Extensions::KHR::get_physical_device_properties2{}, revision));
+    CORRADE_VERIFY(!properties.isSupported("VK_KHR_get_physical_device_properties2", revision + 1));
+    CORRADE_VERIFY(!properties.isSupported<Extensions::KHR::get_physical_device_properties2>(revision + 1));
+    CORRADE_VERIFY(!properties.isSupported(Extensions::KHR::get_physical_device_properties2{}, revision + 1));
 }
 
 void ExtensionPropertiesVkTest::outOfRange() {
