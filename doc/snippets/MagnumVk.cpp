@@ -817,7 +817,7 @@ Vk::CommandBuffer cmd = DOXYGEN_IGNORE(Vk::CommandBuffer{NoCreate});
 cmd.begin()
    DOXYGEN_IGNORE()
    .beginRenderPass(Vk::RenderPassBeginInfo{renderPass, framebuffer}
-        .clearColor(0, 0x1f1f1f_rgbf)
+        .clearColor(0, 0x1f1f1f_srgbf)
         .clearDepthStencil(1, 1.0f, 0))
 /* [RenderPass-usage-begin] */
 /* [RenderPass-usage-end] */
