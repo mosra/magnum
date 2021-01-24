@@ -75,6 +75,8 @@ these formats is denoted by the @ref DeviceFeature::TextureCompressionBc,
 @ref DeviceFeature::TextureCompressionAstcLdr features.
 
 @m_enum_values_as_keywords
+
+@see @ref Magnum::PixelFormat, @ref hasPixelFormat(), @ref pixelFormat()
 */
 enum class PixelFormat: Int {
     /**
