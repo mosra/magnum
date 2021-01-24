@@ -38,16 +38,18 @@ struct PipelineVkTest: VulkanTester {
     explicit PipelineVkTest();
 
     void pipelineBarrier();
-    void pipelineBarrierGeneral();
-    void pipelineBarrierBuffer();
-    void pipelineBarrierImage();
+    void pipelineBarrierExecutionOnly();
+    void pipelineBarrierGlobalMemory();
+    void pipelineBarrierBufferMemory();
+    void pipelineBarrierImageMemory();
 };
 
 PipelineVkTest::PipelineVkTest() {
     addTests({&PipelineVkTest::pipelineBarrier,
-              &PipelineVkTest::pipelineBarrierGeneral,
-              &PipelineVkTest::pipelineBarrierBuffer,
-              &PipelineVkTest::pipelineBarrierImage});
+              &PipelineVkTest::pipelineBarrierExecutionOnly,
+              &PipelineVkTest::pipelineBarrierGlobalMemory,
+              &PipelineVkTest::pipelineBarrierBufferMemory,
+              &PipelineVkTest::pipelineBarrierImageMemory});
 }
 
 void PipelineVkTest::pipelineBarrier() {
@@ -79,7 +81,22 @@ void PipelineVkTest::pipelineBarrier() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierGeneral() {
+void PipelineVkTest::pipelineBarrierExecutionOnly() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    /* A subset of the above, just to test the convenience overloads */
+
+    pool.allocate()
+        .begin()
+        .pipelineBarrier(PipelineStage::Transfer, PipelineStage::Host)
+        .end();
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineVkTest::pipelineBarrierGlobalMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -96,7 +113,7 @@ void PipelineVkTest::pipelineBarrierGeneral() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierBuffer() {
+void PipelineVkTest::pipelineBarrierBufferMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -115,7 +132,7 @@ void PipelineVkTest::pipelineBarrierBuffer() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierImage() {
+void PipelineVkTest::pipelineBarrierImageMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 

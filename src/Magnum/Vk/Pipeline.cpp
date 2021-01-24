@@ -101,6 +101,10 @@ CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages,
     return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(memoryBarriers), Containers::arrayView(bufferMemoryBarriers), Containers::arrayView(imageMemoryBarriers), dependencyFlags);
 }
 
+CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const DependencyFlags dependencyFlags) {
+    return pipelineBarrier(sourceStages, destinationStages, {}, {}, {}, dependencyFlags);
+}
+
 CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const Containers::ArrayView<const MemoryBarrier> memoryBarriers, const DependencyFlags dependencyFlags) {
     return pipelineBarrier(sourceStages, destinationStages, memoryBarriers, {}, {}, dependencyFlags);
 }

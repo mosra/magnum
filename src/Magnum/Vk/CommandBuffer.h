@@ -358,7 +358,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         #endif
 
         /**
-         * @brief Insert a memory dependency
+         * @brief Insert an execution barrier with optional memory dependencies
          * @param sourceStages          Source stages. Has to contain at least
          *      one stage.
          * @param destinationStages     Destination stages. Has to contain at
@@ -394,6 +394,18 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const MemoryBarrier> memoryBarriers, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
         /** @overload */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, std::initializer_list<MemoryBarrier> memoryBarriers, std::initializer_list<BufferMemoryBarrier> bufferMemoryBarriers, std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});
+
+        /**
+         * @brief Insert an execution barrier without memory dependencies
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref pipelineBarrier(PipelineStages, PipelineStages, Containers::ArrayView<const MemoryBarrier>, Containers::ArrayView<const BufferMemoryBarrier>, Containers::ArrayView<const ImageMemoryBarrier>, DependencyFlags)
+         * with empty @p memoryBarriers, @p bufferBarriers and
+         * @p imageBarriers. Useful when an execution barrier is enough, for
+         * example when you need reads from one stage to finish before another
+         * stage starts writing to the same location.
+         */
+        CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, DependencyFlags dependencyFlags = {});
 
         /**
          * @brief Insert a global memory dependency
