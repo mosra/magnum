@@ -324,7 +324,7 @@ extern "C" {
 // Vulkan 1.2 version number
 #define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 166
+#define VK_HEADER_VERSION 168
 // Complete version of this file
 #define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
@@ -4089,7 +4089,7 @@ typedef struct VkSubpassDependency2 {
     VkAccessFlags     srcAccessMask;
     VkAccessFlags     dstAccessMask;
     VkDependencyFlags dependencyFlags;
-    int32_t           viewOffset;
+    int32_t                           viewOffset;
 } VkSubpassDependency2;
 
 typedef struct VkRenderPassCreateInfo2 {
@@ -4638,14 +4638,14 @@ typedef union VkDeviceOrHostAddressConstKHR {
 
 typedef struct VkAccelerationStructureGeometryTrianglesDataKHR {
     VkStructureType sType;
-    const void*                                   pNext;
+    const void*                   pNext;
     VkFormat                                      vertexFormat;
     VkDeviceOrHostAddressConstKHR                 vertexData;
     VkDeviceSize                                  vertexStride;
     uint32_t                                      maxVertex;
     VkIndexType                                   indexType;
-    VkDeviceOrHostAddressConstKHR indexData;
-    VkDeviceOrHostAddressConstKHR transformData;
+    VkDeviceOrHostAddressConstKHR                 indexData;
+    VkDeviceOrHostAddressConstKHR                 transformData;
 } VkAccelerationStructureGeometryTrianglesDataKHR;
 
 typedef struct VkAccelerationStructureGeometryAabbsDataKHR {
@@ -4693,8 +4693,8 @@ typedef struct VkAccelerationStructureBuildGeometryInfoKHR {
 typedef struct VkAccelerationStructureBuildRangeInfoKHR {
     uint32_t                                                primitiveCount;
     uint32_t                                                primitiveOffset;
-    uint32_t                                firstVertex;
-    uint32_t                                transformOffset;
+    uint32_t                                                firstVertex;
+    uint32_t                                                transformOffset;
 } VkAccelerationStructureBuildRangeInfoKHR;
 
 typedef struct VkAccelerationStructureCreateInfoKHR {
