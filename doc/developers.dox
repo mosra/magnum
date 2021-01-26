@@ -865,10 +865,10 @@ pointers on a class that needs them:
 3.  Add a `@see` block, referencing related features if applicable,
     crossreference the newly added value from the values it refers to as well
 4.  Reference the extension / version it was added in via `@requires_vkXY`
-5.  Add the new members to `Magnum/Vk/Implementation/deviceFeatureMapping.hpp`
-    to the correct place with a `_cver()` or `_cext()` macro as appropriate
-6.  If APIs depending on this feature are already exposed, reference the
+5.  If APIs depending on this feature are already exposed, reference the
     feature from those
+6.  Add the new members to `Magnum/Vk/Implementation/deviceFeatureMapping.hpp`
+    to the correct place with a `_cver()` or `_cext()` macro as appropriate
 7.  Extend `Magnum/Vk/Implementation/DeviceFeatures.h` with the new feature
     struct, added to relatively the same place as in the enum header
 8.  Extend @ref Vk::DeviceProperties::features():

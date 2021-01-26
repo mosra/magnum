@@ -42,9 +42,9 @@ namespace Magnum { namespace Vk {
 @brief Device feature
 @m_since_latest
 
-Contains information stored in the @type_vk{PhysicalDeviceFeatures2} structure
-chain. Values correspond to equivalently named structure fields, usually just
-with the first letter uppercase instead of lowercase.
+Contains information stored in the @type_vk_keyword{PhysicalDeviceFeatures2}
+structure chain. Values correspond to equivalently named structure fields,
+usually just with the first letter uppercase instead of lowercase.
 @see @ref DeviceFeatures, @ref DeviceProperties::features(),
     @ref Device::enabledFeatures()
 
@@ -243,8 +243,17 @@ enum class DeviceFeature: UnsignedShort {
     ShaderImageGatherExtended,
 
     /**
-     * Whether *all* shader storage image extended formats are supported.
-     * @todoc link to the formats once we have our own PixelFormat enum
+     * Whether @ref PixelFormat::R8Unorm, @ref PixelFormat::RG8Unorm,
+     * @ref PixelFormat::R8Snorm, @ref PixelFormat::RG8Snorm,
+     * @ref PixelFormat::R8UI, @ref PixelFormat::RG8UI, @ref PixelFormat::R8I,
+     * @ref PixelFormat::RG8I, @ref PixelFormat::R16Unorm,
+     * @ref PixelFormat::RG16Unorm, @ref PixelFormat::RGBA16Unorm,
+     * @ref PixelFormat::R16Snorm, @ref PixelFormat::RG16Snorm,
+     * @ref PixelFormat::RGBA16Snorm, @ref PixelFormat::R16UI,
+     * @ref PixelFormat::RG16UI, @ref PixelFormat::R16I,
+     * @ref PixelFormat::RG16I, @ref PixelFormat::R16F,
+     * @ref PixelFormat::RG16F are *all* supported for shader storage.
+     * @todoc link to the 10/10/10/2 and 10.11.10F formats once exposed
      */
     ShaderStorageImageExtendedFormats,
 
@@ -584,9 +593,8 @@ enum class DeviceFeature: UnsignedShort {
     /* VkPhysicalDeviceImagelessFramebufferFeatures, #109 */
 
     /**
-     * Specifying image view for attachments is possible at render pass begin
-     * time.
-     * @todoc crosslink with RenderPass::begin() when that's implemented.
+     * Specifying image view for attachments is possible at a time
+     * @ref CommandBuffer::beginRenderPass() is called.
      * @requires_vk12 Extension @vk_extension{KHR,imageless_framebuffer}
      */
     ImagelessFramebuffer,
@@ -1195,7 +1203,7 @@ enum class DeviceFeature: UnsignedShort {
      * depth/stencil layouts can be used.
      * @requires_vk12 Extension @vk_extension{KHR,separate_depth_stencil_layouts}
      * @todoc link to the actual ImageAspect and ImageLayout members once they
-     *      exist
+     *      all exist
      */
     SeparateDepthStencilLayouts,
 
@@ -1229,11 +1237,10 @@ enum class DeviceFeature: UnsignedShort {
     BufferDeviceAddressCaptureReplay,
 
     /**
-     * Whether @ref DeviceFeature::BufferDeviceAddress for logical devices
-     * created with multiple physical devices is supported.
+     * Whether @ref DeviceFeature::BufferDeviceAddress,
+     * @ref DeviceFeature::RayTracingPipeline and @ref DeviceFeature::RayQuery
+     * for logical devices created with multiple physical devices is supported.
      * @requires_vk12 Extension @vk_extension{KHR,buffer_device_address}
-     * @todoc this also references `rayTracingPipeline`, `rayQuery`, update
-     *      when those are exposed
      */
     BufferDeviceAddressMultiDevice,
 
