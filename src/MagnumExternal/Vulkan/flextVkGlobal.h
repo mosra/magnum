@@ -51,6 +51,9 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 #define vkDestroyDebugUtilsMessengerEXT flextVkInstance.DestroyDebugUtilsMessengerEXT
 #define vkSubmitDebugUtilsMessageEXT flextVkInstance.SubmitDebugUtilsMessageEXT
 
+/* VK_EXT_extended_dynamic_state */
+
+
 /* VK_EXT_host_query_reset */
 
 
@@ -181,6 +184,21 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 #define vkQueueInsertDebugUtilsLabelEXT flextVkDevice.QueueInsertDebugUtilsLabelEXT
 #define vkSetDebugUtilsObjectNameEXT flextVkDevice.SetDebugUtilsObjectNameEXT
 #define vkSetDebugUtilsObjectTagEXT flextVkDevice.SetDebugUtilsObjectTagEXT
+
+/* VK_EXT_extended_dynamic_state */
+
+#define vkCmdBindVertexBuffers2EXT flextVkDevice.CmdBindVertexBuffers2EXT
+#define vkCmdSetCullModeEXT flextVkDevice.CmdSetCullModeEXT
+#define vkCmdSetDepthBoundsTestEnableEXT flextVkDevice.CmdSetDepthBoundsTestEnableEXT
+#define vkCmdSetDepthCompareOpEXT flextVkDevice.CmdSetDepthCompareOpEXT
+#define vkCmdSetDepthTestEnableEXT flextVkDevice.CmdSetDepthTestEnableEXT
+#define vkCmdSetDepthWriteEnableEXT flextVkDevice.CmdSetDepthWriteEnableEXT
+#define vkCmdSetFrontFaceEXT flextVkDevice.CmdSetFrontFaceEXT
+#define vkCmdSetPrimitiveTopologyEXT flextVkDevice.CmdSetPrimitiveTopologyEXT
+#define vkCmdSetScissorWithCountEXT flextVkDevice.CmdSetScissorWithCountEXT
+#define vkCmdSetStencilOpEXT flextVkDevice.CmdSetStencilOpEXT
+#define vkCmdSetStencilTestEnableEXT flextVkDevice.CmdSetStencilTestEnableEXT
+#define vkCmdSetViewportWithCountEXT flextVkDevice.CmdSetViewportWithCountEXT
 
 /* VK_EXT_host_query_reset */
 

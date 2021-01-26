@@ -60,6 +60,7 @@ struct DeviceFeatures {
     VkPhysicalDeviceBufferDeviceAddressFeatures bufferDeviceAddress;
     VkPhysicalDeviceHostQueryResetFeatures hostQueryReset;
     VkPhysicalDeviceIndexTypeUint8FeaturesEXT indexTypeUint8;
+    VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extendedDynamicState;
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipeline;
     VkPhysicalDeviceRayQueryFeaturesKHR rayQuery;
 };

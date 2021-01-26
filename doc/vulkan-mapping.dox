@@ -115,7 +115,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdBindDescriptorSets}           | |
 @fn_vk{CmdBindIndexBuffer}              | |
 @fn_vk{CmdBindPipeline}                 | |
-@fn_vk{CmdBindVertexBuffers}            | |
+@fn_vk{CmdBindVertexBuffers}, \n @fn_vk{CmdBindVertexBuffers2EXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdBlitImage}, \n @fn_vk{CmdBlitImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -150,17 +150,28 @@ Vulkan function                         | Matching API
 @fn_vk{CmdResetQueryPool}               | |
 @fn_vk{CmdResolveImage}, \n @fn_vk{CmdResolveImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdSetBlendConstants}            | |
+@fn_vk{CmdSetCullModeEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetDepthBias}                 | |
-@fn_vk{CmdSetDeviceMask} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CmdSetDepthBounds}               | |
+@fn_vk{CmdSetDepthBoundsTestEnableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdSetDepthCompareOpEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdSetDepthTestEnableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdSetDepthWriteEnableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdSetDeviceMask} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CmdSetEvent}                     | |
+@fn_vk{CmdSetFrontFaceEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetLineWidth}                 | |
+@fn_vk{CmdSetPrimitiveTopologyEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetRayTracingPipelineStackSizeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdSetScissor}                   | |
+@fn_vk{CmdSetScissorWithCountEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetStencilCompareMask}        | |
+@fn_vk{CmdSetStencilOpEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetStencilReference}          | |
+@fn_vk{CmdSetStencilTestEnableEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetStencilWriteMask}          | |
 @fn_vk{CmdSetViewport}                  | |
+@fn_vk{CmdSetViewportWithCountEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdTraceRaysIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdTraceRaysKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdUpdateBuffer}                 | |
@@ -593,6 +604,7 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceDescriptorIndexingFeatures} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceDescriptorIndexingProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{PhysicalDeviceDriverProperties} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{PhysicalDeviceExtendedDynamicStateFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceExternalBufferInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceExternalFenceInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceExternalImageFormatInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |

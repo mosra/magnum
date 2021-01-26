@@ -1261,6 +1261,15 @@ enum class DeviceFeature: UnsignedShort {
      */
     IndexTypeUint8,
 
+    /* VkPhysicalDeviceExtendedDynamicStateFeaturesEXT, #268 */
+
+    /**
+     * Extended dynamic state is supported.
+     * @requires_vk_extension Extension @vk_extension{EXT,extended_dynamic_state}
+     * @todoc list the actual DynamicState values once the enum exists
+     */
+    ExtendedDynamicState,
+
     /* VkPhysicalDeviceRayTracingPipelineFeaturesKHR, #348 */
 
     /**

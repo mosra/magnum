@@ -63,6 +63,7 @@ extension EXT_validation_features               optional
 extension EXT_texture_compression_astc_hdr      optional
 extension EXT_vertex_attribute_divisor          optional
 extension EXT_index_type_uint8                  optional
+extension EXT_extended_dynamic_state            optional
 extension IMG_format_pvrtc                      optional
 extension KHR_acceleration_structure            optional
 extension KHR_portability_subset                optional

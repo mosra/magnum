@@ -215,6 +215,8 @@ _cext(HostQueryReset, hostQueryReset, hostQueryReset, EXT::host_query_reset)
 
 _cext(IndexTypeUint8, indexTypeUint8, indexTypeUint8, EXT::index_type_uint8)
 
+_cext(ExtendedDynamicState, extendedDynamicState, extendedDynamicState, EXT::extended_dynamic_state)
+
 #define _ce(value, field) _cext(value, field, rayTracingPipeline, KHR::ray_tracing_pipeline)
 _ce(RayTracingPipeline, rayTracingPipeline)
 _ce(RayTracingPipelineShaderGroupHandleCaptureReplay, rayTracingPipelineShaderGroupHandleCaptureReplay)

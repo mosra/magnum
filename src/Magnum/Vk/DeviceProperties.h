@@ -489,6 +489,9 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If the @vk_extension{EXT,index_type_uint8} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceIndexTypeUint8FeaturesEXT}
+         * -    If the @vk_extension{EXT,extended_dynamic_state} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceExtendedDynamicStateFeaturesEXT}
          * -    If the @vk_extension{KHR,ray_tracing_pipeline} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceRayTracingPipelineFeaturesKHR}

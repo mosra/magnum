@@ -254,6 +254,11 @@ extern "C" {
 #define VK_EXT_INDEX_TYPE_UINT8_SPEC_VERSION 1
 #define VK_EXT_INDEX_TYPE_UINT8_EXTENSION_NAME "VK_EXT_index_type_uint8"
 
+/* VK_EXT_extended_dynamic_state */
+
+#define VK_EXT_EXTENDED_DYNAMIC_STATE_SPEC_VERSION 1
+#define VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_extended_dynamic_state"
+
 /* VK_IMG_format_pvrtc */
 
 #define VK_IMG_FORMAT_PVRTC_SPEC_VERSION 1
@@ -647,6 +652,18 @@ typedef enum {
     VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK = 6,
     VK_DYNAMIC_STATE_STENCIL_WRITE_MASK = 7,
     VK_DYNAMIC_STATE_STENCIL_REFERENCE = 8,
+    VK_DYNAMIC_STATE_CULL_MODE_EXT = 1000267000,
+    VK_DYNAMIC_STATE_FRONT_FACE_EXT = 1000267001,
+    VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT = 1000267002,
+    VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT_EXT = 1000267003,
+    VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT_EXT = 1000267004,
+    VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT = 1000267005,
+    VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE_EXT = 1000267006,
+    VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE_EXT = 1000267007,
+    VK_DYNAMIC_STATE_DEPTH_COMPARE_OP_EXT = 1000267008,
+    VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE_EXT = 1000267009,
+    VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE_EXT = 1000267010,
+    VK_DYNAMIC_STATE_STENCIL_OP_EXT = 1000267011,
     VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR = 1000347000
 } VkDynamicState;
 
@@ -1545,6 +1562,7 @@ typedef enum {
     VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_DIVISOR_STATE_CREATE_INFO_EXT = 1000190001,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT = 1000190002,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT = 1000265000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT = 1000267000,
     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES,
@@ -4744,6 +4762,12 @@ typedef struct VkCopyMemoryToAccelerationStructureInfoKHR {
     VkCopyAccelerationStructureModeKHR                     mode;
 } VkCopyMemoryToAccelerationStructureInfoKHR;
 
+typedef struct VkPhysicalDeviceExtendedDynamicStateFeaturesEXT {
+    VkStructureType sType;
+    void*        pNext;
+    VkBool32                           extendedDynamicState;
+} VkPhysicalDeviceExtendedDynamicStateFeaturesEXT;
+
 typedef struct VkPhysicalDevicePortabilitySubsetFeaturesKHR {
     VkStructureType sType;
     void*        pNext;
@@ -4923,6 +4947,9 @@ struct FlextVkInstance {
     void    (VKAPI_PTR *DestroyDebugUtilsMessengerEXT)(VkInstance, VkDebugUtilsMessengerEXT, const VkAllocationCallbacks*);
     void    (VKAPI_PTR *SubmitDebugUtilsMessageEXT)(VkInstance, VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT*);
 
+    /* VK_EXT_extended_dynamic_state */
+
+
     /* VK_EXT_host_query_reset */
 
 
@@ -5057,6 +5084,21 @@ struct FlextVkDevice {
     void    (VKAPI_PTR *QueueInsertDebugUtilsLabelEXT)(VkQueue, const VkDebugUtilsLabelEXT*);
     VkResult    (VKAPI_PTR *SetDebugUtilsObjectNameEXT)(VkDevice, const VkDebugUtilsObjectNameInfoEXT*);
     VkResult    (VKAPI_PTR *SetDebugUtilsObjectTagEXT)(VkDevice, const VkDebugUtilsObjectTagInfoEXT*);
+
+    /* VK_EXT_extended_dynamic_state */
+
+    void    (VKAPI_PTR *CmdBindVertexBuffers2EXT)(VkCommandBuffer, uint32_t, uint32_t, const VkBuffer*, const VkDeviceSize*, const VkDeviceSize*, const VkDeviceSize*);
+    void    (VKAPI_PTR *CmdSetCullModeEXT)(VkCommandBuffer, VkCullModeFlags);
+    void    (VKAPI_PTR *CmdSetDepthBoundsTestEnableEXT)(VkCommandBuffer, VkBool32);
+    void    (VKAPI_PTR *CmdSetDepthCompareOpEXT)(VkCommandBuffer, VkCompareOp);
+    void    (VKAPI_PTR *CmdSetDepthTestEnableEXT)(VkCommandBuffer, VkBool32);
+    void    (VKAPI_PTR *CmdSetDepthWriteEnableEXT)(VkCommandBuffer, VkBool32);
+    void    (VKAPI_PTR *CmdSetFrontFaceEXT)(VkCommandBuffer, VkFrontFace);
+    void    (VKAPI_PTR *CmdSetPrimitiveTopologyEXT)(VkCommandBuffer, VkPrimitiveTopology);
+    void    (VKAPI_PTR *CmdSetScissorWithCountEXT)(VkCommandBuffer, uint32_t, const VkRect2D*);
+    void    (VKAPI_PTR *CmdSetStencilOpEXT)(VkCommandBuffer, VkStencilFaceFlags, VkStencilOp, VkStencilOp, VkStencilOp, VkCompareOp);
+    void    (VKAPI_PTR *CmdSetStencilTestEnableEXT)(VkCommandBuffer, VkBool32);
+    void    (VKAPI_PTR *CmdSetViewportWithCountEXT)(VkCommandBuffer, uint32_t, const VkViewport*);
 
     /* VK_EXT_host_query_reset */
 

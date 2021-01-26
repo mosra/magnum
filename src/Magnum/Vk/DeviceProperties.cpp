@@ -337,6 +337,8 @@ const DeviceFeatures& DeviceProperties::features() {
             Implementation::structureConnect(next, features.hostQueryReset, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_QUERY_RESET_FEATURES);
         if(isOrVersionSupportedInternal<Extensions::EXT::index_type_uint8>())
             Implementation::structureConnect(next, features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
+        if(isOrVersionSupportedInternal<Extensions::EXT::extended_dynamic_state>())
+            Implementation::structureConnect(next, features.extendedDynamicState, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT);
         if(isOrVersionSupportedInternal<Extensions::KHR::ray_tracing_pipeline>())
             Implementation::structureConnect(next, features.rayTracingPipeline, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
         if(isOrVersionSupportedInternal<Extensions::KHR::ray_query>())
