@@ -34,6 +34,7 @@ set(MagnumVk_SRCS
     Framebuffer.cpp
     Handle.cpp
     Pipeline.cpp
+    PipelineLayout.cpp
     Queue.cpp
     Result.cpp
     Shader.cpp
@@ -92,6 +93,8 @@ set(MagnumVk_HEADERS
     MemoryAllocateInfo.h
     MeshLayout.h
     Pipeline.h
+    PipelineLayout.h
+    PipelineLayoutCreateInfo.h
     PixelFormat.h
     Queue.h
     RenderPass.h

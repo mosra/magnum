@@ -44,6 +44,7 @@ corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumV
 corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkMeshLayoutTest MeshLayoutTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkPipelineTest PipelineTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkPipelineLayoutTest PipelineLayoutTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkQueueTest QueueTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
@@ -140,6 +141,7 @@ set_target_properties(
     VkMemoryTest
     VkMeshLayoutTest
     VkPipelineTest
+    VkPipelineLayoutTest
     VkPixelFormatTest
     VkQueueTest
     VkResultTest
@@ -174,6 +176,7 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkInstanceVkTest InstanceVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkMemoryVkTest MemoryVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkPipelineVkTest PipelineVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+    corrade_add_test(VkPipelineLayoutVkTest PipelineLayoutVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkQueueVkTest QueueVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkRenderPassVkTest RenderPassVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkShaderVkTest ShaderVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
@@ -195,6 +198,7 @@ if(BUILD_VK_TESTS)
         VkInstanceVkTest
         VkMemoryVkTest
         VkPipelineVkTest
+        VkPipelineLayoutVkTest
         VkQueueVkTest
         VkRenderPassVkTest
         VkShaderVkTest

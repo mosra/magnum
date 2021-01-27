@@ -71,7 +71,7 @@ Vulkan handle                           | Matching API
 @type_vk{Instance}                      | @ref Instance
 @type_vk{PhysicalDevice}                | @ref DeviceProperties
 @type_vk{Pipeline}                      | |
-@type_vk{PipelineLayout}                | |
+@type_vk{PipelineLayout}                | @ref PipelineLayout
 @type_vk{QueryPool}                     | |
 @type_vk{Queue}                         | @ref Queue
 @type_vk{RenderPass}                    | @ref RenderPass
@@ -202,7 +202,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateInstance}, \n @fn_vk{DestroyInstance} | @ref Instance constructor and destructor
 @fn_vk{CreatePipeline}, \n @fn_vk{DestroyPipeline} | |
 @fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
-@fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | |
+@fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | @ref PipelineLayout constructor and destructor
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
 @fn_vk{CreateRayTracingPipelinesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
@@ -660,7 +660,7 @@ Vulkan structure                        | Matching API
 @type_vk{PipelineDepthStencilStateCreateInfo} | |
 @type_vk{PipelineDynamicStateCreateInfo} | |
 @type_vk{PipelineInputAssemblyStateCreateInfo} | @ref MeshLayout
-@type_vk{PipelineLayoutCreateInfo}      | |
+@type_vk{PipelineLayoutCreateInfo}      | @ref PipelineLayoutCreateInfo
 @type_vk{PipelineLibraryCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PipelineMultisampleStateCreateInfo} | |
 @type_vk{PipelineRasterizationStateCreateInfo} | |

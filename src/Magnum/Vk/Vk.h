@@ -96,6 +96,8 @@ enum class MemoryHeapFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
 class MeshLayout;
 enum class MeshPrimitive: Int;
+class PipelineLayout;
+class PipelineLayoutCreateInfo;
 enum class PipelineStage: UnsignedInt;
 typedef Containers::EnumSet<PipelineStage> PipelineStages;
 enum class PixelFormat: Int;
