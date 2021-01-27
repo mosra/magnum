@@ -134,79 +134,79 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether @ref PixelFormat::CompressedEacR11Unorm,
-     * @ref PixelFormat::CompressedEacR11Snorm,
-     * @ref PixelFormat::CompressedEacRG11Unorm,
-     * @ref PixelFormat::CompressedEacRG11Snorm,
-     * @ref PixelFormat::CompressedEtc2RGB8Unorm,
-     * @ref PixelFormat::CompressedEtc2RGB8Srgb,
-     * @ref PixelFormat::CompressedEtc2RGB8A1Unorm,
-     * @ref PixelFormat::CompressedEtc2RGB8A1Srgb,
-     * @ref PixelFormat::CompressedEtc2RGBA8Unorm,
-     * @ref PixelFormat::CompressedEtc2RGBA8Unorm ETC2 and EAC compressed
-     * texture formats are *all* supported.
+     * @relativeref{PixelFormat,CompressedEacR11Snorm},
+     * @relativeref{PixelFormat,CompressedEacRG11Unorm},
+     * @relativeref{PixelFormat,CompressedEacRG11Snorm},
+     * @relativeref{PixelFormat,CompressedEtc2RGB8Unorm},
+     * @relativeref{PixelFormat,CompressedEtc2RGB8Srgb},
+     * @relativeref{PixelFormat,CompressedEtc2RGB8A1Unorm},
+     * @relativeref{PixelFormat,CompressedEtc2RGB8A1Srgb},
+     * @relativeref{PixelFormat,CompressedEtc2RGBA8Unorm},
+     * @relativeref{PixelFormat,CompressedEtc2RGBA8Unorm} ETC2 and EAC
+     * compressed texture formats are *all* supported.
      * @see @ref DeviceFeature::TextureCompressionBc,
-     *      @ref DeviceFeature::TextureCompressionAstcLdr,
-     *      @ref DeviceFeature::TextureCompressionAstcHdr
+     *      @relativeref{DeviceFeature,TextureCompressionAstcLdr},
+     *      @relativeref{DeviceFeature,TextureCompressionAstcHdr}
      */
     TextureCompressionEtc2,
 
     /**
      * Whether @ref PixelFormat::CompressedAstc4x4RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc4x4RGBASrgb,
-     * @ref PixelFormat::CompressedAstc5x4RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc5x4RGBASrgb,
-     * @ref PixelFormat::CompressedAstc5x5RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc5x5RGBASrgb,
-     * @ref PixelFormat::CompressedAstc6x5RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc6x5RGBASrgb,
-     * @ref PixelFormat::CompressedAstc6x6RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc6x6RGBASrgb,
-     * @ref PixelFormat::CompressedAstc8x5RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc8x5RGBASrgb,
-     * @ref PixelFormat::CompressedAstc8x6RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc8x6RGBASrgb,
-     * @ref PixelFormat::CompressedAstc8x8RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc8x8RGBASrgb,
-     * @ref PixelFormat::CompressedAstc10x5RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc10x5RGBASrgb,
-     * @ref PixelFormat::CompressedAstc10x6RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc10x6RGBASrgb,
-     * @ref PixelFormat::CompressedAstc10x8RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc10x8RGBASrgb,
-     * @ref PixelFormat::CompressedAstc10x10RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc10x10RGBASrgb,
-     * @ref PixelFormat::CompressedAstc12x10RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc12x10RGBASrgb,
-     * @ref PixelFormat::CompressedAstc12x12RGBAUnorm,
-     * @ref PixelFormat::CompressedAstc12x12RGBASrgb,
-     * ASTC LDR compressed texture formats are *all* supported.
+     * @relativeref{PixelFormat,CompressedAstc4x4RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc5x4RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc5x4RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc5x5RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc5x5RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc6x5RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc6x5RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc6x6RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc6x6RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc8x5RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc8x5RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc8x6RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc8x6RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc8x8RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc8x8RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc10x5RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc10x5RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc10x6RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc10x6RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc10x8RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc10x8RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc10x10RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc10x10RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc12x10RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc12x10RGBASrgb},
+     * @relativeref{PixelFormat,CompressedAstc12x12RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedAstc12x12RGBASrgb}, ASTC LDR
+     * compressed texture formats are *all* supported.
      * @see @ref DeviceFeature::TextureCompressionAstcHdr,
-     *      @ref DeviceFeature::TextureCompressionEtc2,
-     *      @ref DeviceFeature::TextureCompressionBc
+     *      @relativeref{DeviceFeature,TextureCompressionEtc2},
+     *      @relativeref{DeviceFeature,TextureCompressionBc}
      */
     TextureCompressionAstcLdr,
 
     /**
      * Whether @ref PixelFormat::CompressedBc1RGBUnorm,
-     * @ref PixelFormat::CompressedBc1RGBSrgb,
-     * @ref PixelFormat::CompressedBc1RGBAUnorm,
-     * @ref PixelFormat::CompressedBc1RGBASrgb,
-     * @ref PixelFormat::CompressedBc2RGBAUnorm,
-     * @ref PixelFormat::CompressedBc2RGBASrgb,
-     * @ref PixelFormat::CompressedBc3RGBAUnorm,
-     * @ref PixelFormat::CompressedBc3RGBASrgb,
-     * @ref PixelFormat::CompressedBc4RUnorm,
-     * @ref PixelFormat::CompressedBc4RSnorm,
-     * @ref PixelFormat::CompressedBc5RGUnorm,
-     * @ref PixelFormat::CompressedBc5RGSnorm,
-     * @ref PixelFormat::CompressedBc6hRGBUfloat,
-     * @ref PixelFormat::CompressedBc6hRGBSfloat,
-     * @ref PixelFormat::CompressedBc7RGBAUnorm,
-     * @ref PixelFormat::CompressedBc7RGBASrgb BC compressed texture formats
-     * are *all* supported.
+     * @relativeref{PixelFormat,CompressedBc1RGBSrgb},
+     * @relativeref{PixelFormat,CompressedBc1RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedBc1RGBASrgb},
+     * @relativeref{PixelFormat,CompressedBc2RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedBc2RGBASrgb},
+     * @relativeref{PixelFormat,CompressedBc3RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedBc3RGBASrgb},
+     * @relativeref{PixelFormat,CompressedBc4RUnorm},
+     * @relativeref{PixelFormat,CompressedBc4RSnorm},
+     * @relativeref{PixelFormat,CompressedBc5RGUnorm},
+     * @relativeref{PixelFormat,CompressedBc5RGSnorm},
+     * @relativeref{PixelFormat,CompressedBc6hRGBUfloat},
+     * @relativeref{PixelFormat,CompressedBc6hRGBSfloat},
+     * @relativeref{PixelFormat,CompressedBc7RGBAUnorm},
+     * @relativeref{PixelFormat,CompressedBc7RGBASrgb} BC compressed texture
+     * formats are *all* supported.
      * @see @ref DeviceFeature::TextureCompressionEtc2,
-     *      @ref DeviceFeature::TextureCompressionAstcLdr,
-     *      @ref DeviceFeature::TextureCompressionAstcHdr
+     *      @relativeref{DeviceFeature,TextureCompressionAstcLdr},
+     *      @relativeref{DeviceFeature,TextureCompressionAstcHdr}
      */
     TextureCompressionBc,
 
@@ -243,16 +243,17 @@ enum class DeviceFeature: UnsignedShort {
     ShaderImageGatherExtended,
 
     /**
-     * Whether @ref PixelFormat::R8Unorm, @ref PixelFormat::RG8Unorm,
-     * @ref PixelFormat::R8Snorm, @ref PixelFormat::RG8Snorm,
-     * @ref PixelFormat::R8UI, @ref PixelFormat::RG8UI, @ref PixelFormat::R8I,
-     * @ref PixelFormat::RG8I, @ref PixelFormat::R16Unorm,
-     * @ref PixelFormat::RG16Unorm, @ref PixelFormat::RGBA16Unorm,
-     * @ref PixelFormat::R16Snorm, @ref PixelFormat::RG16Snorm,
-     * @ref PixelFormat::RGBA16Snorm, @ref PixelFormat::R16UI,
-     * @ref PixelFormat::RG16UI, @ref PixelFormat::R16I,
-     * @ref PixelFormat::RG16I, @ref PixelFormat::R16F,
-     * @ref PixelFormat::RG16F are *all* supported for shader storage.
+     * Whether @ref PixelFormat::R8Unorm, @relativeref{PixelFormat,RG8Unorm},
+     * @relativeref{PixelFormat,R8Snorm}, @relativeref{PixelFormat,RG8Snorm},
+     * @relativeref{PixelFormat,R8UI}, @relativeref{PixelFormat,RG8UI},
+     * @relativeref{PixelFormat,R8I}, @relativeref{PixelFormat,RG8I},
+     * @relativeref{PixelFormat,R16Unorm}, @relativeref{PixelFormat,RG16Unorm},
+     * @relativeref{PixelFormat,RGBA16Unorm}, @relativeref{PixelFormat,R16Snorm},
+     * @relativeref{PixelFormat,RG16Snorm}, @relativeref{PixelFormat,RGBA16Snorm},
+     * @relativeref{PixelFormat,R16UI}, @relativeref{PixelFormat,RG16UI},
+     * @relativeref{PixelFormat,R16I}, @relativeref{PixelFormat,RG16I},
+     * @relativeref{PixelFormat,R16F}, @relativeref{PixelFormat,RG16F} are
+     * *all* supported for shader storage.
      * @todoc link to the 10/10/10/2 and 10.11.10F formats once exposed
      */
     ShaderStorageImageExtendedFormats,
@@ -281,18 +282,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of uniform buffers can be indexed by dynamically uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      */
     ShaderUniformBufferArrayDynamicIndexing,
 
@@ -300,18 +301,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of samplers or sampled images can be indexed by
      * dynamically uniform integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      */
     ShaderSampledImageArrayDynamicIndexing,
 
@@ -319,18 +320,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage buffers can be indexed by dynamically uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      */
     ShaderStorageBufferArrayDynamicIndexing,
 
@@ -338,18 +339,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage images can be indexed by dynamically uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      */
     ShaderStorageImageArrayDynamicIndexing,
 
@@ -367,19 +368,21 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether 64-bit integers are supported in shader code.
-     * @see @ref DeviceFeature::ShaderInt16, @ref DeviceFeature::ShaderInt8,
-     *      @ref DeviceFeature::ShaderSubgroupExtendedTypes
+     * @see @ref DeviceFeature::ShaderInt16,
+     *      @relativeref{DeviceFeature,ShaderInt8},
+     *      @relativeref{DeviceFeature,ShaderSubgroupExtendedTypes}
      */
     ShaderInt64,
 
     /**
      * Whether 16-bit integers are supported in shader code.
-     * @see @ref DeviceFeature::ShaderInt64, @ref DeviceFeature::ShaderInt8,
-     *      @ref DeviceFeature::StorageBuffer16BitAccess,
-     *      @ref DeviceFeature::UniformAndStorageBuffer16BitAccess,
-     *      @ref DeviceFeature::StoragePushConstant16,
-     *      @ref DeviceFeature::StorageInputOutput16,
-     *      @ref DeviceFeature::ShaderSubgroupExtendedTypes
+     * @see @ref DeviceFeature::ShaderInt64,
+     *      @relativeref{DeviceFeature,ShaderInt8},
+     *      @relativeref{DeviceFeature,StorageBuffer16BitAccess},
+     *      @relativeref{DeviceFeature,UniformAndStorageBuffer16BitAccess},
+     *      @relativeref{DeviceFeature,StoragePushConstant16},
+     *      @relativeref{DeviceFeature,StorageInputOutput16},
+     *      @relativeref{DeviceFeature,ShaderSubgroupExtendedTypes}
      */
     ShaderInt16,
 
@@ -508,23 +511,23 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether @ref PixelFormat::CompressedAstc4x4RGBAF,
-     * @ref PixelFormat::CompressedAstc5x4RGBAF,
-     * @ref PixelFormat::CompressedAstc5x5RGBAF,
-     * @ref PixelFormat::CompressedAstc6x5RGBAF,
-     * @ref PixelFormat::CompressedAstc6x6RGBAF,
-     * @ref PixelFormat::CompressedAstc8x5RGBAF,
-     * @ref PixelFormat::CompressedAstc8x6RGBAF,
-     * @ref PixelFormat::CompressedAstc8x8RGBAF,
-     * @ref PixelFormat::CompressedAstc10x5RGBAF,
-     * @ref PixelFormat::CompressedAstc10x6RGBAF,
-     * @ref PixelFormat::CompressedAstc10x8RGBAF,
-     * @ref PixelFormat::CompressedAstc10x10RGBAF,
-     * @ref PixelFormat::CompressedAstc12x10RGBAF,
-     * @ref PixelFormat::CompressedAstc12x12RGBAF ASTC HDR compressed
+     * @relativeref{PixelFormat,CompressedAstc5x4RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc5x5RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc6x5RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc6x6RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc8x5RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc8x6RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc8x8RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc10x5RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc10x6RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc10x8RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc10x10RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc12x10RGBAF},
+     * @relativeref{PixelFormat,CompressedAstc12x12RGBAF} ASTC HDR compressed
      * texture formats are *all* supported.
      * @see @ref DeviceFeature::TextureCompressionAstcLdr,
-     *      @ref DeviceFeature::TextureCompressionEtc2,
-     *      @ref DeviceFeature::TextureCompressionBc
+     *      @relativeref{DeviceFeature,TextureCompressionEtc2},
+     *      @relativeref{DeviceFeature,TextureCompressionBc}
      * @requires_vk_extension Extension @vk_extension{EXT,texture_compression_astc_hdr}
      */
     TextureCompressionAstcHdr,
@@ -534,19 +537,20 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether 16-bit floats are supported in shader code.
      * @see @ref DeviceFeature::ShaderFloat64,
-     *      @ref DeviceFeature::StorageBuffer16BitAccess,
-     *      @ref DeviceFeature::UniformAndStorageBuffer16BitAccess,
-     *      @ref DeviceFeature::StoragePushConstant16,
-     *      @ref DeviceFeature::StorageInputOutput16,
-     *      @ref DeviceFeature::ShaderSubgroupExtendedTypes
+     *      @relativeref{DeviceFeature,StorageBuffer16BitAccess},
+     *      @relativeref{DeviceFeature,UniformAndStorageBuffer16BitAccess},
+     *      @relativeref{DeviceFeature,StoragePushConstant16},
+     *      @relativeref{DeviceFeature,StorageInputOutput16},
+     *      @relativeref{DeviceFeature,ShaderSubgroupExtendedTypes}
      * @requires_vk12 Extension @vk_extension{KHR,shader_float16_int8}
      */
     ShaderFloat16,
 
     /**
      * Whether 8-bit integers are supported in shader code.
-     * @see @ref DeviceFeature::ShaderInt64, @ref DeviceFeature::ShaderInt16,
-     *      @ref DeviceFeature::ShaderSubgroupExtendedTypes
+     * @see @ref DeviceFeature::ShaderInt64,
+     *      @relativeref{DeviceFeature,ShaderInt16},
+     *      @relativeref{DeviceFeature,ShaderSubgroupExtendedTypes}
      * @requires_vk12 Extension @vk_extension{KHR,shader_float16_int8}
      */
     ShaderInt8,
@@ -558,7 +562,8 @@ enum class DeviceFeature: UnsignedShort {
      * floating-point members. Subset of
      * @ref DeviceFeature::UniformAndStorageBuffer16BitAccess.
      * @see @ref DeviceFeature::StorageBuffer8BitAccess,
-     *      @ref DeviceFeature::ShaderInt16, @ref DeviceFeature::ShaderFloat16
+     *      @relativeref{DeviceFeature,ShaderInt16},
+     *      @relativeref{DeviceFeature,ShaderFloat16}
      * @requires_vk11 Extension @vk_extension{KHR,16bit_storage}
      */
     StorageBuffer16BitAccess,
@@ -568,7 +573,8 @@ enum class DeviceFeature: UnsignedShort {
      * 16-bit floating-point members. Superset of
      * @ref DeviceFeature::StorageBuffer16BitAccess.
      * @see @ref DeviceFeature::UniformAndStorageBuffer8BitAccess,
-     *      @ref DeviceFeature::ShaderInt16, @ref DeviceFeature::ShaderFloat16
+     *      @relativeref{DeviceFeature,ShaderInt16},
+     *      @relativeref{DeviceFeature,ShaderFloat16}
      * @requires_vk11 Extension @vk_extension{KHR,16bit_storage}
      */
     UniformAndStorageBuffer16BitAccess,
@@ -577,7 +583,8 @@ enum class DeviceFeature: UnsignedShort {
      * Whether shader push constants can have 16-bit integer and 16-bit
      * floating-point members.
      * @see @ref DeviceFeature::StoragePushConstant8,
-     *      @ref DeviceFeature::ShaderInt16, @ref DeviceFeature::ShaderFloat16
+     *      @relativeref{DeviceFeature,ShaderInt16},
+     *      @relativeref{DeviceFeature,ShaderFloat16}
      * @requires_vk11 Extension @vk_extension{KHR,16bit_storage}
      */
     StoragePushConstant16,
@@ -585,7 +592,8 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether shader inputs and outputs can have 16-bit integer and 16-bit
      * floating-point members.
-     * @see @ref DeviceFeature::ShaderInt16, @ref DeviceFeature::ShaderFloat16
+     * @see @ref DeviceFeature::ShaderInt16,
+     *      @relativeref{DeviceFeature,ShaderFloat16}
      * @requires_vk11 Extension @vk_extension{KHR,16bit_storage}
      */
     StorageInputOutput16,
@@ -644,11 +652,11 @@ enum class DeviceFeature: UnsignedShort {
      * Whether acceleration structure descriptors can be updated after a set is
      * bound.
      * @see @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk_extension Extension @vk_extension{KHR,acceleration_structure}
      */
     DescriptorBindingAccelerationStructureUpdateAfterBind,
@@ -667,18 +675,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of input attachment can be indexed by dynamically uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderInputAttachmentArrayDynamicIndexing,
@@ -687,18 +695,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of uniform texel buffers can be indexed by dynamically
      * uniform integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderUniformTexelBufferArrayDynamicIndexing,
@@ -707,18 +715,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage texel buffers can be indexed by dynamically
      * uniform integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderStorageTexelBufferArrayDynamicIndexing,
@@ -727,18 +735,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of uniform buffers can be indexed by non-uniform integer
      * expressions in shader code.
      * @see @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderUniformBufferArrayNonUniformIndexing,
@@ -747,18 +755,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of samplers or sampled images can be indexed by
      * non-uniform integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderSampledImageArrayNonUniformIndexing,
@@ -767,18 +775,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage buffers can be indexed by non-uniform integer
      * expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderStorageBufferArrayNonUniformIndexing,
@@ -787,18 +795,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage images can be indexed by non-uniform integer
      * expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderStorageImageArrayNonUniformIndexing,
@@ -807,18 +815,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of input attachments can be indexed by non-uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderInputAttachmentArrayNonUniformIndexing,
@@ -827,18 +835,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of uniform texel buffers can be indexed by non-uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderUniformTexelBufferArrayNonUniformIndexing,
@@ -847,18 +855,18 @@ enum class DeviceFeature: UnsignedShort {
      * Whether arrays of storage texel buffers can be indexed by non-uniform
      * integer expressions in shader code.
      * @see @ref DeviceFeature::ShaderUniformBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderSampledImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayNonUniformIndexing,
-     *      @ref DeviceFeature::ShaderUniformBufferArrayDynamicIndexing
-     *      @ref DeviceFeature::ShaderSampledImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageImageArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderInputAttachmentArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderUniformTexelBufferArrayDynamicIndexing,
-     *      @ref DeviceFeature::ShaderStorageTexelBufferArrayDynamicIndexing
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayNonUniformIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformBufferArrayDynamicIndexing}
+     *      @relativeref{DeviceFeature,ShaderSampledImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageImageArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderInputAttachmentArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderUniformTexelBufferArrayDynamicIndexing},
+     *      @relativeref{DeviceFeature,ShaderStorageTexelBufferArrayDynamicIndexing}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     ShaderStorageTexelBufferArrayNonUniformIndexing,
@@ -866,11 +874,11 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether uniform buffer descriptors can be updated after a set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingUniformBufferUpdateAfterBind,
@@ -878,11 +886,11 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether sampled image descriptors can be updated after a set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingSampledImageUpdateAfterBind,
@@ -890,11 +898,11 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether storage image descriptors can be updated after a set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageImageUpdateAfterBind,
@@ -902,11 +910,11 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether storage buffer descriptors can be updated after a set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageBufferUpdateAfterBind,
@@ -915,11 +923,11 @@ enum class DeviceFeature: UnsignedShort {
      * Whether uniform texel buffer descriptors can be updated after a set is
      * bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingUniformTexelBufferUpdateAfterBind,
@@ -928,11 +936,11 @@ enum class DeviceFeature: UnsignedShort {
      * Whether storage texel buffer descriptors can be updated after a set is
      * bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageImageUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingStorageBufferUpdateAfterBind,
-     *      @ref DeviceFeature::DescriptorBindingUniformTexelBufferUpdateAfterBind
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind}
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageTexelBufferUpdateAfterBind,
@@ -1084,8 +1092,10 @@ enum class DeviceFeature: UnsignedShort {
      * Whether subgroup operations can use 8-bit integer, 16-bit integer,
      * 64-bit integer and 16-bit floating point types in group operations with
      * subgroup scope, providing the types are supported.
-     * @see @ref DeviceFeature::ShaderInt8, @ref DeviceFeature::ShaderInt16,
-     *      @ref DeviceFeature::ShaderInt64, @ref DeviceFeature::ShaderFloat16
+     * @see @ref DeviceFeature::ShaderInt8,
+     *      @relativeref{DeviceFeature,ShaderInt16},
+     *      @relativeref{DeviceFeature,ShaderInt64},
+     *      @relativeref{DeviceFeature,ShaderFloat16}
      * @requires_vk12 Extension @vk_extension{KHR,shader_subgroup_extended_types}
      */
     ShaderSubgroupExtendedTypes,
@@ -1096,7 +1106,7 @@ enum class DeviceFeature: UnsignedShort {
      * Whether shader storage buffers can have 8-bit integer members. Subset of
      * @ref DeviceFeature::UniformAndStorageBuffer8BitAccess.
      * @see @ref DeviceFeature::StorageBuffer16BitAccess,
-     *      @ref DeviceFeature::ShaderInt8
+     *      @relativeref{DeviceFeature,ShaderInt8}
      * @requires_vk12 Extension @vk_extension{KHR,8bit_storage}
      */
     StorageBuffer8BitAccess,
@@ -1105,7 +1115,7 @@ enum class DeviceFeature: UnsignedShort {
      * Whether shader uniforms and storage buffers can have 8-bit integer
      * members. Superset of @ref DeviceFeature::StorageBuffer8BitAccess.
      * @see @ref DeviceFeature::UniformAndStorageBuffer16BitAccess,
-     *      @ref DeviceFeature::ShaderInt8
+     *      @relativeref{DeviceFeature,ShaderInt8}
      * @requires_vk12 Extension @vk_extension{KHR,8bit_storage}
      */
     UniformAndStorageBuffer8BitAccess,
@@ -1113,7 +1123,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether shader push constants can have 8-bit integer members.
      * @see @ref DeviceFeature::StoragePushConstant16,
-     *      @ref DeviceFeature::ShaderInt8
+     *      @relativeref{DeviceFeature,ShaderInt8}
      * @requires_vk12 Extension @vk_extension{KHR,8bit_storage}
      */
     StoragePushConstant8,
@@ -1163,7 +1173,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether the Vulkan Memory Model is supported.
      * @see @ref DeviceFeature::VulkanMemoryModelDeviceScope,
-     *      @ref DeviceFeature::VulkanMemoryModelAvailabilityVisibilityChains
+     *      @relativeref{DeviceFeature,VulkanMemoryModelAvailabilityVisibilityChains}
      * @requires_vk12 Extension @vk_extension{KHR,vulkan_memory_model}
      */
     VulkanMemoryModel,
@@ -1171,7 +1181,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether the Vulkan Memory Model can use device scope synchronization.
      * @see @ref DeviceFeature::VulkanMemoryModel,
-     *      @ref DeviceFeature::VulkanMemoryModelAvailabilityVisibilityChains
+     *      @relativeref{DeviceFeature,VulkanMemoryModelAvailabilityVisibilityChains}
      * @requires_vk12 Extension @vk_extension{KHR,vulkan_memory_model}
      */
     VulkanMemoryModelDeviceScope,
@@ -1180,7 +1190,7 @@ enum class DeviceFeature: UnsignedShort {
      * Whether the Vulkan Memory Model can use availability and visibility
      * chains with more than one element.
      * @see @ref DeviceFeature::VulkanMemoryModel,
-     *      @ref DeviceFeature::VulkanMemoryModelDeviceScope
+     *      @relativeref{DeviceFeature,VulkanMemoryModelDeviceScope}
      * @requires_vk12 Extension @vk_extension{KHR,vulkan_memory_model} since
      *      revision 3
      */
@@ -1222,7 +1232,7 @@ enum class DeviceFeature: UnsignedShort {
      * Whether accessing buffer memory in shaders as storage buffers via an
      * address queried from @fn_vk{GetBufferDeviceAddress} is supported.
      * @see @ref DeviceFeature::BufferDeviceAddressCaptureReplay,
-     *      @ref DeviceFeature::BufferDeviceAddressMultiDevice
+     *      @relativeref{DeviceFeature,BufferDeviceAddressMultiDevice}
      * @requires_vk12 Extension @vk_extension{KHR,buffer_device_address}
      */
     BufferDeviceAddress,
@@ -1231,15 +1241,16 @@ enum class DeviceFeature: UnsignedShort {
      * Whether saving and reusing buffer dand device addresses for trace
      * capture and replay is supported.
      * @see @ref DeviceFeature::BufferDeviceAddress,
-     *      @ref DeviceFeature::BufferDeviceAddressMultiDevice
+     *      @relativeref{DeviceFeature,BufferDeviceAddressMultiDevice}
      * @requires_vk12 Extension @vk_extension{KHR,buffer_device_address}
      */
     BufferDeviceAddressCaptureReplay,
 
     /**
      * Whether @ref DeviceFeature::BufferDeviceAddress,
-     * @ref DeviceFeature::RayTracingPipeline and @ref DeviceFeature::RayQuery
-     * for logical devices created with multiple physical devices is supported.
+     * @relativeref{DeviceFeature,RayTracingPipeline} and
+     * @relativeref{DeviceFeature,RayQuery} for logical devices created with
+     * multiple physical devices is supported.
      * @requires_vk12 Extension @vk_extension{KHR,buffer_device_address}
      */
     BufferDeviceAddressMultiDevice,

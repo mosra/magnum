@@ -102,7 +102,8 @@ ALIASES                = \
     "m_since_latest=@since @m_class{m-label m-success m-flat} @ref changelog-latest \"new&nbsp;in&nbsp;Git&nbsp;master\"" \
     "m_since_latest_{1}=@since @m_class{m-label m-success m-flat} @ref changelog-\1-latest \"new&nbsp;in&nbsp;Git&nbsp;master\"" \
     "m_deprecated_since{2}=@since deprecated&nbsp;in&nbsp;\1.\2 @deprecated" \
-    "m_deprecated_since_latest=@since deprecated&nbsp;in&nbsp;Git&nbsp;master @deprecated"
+    "m_deprecated_since_latest=@since deprecated&nbsp;in&nbsp;Git&nbsp;master @deprecated" \
+    "relativeref{2}=@ref \1::\2 \"\2\""
 
 GENERATE_TODOLIST      = NO
 GENERATE_BUGLIST       = NO
