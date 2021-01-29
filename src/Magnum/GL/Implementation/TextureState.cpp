@@ -312,6 +312,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     else
         getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
+    #ifdef CORRADE_TARGET_WINDOWS
+    /** @todo those *might* be happening with the proprietary AMD driver on
+        linux as well, test */
     if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
         !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"))
@@ -321,7 +324,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
         getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     else
+    #endif
+    {
         getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+    }
     #endif
 
     /* Texture storage implementation for desktop and ES */
@@ -472,12 +478,18 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
-    } else if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
+    }
+    #ifdef CORRADE_TARGET_WINDOWS
+    /** @todo those *might* be happening with the proprietary AMD driver on
+        linux as well, test */
+    else if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
        !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice")) {
         /* DSA version is broken (non-zero Z offset not allowed), need to
            emulate using classic APIs */
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
-    } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+    }
+    #endif
+    else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSA;
     } else
     {
