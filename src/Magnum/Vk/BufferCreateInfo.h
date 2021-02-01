@@ -77,7 +77,24 @@ enum class BufferUsage: UnsignedInt {
     IndirectBuffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
 
     /** @todo VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT, 1.2 */
-    /** @todo RT-related usages */
+
+    /**
+     * Suitable for a ray tracing shader binding table
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    ShaderBindingTable = VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR,
+
+    /**
+     * Suitable as a read-only input to an acceleration structure build
+     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
+     */
+    AccelerationStructureBuildInputReadOnly = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR,
+
+    /**
+     * Suitable for an acceleration structure storage space
+     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
+     */
+    AccelerationStructureStorage = VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR
 };
 
 /**

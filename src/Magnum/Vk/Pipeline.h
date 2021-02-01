@@ -132,10 +132,16 @@ enum class PipelineStage: UnsignedInt {
     /** Execution of host read/writes of device memory */
     Host = VK_PIPELINE_STAGE_HOST_BIT,
 
-    /** Execution of commands related to an acceleration structure */
+    /**
+     * Execution of commands related to an acceleration structure
+     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
+     */
     AccelerationStructureBuild = VK_PIPELINE_STAGE_ACCELERATION_STRUCTURE_BUILD_BIT_KHR,
 
-    /** Execution of ray tracing shaders */
+    /**
+     * Execution of ray tracing shaders
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
     RayTracingShader = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
 
     /**
@@ -350,6 +356,7 @@ enum class Access: UnsignedInt {
      * @ref PipelineStage::TessellationEvaluationShader "TessellationEvaluationShader",
      * @ref PipelineStage::ComputeShader "ComputeShader" and
      * @ref PipelineStage::RayTracingShader "RayTracingShader".
+     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
      */
     AccelerationStructureRead = VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR,
 
@@ -358,6 +365,7 @@ enum class Access: UnsignedInt {
      * part of a build or copy command.
      *
      * Valid for @ref PipelineStage::AccelerationStructureBuild.
+     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
      */
     AccelerationStructureWrite = VK_ACCESS_ACCELERATION_STRUCTURE_WRITE_BIT_KHR
 };
