@@ -371,9 +371,9 @@ class MAGNUM_VK_EXPORT Instance {
          * @snippet MagnumVk.cpp Instance-isExtensionEnabled
          *
          * Note that this returns @cpp true @ce only if given extension is
-         * supported by the driver *and* it was enabled in
-         * @ref InstanceCreateInfo when creating the @ref Instance. For
-         * querying extension support before creating an instance use
+         * supported by the driver *and* it was enabled via
+         * @ref InstanceCreateInfo::addEnabledExtensions(). For querying
+         * extension support before creating an instance use
          * @ref InstanceExtensionProperties::isSupported().
          */
         template<class E> bool isExtensionEnabled() const {

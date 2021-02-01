@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Vk::RenderPass, @ref Magnum::Vk::RenderPassBeginInfo, @ref Magnum::Vk::SubpassBeginInfo, @ref Magnum::Vk::SubpassEndInfo, enum @ref Magnum::Vk::SubpassContents
+ * @m_since_latest
  */
 
 #include <Corrade/Containers/Pointer.h>

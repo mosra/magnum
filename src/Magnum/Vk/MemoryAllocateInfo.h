@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Vk::MemoryRequirements, @ref Magnum::Vk::MemoryAllocateInfo
+ * @m_since_latest
  */
 
 #include "Magnum/Magnum.h"

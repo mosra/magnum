@@ -46,7 +46,7 @@ Contains information stored in the @type_vk_keyword{PhysicalDeviceFeatures2}
 structure chain. Values correspond to equivalently named structure fields,
 usually just with the first letter uppercase instead of lowercase.
 @see @ref DeviceFeatures, @ref DeviceProperties::features(),
-    @ref Device::enabledFeatures()
+    @ref DeviceCreateInfo::setEnabledFeatures(), @ref Device::enabledFeatures()
 
 @todo @type_vk{PhysicalDeviceVulkan12Features} additionally has
     `samplerMirrorClampToEdge`, `drawIndirectCount`, `descriptorIndexing`,

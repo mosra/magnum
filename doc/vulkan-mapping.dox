@@ -938,7 +938,7 @@ Vulkan enum                             | Matching API
 @type_vk{QueryPipelineStatisticFlagBits}, \n @type_vk{QueryPipelineStatisticFlags} | |
 @type_vk{QueryResultFlagBits}, \n @type_vk{QueryResultFlags} | |
 @type_vk{QueryType}                     | |
-@type_vk{QueueFlagBits}, \n @type_vk{QueueFlags} | |
+@type_vk{QueueFlagBits}, \n @type_vk{QueueFlags} | @ref QueueFlag, \n @ref QueueFlags
 
 @subsection vulkan-mapping-enums-r R
 

@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Vk::MemoryRequirements, @ref Magnum::Vk::MemoryAllocateInfo, @ref Magnum::Vk::Memory, enum @ref Magnum::Vk::MemoryFlag, enum set @ref Magnum::Vk::MemoryFlags
+ * @m_since_latest
  */
 
 #include <Corrade/Containers/EnumSet.h>

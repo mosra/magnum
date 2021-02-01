@@ -423,8 +423,8 @@ class MAGNUM_VK_EXPORT Device {
          * @snippet MagnumVk.cpp Device-isExtensionEnabled
          *
          * Note that this returns @cpp true @ce only if given extension is
-         * supported by the driver *and* it was enabled in
-         * @ref DeviceCreateInfo when creating the @ref Device. For querying
+         * supported by the driver *and* it was enabled via
+         * @ref DeviceCreateInfo::addEnabledExtensions(). For querying
          * extension support before creating a device use
          * @ref ExtensionProperties::isSupported().
          */
@@ -439,7 +439,8 @@ class MAGNUM_VK_EXPORT Device {
         /**
          * @brief Features enabled on the device
          *
-         * @see @ref DeviceProperties::features()
+         * @see @ref DeviceCreateInfo::setEnabledFeatures(),
+         *      @ref DeviceProperties::features()
          */
         const DeviceFeatures& enabledFeatures() const { return _enabledFeatures; }
 

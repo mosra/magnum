@@ -176,7 +176,7 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * or in at least one of the enabled layers, use
          * @ref ExtensionProperties::isSupported() to check for their presence.
          *
-         * The function makes copies of string views that are not owning or
+         * The function makes copies of string views that are not global or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
          * literal to prevent that where possible.
          */

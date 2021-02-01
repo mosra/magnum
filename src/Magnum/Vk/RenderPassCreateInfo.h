@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Vk::AttachmentDescription, @ref Magnum::Vk::AttachmentReference, @ref Magnum::Vk::SubpassDescription, @ref Magnum::Vk::SubpassDependency, @ref Magnum::Vk::RenderPassCreateInfo, enum @ref Magnum::Vk::AttachmentLoadOperation, @ref Magnum::Vk::AttachmentStoreOperation
+ * @m_since_latest
  */
 
 #include <utility>

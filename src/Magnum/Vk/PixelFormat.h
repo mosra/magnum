@@ -1394,7 +1394,10 @@ enum class PixelFormat: Int {
     CompressedPvrtc2RGBA4bppSrgb = VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG
 };
 
-/** @debugoperatorenum{PixelFormat} */
+/**
+@debugoperatorenum{PixelFormat}
+@m_since_latest
+*/
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
 
 /**

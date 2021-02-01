@@ -156,7 +156,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * Use the @ref version() helper to create the @p version value. The
          * name is @cpp nullptr @ce by default.
          *
-         * The function makes copies of string views that are not owning or
+         * The function makes copies of string views that are not global or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
          * literal to prevent that where possible.
          */
@@ -172,7 +172,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @ref Vk-Instance-command-line "command-line options", it's not
          * added.
          *
-         * The function makes copies of string views that are not owning or
+         * The function makes copies of string views that are not global or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
          * literal to prevent that where possible.
          */
@@ -192,7 +192,7 @@ class MAGNUM_VK_EXPORT InstanceCreateInfo {
          * @ref Vk-Instance-command-line "command-line options", it's not
          * added.
          *
-         * The function makes copies of string views that are not owning or
+         * The function makes copies of string views that are not global or
          * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
          * literal to prevent that where possible.
          */
