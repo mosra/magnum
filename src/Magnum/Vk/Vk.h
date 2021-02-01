@@ -113,6 +113,9 @@ class RenderPassCreateInfo;
 enum class Result: Int;
 class Shader;
 class ShaderCreateInfo;
+class ShaderSet;
+/* ShaderSpecialization used only directly with ShaderSet */
+enum class ShaderStage: UnsignedInt;
 class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;

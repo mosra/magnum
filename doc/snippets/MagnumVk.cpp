@@ -57,6 +57,7 @@
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
+#include "Magnum/Vk/ShaderSet.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
 
 /* [wrapping-include-createinfo] */
@@ -867,6 +868,37 @@ DOXYGEN_IGNORE()
 
 Vk::Shader shader{device, info};
 /* [Shader-creation] */
+}
+
+{
+/* [ShaderSet-usage] */
+Vk::Shader vert{DOXYGEN_IGNORE(NoCreate)}, frag{DOXYGEN_IGNORE(NoCreate)};
+
+using namespace Containers::Literals;
+
+Vk::ShaderSet set;
+set.addShader(Vk::ShaderStage::Vertex, vert, "main"_s)
+   .addShader(Vk::ShaderStage::Fragment, frag, "main"_s);
+/* [ShaderSet-usage] */
+
+/* [ShaderSet-usage-specializations] */
+set.addShader(Vk::ShaderStage::Fragment, frag, "main"_s, {
+    {0, 3},
+    {1, 0.25f},
+    {2, false}
+});
+/* [ShaderSet-usage-specializations] */
+}
+
+{
+using namespace Containers::Literals;
+/* [ShaderSet-usage-ownership-transfer] */
+Vk::Shader shader{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::ShaderSet set;
+set.addShader(Vk::ShaderStage::Vertex, shader, "vert"_s)
+   .addShader(Vk::ShaderStage::Fragment, std::move(shader), "frag"_s);
+/* [ShaderSet-usage-ownership-transfer] */
 }
 
 {

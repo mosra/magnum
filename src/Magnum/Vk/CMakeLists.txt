@@ -60,6 +60,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Memory.cpp
     PixelFormat.cpp
     RenderPass.cpp
+    ShaderSet.cpp
     VertexFormat.cpp)
 
 set(MagnumVk_HEADERS
@@ -102,6 +103,7 @@ set(MagnumVk_HEADERS
     Result.h
     Shader.h
     ShaderCreateInfo.h
+    ShaderSet.h
     TypeTraits.h
     Version.h
     VertexFormat.h

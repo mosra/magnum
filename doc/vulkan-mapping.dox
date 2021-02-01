@@ -664,7 +664,7 @@ Vulkan structure                        | Matching API
 @type_vk{PipelineLibraryCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{PipelineMultisampleStateCreateInfo} | |
 @type_vk{PipelineRasterizationStateCreateInfo} | |
-@type_vk{PipelineShaderStageCreateInfo} | |
+@type_vk{PipelineShaderStageCreateInfo} | @ref ShaderSet
 @type_vk{PipelineTessellationStateCreateInfo} | |
 @type_vk{PipelineTessellationDomainOriginStateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PipelineVertexInputDivisorStateCreateInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref MeshLayout
@@ -722,8 +722,8 @@ Vulkan structure                        | Matching API
 @type_vk{SparseImageMemoryBind}         | |
 @type_vk{SparseImageMemoryRequirements}, \n @type_vk{SparseImageMemoryRequirements2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{SparseMemoryBind}              | |
-@type_vk{SpecializationInfo}            | |
-@type_vk{SpecializationMapEntry}        | |
+@type_vk{SpecializationInfo}            | @ref ShaderSet
+@type_vk{SpecializationMapEntry}        | @ref ShaderSet
 @type_vk{StencilOpState}                | |
 @type_vk{StridedDeviceAddressRegionKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{SubmitInfo}                    | @ref SubmitInfo
@@ -969,7 +969,7 @@ Vulkan enum                             | Matching API
 @type_vk{ShaderFloatControlsIndependence} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderGroupShaderKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flags
-@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | |
+@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage
 @type_vk{SharingMode}                   | |
 @type_vk{SparseImageFormatFlagBits}, \n @type_vk{SparseImageFormatFlags} | |
 @type_vk{SparseMemoryBindFlagBits}, \n @type_vk{SparseMemoryBindFlags} | |

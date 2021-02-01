@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::Shader
+ * @brief Class @ref Magnum::Vk::Shader, enum @ref Magnum::Vk::ShaderStage
  * @m_since_latest
  */
 
@@ -38,6 +38,78 @@
 #include "Magnum/Vk/visibility.h"
 
 namespace Magnum { namespace Vk {
+
+/**
+@brief Shader stage
+@m_since_latest
+
+Wraps @type_vk_keyword{ShaderStageFlagBits}.
+@m_enum_values_as_keywords
+*/
+enum class ShaderStage: UnsignedInt {
+    /** Vertex stage */
+    Vertex = VK_SHADER_STAGE_VERTEX_BIT,
+
+    /** Fragment stage */
+    Fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
+
+    /**
+     * Geometry stage
+     * @requires_vk_feature @ref DeviceFeature::GeometryShader
+     */
+    Geometry = VK_SHADER_STAGE_GEOMETRY_BIT,
+
+    /**
+     * Tessellation control stage
+     * @requires_vk_feature @ref DeviceFeature::TessellationShader
+     */
+    TessellationControl = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
+
+    /**
+     * Tessellation evaluation stage
+     * @requires_vk_feature @ref DeviceFeature::TessellationShader
+     */
+    TessellationEvaluation = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
+
+    /** Compute stage */
+    Compute = VK_SHADER_STAGE_COMPUTE_BIT,
+
+    /**
+     * Ray generation stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayGeneration = VK_SHADER_STAGE_RAYGEN_BIT_KHR,
+
+    /**
+     * Ray any hit stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayAnyHit = VK_SHADER_STAGE_ANY_HIT_BIT_KHR,
+
+    /**
+     * Ray closest hit stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayClosestHit = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
+
+    /**
+     * Ray miss stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayMiss = VK_SHADER_STAGE_MISS_BIT_KHR,
+
+    /**
+     * Ray intersection stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayIntersection = VK_SHADER_STAGE_INTERSECTION_BIT_KHR,
+
+    /**
+     * Ray callable stage
+     * @requires_vk_feature @ref DeviceFeature::RayTracingPipeline
+     */
+    RayCallable = VK_SHADER_STAGE_CALLABLE_BIT_KHR
+};
 
 /**
 @brief Shader
