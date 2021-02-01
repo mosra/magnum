@@ -172,6 +172,7 @@ namespace EXT {
     _extension(72, KHR,ray_query,                           Vk11, None) // #349
 }
 #undef _extension
+#undef _extension_
 
 #endif
 
