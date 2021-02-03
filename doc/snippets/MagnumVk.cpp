@@ -52,8 +52,10 @@
 #include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/Pipeline.h"
+#include "Magnum/Vk/PipelineLayout.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
+#include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
@@ -788,6 +790,26 @@ meshLayout
     .addAttribute(NormalLocation, BufferBinding, VertexFormat::Vector3,
         sizeof(Vector3) + sizeof(Vector2));
 /* [MeshLayout-usage] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [Pipeline-creation-rasterization] */
+#include <Magnum/Vk/RasterizationPipelineCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::ShaderSet shaderSet{DOXYGEN_IGNORE()};
+Vk::MeshLayout meshLayout{DOXYGEN_IGNORE(MeshPrimitive{})};
+Vk::PipelineLayout pipelineLayout{DOXYGEN_IGNORE(NoCreate)};
+Vk::RenderPass renderPass{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{
+        shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+    .setViewport({{}, {800.0f, 600.0f}})
+};
+/* [Pipeline-creation-rasterization] */
 }
 
 {

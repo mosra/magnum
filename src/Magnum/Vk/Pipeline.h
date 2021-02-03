@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::MemoryBarrier, @ref Magnum::Vk::BufferMemoryBarrier, @ref Magnum::Vk::ImageMemoryBarrier, enum @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
+ * @brief Class @ref Magnum::Vk::Pipeline, @ref Magnum::Vk::MemoryBarrier, @ref Magnum::Vk::BufferMemoryBarrier, @ref Magnum::Vk::ImageMemoryBarrier, enum @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
  * @m_since_latest
  */
 
@@ -39,6 +39,109 @@
 #include "Magnum/Vk/Vulkan.h"
 
 namespace Magnum { namespace Vk {
+
+/**
+@brief Pipeline
+@m_since_latest
+
+Wraps a @type_vk_keyword{Pipeline}.
+
+@section Vk-Pipeline-creation-rasterization Rasterization pipeline creation
+
+A @ref RasterizationPipelineCreateInfo is constructed from a @ref ShaderSet,
+@ref MeshLayout, @ref PipelineLayout and a @ref RenderPass together with
+subpass index and the count of color attachments. Apart from that you need to
+set a viewport using @ref RasterizationPipelineCreateInfo::setViewport()
+and you end up with a minimal setup needed for color-only rendering:
+
+@snippet MagnumVk.cpp Pipeline-creation-rasterization
+
+Certain aspects of the pipeline can be set as dynamic using
+@relativeref{RasterizationPipelineCreateInfo,setDynamicStates()} --- in that
+case a subset of the values passed to the constructor will be ignored. See the
+particular @ref DynamicRasterizationState values for more information.
+*/
+class MAGNUM_VK_EXPORT Pipeline {
+    public:
+        /**
+         * @brief Wrap existing Vulkan handle
+         * @param device            Vulkan device the pipeline is created on
+         * @param handle            The @type_vk{Pipeline} handle
+         * @param flags             Handle flags
+         *
+         * The @p handle is expected to be originating from @p device. Unlike
+         * a pipeline layout created using a constructor, the Vulkan pipeline
+         * layout is by default not deleted on destruction, use @p flags for
+         * different behavior.
+         * @see @ref release()
+         */
+        static Pipeline wrap(Device& device, VkPipeline handle, HandleFlags flags = {});
+
+        /**
+         * @brief Construct a rasterization pipeline
+         * @param device    Vulkan device to create the pipeline on
+         * @param info      Rasterization pipeline creation info
+         *
+         * @see @fn_vk_keyword{CreateGraphicsPipelines}
+         */
+        explicit Pipeline(Device& device, const RasterizationPipelineCreateInfo& info);
+
+        /**
+         * @brief Construct without creating the pipeline layout
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         */
+        explicit Pipeline(NoCreateT);
+
+        /** @brief Copying is not allowed */
+        Pipeline(const Pipeline&) = delete;
+
+        /** @brief Move constructor */
+        Pipeline(Pipeline&& other) noexcept;
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys associated @type_vk{Pipeline} handle, unless the instance
+         * was created using @ref wrap() without
+         * @ref HandleFlag::DestroyOnDestruction specified.
+         * @see @fn_vk_keyword{DestroyPipeline}, @ref release()
+         */
+        ~Pipeline();
+
+        /** @brief Copying is not allowed */
+        Pipeline& operator=(const Pipeline&) = delete;
+
+        /** @brief Move assignment */
+        Pipeline& operator=(Pipeline&& other) noexcept;
+
+        /** @brief Underlying @type_vk{Pipeline} handle */
+        VkPipeline handle() { return _handle; }
+        /** @overload */
+        operator VkPipeline() { return _handle; }
+
+        /** @brief Handle flags */
+        HandleFlags handleFlags() const { return _flags; }
+
+        /**
+         * @brief Release the underlying Vulkan pipeline
+         *
+         * Releases ownership of the Vulkan pipeline and returns its
+         * handle so @fn_vk{DestroyPipeline} is not called on destruction. The
+         * internal state is then equivalent to moved-from state.
+         * @see @ref wrap()
+         */
+        VkPipeline release();
+
+    private:
+        /* Can't be a reference because of the NoCreate constructor */
+        Device* _device;
+
+        VkPipeline _handle;
+        HandleFlags _flags;
+};
 
 /**
 @brief Pipeline stage

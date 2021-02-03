@@ -24,14 +24,289 @@
 */
 
 #include "Pipeline.h"
+#include "RasterizationPipelineCreateInfo.h"
 #include "CommandBuffer.h"
 
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
 
+#include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/MeshLayout.h"
+#include "Magnum/Vk/ShaderSet.h"
 
 namespace Magnum { namespace Vk {
+
+struct RasterizationPipelineCreateInfo::State {
+    Containers::Array<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
+    Containers::Array<VkDynamicState> dynamicStates;
+    /** @todo make an array once we support multiview */
+    VkViewport viewport;
+    VkRect2D scissor;
+};
+
+RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const ShaderSet& shaderSet, const MeshLayout& meshLayout, const VkPipelineLayout pipelineLayout, const VkRenderPass renderPass, const UnsignedInt subpass, const UnsignedInt subpassColorAttachmentCount, Flags flags): _info{}, _viewportInfo{}, _rasterizationInfo{}, _multisampleInfo{}, _depthStencilInfo{}, _colorBlendInfo{}, _dynamicInfo{}, _state{Containers::InPlaceInit} {
+    _info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    _info.flags = VkPipelineCreateFlags(flags);
+    _info.stageCount = shaderSet.stages().size();
+    _info.pStages = shaderSet.stages();
+    _info.pVertexInputState = meshLayout;
+    _info.pInputAssemblyState = meshLayout;
+
+    /* pTesselationState is fine to be null */
+    /** @todo add it if we get passed a tessellation shader? or should the
+        shader wrapper include it? */
+
+    /* Leaving pViewportState null as that gets (but doesn't have to, if
+       rasterization is disabled) set by setViewport() */
+
+    _rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    _rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+    _rasterizationInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    _rasterizationInfo.lineWidth = 1.0f;
+    _info.pRasterizationState = &_rasterizationInfo;
+
+    _multisampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    _multisampleInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    _info.pMultisampleState = &_multisampleInfo;
+
+    _depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    _info.pDepthStencilState = &_depthStencilInfo;
+
+    _state->colorBlendAttachments = Containers::Array<VkPipelineColorBlendAttachmentState>{Containers::ValueInit, subpassColorAttachmentCount};
+    for(VkPipelineColorBlendAttachmentState& i: _state->colorBlendAttachments) {
+        i.colorWriteMask = VK_COLOR_COMPONENT_R_BIT|
+                           VK_COLOR_COMPONENT_G_BIT|
+                           VK_COLOR_COMPONENT_B_BIT|
+                           VK_COLOR_COMPONENT_A_BIT;
+    }
+
+    _colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    _colorBlendInfo.attachmentCount = subpassColorAttachmentCount;
+    _colorBlendInfo.pAttachments = _state->colorBlendAttachments;
+    _info.pColorBlendState = &_colorBlendInfo;
+
+    /* pDynamicState left null, gets set by setDynamicStates() if needed */
+
+    _info.layout = pipelineLayout;
+    _info.renderPass = renderPass;
+    _info.subpass = subpass;
+}
+
+RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(NoInitT) noexcept {}
+
+RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(const VkGraphicsPipelineCreateInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info)
+{
+    /* Copy and reroute all top-level nested structs as well */
+    if(info.pViewportState)
+        _info.pViewportState = &(_viewportInfo = *info.pViewportState);
+    if(info.pRasterizationState)
+        _info.pRasterizationState = &(_rasterizationInfo = *info.pRasterizationState);
+    if(info.pMultisampleState)
+        _info.pMultisampleState = &(_multisampleInfo = *info.pMultisampleState);
+    if(info.pDepthStencilState)
+        _info.pDepthStencilState = &(_depthStencilInfo = *info.pDepthStencilState);
+    if(info.pColorBlendState)
+        _info.pColorBlendState = &(_colorBlendInfo = *info.pColorBlendState);
+    if(info.pDynamicState)
+        _info.pDynamicState = &(_dynamicInfo = *info.pDynamicState);
+}
+
+RasterizationPipelineCreateInfo::RasterizationPipelineCreateInfo(RasterizationPipelineCreateInfo&& other) noexcept:
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(other._info),
+    _viewportInfo(other._viewportInfo),
+    _rasterizationInfo(other._rasterizationInfo),
+    _multisampleInfo(other._multisampleInfo),
+    _depthStencilInfo(other._depthStencilInfo),
+    _colorBlendInfo(other._colorBlendInfo),
+    _dynamicInfo(other._dynamicInfo),
+    _state{std::move(other._state)}
+{
+    /* Reroute the pointers */
+    if(_info.pViewportState == &other._viewportInfo)
+        _info.pViewportState = &_viewportInfo;
+    if(_info.pRasterizationState == &other._rasterizationInfo)
+        _info.pRasterizationState = &_rasterizationInfo;
+    if(_info.pMultisampleState == &other._multisampleInfo)
+        _info.pMultisampleState = &_multisampleInfo;
+    if(_info.pDepthStencilState == &other._depthStencilInfo)
+        _info.pDepthStencilState = &_depthStencilInfo;
+    if(_info.pColorBlendState == &other._colorBlendInfo)
+        _info.pColorBlendState = &_colorBlendInfo;
+    if(_info.pDynamicState == &other._dynamicInfo)
+        _info.pDynamicState = &_dynamicInfo;
+
+    /* Ensure the previous instance doesn't reference state that's now ours */
+    /** @todo this is now more like a destructible move, do it more selectively
+        and clear only what's really ours and not external? */
+    other._info.pNext = nullptr;
+    other._info.stageCount = 0;
+    other._info.pStages = nullptr;
+    other._info.pVertexInputState = nullptr;
+    other._info.pInputAssemblyState = nullptr;
+    other._info.pTessellationState = nullptr;
+    other._info.pViewportState = nullptr;
+    other._info.pRasterizationState = nullptr;
+    other._info.pMultisampleState = nullptr;
+    other._info.pDepthStencilState = nullptr;
+    other._info.pColorBlendState = nullptr;
+    other._info.pDynamicState = nullptr;
+}
+
+RasterizationPipelineCreateInfo::~RasterizationPipelineCreateInfo() = default;
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::operator=(RasterizationPipelineCreateInfo&& other) noexcept {
+    using std::swap;
+    swap(other._info, _info);
+    swap(other._viewportInfo, _viewportInfo);
+    swap(other._rasterizationInfo, _rasterizationInfo);
+    swap(other._multisampleInfo, _multisampleInfo);
+    swap(other._depthStencilInfo, _depthStencilInfo);
+    swap(other._colorBlendInfo, _colorBlendInfo);
+    swap(other._dynamicInfo, _dynamicInfo);
+    swap(other._state, _state);
+
+    /* Reroute the pointers */
+    if(_info.pViewportState == &other._viewportInfo)
+        _info.pViewportState = &_viewportInfo;
+    if(_info.pRasterizationState == &other._rasterizationInfo)
+        _info.pRasterizationState = &_rasterizationInfo;
+    if(_info.pMultisampleState == &other._multisampleInfo)
+        _info.pMultisampleState = &_multisampleInfo;
+    if(_info.pDepthStencilState == &other._depthStencilInfo)
+        _info.pDepthStencilState = &_depthStencilInfo;
+    if(_info.pColorBlendState == &other._colorBlendInfo)
+        _info.pColorBlendState = &_colorBlendInfo;
+    if(_info.pDynamicState == &other._dynamicInfo)
+        _info.pDynamicState = &_dynamicInfo;
+
+    /* And other way around as well */
+    if(other._info.pViewportState == &_viewportInfo)
+        other._info.pViewportState = &other._viewportInfo;
+    if(other._info.pRasterizationState == &_rasterizationInfo)
+        other._info.pRasterizationState = &other._rasterizationInfo;
+    if(other._info.pMultisampleState == &_multisampleInfo)
+        other._info.pMultisampleState = &other._multisampleInfo;
+    if(other._info.pDepthStencilState == &_depthStencilInfo)
+        other._info.pDepthStencilState = &other._depthStencilInfo;
+    if(other._info.pColorBlendState == &_colorBlendInfo)
+        other._info.pColorBlendState = &other._colorBlendInfo;
+    if(other._info.pDynamicState == &_dynamicInfo)
+        other._info.pDynamicState = &other._dynamicInfo;
+
+    return *this;
+}
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setViewport(const Range3D& viewport, const Range2Di& scissor) {
+    _state->viewport = VkViewport(viewport);
+    _state->scissor = VkRect2D(scissor);
+
+    _viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    _viewportInfo.viewportCount = 1;
+    _viewportInfo.pViewports = &_state->viewport;
+    _viewportInfo.scissorCount = 1;
+    _viewportInfo.pScissors = &_state->scissor;
+    _info.pViewportState = &_viewportInfo;
+    return *this;
+}
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setViewport(const Range3D& viewport) {
+    return setViewport(viewport, Range2Di{viewport.xy()});
+}
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setViewport(const Range2D& viewport, const Range2Di& scissor) {
+    return setViewport(Range3D{{viewport.min(), 0.0f}, {viewport.max(), 1.0f}}, scissor);
+}
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setViewport(const Range2D& viewport) {
+    return setViewport(viewport, Range2Di{viewport});
+}
+
+namespace {
+
+constexpr VkDynamicState DynamicRasterizationStateMapping[]{
+    #define _c(value, vkValue) VK_DYNAMIC_STATE_ ## vkValue,
+    #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
+    #undef _c
+};
+
+}
+
+RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setDynamicStates(const DynamicRasterizationStates& states) {
+    /* Count the number of states set, allocate for that */
+    std::size_t count = 0;
+    for(std::size_t i = 0; i != DynamicRasterizationStates::Size; ++i)
+        count += Math::popcount(states.data()[i]);
+    _state->dynamicStates = Containers::Array<VkDynamicState>{Containers::NoInit, count};
+
+    std::size_t offset = 0;
+    for(std::uint64_t i = 0; i != Containers::arraySize(DynamicRasterizationStateMapping); ++i)
+        if(states & DynamicRasterizationState(i))
+            _state->dynamicStates[offset++] = DynamicRasterizationStateMapping[i];
+    CORRADE_INTERNAL_ASSERT(offset == count);
+
+    _dynamicInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    _dynamicInfo.dynamicStateCount = count;
+    _dynamicInfo.pDynamicStates = _state->dynamicStates;
+    _info.pDynamicState = &_dynamicInfo;
+    return *this;
+}
+
+Pipeline Pipeline::wrap(Device& device, const VkPipeline handle, const HandleFlags flags) {
+    Pipeline out{NoCreate};
+    out._device = &device;
+    out._handle = handle;
+    out._flags = flags;
+    return out;
+}
+
+Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
+    _device{&device},
+    #ifdef CORRADE_GRACEFUL_ASSERT
+    /* Otherwise vkDestroyPipeline() crashes when we hit the assert */
+    _handle{},
+    #endif
+    _flags{HandleFlag::DestroyOnDestruction}
+{
+    /* Doesn't check that the viewport is really a dynamic state, but should
+       catch most cases without false positives */
+    CORRADE_ASSERT(info->pViewportState || info->pRasterizationState->rasterizerDiscardEnable || info->pDynamicState,
+        "Vk::Pipeline: if rasterization discard is not enabled, the viewport has to be either dynamic or set via setViewport()", );
+
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateGraphicsPipelines(device, {}, 1, info, nullptr, &_handle));
+}
+
+Pipeline::Pipeline(NoCreateT): _device{}, _handle{} {}
+
+Pipeline::Pipeline(Pipeline&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+    other._handle = {};
+}
+
+Pipeline::~Pipeline() {
+    if(_handle && (_flags & HandleFlag::DestroyOnDestruction))
+        (**_device).DestroyPipeline(*_device, _handle, nullptr);
+}
+
+Pipeline& Pipeline::operator=(Pipeline&& other) noexcept {
+    using std::swap;
+    swap(other._device, _device);
+    swap(other._handle, _handle);
+    swap(other._flags, _flags);
+    return *this;
+}
+
+VkPipeline Pipeline::release() {
+    const VkPipeline handle = _handle;
+    _handle = {};
+    return handle;
+}
 
 MemoryBarrier::MemoryBarrier(const Accesses sourceAccesses, const Accesses destinationAccesses): _barrier{} {
     _barrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;

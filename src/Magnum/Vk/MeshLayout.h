@@ -179,7 +179,8 @@ Wraps a
 @m_class{m-noindent}
 
 describing how vertex attributes are organized in buffers and what's the layout
-of each attribute.
+of each attribute. Used as an input for creating a
+@ref Vk-Pipeline-creation-rasterization "rasterization pipeline".
 
 @section Vk-MeshLayout-usage Usage
 
@@ -195,7 +196,7 @@ vertex buffer when drawing.
 
 @subsection Vk-MeshLayout-usage-comparison Layout comparison
 
-Because a pipeline is tied to a particular mesh layout (apart from certain
+Because a @ref Pipeline is tied to a particular mesh layout (apart from certain
 aspects that can be controlled via dynamic state), new pipelines should be
 created only when the layout is actually different. For that, the class
 provides a @ref operator==(), which returns @cpp true @ce when the two layouts

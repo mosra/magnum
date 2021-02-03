@@ -1275,9 +1275,20 @@ enum class DeviceFeature: UnsignedShort {
     /* VkPhysicalDeviceExtendedDynamicStateFeaturesEXT, #268 */
 
     /**
-     * Extended dynamic state is supported.
+     * The @ref DynamicRasterizationState::CullMode,
+     * @relativeref{DynamicRasterizationState,FrontFace},
+     * @relativeref{DynamicRasterizationState,PrimitiveTopology},
+     * @relativeref{DynamicRasterizationState,ViewportWithCount},
+     * @relativeref{DynamicRasterizationState,ScissorWithCount},
+     * @relativeref{DynamicRasterizationState,VertexInputBindingStride},
+     * @relativeref{DynamicRasterizationState,DepthTestEnable},
+     * @relativeref{DynamicRasterizationState,DepthWriteEnable},
+     * @relativeref{DynamicRasterizationState,DepthCompareOperation},
+     * @relativeref{DynamicRasterizationState,DepthBoundsTestEnable},
+     * @relativeref{DynamicRasterizationState,StencilTestEnable} and
+     * @relativeref{DynamicRasterizationState,StencilOperation} extended
+     * dynamic state is supported.
      * @requires_vk_extension Extension @vk_extension{EXT,extended_dynamic_state}
-     * @todoc list the actual DynamicState values once the enum exists
      */
     ExtendedDynamicState,
 

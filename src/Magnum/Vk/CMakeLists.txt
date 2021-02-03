@@ -33,7 +33,6 @@ set(MagnumVk_SRCS
     Fence.cpp
     Framebuffer.cpp
     Handle.cpp
-    Pipeline.cpp
     PipelineLayout.cpp
     Queue.cpp
     Result.cpp
@@ -58,6 +57,7 @@ set(MagnumVk_GracefulAssert_SRCS
     LayerProperties.cpp
     MeshLayout.cpp
     Memory.cpp
+    Pipeline.cpp
     PixelFormat.cpp
     RenderPass.cpp
     ShaderSet.cpp
@@ -98,6 +98,7 @@ set(MagnumVk_HEADERS
     PipelineLayoutCreateInfo.h
     PixelFormat.h
     Queue.h
+    RasterizationPipelineCreateInfo.h
     RenderPass.h
     RenderPassCreateInfo.h
     Result.h
@@ -121,6 +122,7 @@ set(MagnumVk_PRIVATE_HEADERS
 
     Implementation/compressedPixelFormatMapping.hpp
     Implementation/deviceFeatureMapping.hpp
+    Implementation/dynamicRasterizationStateMapping.hpp
     Implementation/pixelFormatMapping.hpp
     Implementation/structureHelpers.h
     Implementation/vertexFormatMapping.hpp)

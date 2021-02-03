@@ -70,7 +70,7 @@ Vulkan handle                           | Matching API
 @type_vk{ImageView}                     | @ref ImageView
 @type_vk{Instance}                      | @ref Instance
 @type_vk{PhysicalDevice}                | @ref DeviceProperties
-@type_vk{Pipeline}                      | |
+@type_vk{Pipeline}                      | @ref Pipeline
 @type_vk{PipelineLayout}                | @ref PipelineLayout
 @type_vk{QueryPool}                     | |
 @type_vk{Queue}                         | @ref Queue
@@ -186,7 +186,6 @@ Vulkan function                         | Matching API
 @fn_vk{CreateBuffer}, \n @fn_vk{DestroyBuffer} | @ref Buffer constructor and destructor
 @fn_vk{CreateBufferView}, \n @fn_vk{DestroyBufferView} | |
 @fn_vk{CreateCommandPool}, \n @fn_vk{DestroyCommandPool} | @ref CommandPool constructor and destructor
-@fn_vk{CreateComputePipelines}, \n @fn_vk{DestroyComputePipelines} | |
 @fn_vk{CreateDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugReportCallbackEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -200,11 +199,10 @@ Vulkan function                         | Matching API
 @fn_vk{CreateImage}, \n @fn_vk{DestroyImage} | @ref Image constructor and destructor
 @fn_vk{CreateImageView}, \n @fn_vk{DestroyImageView} | @ref ImageView constructor and destructor
 @fn_vk{CreateInstance}, \n @fn_vk{DestroyInstance} | @ref Instance constructor and destructor
-@fn_vk{CreatePipeline}, \n @fn_vk{DestroyPipeline} | |
+@fn_vk{CreateGraphicsPipelines}, \n @fn_vk{CreateComputePipelines}, \n @fn_vk{CreateRayTracingPipelinesKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyPipeline} | @ref Pipeline constructor and destructor
 @fn_vk{CreatePipelineCache}, \n @fn_vk{DestroyPipelineCache} | |
 @fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | @ref PipelineLayout constructor and destructor
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
-@fn_vk{CreateRayTracingPipelinesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
 @fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -530,7 +528,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{GraphicsPipelineCreateInfo}    | |
+@type_vk{GraphicsPipelineCreateInfo}    | @ref RasterizationPipelineCreateInfo
 
 @subsection vulkan-mapping-structures-i I
 
@@ -655,21 +653,21 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceVulkan12Properties} @m_class{m-label m-flat m-success} **1.2** | ignored for compatibility reasons
 @type_vk{PhysicalDeviceVulkanMemoryModelFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
 @type_vk{PipelineCacheCreateInfo}       | |
-@type_vk{PipelineColorBlendAttachmentState} | |
-@type_vk{PipelineColorBlendStateCreateInfo} | |
-@type_vk{PipelineDepthStencilStateCreateInfo} | |
-@type_vk{PipelineDynamicStateCreateInfo} | |
+@type_vk{PipelineColorBlendAttachmentState} | @ref RasterizationPipelineCreateInfo
+@type_vk{PipelineColorBlendStateCreateInfo} | @ref RasterizationPipelineCreateInfo
+@type_vk{PipelineDepthStencilStateCreateInfo} | @ref RasterizationPipelineCreateInfo
+@type_vk{PipelineDynamicStateCreateInfo} | @ref RasterizationPipelineCreateInfo
 @type_vk{PipelineInputAssemblyStateCreateInfo} | @ref MeshLayout
 @type_vk{PipelineLayoutCreateInfo}      | @ref PipelineLayoutCreateInfo
 @type_vk{PipelineLibraryCreateInfoKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{PipelineMultisampleStateCreateInfo} | |
-@type_vk{PipelineRasterizationStateCreateInfo} | |
+@type_vk{PipelineMultisampleStateCreateInfo} | @ref RasterizationPipelineCreateInfo
+@type_vk{PipelineRasterizationStateCreateInfo} | @ref RasterizationPipelineCreateInfo
 @type_vk{PipelineShaderStageCreateInfo} | @ref ShaderSet
 @type_vk{PipelineTessellationStateCreateInfo} | |
 @type_vk{PipelineTessellationDomainOriginStateCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PipelineVertexInputDivisorStateCreateInfoEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref MeshLayout
 @type_vk{PipelineVertexInputStateCreateInfo} | @ref MeshLayout
-@type_vk{PipelineViewportStateCreateInfo} | |
+@type_vk{PipelineViewportStateCreateInfo} | @ref RasterizationPipelineCreateInfo
 @type_vk{ProtectedSubmitInfo}           | |
 @type_vk{PushConstantRange}             | |
 
@@ -831,7 +829,7 @@ Vulkan enum                             | Matching API
 @type_vk{DescriptorType}                | |
 @type_vk{DeviceQueueCreateFlagBits}, \n @type_vk{DeviceQueueCreateFlags} | |
 @type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
-@type_vk{DynamicState}                  | |
+@type_vk{DynamicState}                  | @ref DynamicRasterizationState
 
 @subsection vulkan-mapping-enums-e E
 
@@ -921,7 +919,7 @@ Vulkan enum                             | Matching API
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
 @type_vk{PipelineCacheHeaderVersion}    | |
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
-@type_vk{PipelineCreateFlagBits}, \n @type_vk{PipelineCreateFlags} | |
+@type_vk{PipelineCreateFlagBits}, \n @type_vk{PipelineCreateFlags} | @ref RasterizationPipelineCreateInfo::Flag, \n @ref RasterizationPipelineCreateInfo::Flags
 @type_vk{PipelineShaderStageCreateFlagBits}, \n @type_vk{PipelineShaderStageCreateFlags} | |
 @type_vk{PipelineStageFlagBits}, \n @type_vk{PipelineStageFlags} | @ref PipelineStage, \n @ref PipelineStages
 @type_vk{PointClippingBehavior} @m_class{m-label m-flat m-success} **KHR, 1.1** | |

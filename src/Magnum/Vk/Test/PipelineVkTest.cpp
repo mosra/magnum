@@ -23,19 +23,44 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Directory.h>
+
+#include "Magnum/Math/Range.h"
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
+#include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/Pipeline.h"
+#include "Magnum/Vk/PipelineLayoutCreateInfo.h"
 #include "Magnum/Vk/PixelFormat.h"
+#include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
+#include "Magnum/Vk/RenderPassCreateInfo.h"
+#include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/ShaderCreateInfo.h"
+#include "Magnum/Vk/ShaderSet.h"
+#include "Magnum/Vk/VertexFormat.h"
 #include "Magnum/Vk/VulkanTester.h"
+
+#include "configure.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
 struct PipelineVkTest: VulkanTester {
     explicit PipelineVkTest();
+
+    void constructRasterization();
+    void constructRasterizationViewportNotSet();
+    void constructRasterizationViewportNotSetDiscardEnabled();
+    void constructRasterizationViewportNotSetDynamic();
+    void constructMove();
+
+    void wrap();
 
     void pipelineBarrier();
     void pipelineBarrierExecutionOnly();
@@ -45,11 +70,282 @@ struct PipelineVkTest: VulkanTester {
 };
 
 PipelineVkTest::PipelineVkTest() {
-    addTests({&PipelineVkTest::pipelineBarrier,
+    addTests({&PipelineVkTest::constructRasterization,
+              &PipelineVkTest::constructRasterizationViewportNotSet,
+              &PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled,
+              &PipelineVkTest::constructRasterizationViewportNotSetDynamic,
+              &PipelineVkTest::constructMove,
+
+              &PipelineVkTest::wrap,
+
+              &PipelineVkTest::pipelineBarrier,
               &PipelineVkTest::pipelineBarrierExecutionOnly,
               &PipelineVkTest::pipelineBarrierGlobalMemory,
               &PipelineVkTest::pipelineBarrierBufferMemory,
               &PipelineVkTest::pipelineBarrierImageMemory});
+}
+
+using namespace Containers::Literals;
+
+void PipelineVkTest::constructRasterization() {
+    /* Wonderful, this contains basically EVERYTHING ELSE that got implemented
+       until now. */
+
+    {
+        RenderPass renderPass{device(), RenderPassCreateInfo{}
+            .setAttachments({
+                AttachmentDescription{PixelFormat::RGBA8Unorm,
+                    AttachmentLoadOperation::Clear,
+                    AttachmentStoreOperation::Store,
+                    ImageLayout::Undefined,
+                    ImageLayout::ColorAttachment}
+            })
+            .addSubpass(SubpassDescription{}.setColorAttachments({
+                AttachmentReference{0, ImageLayout::ColorAttachment}
+            }))
+        };
+
+        /* Not sure if this is really needed, but the shader needs those inputs
+           so playing it safe */
+        MeshLayout meshLayout{MeshPrimitive::Triangles};
+        meshLayout
+            .addBinding(0, 2*4*4)
+            .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+            .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+        PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+        Shader shader{device(), ShaderCreateInfo{
+            Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+        }};
+
+        ShaderSet shaderSet;
+        shaderSet
+            .addShader(ShaderStage::Vertex, shader, "ver"_s)
+            .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+        Pipeline pipeline{device(), RasterizationPipelineCreateInfo{
+                shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+            .setViewport({{}, {200, 200}})
+        };
+        CORRADE_VERIFY(pipeline.handle());
+        CORRADE_COMPARE(pipeline.handleFlags(), HandleFlag::DestroyOnDestruction);
+    }
+
+    /* Shouldn't crash or anything */
+    CORRADE_VERIFY(true);
+}
+
+void PipelineVkTest::constructRasterizationViewportNotSet() {
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    ShaderSet shaderSet;
+
+    RasterizationPipelineCreateInfo info{
+        shaderSet, meshLayout, pipelineLayout, {}, 0, 1
+    };
+    CORRADE_VERIFY(!info->pViewportState);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Pipeline pipeline{device(), info};
+    CORRADE_COMPARE(out.str(), "Vk::Pipeline: if rasterization discard is not enabled, the viewport has to be either dynamic or set via setViewport()\n");
+}
+
+void PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    RasterizationPipelineCreateInfo info{shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1};
+    CORRADE_VERIFY(!info->pViewportState);
+    /** @todo switch to Magnum API once exposed */
+    const_cast<VkPipelineRasterizationStateCreateInfo*>(info->pRasterizationState)->rasterizerDiscardEnable = true;
+    Pipeline pipeline{device(), info};
+
+    /* The only thing I want to verify is that this doesn't crash or assert */
+    CORRADE_VERIFY(pipeline.handle());
+}
+
+void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs
+       so playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    RasterizationPipelineCreateInfo info{
+        shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1};
+    info.setViewport(Range3D{}) /* Has to be set because the count is used */
+        .setDynamicStates(DynamicRasterizationState::Viewport|
+                          DynamicRasterizationState::Scissor);
+    /* But the data don't have to be there */
+    const_cast<VkPipelineViewportStateCreateInfo*>(info->pViewportState)->pViewports = nullptr;
+    const_cast<VkPipelineViewportStateCreateInfo*>(info->pViewportState)->pScissors = nullptr;
+
+    Pipeline pipeline{device(), info};
+
+    /* The only thing I want to verify is that this doesn't crash or assert */
+    CORRADE_VERIFY(pipeline.handle());
+}
+
+void PipelineVkTest::constructMove() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    Pipeline a{device(), RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {200, 200}})
+    };
+    VkPipeline handle = a.handle();
+
+    Pipeline b = std::move(a);
+    CORRADE_VERIFY(!a.handle());
+    CORRADE_COMPARE(b.handle(), handle);
+    CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+
+    Pipeline c{NoCreate};
+    c = std::move(b);
+    CORRADE_VERIFY(!b.handle());
+    CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
+    CORRADE_COMPARE(c.handle(), handle);
+    CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Pipeline>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<Pipeline>::value);
+}
+
+void PipelineVkTest::wrap() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    VkPipeline pipeline{};
+    CORRADE_COMPARE(Result(device()->CreateGraphicsPipelines(device(), {}, 1,
+        RasterizationPipelineCreateInfo{shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+            .setViewport({{}, {200, 200}}),
+        nullptr, &pipeline)), Result::Success);
+
+    auto wrapped = Pipeline::wrap(device(), pipeline, HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(wrapped.handle(), pipeline);
+
+    /* Release the handle again, destroy by hand */
+    CORRADE_COMPARE(wrapped.release(), pipeline);
+    CORRADE_VERIFY(!wrapped.handle());
+    device()->DestroyPipeline(device(), pipeline, nullptr);
 }
 
 void PipelineVkTest::pipelineBarrier() {

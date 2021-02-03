@@ -43,7 +43,7 @@ namespace Magnum { namespace Vk {
 @brief Pipeline layout
 @m_since_latest
 
-Wraps a @type_vk_keyword{PipelineLayout}.
+Wraps a @type_vk_keyword{PipelineLayout}. Used in a @ref Pipeline.
 */
 class MAGNUM_VK_EXPORT PipelineLayout {
     public:
