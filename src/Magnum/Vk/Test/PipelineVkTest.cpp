@@ -62,11 +62,11 @@ struct PipelineVkTest: VulkanTester {
 
     void wrap();
 
-    void pipelineBarrier();
-    void pipelineBarrierExecutionOnly();
-    void pipelineBarrierGlobalMemory();
-    void pipelineBarrierBufferMemory();
-    void pipelineBarrierImageMemory();
+    void cmdBarrier();
+    void cmdBarrierExecutionOnly();
+    void cmdBarrierGlobalMemory();
+    void cmdBarrierBufferMemory();
+    void cmdBarrierImageMemory();
 };
 
 PipelineVkTest::PipelineVkTest() {
@@ -78,11 +78,11 @@ PipelineVkTest::PipelineVkTest() {
 
               &PipelineVkTest::wrap,
 
-              &PipelineVkTest::pipelineBarrier,
-              &PipelineVkTest::pipelineBarrierExecutionOnly,
-              &PipelineVkTest::pipelineBarrierGlobalMemory,
-              &PipelineVkTest::pipelineBarrierBufferMemory,
-              &PipelineVkTest::pipelineBarrierImageMemory});
+              &PipelineVkTest::cmdBarrier,
+              &PipelineVkTest::cmdBarrierExecutionOnly,
+              &PipelineVkTest::cmdBarrierGlobalMemory,
+              &PipelineVkTest::cmdBarrierBufferMemory,
+              &PipelineVkTest::cmdBarrierImageMemory});
 }
 
 using namespace Containers::Literals;
@@ -348,7 +348,7 @@ void PipelineVkTest::wrap() {
     device()->DestroyPipeline(device(), pipeline, nullptr);
 }
 
-void PipelineVkTest::pipelineBarrier() {
+void PipelineVkTest::cmdBarrier() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -377,7 +377,7 @@ void PipelineVkTest::pipelineBarrier() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierExecutionOnly() {
+void PipelineVkTest::cmdBarrierExecutionOnly() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -392,7 +392,7 @@ void PipelineVkTest::pipelineBarrierExecutionOnly() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierGlobalMemory() {
+void PipelineVkTest::cmdBarrierGlobalMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -409,7 +409,7 @@ void PipelineVkTest::pipelineBarrierGlobalMemory() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierBufferMemory() {
+void PipelineVkTest::cmdBarrierBufferMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
@@ -428,7 +428,7 @@ void PipelineVkTest::pipelineBarrierBufferMemory() {
     CORRADE_VERIFY(true);
 }
 
-void PipelineVkTest::pipelineBarrierImageMemory() {
+void PipelineVkTest::cmdBarrierImageMemory() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
