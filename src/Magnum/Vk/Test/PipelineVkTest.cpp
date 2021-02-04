@@ -271,42 +271,18 @@ void PipelineVkTest::constructCompute() {
 }
 
 void PipelineVkTest::constructMove() {
-    RenderPass renderPass{device(), RenderPassCreateInfo{}
-        .setAttachments({
-            AttachmentDescription{PixelFormat::RGBA8Unorm,
-                AttachmentLoadOperation::Clear,
-                AttachmentStoreOperation::Store,
-                ImageLayout::Undefined,
-                ImageLayout::ColorAttachment}
-        })
-        .addSubpass(SubpassDescription{}.setColorAttachments({
-            AttachmentReference{0, ImageLayout::ColorAttachment}
-        }))
-    };
-
-    /* Not sure if this is really needed, but the shader needs those inputs so
-       playing it safe */
-    MeshLayout meshLayout{MeshPrimitive::Triangles};
-    meshLayout
-        .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
-
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
     }};
 
     ShaderSet shaderSet;
-    shaderSet
-        .addShader(ShaderStage::Vertex, shader, "ver"_s)
-        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
 
-    Pipeline a{device(), RasterizationPipelineCreateInfo{
-            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
-        .setViewport({{}, {200, 200}})
-    };
+    Pipeline a{device(), ComputePipelineCreateInfo{
+        shaderSet, pipelineLayout
+    }};
     VkPipeline handle = a.handle();
 
     Pipeline b = std::move(a);
@@ -326,42 +302,18 @@ void PipelineVkTest::constructMove() {
 }
 
 void PipelineVkTest::wrap() {
-    RenderPass renderPass{device(), RenderPassCreateInfo{}
-        .setAttachments({
-            AttachmentDescription{PixelFormat::RGBA8Unorm,
-                AttachmentLoadOperation::Clear,
-                AttachmentStoreOperation::Store,
-                ImageLayout::Undefined,
-                ImageLayout::ColorAttachment}
-        })
-        .addSubpass(SubpassDescription{}.setColorAttachments({
-            AttachmentReference{0, ImageLayout::ColorAttachment}
-        }))
-    };
-
-    /* Not sure if this is really needed, but the shader needs those inputs so
-       playing it safe */
-    MeshLayout meshLayout{MeshPrimitive::Triangles};
-    meshLayout
-        .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
-
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
     }};
 
     ShaderSet shaderSet;
-    shaderSet
-        .addShader(ShaderStage::Vertex, shader, "ver"_s)
-        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
 
     VkPipeline pipeline{};
-    CORRADE_COMPARE(Result(device()->CreateGraphicsPipelines(device(), {}, 1,
-        RasterizationPipelineCreateInfo{shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
-            .setViewport({{}, {200, 200}}),
+    CORRADE_COMPARE(Result(device()->CreateComputePipelines(device(), {}, 1,
+        ComputePipelineCreateInfo{shaderSet, pipelineLayout},
         nullptr, &pipeline)), Result::Success);
 
     auto wrapped = Pipeline::wrap(device(), pipeline, HandleFlag::DestroyOnDestruction);
