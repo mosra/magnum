@@ -546,7 +546,7 @@ class MAGNUM_VK_EXPORT SubpassDescription {
         SubpassDescription(const SubpassDescription&) = delete;
 
         /** @brief Move constructor */
-        SubpassDescription(SubpassDescription&&) noexcept;
+        SubpassDescription(SubpassDescription&& other) noexcept;
 
         ~SubpassDescription();
 
@@ -554,7 +554,7 @@ class MAGNUM_VK_EXPORT SubpassDescription {
         SubpassDescription& operator=(const SubpassDescription&) = delete;
 
         /** @brief Move assignment */
-        SubpassDescription& operator=(SubpassDescription&&) noexcept;
+        SubpassDescription& operator=(SubpassDescription&& other) noexcept;
 
         /**
          * @brief Set input attachments
