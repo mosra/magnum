@@ -45,6 +45,7 @@ class CommandBuffer;
 /* CommandBufferBeginInfo is useful only in combination with CommandBuffer */
 class CommandPool;
 class CommandPoolCreateInfo;
+class ComputePipelineCreateInfo;
 /* BufferCopy used only directly inside CopyBufferInfo */
 class CopyBufferInfo;
 /* ImageCopy used only directly inside CopyImageInfo */

@@ -434,7 +434,7 @@ Vulkan structure                        | Matching API
 @type_vk{CommandBufferInheritanceInfo}  | |
 @type_vk{CommandPoolCreateInfo}         | @ref CommandPoolCreateInfo
 @type_vk{ComponentMapping}              | |
-@type_vk{ComputePipelineCreateInfo}     | |
+@type_vk{ComputePipelineCreateInfo}     | @ref ComputePipelineCreateInfo
 @type_vk{ConformanceVersion}            | |
 @type_vk{CopyBufferInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyBufferInfo
 @type_vk{CopyBufferToImageInfo2KHR} @m_class{m-label m-flat m-warning} **KHR** | @ref CopyBufferToImageInfo
@@ -919,7 +919,7 @@ Vulkan enum                             | Matching API
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
 @type_vk{PipelineCacheHeaderVersion}    | |
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
-@type_vk{PipelineCreateFlagBits}, \n @type_vk{PipelineCreateFlags} | @ref RasterizationPipelineCreateInfo::Flag, \n @ref RasterizationPipelineCreateInfo::Flags
+@type_vk{PipelineCreateFlagBits}, \n @type_vk{PipelineCreateFlags} | @ref RasterizationPipelineCreateInfo::Flag, \n @ref RasterizationPipelineCreateInfo::Flags, \n @ref ComputePipelineCreateInfo::Flag, \n @ref ComputePipelineCreateInfo::Flags
 @type_vk{PipelineShaderStageCreateFlagBits}, \n @type_vk{PipelineShaderStageCreateFlags} | |
 @type_vk{PipelineStageFlagBits}, \n @type_vk{PipelineStageFlags} | @ref PipelineStage, \n @ref PipelineStages
 @type_vk{PointClippingBehavior} @m_class{m-label m-flat m-success} **KHR, 1.1** | |

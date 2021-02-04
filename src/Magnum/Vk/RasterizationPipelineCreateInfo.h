@@ -291,6 +291,7 @@ Wraps a @type_vk_keyword{GraphicsPipelineCreateInfo}, along with
 
 See @ref Vk-Pipeline-creation-rasterization "Rasterization pipeline creation"
 for usage information.
+@see @ref ComputePipelineCreateInfo
 */
 class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
     public:

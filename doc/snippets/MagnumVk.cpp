@@ -37,6 +37,7 @@
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
+#include "Magnum/Vk/ComputePipelineCreateInfo.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -810,6 +811,23 @@ Vk::Pipeline pipeline{device, Vk::RasterizationPipelineCreateInfo{
     .setViewport({{}, {800.0f, 600.0f}})
 };
 /* [Pipeline-creation-rasterization] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [Pipeline-creation-compute] */
+#include <Magnum/Vk/ComputePipelineCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::ShaderSet shaderSet{DOXYGEN_IGNORE()};
+Vk::PipelineLayout pipelineLayout{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::Pipeline pipeline{device, Vk::ComputePipelineCreateInfo{
+    shaderSet, pipelineLayout
+}};
+/* [Pipeline-creation-compute] */
 }
 
 {

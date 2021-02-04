@@ -25,6 +25,7 @@
 
 #include "Pipeline.h"
 #include "RasterizationPipelineCreateInfo.h"
+#include "ComputePipelineCreateInfo.h"
 #include "CommandBuffer.h"
 
 #include <Corrade/Containers/Array.h>
@@ -259,6 +260,23 @@ RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setDynamicStat
     return *this;
 }
 
+ComputePipelineCreateInfo::ComputePipelineCreateInfo(const ShaderSet& shaderSet, const VkPipelineLayout pipelineLayout, const Flags flags): _info{} {
+    CORRADE_ASSERT(shaderSet.stages().size() == 1,
+        "Vk::ComputePipelineCreateInfo: the shader set has to contain exactly one shader, got" << shaderSet.stages().size(), );
+
+    _info.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+    _info.flags = VkPipelineCreateFlags(flags);
+    _info.stage = shaderSet.stages()[0];
+    _info.layout = pipelineLayout;
+}
+
+ComputePipelineCreateInfo::ComputePipelineCreateInfo(NoInitT) noexcept {}
+
+ComputePipelineCreateInfo::ComputePipelineCreateInfo(const VkComputePipelineCreateInfo& info):
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _info(info) {}
+
 Pipeline Pipeline::wrap(Device& device, const VkPipeline handle, const HandleFlags flags) {
     Pipeline out{NoCreate};
     out._device = &device;
@@ -281,6 +299,10 @@ Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
         "Vk::Pipeline: if rasterization discard is not enabled, the viewport has to be either dynamic or set via setViewport()", );
 
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateGraphicsPipelines(device, {}, 1, info, nullptr, &_handle));
+}
+
+Pipeline::Pipeline(Device& device, const ComputePipelineCreateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateComputePipelines(device, {}, 1, info, nullptr, &_handle));
 }
 
 Pipeline::Pipeline(NoCreateT): _device{}, _handle{} {}

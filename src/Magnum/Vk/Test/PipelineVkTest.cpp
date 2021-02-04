@@ -33,6 +33,7 @@
 #include "Magnum/Vk/BufferCreateInfo.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
+#include "Magnum/Vk/ComputePipelineCreateInfo.h"
 #include "Magnum/Vk/DeviceProperties.h"
 #include "Magnum/Vk/ImageCreateInfo.h"
 #include "Magnum/Vk/MeshLayout.h"
@@ -58,6 +59,7 @@ struct PipelineVkTest: VulkanTester {
     void constructRasterizationViewportNotSet();
     void constructRasterizationViewportNotSetDiscardEnabled();
     void constructRasterizationViewportNotSetDynamic();
+    void constructCompute();
     void constructMove();
 
     void wrap();
@@ -74,6 +76,7 @@ PipelineVkTest::PipelineVkTest() {
               &PipelineVkTest::constructRasterizationViewportNotSet,
               &PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled,
               &PipelineVkTest::constructRasterizationViewportNotSetDynamic,
+              &PipelineVkTest::constructCompute,
               &PipelineVkTest::constructMove,
 
               &PipelineVkTest::wrap,
@@ -243,6 +246,28 @@ void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
 
     /* The only thing I want to verify is that this doesn't crash or assert */
     CORRADE_VERIFY(pipeline.handle());
+}
+
+void PipelineVkTest::constructCompute() {
+    {
+        PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+        Shader shader{device(), ShaderCreateInfo{
+            Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+        }};
+
+        ShaderSet shaderSet;
+        shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+
+        Pipeline pipeline{device(), ComputePipelineCreateInfo{
+            shaderSet, pipelineLayout
+        }};
+        CORRADE_VERIFY(pipeline.handle());
+        CORRADE_COMPARE(pipeline.handleFlags(), HandleFlag::DestroyOnDestruction);
+    }
+
+    /* Shouldn't crash or anything */
+    CORRADE_VERIFY(true);
 }
 
 void PipelineVkTest::constructMove() {

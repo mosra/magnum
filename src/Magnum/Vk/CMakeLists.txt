@@ -70,6 +70,7 @@ set(MagnumVk_HEADERS
     CommandBuffer.h
     CommandPool.h
     CommandPoolCreateInfo.h
+    ComputePipelineCreateInfo.h
     Device.h
     DeviceCreateInfo.h
     DeviceFeatures.h

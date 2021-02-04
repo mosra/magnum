@@ -60,6 +60,14 @@ Certain aspects of the pipeline can be set as dynamic using
 @relativeref{RasterizationPipelineCreateInfo,setDynamicStates()} --- in that
 case a subset of the values passed to the constructor will be ignored. See the
 particular @ref DynamicRasterizationState values for more information.
+
+@section Vk-Pipeline-creation-compute Compute pipeline creation
+
+Compared to a rasterization pipeline, @ref ComputePipelineCreateInfo only takes
+a @ref ShaderSet containing a single @ref ShaderStage::Compute shader and a
+@link PipelineLayout @endlink:
+
+@snippet MagnumVk.cpp Pipeline-creation-compute
 */
 class MAGNUM_VK_EXPORT Pipeline {
     public:
@@ -85,6 +93,15 @@ class MAGNUM_VK_EXPORT Pipeline {
          * @see @fn_vk_keyword{CreateGraphicsPipelines}
          */
         explicit Pipeline(Device& device, const RasterizationPipelineCreateInfo& info);
+
+        /**
+         * @brief Construct a compute pipeline
+         * @param device    Vulkan device to create the pipeline on
+         * @param info      Compite pipeline creation info
+         *
+         * @see @fn_vk_keyword{CreateComputePipelines}
+         */
+        explicit Pipeline(Device& device, const ComputePipelineCreateInfo& info);
 
         /**
          * @brief Construct without creating the pipeline layout

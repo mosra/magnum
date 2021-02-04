@@ -24,17 +24,21 @@
 */
 
 #include <new>
+#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Range.h"
+#include "Magnum/Vk/ComputePipelineCreateInfo.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
+#include "Magnum/Vk/Shader.h"
 #include "Magnum/Vk/ShaderSet.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
@@ -56,6 +60,12 @@ struct PipelineTest: TestSuite::Tester {
     void rasterizationCreateInfoViewportImplicitScissor();
     void rasterizationCreateInfoViewport2DImplicitScissor();
     void rasterizationCreateInfoDynamicState();
+
+    void computeCreateInfoConstruct();
+    void computeCreateInfoConstructOwnedEntrypoint();
+    void computeCreateInfoConstructNotSingleShader();
+    void computeCreateInfoConstructNoInit();
+    void computeCreateInfoConstructFromVk();
 
     void constructNoCreate();
     void constructCopy();
@@ -90,6 +100,12 @@ PipelineTest::PipelineTest() {
               &PipelineTest::rasterizationCreateInfoViewport2DImplicitScissor,
               &PipelineTest::rasterizationCreateInfoDynamicState,
 
+              &PipelineTest::computeCreateInfoConstruct,
+              &PipelineTest::computeCreateInfoConstructOwnedEntrypoint,
+              &PipelineTest::computeCreateInfoConstructNotSingleShader,
+              &PipelineTest::computeCreateInfoConstructNoInit,
+              &PipelineTest::computeCreateInfoConstructFromVk,
+
               &PipelineTest::constructNoCreate,
               &PipelineTest::constructCopy,
 
@@ -106,6 +122,8 @@ PipelineTest::PipelineTest() {
               &PipelineTest::imageMemoryBarrierConstructNoInit,
               &PipelineTest::imageMemoryBarrierConstructFromVk});
 }
+
+using namespace Containers::Literals;
 
 void PipelineTest::dynamicRasterizationStateMapping() {
     /* Same table is in Pipeline.cpp, here just to have something to test the
@@ -508,6 +526,65 @@ void PipelineTest::rasterizationCreateInfoDynamicState() {
     CORRADE_COMPARE(info->pDynamicState->pDynamicStates[0], VK_DYNAMIC_STATE_CULL_MODE_EXT);
     CORRADE_COMPARE(info->pDynamicState->pDynamicStates[1], VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT_EXT);
     CORRADE_COMPARE(info->pDynamicState->pDynamicStates[2], VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE_EXT);
+}
+
+void PipelineTest::computeCreateInfoConstruct() {
+    ShaderSet shaderSet;
+    Containers::StringView name = "dead"_s;
+    /* Yes, I know Fragment is wrong, it's just for testing */
+    shaderSet.addShader(ShaderStage::Fragment, reinterpret_cast<VkShaderModule>(0xbeef), name);
+
+    ComputePipelineCreateInfo info{shaderSet, reinterpret_cast<VkPipelineLayout>(0xdead), ComputePipelineCreateInfo::Flag::DisableOptimization|ComputePipelineCreateInfo::Flag::AllowDerivatives};
+    CORRADE_COMPARE(info->flags, VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT|VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT);
+    CORRADE_COMPARE(info->stage.stage, VK_SHADER_STAGE_FRAGMENT_BIT);
+    CORRADE_COMPARE(info->stage.module, reinterpret_cast<VkShaderModule>(0xbeef));
+    CORRADE_COMPARE(info->stage.pName, name.data());
+    CORRADE_COMPARE(info->layout, reinterpret_cast<VkPipelineLayout>(0xdead));
+}
+
+void PipelineTest::computeCreateInfoConstructOwnedEntrypoint() {
+    ShaderSet shaderSet;
+    shaderSet.addShader({}, {}, "dead!"_s.except(1));
+
+    ComputePipelineCreateInfo info{shaderSet, {}};
+    CORRADE_COMPARE(info->stage.pName, "dead"_s);
+    {
+        CORRADE_EXPECT_FAIL("ComputePipelineCreateInfo currently expects the ShaderSet to stay in scope, referencing its internals.");
+        CORRADE_VERIFY(info->stage.pName != shaderSet.stages()[0].pName);
+    }
+}
+
+void PipelineTest::computeCreateInfoConstructNotSingleShader() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    ShaderSet shaderSet;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    ComputePipelineCreateInfo info{shaderSet, {}};
+    CORRADE_COMPARE(out.str(), "Vk::ComputePipelineCreateInfo: the shader set has to contain exactly one shader, got 0\n");
+}
+
+void PipelineTest::computeCreateInfoConstructNoInit() {
+    ComputePipelineCreateInfo info{NoInit};
+    info->sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+    new(&info) ComputePipelineCreateInfo{NoInit};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<ComputePipelineCreateInfo, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ComputePipelineCreateInfo>::value));
+}
+
+void PipelineTest::computeCreateInfoConstructFromVk() {
+    VkComputePipelineCreateInfo vkInfo;
+    vkInfo.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+
+    ComputePipelineCreateInfo info{vkInfo};
+    CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 }
 
 void PipelineTest::constructNoCreate() {
