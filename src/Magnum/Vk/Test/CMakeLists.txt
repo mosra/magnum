@@ -180,7 +180,9 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkPipelineLayoutVkTest PipelineLayoutVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkQueueVkTest QueueVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkRenderPassVkTest RenderPassVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
-    corrade_add_test(VkShaderVkTest ShaderVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+    corrade_add_test(VkShaderVkTest ShaderVkTest.cpp
+        LIBRARIES MagnumVk MagnumVulkanTester
+        FILES triangle-shaders.spv)
     target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
 
