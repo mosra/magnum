@@ -506,7 +506,7 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * in addition to `sType`, everything else is zero-filled:
          *
          * -    `flags`
-         * -    `pipelineBindPoint` to @val_vk{PIPELINE_BIND_POINT_GRAPHICS,PipelineBindPoint}
+         * -    `pipelineBindPoint` to @ref PipelineBindPoint::Rasterization
          *
          * Use @ref setInputAttachments(), @ref setColorAttachments(),
          * @ref setDepthStencilAttachment() and @ref setPreserveAttachments()

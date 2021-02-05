@@ -114,7 +114,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref CommandBuffer::beginRenderPass(), \n @ref CommandBuffer::nextSubpass(), \n @ref CommandBuffer::endRenderPass()
 @fn_vk{CmdBindDescriptorSets}           | |
 @fn_vk{CmdBindIndexBuffer}              | |
-@fn_vk{CmdBindPipeline}                 | |
+@fn_vk{CmdBindPipeline}                 | @ref CommandBuffer::bindPipeline()
 @fn_vk{CmdBindVertexBuffers}, \n @fn_vk{CmdBindVertexBuffers2EXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdBlitImage}, \n @fn_vk{CmdBlitImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -915,7 +915,7 @@ Vulkan enum                             | Matching API
 --------------------------------------- | ------------
 @type_vk{PeerMemoryFeatureFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @type_vk{PeerMemoryFeatureFlags} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceType}            | @ref DeviceType
-@type_vk{PipelineBindPoint}             | |
+@type_vk{PipelineBindPoint}             | @ref PipelineBindPoint
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |
 @type_vk{PipelineCacheHeaderVersion}    | |
 @type_vk{PipelineCacheCreateFlagBits}, \n @type_vk{PipelineCacheCreateFlags} | |

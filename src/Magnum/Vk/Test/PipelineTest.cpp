@@ -82,6 +82,8 @@ struct PipelineTest: TestSuite::Tester {
     void imageMemoryBarrierConstructImplicitAspect();
     void imageMemoryBarrierConstructNoInit();
     void imageMemoryBarrierConstructFromVk();
+
+    void debugBindPoint();
 };
 
 PipelineTest::PipelineTest() {
@@ -120,7 +122,9 @@ PipelineTest::PipelineTest() {
               &PipelineTest::imageMemoryBarrierConstruct,
               &PipelineTest::imageMemoryBarrierConstructImplicitAspect,
               &PipelineTest::imageMemoryBarrierConstructNoInit,
-              &PipelineTest::imageMemoryBarrierConstructFromVk});
+              &PipelineTest::imageMemoryBarrierConstructFromVk,
+
+              &PipelineTest::debugBindPoint});
 }
 
 using namespace Containers::Literals;
@@ -709,6 +713,12 @@ void PipelineTest::imageMemoryBarrierConstructFromVk() {
 
     ImageMemoryBarrier barrier{vkBarrier};
     CORRADE_COMPARE(barrier->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
+}
+
+void PipelineTest::debugBindPoint() {
+    std::ostringstream out;
+    Debug{&out} << PipelineBindPoint::Compute << PipelineBindPoint(-10007655);
+    CORRADE_COMPARE(out.str(), "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
 }
 
 }}}}

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::Pipeline, @ref Magnum::Vk::MemoryBarrier, @ref Magnum::Vk::BufferMemoryBarrier, @ref Magnum::Vk::ImageMemoryBarrier, enum @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
+ * @brief Class @ref Magnum::Vk::Pipeline, @ref Magnum::Vk::MemoryBarrier, @ref Magnum::Vk::BufferMemoryBarrier, @ref Magnum::Vk::ImageMemoryBarrier, enum @ref Magnum::Vk::PipelineBindPoint, @ref Magnum::Vk::PipelineStage, @ref Magnum::Vk::Access, @ref Magnum::Vk::DependencyFlag, enum set @ref Magnum::Vk::PipelineStages, @ref Magnum::Vk::Accesses, @ref Magnum::Vk::DependencyFlags
  * @m_since_latest
  */
 
@@ -39,6 +39,37 @@
 #include "Magnum/Vk/Vulkan.h"
 
 namespace Magnum { namespace Vk {
+
+/**
+@brief Pipeline bind point
+@m_since_latest
+
+Wraps a @type_vk_keyword{PipelineBindPoint}.
+@see @ref Pipeline::bindPoint()
+@m_enum_values_as_keywords
+*/
+enum class PipelineBindPoint: Int {
+    /**
+     * Rasterization pipeline
+     * @see @ref RasterizationPipelineCreateInfo
+     */
+    Rasterization = VK_PIPELINE_BIND_POINT_GRAPHICS,
+
+    /** Ray tracing pipeline */
+    RayTracing = VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR,
+
+    /**
+     * Compute pipeline
+     * @see @ref ComputePipelineCreateInfo
+     */
+    Compute = VK_PIPELINE_BIND_POINT_COMPUTE
+};
+
+/**
+@debugoperatorenum{PipelineBindPoint}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, PipelineBindPoint value);
 
 /**
 @brief Pipeline
@@ -68,12 +99,22 @@ a @ref ShaderSet containing a single @ref ShaderStage::Compute shader and a
 @link PipelineLayout @endlink:
 
 @snippet MagnumVk.cpp Pipeline-creation-compute
+
+@section Vk-Pipeline-usage Pipeline usage
+
+A pipeline is bound to a compatible command buffer using
+@ref CommandBuffer::bindPipeline(), which replaces any pipeline bound
+previously to the same @ref bindPoint():
+
+@snippet MagnumVk.cpp Pipeline-usage
 */
 class MAGNUM_VK_EXPORT Pipeline {
     public:
         /**
          * @brief Wrap existing Vulkan handle
          * @param device            Vulkan device the pipeline is created on
+         * @param bindPoint         Pipeline bind point. Available through
+         *      @ref bindPoint() afterwards.
          * @param handle            The @type_vk{Pipeline} handle
          * @param flags             Handle flags
          *
@@ -83,13 +124,14 @@ class MAGNUM_VK_EXPORT Pipeline {
          * different behavior.
          * @see @ref release()
          */
-        static Pipeline wrap(Device& device, VkPipeline handle, HandleFlags flags = {});
+        static Pipeline wrap(Device& device, PipelineBindPoint bindPoint, VkPipeline handle, HandleFlags flags = {});
 
         /**
          * @brief Construct a rasterization pipeline
          * @param device    Vulkan device to create the pipeline on
          * @param info      Rasterization pipeline creation info
          *
+         * THe @ref bindPoint() is set to @ref PipelineBindPoint::Rasterization.
          * @see @fn_vk_keyword{CreateGraphicsPipelines}
          */
         explicit Pipeline(Device& device, const RasterizationPipelineCreateInfo& info);
@@ -99,6 +141,7 @@ class MAGNUM_VK_EXPORT Pipeline {
          * @param device    Vulkan device to create the pipeline on
          * @param info      Compite pipeline creation info
          *
+         * THe @ref bindPoint() is set to @ref PipelineBindPoint::Compute.
          * @see @fn_vk_keyword{CreateComputePipelines}
          */
         explicit Pipeline(Device& device, const ComputePipelineCreateInfo& info);
@@ -143,6 +186,14 @@ class MAGNUM_VK_EXPORT Pipeline {
         HandleFlags handleFlags() const { return _flags; }
 
         /**
+         * @brief Pipeline bind point
+         *
+         * Either set implicitly based on what constructor was used, or coming
+         * from the @ref wrap() call.
+         */
+        PipelineBindPoint bindPoint() const { return _bindPoint; }
+
+        /**
          * @brief Release the underlying Vulkan pipeline
          *
          * Releases ownership of the Vulkan pipeline and returns its
@@ -157,6 +208,7 @@ class MAGNUM_VK_EXPORT Pipeline {
         Device* _device;
 
         VkPipeline _handle;
+        PipelineBindPoint _bindPoint;
         HandleFlags _flags;
 };
 

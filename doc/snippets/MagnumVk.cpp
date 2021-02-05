@@ -831,6 +831,17 @@ Vk::Pipeline pipeline{device, Vk::ComputePipelineCreateInfo{
 }
 
 {
+Vk::CommandBuffer cmd{NoCreate};
+/* [Pipeline-usage] */
+Vk::Pipeline pipeline{DOXYGEN_IGNORE(NoCreate)};
+
+DOXYGEN_IGNORE()
+
+cmd.bindPipeline(pipeline);
+/* [Pipeline-usage] */
+}
+
+{
 Vk::Device device{NoCreate};
 /* The include should be a no-op here since it was already included above */
 /* [RenderPass-creation] */

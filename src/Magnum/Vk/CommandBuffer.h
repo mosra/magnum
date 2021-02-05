@@ -358,6 +358,16 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         #endif
 
         /**
+         * @brief Bind a pipeline
+         * @return Reference to self (for method chaining)
+         *
+         * Can be called both inside and outside a render pass. See
+         * @ref Vk-Pipeline-usage for a usage example.
+         * @see @fn_vk_keyword{CmdBindPipeline}
+         */
+        CommandBuffer& bindPipeline(Pipeline& pipeline);
+
+        /**
          * @brief Insert an execution barrier with optional memory dependencies
          * @param sourceStages          Source stages. Has to contain at least
          *      one stage.

@@ -38,6 +38,7 @@
 #include "Magnum/Vk/Handle.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/Integration.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Implementation/DeviceState.h"
 
@@ -175,7 +176,7 @@ struct SubpassDescription::State {
 SubpassDescription::SubpassDescription(const Flags flags): _description{} {
     _description.sType = VK_STRUCTURE_TYPE_SUBPASS_DESCRIPTION_2;
     _description.flags = VkSubpassDescriptionFlags(flags);
-    _description.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    _description.pipelineBindPoint = VkPipelineBindPoint(PipelineBindPoint::Rasterization);
 }
 
 SubpassDescription::SubpassDescription(NoInitT) noexcept {}

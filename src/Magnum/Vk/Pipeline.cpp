@@ -277,10 +277,11 @@ ComputePipelineCreateInfo::ComputePipelineCreateInfo(const VkComputePipelineCrea
        member instead of doing a copy */
     _info(info) {}
 
-Pipeline Pipeline::wrap(Device& device, const VkPipeline handle, const HandleFlags flags) {
+Pipeline Pipeline::wrap(Device& device, const PipelineBindPoint bindPoint, const VkPipeline handle, const HandleFlags flags) {
     Pipeline out{NoCreate};
     out._device = &device;
     out._handle = handle;
+    out._bindPoint = bindPoint;
     out._flags = flags;
     return out;
 }
@@ -291,6 +292,7 @@ Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
     /* Otherwise vkDestroyPipeline() crashes when we hit the assert */
     _handle{},
     #endif
+    _bindPoint{PipelineBindPoint::Rasterization},
     _flags{HandleFlag::DestroyOnDestruction}
 {
     /* Doesn't check that the viewport is really a dynamic state, but should
@@ -301,13 +303,13 @@ Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateGraphicsPipelines(device, {}, 1, info, nullptr, &_handle));
 }
 
-Pipeline::Pipeline(Device& device, const ComputePipelineCreateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
+Pipeline::Pipeline(Device& device, const ComputePipelineCreateInfo& info): _device{&device}, _bindPoint{PipelineBindPoint::Compute}, _flags{HandleFlag::DestroyOnDestruction} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateComputePipelines(device, {}, 1, info, nullptr, &_handle));
 }
 
-Pipeline::Pipeline(NoCreateT): _device{}, _handle{} {}
+Pipeline::Pipeline(NoCreateT): _device{}, _handle{}, _bindPoint{} {}
 
-Pipeline::Pipeline(Pipeline&& other) noexcept: _device{other._device}, _handle{other._handle}, _flags{other._flags} {
+Pipeline::Pipeline(Pipeline&& other) noexcept: _device{other._device}, _handle{other._handle}, _bindPoint{other._bindPoint}, _flags{other._flags} {
     other._handle = {};
 }
 
@@ -320,6 +322,7 @@ Pipeline& Pipeline::operator=(Pipeline&& other) noexcept {
     using std::swap;
     swap(other._device, _device);
     swap(other._handle, _handle);
+    swap(other._bindPoint, _bindPoint);
     swap(other._flags, _flags);
     return *this;
 }
@@ -382,6 +385,11 @@ ImageMemoryBarrier::ImageMemoryBarrier(const VkImageMemoryBarrier& barrier):
        member instead of doing a copy */
     _barrier(barrier) {}
 
+CommandBuffer& CommandBuffer::bindPipeline(Pipeline& pipeline) {
+    (**_device).CmdBindPipeline(_handle, VkPipelineBindPoint(pipeline.bindPoint()), pipeline);
+    return *this;
+}
+
 CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const Containers::ArrayView<const MemoryBarrier> memoryBarriers, const Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, const Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, const DependencyFlags dependencyFlags) {
     /* Once these grow (VkSampleLocationsInfoEXT?), they will need to be
        linearized into a separate array first */
@@ -424,6 +432,23 @@ CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages,
 
 CommandBuffer& CommandBuffer::pipelineBarrier(const PipelineStages sourceStages, const PipelineStages destinationStages, const std::initializer_list<ImageMemoryBarrier> imageMemoryBarriers, const DependencyFlags dependencyFlags) {
     return pipelineBarrier(sourceStages, destinationStages, Containers::arrayView(imageMemoryBarriers), dependencyFlags);
+}
+
+Debug& operator<<(Debug& debug, const PipelineBindPoint value) {
+    debug << "Vk::PipelineBindPoint" << Debug::nospace;
+
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Vk::PipelineBindPoint::value: return debug << "::" << Debug::nospace << #value;
+        _c(Rasterization)
+        _c(RayTracing)
+        _c(Compute)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    /* Vulkan docs have the values in decimal, so not converting to hex */
+    return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
 }
 
 }}

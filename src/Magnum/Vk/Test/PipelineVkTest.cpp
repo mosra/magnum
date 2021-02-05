@@ -64,6 +64,8 @@ struct PipelineVkTest: VulkanTester {
 
     void wrap();
 
+    void cmdBind();
+
     void cmdBarrier();
     void cmdBarrierExecutionOnly();
     void cmdBarrierGlobalMemory();
@@ -80,6 +82,8 @@ PipelineVkTest::PipelineVkTest() {
               &PipelineVkTest::constructMove,
 
               &PipelineVkTest::wrap,
+
+              &PipelineVkTest::cmdBind,
 
               &PipelineVkTest::cmdBarrier,
               &PipelineVkTest::cmdBarrierExecutionOnly,
@@ -133,6 +137,7 @@ void PipelineVkTest::constructRasterization() {
         };
         CORRADE_VERIFY(pipeline.handle());
         CORRADE_COMPARE(pipeline.handleFlags(), HandleFlag::DestroyOnDestruction);
+        CORRADE_COMPARE(pipeline.bindPoint(), PipelineBindPoint::Rasterization);
     }
 
     /* Shouldn't crash or anything */
@@ -289,6 +294,7 @@ void PipelineVkTest::constructMove() {
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(b.bindPoint(), PipelineBindPoint::Compute);
 
     Pipeline c{NoCreate};
     c = std::move(b);
@@ -296,6 +302,7 @@ void PipelineVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(c.bindPoint(), PipelineBindPoint::Compute);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Pipeline>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Pipeline>::value);
@@ -316,13 +323,41 @@ void PipelineVkTest::wrap() {
         ComputePipelineCreateInfo{shaderSet, pipelineLayout},
         nullptr, &pipeline)), Result::Success);
 
-    auto wrapped = Pipeline::wrap(device(), pipeline, HandleFlag::DestroyOnDestruction);
+    auto wrapped = Pipeline::wrap(device(), PipelineBindPoint::Compute, pipeline, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), pipeline);
+    CORRADE_COMPARE(wrapped.bindPoint(), PipelineBindPoint::Compute);
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), pipeline);
     CORRADE_VERIFY(!wrapped.handle());
     device()->DestroyPipeline(device(), pipeline, nullptr);
+}
+
+void PipelineVkTest::cmdBind() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        /* This might blow up if queue() isn't the one matching this family */
+        device().properties().pickQueueFamily(QueueFlag::Graphics|QueueFlag::Compute)}};
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+
+    Pipeline pipeline{device(), ComputePipelineCreateInfo{
+        shaderSet, pipelineLayout
+    }};
+
+    pool.allocate()
+        .begin()
+        .bindPipeline(pipeline)
+        .end();
+
+    /* Does not do anything visible, so just test that it didn't blow up */
+    CORRADE_VERIFY(true);
 }
 
 void PipelineVkTest::cmdBarrier() {

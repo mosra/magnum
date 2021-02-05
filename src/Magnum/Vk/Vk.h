@@ -100,6 +100,7 @@ typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
 class MeshLayout;
 enum class MeshPrimitive: Int;
 class Pipeline;
+enum class PipelineBindPoint: Int;
 class PipelineLayout;
 class PipelineLayoutCreateInfo;
 enum class PipelineStage: UnsignedInt;
