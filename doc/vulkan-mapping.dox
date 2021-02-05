@@ -425,9 +425,9 @@ Vulkan structure                        | Matching API
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
 @type_vk{ClearAttachment}               | |
-@type_vk{ClearColorValue}               | convertible from/to @ref Magnum::Vector3 "Vector3", @ref Magnum::Color3 "Color3", @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" using @ref Magnum/Vk/Integration.h
-@type_vk{ClearDepthStencilValue}        | |
-@type_vk{ClearValue}                    | |
+@type_vk{ClearColorValue}               | convertible from/to @ref Magnum::Vector3 "Vector3", @ref Magnum::Color3 "Color3", @ref Magnum::Vector4 "Vector4", @ref Magnum::Color4 "Color4", @ref Magnum::Vector4i "Vector4i", @ref Magnum::Vector4ui "Vector4ui" using @ref Magnum/Vk/Integration.h; only exposed through @ref RenderPassBeginInfo::clearColor() and @ref CommandBuffer::clearColorImage() overloads
+@type_vk{ClearDepthStencilValue}        | only exposed through @ref RenderPassBeginInfo::clearDepthStencil(), @ref CommandBuffer::clearDepthStencilImage() and friends
+@type_vk{ClearValue}                    | only exposed through @ref RenderPassBeginInfo::clearColor() and @relativeref{RenderPassBeginInfo,clearDepthStencil()} overloads
 @type_vk{ClearRect}                     | convertible from/to @ref Range3Di using @ref Magnum/Vk/Integration.h
 @type_vk{CommandBufferAllocateInfo}     | not exposed, internal to @ref CommandPool::allocate()
 @type_vk{CommandBufferBeginInfo}        | @ref CommandBufferBeginInfo
