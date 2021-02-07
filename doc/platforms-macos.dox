@@ -35,10 +35,6 @@ namespace Magnum {
 
 @todoc code coverage
 
-With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
-4.1 (i.e., two versions before compute shaders are available). Moreover, OpenGL
-is deprecated since macOS 10.14.
-
 See also @ref platforms-ios.
 
 @section platforms-macos-bundle Bundle creation
@@ -246,7 +242,33 @@ sudo rm -rf /Library/Developer/CommandLineTools
 sudo xcode-select --install
 @endcode
 
-@subsection platforms-macos-troubleshooting-gl Mac-specific OpenGL behavior
+@section platforms-macos-vulkan Vulkan on macOS
+
+Vulkan on macOS is implemented on top of Metal, and there are two possible
+ways:
+
+-   Using [MoltenVK](https://github.com/KhronosGroup/MoltenVK) directly. The
+    library can supplement a Vulkan loader as well, which means you don't need
+    two libraries, however this way you lose the possibility to have multiple
+    devices (for example a SwiftShader software rendering). MoltenVK is
+    directly available in Homebrew as `molten-vk`.
+-   Using [Vulkan Loader](https://github.com/KhronosGroup/Vulkan-Loader)
+    together with MoltenVK and possibly other device implementations. That way
+    you'll get the benefits of a standard loader and device selection. The
+    loader isn't available in Homebrew so you need to either install the whole
+    several-hunred-megabyte SDK or [build it from source](https://github.com/KhronosGroup/Vulkan-Loader/blob/master/BUILD.md#building-on-macos).
+
+Magnum's own [FindVulkan.cmake](https://github.com/mosra/magnum/blob/master/modules/FindVulkan.cmake)
+will look for the Vulkan Loader first and if not found, falls back to searching
+for MoltenVK.
+
+@section platforms-macos-gl OpenGL on macOS
+
+With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
+4.1 (i.e., two versions before compute shaders are available). Moreover, OpenGL
+is deprecated since macOS 10.14.
+
+These are known macOS-specific OpenGL issues:
 
 -   @ref GL::AbstractShaderProgram::validate() expects that the shader has a
     properly configured framebuffer bound along with proper @ref GL::Renderer

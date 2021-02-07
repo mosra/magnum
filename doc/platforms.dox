@@ -28,6 +28,7 @@ namespace Magnum {
 /** @page platforms Platform-specific guides
 @brief General information, tips and troubleshooting for particular platforms
 
+-   @subpage platforms-vk --- @copybrief platforms-vk
 -   @subpage platforms-gl --- @copybrief platforms-gl
 -   @subpage platforms-linux --- @copybrief platforms-linux
 -   @subpage platforms-windows --- @copybrief platforms-windows
