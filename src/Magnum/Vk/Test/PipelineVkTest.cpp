@@ -276,25 +276,49 @@ void PipelineVkTest::constructCompute() {
 }
 
 void PipelineVkTest::constructMove() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
     }};
 
     ShaderSet shaderSet;
-    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
 
-    Pipeline a{device(), ComputePipelineCreateInfo{
-        shaderSet, pipelineLayout
-    }};
+    Pipeline a{device(), RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {200, 200}})
+    };
     VkPipeline handle = a.handle();
 
     Pipeline b = std::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(b.bindPoint(), PipelineBindPoint::Compute);
+    CORRADE_COMPARE(b.bindPoint(), PipelineBindPoint::Rasterization);
 
     Pipeline c{NoCreate};
     c = std::move(b);
@@ -302,30 +326,54 @@ void PipelineVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(c.bindPoint(), PipelineBindPoint::Compute);
+    CORRADE_COMPARE(c.bindPoint(), PipelineBindPoint::Rasterization);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Pipeline>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Pipeline>::value);
 }
 
 void PipelineVkTest::wrap() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
     }};
 
     ShaderSet shaderSet;
-    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
 
     VkPipeline pipeline{};
-    CORRADE_COMPARE(Result(device()->CreateComputePipelines(device(), {}, 1,
-        ComputePipelineCreateInfo{shaderSet, pipelineLayout},
+    CORRADE_COMPARE(Result(device()->CreateGraphicsPipelines(device(), {}, 1,
+        RasterizationPipelineCreateInfo{shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+            .setViewport({{}, {200, 200}}),
         nullptr, &pipeline)), Result::Success);
 
-    auto wrapped = Pipeline::wrap(device(), PipelineBindPoint::Compute, pipeline, HandleFlag::DestroyOnDestruction);
+    auto wrapped = Pipeline::wrap(device(), PipelineBindPoint::Rasterization, pipeline, HandleFlag::DestroyOnDestruction);
     CORRADE_COMPARE(wrapped.handle(), pipeline);
-    CORRADE_COMPARE(wrapped.bindPoint(), PipelineBindPoint::Compute);
+    CORRADE_COMPARE(wrapped.bindPoint(), PipelineBindPoint::Rasterization);
 
     /* Release the handle again, destroy by hand */
     CORRADE_COMPARE(wrapped.release(), pipeline);
