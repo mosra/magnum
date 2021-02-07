@@ -124,6 +124,8 @@ namespace EXT {
     _extension(8,  EXT,host_query_reset,                    Vk10, Vk12) // #262
     _extension(9,  EXT,index_type_uint8,                    Vk10, None) // #266
     _extension(10, EXT,extended_dynamic_state,              Vk10, None) // #268
+    _extension(11, EXT,robustness2,                         Vk10, None) // #287
+    _extension(12, EXT,image_robustness,                    Vk10, None) // #336
 } namespace IMG {
     _extension(20, IMG,format_pvrtc,                        Vk10, None) // #55
 } namespace KHR {

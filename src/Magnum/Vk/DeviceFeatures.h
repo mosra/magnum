@@ -59,8 +59,12 @@ usually just with the first letter uppercase instead of lowercase.
 enum class DeviceFeature: UnsignedShort {
     /**
      * Whether accesses to buffers are bounds-checked against the range of the
-     * buffer descriptor.
-     * @todo expose @vk_extension{EXT,robustness2}, reference from here
+     * buffer descriptor. Out of bounds accesses are guaranteed to not cause
+     * application termination, but have implementation-dependent behavior. A
+     * subset of the guarantees provided by
+     * @ref DeviceFeature::RobustBufferAccess2.
+     * @see @ref DeviceFeature::RobustImageAccess,
+     *      @relativeref{DeviceFeature,RobustImageAccess2}
      */
     RobustBufferAccess,
 
@@ -1291,6 +1295,55 @@ enum class DeviceFeature: UnsignedShort {
      * @requires_vk_extension Extension @vk_extension{EXT,extended_dynamic_state}
      */
     ExtendedDynamicState,
+
+    /* VkPhysicalDeviceRobustness2FeaturesEXT, #287 */
+
+    /**
+     * Whether accesses to buffers are bounds-checked against the range of the
+     * buffer descriptor, rounded up to a multiple of buffer access size
+     * alignment. Out of bounds writes are guaranteed to be discarded, out of
+     * bounds reads are guaranteed to return zero values. A stricter but more
+     * expensive variant of @ref DeviceFeature::RobustBufferAccess.
+     * @requires_vk_extension Extension @vk_extension{EXT,robustness2}
+     * @todo expose the alignment limit
+     */
+    RobustBufferAccess2,
+
+    /**
+     * Whether accesses to images are bounds-checked against the dimensions of
+     * the image view. Out of bounds loads are guaranteed to return zero
+     * values, with @f$ (0, 0, 0, 1) @f$ inserted for missing components based
+     * on the image format. A stricted but more expensive variant of
+     * @ref DeviceFeature::RobustImageAccess.
+     * @see @ref DeviceFeature::RobustBufferAccess,
+     *      @relativeref{DeviceFeature,RobustBufferAccess2}
+     * @requires_vk_extension Extension @vk_extension{EXT,robustness2}
+     */
+    RobustImageAccess2,
+
+    /**
+     * Whether descriptors can be written with a null resource or view handle,
+     * at which point they're considered valid and act as if the descriptor was
+     * bound to nothing.
+     * @requires_vk_extension Extension @vk_extension{EXT,robustness2}
+     */
+    NullDescriptor,
+
+    /* VkPhysicalDeviceImageRobustnessFeaturesEXT, #336 */
+
+    /**
+     * Whether accesses to images are bounds-checked against the dimensions of
+     * the image view. Out of bounds loads are guaranteed to return zero
+     * values, with either @f$ (0, 0, 0, 0) @f$ or @f$ (0, 0, 0, 1) @f$
+     * inserted for missing components based on the image format, with no
+     * guarantees provided for values returned for an invalid mip level. A
+     * subset of the guarantees provided by
+     * @ref DeviceFeature::RobustImageAccess2.
+     * @see @ref DeviceFeature::RobustBufferAccess,
+     *      @relativeref{DeviceFeature,RobustBufferAccess2}
+     * @requires_vk_extension Extension @vk_extension{EXT,image_robustness}
+     */
+    RobustImageAccess,
 
     /* VkPhysicalDeviceRayTracingPipelineFeaturesKHR, #348 */
 

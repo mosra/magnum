@@ -412,6 +412,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features.hostQueryReset,
             _state->features.indexTypeUint8,
             _state->features.extendedDynamicState,
+            _state->features.robustness2,
+            _state->features.imageRobustness,
             _state->features.rayTracingPipeline,
             _state->features.rayQuery
         });
@@ -533,6 +535,10 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
         _state->features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.extendedDynamicState, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.robustness2, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.imageRobustness, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.rayTracingPipeline, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
     structureConnectIfUsed(next, _state->firstEnabledFeature,

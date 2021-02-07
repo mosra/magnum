@@ -268,6 +268,10 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      (@vk_extension{EXT,index_type_uint8})
          * -    @type_vk_keyword{PhysicalDeviceExtendedDynamicStateFeaturesEXT}
          *      (@vk_extension{EXT,extended_dynamic_state})
+         * -    @type_vk_keyword{PhysicalDeviceRobustness2FeaturesEXT}
+         *      (@vk_extension{EXT,robustness2})
+         * -    @type_vk_keyword{PhysicalDeviceImageRobustnessFeaturesEXT}
+         *      (@vk_extension{EXT,image_robustness})
          * -    @type_vk_keyword{PhysicalDeviceRayTracingPipelineFeaturesKHR}
          *      (@vk_extension{KHR,ray_tracing_pipeline})
          * -    @type_vk_keyword{PhysicalDeviceRayQueryFeaturesKHR}

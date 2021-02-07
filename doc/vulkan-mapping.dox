@@ -614,6 +614,7 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceIDProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceImageFormatInfo2} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PhysicalDeviceImagelessFramebufferFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceImageRobustnessFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceIndexTypeUint8FeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceTextureCompressionASTCHDRFeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceLimits}          | |
@@ -630,6 +631,8 @@ Vulkan structure                        | Matching API
 @type_vk{PhysicalDeviceRayQueryFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceRayTracingPipelineFeaturesKHR} @m_class{m-label m-flat m-warning} **KHR** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceRayTracingPipelinePropertiesKHR} @m_class{m-label m-flat m-warning} **KHR** | |
+@type_vk{PhysicalDeviceRobustness2FeaturesEXT} @m_class{m-label m-flat m-warning} **EXT** | @ref DeviceFeatures
+@type_vk{PhysicalDeviceRobustness2PropertiesEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{PhysicalDeviceSamplerFilterMinmaxProperties} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{PhysicalDeviceSamplerYcbcrConversionFeatures} @m_class{m-label m-flat m-success} **KHR, 1.1** | @ref DeviceFeatures
 @type_vk{PhysicalDeviceSeparateDepthStencilLayoutsFeatures} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceFeatures

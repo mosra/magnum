@@ -123,6 +123,8 @@ Extension                                           | Status
 @vk_extension{EXT,vertex_attribute_divisor}         | done
 @vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
 @vk_extension{EXT,extended_dynamic_state}           | |
+@vk_extension{EXT,robustness2}                      | done except properties
+@vk_extension{EXT,image_robustness}                 | done
 @vk_extension{KHR,acceleration_structure}           | |
 @vk_extension{KHR,portability_subset}               | done except properties
 @vk_extension{KHR,deferred_host_operations}         | |

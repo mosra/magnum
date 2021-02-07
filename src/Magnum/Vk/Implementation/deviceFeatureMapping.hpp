@@ -217,6 +217,14 @@ _cext(IndexTypeUint8, indexTypeUint8, indexTypeUint8, EXT::index_type_uint8)
 
 _cext(ExtendedDynamicState, extendedDynamicState, extendedDynamicState, EXT::extended_dynamic_state)
 
+#define _ce(value, field) _cext(value, field, robustness2, EXT::robustness2)
+_ce(RobustBufferAccess2, robustBufferAccess2)
+_ce(RobustImageAccess2, robustImageAccess2)
+_ce(NullDescriptor, nullDescriptor)
+#undef _ce
+
+_cext(RobustImageAccess, robustImageAccess, imageRobustness, EXT::image_robustness)
+
 #define _ce(value, field) _cext(value, field, rayTracingPipeline, KHR::ray_tracing_pipeline)
 _ce(RayTracingPipeline, rayTracingPipeline)
 _ce(RayTracingPipelineShaderGroupHandleCaptureReplay, rayTracingPipelineShaderGroupHandleCaptureReplay)

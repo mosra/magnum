@@ -259,6 +259,16 @@ extern "C" {
 #define VK_EXT_EXTENDED_DYNAMIC_STATE_SPEC_VERSION 1
 #define VK_EXT_EXTENDED_DYNAMIC_STATE_EXTENSION_NAME "VK_EXT_extended_dynamic_state"
 
+/* VK_EXT_robustness2 */
+
+#define VK_EXT_ROBUSTNESS_2_SPEC_VERSION 1
+#define VK_EXT_ROBUSTNESS_2_EXTENSION_NAME "VK_EXT_robustness2"
+
+/* VK_EXT_image_robustness */
+
+#define VK_EXT_IMAGE_ROBUSTNESS_SPEC_VERSION 1
+#define VK_EXT_IMAGE_ROBUSTNESS_EXTENSION_NAME "VK_EXT_image_robustness"
+
 /* VK_IMG_format_pvrtc */
 
 #define VK_IMG_FORMAT_PVRTC_SPEC_VERSION 1
@@ -329,7 +339,7 @@ extern "C" {
 // Vulkan 1.2 version number
 #define VK_API_VERSION_1_2 VK_MAKE_VERSION(1, 2, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 168
+#define VK_HEADER_VERSION 169
 // Complete version of this file
 #define VK_HEADER_VERSION_COMPLETE VK_MAKE_VERSION(1, 2, VK_HEADER_VERSION)
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
@@ -1563,6 +1573,9 @@ typedef enum {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT = 1000190002,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT = 1000265000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT = 1000267000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT = 1000286000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT = 1000286001,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT = 1000335000,
     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES,
@@ -4767,6 +4780,27 @@ typedef struct VkPhysicalDeviceExtendedDynamicStateFeaturesEXT {
     void*        pNext;
     VkBool32                           extendedDynamicState;
 } VkPhysicalDeviceExtendedDynamicStateFeaturesEXT;
+
+typedef struct VkPhysicalDeviceRobustness2FeaturesEXT {
+    VkStructureType sType;
+    void*        pNext;
+    VkBool32                           robustBufferAccess2;
+    VkBool32                           robustImageAccess2;
+    VkBool32                           nullDescriptor;
+} VkPhysicalDeviceRobustness2FeaturesEXT;
+
+typedef struct VkPhysicalDeviceRobustness2PropertiesEXT {
+    VkStructureType sType;
+    void*        pNext;
+    VkDeviceSize                       robustStorageBufferAccessSizeAlignment;
+    VkDeviceSize                       robustUniformBufferAccessSizeAlignment;
+} VkPhysicalDeviceRobustness2PropertiesEXT;
+
+typedef struct VkPhysicalDeviceImageRobustnessFeaturesEXT {
+    VkStructureType sType;
+    void*        pNext;
+    VkBool32                           robustImageAccess;
+} VkPhysicalDeviceImageRobustnessFeaturesEXT;
 
 typedef struct VkPhysicalDevicePortabilitySubsetFeaturesKHR {
     VkStructureType sType;
