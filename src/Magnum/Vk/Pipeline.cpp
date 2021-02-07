@@ -29,6 +29,7 @@
 #include "CommandBuffer.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BigEnumSet.hpp>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
@@ -449,6 +450,30 @@ Debug& operator<<(Debug& debug, const PipelineBindPoint value) {
 
     /* Vulkan docs have the values in decimal, so not converting to hex */
     return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+namespace {
+
+constexpr const char* DynamicRasterizationStateNames[]{
+    #define _c(value, vkValue) #value,
+    #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
+    #undef _c
+};
+
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationState value) {
+    debug << "Vk::DynamicRasterizationState" << Debug::nospace;
+
+    if(UnsignedInt(value) < Containers::arraySize(DynamicRasterizationStateNames)) {
+        return debug << "::" << Debug::nospace << DynamicRasterizationStateNames[UnsignedInt(value)];
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value) {
+    return Containers::bigEnumSetDebugOutput(debug, value, "Vk::DynamicRasterizationStates{}");
 }
 
 }}

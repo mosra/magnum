@@ -274,6 +274,18 @@ typedef Containers::BigEnumSet<DynamicRasterizationState, 1> DynamicRasterizatio
 CORRADE_ENUMSET_OPERATORS(DynamicRasterizationStates)
 
 /**
+@debugoperatorenum{DynamicRasterizationState}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DynamicRasterizationState value);
+
+/**
+@debugoperatorenum{DynamicRasterizationState}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value);
+
+/**
 @brief Rasterization pipeline creation info
 @m_since_latest
 
