@@ -348,7 +348,7 @@ using namespace Containers::Literals;
 Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(properties)}
     DOXYGEN_IGNORE()
     .setEnabledFeatures(
-        Vk::DeviceFeature::IndexTypeUint8|
+        Vk::DeviceFeature::IndexTypeUnsignedByte|
         Vk::DeviceFeature::SamplerAnisotropy|
         Vk::DeviceFeature::GeometryShader|
         DOXYGEN_IGNORE(Vk::DeviceFeature{}))
@@ -370,7 +370,7 @@ if(extensions.isSupported("VK_NV_mesh_shader"_s))
     info.addEnabledExtensions({"VK_NV_mesh_shader"_s});
 DOXYGEN_IGNORE()
 info.setEnabledFeatures(properties.features() & // mask away unsupported ones
-    (Vk::DeviceFeature::IndexTypeUint8|
+    (Vk::DeviceFeature::IndexTypeUnsignedByte|
      Vk::DeviceFeature::SamplerAnisotropy|
      Vk::DeviceFeature::GeometryShader|
      DOXYGEN_IGNORE(Vk::DeviceFeature{})));

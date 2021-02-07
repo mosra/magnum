@@ -36,7 +36,7 @@
 */
 #ifdef _c
 _c(RobustBufferAccess, robustBufferAccess)
-_c(FullDrawIndexUint32, fullDrawIndexUint32)
+_c(FullDrawIndexUnsignedInt, fullDrawIndexUint32)
 _c(ImageCubeArray, imageCubeArray)
 _c(IndependentBlend, independentBlend)
 _c(GeometryShader, geometryShader)
@@ -213,7 +213,7 @@ _ce(BufferDeviceAddressMultiDevice, bufferDeviceAddressMultiDevice)
 
 _cext(HostQueryReset, hostQueryReset, hostQueryReset, EXT::host_query_reset)
 
-_cext(IndexTypeUint8, indexTypeUint8, indexTypeUint8, EXT::index_type_uint8)
+_cext(IndexTypeUnsignedByte, indexTypeUint8, indexTypeUint8, EXT::index_type_uint8)
 
 _cext(ExtendedDynamicState, extendedDynamicState, extendedDynamicState, EXT::extended_dynamic_state)
 

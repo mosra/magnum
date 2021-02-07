@@ -71,10 +71,10 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether the full 32-bit range is supported for indexed draw calls when
      * using @val_vk{INDEX_TYPE_UINT32,IndexType}.
-     * @see @ref DeviceFeature::IndexTypeUint8
+     * @see @ref DeviceFeature::IndexTypeUnsignedByte
      * @todo expose the `maxDrawIndexedIndexValue` limit
      */
-    FullDrawIndexUint32,
+    FullDrawIndexUnsignedInt,
 
     /**
      * Whether image views with @val_vk{IMAGE_VIEW_TYPE_CUBE_ARRAY,ImageViewType}
@@ -1271,10 +1271,10 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether an 8-bit type can be used in index buffers.
-     * @see @ref DeviceFeature::FullDrawIndexUint32
+     * @see @ref DeviceFeature::FullDrawIndexUnsignedInt
      * @requires_vk_extension Extension @vk_extension{EXT,index_type_uint8}
      */
-    IndexTypeUint8,
+    IndexTypeUnsignedByte,
 
     /* VkPhysicalDeviceExtendedDynamicStateFeaturesEXT, #268 */
 
