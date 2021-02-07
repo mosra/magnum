@@ -30,6 +30,7 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/BigEnumSet.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
@@ -116,6 +117,9 @@ class MAGNUM_VK_EXPORT Pipeline {
          * @param bindPoint         Pipeline bind point. Available through
          *      @ref bindPoint() afterwards.
          * @param handle            The @type_vk{Pipeline} handle
+         * @param dynamicStates     Dynamic states enabled on the rasterization
+         *      pipeline. Available through @ref dynamicRasterizationStates()
+         *      afterwards.
          * @param flags             Handle flags
          *
          * The @p handle is expected to be originating from @p device. Unlike
@@ -124,6 +128,8 @@ class MAGNUM_VK_EXPORT Pipeline {
          * different behavior.
          * @see @ref release()
          */
+        static Pipeline wrap(Device& device, PipelineBindPoint bindPoint, VkPipeline handle, const DynamicRasterizationStates& dynamicStates, HandleFlags flags = {});
+        /** @overload */
         static Pipeline wrap(Device& device, PipelineBindPoint bindPoint, VkPipeline handle, HandleFlags flags = {});
 
         /**
@@ -194,6 +200,15 @@ class MAGNUM_VK_EXPORT Pipeline {
         PipelineBindPoint bindPoint() const { return _bindPoint; }
 
         /**
+         * @brief Dynamic rasterization states enabled in this pipeline
+         *
+         * Contains the states passed to @ref RasterizationPipelineCreateInfo::setDynamicStates()
+         * or to the @ref wrap() call. Expects that @ref bindPoint() is
+         * @ref PipelineBindPoint::Rasterization.
+         */
+        DynamicRasterizationStates dynamicRasterizationStates() const;
+
+        /**
          * @brief Release the underlying Vulkan pipeline
          *
          * Releases ownership of the Vulkan pipeline and returns its
@@ -210,6 +225,9 @@ class MAGNUM_VK_EXPORT Pipeline {
         VkPipeline _handle;
         PipelineBindPoint _bindPoint;
         HandleFlags _flags;
+        union {
+            DynamicRasterizationStates rasterization;
+        } _dynamicStates;
 };
 
 /**

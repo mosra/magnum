@@ -524,6 +524,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
         operator const VkGraphicsPipelineCreateInfo*() const { return &_info; }
 
     private:
+        friend Pipeline;
+
         VkGraphicsPipelineCreateInfo _info;
         VkPipelineViewportStateCreateInfo _viewportInfo;
         VkPipelineRasterizationStateCreateInfo _rasterizationInfo;
