@@ -432,6 +432,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Programmable point size. If enabled, the point size is taken
              * from vertex/geometry shader builtin @glsl gl_PointSize @ce.
              * @see @ref setPointSize()
+             * @m_keywords{gl_PointSize}
              * @requires_gl Always enabled on OpenGL ES and WebGL.
              */
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
@@ -855,6 +856,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Initial value is @cpp 1.0f @ce.
          * @see @ref Feature::ProgramPointSize, @fn_gl_keyword{PointSize}
+         * @m_keywords{gl_PointSize}
          * @requires_gl Use `gl_PointSize` builtin vertex shader variable in
          *      OpenGL ES and WebGL instead.
          */
