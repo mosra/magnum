@@ -31,6 +31,7 @@
  */
 
 #include <initializer_list>
+#include <Corrade/Containers/BigEnumSet.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Tags.h"
@@ -260,6 +261,17 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         HandleFlags handleFlags() const { return _flags; }
 
         /**
+         * @brief Dynamic states used by currently bound rasterization pipeline
+         *
+         * If no rasterization pipeline is bound or there are no dynamic states
+         * on the currently bound one, returns an empty set.
+         * @see @ref bindPipeline()
+         */
+        DynamicRasterizationStates dynamicRasterizationStates() const {
+            return _dynamicRasterizationStates;
+        }
+
+        /**
          * @brief Reset the command buffer
          *
          * This operation is allowed only if the originating @ref CommandPool
@@ -361,8 +373,10 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          * @brief Bind a pipeline
          * @return Reference to self (for method chaining)
          *
-         * Can be called both inside and outside a render pass. See
-         * @ref Vk-Pipeline-usage for a usage example.
+         * Can be called both inside and outside a render pass. If the pipeline
+         * is a rasterization pipeline, the set of its dynamic states is stored
+         * in @ref dynamicRasterizationStates() for use by drawing and other
+         * commands. See @ref Vk-Pipeline-usage for a usage example.
          * @see @fn_vk_keyword{CmdBindPipeline}
          */
         CommandBuffer& bindPipeline(Pipeline& pipeline);
@@ -765,6 +779,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         VkCommandPool _pool; /* Used only for vkFreeCommandBuffers() */
         VkCommandBuffer _handle;
         HandleFlags _flags;
+        DynamicRasterizationStates _dynamicRasterizationStates;
 };
 
 }}

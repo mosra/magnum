@@ -67,7 +67,8 @@ struct PipelineVkTest: VulkanTester {
 
     void dynamicRasterizationStatesNotRasterization();
 
-    void cmdBind();
+    void cmdBindRasterization();
+    void cmdBindCompute();
 
     void cmdBarrier();
     void cmdBarrierExecutionOnly();
@@ -89,7 +90,8 @@ PipelineVkTest::PipelineVkTest() {
 
               &PipelineVkTest::dynamicRasterizationStatesNotRasterization,
 
-              &PipelineVkTest::cmdBind,
+              &PipelineVkTest::cmdBindRasterization,
+              &PipelineVkTest::cmdBindCompute,
 
               &PipelineVkTest::cmdBarrier,
               &PipelineVkTest::cmdBarrierExecutionOnly,
@@ -447,7 +449,64 @@ void PipelineVkTest::dynamicRasterizationStatesNotRasterization() {
     CORRADE_COMPARE(out.str(), "Vk::Pipeline::dynamicRasterizationStates(): not a rasterization pipeline\n");
 }
 
-void PipelineVkTest::cmdBind() {
+void PipelineVkTest::cmdBindRasterization() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        /* This might blow up if queue() isn't the one matching this family */
+        device().properties().pickQueueFamily(QueueFlag::Graphics|QueueFlag::Compute)}};
+
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    Pipeline pipeline{device(), RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {200, 200}})
+        .setDynamicStates(DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias)
+    };
+
+    CommandBuffer cmd = pool.allocate();
+
+    cmd.begin();
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationStates{});
+
+    cmd.bindPipeline(pipeline);
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
+
+    /* Should be reset again on end() so if it's reset() and begun again it
+       doesn't show a no-longer-true value */
+    cmd.end();
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationStates{});
+}
+
+void PipelineVkTest::cmdBindCompute() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         /* This might blow up if queue() isn't the one matching this family */
         device().properties().pickQueueFamily(QueueFlag::Graphics|QueueFlag::Compute)}};

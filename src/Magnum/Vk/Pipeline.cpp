@@ -412,6 +412,10 @@ ImageMemoryBarrier::ImageMemoryBarrier(const VkImageMemoryBarrier& barrier):
     _barrier(barrier) {}
 
 CommandBuffer& CommandBuffer::bindPipeline(Pipeline& pipeline) {
+    /* Save the set of dynamic states for future use */
+    if(pipeline.bindPoint() == PipelineBindPoint::Rasterization)
+        _dynamicRasterizationStates = pipeline.dynamicRasterizationStates();
+
     (**_device).CmdBindPipeline(_handle, VkPipelineBindPoint(pipeline.bindPoint()), pipeline);
     return *this;
 }
