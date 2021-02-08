@@ -307,7 +307,9 @@ class MAGNUM_VK_EXPORT MeshLayout {
          *
          * @see @ref addInstancedBinding()
          */
-        MeshLayout& addBinding(UnsignedInt binding, UnsignedInt stride);
+        MeshLayout& addBinding(UnsignedInt binding, UnsignedInt stride) &;
+        /** @overload */
+        MeshLayout&& addBinding(UnsignedInt binding, UnsignedInt stride) &&;
 
         /**
          * @brief Add an instanced buffer binding
@@ -344,7 +346,9 @@ class MAGNUM_VK_EXPORT MeshLayout {
          * @requires_vk_feature @ref DeviceFeature::VertexAttributeInstanceRateZeroDivisor
          *      if @p divisor is `0`
          */
-        MeshLayout& addInstancedBinding(UnsignedInt binding, UnsignedInt stride, UnsignedInt divisor = 1);
+        MeshLayout& addInstancedBinding(UnsignedInt binding, UnsignedInt stride, UnsignedInt divisor = 1) &;
+        /** @overload */
+        MeshLayout&& addInstancedBinding(UnsignedInt binding, UnsignedInt stride, UnsignedInt divisor = 1) &&;
 
         /**
          * @brief Add an attribute
@@ -368,9 +372,13 @@ class MAGNUM_VK_EXPORT MeshLayout {
          * -    `format`
          * -    `offset`
          */
-        MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, VertexFormat format, UnsignedInt offset);
+        MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, VertexFormat format, UnsignedInt offset) &;
         /** @overload */
-        MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, Magnum::VertexFormat format, UnsignedInt offset);
+        MeshLayout&& addAttribute(UnsignedInt location, UnsignedInt binding, VertexFormat format, UnsignedInt offset) &&;
+        /** @overload */
+        MeshLayout& addAttribute(UnsignedInt location, UnsignedInt binding, Magnum::VertexFormat format, UnsignedInt offset) &;
+        /** @overload */
+        MeshLayout&& addAttribute(UnsignedInt location, UnsignedInt binding, Magnum::VertexFormat format, UnsignedInt offset) &&;
 
         /** @brief Underlying @type_vk{PipelineVertexInputStateCreateInfo} structure */
         VkPipelineVertexInputStateCreateInfo& vkPipelineVertexInputStateCreateInfo() {
