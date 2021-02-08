@@ -335,9 +335,9 @@ enum class PipelineStage: UnsignedInt {
     RayTracingShader = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
 
     /**
-     * Execution of all graphics stages. While numerically a single bit, it's
-     * equivalent to the logical OR of a supported and enabled subset of the
-     * following:
+     * Execution of all rasterization stages. While numerically a single bit,
+     * it's equivalent to the logical OR of a supported and enabled subset of
+     * the following:
      *
      * -    @ref PipelineStage::DrawIndirect
      * -    @ref PipelineStage::VertexInput
@@ -350,10 +350,12 @@ enum class PipelineStage: UnsignedInt {
      * -    @ref PipelineStage::LateFragmentTests
      * -    @ref PipelineStage::ColorAttachmentOutput
      *
-     * Note that this *does not* include @ref PipelineStage::RayTracingShader
-     * or @ref PipelineStage::AccelerationStructureBuild.
+     * As the name suggests, this *does not* include
+     * @ref PipelineStage::RayTracingShader or
+     * @ref PipelineStage::AccelerationStructureBuild.
+     * @todo mention mesh / task shaders once exposed
      */
-    AllGraphics = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+    AllRasterization = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
 
     /**
      * All commands.

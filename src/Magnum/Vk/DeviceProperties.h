@@ -161,10 +161,10 @@ Wraps a @type_vk_keyword{QueueFlagBits}.
 @m_enum_values_as_keywords
 */
 enum class QueueFlag: UnsignedInt {
-    /** Supports graphics operations */
+    /** Supports general graphics and rasterization operations. */
     Graphics = VK_QUEUE_GRAPHICS_BIT,
 
-    /** Supports compute operations */
+    /** Supports compute and ray tracing operations. */
     Compute = VK_QUEUE_COMPUTE_BIT,
 
     /** Supports transfer operations */

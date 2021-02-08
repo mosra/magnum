@@ -188,5 +188,14 @@ can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
 
 @snippet MagnumVk.cpp wrapping-optimizing-properties-device-move
 
+@section vulkan-wrapping-naming-differences Important differences in naming
+
+-   To emphasise the distinction between rasterization and raytracing
+    pipelines and prevent confusion, @ref Vk::RasterizationPipelineCreateInfo
+    is used for @type_vk{GraphicsPipelineCreateInfo}, and similarly for
+    related APIs, such as @ref Vk::DynamicRasterizationState containing a
+    rasterization-related subset of @type_vk{DynamicState} or
+    @ref Vk::PipelineStage::AllRasterization for @val_vk{PIPELINE_STAGE_ALL_GRAPHICS_BIT,PipelineStageFlagBits}.
+
 */
 }

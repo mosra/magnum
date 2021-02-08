@@ -776,7 +776,7 @@ void RenderPassTest::subpassDependencyConstruct() {
     SubpassDependency dependency{
         15, SubpassDependency::External,
         PipelineStage::ComputeShader|PipelineStage::Transfer,
-        PipelineStage::AllGraphics,
+        PipelineStage::AllRasterization,
         Access::TransferRead|Access::UniformRead,
         Access::MemoryWrite,
         DependencyFlag::ByRegion};
@@ -830,7 +830,7 @@ template<class T> void RenderPassTest::subpassDependencyConvertToVk() {
     SubpassDependency dependency{
         15, SubpassDependency::External,
         PipelineStage::ComputeShader|PipelineStage::Transfer,
-        PipelineStage::AllGraphics,
+        PipelineStage::AllRasterization,
         Access::TransferRead|Access::UniformRead,
         Access::MemoryWrite,
         DependencyFlag::ByRegion};
