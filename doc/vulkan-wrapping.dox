@@ -196,6 +196,18 @@ can be also passed to @ref Vk::DeviceCreateInfo to allow reuse:
     related APIs, such as @ref Vk::DynamicRasterizationState containing a
     rasterization-related subset of @type_vk{DynamicState} or
     @ref Vk::PipelineStage::AllRasterization for @val_vk{PIPELINE_STAGE_ALL_GRAPHICS_BIT,PipelineStageFlagBits}.
+-   Because not all @type_vk{Format} values can be used as both pixel and
+    vertex formats (for example there can be double-precision vertices, but not
+    pixels, or it makes no sense to use ASTC for vertices), the enum is split
+    into @ref Vk::PixelFormat and @ref Vk::VertexFormat. For pixel formats the
+    naming is simplified for easier typing (@ref Vk::PixelFormat::RGBA8Srgb
+    instead of @val_vk{FORMAT_R8G8B8A8_SRGB,Format}, for example); for vertex
+    formats the RGBA notion is omitted and replaced with just component count,
+    in most cases matching Magnum scalar and vector type names
+    (@ref Vk::VertexFormat::Vector3 instead of @val_vk{FORMAT_R32G32B32_SFLOAT,Format})
+-   As Magnum has several mesh-related abstraction (and Vulkan none),
+    @ref Vk::MeshPrimitive is used instead of @type_vk{PrimitiveTopology} for a
+    better visual grouping of related concepts
 
 */
 }

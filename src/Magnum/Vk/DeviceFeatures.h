@@ -1281,7 +1281,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * The @ref DynamicRasterizationState::CullMode,
      * @relativeref{DynamicRasterizationState,FrontFace},
-     * @relativeref{DynamicRasterizationState,PrimitiveTopology},
+     * @relativeref{DynamicRasterizationState,MeshPrimitive},
      * @relativeref{DynamicRasterizationState,ViewportWithCount},
      * @relativeref{DynamicRasterizationState,ScissorWithCount},
      * @relativeref{DynamicRasterizationState,VertexInputBindingStride},

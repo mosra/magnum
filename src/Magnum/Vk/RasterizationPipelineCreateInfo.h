@@ -164,7 +164,7 @@ enum class DynamicRasterizationState: UnsignedByte {
      * @requires_vk_feature @ref DeviceFeature::ExtendedDynamicState
      * @m_keywords{VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT}
      */
-    PrimitiveTopology,
+    MeshPrimitive,
 
     /**
      * Both the number of viewports and their ranges set in
