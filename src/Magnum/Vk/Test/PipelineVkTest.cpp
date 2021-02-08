@@ -125,8 +125,8 @@ void PipelineVkTest::constructRasterization() {
         MeshLayout meshLayout{MeshPrimitive::Triangles};
         meshLayout
             .addBinding(0, 2*4*4)
-            .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-            .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+            .addAttribute(0, 0, VertexFormat::Vector4, 0)
+            .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
         PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -195,8 +195,8 @@ void PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -238,8 +238,8 @@ void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -308,8 +308,8 @@ void PipelineVkTest::constructMove() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -368,8 +368,8 @@ void PipelineVkTest::wrapRasterization() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -472,8 +472,8 @@ void PipelineVkTest::cmdBindRasterization() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
