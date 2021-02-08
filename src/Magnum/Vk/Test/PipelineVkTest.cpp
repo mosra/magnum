@@ -451,8 +451,7 @@ void PipelineVkTest::dynamicRasterizationStatesNotRasterization() {
 
 void PipelineVkTest::cmdBindRasterization() {
     CommandPool pool{device(), CommandPoolCreateInfo{
-        /* This might blow up if queue() isn't the one matching this family */
-        device().properties().pickQueueFamily(QueueFlag::Graphics|QueueFlag::Compute)}};
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
 
     RenderPass renderPass{device(), RenderPassCreateInfo{}
         .setAttachments({
