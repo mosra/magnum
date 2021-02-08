@@ -413,6 +413,33 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          *
          * See @ref Vk-Buffer-usage-copy, @ref Vk-Image-usage-clear and
          * @ref Vk-Image-usage-copy for usage examples.
+         *
+         * @m_class{m-note m-success}
+         *
+         * @par
+         *      Where possible, expressing the dependencies and image layout
+         *      transitions via @ref RenderPass APIs is considered more
+         *      efficient than an explicit barrier ([source](https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#graphics-to-graphics-dependencies)).
+         * @par
+         *      To avoid pipeline stalls and unnecessary synchronization, avoid
+         *      using overly generic stage and access sets. On the other hand,
+         *      using @ref PipelineStage::AllCommands together with
+         *      @ref Access::MemoryRead / @relativeref{Access,MemoryWrite} is
+         *      useful for debugging synchronization issues.
+         * @par
+         *      According to multiple sources ([1](https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#three-dispatches-first-dispatch-writes-to-one-storage-buffer-second-dispatch-writes-to-a-different-storage-buffer-third-dispatch-reads-both),
+         *      [2](https://developer.nvidia.com/blog/vulkan-dos-donts/#h.6fr5jvul7u03)),
+         *      it's advised to group multiple barriers together into a single
+         *      call --- that way the worst case can be picked instead of
+         *      sequentially going through all barriers.
+         * @par
+         *      Even though it may seem counterintuitive, it's recommended
+         *      ([1](https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples#three-dispatches-first-dispatch-writes-to-one-storage-buffer-second-dispatch-writes-to-a-different-storage-buffer-third-dispatch-reads-both),
+         *      [2](http://themaister.net/blog/2019/08/14/yet-another-blog-explaining-vulkan-synchronization/))
+         *      to do global memory barriers than per-resource barriers, except
+         *      for cases where layout transition or queue ownership transfer
+         *      needs to be done on a particular image or buffer.
+         *
          * @see @fn_vk_keyword{CmdPipelineBarrier}
          */
         CommandBuffer& pipelineBarrier(PipelineStages sourceStages, PipelineStages destinationStages, Containers::ArrayView<const MemoryBarrier> memoryBarriers, Containers::ArrayView<const BufferMemoryBarrier> bufferMemoryBarriers, Containers::ArrayView<const ImageMemoryBarrier> imageMemoryBarriers, DependencyFlags dependencyFlags = {});

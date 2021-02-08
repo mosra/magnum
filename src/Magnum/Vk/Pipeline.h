@@ -355,7 +355,16 @@ enum class PipelineStage: UnsignedInt {
      */
     AllGraphics = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
 
-    /** All commands */
+    /**
+     * All commands.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
+     */
     AllCommands = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
 };
 
@@ -523,6 +532,13 @@ enum class Access: UnsignedInt {
     /**
      * All read accesses. Valid for any @ref PipelineStage, treated as
      * equivalent of a combination of all `*Read` flags valid in given context.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
      */
     MemoryRead = VK_ACCESS_MEMORY_READ_BIT,
 
@@ -530,6 +546,13 @@ enum class Access: UnsignedInt {
      * All write accesses. Valid for any @ref PipelineStage, treated as
      * equivalent of a combination of all `*Write` flags valid in given
      * context.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
      */
     MemoryWrite = VK_ACCESS_MEMORY_WRITE_BIT,
 
@@ -614,7 +637,10 @@ class MAGNUM_VK_EXPORT MemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param destinationAccesses   Destination memory access types
          *      participating in a dependency
          *
@@ -672,7 +698,10 @@ class MAGNUM_VK_EXPORT BufferMemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param destinationAccesses   Destination memory access types
          *      participating in a dependency
          * @param buffer                A @ref Buffer or a raw Vulkan buffer
@@ -740,7 +769,10 @@ class MAGNUM_VK_EXPORT ImageMemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param oldLayout             Old layout in an image layout
          *      transition
          * @param destinationAccesses   Destination memory access types
