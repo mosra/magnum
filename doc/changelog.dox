@@ -171,6 +171,11 @@ See also:
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.
 
+@subsubsection changelog-latest-changes-math Math library
+
+-   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte
+    and @ref UnsignedShort or @ref Byte and @ref Short
+
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
 -   Added a `--bounds` option to @ref magnum-sceneconverter "magnum-sceneconverter",

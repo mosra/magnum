@@ -324,6 +324,30 @@ MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const 
  */
 MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Int>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
 
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedByte>& src, const Corrade::Containers::StridedArrayView2D<UnsignedShort>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Byte>& src, const Corrade::Containers::StridedArrayView2D<Short>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const UnsignedShort>& src, const Corrade::Containers::StridedArrayView2D<UnsignedByte>& dst);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_EXPORT void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, const Corrade::Containers::StridedArrayView2D<Byte>& dst);
+
 /* Since 1.8.17, the original short-hand group closing doesn't work anymore.
    FFS. */
 /**
