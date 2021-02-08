@@ -97,6 +97,8 @@ enum class MemoryFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryFlag> MemoryFlags;
 enum class MemoryHeapFlag: UnsignedInt;
 typedef Containers::EnumSet<MemoryHeapFlag> MemoryHeapFlags;
+class Mesh;
+enum class MeshIndexType: Int;
 class MeshLayout;
 enum class MeshPrimitive: Int;
 class Pipeline;

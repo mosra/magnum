@@ -122,7 +122,7 @@ Extension                                           | Status
 @vk_extension{EXT,validation_features} @m_class{m-label m-info} **instance** | |
 @vk_extension{EXT,vertex_attribute_divisor}         | done
 @vk_extension{EXT,index_type_uint8}                 | @ref Vk::vkIndexType() only
-@vk_extension{EXT,extended_dynamic_state}           | |
+@vk_extension{EXT,extended_dynamic_state}           | only dynamic primitive and stride
 @vk_extension{EXT,robustness2}                      | done except properties
 @vk_extension{EXT,image_robustness}                 | done
 @vk_extension{KHR,acceleration_structure}           | |

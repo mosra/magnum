@@ -85,6 +85,12 @@ DeviceState::DeviceState(Device& device, Containers::Array<std::pair<Containers:
         cmdEndRenderPassImplementation = &CommandBuffer::endRenderPassImplementationDefault;
     }
 
+    if(device.isExtensionEnabled<Extensions::EXT::extended_dynamic_state>()) {
+        cmdBindVertexBuffersImplementation = &CommandBuffer::bindVertexBuffersImplementationEXT;
+    } else {
+        cmdBindVertexBuffersImplementation = &CommandBuffer::bindVertexBuffersImplementationDefault;
+    }
+
     if(device.isExtensionEnabled<Extensions::KHR::copy_commands2>()) {
         cmdCopyBufferImplementation = &CommandBuffer::copyBufferImplementationKHR;
         cmdCopyImageImplementation = &CommandBuffer::copyImageImplementationKHR;

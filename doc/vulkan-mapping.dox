@@ -113,9 +113,9 @@ Vulkan function                         | Matching API
 @fn_vk{CmdBeginDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{CmdEndDebugUtilsLabelEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdBeginRenderPass}, \n @fn_vk{CmdBeginRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdNextSubpass}, \n @fn_vk{CmdNextSubpass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{CmdEndRenderpass}, \n @fn_vk{CmdEndRenderpass2} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref CommandBuffer::beginRenderPass(), \n @ref CommandBuffer::nextSubpass(), \n @ref CommandBuffer::endRenderPass()
 @fn_vk{CmdBindDescriptorSets}           | |
-@fn_vk{CmdBindIndexBuffer}              | |
+@fn_vk{CmdBindIndexBuffer}              | internal to @ref CommandBuffer::draw()
 @fn_vk{CmdBindPipeline}                 | @ref CommandBuffer::bindPipeline()
-@fn_vk{CmdBindVertexBuffers}, \n @fn_vk{CmdBindVertexBuffers2EXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdBindVertexBuffers}, \n @fn_vk{CmdBindVertexBuffers2EXT} @m_class{m-label m-flat m-warning} **EXT** | internal to @ref CommandBuffer::draw()
 @fn_vk{CmdBlitImage}, \n @fn_vk{CmdBlitImage2KHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresIndirectKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdBuildAccelerationStructuresKHR} @m_class{m-label m-flat m-warning} **KHR** | |
@@ -135,8 +135,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdDispatch}                     | |
 @fn_vk{CmdDispatchBase} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CmdDispatchIndirect}             | |
-@fn_vk{CmdDraw}                         | |
-@fn_vk{CmdDrawIndexed}                  | |
+@fn_vk{CmdDraw}, \n @fn_vk{CmdDrawIndexed} | @ref CommandBuffer::draw()
 @fn_vk{CmdDrawIndexedIndirect}          | |
 @fn_vk{CmdDrawIndexedIndirectCount} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @fn_vk{CmdDrawIndirect}                 | |
@@ -161,7 +160,7 @@ Vulkan function                         | Matching API
 @fn_vk{CmdSetEvent}                     | |
 @fn_vk{CmdSetFrontFaceEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CmdSetLineWidth}                 | |
-@fn_vk{CmdSetPrimitiveTopologyEXT} @m_class{m-label m-flat m-warning} **EXT** | |
+@fn_vk{CmdSetPrimitiveTopologyEXT} @m_class{m-label m-flat m-warning} **EXT** | internal to @ref CommandBuffer::draw()
 @fn_vk{CmdSetRayTracingPipelineStackSizeKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CmdSetScissor}                   | |
 @fn_vk{CmdSetScissorWithCountEXT} @m_class{m-label m-flat m-warning} **EXT** | |
@@ -881,7 +880,7 @@ Vulkan enum                             | Matching API
 @type_vk{ImageType}                     | not exposed, internal to @ref ImageCreateInfo subclasses
 @type_vk{ImageUsageFlagBits}, \n @type_vk{ImageUsageFlags} | @ref ImageUsage, \n @ref ImageUsages
 @type_vk{ImageViewType}                 | not exposed, internal to @ref ImageViewCreateInfo subclasses
-@type_vk{IndexType}                     | only @ref vkIndexType()
+@type_vk{IndexType}                     | @ref MeshIndexType
 @type_vk{InternalAllocationType}        | @ref vulkan-wrapping-host-allocation "not exposed"
 
 @subsection vulkan-mapping-enums-l L

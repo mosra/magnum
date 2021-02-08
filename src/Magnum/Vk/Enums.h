@@ -51,33 +51,19 @@ CORRADE_DEPRECATED("use hasMeshPrimitive() instead") MAGNUM_VK_EXPORT bool hasVk
  * @m_deprecated_since_latest Use @ref meshPrimitive() instead.
  */
 CORRADE_DEPRECATED("use meshPrimitive() instead") MAGNUM_VK_EXPORT VkPrimitiveTopology vkPrimitiveTopology(Magnum::MeshPrimitive primitive);
-#endif
 
 /**
-@brief Check availability of a generic index type
-
-Returns @cpp false @ce if Vulkan doesn't support such type, @cpp true @ce
-otherwise. The @p type value is expected to be valid.
-
-@note Support of some types depends on presence of a particular Vulkan
-    extension. Such check is outside of the scope of this function and you are
-    expected to verify extension availability before using such type.
-
-@see @ref vkIndexType(), @vk_extension{EXT,index_type_uint8}
-*/
-MAGNUM_VK_EXPORT bool hasVkIndexType(Magnum::MeshIndexType type);
+ * @brief Check availability of a generic index type
+ * @m_deprecated_since_latest All generic index types are available in Vulkan.
+ */
+CORRADE_DEPRECATED("all generic index types are available in Vulkan") MAGNUM_VK_EXPORT bool hasVkIndexType(Magnum::MeshIndexType type);
 
 /**
-@brief Convert generic mesh index type to Vulkan mesh index type
+ * @brief @copybrief meshIndexType()
+ * @m_deprecated_since_latest Use @ref meshIndexType() instead.
+ */
+CORRADE_DEPRECATED("use meshIndexType() instead") MAGNUM_VK_EXPORT VkIndexType vkIndexType(Magnum::MeshIndexType type);
 
-Not all generic index types have a Vulkan equivalent and this function expects
-that given type is available. Use @ref hasVkIndexType() to query availability
-of given index type.
-@see @ref vkPrimitiveTopology()
-*/
-MAGNUM_VK_EXPORT VkIndexType vkIndexType(Magnum::MeshIndexType type);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
 /**
  * @brief @copybrief hasVertexFormat()
  * @m_deprecated_since_latest Use @ref hasVertexFormat() instead.
@@ -97,9 +83,7 @@ CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFo
  *      instead.
  */
 CORRADE_DEPRECATED("use hasPixelFormat() instead") MAGNUM_VK_EXPORT bool hasVkFormat(Magnum::CompressedPixelFormat format);
-#endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 /**
  * @brief @copybrief vertexFormat()
  * @m_deprecated_since_latest Use @ref vertexFormat() instead.

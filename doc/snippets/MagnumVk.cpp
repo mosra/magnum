@@ -51,7 +51,7 @@
 #include "Magnum/Vk/ImageViewCreateInfo.h"
 #include "Magnum/Vk/LayerProperties.h"
 #include "Magnum/Vk/MemoryAllocateInfo.h"
-#include "Magnum/Vk/MeshLayout.h"
+#include "Magnum/Vk/Mesh.h"
 #include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/PipelineLayout.h"
 #include "Magnum/Vk/PixelFormat.h"
@@ -774,23 +774,151 @@ indices.bindMemory(memory, indicesOffset);
 
 {
 /* [MeshLayout-usage] */
-constexpr UnsignedInt BufferBinding = 0;
+constexpr UnsignedInt Binding = 0;
 
 constexpr UnsignedInt PositionLocation = 0;
-constexpr UnsignedInt TextureCoordinateLocation = 1;
+constexpr UnsignedInt TextureLocation = 1;
 constexpr UnsignedInt NormalLocation = 5;
 
 Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
 meshLayout
-    .addBinding(BufferBinding,
-        sizeof(Vector3) + sizeof(Vector2) + sizeof(Vector3))
-    .addAttribute(PositionLocation, BufferBinding, VertexFormat::Vector3,
-        0)
-    .addAttribute(TextureCoordinateLocation, BufferBinding, VertexFormat::Vector2,
-        sizeof(Vector3))
-    .addAttribute(NormalLocation, BufferBinding, VertexFormat::Vector3,
-        sizeof(Vector3) + sizeof(Vector2));
+    .addBinding(Binding, 8*sizeof(Float))
+    .addAttribute(PositionLocation, Binding, VertexFormat::Vector3, 0)
+    .addAttribute(TextureLocation, Binding, VertexFormat::Vector2, 3*sizeof(Float))
+    .addAttribute(NormalLocation, Binding, VertexFormat::Vector3, 5*sizeof(Float));
 /* [MeshLayout-usage] */
+}
+
+{
+constexpr UnsignedInt Binding = 0;
+constexpr UnsignedInt PositionLocation = 0;
+constexpr UnsignedInt TextureLocation = 1;
+constexpr UnsignedInt NormalLocation = 5;
+UnsignedInt vertexCount = 35, indexCount = 48;
+Vk::Device device{NoCreate};
+/* [Mesh-populating] */
+Vk::MeshLayout meshLayout{MeshPrimitive::Triangles};
+meshLayout
+    .addBinding(Binding, 8*sizeof(Float))
+    .addAttribute(PositionLocation, Binding, VertexFormat::Vector3, 0)
+    .addAttribute(TextureLocation, Binding, VertexFormat::Vector2, 3*sizeof(Float))
+    .addAttribute(NormalLocation, Binding, VertexFormat::Vector3, 5*sizeof(Float));
+
+Vk::Buffer vertices{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
+    Vk::BufferUsage::VertexBuffer, vertexCount*8*sizeof(Float)
+}, DOXYGEN_IGNORE(NoAllocate)};
+
+DOXYGEN_IGNORE()
+
+Vk::Mesh mesh{meshLayout};
+mesh.addVertexBuffer(Binding, vertices, 0)
+    .setCount(vertexCount);
+/* [Mesh-populating] */
+
+/* [Mesh-populating-indexed] */
+Vk::Buffer indices{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
+    Vk::BufferUsage::IndexBuffer, indexCount*sizeof(UnsignedShort)
+}, DOXYGEN_IGNORE(NoAllocate)};
+
+DOXYGEN_IGNORE()
+
+mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort)
+    .setCount(indexCount);
+/* [Mesh-populating-indexed] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Mesh-populating-owned] */
+Vk::Buffer buffer{DOXYGEN_IGNORE(device), Vk::BufferCreateInfo{
+    Vk::BufferUsage::VertexBuffer|Vk::BufferUsage::IndexBuffer, DOXYGEN_IGNORE(0)
+}, DOXYGEN_IGNORE(NoAllocate)};
+
+DOXYGEN_IGNORE()
+
+Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles}
+    .addBinding(DOXYGEN_IGNORE(0, 0))
+    DOXYGEN_IGNORE()
+};
+mesh.addVertexBuffer(DOXYGEN_IGNORE(0), buffer, DOXYGEN_IGNORE(0))
+    .setIndexBuffer(std::move(buffer), DOXYGEN_IGNORE(0, MeshIndexType{}))
+    .setCount(DOXYGEN_IGNORE(0));
+/* [Mesh-populating-owned] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+Vk::ShaderSet shaderSet;
+Vk::PipelineLayout pipelineLayout{NoCreate};
+Vk::RenderPass renderPass{NoCreate};
+/* [Mesh-drawing] */
+Vk::Mesh mesh{DOXYGEN_IGNORE(Vk::MeshLayout{MeshPrimitive{}})};
+
+Vk::Pipeline pipeline{DOXYGEN_IGNORE(device), Vk::RasterizationPipelineCreateInfo{
+        DOXYGEN_IGNORE(shaderSet), mesh.layout(), DOXYGEN_IGNORE(pipelineLayout, renderPass, 0, 1)
+    }DOXYGEN_IGNORE()
+};
+
+DOXYGEN_IGNORE()
+
+cmd.bindPipeline(pipeline)
+   .draw(mesh);
+/* [Mesh-drawing] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::CommandBuffer cmd{NoCreate};
+Vk::ShaderSet shaderSet;
+Vk::PipelineLayout pipelineLayout{NoCreate};
+Vk::RenderPass renderPass{NoCreate};
+constexpr UnsignedInt PositionLocation = 0;
+constexpr UnsignedInt TextureLocation = 1;
+constexpr UnsignedInt NormalLocation = 5;
+/* [Mesh-drawing-dynamic] */
+/* Use zero stride and zero offsets, as the stride gets specified dynamically
+   and offsets specified in concrete buffer bindings instead */
+Vk::MeshLayout dynamicMeshLayout{MeshPrimitive::Triangles};
+dynamicMeshLayout
+    .addBinding(0, 0)
+    .addBinding(1, 0)
+    .addBinding(2, 0)
+    .addAttribute(PositionLocation, 0, VertexFormat::Vector3, 0)
+    .addAttribute(TextureLocation, 1, VertexFormat::Vector2, 0)
+    .addAttribute(NormalLocation, 2, VertexFormat::Vector3, 0);
+
+Vk::Pipeline pipeline{DOXYGEN_IGNORE(device), Vk::RasterizationPipelineCreateInfo{
+        DOXYGEN_IGNORE(shaderSet), dynamicMeshLayout, DOXYGEN_IGNORE(pipelineLayout, renderPass, 0, 1)}
+    /* Enable dynamic primitive and stride */
+    .setDynamicStates(Vk::DynamicRasterizationState::MeshPrimitive|
+                      Vk::DynamicRasterizationState::VertexInputBindingStride)
+    DOXYGEN_IGNORE()
+};
+
+Vk::Buffer vertices{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::Mesh mesh{Vk::MeshLayout{MeshPrimitive::Triangles} /* Or TriangleStrip etc */
+    /* Concrete stride */
+    .addBinding(0, 8*sizeof(Float))
+    .addBinding(1, 8*sizeof(Float))
+    .addBinding(2, 8*sizeof(Float))
+    /* Rest the same as in the dynamicMeshLayout */
+    .addAttribute(PositionLocation, 0, VertexFormat::Vector3, 0)
+    .addAttribute(TextureLocation, 1, VertexFormat::Vector2, 0)
+    .addAttribute(NormalLocation, 2, VertexFormat::Vector3, 0)
+};
+
+/* Bind the same buffer to three different bindings, with concrete offsets */
+mesh.addVertexBuffer(0, vertices, 0)
+    .addVertexBuffer(1, vertices, 3*sizeof(Float))
+    .addVertexBuffer(2, vertices, 5*sizeof(Float))
+    .setCount(DOXYGEN_IGNORE(0));
+
+cmd.bindPipeline(pipeline)
+   /* Updates the dynamic primitive and stride as needed by the mesh */
+   .draw(mesh);
+/* [Mesh-drawing-dynamic] */
 }
 
 {

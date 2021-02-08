@@ -378,6 +378,11 @@ See also:
     @ref Vk::pixelFormat(Magnum::CompressedPixelFormat) that return the new
     @ref Vk::PixelFormat enum that contains only values suitable for a pixel
     format
+-   @cpp Vk::hasVkIndexType() @ce and @cpp Vk::vkIndexType() @ce returning a
+    raw @type_vk{IndexType} are deprecated in favor of
+    @ref Vk::meshIndexType() that returns the new @ref Vk::MeshIndexType enum.
+    Since all generic index types are available in Vulkan now, there's no need
+    for a @cpp hasMeshIndexType() @ce anymore.
 -   @cpp Vk::hasVkPrimitiveTopology() @ce and
     @cpp Vk::vkPrimitiveTopology() @ce returning a raw
     @type_vk{PrimitiveToplogy} are deprecated in favor of

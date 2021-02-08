@@ -363,6 +363,7 @@ cast to @ref VertexFormat.
 Not all generic vertex formats have a Vulkan equivalent and this function
 expects that given format is available. Use @ref hasVertexFormat() to query
 availability of given format.
+@see @ref meshIndexType(), @ref meshPrimitive()
 */
 MAGNUM_VK_EXPORT VertexFormat vertexFormat(Magnum::VertexFormat format);
 

@@ -1,0 +1,40 @@
+               OpCapability Shader
+               OpMemoryModel Logical GLSL450
+               OpEntryPoint Vertex %ver "ver" %position %color %gl_Position %interpolatedColorOut
+               OpEntryPoint Fragment %fra "fra" %interpolatedColorIn %fragmentColor
+               OpExecutionMode %fra OriginUpperLeft
+
+               OpDecorate %gl_Position BuiltIn Position
+               OpDecorate %position             Location 0
+               OpDecorate %color                Location 1
+               OpDecorate %interpolatedColorIn  Location 0
+               OpDecorate %interpolatedColorOut Location 0
+               OpDecorate %fragmentColor        Location 0
+       %void = OpTypeVoid
+         %10 = OpTypeFunction %void
+      %float = OpTypeFloat 32
+    %v4float = OpTypeVector %float 4
+%_ptr_Input_v4float = OpTypePointer Input %v4float
+   %position = OpVariable %_ptr_Input_v4float Input
+      %color = OpVariable %_ptr_Input_v4float Input
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%gl_Position = OpVariable %_ptr_Output_v4float Output
+%interpolatedColorOut = OpVariable %_ptr_Output_v4float Output
+%interpolatedColorIn = OpVariable %_ptr_Input_v4float Input
+%fragmentColor = OpVariable %_ptr_Output_v4float Output
+
+        %ver = OpFunction %void None %10
+       %ver_ = OpLabel
+         %16 = OpLoad %v4float %position
+         %17 = OpLoad %v4float %color
+               OpStore %gl_Position %16
+               OpStore %interpolatedColorOut %17
+               OpReturn
+               OpFunctionEnd
+
+        %fra = OpFunction %void None %10
+       %fra_ = OpLabel
+         %19 = OpLoad %v4float %interpolatedColorIn
+               OpStore %fragmentColor %19
+               OpReturn
+               OpFunctionEnd

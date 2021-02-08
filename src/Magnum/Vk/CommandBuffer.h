@@ -382,6 +382,16 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer& bindPipeline(Pipeline& pipeline);
 
         /**
+         * @brief Draw a mesh
+         * @return Reference to self (for method chaining)
+         *
+         * Can be only called inside a render pass with a graphics pipeline
+         * bound. See @ref Vk-Mesh-drawing for a usage example.
+         * @see @fn_vk_keyword{CmdDraw}, @fn_vk_keyword{CmdDrawIndexed}
+         */
+        CommandBuffer& draw(Mesh& mesh);
+
+        /**
          * @brief Insert an execution barrier with optional memory dependencies
          * @param sourceStages          Source stages. Has to contain at least
          *      one stage.
@@ -784,6 +794,9 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         MAGNUM_VK_LOCAL static void endRenderPassImplementationDefault(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
         MAGNUM_VK_LOCAL static void endRenderPassImplementationKHR(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
         MAGNUM_VK_LOCAL static void endRenderPassImplementation12(CommandBuffer& self, const VkSubpassEndInfo& endInfo);
+
+        MAGNUM_VK_LOCAL static void bindVertexBuffersImplementationDefault(CommandBuffer& self, UnsignedInt firstBinding, UnsignedInt bindingCount, const VkBuffer* buffers, const UnsignedLong* offsets, const UnsignedLong* strides);
+        MAGNUM_VK_LOCAL static void bindVertexBuffersImplementationEXT(CommandBuffer& self, UnsignedInt firstBinding, UnsignedInt bindingCount, const VkBuffer* buffers, const UnsignedLong* offsets, const UnsignedLong* strides);
 
         MAGNUM_VK_LOCAL static void copyBufferImplementationDefault(CommandBuffer& self, const CopyBufferInfo& info);
         MAGNUM_VK_LOCAL static void copyBufferImplementationKHR(CommandBuffer& self, const CopyBufferInfo& info);

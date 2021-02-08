@@ -1,0 +1,30 @@
+               OpCapability Shader
+               OpMemoryModel Logical GLSL450
+               OpEntryPoint Vertex %ver "ver" %gl_Position
+               OpEntryPoint Fragment %fra "fra" %fragmentColor
+               OpExecutionMode %fra OriginUpperLeft
+               OpDecorate %gl_Position BuiltIn Position
+               OpDecorate %fragmentColor Location 0
+
+       %void = OpTypeVoid
+         %10 = OpTypeFunction %void
+      %float = OpTypeFloat 32
+    %v4float = OpTypeVector %float 4
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%gl_Position = OpVariable %_ptr_Output_v4float Output
+%fragmentColor = OpVariable %_ptr_Output_v4float Output
+
+          %9 = OpConstant %float 0
+         %11 = OpConstantComposite %v4float %9 %9 %9 %9
+
+        %ver = OpFunction %void None %10
+       %ver_ = OpLabel
+               OpStore %gl_Position %11
+               OpReturn
+               OpFunctionEnd
+
+        %fra = OpFunction %void None %10
+       %fra_ = OpLabel
+               OpStore %fragmentColor %11
+               OpReturn
+               OpFunctionEnd

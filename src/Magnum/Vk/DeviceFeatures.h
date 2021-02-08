@@ -70,7 +70,7 @@ enum class DeviceFeature: UnsignedShort {
 
     /**
      * Whether the full 32-bit range is supported for indexed draw calls when
-     * using @val_vk{INDEX_TYPE_UINT32,IndexType}.
+     * using @ref MeshIndexType::UnsignedInt.
      * @see @ref DeviceFeature::IndexTypeUnsignedByte
      * @todo expose the `maxDrawIndexedIndexValue` limit
      */
