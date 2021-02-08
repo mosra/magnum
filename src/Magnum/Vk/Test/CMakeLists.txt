@@ -150,6 +150,7 @@ set_target_properties(
     VkResultTest
     VkRenderPassTest
     VkShaderTest
+    VkShaderSetTest
     VkStructureHelpersTest
     VkVersionTest
     VkVertexFormatTest
