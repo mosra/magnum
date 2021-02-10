@@ -912,7 +912,9 @@ bool Context::tryCreate() {
 
     /* Initialize functionality based on current OpenGL version and extensions */
     /** @todo Get rid of these */
-    DefaultFramebuffer::initializeContextBasedFunctionality(*this);
+    if(!(_internalFlags & InternalFlag::NoFramebuffer))
+        DefaultFramebuffer::initializeContextBasedFunctionality(*this);
+
     Renderer::initializeContextBasedFunctionality();
 
     /* Enable GPU validation, if requested */

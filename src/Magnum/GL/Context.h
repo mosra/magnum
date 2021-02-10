@@ -747,6 +747,8 @@ class MAGNUM_GL_EXPORT Context {
             DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
             GpuValidation = 1 << 2,
 
+            NoFramebuffer = 1 << 3,
+
             Default = DisplayInitializationLog
         };
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
