@@ -626,9 +626,9 @@ Context& Context::current() {
 
 void Context::makeCurrent(Context* context) { currentContext = context; }
 
-Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
+Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&), InternalFlags flags): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader, flags} {}
 
-Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&)): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&), InternalFlags flags): Context{NoCreate, functionLoader, flags} {
     /* Parse arguments */
     CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds").setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
@@ -644,8 +644,8 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     /* Decide how to display initialization log */
     if(args.value("log") == "verbose" || args.value("log") == "VERBOSE")
         _internalFlags |= InternalFlag::DisplayVerboseInitializationLog;
-    else if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
-        _internalFlags |= InternalFlag::DisplayInitializationLog;
+    else if(args.value("log") == "quiet" || args.value("log") == "QUIET")
+        _internalFlags &= ~InternalFlag::DisplayInitializationLog;
 
     /* Decide whether to enable GPU validation */
     if(args.value("gpu-validation") == "on" || args.value("gpu-validation") == "ON")
@@ -659,6 +659,8 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
         _disabledExtensions.push_back(extension);
 }
+
+Context::Context(NoCreateT, void functionLoader(Context&), InternalFlags flags): _functionLoader{functionLoader}, _version{Version::None}, _internalFlags{flags} {}
 
 Context::Context(Context&& other) noexcept: _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL

@@ -745,7 +745,9 @@ class MAGNUM_GL_EXPORT Context {
         enum class InternalFlag: UnsignedByte {
             DisplayInitializationLog = 1 << 0,
             DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
-            GpuValidation = 1 << 2
+            GpuValidation = 1 << 2,
+
+            Default = DisplayInitializationLog
         };
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
@@ -766,9 +768,10 @@ class MAGNUM_GL_EXPORT Context {
     #endif
         /* Made protected so it's possible to test the NoCreate constructor and
            also not needed to friend Platform::GLContext. */
-        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
-        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
-        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
+        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&), InternalFlags flags = InternalFlag::Default);
+        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&), InternalFlags flags = InternalFlag::Default): Context{NoCreate, args, argc, argv, functionLoader, flags} {}
+        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&), InternalFlags flags = InternalFlag::Default);
+        explicit Context(NoCreateT, void functionLoader(Context&), InternalFlags flags = InternalFlag::Default);
 
         bool tryCreate();
         void create();
