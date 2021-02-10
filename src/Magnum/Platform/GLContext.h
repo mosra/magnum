@@ -60,13 +60,13 @@ class GLContext: public GL::Context {
          * Equivalent to calling @ref GLContext(NoCreateT, Int, const char**)
          * followed by @ref create().
          */
-        explicit GLContext(Int argc, const char** argv): GLContext{NoCreate, argc, argv} { create(); }
+        explicit GLContext(Int argc, const char** argv, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, argc, argv, flags} { create(); }
 
         /** @overload */
-        explicit GLContext(Int argc, char** argv): GLContext{argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, char** argv, InternalFlags flags = InternalFlag::Default): GLContext{argc, const_cast<const char**>(argv), flags} {}
 
         /** @overload */
-        explicit GLContext(Int argc, std::nullptr_t argv): GLContext{argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, std::nullptr_t argv, InternalFlags flags = InternalFlag::Default): GLContext{argc, static_cast<const char**>(argv), flags} {}
 
         /**
          * @brief Default constructor
@@ -77,7 +77,7 @@ class GLContext: public GL::Context {
          * behavior from the environment. See @ref GL-Context-command-line for
          * more information.
          */
-        explicit GLContext(): GLContext{0, nullptr} {}
+        explicit GLContext(InternalFlags flags = InternalFlag::Default): GLContext{0, nullptr, flags} {}
 
         /**
          * @brief Construct without creating the context
@@ -87,28 +87,28 @@ class GLContext: public GL::Context {
          * Use @ref create() or @ref tryCreate() to create the context.
          * @see @ref GLContext(Int, const char**)
          */
-        explicit GLContext(NoCreateT, Int argc, const char** argv):
+        explicit GLContext(NoCreateT, Int argc, const char** argv, InternalFlags flags = InternalFlag::Default):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            GL::Context{NoCreate, argc, argv, flextGLInit} {}
+            GL::Context{NoCreate, argc, argv, flextGLInit, flags} {}
             #else
-            GL::Context{NoCreate, argc, argv, nullptr} {}
+            GL::Context{NoCreate, argc, argv, nullptr, flags} {}
             #endif
 
         /** @overload */
-        explicit GLContext(NoCreateT, Int argc, char** argv): GLContext{NoCreate, argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Int argc, char** argv, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, argc, const_cast<const char**>(argv), flags} {}
 
         /** @overload */
-        explicit GLContext(NoCreateT, Int argc, std::nullptr_t argv): GLContext{NoCreate, argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Int argc, std::nullptr_t argv, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, argc, static_cast<const char**>(argv), flags} {}
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Used privately to inject additional command-line arguments */
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, char** argv): GLContext{NoCreate, args, argc, const_cast<const char**>(argv)} {}
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, std::nullptr_t argv): GLContext{NoCreate, args, argc, static_cast<const char**>(argv)} {}
-        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, const char** argv):
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, char** argv, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, args, argc, const_cast<const char**>(argv), flags} {}
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, std::nullptr_t argv, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, args, argc, static_cast<const char**>(argv), flags} {}
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, InternalFlags flags = InternalFlag::Default):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            GL::Context{NoCreate, args, argc, argv, flextGLInit} {}
+            GL::Context{NoCreate, args, argc, argv, flextGLInit, flags} {}
             #else
-            GL::Context{NoCreate, args, argc, argv, nullptr} {}
+            GL::Context{NoCreate, args, argc, argv, nullptr, flags} {}
             #endif
         #endif
 
@@ -121,7 +121,7 @@ class GLContext: public GL::Context {
          * affect the renderer behavior from the environment. See
          * @ref GL-Context-command-line for more information.
          */
-        explicit GLContext(NoCreateT): GLContext{NoCreate, 0, nullptr} {}
+        explicit GLContext(NoCreateT, InternalFlags flags = InternalFlag::Default): GLContext{NoCreate, 0, nullptr, flags} {}
 
         /**
          * @brief Create the context
