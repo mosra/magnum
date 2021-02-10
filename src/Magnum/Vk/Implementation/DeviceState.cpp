@@ -32,6 +32,7 @@
 #include "Magnum/Vk/Extensions.h"
 #include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/RenderPass.h"
+#include "Magnum/Vk/Shader.h"
 #include "Magnum/Vk/Version.h"
 #include "Magnum/Vk/Implementation/DriverWorkaround.h"
 
@@ -112,6 +113,13 @@ DeviceState::DeviceState(Device& device, Containers::Array<std::pair<Containers:
             cmdCopyBufferToImageImplementation = &CommandBuffer::copyBufferToImageImplementationDefault;
             cmdCopyImageToBufferImplementation = &CommandBuffer::copyImageToBufferImplementationDefault;
         }
+    }
+
+    /* SPIR-V hotpatching on shader creation */
+    if(device.properties().name().hasPrefix("SwiftShader"_s) && !Implementation::isDriverWorkaroundDisabled(encounteredWorkarounds, "swiftshader-spirv-multi-entrypoint-conflicting-locations"_s)) {
+        createShaderImplementation = &Shader::createImplementationSwiftShaderMultiEntryPointPatching;
+    } else {
+        createShaderImplementation = &Shader::createImplementationDefault;
     }
 }
 

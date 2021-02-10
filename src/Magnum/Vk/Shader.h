@@ -39,6 +39,8 @@
 
 namespace Magnum { namespace Vk {
 
+namespace Implementation { struct DeviceState; }
+
 /**
 @brief Shader stage
 @m_since_latest
@@ -203,6 +205,11 @@ class MAGNUM_VK_EXPORT Shader {
         VkShaderModule release();
 
     private:
+        friend Implementation::DeviceState;
+
+        MAGNUM_VK_LOCAL static VkResult createImplementationDefault(Device& device, const VkShaderModuleCreateInfo& info, const VkAllocationCallbacks* callbacks, VkShaderModule& handle);
+        MAGNUM_VK_LOCAL static VkResult createImplementationSwiftShaderMultiEntryPointPatching(Device& device, const VkShaderModuleCreateInfo& info, const VkAllocationCallbacks* callbacks, VkShaderModule& handle);
+
         /* Can't be a reference because of the NoCreate constructor */
         Device* _device;
 

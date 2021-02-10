@@ -23,15 +23,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Directory.h>
 
+#include "Magnum/ShaderTools/Implementation/spirv.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
+#include "Magnum/Vk/Implementation/spirvPatching.h"
+
+#include "configure.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
 
 struct ShaderTest: TestSuite::Tester {
     explicit ShaderTest();
+
+    void spirvPatchSwiftShaderConflictingMultiEntrypointLocations();
+    void spirvPatchSwiftShaderConflictingMultiEntrypointLocationsTooManyEntrypoints();
+    void spirvPatchSwiftShaderConflictingMultiEntrypointLocationsOnlyOneEntrypoint();
+    void spirvPatchSwiftShaderConflictingMultiEntrypointLocationsNoInterfaces();
 
     void createInfoConstruct();
     void createInfoConstructTransferOwnership();
@@ -45,7 +56,12 @@ struct ShaderTest: TestSuite::Tester {
 };
 
 ShaderTest::ShaderTest() {
-    addTests({&ShaderTest::createInfoConstruct,
+    addTests({&ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocations,
+              &ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsTooManyEntrypoints,
+              &ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsOnlyOneEntrypoint,
+              &ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsNoInterfaces,
+
+              &ShaderTest::createInfoConstruct,
               &ShaderTest::createInfoConstructTransferOwnership,
               &ShaderTest::createInfoConstructNoInit,
               &ShaderTest::createInfoConstructFromVk,
@@ -54,6 +70,103 @@ ShaderTest::ShaderTest() {
 
               &ShaderTest::constructNoCreate,
               &ShaderTest::constructCopy});
+}
+
+void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocations() {
+    Containers::Array<char> data = Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "ShaderTestFiles/vert-frag.spv"));
+
+    /* The file is a full SPIR-V, strip the header first */
+    const Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size());
+    CORRADE_VERIFY(spirv);
+
+    Containers::ArrayView<const UnsignedInt> view = spirv;
+    Containers::Optional<ShaderTools::Implementation::SpirvEntrypoint> vert = ShaderTools::Implementation::spirvNextEntrypoint(view);
+    CORRADE_VERIFY(vert);
+    CORRADE_COMPARE(vert->name, "ver");
+    CORRADE_COMPARE(vert->interfaces.size(), 7);
+
+    Containers::Optional<ShaderTools::Implementation::SpirvEntrypoint> frag = ShaderTools::Implementation::spirvNextEntrypoint(view);
+    CORRADE_VERIFY(frag);
+    CORRADE_COMPARE(frag->name, "fra");
+    CORRADE_COMPARE(frag->interfaces.size(), 5);
+
+    ShaderTools::Implementation::SpirvEntrypointInterface vertInterfaces[7]{};
+    ShaderTools::Implementation::spirvEntrypointInterface(view, *vert, vertInterfaces);
+    CORRADE_VERIFY(vertInterfaces[0].location); /* position */
+    CORRADE_COMPARE(*vertInterfaces[0].location, 0);
+    CORRADE_VERIFY(vertInterfaces[1].location); /* color */
+    CORRADE_COMPARE(*vertInterfaces[1].location, 1);
+    CORRADE_VERIFY(vertInterfaces[3].location); /* interpolatedColorOut */
+    CORRADE_COMPARE(*vertInterfaces[3].location, 0);
+    CORRADE_VERIFY(vertInterfaces[4].location); /* interpolatedTexCoordsOut */
+    CORRADE_COMPARE(*vertInterfaces[4].location, 1);
+    CORRADE_VERIFY(vertInterfaces[5].location); /* interpolatedNormalOut */
+    CORRADE_COMPARE(*vertInterfaces[5].location, 2);
+    CORRADE_VERIFY(vertInterfaces[6].location); /* unused */
+    CORRADE_COMPARE(*vertInterfaces[6].location, 3);
+
+    ShaderTools::Implementation::SpirvEntrypointInterface fragInterfaces[5]{};
+    ShaderTools::Implementation::spirvEntrypointInterface(view, *frag, fragInterfaces);
+    CORRADE_VERIFY(fragInterfaces[0].location); /* interpolatedColorIn */
+    CORRADE_COMPARE(*fragInterfaces[0].location, 0);
+    CORRADE_VERIFY(fragInterfaces[1].location); /* interpolatedTexCoordsIn */
+    CORRADE_COMPARE(*fragInterfaces[1].location, 1);
+    CORRADE_VERIFY(fragInterfaces[2].location); /* interpolatedNormalIn */
+    CORRADE_COMPARE(*fragInterfaces[2].location, 2);
+    CORRADE_VERIFY(fragInterfaces[3].location); /* fragmentColor */
+    CORRADE_COMPARE(*fragInterfaces[3].location, 0);
+    CORRADE_VERIFY(fragInterfaces[4].location); /* weight */
+    CORRADE_COMPARE(*fragInterfaces[4].location, 1);
+
+    CORRADE_VERIFY(Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(spirv));
+    CORRADE_COMPARE(*vertInterfaces[0].location, 0);
+    CORRADE_COMPARE(*vertInterfaces[1].location, 1);
+    CORRADE_COMPARE(*vertInterfaces[3].location, 4); /* changed */
+    CORRADE_COMPARE(*vertInterfaces[4].location, 5); /* changed */
+    CORRADE_COMPARE(*vertInterfaces[5].location, 2); /* kept, no conflict */
+    CORRADE_COMPARE(*vertInterfaces[6].location, 3); /* kept, no conflict */
+
+    CORRADE_COMPARE(*fragInterfaces[0].location, 4); /* changed */
+    CORRADE_COMPARE(*fragInterfaces[1].location, 5); /* changed */
+    CORRADE_COMPARE(*fragInterfaces[2].location, 2); /* kept, no conflict */
+    CORRADE_COMPARE(*fragInterfaces[3].location, 0);
+    CORRADE_COMPARE(*fragInterfaces[4].location, 1);
+}
+
+UnsignedInt op(UnsignedInt length, SpvOp op) {
+    return length << 16 | op;
+}
+
+void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsTooManyEntrypoints() {
+    UnsignedInt data[] {
+        op(6, SpvOpEntryPoint), SpvExecutionModelVertex, 1, '\0', 4, 5,
+        op(4, SpvOpEntryPoint), SpvExecutionModelFragment, 2, '\0',
+        op(6, SpvOpEntryPoint), SpvExecutionModelFragment, 3, '\0', 7, 8,
+    };
+
+    /* There's three entrypoints, skip to avoid breaking something we don't
+       understand */
+    CORRADE_VERIFY(!Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(data));
+}
+
+void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsOnlyOneEntrypoint() {
+    UnsignedInt data[] {
+        op(6, SpvOpEntryPoint), SpvExecutionModelVertex, 1, '\0', 4, 5,
+    };
+
+    /* There's just one entrypoint, the bug doesn't affect this case */
+    CORRADE_VERIFY(!Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(data));
+}
+
+void ShaderTest::spirvPatchSwiftShaderConflictingMultiEntrypointLocationsNoInterfaces() {
+    UnsignedInt data[] {
+        op(4, SpvOpEntryPoint), SpvExecutionModelVertex, 1, '\0',
+        op(4, SpvOpEntryPoint), SpvExecutionModelFragment, 2, '\0'
+    };
+
+    /* There's no interfaces and thus nothing to do, but the function should
+       succeed and not crash */
+    CORRADE_VERIFY(Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(data));
 }
 
 void ShaderTest::createInfoConstruct() {

@@ -1,0 +1,53 @@
+               OpCapability Shader
+               OpMemoryModel Logical GLSL450
+               OpEntryPoint Vertex %ver "ver" %position %color %gl_Position %interpolatedColorOut %interpolatedTexCoordsOut %interpolatedNormalOut %unused
+               OpEntryPoint Fragment %fra "fra" %interpolatedColorIn %interpolatedTexCoordsIn %interpolatedNormalIn %fragmentColor %weight
+
+               OpDecorate %gl_Position BuiltIn Position
+               OpDecorate %position             Location 0
+               OpDecorate %color                Location 1
+               OpDecorate %fragmentColor        Location 0
+               OpDecorate %weight               Location 1
+
+               OpDecorate %interpolatedColorOut Location 0
+               OpDecorate %interpolatedColorIn  Location 0
+
+               OpDecorate %interpolatedTexCoordsOut Location 1
+               OpDecorate %interpolatedTexCoordsIn  Location 1
+
+               OpDecorate %interpolatedNormalOut    Location 2
+               OpDecorate %interpolatedNormalIn     Location 2
+
+               OpDecorate %unused               Location 3
+
+      %float = OpTypeFloat 32
+    %v2float = OpTypeVector %float 2
+    %v3float = OpTypeVector %float 3
+    %v4float = OpTypeVector %float 4
+
+%_ptr_Output_float = OpTypePointer Output %float
+     %weight = OpVariable %_ptr_Output_float Output
+
+%_ptr_Input_v2float = OpTypePointer Input %v2float
+%interpolatedTexCoordsIn = OpVariable %_ptr_Input_v2float Input
+
+%_ptr_Output_v2float = OpTypePointer Output %v2float
+%interpolatedTexCoordsOut = OpVariable %_ptr_Input_v2float Output
+
+%_ptr_Input_v3float = OpTypePointer Input %v3float
+%interpolatedNormalIn = OpVariable %_ptr_Input_v3float Input
+
+%_ptr_Output_v3float = OpTypePointer Output %v3float
+%interpolatedNormalOut = OpVariable %_ptr_Input_v3float Output
+
+%_ptr_Input_v4float = OpTypePointer Input %v4float
+   %position = OpVariable %_ptr_Input_v4float Input
+      %color = OpVariable %_ptr_Input_v4float Input
+%interpolatedColorIn = OpVariable %_ptr_Input_v4float Input
+
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%interpolatedColorOut = OpVariable %_ptr_Output_v4float Output
+%gl_Position = OpVariable %_ptr_Output_v4float Output
+%fragmentColor = OpVariable %_ptr_Output_v4float Output
+
+     %unused = OpVariable %_ptr_Output_float Output
