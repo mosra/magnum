@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_ShaderTools_h
-#define Magnum_Trade_ShaderTools_h
+#ifndef Magnum_ShaderTools_ShaderTools_h
+#define Magnum_ShaderTools_ShaderTools_h
 /*
     This file is part of Magnum.
 
@@ -29,7 +29,7 @@
  * @brief Forward declarations for the @ref Magnum::ShaderTools namespace
  */
 
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace ShaderTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractConverter;
