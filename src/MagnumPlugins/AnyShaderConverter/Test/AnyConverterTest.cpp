@@ -34,6 +34,7 @@
 #include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/ShaderTools/AbstractConverter.h"
+#include "Magnum/ShaderTools/Stage.h"
 
 #include "configure.h"
 

@@ -36,6 +36,7 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/ShaderTools/AbstractConverter.h"
+#include "Magnum/ShaderTools/Stage.h"
 
 #include "configure.h"
 
@@ -180,7 +181,6 @@ struct AbstractConverterTest: TestSuite::Tester {
     void debugFlag();
     void debugFlags();
     void debugFormat();
-    void debugStage();
 };
 
 AbstractConverterTest::AbstractConverterTest() {
@@ -319,8 +319,7 @@ AbstractConverterTest::AbstractConverterTest() {
               &AbstractConverterTest::debugFeatures,
               &AbstractConverterTest::debugFlag,
               &AbstractConverterTest::debugFlags,
-              &AbstractConverterTest::debugFormat,
-              &AbstractConverterTest::debugStage});
+              &AbstractConverterTest::debugFormat});
 
     /* Create testing dir */
     Utility::Directory::mkpath(SHADERTOOLS_TEST_OUTPUT_DIR);
@@ -3426,13 +3425,6 @@ void AbstractConverterTest::debugFormat() {
 
     Debug{&out} << Format::Glsl << Format(0xf0);
     CORRADE_COMPARE(out.str(), "ShaderTools::Format::Glsl ShaderTools::Format(0xf0)\n");
-}
-
-void AbstractConverterTest::debugStage() {
-    std::ostringstream out;
-
-    Debug{&out} << Stage::RayMiss << Stage(0xf0);
-    CORRADE_COMPARE(out.str(), "ShaderTools::Stage::RayMiss ShaderTools::Stage(0xf0)\n");
 }
 
 }}}}

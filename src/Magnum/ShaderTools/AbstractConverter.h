@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::ShaderTools::AbstractConverter, enum @ref Magnum::ShaderTools::ConverterFeature, @ref Magnum::ShaderTools::ConverterFlag, @ref Magnum::ShaderTools::Format, @ref Magnum::ShaderTools::Stage, enum set @ref Magnum::ShaderTools::ConverterFeatures, @ref Magnum::ShaderTools::ConverterFlags
+ * @brief Class @ref Magnum::ShaderTools::AbstractConverter, enum @ref Magnum::ShaderTools::ConverterFeature, @ref Magnum::ShaderTools::ConverterFlag, @ref Magnum::ShaderTools::Format, enum set @ref Magnum::ShaderTools::ConverterFeatures, @ref Magnum::ShaderTools::ConverterFlags
  * @m_since_latest
  */
 
@@ -34,7 +34,12 @@
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/ShaderTools/ShaderTools.h"
 #include "Magnum/ShaderTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/ShaderTools/Stage.h"
+#endif
 
 namespace Magnum { namespace ShaderTools {
 
@@ -263,55 +268,6 @@ enum class Format: UnsignedInt {
 @m_since_latest
 */
 MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, Format value);
-
-/**
-@brief Shader stage
-@m_since_latest
-
-@see @ref AbstractConverter
-*/
-enum class Stage: UnsignedInt {
-    /**
-     * Unspecified stage. When used in the
-     * @ref AbstractConverter::validateFile(),
-     * @ref AbstractConverter::convertFileToFile() "convertFileToFile()",
-     * @ref AbstractConverter::convertFileToData() "convertFileToData()",
-     * @ref AbstractConverter::linkFilesToFile() "linkFilesToFile()" or
-     * @ref AbstractConverter::linkFilesToData() "linkFilesToData()" APIs,
-     * particular plugins may attempt to detect the stage from filename, the
-     * shader stage might also be encoded directly in certain
-     * @ref Format "Format"s. Leaving the stage unspecified might limit
-     * validation and conversion capabilities, see documentation of a
-     * particular converter for concrete behavior.
-     *
-     * This value is guaranteed to be @cpp 0 @ce, which means you're encouraged
-     * to simply use @cpp {} @ce in function calls and elsewhere.
-     */
-    Unspecified = 0,
-
-    Vertex,                     /**< Vertex stage */
-    Fragment,                   /**< Fragment stage */
-    Geometry,                   /**< Geometry stage */
-    TessellationControl,        /**< Tessellation control stage */
-    TessellationEvaluation,     /**< Tessellation evaluation stage */
-    Compute,                    /**< Compute stage */
-
-    RayGeneration,              /**< Ray generation stage */
-    RayAnyHit,                  /**< Ray any hit stage */
-    RayClosestHit,              /**< Ray closest hit stage */
-    RayMiss,                    /**< Ray miss stage */
-    RayIntersection,            /**< Ray intersection stage */
-    RayCallable,                /**< Ray callable stage */
-
-    MeshTask,                   /**< Mesh task stage */
-    Mesh                        /**< Mesh stage */
-};
-
-/**
-@debugoperatorenum{Stage}
-@m_since_latest
-*/
-MAGNUM_SHADERTOOLS_EXPORT Debug& operator<<(Debug& debug, Stage value);
 
 /**
 @brief Base for shader converter plugins

@@ -33,6 +33,7 @@
 #include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/ShaderTools/AbstractConverter.h"
+#include "Magnum/ShaderTools/Stage.h"
 
 namespace Magnum {
 

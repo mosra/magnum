@@ -1,5 +1,3 @@
-#ifndef Magnum_ShaderTools_ShaderTools_h
-#define Magnum_ShaderTools_ShaderTools_h
 /*
     This file is part of Magnum.
 
@@ -25,19 +23,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::ShaderTools namespace
- */
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Types.h"
+#include "Magnum/ShaderTools/Stage.h"
 
-namespace Magnum { namespace ShaderTools {
+namespace Magnum { namespace ShaderTools { namespace Test { namespace {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractConverter;
-#endif
-enum class Stage: UnsignedInt;
+struct StageTest: TestSuite::Tester {
+    explicit StageTest();
 
-}}
+    void debug();
+};
 
-#endif
+StageTest::StageTest() {
+    addTests({&StageTest::debug});
+}
+
+void StageTest::debug() {
+    std::ostringstream out;
+
+    Debug{&out} << Stage::RayMiss << Stage(0xf0);
+    CORRADE_COMPARE(out.str(), "ShaderTools::Stage::RayMiss ShaderTools::Stage(0xf0)\n");
+}
+
+}}}}
+
+CORRADE_TEST_MAIN(Magnum::ShaderTools::Test::StageTest)

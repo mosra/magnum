@@ -30,11 +30,13 @@ set(MagnumShaderTools_SRCS )
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumShaderTools_GracefulAssert_SRCS
-    AbstractConverter.cpp)
+    AbstractConverter.cpp
+    Stage.cpp)
 
 set(MagnumShaderTools_HEADERS
     AbstractConverter.h
     ShaderTools.h
+    Stage.h
 
     visibility.h)
 

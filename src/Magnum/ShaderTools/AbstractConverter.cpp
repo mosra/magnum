@@ -741,32 +741,4 @@ Debug& operator<<(Debug& debug, const Format value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const Stage value) {
-    debug << "ShaderTools::Stage" << Debug::nospace;
-
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case Stage::v: return debug << "::" #v;
-        _c(Unspecified)
-        _c(Vertex)
-        _c(Fragment)
-        _c(Geometry)
-        _c(TessellationControl)
-        _c(TessellationEvaluation)
-        _c(Compute)
-        _c(RayGeneration)
-        _c(RayAnyHit)
-        _c(RayClosestHit)
-        _c(RayMiss)
-        _c(RayIntersection)
-        _c(RayCallable)
-        _c(MeshTask)
-        _c(Mesh)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
-}
-
 }}

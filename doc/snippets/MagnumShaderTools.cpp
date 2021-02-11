@@ -31,6 +31,7 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/ShaderTools/AbstractConverter.h"
+#include "Magnum/ShaderTools/Stage.h"
 
 #define DOXYGEN_IGNORE(...) __VA_ARGS__
 
