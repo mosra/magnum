@@ -75,7 +75,8 @@ magnum-imageconverter [-h|--help] [-I|--importer IMPORTER]
 Arguments:
 
 -   `input` --- input image
--   `output` --- output image, ignored if `--in-place` or `--info` is present
+-   `output` --- output image; ignored if `--info` is present, disallowed for
+    `--in-place`
 -   `-h`, `--help` --- display this help message and exit
 -   `-I`, `--importer IMPORTER` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
@@ -145,7 +146,7 @@ using namespace Magnum;
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input image")
-        .addArgument("output").setHelp("output", "output image, ignored if --in-place or --info is present")
+        .addArgument("output").setHelp("output", "output image; ignored if --info is present, disallowed for --in-place")
         .addOption('I', "importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption('C', "converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
@@ -181,6 +182,20 @@ comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
 key=true; configuration subgroups are delimited with /.)")
         .parse(argc, argv);
+
+    /* Generic checks */
+    if(!args.value<Containers::StringView>("output").isEmpty()) {
+        if(args.isSet("in-place")) {
+            Error{} << "Output file shouldn't be set for --in-place:" << args.value<Containers::StringView>("output");
+            return 1;
+        }
+
+        /* Not an error in this case, it should be possible to just append
+           --info to existing command line without having to remove anything.
+           But print a warning at least, it could also be a mistyped option. */
+        if(args.isSet("info"))
+            Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
+    }
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? std::string{} :

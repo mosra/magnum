@@ -75,7 +75,7 @@ magnum-shaderconverter [-h|--help] [--validate] [--link]
 Arguments:
 
 -   `input` --- input file(s)
--   `output` --- output file, ignored if `--validate` is present. If neither
+-   `output` --- output file, disallowed for `--validate`. If neither
     `--validate` nor `--link` is present, corresponds to the
     @ref ShaderTools::AbstractConverter::convertFileToFile() function.
 -   `-h`, `--help` --- display this help message and exit
@@ -173,7 +173,7 @@ using namespace Magnum;
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArrayArgument("input").setHelp("input", "input file(s)")
-        .addArgument("output").setHelp("output", "output file, ignored if --validate is present")
+        .addArgument("output").setHelp("output", "output file, disallowed for --validate")
         .addBooleanOption("validate").setHelp("validate", "validate input")
         .addBooleanOption("link").setHelp("link", "link multiple input files together")
         .addArrayOption('C', "converter").setHelp("converter", "shader converter plugin(s)")
@@ -232,9 +232,9 @@ see documentation of a particular converter for more information.)")
         .parse(argc, argv);
 
     /* Generic checks */
-    if(args.isSet("validate")) {
-        if(!args.value<Containers::StringView>("output").isEmpty()) {
-            Error{} << "Output file shouldn't be set for --validate";
+    if(!args.value<Containers::StringView>("output").isEmpty()) {
+        if(args.isSet("validate")) {
+            Error{} << "Output file shouldn't be set for --validate:" << args.value<Containers::StringView>("output");
             return 1;
         }
     }

@@ -86,7 +86,7 @@ magnum-sceneconverter [-h|--help] [-I|--importer IMPORTER]
 Arguments:
 
 -   `input` --- input file
--   `output` --- output file, ignored if `--info` is present
+-   `output` --- output file; ignored if `--info` is present
 -   `-h`, `--help` --- display this help message and exit
 -   `-I`, `--importer IMPORTER` --- scene importer plugin (default:
     @ref Trade::AnySceneImporter "AnySceneImporter")
@@ -199,7 +199,7 @@ UnsignedInt namedAttributeId(const Trade::MeshData& mesh, UnsignedInt id) {
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArgument("input").setHelp("input", "input file")
-        .addArgument("output").setHelp("output", "output file, ignored if --info is present")
+        .addArgument("output").setHelp("output", "output file; ignored if --info is present")
         .addOption('I', "importer", "AnySceneImporter").setHelp("importer", "scene importer plugin")
         .addArrayOption('C', "converter").setHelp("converter", "scene converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
@@ -240,6 +240,15 @@ converter doesn't support conversion to a file, AnySceneConverter is used to
 save its output; if no -C / --converter is specified, AnySceneConverter is
 used.)")
         .parse(argc, argv);
+
+    /* Generic checks */
+    if(!args.value<Containers::StringView>("output").isEmpty()) {
+        /* Not an error in this case, it should be possible to just append
+           --info to existing command line without having to remove anything.
+           But print a warning at least, it could also be a mistyped option. */
+        if(args.isSet("info"))
+            Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
+    }
 
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? std::string{} :
