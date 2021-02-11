@@ -50,6 +50,7 @@ Debug& operator<<(Debug& debug, const Stage value) {
         _c(RayCallable)
         _c(MeshTask)
         _c(Mesh)
+        _c(Kernel)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

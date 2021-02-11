@@ -75,7 +75,15 @@ enum class Stage: UnsignedInt {
     RayCallable,                /**< Ray callable stage */
 
     MeshTask,                   /**< Mesh task stage */
-    Mesh                        /**< Mesh stage */
+    Mesh,                       /**< Mesh stage */
+
+    /**
+     * Compute kernel.
+     *
+     * Compared to @ref Stage::Compute, which is used by graphics APIs such as
+     * Vulkan or OpenGL, this one is for use by OpenCL.
+     */
+    Kernel
 };
 
 /**
