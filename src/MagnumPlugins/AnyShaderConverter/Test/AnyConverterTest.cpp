@@ -445,7 +445,7 @@ void AnyConverterTest::convertPropagateFlags() {
     std::ostringstream out;
     Debug redirectDebug{&out};
     Error redirectError{&out};
-    CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, Utility::Directory::join(ANYSHADERCONVERTER_TEST_DIR, "file.glsl"), Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
+    CORRADE_VERIFY(!converter->convertFileToFile(Stage::Fragment, filename, Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.spv")));
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "ShaderTools::AnyConverter::convertFileToFile(): using GlslToSpirvShaderConverter (provided by GlslangShaderConverter)\n"
         "ShaderTools::GlslangConverter::convertDataToData(): compilation failed:\n"
