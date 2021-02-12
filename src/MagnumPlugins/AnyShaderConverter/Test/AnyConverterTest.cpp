@@ -305,7 +305,7 @@ void AnyConverterTest::convert() {
 }
 
 void AnyConverterTest::convertNotSupported() {
-    CORRADE_SKIP("No plugin that would support just validation exists.");
+    CORRADE_SKIP("No plugin that would support just conversion exists.");
 }
 
 void AnyConverterTest::convertPreprocessNotSupported() {
