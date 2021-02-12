@@ -38,9 +38,14 @@ corrade_add_test(ShaderToolsAbstractConverterTest AbstractConverterTest.cpp
     LIBRARIES MagnumShaderToolsTestLib
     FILES file.dat another.dat)
 target_include_directories(ShaderToolsAbstractConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+corrade_add_test(ShaderToolsSpirvTest SpirvTest.cpp
+    LIBRARIES MagnumShaderTools
+    FILES SpirvTestFiles/entrypoint-interface.spv)
+target_include_directories(ShaderToolsSpirvTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(ShaderToolsStageTest StageTest.cpp LIBRARIES MagnumShaderTools)
 
 set_target_properties(
     ShaderToolsAbstractConverterTest
+    ShaderToolsSpirvTest
     ShaderToolsStageTest
     PROPERTIES FOLDER "Magnum/ShaderTools/Test")

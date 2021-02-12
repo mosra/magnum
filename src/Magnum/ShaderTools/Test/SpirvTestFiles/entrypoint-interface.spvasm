@@ -1,0 +1,23 @@
+               OpCapability Shader
+               OpEntryPoint Vertex %ver "vertexLongEntrypointName" %position %color %gl_Position %interpolatedColorOut
+               OpEntryPoint Fragment %fra "fra" %interpolatedColorIn %fragmentColor %unknownFragmentInterface
+               OpExecutionMode %fra OriginUpperLeft
+               OpDecorate %gl_Position BuiltIn Position
+               OpDecorate %position             Location 0
+               OpDecorate %color                Location 1
+               OpDecorate %fragmentColor        Location 0
+               OpDecorate %unknownFragmentInterface Location 1
+               OpDecorate %interpolatedColorIn  Location 0
+               OpDecorate %interpolatedColorOut Location 0
+       %void = OpTypeVoid
+         %10 = OpTypeFunction %void
+      %float = OpTypeFloat 32
+    %v4float = OpTypeVector %float 4
+%_ptr_Input_v4float = OpTypePointer Input %v4float
+   %position = OpVariable %_ptr_Input_v4float Input
+      %color = OpVariable %_ptr_Input_v4float Input
+%interpolatedColorIn = OpVariable %_ptr_Input_v4float Input
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%gl_Position = OpVariable %_ptr_Output_v4float Output
+%interpolatedColorOut = OpVariable %_ptr_Output_v4float Output
+%fragmentColor = OpVariable %_ptr_Output_v4float Output
