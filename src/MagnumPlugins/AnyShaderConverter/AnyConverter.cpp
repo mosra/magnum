@@ -236,10 +236,11 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     const Containers::StringView formatFrom = stringForFormat(
         _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToFile():", from)
     );
+    if(formatFrom.isEmpty()) return {};
     const Containers::StringView formatTo = stringForFormat(
         _state->outputFormat != Format::Unspecified ? _state->outputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToFile():", to)
     );
-    if(formatFrom.isEmpty() || formatTo.isEmpty()) return {};
+    if(formatTo.isEmpty()) return {};
 
     /* Decide on a plugin name based on the format. This might result in
        invalid combinations such as SpirvToGlslShaderConverter which can't be

@@ -44,6 +44,7 @@ struct AnyConverterTest: TestSuite::Tester {
     explicit AnyConverterTest();
 
     void validate();
+    void validateUnknown();
     void validateNotSupported();
     void validatePreprocessNotSupported();
     void validatePropagateFlags();
@@ -52,6 +53,8 @@ struct AnyConverterTest: TestSuite::Tester {
     void validatePropagatePreprocess();
 
     void convert();
+    void convertUnknownInput();
+    void convertUnknownOutput();
     void convertNotSupported();
     void convertPreprocessNotSupported();
     void convertDebugInfoNotSupported();
@@ -67,8 +70,6 @@ struct AnyConverterTest: TestSuite::Tester {
     void detectValidateExplicitFormat();
     void detectConvert();
     void detectConvertExplicitFormat();
-
-    void unknown();
 
     /* Explicitly forbid system-wide plugin dependencies. Tests that need those
        have their own manager. */
@@ -100,6 +101,7 @@ constexpr struct {
 
 AnyConverterTest::AnyConverterTest() {
     addTests({&AnyConverterTest::validate,
+              &AnyConverterTest::validateUnknown,
               &AnyConverterTest::validateNotSupported,
               &AnyConverterTest::validatePreprocessNotSupported,
               &AnyConverterTest::validatePropagateFlags,
@@ -108,6 +110,8 @@ AnyConverterTest::AnyConverterTest() {
               &AnyConverterTest::validatePropagatePreprocess,
 
               &AnyConverterTest::convert,
+              &AnyConverterTest::convertUnknownInput,
+              &AnyConverterTest::convertUnknownOutput,
               &AnyConverterTest::convertNotSupported,
               &AnyConverterTest::convertPreprocessNotSupported,
               &AnyConverterTest::convertDebugInfoNotSupported,
@@ -128,8 +132,6 @@ AnyConverterTest::AnyConverterTest() {
         Containers::arraySize(DetectConvertData));
 
     addTests({&AnyConverterTest::detectConvertExplicitFormat});
-
-    addTests({&AnyConverterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -157,6 +159,16 @@ void AnyConverterTest::validate() {
     /* Make it print a warning so we know it's doing something */
     CORRADE_COMPARE(converter->validateFile(Stage::Fragment, filename),
         std::make_pair(true, Utility::formatString("WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved", filename)));
+}
+
+void AnyConverterTest::validateUnknown() {
+    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(converter->validateFile({}, "dead.cg"),
+        std::make_pair(false, ""));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AnyConverter::validateFile(): cannot determine the format of dead.cg\n");
 }
 
 void AnyConverterTest::validateNotSupported() {
@@ -308,6 +320,24 @@ void AnyConverterTest::convert() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "ShaderTools::GlslangConverter::convertDataToData(): compilation succeeded with the following message:\n"
         "WARNING: {}:10: 'reserved__identifier' : identifiers containing consecutive underscores (\"__\") are reserved\n", inputFilename));
+}
+
+void AnyConverterTest::convertUnknownInput() {
+    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, "dead.cg", "whatever.osl"));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AnyConverter::convertFileToFile(): cannot determine the format of dead.cg\n");
+}
+
+void AnyConverterTest::convertUnknownOutput() {
+    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, "file.spv", "whatever.osl"));
+    CORRADE_COMPARE(out.str(), "ShaderTools::AnyConverter::convertFileToFile(): cannot determine the format of whatever.osl\n");
 }
 
 void AnyConverterTest::convertNotSupported() {
@@ -633,16 +663,6 @@ void AnyConverterTest::detectConvertExplicitFormat() {
         "PluginManager::Manager::load(): plugin HlslToWgslShaderConverter was not found\n"
         "ShaderTools::AnyConverter::convertFileToFile(): cannot load the HlslToWgslShaderConverter plugin\n");
     #endif
-}
-
-void AnyConverterTest::unknown() {
-    std::ostringstream output;
-    Error redirectError{&output};
-
-    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
-    CORRADE_COMPARE(converter->validateFile({}, "dead.cg"),
-        std::make_pair(false, ""));
-    CORRADE_COMPARE(output.str(), "ShaderTools::AnyConverter::validateFile(): cannot determine the format of dead.cg\n");
 }
 
 }}}}
