@@ -17,7 +17,6 @@ extension EXT_texture_border_clamp                  optional
 extension EXT_texture_buffer                        optional
 extension EXT_texture_cube_map_array                optional
 extension EXT_primitive_bounding_box                optional
-extension EXT_texture_norm16                        optional
 # extension KHR_texture_compression_astc_ldr        optional
 extension KHR_debug                                 optional
 extension KHR_blend_equation_advanced               optional
@@ -57,6 +56,7 @@ extension EXT_sRGB_write_control                    optional
 extension EXT_texture_compression_s3tc              optional
 extension EXT_pvrtc_sRGB                            optional
 extension EXT_shader_integer_mix                    optional
+extension EXT_texture_norm16                        optional
 extension EXT_texture_sRGB_R8                       optional
 extension EXT_texture_sRGB_RG8                      optional
 extension EXT_polygon_offset_clamp                  optional
