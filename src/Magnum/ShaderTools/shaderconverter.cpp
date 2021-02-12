@@ -335,7 +335,7 @@ see documentation of a particular converter for more information.)")
         Containers::Array<std::pair<ShaderTools::Stage, Containers::StringView>> linkInputs;
         if(i == 0) {
             if((args.isSet("preprocess-only") || args.arrayValueCount("define") || args.arrayValueCount("undefine"))) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::Preprocess)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::Preprocess)) {
                     Error{} << "The -E / -D / -U options are set, but" << converterName << "doesn't support preprocessing";
                     return 10;
                 }
@@ -360,7 +360,7 @@ see documentation of a particular converter for more information.)")
             }
 
             if(!args.value<Containers::StringView>("optimize").isEmpty()) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::Optimize)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::Optimize)) {
                     Error{} << "The -O option is set, but" << converterName << "doesn't support optimization";
                     return 11;
                 }
@@ -369,7 +369,7 @@ see documentation of a particular converter for more information.)")
             }
 
             if(!args.value<Containers::StringView>("debug-info").isEmpty()) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::DebugInfo)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::DebugInfo)) {
                     Error{} << "The -g option is set, but" << converterName << "doesn't support debug info";
                     return 12;
                 }
@@ -394,7 +394,7 @@ see documentation of a particular converter for more information.)")
                re-entered again */
             CORRADE_INTERNAL_ASSERT(i == 0);
 
-            if(!(converter->features() & ShaderTools::ConverterFeature::ValidateFile)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ValidateFile)) {
                 Error{} << converterName << "doesn't support file validation";
                 return 13;
             }
@@ -417,7 +417,7 @@ see documentation of a particular converter for more information.)")
 
         /* This is the first *and* last --converter, go from a file to a file */
         if(i == 0 && converterCount <= 1) {
-            if(!(converter->features() & ShaderTools::ConverterFeature::ConvertFile)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ConvertFile)) {
                 Error{} << converterName << "doesn't support file conversion";
                 return 15;
             }
@@ -441,7 +441,7 @@ see documentation of a particular converter for more information.)")
 
         /* Otherwise we need to go through data */
         } else {
-            if(!(converter->features() & ShaderTools::ConverterFeature::ConvertData)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ConvertData)) {
                 Error{} << converterName << "doesn't support data conversion";
                 return 18;
             }
