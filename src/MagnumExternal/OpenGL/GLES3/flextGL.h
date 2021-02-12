@@ -1945,6 +1945,20 @@ GLAPI FLEXTGL_EXPORT void APIENTRY glWaitSync(GLsync, GLbitfield, GLuint64);
    less symbols is exported, saving on binary size. */
 struct FlextGL {
 
+    /* GL_ANGLE_base_vertex_base_instance */
+
+    void(APIENTRY *DrawArraysInstancedBaseInstanceANGLE)(GLenum, GLint, GLsizei, GLsizei, GLuint);
+    void(APIENTRY *DrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint, GLuint);
+    void(APIENTRY *MultiDrawArraysInstancedBaseInstanceANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, const GLuint *, GLsizei);
+    void(APIENTRY *MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei);
+
+    /* GL_ANGLE_multi_draw */
+
+    void(APIENTRY *MultiDrawArraysANGLE)(GLenum, const GLint *, const GLsizei *, GLsizei);
+    void(APIENTRY *MultiDrawArraysInstancedANGLE)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei);
+    void(APIENTRY *MultiDrawElementsANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei);
+    void(APIENTRY *MultiDrawElementsInstancedANGLE)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei);
+
     /* GL_ES_VERSION_3_1 */
 
     void(APIENTRY *ActiveShaderProgram)(GLuint, GLuint);
@@ -2104,6 +2118,13 @@ struct FlextGL {
     void(APIENTRY *EnableiEXT)(GLenum, GLuint);
     GLboolean(APIENTRY *IsEnablediEXT)(GLenum, GLuint);
 
+    /* GL_EXT_draw_elements_base_vertex */
+
+    void(APIENTRY *DrawElementsBaseVertexEXT)(GLenum, GLsizei, GLenum, const void *, GLint);
+    void(APIENTRY *DrawElementsInstancedBaseVertexEXT)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint);
+    void(APIENTRY *DrawRangeElementsBaseVertexEXT)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint);
+    void(APIENTRY *MultiDrawElementsBaseVertexEXT)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei, const GLint *);
+
     /* GL_EXT_geometry_shader */
 
     void(APIENTRY *FramebufferTextureEXT)(GLenum, GLenum, GLuint, GLint);
@@ -2236,6 +2257,12 @@ struct FlextGL {
     void(APIENTRY *NamedFramebufferSampleLocationsfvNV)(GLuint, GLuint, GLsizei, const GLfloat *);
     void(APIENTRY *ResolveDepthValuesNV)(void);
 
+    /* GL_OES_draw_elements_base_vertex */
+
+    void(APIENTRY *DrawElementsBaseVertexOES)(GLenum, GLsizei, GLenum, const void *, GLint);
+    void(APIENTRY *DrawElementsInstancedBaseVertexOES)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint);
+    void(APIENTRY *DrawRangeElementsBaseVertexOES)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint);
+
     /* GL_OES_mapbuffer */
 
     void(APIENTRY *GetBufferPointervOES)(GLenum, GLenum, void **);
@@ -2256,6 +2283,20 @@ struct FlextGL {
 };
 
 extern FLEXTGL_EXPORT FlextGL flextGL;
+
+/* GL_ANGLE_base_vertex_base_instance */
+
+#define glDrawArraysInstancedBaseInstanceANGLE flextGL.DrawArraysInstancedBaseInstanceANGLE
+#define glDrawElementsInstancedBaseVertexBaseInstanceANGLE flextGL.DrawElementsInstancedBaseVertexBaseInstanceANGLE
+#define glMultiDrawArraysInstancedBaseInstanceANGLE flextGL.MultiDrawArraysInstancedBaseInstanceANGLE
+#define glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE flextGL.MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE
+
+/* GL_ANGLE_multi_draw */
+
+#define glMultiDrawArraysANGLE flextGL.MultiDrawArraysANGLE
+#define glMultiDrawArraysInstancedANGLE flextGL.MultiDrawArraysInstancedANGLE
+#define glMultiDrawElementsANGLE flextGL.MultiDrawElementsANGLE
+#define glMultiDrawElementsInstancedANGLE flextGL.MultiDrawElementsInstancedANGLE
 
 /* GL_ES_VERSION_3_1 */
 
@@ -2416,6 +2457,13 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glEnableiEXT flextGL.EnableiEXT
 #define glIsEnablediEXT flextGL.IsEnablediEXT
 
+/* GL_EXT_draw_elements_base_vertex */
+
+#define glDrawElementsBaseVertexEXT flextGL.DrawElementsBaseVertexEXT
+#define glDrawElementsInstancedBaseVertexEXT flextGL.DrawElementsInstancedBaseVertexEXT
+#define glDrawRangeElementsBaseVertexEXT flextGL.DrawRangeElementsBaseVertexEXT
+#define glMultiDrawElementsBaseVertexEXT flextGL.MultiDrawElementsBaseVertexEXT
+
 /* GL_EXT_geometry_shader */
 
 #define glFramebufferTextureEXT flextGL.FramebufferTextureEXT
@@ -2547,6 +2595,12 @@ extern FLEXTGL_EXPORT FlextGL flextGL;
 #define glFramebufferSampleLocationsfvNV flextGL.FramebufferSampleLocationsfvNV
 #define glNamedFramebufferSampleLocationsfvNV flextGL.NamedFramebufferSampleLocationsfvNV
 #define glResolveDepthValuesNV flextGL.ResolveDepthValuesNV
+
+/* GL_OES_draw_elements_base_vertex */
+
+#define glDrawElementsBaseVertexOES flextGL.DrawElementsBaseVertexOES
+#define glDrawElementsInstancedBaseVertexOES flextGL.DrawElementsInstancedBaseVertexOES
+#define glDrawRangeElementsBaseVertexOES flextGL.DrawRangeElementsBaseVertexOES
 
 /* GL_OES_mapbuffer */
 

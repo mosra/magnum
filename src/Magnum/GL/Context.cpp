@@ -327,6 +327,10 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(ANDROID,extension_pack_es31a),
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(ANGLE,base_vertex_base_instance),
+    #endif
+    _extension(ANGLE,multi_draw),
     _extension(ANGLE,texture_compression_dxt1),
     _extension(ANGLE,texture_compression_dxt3),
     _extension(ANGLE,texture_compression_dxt5),
@@ -340,6 +344,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,debug_label),
     _extension(EXT,debug_marker),
     _extension(EXT,disjoint_timer_query),
+    _extension(EXT,draw_elements_base_vertex),
     _extension(EXT,multi_draw_arrays),
     _extension(EXT,multisampled_render_to_texture),
     _extension(EXT,polygon_offset_clamp),
@@ -391,6 +396,7 @@ constexpr Extension ExtensionList[]{
     #endif
     _extension(NV,texture_border_clamp),
     _extension(OES,depth32),
+    _extension(OES,draw_elements_base_vertex),
     _extension(OES,mapbuffer),
     _extension(OES,stencil1),
     _extension(OES,stencil4),

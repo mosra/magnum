@@ -33,6 +33,18 @@
 void flextGLInit(Magnum::GL::Context&) {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
+    /* GL_ANGLE_base_vertex_base_instance */
+    flextGL.DrawArraysInstancedBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, GLsizei, GLuint)>(loader.load("glDrawArraysInstancedBaseInstanceANGLE"));
+    flextGL.DrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const GLvoid *, GLsizei, GLint, GLuint)>(loader.load("glDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
+    flextGL.MultiDrawArraysInstancedBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, const GLuint *, GLsizei)>(loader.load("glMultiDrawArraysInstancedBaseInstanceANGLE"));
+    flextGL.MultiDrawElementsInstancedBaseVertexBaseInstanceANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei *, const GLint *, const GLuint *, GLsizei)>(loader.load("glMultiDrawElementsInstancedBaseVertexBaseInstanceANGLE"));
+
+    /* GL_ANGLE_multi_draw */
+    flextGL.MultiDrawArraysANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, GLsizei)>(loader.load("glMultiDrawArraysANGLE"));
+    flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(loader.load("glMultiDrawArraysInstancedANGLE"));
+    flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei)>(loader.load("glMultiDrawElementsANGLE"));
+    flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei)>(loader.load("glMultiDrawElementsInstancedANGLE"));
+
     /* GL_ES_VERSION_3_1 */
     flextGL.ActiveShaderProgram = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glActiveShaderProgram"));
     flextGL.BindImageTexture = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum)>(loader.load("glBindImageTexture"));
@@ -185,6 +197,12 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.EnableiEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(loader.load("glEnableiEXT"));
     flextGL.IsEnablediEXT = reinterpret_cast<GLboolean(APIENTRY*)(GLenum, GLuint)>(loader.load("glIsEnablediEXT"));
 
+    /* GL_EXT_draw_elements_base_vertex */
+    flextGL.DrawElementsBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLint)>(loader.load("glDrawElementsBaseVertexEXT"));
+    flextGL.DrawElementsInstancedBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint)>(loader.load("glDrawElementsInstancedBaseVertexEXT"));
+    flextGL.DrawRangeElementsBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint)>(loader.load("glDrawRangeElementsBaseVertexEXT"));
+    flextGL.MultiDrawElementsBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei, const GLint *)>(loader.load("glMultiDrawElementsBaseVertexEXT"));
+
     /* GL_EXT_geometry_shader */
     flextGL.FramebufferTextureEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint)>(loader.load("glFramebufferTextureEXT"));
 
@@ -301,6 +319,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(loader.load("glFramebufferSampleLocationsfvNV"));
     flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(loader.load("glNamedFramebufferSampleLocationsfvNV"));
     flextGL.ResolveDepthValuesNV = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glResolveDepthValuesNV"));
+
+    /* GL_OES_draw_elements_base_vertex */
+    flextGL.DrawElementsBaseVertexOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLint)>(loader.load("glDrawElementsBaseVertexOES"));
+    flextGL.DrawElementsInstancedBaseVertexOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint)>(loader.load("glDrawElementsInstancedBaseVertexOES"));
+    flextGL.DrawRangeElementsBaseVertexOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint)>(loader.load("glDrawRangeElementsBaseVertexOES"));
 
     /* GL_OES_mapbuffer */
     flextGL.GetBufferPointervOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, void **)>(loader.load("glGetBufferPointervOES"));

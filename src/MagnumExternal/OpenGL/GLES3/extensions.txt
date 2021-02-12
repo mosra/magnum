@@ -5,6 +5,8 @@
 
 version 3.2 es
 
+extraspec https://raw.githubusercontent.com/google/angle/master/scripts/gl_angle_ext.xml
+
 extension EXT_color_buffer_half_float               optional
 extension EXT_color_buffer_float                    optional
 extension EXT_copy_image                            optional
@@ -56,6 +58,7 @@ extension EXT_sRGB_write_control                    optional
 extension EXT_texture_compression_s3tc              optional
 extension EXT_pvrtc_sRGB                            optional
 extension EXT_shader_integer_mix                    optional
+extension EXT_draw_elements_base_vertex             optional
 extension EXT_texture_norm16                        optional
 extension EXT_texture_sRGB_R8                       optional
 extension EXT_texture_sRGB_RG8                      optional
@@ -83,7 +86,12 @@ extension OES_depth32                               optional
 extension OES_mapbuffer                             optional
 extension OES_stencil1                              optional
 extension OES_stencil4                              optional
+extension OES_draw_elements_base_vertex             optional
 extension OVR_multiview                             optional
 extension OVR_multiview2                            optional
+
+# From the gl_angle_ext file
+extension ANGLE_multi_draw                          optional
+extension ANGLE_base_vertex_base_instance           optional
 
 # kate: hl python

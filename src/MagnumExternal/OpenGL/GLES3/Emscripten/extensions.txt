@@ -4,6 +4,8 @@
 
 version 3.0 es
 
+extraspec https://raw.githubusercontent.com/google/angle/master/scripts/gl_angle_ext.xml
+
 extension EXT_texture_filter_anisotropic        optional
 # It's actually EXT_disjoint_timer_query_webgl2, but that's not known to gl.xml
 extension EXT_disjoint_timer_query              optional
@@ -24,7 +26,11 @@ extension KHR_texture_compression_astc_ldr      optional
 
 # WEBGL_blend_equation_advanced_coherent includes just the enums but not the
 # barrier
-extension KHR_blend_equation_advanced optional
+extension KHR_blend_equation_advanced           optional
+
+# From the gl_angle_ext file, base for WEBGL_multi_draw etc
+extension ANGLE_multi_draw                      optional
+extension ANGLE_base_vertex_base_instance       optional
 
 begin functions blacklist
     # Not present in WEBGL_blend_equation_advanced_coherent

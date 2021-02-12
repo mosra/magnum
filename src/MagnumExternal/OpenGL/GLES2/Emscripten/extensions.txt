@@ -4,6 +4,8 @@
 
 version 2.0 es
 
+extraspec https://raw.githubusercontent.com/google/angle/master/scripts/gl_angle_ext.xml
+
 extension ANGLE_instanced_arrays                optional
 extension EXT_color_buffer_half_float           optional
 extension EXT_sRGB                              optional
@@ -36,6 +38,11 @@ extension KHR_texture_compression_astc_ldr      optional
 # WEBGL_blend_equation_advanced_coherent includes just the enums but not the
 # barrier
 extension KHR_blend_equation_advanced optional
+
+# From the gl_angle_ext file, base for WEBGL_multi_draw
+extension ANGLE_multi_draw                      optional
+# Base for WEBGL_{multi_,}draw_instanced_base_vertex_base_instance
+extension ANGLE_base_vertex_base_instance       optional
 
 begin functions blacklist
     # Not present in WEBGL_blend_equation_advanced_coherent
