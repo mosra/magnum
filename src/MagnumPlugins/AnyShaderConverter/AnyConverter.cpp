@@ -54,7 +54,7 @@ AnyConverter::AnyConverter(PluginManager::AbstractManager& manager, const std::s
 AnyConverter::~AnyConverter() = default;
 
 ConverterFeatures AnyConverter::doFeatures() const {
-    return ConverterFeature::ValidateFile|ConverterFeature::ConvertFile|ConverterFeature::Preprocess|ConverterFeature::DebugInfo|ConverterFeature::Optimize;
+    return ConverterFeature::ValidateFile|ConverterFeature::ValidateData|ConverterFeature::ConvertFile|ConverterFeature::ConvertData|ConverterFeature::Preprocess|ConverterFeature::DebugInfo|ConverterFeature::Optimize;
 }
 
 void AnyConverter::doSetInputFormat(const Format format, const Containers::StringView version) {
@@ -228,6 +228,59 @@ std::pair<bool, Containers::String> AnyConverter::doValidateFile(const Stage sta
     return converter->validateFile(stage, filename);
 }
 
+std::pair<bool, Containers::String> AnyConverter::doValidateData(const Stage stage, const Containers::ArrayView<const char> data) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* Decide on a plugin name based on the format */
+    if(_state->inputFormat == Format::Unspecified) {
+        Error{} << "ShaderTools::AnyConverter::validateData(): no input format specified";
+        return {};
+    }
+    const std::string plugin = Utility::formatString("{}ShaderConverter", stringForFormat(_state->inputFormat));
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "ShaderTools::AnyConverter::validateData(): cannot load the" << plugin << "plugin";
+        return {};
+    }
+    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+    if(flags() & ConverterFlag::Verbose) {
+        Debug d;
+        d << "ShaderTools::AnyConverter::validateData(): using" << plugin;
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin */
+    Containers::Pointer<AbstractConverter> converter = static_cast<PluginManager::Manager<AbstractConverter>*>(manager())->instantiate(plugin);
+
+    /* Check that it can actually validate */
+    if(!(converter->features() & ConverterFeature::ValidateData)) {
+        Error{} << "ShaderTools::AnyConverter::validateData():" << metadata->name() << "does not support validation";
+        return {};
+    }
+
+    /* Check that it can preprocess, in case we were asked to preprocess */
+    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+        Error{} << "ShaderTools::AnyConverter::validateData():" << metadata->name() << "does not support preprocessing";
+        return {};
+    }
+
+    /* Propagate input/output version and flags */
+    converter->setFlags(flags());
+    converter->setInputFormat(_state->inputFormat, _state->inputVersion);
+    converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
+
+    /* Propagate definitions, if any */
+    if(!_state->definitionViews.empty())
+        converter->setDefinitions(_state->definitionViews);
+
+    /* Try to validate the data (error output should be printed by the plugin
+       itself) */
+    return converter->validateData(stage, data);
+}
+
 bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::StringView from, const Containers::StringView to) {
     CORRADE_INTERNAL_ASSERT(manager());
 
@@ -306,6 +359,166 @@ bool AnyConverter::doConvertFileToFile(const Stage stage, const Containers::Stri
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
     return converter->convertFileToFile(stage, from, to);
+}
+
+Containers::Array<char> AnyConverter::doConvertFileToData(const Stage stage, const Containers::StringView from) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* Prefer the explicitly set input format. If not set, fall back to
+       detecting based on input and output extension. */
+    const Containers::StringView formatFrom = stringForFormat(
+        _state->inputFormat != Format::Unspecified ? _state->inputFormat : formatForExtension("ShaderTools::AnyConverter::convertFileToData():", from)
+    );
+    if(formatFrom.isEmpty()) return {};
+    if(_state->outputFormat == Format::Unspecified) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData(): no output format specified";
+        return {};
+    }
+    const Containers::StringView formatTo = stringForFormat(_state->outputFormat);
+
+    /* Decide on a plugin name based on the format. This might result in
+       invalid combinations such as SpirvToGlslShaderConverter which can't be
+       really handled yet but I think that's okay for now. */
+    const std::string plugin = Utility::formatString(
+        formatFrom == formatTo ? "{}ShaderConverter" : "{}To{}ShaderConverter",
+        formatFrom, formatTo);
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData(): cannot load the" << plugin << "plugin";
+        return {};
+    }
+    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+    if(flags() & ConverterFlag::Verbose) {
+        Debug d;
+        d << "ShaderTools::AnyConverter::convertFileToData(): using" << plugin;
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin */
+    Containers::Pointer<AbstractConverter> converter = static_cast<PluginManager::Manager<AbstractConverter>*>(manager())->instantiate(plugin);
+
+    /* Check that it can actually convert */
+    if(!(converter->features() & ConverterFeature::ConvertData)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData():" << metadata->name() << "does not support conversion";
+        return {};
+    }
+
+    /* Check that it can preprocess, in case we were asked to preprocess */
+    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData():" << metadata->name() << "does not support preprocessing";
+        return {};
+    }
+
+    /* Check that it can output debug info, in case we were asked to */
+    if(!_state->debugInfoLevel.isEmpty() && !(converter->features() & ConverterFeature::DebugInfo)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData():" << metadata->name() << "does not support controlling debug info output";
+        return {};
+    }
+
+    /* Check that it can optimize, in case we were asked to */
+    if(!_state->optimizationLevel.isEmpty() && !(converter->features() & ConverterFeature::Optimize)) {
+        Error{} << "ShaderTools::AnyConverter::convertFileToData():" << metadata->name() << "does not support optimization";
+        return {};
+    }
+
+    /* Propagate input/output version and flags */
+    converter->setFlags(flags());
+    converter->setInputFormat(_state->inputFormat, _state->inputVersion);
+    converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
+
+    /* Propagate definitions and debug info, if any */
+    if(!_state->definitionViews.empty())
+        converter->setDefinitions(_state->definitionViews);
+    if(!_state->debugInfoLevel.isEmpty())
+        converter->setDebugInfoLevel(_state->debugInfoLevel);
+    if(!_state->optimizationLevel.isEmpty())
+        converter->setOptimizationLevel(_state->optimizationLevel);
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertFileToData(stage, from);
+}
+
+Containers::Array<char> AnyConverter::doConvertDataToData(const Stage stage, const Containers::ArrayView<const char> from) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    /* Decide on a plugin name based on the format. This might result in
+       invalid combinations such as SpirvToGlslShaderConverter which can't be
+       really handled yet but I think that's okay for now. */
+    if(_state->inputFormat == Format::Unspecified) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData(): no input format specified";
+        return {};
+    }
+    if(_state->outputFormat == Format::Unspecified) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData(): no output format specified";
+        return {};
+    }
+    const Containers::StringView formatFrom = stringForFormat(_state->inputFormat);
+    const Containers::StringView formatTo = stringForFormat(_state->outputFormat);
+    const std::string plugin = Utility::formatString(
+        formatFrom == formatTo ? "{}ShaderConverter" : "{}To{}ShaderConverter",
+        formatFrom, formatTo);
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData(): cannot load the" << plugin << "plugin";
+        return {};
+    }
+    PluginManager::PluginMetadata* metadata = manager()->metadata(plugin);
+    if(flags() & ConverterFlag::Verbose) {
+        Debug d;
+        d << "ShaderTools::AnyConverter::convertDataToData(): using" << plugin;
+        CORRADE_INTERNAL_ASSERT(metadata);
+        if(plugin != metadata->name())
+            d << "(provided by" << metadata->name() << Debug::nospace << ")";
+    }
+
+    /* Instantiate the plugin */
+    Containers::Pointer<AbstractConverter> converter = static_cast<PluginManager::Manager<AbstractConverter>*>(manager())->instantiate(plugin);
+
+    /* Check that it can actually convert */
+    if(!(converter->features() & ConverterFeature::ConvertData)) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData():" << metadata->name() << "does not support conversion";
+        return {};
+    }
+
+    /* Check that it can preprocess, in case we were asked to preprocess */
+    if((!_state->definitionViews.empty() || (flags() & ConverterFlag::PreprocessOnly)) && !(converter->features() & ConverterFeature::Preprocess)) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData():" << metadata->name() << "does not support preprocessing";
+        return {};
+    }
+
+    /* Check that it can output debug info, in case we were asked to */
+    if(!_state->debugInfoLevel.isEmpty() && !(converter->features() & ConverterFeature::DebugInfo)) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData():" << metadata->name() << "does not support controlling debug info output";
+        return {};
+    }
+
+    /* Check that it can optimize, in case we were asked to */
+    if(!_state->optimizationLevel.isEmpty() && !(converter->features() & ConverterFeature::Optimize)) {
+        Error{} << "ShaderTools::AnyConverter::convertDataToData():" << metadata->name() << "does not support optimization";
+        return {};
+    }
+
+    /* Propagate input/output version and flags */
+    converter->setFlags(flags());
+    converter->setInputFormat(_state->inputFormat, _state->inputVersion);
+    converter->setOutputFormat(_state->outputFormat, _state->outputVersion);
+
+    /* Propagate definitions and debug info, if any */
+    if(!_state->definitionViews.empty())
+        converter->setDefinitions(_state->definitionViews);
+    if(!_state->debugInfoLevel.isEmpty())
+        converter->setDebugInfoLevel(_state->debugInfoLevel);
+    if(!_state->optimizationLevel.isEmpty())
+        converter->setOptimizationLevel(_state->optimizationLevel);
+
+    /* Try to convert the file (error output should be printed by the plugin
+       itself) */
+    return converter->convertDataToData(stage, from);
 }
 
 }}
