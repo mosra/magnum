@@ -983,14 +983,6 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV2_IMG 0x93F0
 #define GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV2_IMG 0x93F1
 
-/* GL_EXT_texture_sRGB_R8 */
-
-#define GL_SR8_EXT 0x8FBD
-
-/* GL_EXT_texture_sRGB_RG8 */
-
-#define GL_SRG8_EXT 0x8FBE
-
 /* GL_EXT_polygon_offset_clamp */
 
 #define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B

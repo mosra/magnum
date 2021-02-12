@@ -435,6 +435,10 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text libraries
+-   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
+    on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
+    @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at
+    least
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()
