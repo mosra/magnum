@@ -64,7 +64,9 @@ struct AnyConverterTest: TestSuite::Tester {
     void convertPropagateOptimization();
 
     void detectValidate();
+    void detectValidateExplicitFormat();
     void detectConvert();
+    void detectConvertExplicitFormat();
 
     void unknown();
 
@@ -120,8 +122,12 @@ AnyConverterTest::AnyConverterTest() {
     addInstancedTests({&AnyConverterTest::detectValidate},
         Containers::arraySize(DetectValidateData));
 
+    addTests({&AnyConverterTest::detectValidateExplicitFormat});
+
     addInstancedTests({&AnyConverterTest::detectConvert},
         Containers::arraySize(DetectConvertData));
+
+    addTests({&AnyConverterTest::detectConvertExplicitFormat});
 
     addTests({&AnyConverterTest::unknown});
 
@@ -567,6 +573,27 @@ void AnyConverterTest::detectValidate() {
     #endif
 }
 
+void AnyConverterTest::detectValidateExplicitFormat() {
+    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
+
+    /* It should pick up this format and not bother with the extension */
+    converter->setInputFormat(Format::Hlsl);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_COMPARE(converter->validateFile({}, "file.spv"),
+        std::make_pair(false, ""));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(),
+        "PluginManager::Manager::load(): plugin HlslShaderConverter is not static and was not found in nonexistent\n"
+        "ShaderTools::AnyConverter::validateFile(): cannot load the HlslShaderConverter plugin\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "PluginManager::Manager::load(): plugin HlslShaderConverter was not found\n"
+        "ShaderTools::AnyConverter::validateFile(): cannot load the HlslShaderConverter plugin\n");
+    #endif
+}
+
 void AnyConverterTest::detectConvert() {
     auto&& data = DetectConvertData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -584,6 +611,27 @@ void AnyConverterTest::detectConvert() {
     CORRADE_COMPARE(out.str(), Utility::formatString(
         "PluginManager::Manager::load(): plugin {0} was not found\n"
         "ShaderTools::AnyConverter::convertFileToFile(): cannot load the {0} plugin\n", data.plugin));
+    #endif
+}
+
+void AnyConverterTest::detectConvertExplicitFormat() {
+    Containers::Pointer<AbstractConverter> converter = _manager.instantiate("AnyShaderConverter");
+
+    /* It should pick up this format and not bother with the extension */
+    converter->setInputFormat(Format::Hlsl);
+    converter->setOutputFormat(Format::Wgsl);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->convertFileToFile({}, "file.spv", Utility::Directory::join(ANYSHADERCONVERTER_TEST_OUTPUT_DIR, "file.glsl")));
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(),
+        "PluginManager::Manager::load(): plugin HlslToWgslShaderConverter is not static and was not found in nonexistent\n"
+        "ShaderTools::AnyConverter::convertFileToFile(): cannot load the HlslToWgslShaderConverter plugin\n");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "PluginManager::Manager::load(): plugin HlslToWgslShaderConverter was not found\n"
+        "ShaderTools::AnyConverter::convertFileToFile(): cannot load the HlslToWgslShaderConverter plugin\n");
     #endif
 }
 

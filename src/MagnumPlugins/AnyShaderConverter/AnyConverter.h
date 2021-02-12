@@ -57,8 +57,10 @@ namespace Magnum { namespace ShaderTools {
 
 @m_keywords{AnyShaderConverter}
 
-Detects file type based on file extension, loads corresponding plugin and then
-tries to either validate or convert the file with it. Detected file formats:
+Loads a plugin corresponding to a format either explicitly set using
+@ref setInputFormat() / @ref setOutputFormat() or detected based on input /
+output file extension plugin and then tries to either validate or convert the
+file with it. These formats are detected based on extension:
 
 -   GLSL (`*.glsl`, `*.vert`, `*.frag`, `*.geom`, `*.comp`, `*.tesc`, `*.tese`,
     `*.rgen`, `*.rint`, `*.rahit`, `*.rchit`, `*.rmiss`, `*.rcall`, `*.mesh`,
