@@ -70,8 +70,9 @@ const struct {
     Containers::ArrayView<const void> data;
 } InvalidData[] {
     {"empty", {}},
-    {"just the header", JustHeader},
-    {"invalid magic", InvalidMagic},
+    /* GCC 4.8 needs the ArrayView conversion explicit */
+    {"just the header", Containers::arrayView(JustHeader)},
+    {"invalid magic", Containers::arrayView(InvalidMagic)},
     {"size not divisible by four", Containers::arrayCast<const char>(Data).except(1)}
 };
 
