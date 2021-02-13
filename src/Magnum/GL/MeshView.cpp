@@ -84,7 +84,6 @@ MeshView& MeshView::draw(AbstractShaderProgram&& shader, TransformFeedback& xfb,
 #endif
 #endif
 
-#ifndef MAGNUM_TARGET_WEBGL
 void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
@@ -123,10 +122,11 @@ void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Contai
     /* Non-indexed meshes */
     if(!original._indexBuffer.id()) {
         #ifndef MAGNUM_TARGET_GLES
-        glMultiDrawArrays(GLenum(original._primitive), baseVertex, count, meshes.size());
+        glMultiDrawArrays
         #else
-        glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
+        state.multiDrawArraysImplementation
         #endif
+            (GLenum(original._primitive), baseVertex, count, meshes.size());
 
     /* Indexed meshes */
     } else {
@@ -140,16 +140,16 @@ void MeshView::multiDrawImplementationDefault(Containers::ArrayView<const Contai
         #endif
         {
             #ifndef MAGNUM_TARGET_GLES
-            glMultiDrawElements(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
+            glMultiDrawElements
             #else
-            glMultiDrawElementsEXT(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
+            state.multiDrawElementsImplementation
             #endif
+                (GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
         }
     }
 
     (original.*state.unbindImplementation)();
 }
-#endif
 
 #ifdef MAGNUM_TARGET_GLES
 void MeshView::multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes) {

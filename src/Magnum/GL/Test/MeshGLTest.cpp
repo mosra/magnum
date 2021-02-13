@@ -3005,9 +3005,15 @@ template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
 #endif
 
 void MeshGLTest::multiDraw() {
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>())
-        Debug() << Extensions::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        Debug{} << "Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation";
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        Debug{} << Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation";
+    #endif
     #endif
 
     typedef Attribute<0, Float> Attribute;
@@ -3042,9 +3048,15 @@ void MeshGLTest::multiDraw() {
 }
 
 void MeshGLTest::multiDrawIndexed() {
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>())
-        Debug() << Extensions::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
+    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        Debug{} << "Neither" << Extensions::EXT::multi_draw_arrays::string() << "nor" << Extensions::ANGLE::multi_draw::string() << "is supported, using fallback implementation";
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        Debug{} << Extensions::WEBGL::multi_draw::string() << "is not supported, using fallback implementation";
+    #endif
     #endif
 
     Buffer vertices;

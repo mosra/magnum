@@ -60,6 +60,8 @@ struct MeshState {
 
     #ifdef MAGNUM_TARGET_GLES
     void(*multiDrawImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
+    void(APIENTRY *multiDrawArraysImplementation)(GLenum, const GLint*, const GLsizei*, GLsizei);
+    void(APIENTRY *multiDrawElementsImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei);
     #endif
 
     void(*bindVAOImplementation)(GLuint);

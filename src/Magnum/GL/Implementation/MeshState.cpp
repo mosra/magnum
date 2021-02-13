@@ -108,16 +108,43 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
+    /* Multi draw implementation on ES. Because there's a lot of dispatch logic
+       involved, the multiDrawImplementationDefault then has internal
+       extension-specific codepaths based on whether EXT, OES, ANGLE or
+       whichever entrypoints are supported. */
     #ifndef MAGNUM_TARGET_WEBGL
-    /* Multi draw implementation on ES */
-    if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>()) {
-        extensions.push_back(Extensions::EXT::multi_draw_arrays::string());
+    if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>() ||
+       context.isExtensionSupported<Extensions::ANGLE::multi_draw>())
+    #else
+    if(context.isExtensionSupported<Extensions::WEBGL::multi_draw>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>()) {
+            extensions.push_back(Extensions::EXT::multi_draw_arrays::string());
+
+            multiDrawArraysImplementation = glMultiDrawArraysEXT;
+            multiDrawElementsImplementation = glMultiDrawElementsEXT;
+        } else if(context.isExtensionSupported<Extensions::ANGLE::multi_draw>()) {
+            extensions.push_back(Extensions::ANGLE::multi_draw::string());
+
+            multiDrawArraysImplementation = glMultiDrawArraysANGLE;
+            multiDrawElementsImplementation = glMultiDrawElementsANGLE;
+        } else CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        #else
+        {
+            extensions.push_back(Extensions::WEBGL::multi_draw::string());
+
+            /* The WEBGL extension uses the same entrypoints as the ANGLE
+               extension it was based on */
+            multiDrawArraysImplementation = glMultiDrawArraysANGLE;
+            multiDrawElementsImplementation = glMultiDrawElementsANGLE;
+        }
+        #endif
 
         multiDrawImplementation = &MeshView::multiDrawImplementationDefault;
+
     } else multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
-    #else
-    multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
-    #endif
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2

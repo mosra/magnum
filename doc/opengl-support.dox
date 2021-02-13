@@ -449,7 +449,7 @@ Extension                                   | Status
 @gl_extension2{ANGLE,texture_compression_dxt1,ANGLE_texture_compression_dxt} | done
 @gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt} | done
 @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
-@m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted) | |
+@m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted) | done
 @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | |
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{APPLE,clip_distance}          | done
@@ -571,10 +571,10 @@ Extension                                   | Status
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
-@webgl_extension{WEBGL,multi_draw}          | missing support in Emscripten
+@webgl_extension{WEBGL,multi_draw}          | done
 @webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
-@webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | missing support in Emscripten
-@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | missing support in Emscripten
+@webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | |
+@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | |
 
 @section opengl-unsupported Unsupported OpenGL features
 

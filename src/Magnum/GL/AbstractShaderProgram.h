@@ -840,8 +840,10 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Draw multiple meshes at once
          * @m_since{2020,06}
          *
-         * In OpenGL ES, if @gl_extension{EXT,multi_draw_arrays} is not
-         * present, the functionality is emulated using a sequence of
+         * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
+         * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
+         * not present, the functionality is emulated using a sequence of
          * @ref draw(MeshView&) calls.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),

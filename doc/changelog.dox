@@ -62,12 +62,14 @@ See also:
     @webgl_extension{WEBGL,debug_renderer_info} and
     @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
     yet
--   Recognizing ANGLE GLES and WebGL multi-draw extensions:
+-   Recognizing ANGLE GLES and WebGL multi-draw extensions and using them in
+    @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
     -   @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    -   @webgl_extension{WEBGL,multi_draw}
+-   The following extensions are recognized but not used yet:
     -   @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt)
     -   @gl_extension{EXT,draw_elements_base_vertex}
     -   @gl_extension{OES,draw_elements_base_vertex}
-    -   @webgl_extension{WEBGL,multi_draw}
     -   @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
     -   @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
 -   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
