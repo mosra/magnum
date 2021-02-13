@@ -336,6 +336,10 @@ const char* KnownWorkarounds[]{
    MeshGLTest::addVertexBufferIntWithShort(). */
 "intel-windows-broken-dsa-integer-vertex-attributes",
 
+/* Shader compiler on Intel Windows drivers insists on telling me "No errors."
+   when it should just stay silent. */
+"intel-windows-chatty-shader-compiler",
+
 /* When using more than just a vertex and fragment shader (geometry shader,
    e.g.), ARB_explicit_uniform_location on Intel silently uses wrong
    locations, blowing up with either a non-descript
@@ -379,38 +383,6 @@ const char* KnownWorkarounds[]{
 #endif
 /* [workarounds] */
 };
-
-}
-
-namespace Implementation {
-
-/* Used in Shader.cpp (duh) */
-bool isShaderCompilationLogEmpty(const std::string&);
-bool isShaderCompilationLogEmpty(const std::string& result) {
-    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    /* Intel Windows drivers are too chatty */
-    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
-        return true;
-    #else
-    static_cast<void>(result);
-    #endif
-
-    return false;
-}
-
-/* Used in AbstractShaderProgram.cpp (duh) */
-bool isProgramLinkLogEmpty(const std::string&);
-bool isProgramLinkLogEmpty(const std::string& result) {
-    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    /* Intel Windows drivers are too chatty */
-    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
-        return true;
-    #else
-    static_cast<void>(result);
-    #endif
-
-    return false;
-}
 
 }
 

@@ -175,6 +175,10 @@ See also:
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.
+-   Intel/Windows-specific code for silencing useless shader compiler output is
+    now advertised as a @cpp "intel-windows-chatty-shader-compiler" @ce
+    workaround, instead of being done silently. See @ref opengl-workarounds for
+    more information.
 
 @subsubsection changelog-latest-changes-math Math library
 
