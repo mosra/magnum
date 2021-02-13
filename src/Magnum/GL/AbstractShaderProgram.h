@@ -844,7 +844,9 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
          * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
          * not present, the functionality is emulated using a sequence of
-         * @ref draw(MeshView&) calls.
+         * @ref draw(MeshView&) calls. Note that @webgl_extension{WEBGL,multi_draw}
+         * is only implemented since Emscripten 2.0.0, so it's not even
+         * advertised on older versions.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
          * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in

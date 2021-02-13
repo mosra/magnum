@@ -136,9 +136,16 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
             extensions.push_back(Extensions::WEBGL::multi_draw::string());
 
             /* The WEBGL extension uses the same entrypoints as the ANGLE
-               extension it was based on */
+               extension it was based on. Only available since 2.0.0:
+               https://github.com/emscripten-core/emscripten/pull/11650 */
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20000
             multiDrawArraysImplementation = glMultiDrawArraysANGLE;
             multiDrawElementsImplementation = glMultiDrawElementsANGLE;
+            #else
+            /* In Context::setupDriverWorkarounds() we make sure the extension
+               is not even advertised, so this shouldn't be reached. */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            #endif
         }
         #endif
 
