@@ -1351,6 +1351,9 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
         static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
         #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
+        #endif
 
         void use();
 

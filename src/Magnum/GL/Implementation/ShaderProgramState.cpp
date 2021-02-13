@@ -65,6 +65,11 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationIntelWindows;
     } else
     #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-chatty-shader-compiler")) {
+        cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationAngle;
+    } else
+    #endif
     {
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationNoOp;
     }

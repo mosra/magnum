@@ -40,6 +40,13 @@ namespace {
 /* Search the code for the following strings to see where they are implemented. */
 const char* KnownWorkarounds[]{
 /* [workarounds] */
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+/* ANGLE's shader linker insists on returning a message consisting of a
+   single newline on success, causing annoying noise in the console. Similar to
+   "intel-windows-chatty-shader-compiler". */
+"angle-chatty-shader-compiler",
+#endif
+
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
    on ANY buffer when ANY buffer is attached to a currently bound
@@ -337,7 +344,7 @@ const char* KnownWorkarounds[]{
 "intel-windows-broken-dsa-integer-vertex-attributes",
 
 /* Shader compiler on Intel Windows drivers insists on telling me "No errors."
-   when it should just stay silent. */
+   when it should just stay silent. See also "angle-chatty-shader-compiler". */
 "intel-windows-chatty-shader-compiler",
 
 /* When using more than just a vertex and fragment shader (geometry shader,

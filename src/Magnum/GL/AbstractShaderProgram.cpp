@@ -544,6 +544,12 @@ void AbstractShaderProgram::cleanLogImplementationIntelWindows(std::string& mess
 }
 #endif
 
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractShaderProgram::cleanLogImplementationAngle(std::string& message) {
+    if(message == "\n") message = {};
+}
+#endif
+
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     const GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
