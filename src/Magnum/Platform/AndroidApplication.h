@@ -40,6 +40,10 @@
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
 
+//Is it ok?
+#include "Corrade/Containers/Array.h"
+#include "Corrade/Containers/GrowableArray.h"
+
 #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
 #include <android/input.h>
 
@@ -433,7 +437,11 @@ class AndroidApplication {
         EGLDisplay _display;
         EGLSurface _surface;
         EGLContext _glContext;
-        Vector2i _previousMouseMovePosition{-1};
+        /* Create array from given value like here:
+           https://doc.magnum.graphics/corrade/classCorrade_1_1Containers_1_1Array.html 
+           The exact number of pointers is unknown, isn't it? 
+           */
+        Containers::Array<Vector2i> _previousMouseMovePosition{Containers::InPlaceInit, {{-1,-1}}};
 
         Containers::Pointer<Platform::GLContext> _context;
         Containers::Pointer<LogOutput> _logOutput;
@@ -710,12 +718,28 @@ class AndroidApplication::MouseEvent: public InputEvent {
 
         /** @brief Position */
         Vector2i position() {
-            return {Int(AMotionEvent_getX(_event, 0)),
-                    Int(AMotionEvent_getY(_event, 0))};
+            return {Int(AMotionEvent_getX(_event, _pointerIndex)),
+                    Int(AMotionEvent_getY(_event, _pointerIndex))};
         }
 
+        /** @brief Pointer Index Do we need both of them? 
+         * Index != Id 
+        */
+        std::size_t pointerIndex() const { return _pointerIndex; }
+
+        /** @brief Pointer Id 
+         * Index != Id
+        */
+        std::size_t pointerId() const { return _pointerId; }
+
     private:
-        explicit MouseEvent(AInputEvent* event): InputEvent(event) {}
+        // Did it almost like MouseMoveEvent with _relativePosition
+        explicit MouseEvent(AInputEvent* event, std::size_t pointerIndex = 0, std::int32_t pointerId = 0):
+         /* why not {}, but () instead? */ InputEvent(event),
+         _pointerId{pointerId},_pointerIndex{pointerIndex} {}
+        
+        const std::int32_t _pointerId;
+        const std::size_t _pointerIndex;
 };
 
 /**

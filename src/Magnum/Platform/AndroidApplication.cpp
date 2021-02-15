@@ -251,7 +251,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
                 /* On a touch screen move events aren't reported when the
                    finger is moving above (of course), so remember the position
                    always */
-                app._previousMouseMovePosition = {Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
+                app._previousMouseMovePosition[0] = {Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
                 MouseEvent e(event);
                 action == AMOTION_EVENT_ACTION_DOWN ? app.mousePressEvent(e) : app.mouseReleaseEvent(e);
                 return e.isAccepted() ? 1 : 0;
@@ -260,10 +260,47 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
             case AMOTION_EVENT_ACTION_MOVE: {
                 Vector2i position{Int(AMotionEvent_getX(event, 0)), Int(AMotionEvent_getY(event, 0))};
                 MouseMoveEvent e{event,
-                    app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
-                    position - app._previousMouseMovePosition};
-                app._previousMouseMovePosition = position;
+                    app._previousMouseMovePosition[0] == Vector2i{-1} ? Vector2i{} :
+                    position - app._previousMouseMovePosition[0]};
+                app._previousMouseMovePosition[0] = position;
                 app.mouseMoveEvent(e);
+                return e.isAccepted() ? 1 : 0;
+            }
+
+            /* Look here: 
+               https://android-developers.googleblog.com/2010/06/making-sense-of-multitouch.html
+               for ACTION_POINTER_UP and ACTION_POINTER_DOWN */
+            
+            case AMOTION_EVENT_ACTION_POINTER_DOWN:
+            case AMOTION_EVENT_ACTION_POINTER_UP: {
+                // Extract the index of the pointer that left the touch sensor
+                // ! Don't mix up AMotionEvent_getAction(event) and 'action' !
+                const std::size_t pointerIndex = (AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) 
+                    >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+
+                const std::size_t pointerCount = AMotionEvent_getPointerCount(event);
+
+                // Get the persistent id from the index
+                std::int32_t pointerId = AMotionEvent_getPointerId(event, pointerIndex);
+                /* Do we need an assert or something like unordered_map in case of (pointerId < 0) or (pointerId > 2^(~20)) 
+                   or we can just trust AMotionEvent_getPointerId() ?
+                   
+                   Btw, looks like 'pointerIndex' works well.
+                    */
+                pointerId = (pointerId < 0 ? 0 : (size_t)pointerId);
+
+
+                if(pointerId >= arraySize(app._previousMouseMovePosition))
+                    Containers::arrayAppend(app._previousMouseMovePosition, 
+                    {Int(AMotionEvent_getX(event, pointerIndex)),
+                    Int(AMotionEvent_getY(event, pointerIndex))});
+                else
+                    app._previousMouseMovePosition[pointerId] = {Int(AMotionEvent_getX(event, pointerIndex)),
+                                                                Int(AMotionEvent_getY(event, pointerIndex))};
+
+                MouseEvent e(event, pointerIndex, pointerId);
+                action == AMOTION_EVENT_ACTION_POINTER_DOWN ? 
+                    app.mousePressEvent(e) : app.mouseReleaseEvent(e);
                 return e.isAccepted() ? 1 : 0;
             }
         }
