@@ -467,10 +467,11 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
             #endif
             {
                 #ifndef MAGNUM_TARGET_GLES2
-                glDrawArraysInstanced(GLenum(_primitive), baseVertex, count, instanceCount);
+                glDrawArraysInstanced
                 #else
-                (this->*state.drawArraysInstancedImplementation)(baseVertex, count, instanceCount);
+                state.drawArraysInstancedImplementation
                 #endif
+                    (GLenum(_primitive), baseVertex, count, instanceCount);
             }
 
         /* Indexed mesh with base vertex */
@@ -503,10 +504,11 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
             #endif
             {
                 #ifndef MAGNUM_TARGET_GLES2
-                glDrawElementsInstanced(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
+                glDrawElementsInstanced
                 #else
-                (this->*state.drawElementsInstancedImplementation)(count, indexOffset, instanceCount);
+                state.drawElementsInstancedImplementation
                 #endif
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
             }
         }
     }
@@ -870,35 +872,5 @@ void Mesh::unbindImplementationDefault() {
 }
 
 void Mesh::unbindImplementationVAO() {}
-
-#ifdef MAGNUM_TARGET_GLES2
-void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
-}
-
-#ifndef MAGNUM_TARGET_WEBGL
-void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
-}
-
-void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
-}
-#endif
-
-void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-}
-
-#ifndef MAGNUM_TARGET_WEBGL
-void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-}
-
-void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-}
-#endif
-#endif
 
 }}

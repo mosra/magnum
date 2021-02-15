@@ -1133,20 +1133,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL unbindImplementationDefault();
         void MAGNUM_GL_LOCAL unbindImplementationVAO();
 
-        #ifdef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationANGLE(GLint baseVertex, GLsizei count, GLsizei instanceCount);
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationEXT(GLint baseVertex, GLsizei count, GLsizei instanceCount);
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationNV(GLint baseVertex, GLsizei count, GLsizei instanceCount);
-        #endif
-
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationANGLE(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationEXT(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationNV(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
-        #endif
-        #endif
-
         /* _id, _primitive, _flags set from constructors */
         GLuint _id;
         MeshPrimitive _primitive;

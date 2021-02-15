@@ -54,8 +54,8 @@ struct MeshState {
     void(Mesh::*unbindImplementation)();
 
     #ifdef MAGNUM_TARGET_GLES2
-    void(Mesh::*drawArraysInstancedImplementation)(GLint, GLsizei, GLsizei);
-    void(Mesh::*drawElementsInstancedImplementation)(GLsizei, GLintptr, GLsizei);
+    void(APIENTRY *drawArraysInstancedImplementation)(GLenum, GLint, GLsizei, GLsizei);
+    void(APIENTRY *drawElementsInstancedImplementation)(GLenum, GLsizei, GLenum, const void*, GLsizei);
     #endif
 
     #ifdef MAGNUM_TARGET_GLES

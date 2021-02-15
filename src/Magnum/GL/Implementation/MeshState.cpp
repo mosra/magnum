@@ -159,8 +159,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     if(context.isExtensionSupported<Extensions::ANGLE::instanced_arrays>()) {
         extensions.push_back(Extensions::ANGLE::instanced_arrays::string());
 
-        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationANGLE;
-        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationANGLE;
+        drawArraysInstancedImplementation = glDrawArraysInstancedANGLE;
+        drawElementsInstancedImplementation = glDrawElementsInstancedANGLE;
     }
     #ifndef MAGNUM_TARGET_WEBGL
     else if(context.isExtensionSupported<Extensions::EXT::instanced_arrays>() ||
@@ -169,8 +169,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
             Extensions::EXT::instanced_arrays::string() :
             Extensions::EXT::draw_instanced::string());
 
-        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationEXT;
-        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationEXT;
+        drawArraysInstancedImplementation = glDrawArraysInstancedEXT;
+        drawElementsInstancedImplementation = glDrawElementsInstancedEXT;
 
     } else if(context.isExtensionSupported<Extensions::NV::instanced_arrays>() ||
               context.isExtensionSupported<Extensions::NV::draw_instanced>()) {
@@ -178,8 +178,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
             Extensions::NV::instanced_arrays::string() :
             Extensions::NV::draw_instanced::string());
 
-        drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationNV;
-        drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationNV;
+        drawArraysInstancedImplementation = glDrawArraysInstancedNV;
+        drawElementsInstancedImplementation = glDrawElementsInstancedNV;
     }
     #endif
     else {
