@@ -137,16 +137,38 @@ struct MeshGLTest: OpenGLTester {
     void unbindVAOBeforeEnteringExternalSection();
     void bindScratchVaoWhenEnteringExternalSection();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void setBaseVertex();
     #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void setBaseVertexNoExtensionAvailable();
+    void setBaseVertexRangeNoExtensionAvailable();
+    #endif
     void setInstanceCount();
-    void setInstanceCountIndexed();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     void setInstanceCountBaseInstance();
-    void setInstanceCountBaseInstanceIndexed();
-    void setInstanceCountBaseVertex();
-    void setInstanceCountBaseVertexBaseInstance();
+    #ifdef MAGNUM_TARGET_GLES
+    void setInstanceCountBaseInstanceNoExtensionAvailable();
+    #endif
+    #endif
+    void setInstanceCountIndexed();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setInstanceCountIndexedBaseInstance();
+    #ifdef MAGNUM_TARGET_GLES
+    void setInstanceCountIndexedBaseInstanceNoExtensionAvailable();
+    #endif
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void setInstanceCountIndexedBaseVertex();
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void setInstanceCountIndexedBaseVertexNoExtensionAvailable();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void setInstanceCountIndexedBaseVertexBaseInstance();
+    #ifdef MAGNUM_TARGET_GLES
+    void setInstanceCountIndexedBaseVertexBaseInstanceNoExtensionAvailable();
+    #endif
     #endif
 
     void addVertexBufferInstancedFloat();
@@ -160,8 +182,12 @@ struct MeshGLTest: OpenGLTester {
 
     void multiDraw();
     void multiDrawIndexed();
-    #ifndef MAGNUM_TARGET_GLES
+    void multiDrawInstanced();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void multiDrawBaseVertex();
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void multiDrawBaseVertexNoExtensionAvailable();
     #endif
 };
 
@@ -259,16 +285,38 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
               &MeshGLTest::bindScratchVaoWhenEnteringExternalSection,
 
-              #ifndef MAGNUM_TARGET_GLES
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &MeshGLTest::setBaseVertex,
               #endif
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::setBaseVertexNoExtensionAvailable,
+              &MeshGLTest::setBaseVertexRangeNoExtensionAvailable,
+              #endif
               &MeshGLTest::setInstanceCount,
-              &MeshGLTest::setInstanceCountIndexed,
-              #ifndef MAGNUM_TARGET_GLES
+              #ifndef MAGNUM_TARGET_GLES2
               &MeshGLTest::setInstanceCountBaseInstance,
-              &MeshGLTest::setInstanceCountBaseInstanceIndexed,
-              &MeshGLTest::setInstanceCountBaseVertex,
-              &MeshGLTest::setInstanceCountBaseVertexBaseInstance,
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::setInstanceCountBaseInstanceNoExtensionAvailable,
+              #endif
+              #endif
+              &MeshGLTest::setInstanceCountIndexed,
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshGLTest::setInstanceCountIndexedBaseInstance,
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::setInstanceCountIndexedBaseInstanceNoExtensionAvailable,
+              #endif
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshGLTest::setInstanceCountIndexedBaseVertex,
+              #endif
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
+              &MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance,
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstanceNoExtensionAvailable,
+              #endif
               #endif
 
               &MeshGLTest::addVertexBufferInstancedFloat,
@@ -282,8 +330,12 @@ MeshGLTest::MeshGLTest() {
 
               &MeshGLTest::multiDraw,
               &MeshGLTest::multiDrawIndexed,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::multiDrawBaseVertex
+              &MeshGLTest::multiDrawInstanced,
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+              &MeshGLTest::multiDrawBaseVertex,
+              #endif
+              #ifdef MAGNUM_TARGET_GLES
+              &MeshGLTest::multiDrawBaseVertexNoExtensionAvailable
               #endif
               });
 }
@@ -1966,7 +2018,6 @@ const Float indexedVertexData[] = {
             1.0f, -0.5f
 };
 
-#ifndef MAGNUM_TARGET_GLES
 const Float indexedVertexDataBaseVertex[] = {
     0.0f, 0.0f, /* Offset */
 
@@ -1995,7 +2046,6 @@ const Float indexedVertexDataBaseVertex[] = {
         0.4f, 0.0f, -0.9f,
             1.0f, -0.5f
 };
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 constexpr Color4ub indexedResult{64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255};
@@ -2485,10 +2535,19 @@ void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void MeshGLTest::setBaseVertex() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
 
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
@@ -2510,6 +2569,72 @@ void MeshGLTest::setBaseVertex() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, indexedResult);
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::setBaseVertexNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isVersionSupported(Version::GLES320))
+        CORRADE_SKIP("OpenGL ES 3.2 is available.");
+    if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+    if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setBaseVertex(1)
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
+    #endif
+}
+
+void MeshGLTest::setBaseVertexRangeNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isVersionSupported(Version::GLES320))
+        CORRADE_SKIP("OpenGL ES 3.2 is available.");
+    if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+    if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setBaseVertex(1)
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort, 0, 2);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0\n");
+    #endif
 }
 #endif
 
@@ -2561,6 +2686,71 @@ void MeshGLTest::setInstanceCount() {
     CORRADE_COMPARE(value, 96);
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::setInstanceCountBaseInstance() {
+    /* Verbatim copy of setInstanceCount() with additional extension check and
+       setBaseInstance() call. It would just render three times the same
+       value. I'm too lazy to invent proper test case, so I'll just check that
+       it didn't generate any error and rendered something */
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::base_instance>())
+        CORRADE_SKIP(Extensions::ARB::base_instance::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
+
+    typedef Attribute<0, Float> Attribute;
+
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setBaseVertex(1)
+        .setInstanceCount(3)
+        .setBaseInstance(72)
+        .addVertexBuffer(buffer, 4, Attribute());
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        RenderbufferFormat::RGBA8,
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(value, 96);
+}
+
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::setInstanceCountBaseInstanceNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setInstanceCount(2)
+        .setBaseInstance(1);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced mesh draw with base instance specification\n");
+}
+#endif
+#endif
+
 void MeshGLTest::setInstanceCountIndexed() {
     /* Verbatim copy of setIndexBuffer() with added extension check and
        setInstanceCount() call. It would just render three times the same
@@ -2611,50 +2801,25 @@ void MeshGLTest::setInstanceCountIndexed() {
     CORRADE_COMPARE(value, indexedResult);
 }
 
-#ifndef MAGNUM_TARGET_GLES
-void MeshGLTest::setInstanceCountBaseInstance() {
-    /* Verbatim copy of setInstanceCount() with additional extension check and
-       setBaseInstance() call. It would just render three times the same
-       value. I'm too lazy to invent proper test case, so I'll just check that
-       it didn't generate any error and rendered something */
-
-    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
-        CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::ARB::base_instance>())
-        CORRADE_SKIP(Extensions::ARB::base_instance::string() + std::string(" is not available."));
-
-    typedef Attribute<0, Float> Attribute;
-
-    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
-    Buffer buffer;
-    buffer.setData(data, BufferUsage::StaticDraw);
-
-    Mesh mesh;
-    mesh.setBaseVertex(1)
-        .setInstanceCount(3)
-        .setBaseInstance(72)
-        .addVertexBuffer(buffer, 4, Attribute());
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
-        RenderbufferFormat::RGBA8,
-        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, 96);
-}
-
-void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::setInstanceCountIndexedBaseInstance() {
     /* Verbatim copy of setInstanceCountIndexed() with additional extension
        check and setBaseInstance() call. It would just render three times the
        same value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
     if(!Context::current().isExtensionSupported<Extensions::ARB::base_instance>())
         CORRADE_SKIP(Extensions::ARB::base_instance::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
 
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
@@ -2679,16 +2844,54 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
     CORRADE_COMPARE(value, indexedResult);
 }
 
-void MeshGLTest::setInstanceCountBaseVertex() {
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::setInstanceCountIndexedBaseInstanceNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setInstanceCount(2)
+        .setBaseInstance(1)
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base instance specification\n");
+}
+#endif
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::setInstanceCountIndexedBaseVertex() {
     /* Verbatim copy of setBaseVertex() with additional extension check and
        setInstanceCount() call. It would just render three times the same
        value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
 
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
@@ -2712,19 +2915,66 @@ void MeshGLTest::setInstanceCountBaseVertex() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, indexedResult);
 }
+#endif
 
-void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::setInstanceCountIndexedBaseVertexNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isVersionSupported(Version::GLES320))
+        CORRADE_SKIP("OpenGL ES 3.2 is available.");
+    if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+    if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setInstanceCount(2)
+        .setBaseVertex(1)
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL ES 3.0\n");
+    #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstance() {
     /* Verbatim copy of setInstanceCountBaseVertex() with added extension check
        and setBaseInstance() call. It would just render three times the same
        value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
     if(!Context::current().isExtensionSupported<Extensions::ARB::base_instance>())
         CORRADE_SKIP(Extensions::ARB::base_instance::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is not available."});
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
 
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
@@ -2749,6 +2999,38 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, indexedResult);
 }
+
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::setInstanceCountIndexedBaseVertexBaseInstanceNoExtensionAvailable() {
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::ANGLE::base_vertex_base_instance::string() + std::string{" is available."});
+    #else
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setCount(3)
+        .setInstanceCount(2)
+        .setBaseVertex(1)
+        .setBaseInstance(1)
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw(mesh);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex and base instance specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL 3.0\n");
+    #endif
+}
+#endif
 #endif
 
 void MeshGLTest::addVertexBufferInstancedFloat() {
@@ -3079,10 +3361,31 @@ void MeshGLTest::multiDrawIndexed() {
     CORRADE_COMPARE(value, indexedResult);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+void MeshGLTest::multiDrawInstanced() {
+    Mesh mesh;
+    MeshView view{mesh};
+    view.setCount(3)
+        .setInstanceCount(2);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw({view, view});
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): cannot draw multiple instanced meshes\n");
+}
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void MeshGLTest::multiDrawBaseVertex() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    if(!Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(std::string{"Neither "} + Extensions::OES::draw_elements_base_vertex::string() + " nor " + Extensions::EXT::draw_elements_base_vertex::string() + " is available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is not available."});
+    #endif
 
     Buffer vertices;
     vertices.setData(indexedVertexDataBaseVertex, BufferUsage::StaticDraw);
@@ -3103,6 +3406,53 @@ void MeshGLTest::multiDrawBaseVertex() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, indexedResult);
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void MeshGLTest::multiDrawBaseVertexNoExtensionAvailable() {
+    #ifdef MAGNUM_TARGET_GLES
+    /* If the multidraw extensions aren't available, we can't test this assert,
+       only the assert in the fallback path, which is already tested above. */
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::EXT::multi_draw_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::multi_draw>())
+        CORRADE_SKIP(std::string{"Neither "} + Extensions::EXT::multi_draw_arrays::string() + " nor " + Extensions::ANGLE::multi_draw::string() + " is available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw::string() + std::string{" is not available."});
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(Context::current().isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::EXT::draw_elements_base_vertex::string() + std::string{" is available."});
+    if(Context::current().isExtensionSupported<Extensions::OES::draw_elements_base_vertex>())
+        CORRADE_SKIP(Extensions::OES::draw_elements_base_vertex::string() + std::string{" is available."});
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>())
+        CORRADE_SKIP(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string() + std::string{" is available."});
+    #endif
+
+    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(indexData, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setIndexBuffer(indices, 0, MeshIndexType::UnsignedShort);
+
+    MeshView view{mesh};
+    view.setCount(3)
+        .setBaseVertex(1);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MultipleShader{}.draw({view, view});
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): no extension available for indexed mesh multi-draw with base vertex specification\n");
+    #else
+    CORRADE_COMPARE(out.str(), "GL::AbstractShaderProgram::draw(): indexed mesh multi-draw with base vertex specification possible only since WebGL 2.0\n");
+    #endif
 }
 #endif
 

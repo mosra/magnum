@@ -53,15 +53,37 @@ struct MeshState {
     void(Mesh::*bindImplementation)();
     void(Mesh::*unbindImplementation)();
 
+    #ifdef MAGNUM_TARGET_GLES
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void(APIENTRY *drawElementsBaseVertexImplementation)(GLenum, GLsizei, GLenum, const void*, GLint);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void(APIENTRY *drawRangeElementsBaseVertexImplementation)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void*, GLint);
+    #endif
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES2
     void(APIENTRY *drawArraysInstancedImplementation)(GLenum, GLint, GLsizei, GLsizei);
+    #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+    void(APIENTRY *drawArraysInstancedBaseInstanceImplementation)(GLenum, GLint, GLsizei, GLsizei, GLuint);
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
     void(APIENTRY *drawElementsInstancedImplementation)(GLenum, GLsizei, GLenum, const void*, GLsizei);
+    #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+    void(APIENTRY *drawElementsInstancedBaseVertexImplementation)(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint);
+    void(APIENTRY *drawElementsInstancedBaseInstanceImplementation)(GLenum, GLsizei, GLenum, const void*, GLsizei, GLuint);
+    void(APIENTRY *drawElementsInstancedBaseVertexBaseInstanceImplementation)(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint, GLuint);
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
     void(*multiDrawImplementation)(Containers::ArrayView<const Containers::Reference<MeshView>>);
     void(APIENTRY *multiDrawArraysImplementation)(GLenum, const GLint*, const GLsizei*, GLsizei);
     void(APIENTRY *multiDrawElementsImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void(APIENTRY *multiDrawElementsBaseVertexImplementation)(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);
+    #endif
     #endif
 
     void(*bindVAOImplementation)(GLuint);

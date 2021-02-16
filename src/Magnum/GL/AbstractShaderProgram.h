@@ -863,8 +863,14 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not
          *      `0`
-         * @requires_gl Specifying base vertex for indexed meshes is not
-         *      available in OpenGL ES or WebGL.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @gl_extension{OES,draw_elements_base_vertex} or
+         *      @gl_extension{EXT,draw_elements_base_vertex} if the mesh is
+         *      indexed and @ref MeshView::baseVertex() is not `0`
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and @ref MeshView::baseVertex() is not
+         *      `0`
          */
         void draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 

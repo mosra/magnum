@@ -358,10 +358,8 @@ void AbstractShaderProgram::draw(Mesh& mesh) {
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
     #else
     mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif
@@ -375,10 +373,8 @@ void AbstractShaderProgram::draw(MeshView& mesh) {
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
     #else
     mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif

@@ -401,10 +401,8 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, const GLintptr offset, const MeshInde
     return *this;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd)
-#elif !defined(MAGNUM_TARGET_GLES2)
-void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset, Int indexStart, Int indexEnd)
 #else
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset)
 #endif
@@ -421,15 +419,30 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
         /* Indexed mesh with base vertex */
         } else if(baseVertex) {
-            #ifndef MAGNUM_TARGET_GLES
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            #ifndef MAGNUM_TARGET_GLES2
             /* Indexed mesh with specified range */
             if(indexEnd) {
-                glDrawRangeElementsBaseVertex(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawRangeElementsBaseVertex
+                #else
+                state.drawRangeElementsBaseVertexImplementation
+                #endif
+                    (GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
 
             /* Indexed mesh */
-            } else glDrawElementsBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+            } else
+            #endif
+            {
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawElementsBaseVertex
+                #else
+                state.drawElementsBaseVertexImplementation
+                #endif
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), baseVertex);
+            }
             #else
-            CORRADE_ASSERT_UNREACHABLE("GL::Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): indexed mesh draw with base vertex specification possible only since WebGL 2.0", );
             #endif
 
         /* Indexed mesh */
@@ -457,10 +470,15 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     } else {
         /* Non-indexed mesh */
         if(!_indexBuffer.id()) {
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /* Non-indexed mesh with base instance */
             if(baseInstance) {
-                glDrawArraysInstancedBaseInstance(GLenum(_primitive), baseVertex, count, instanceCount, baseInstance);
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawArraysInstancedBaseInstance
+                #else
+                state.drawArraysInstancedBaseInstanceImplementation
+                #endif
+                    (GLenum(_primitive), baseVertex, count, instanceCount, baseInstance);
 
             /* Non-indexed mesh */
             } else
@@ -476,28 +494,40 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
         /* Indexed mesh with base vertex */
         } else if(baseVertex) {
-            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /* Indexed mesh with base vertex and base instance */
             if(baseInstance) {
-                glDrawElementsInstancedBaseVertexBaseInstance(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex, baseInstance);
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawElementsInstancedBaseVertexBaseInstance
+                #else
+                state.drawElementsInstancedBaseVertexBaseInstanceImplementation
+                #endif
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex, baseInstance);
 
             /* Indexed mesh with base vertex */
-            } else
-            #endif
-            {
-                glDrawElementsInstancedBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex);
+            } else {
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawElementsInstancedBaseVertex
+                #else
+                state.drawElementsInstancedBaseVertexImplementation
+                #endif
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex);
             }
             #else
-            CORRADE_ASSERT_UNREACHABLE("GL::Mesh::draw(): OpenGL ES 3.2 or desktop GL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): instanced indexed mesh draw with base vertex specification possible only since OpenGL ES 3.0", );
             #endif
 
         /* Indexed mesh */
         } else {
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /* Indexed mesh with base instance */
             if(baseInstance) {
-                glDrawElementsInstancedBaseInstance(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseInstance);
+                #ifndef MAGNUM_TARGET_GLES
+                glDrawElementsInstancedBaseInstance
+                #else
+                state.drawElementsInstancedBaseInstanceImplementation
+                #endif
+                    (GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseInstance);
 
             /* Instanced mesh */
             } else
@@ -872,5 +902,59 @@ void Mesh::unbindImplementationDefault() {
 }
 
 void Mesh::unbindImplementationVAO() {}
+
+#ifdef MAGNUM_TARGET_GLES
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+void Mesh::drawElementsBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLint baseVertex) {
+    glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, 1, baseVertex, 0);
+}
+#endif
+
+void Mesh::drawElementsBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification", );
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+void Mesh::drawRangeElementsBaseVertexImplementationANGLE(const GLenum mode, GLuint, GLuint, GLsizei count, GLenum type, const void* indices, GLint baseVertex) {
+    glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, 1, baseVertex, 0);
+}
+#endif
+
+void Mesh::drawRangeElementsBaseVertexImplementationAssert(GLenum, GLuint, GLuint, GLsizei, GLenum, const void*, GLint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for indexed mesh draw with base vertex specification", );
+}
+
+void Mesh::drawArraysInstancedBaseInstanceImplementationAssert(GLenum, GLint, GLsizei, GLsizei, GLuint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced mesh draw with base instance specification", );
+}
+
+#if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+void Mesh::drawElementsInstancedBaseInstanceImplementationANGLE(const GLenum mode, const GLsizei count, const GLenum type, const void* const indices, const GLsizei instanceCount, const GLuint baseInstance) {
+    glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, 0, baseInstance);
+}
+#endif
+
+void Mesh::drawElementsInstancedBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLuint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base instance specification", );
+}
+
+void Mesh::drawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint, GLuint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex and base instance specification", );
+}
+
+#if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_patch__ >= 13915
+void Mesh::drawElementsInstancedBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLint baseVertex) {
+    glDrawElementsInstancedBaseVertexBaseInstanceANGLE(mode, count, type, indices, instanceCount, baseVertex, 0);
+}
+#endif
+
+void Mesh::drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint) {
+    CORRADE_ASSERT_UNREACHABLE("GL::AbstractShaderProgram::draw(): no extension available for instanced indexed mesh draw with base vertex specification", );
+}
+#endif
+#endif
 
 }}

@@ -547,6 +547,18 @@ void Context::setupDriverWorkarounds() {
     #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20000
     _setRequiredVersion(WEBGL::multi_draw, None);
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    /* WEBGL_multi_draw_instanced_base_vertex_base_instance only since
+       Emscripten 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20005
+    _setRequiredVersion(WEBGL::multi_draw_instanced_base_vertex_base_instance, None);
+    #endif
+    /* WEBGL_draw_instanced_base_vertex_base_instance only since Emscripten
+       1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13915
+    _setRequiredVersion(WEBGL::draw_instanced_base_vertex_base_instance, None);
+    #endif
+    #endif
     #endif
 
     #undef _setRequiredVersion

@@ -107,6 +107,102 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     }
     #endif
 
+    /* Base vertex draws on ES 2/3 and WebGL 2 */
+    #if defined(MAGNUM_TARGET_GLES) && !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef MAGNUM_TARGET_GLES2
+    if(context.isVersionSupported(Version::GLES320)) {
+        drawElementsBaseVertexImplementation = glDrawElementsBaseVertex;
+        drawRangeElementsBaseVertexImplementation = glDrawRangeElementsBaseVertex;
+        drawElementsInstancedBaseVertexImplementation = glDrawElementsInstancedBaseVertex;
+    } else
+    #endif
+    if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
+        extensions.push_back(Extensions::EXT::draw_elements_base_vertex::string());
+
+        drawElementsBaseVertexImplementation = glDrawElementsBaseVertexEXT;
+        #ifndef MAGNUM_TARGET_GLES2
+        drawRangeElementsBaseVertexImplementation = glDrawRangeElementsBaseVertexEXT;
+        drawElementsInstancedBaseVertexImplementation = glDrawElementsInstancedBaseVertexEXT;
+        #endif
+    } else if(context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
+        extensions.push_back(Extensions::OES::draw_elements_base_vertex::string());
+
+        drawElementsBaseVertexImplementation = glDrawElementsBaseVertexOES;
+        #ifndef MAGNUM_TARGET_GLES2
+        drawRangeElementsBaseVertexImplementation = glDrawRangeElementsBaseVertexOES;
+        drawElementsInstancedBaseVertexImplementation = glDrawElementsInstancedBaseVertexOES;
+        #endif
+    } else
+    #else
+    if(context.isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>()) {
+        extensions.push_back(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string());
+
+        /* The WEBGL extension uses the same entrypoints as the ANGLE extension
+           it was based on, however we wrap it to supply trivial instance count
+           because there's no non-instanced variant. Only available since
+           1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        drawElementsBaseVertexImplementation = Mesh::drawElementsBaseVertexImplementationANGLE;
+        drawRangeElementsBaseVertexImplementation = Mesh::drawRangeElementsBaseVertexImplementationANGLE;
+        drawElementsInstancedBaseVertexImplementation = Mesh::drawElementsInstancedBaseVertexImplementationANGLE;
+        #else
+        /* In Context::setupDriverWorkarounds() we make sure the extension is
+           not even advertised, so this shouldn't be reached. */
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        #endif
+    } else
+    #endif
+    {
+        drawElementsBaseVertexImplementation = Mesh::drawElementsBaseVertexImplementationAssert;
+        #ifndef MAGNUM_TARGET_GLES2
+        drawRangeElementsBaseVertexImplementation = Mesh::drawRangeElementsBaseVertexImplementationAssert;
+        drawElementsInstancedBaseVertexImplementation = Mesh::drawElementsInstancedBaseVertexImplementationAssert;
+        #endif
+    }
+    #endif
+
+    /* Base instance draws on ES3 and WebGL2 */
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef MAGNUM_TARGET_GLES2
+    if(context.isExtensionSupported<Extensions::ANGLE::base_vertex_base_instance>()) {
+        extensions.push_back(Extensions::ANGLE::base_vertex_base_instance::string());
+
+        drawArraysInstancedBaseInstanceImplementation = glDrawArraysInstancedBaseInstanceANGLE;
+        /* This variant isn't in the ext, emulated using
+           glDrawElementsInstancedBaseVertexBaseInstanceANGLE */
+        drawElementsInstancedBaseInstanceImplementation = Mesh::drawElementsInstancedBaseInstanceImplementationANGLE;
+        drawElementsInstancedBaseVertexBaseInstanceImplementation = glDrawElementsInstancedBaseVertexBaseInstanceANGLE;
+    } else
+    #endif
+    #else
+    if(context.isExtensionSupported<Extensions::WEBGL::draw_instanced_base_vertex_base_instance>()) {
+        extensions.push_back(Extensions::WEBGL::draw_instanced_base_vertex_base_instance::string());
+
+        /* The WEBGL extension uses the same entrypoints as the ANGLE extension
+           it was based on. Only available since 1.39.15:
+           https://github.com/emscripten-core/emscripten/pull/11054 */
+        #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        drawArraysInstancedBaseInstanceImplementation = glDrawArraysInstancedBaseInstanceANGLE;
+        /* This variant isn't in the ext, emulated using
+           glDrawElementsInstancedBaseVertexBaseInstanceANGLE */
+        drawElementsInstancedBaseInstanceImplementation = Mesh::drawElementsInstancedBaseInstanceImplementationANGLE;
+        drawElementsInstancedBaseVertexBaseInstanceImplementation = glDrawElementsInstancedBaseVertexBaseInstanceANGLE;
+        #else
+        /* In Context::setupDriverWorkarounds() we make sure the extension is
+           not even advertised, so this shouldn't be reached. */
+        CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+        #endif
+    } else
+    #endif
+    {
+        drawArraysInstancedBaseInstanceImplementation = Mesh::drawArraysInstancedBaseInstanceImplementationAssert;
+        drawElementsInstancedBaseInstanceImplementation = Mesh::drawElementsInstancedBaseInstanceImplementationAssert;
+        drawElementsInstancedBaseVertexBaseInstanceImplementation = Mesh::drawElementsInstancedBaseVertexBaseInstanceImplementationAssert;
+    }
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     /* Multi draw implementation on ES. Because there's a lot of dispatch logic
        involved, the multiDrawImplementationDefault then has internal
@@ -146,6 +242,44 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
                is not even advertised, so this shouldn't be reached. */
             CORRADE_INTERNAL_ASSERT_UNREACHABLE();
             #endif
+        }
+        #endif
+
+        /* These function pointers make sense only if the general multi-draw
+           extension is supported. Also, not on WebGL 1 at all. */
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(context.isExtensionSupported<Extensions::EXT::draw_elements_base_vertex>()) {
+            extensions.push_back(Extensions::EXT::draw_elements_base_vertex::string());
+
+            multiDrawElementsBaseVertexImplementation = glMultiDrawElementsBaseVertexEXT;
+        } else if(context.isExtensionSupported<Extensions::OES::draw_elements_base_vertex>()) {
+            extensions.push_back(Extensions::OES::draw_elements_base_vertex::string());
+
+            /* Yes, it's really EXT, the same as with
+               EXT_draw_elements_base_vertex. I have no idea why the two
+               extensions exist and why it isn't just one. */
+            multiDrawElementsBaseVertexImplementation = glMultiDrawElementsBaseVertexEXT;
+        } else
+        #else
+        if(context.isExtensionSupported<Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance>()) {
+            extensions.push_back(Extensions::WEBGL::multi_draw_instanced_base_vertex_base_instance::string());
+
+            /* The WEBGL extension uses the same entrypoints as the ANGLE
+               extension it was based on, however we wrap it and supply trivial
+               instance counts because there's no non-instanced variant. Only
+               available since 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
+            #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
+            multiDrawElementsBaseVertexImplementation = MeshView::multiDrawElementsBaseVertexImplementationANGLE;
+            #else
+            /* In Context::setupDriverWorkarounds() we make sure the extension
+               is not even advertised, so this shouldn't be reached. */
+            CORRADE_INTERNAL_ASSERT_UNREACHABLE();
+            #endif
+        } else
+        #endif
+        {
+            multiDrawElementsBaseVertexImplementation = MeshView::multiDrawElementsBaseVertexImplementationAssert;
         }
         #endif
 

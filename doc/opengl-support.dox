@@ -450,7 +450,7 @@ Extension                                   | Status
 @gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt} | done
 @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
 @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt) (unlisted) | done
-@m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | |
+@m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt) (unlisted) | done except instanced multi-draw
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{APPLE,clip_distance}          | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
@@ -472,7 +472,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,pvrtc_sRGB}               | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
-@gl_extension{EXT,draw_elements_base_vertex} | |
+@gl_extension{EXT,draw_elements_base_vertex} | done
 @gl_extension{EXT,texture_norm16}           | done
 @gl_extension{EXT,texture_sRGB_R8}          | done
 @gl_extension{EXT,texture_sRGB_RG8}         | done
@@ -500,7 +500,7 @@ Extension                                   | Status
 @gl_extension{OES,stencil1}                 | done
 @gl_extension{OES,stencil4}                 | done
 @gl_extension{OES,texture_float_linear}     | done
-@gl_extension{OES,draw_elements_base_vertex} | |
+@gl_extension{OES,draw_elements_base_vertex} | done
 @gl_extension{OVR,multiview}                | |
 @gl_extension{OVR,multiview2}               | |
 
@@ -573,8 +573,8 @@ Extension                                   | Status
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 @webgl_extension{WEBGL,multi_draw}          | done
 @webgl_extension{WEBGL,blend_equation_advanced_coherent} | done
-@webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | |
-@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | |
+@webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} | done
+@webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance} | done except instanced multi-draw
 
 @section opengl-unsupported Unsupported OpenGL features
 
