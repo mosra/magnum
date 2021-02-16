@@ -172,11 +172,20 @@ MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive primitive);
 @m_enum_values_as_keywords
 */
 enum class MeshIndexType: GLenum {
-    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+    /**
+     * @relativeref{Magnum,UnsignedByte}.
+     *
+     * Even though OpenGL historically supports 8-bit indices, using this type
+     * is discouraged on contemporary GPU architectures. Prefer using 16-bit
+     * indices instead.
+     */
+    UnsignedByte = GL_UNSIGNED_BYTE,
+
+    /** @relativeref{Magnum,UnsignedShort} */
+    UnsignedShort = GL_UNSIGNED_SHORT,
 
     /**
-     * Unsigned int
+     * @relativeref{Magnum,UnsignedInt}
      * @requires_gles30 Extension @gl_extension{OES,element_index_uint}
      *       in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}

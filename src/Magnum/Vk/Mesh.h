@@ -44,7 +44,14 @@ Wraps a @type_vk_keyword{IndexType}.
 */
 enum class MeshIndexType: Int {
     /**
-     * @ref Magnum::UnsignedByte "UnsignedByte"
+     * @ref Magnum::UnsignedByte "UnsignedByte".
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      Discouraged on contemporary GPU architectures, prefer to use 16-bit
+     *      indices instead.
+     *
      * @requires_vk_feature @ref DeviceFeature::IndexTypeUnsignedByte
      */
     UnsignedByte = VK_INDEX_TYPE_UINT8_EXT,

@@ -249,17 +249,18 @@ enum class MeshIndexType: UnsignedByte {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
-     * Unsigned byte
+     * @relativeref{Magnum,UnsignedByte}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedByte /
-     * @ref Vk::MeshIndexTyúe::UnsignedByte. Note that using this
-     * type is discouraged, at least AMD GPUs are known to suggest (via debug
-     * output) using 16-byte types instead for better efficiency.
+     * @ref Vk::MeshIndexType::UnsignedByte. Even though OpenGL supports this
+     * type and Vulkan can as well via an extension, using this type is
+     * discouraged on contemporary GPU architectures. Prefer using 16-bit
+     * indices instead.
      */
     UnsignedByte = 1,
 
     /**
-     * Unsigned short
+     * @relativeref{Magnum,UnsignedShort}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedShort /
      * @ref Vk::MeshIndexType::UnsignedShort.
@@ -267,7 +268,7 @@ enum class MeshIndexType: UnsignedByte {
     UnsignedShort,
 
     /**
-     * Unsigned int
+     * @relativeref{Magnum,UnsignedInt}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedInt /
      * @ref Vk::MeshIndexType::UnsignedInt.
