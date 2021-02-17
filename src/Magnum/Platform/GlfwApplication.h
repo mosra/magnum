@@ -624,7 +624,8 @@ class GlfwApplication {
          * @brief Set cursor type
          * @m_since{2020,06}
          *
-         * Default is @ref Cursor::Arrow.
+         * Expects that a window is already created. Default is
+         * @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
@@ -735,7 +736,15 @@ class GlfwApplication {
 
         void setupCallbacks();
 
-        GLFWcursor* _cursors[8]{};
+        /* Corresponds to size of the Cursor enum, the two Hidden cursors are
+           handled differently */
+        GLFWcursor* _cursors[
+            #ifndef GLFW_RESIZE_NWSE_CURSOR
+            6
+            #else
+            10
+            #endif
+        ]{};
         Cursor _cursor = Cursor::Arrow;
 
         /* These are saved from command-line arguments */

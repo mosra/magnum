@@ -968,7 +968,8 @@ class Sdl2Application {
          * @brief Set cursor type
          * @m_since{2020,06}
          *
-         * Default is @ref Cursor::Arrow.
+         * Expects that a window is already created. Default is
+         * @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
@@ -1184,7 +1185,7 @@ class Sdl2Application {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Cursor* _cursors[14]{};
+        SDL_Cursor* _cursors[12]{};
         #else
         Cursor _cursor;
         #endif

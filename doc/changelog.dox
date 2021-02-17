@@ -308,6 +308,8 @@ See also:
 -   Fixed canvas size setup in @ref Platform::EmscriptenApplication to be the
     same in the @ref Platform::EmscriptenApplication::Configuration::WindowFlag::Contextless "Contextless"
     case as for a WebGL-enabled context
+-   Fixed a crash in @ref Platform::GlfwApplication::setCursor() on the
+    upcoming GLFW 3.4
 -   @ref SceneGraph::BasicMatrixTransformation2D,
     @ref SceneGraph::BasicMatrixTransformation3D,
     @ref SceneGraph::BasicRigidMatrixTransformation2D and

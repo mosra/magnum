@@ -1052,7 +1052,7 @@ constexpr const char* CursorMap[] {
 
 void Sdl2Application::setCursor(Cursor cursor) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::setCursor(): no window opened", );
 
     if(cursor == Cursor::Hidden) {
         SDL_ShowCursor(SDL_DISABLE);
@@ -1069,11 +1069,17 @@ void Sdl2Application::setCursor(Cursor cursor) {
         SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 
+    /* The second condition could be a static assert but it doesn't let me
+       because "this pointer only accessible in a constexpr function". Thanks
+       for nothing, C++. */
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors) && Containers::arraySize(_cursors) == Containers::arraySize(CursorMap));
+
     if(!_cursors[UnsignedInt(cursor)])
         _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
 
     SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
     #else
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::setCursor(): no window opened", );
     _cursor = cursor;
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
     #pragma GCC diagnostic push
