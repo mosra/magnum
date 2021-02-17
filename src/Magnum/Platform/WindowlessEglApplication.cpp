@@ -503,7 +503,15 @@ bool WindowlessEglContext::makeCurrent() {
         return true;
     #endif
 
-    Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
+    Error() << "Platform::WindowlessEglApplication::makeCurrent(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
+    return false;
+}
+
+bool WindowlessEglContext::release() {
+    if(eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT))
+        return true;
+
+    Error() << "Platform::WindowlessEglApplication::release(): cannot release current context:" << Implementation::eglErrorString(eglGetError());
     return false;
 }
 

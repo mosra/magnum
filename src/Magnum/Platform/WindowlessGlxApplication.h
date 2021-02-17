@@ -147,6 +147,14 @@ class WindowlessGlxContext {
         bool makeCurrent();
 
         /**
+         * @brief Release current context
+         *
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
+         */
+        bool release();
+
+        /**
          * @brief Underlying OpenGL context
          * @m_since{2020,06}
          *

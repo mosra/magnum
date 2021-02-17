@@ -255,6 +255,14 @@ bool WindowlessGlxContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessGlxContext::release() {
+    if(glXMakeContextCurrent(_display, 0, 0, nullptr))
+        return true;
+
+    Error() << "Platform::WindowlessGlxContext::release(): cannot release current context";
+    return false;
+}
+
 WindowlessGlxContext::Configuration::Configuration():
     #ifndef MAGNUM_TARGET_GLES
     _flags{Flag::ForwardCompatible}

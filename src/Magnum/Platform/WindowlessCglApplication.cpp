@@ -97,6 +97,14 @@ bool WindowlessCglContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessCglContext::release() {
+    if(CGLSetCurrentContext(0) == kCGLNoError)
+        return true;
+
+    Error() << "Platform::WindowlessCglContext::release(): cannot release current context";
+    return false;
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
 #endif
