@@ -172,7 +172,7 @@ bool MeshLayout::operator==(const MeshLayout& other) const {
     #undef _c
 }
 
-MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) {
+MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) & {
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
@@ -190,7 +190,11 @@ MeshLayout& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt 
     return *this;
 }
 
-MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) {
+MeshLayout&& MeshLayout::addBinding(const UnsignedInt binding, const UnsignedInt stride) && {
+    return std::move(addBinding(binding, stride));
+}
+
+MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) & {
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
@@ -221,7 +225,11 @@ MeshLayout& MeshLayout::addInstancedBinding(const UnsignedInt binding, const Uns
     return *this;
 }
 
-MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) {
+MeshLayout&& MeshLayout::addInstancedBinding(const UnsignedInt binding, const UnsignedInt stride, const UnsignedInt divisor) && {
+    return std::move(addInstancedBinding(binding, stride, divisor));
+}
+
+MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) & {
     if(!_state) _state.emplace();
 
     /* Ensure order for efficient comparisons */
@@ -240,8 +248,16 @@ MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedI
     return *this;
 }
 
-MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) {
+MeshLayout&& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const VertexFormat format, const UnsignedInt offset) && {
+    return std::move(addAttribute(location, binding, format, offset));
+}
+
+MeshLayout& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) & {
     return addAttribute(location, binding, vertexFormat(format), offset);
+}
+
+MeshLayout&& MeshLayout::addAttribute(const UnsignedInt location, const UnsignedInt binding, const Magnum::VertexFormat format, const UnsignedInt offset) && {
+    return std::move(addAttribute(location, binding, format, offset));
 }
 
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {

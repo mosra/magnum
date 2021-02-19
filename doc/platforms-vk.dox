@@ -75,6 +75,10 @@ Build as a static library and supply to CMake via `Vulkan_LIBRARY`:
 
 @section platforms-vk-best-practices Vulkan best practices
 
+Khronos wiki:
+
+-   [Synchronization Examples](https://github.com/KhronosGroup/Vulkan-Docs/wiki/Synchronization-Examples)
+
 NVidia tutorials and tips:
 
 -   [Engaging the Voyage to Vulkan](https://developer.nvidia.com/engaging-voyage-vulkan)

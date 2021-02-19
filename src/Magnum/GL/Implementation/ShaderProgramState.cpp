@@ -60,6 +60,20 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     }
     #endif
 
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler")) {
+        cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationIntelWindows;
+    } else
+    #endif
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-chatty-shader-compiler")) {
+        cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationAngle;
+    } else
+    #endif
+    {
+        cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationNoOp;
+    }
+
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::separate_shader_objects>())

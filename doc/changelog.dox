@@ -62,11 +62,16 @@ See also:
     @webgl_extension{WEBGL,debug_renderer_info} and
     @webgl_extension{WEBGL,debug_shaders} extensions, no implementation done
     yet
--   Recognizing @webgl_extension{WEBGL,multi_draw},
-    @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance} and
-    @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
-    extensions, however there's no Emscripten entrypoints for those yet which
-    means these can'be implemented right now.
+-   Recognizing ANGLE GLES and WebGL base vertex, base instance and multi-draw
+    extensions and using them in @ref GL::AbstractShaderProgram::draw(Mesh&)
+    and @ref GL::AbstractShaderProgram::draw(Containers::ArrayView<const Containers::Reference<MeshView>>):
+    -   @gl_extension{EXT,draw_elements_base_vertex}
+    -   @gl_extension{OES,draw_elements_base_vertex}
+    -   @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+    -   @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt)
+    -   @webgl_extension{WEBGL,multi_draw}
+    -   @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
+    -   @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
 -   Added a @ref GL::AbstractTexture::target() getter to simplify interaction
     with raw GL code
 -   Exposed @gl_extension{ARB,buffer_storage} as
@@ -76,6 +81,9 @@ See also:
     happening during EGL initialization in recent NVidia drivers.  See
     @ref opengl-workarounds and [mosra/magnum#491](https://github.com/mosra/magnum/pull/491)
     for more information.
+-   A new @cpp "angle-chatty-shader-compiler" @ce workarounds for silencing
+    useless linker output on ANGLE. See @ref opengl-workarounds for more
+    information.
 
 @subsubsection changelog-latest-new-math Math library
 
@@ -170,6 +178,10 @@ See also:
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.
+-   Intel/Windows-specific code for silencing useless shader compiler output is
+    now advertised as a @cpp "intel-windows-chatty-shader-compiler" @ce
+    workaround, instead of being done silently. See @ref opengl-workarounds for
+    more information.
 
 @subsubsection changelog-latest-changes-math Math library
 
@@ -378,6 +390,11 @@ See also:
     @ref Vk::pixelFormat(Magnum::CompressedPixelFormat) that return the new
     @ref Vk::PixelFormat enum that contains only values suitable for a pixel
     format
+-   @cpp Vk::hasVkIndexType() @ce and @cpp Vk::vkIndexType() @ce returning a
+    raw @type_vk{IndexType} are deprecated in favor of
+    @ref Vk::meshIndexType() that returns the new @ref Vk::MeshIndexType enum.
+    Since all generic index types are available in Vulkan now, there's no need
+    for a @cpp hasMeshIndexType() @ce anymore.
 -   @cpp Vk::hasVkPrimitiveTopology() @ce and
     @cpp Vk::vkPrimitiveTopology() @ce returning a raw
     @type_vk{PrimitiveToplogy} are deprecated in favor of
@@ -430,6 +447,10 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text libraries
+-   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
+    on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
+    @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at
+    least
 -   @ref SceneGraph::Object::addChild() no longer requires the type constructor
     to have the last parameter a parent object object pointer, as that was
     quite limiting. Instead it's calling @ref SceneGraph::Object::setParent()

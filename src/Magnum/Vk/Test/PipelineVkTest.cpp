@@ -62,9 +62,13 @@ struct PipelineVkTest: VulkanTester {
     void constructCompute();
     void constructMove();
 
-    void wrap();
+    void wrapRasterization();
+    void wrapCompute();
 
-    void cmdBind();
+    void dynamicRasterizationStatesNotRasterization();
+
+    void cmdBindRasterization();
+    void cmdBindCompute();
 
     void cmdBarrier();
     void cmdBarrierExecutionOnly();
@@ -81,9 +85,13 @@ PipelineVkTest::PipelineVkTest() {
               &PipelineVkTest::constructCompute,
               &PipelineVkTest::constructMove,
 
-              &PipelineVkTest::wrap,
+              &PipelineVkTest::wrapRasterization,
+              &PipelineVkTest::wrapCompute,
 
-              &PipelineVkTest::cmdBind,
+              &PipelineVkTest::dynamicRasterizationStatesNotRasterization,
+
+              &PipelineVkTest::cmdBindRasterization,
+              &PipelineVkTest::cmdBindCompute,
 
               &PipelineVkTest::cmdBarrier,
               &PipelineVkTest::cmdBarrierExecutionOnly,
@@ -117,8 +125,8 @@ void PipelineVkTest::constructRasterization() {
         MeshLayout meshLayout{MeshPrimitive::Triangles};
         meshLayout
             .addBinding(0, 2*4*4)
-            .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-            .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+            .addAttribute(0, 0, VertexFormat::Vector4, 0)
+            .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
         PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -134,10 +142,12 @@ void PipelineVkTest::constructRasterization() {
         Pipeline pipeline{device(), RasterizationPipelineCreateInfo{
                 shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
             .setViewport({{}, {200, 200}})
+            .setDynamicStates(DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias)
         };
         CORRADE_VERIFY(pipeline.handle());
         CORRADE_COMPARE(pipeline.handleFlags(), HandleFlag::DestroyOnDestruction);
         CORRADE_COMPARE(pipeline.bindPoint(), PipelineBindPoint::Rasterization);
+        CORRADE_COMPARE(pipeline.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
     }
 
     /* Shouldn't crash or anything */
@@ -145,6 +155,10 @@ void PipelineVkTest::constructRasterization() {
 }
 
 void PipelineVkTest::constructRasterizationViewportNotSet() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
     MeshLayout meshLayout{MeshPrimitive::Triangles};
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
@@ -181,8 +195,8 @@ void PipelineVkTest::constructRasterizationViewportNotSetDiscardEnabled() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -224,8 +238,8 @@ void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
     MeshLayout meshLayout{MeshPrimitive::Triangles};
     meshLayout
         .addBinding(0, 2*4*4)
-        .addAttribute(0, 0, Vk::VertexFormat::Vector4, 0)
-        .addAttribute(1, 0, Vk::VertexFormat::Vector4, 4*4);
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
 
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
@@ -241,16 +255,16 @@ void PipelineVkTest::constructRasterizationViewportNotSetDynamic() {
     RasterizationPipelineCreateInfo info{
         shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1};
     info.setViewport(Range3D{}) /* Has to be set because the count is used */
-        .setDynamicStates(DynamicRasterizationState::Viewport|
-                          DynamicRasterizationState::Scissor);
+        .setDynamicStates(DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor);
     /* But the data don't have to be there */
     const_cast<VkPipelineViewportStateCreateInfo*>(info->pViewportState)->pViewports = nullptr;
     const_cast<VkPipelineViewportStateCreateInfo*>(info->pViewportState)->pScissors = nullptr;
 
     Pipeline pipeline{device(), info};
 
-    /* The only thing I want to verify is that this doesn't crash or assert */
+    /* The main thing I want to verify is that this doesn't crash or assert */
     CORRADE_VERIFY(pipeline.handle());
+    CORRADE_COMPARE(pipeline.dynamicRasterizationStates(), DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor);
 }
 
 void PipelineVkTest::constructCompute() {
@@ -276,25 +290,51 @@ void PipelineVkTest::constructCompute() {
 }
 
 void PipelineVkTest::constructMove() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
+
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
-        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
     }};
 
     ShaderSet shaderSet;
-    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
 
-    Pipeline a{device(), ComputePipelineCreateInfo{
-        shaderSet, pipelineLayout
-    }};
+    Pipeline a{device(), RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {200, 200}})
+        .setDynamicStates(DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias)
+    };
     VkPipeline handle = a.handle();
 
     Pipeline b = std::move(a);
     CORRADE_VERIFY(!a.handle());
     CORRADE_COMPARE(b.handle(), handle);
     CORRADE_COMPARE(b.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(b.bindPoint(), PipelineBindPoint::Compute);
+    CORRADE_COMPARE(b.bindPoint(), PipelineBindPoint::Rasterization);
+    CORRADE_COMPARE(b.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
 
     Pipeline c{NoCreate};
     c = std::move(b);
@@ -302,13 +342,65 @@ void PipelineVkTest::constructMove() {
     CORRADE_COMPARE(b.handleFlags(), HandleFlags{});
     CORRADE_COMPARE(c.handle(), handle);
     CORRADE_COMPARE(c.handleFlags(), HandleFlag::DestroyOnDestruction);
-    CORRADE_COMPARE(c.bindPoint(), PipelineBindPoint::Compute);
+    CORRADE_COMPARE(c.bindPoint(), PipelineBindPoint::Rasterization);
+    CORRADE_COMPARE(c.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
 
     CORRADE_VERIFY(std::is_nothrow_move_constructible<Pipeline>::value);
     CORRADE_VERIFY(std::is_nothrow_move_assignable<Pipeline>::value);
 }
 
-void PipelineVkTest::wrap() {
+void PipelineVkTest::wrapRasterization() {
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    VkPipeline pipeline{};
+    CORRADE_COMPARE(Result(device()->CreateGraphicsPipelines(device(), {}, 1,
+        RasterizationPipelineCreateInfo{shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+            .setViewport({{}, {200, 200}})
+            .setDynamicStates(DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias),
+        nullptr, &pipeline)), Result::Success);
+
+    auto wrapped = Pipeline::wrap(device(), PipelineBindPoint::Rasterization, pipeline, DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias, HandleFlag::DestroyOnDestruction);
+    CORRADE_COMPARE(wrapped.handle(), pipeline);
+    CORRADE_COMPARE(wrapped.bindPoint(), PipelineBindPoint::Rasterization);
+    CORRADE_COMPARE(wrapped.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
+
+    /* Release the handle again, destroy by hand */
+    CORRADE_COMPARE(wrapped.release(), pipeline);
+    CORRADE_VERIFY(!wrapped.handle());
+    device()->DestroyPipeline(device(), pipeline, nullptr);
+}
+
+void PipelineVkTest::wrapCompute() {
     PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
 
     Shader shader{device(), ShaderCreateInfo{
@@ -333,7 +425,87 @@ void PipelineVkTest::wrap() {
     device()->DestroyPipeline(device(), pipeline, nullptr);
 }
 
-void PipelineVkTest::cmdBind() {
+void PipelineVkTest::dynamicRasterizationStatesNotRasterization() {
+    #ifdef CORRADE_NO_ASSERT
+    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
+    #endif
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "compute-noop.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet.addShader(ShaderStage::Compute, shader, "main"_s);
+
+    Pipeline pipeline{device(), ComputePipelineCreateInfo{
+        shaderSet, pipelineLayout
+    }};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    pipeline.dynamicRasterizationStates();
+    CORRADE_COMPARE(out.str(), "Vk::Pipeline::dynamicRasterizationStates(): not a rasterization pipeline\n");
+}
+
+void PipelineVkTest::cmdBindRasterization() {
+    CommandPool pool{device(), CommandPoolCreateInfo{
+        device().properties().pickQueueFamily(QueueFlag::Graphics)}};
+
+    RenderPass renderPass{device(), RenderPassCreateInfo{}
+        .setAttachments({
+            AttachmentDescription{PixelFormat::RGBA8Unorm,
+                AttachmentLoadOperation::Clear,
+                AttachmentStoreOperation::Store,
+                ImageLayout::Undefined,
+                ImageLayout::ColorAttachment}
+        })
+        .addSubpass(SubpassDescription{}.setColorAttachments({
+            AttachmentReference{0, ImageLayout::ColorAttachment}
+        }))
+    };
+
+    /* Not sure if this is really needed, but the shader needs those inputs so
+       playing it safe */
+    MeshLayout meshLayout{MeshPrimitive::Triangles};
+    meshLayout
+        .addBinding(0, 2*4*4)
+        .addAttribute(0, 0, VertexFormat::Vector4, 0)
+        .addAttribute(1, 0, VertexFormat::Vector4, 4*4);
+
+    PipelineLayout pipelineLayout{device(), PipelineLayoutCreateInfo{}};
+
+    Shader shader{device(), ShaderCreateInfo{
+        Utility::Directory::read(Utility::Directory::join(VK_TEST_DIR, "triangle-shaders.spv"))
+    }};
+
+    ShaderSet shaderSet;
+    shaderSet
+        .addShader(ShaderStage::Vertex, shader, "ver"_s)
+        .addShader(ShaderStage::Fragment, shader, "fra"_s);
+
+    Pipeline pipeline{device(), RasterizationPipelineCreateInfo{
+            shaderSet, meshLayout, pipelineLayout, renderPass, 0, 1}
+        .setViewport({{}, {200, 200}})
+        .setDynamicStates(DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias)
+    };
+
+    CommandBuffer cmd = pool.allocate();
+
+    cmd.begin();
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationStates{});
+
+    cmd.bindPipeline(pipeline);
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationState::LineWidth|DynamicRasterizationState::DepthBias);
+
+    /* Should be reset again on end() so if it's reset() and begun again it
+       doesn't show a no-longer-true value */
+    cmd.end();
+    CORRADE_COMPARE(cmd.dynamicRasterizationStates(), DynamicRasterizationStates{});
+}
+
+void PipelineVkTest::cmdBindCompute() {
     CommandPool pool{device(), CommandPoolCreateInfo{
         /* This might blow up if queue() isn't the one matching this family */
         device().properties().pickQueueFamily(QueueFlag::Graphics|QueueFlag::Compute)}};

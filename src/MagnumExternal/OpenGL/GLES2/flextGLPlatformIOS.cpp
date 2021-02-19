@@ -30,6 +30,10 @@
 #undef glDrawArraysInstancedANGLE
 #undef glDrawElementsInstancedANGLE
 #undef glVertexAttribDivisorANGLE
+#undef glMultiDrawArraysANGLE
+#undef glMultiDrawArraysInstancedANGLE
+#undef glMultiDrawElementsANGLE
+#undef glMultiDrawElementsInstancedANGLE
 #undef glRenderbufferStorageMultisampleAPPLE
 #undef glResolveMultisampleFramebufferAPPLE
 #undef glGetObjectLabelEXT
@@ -52,6 +56,8 @@
 #undef glDisableiEXT
 #undef glEnableiEXT
 #undef glIsEnablediEXT
+#undef glDrawElementsBaseVertexEXT
+#undef glMultiDrawElementsBaseVertexEXT
 #undef glDrawArraysInstancedEXT
 #undef glDrawElementsInstancedEXT
 #undef glVertexAttribDivisorEXT
@@ -141,6 +147,7 @@
 #undef glFramebufferSampleLocationsfvNV
 #undef glNamedFramebufferSampleLocationsfvNV
 #undef glResolveDepthValuesNV
+#undef glDrawElementsBaseVertexOES
 #undef glGetBufferPointervOES
 #undef glMapBufferOES
 #undef glUnmapBufferOES
@@ -177,6 +184,14 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.DrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, GLsizei)>(glDrawArraysInstancedANGLE);
     flextGL.DrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLsizei)>(glDrawElementsInstancedANGLE);
     flextGL.VertexAttribDivisorANGLE = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(glVertexAttribDivisorANGLE);
+    #endif
+
+    /* GL_ANGLE_multi_draw */
+    #if GL_ANGLE_multi_draw
+    flextGL.MultiDrawArraysANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, GLsizei)>(glMultiDrawArraysANGLE);
+    flextGL.MultiDrawArraysInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, const GLsizei *, GLsizei)>(glMultiDrawArraysInstancedANGLE);
+    flextGL.MultiDrawElementsANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, GLsizei)>(glMultiDrawElementsANGLE);
+    flextGL.MultiDrawElementsInstancedANGLE = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const GLvoid *const*, const GLsizei*, GLsizei)>(glMultiDrawElementsInstancedANGLE);
     #endif
 
     /* GL_APPLE_framebuffer_multisample */
@@ -227,6 +242,12 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.DisableiEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(glDisableiEXT);
     flextGL.EnableiEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(glEnableiEXT);
     flextGL.IsEnablediEXT = reinterpret_cast<GLboolean(APIENTRY*)(GLenum, GLuint)>(glIsEnablediEXT);
+    #endif
+
+    /* GL_EXT_draw_elements_base_vertex */
+    #if GL_EXT_draw_elements_base_vertex
+    flextGL.DrawElementsBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLint)>(glDrawElementsBaseVertexEXT);
+    flextGL.MultiDrawElementsBaseVertexEXT = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei, const GLint *)>(glMultiDrawElementsBaseVertexEXT);
     #endif
 
     /* GL_EXT_instanced_arrays */
@@ -400,6 +421,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextGL.FramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(glFramebufferSampleLocationsfvNV);
     flextGL.NamedFramebufferSampleLocationsfvNV = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(glNamedFramebufferSampleLocationsfvNV);
     flextGL.ResolveDepthValuesNV = reinterpret_cast<void(APIENTRY*)(void)>(glResolveDepthValuesNV);
+    #endif
+
+    /* GL_OES_draw_elements_base_vertex */
+    #if GL_OES_draw_elements_base_vertex
+    flextGL.DrawElementsBaseVertexOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLint)>(glDrawElementsBaseVertexOES);
     #endif
 
     /* GL_OES_mapbuffer */

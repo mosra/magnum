@@ -134,8 +134,12 @@ class MAGNUM_GL_EXPORT MeshView {
          * @cpp 0 @ce.
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
-         * @requires_gles32 Base vertex cannot be specified for indexed meshes
-         *      in OpenGL ES 3.1 or WebGL.
+         * @requires_es_extension Extension @gl_extension{OES,draw_elements_base_vertex}
+         *      or @gl_extension{EXT,draw_elements_base_vertex} for indexed
+         *      meshes on OpenGL ES 3.1 and older
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
+         *      for indexed meshes
          */
         MeshView& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
@@ -201,7 +205,7 @@ class MAGNUM_GL_EXPORT MeshView {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /** @brief Base instance */
         UnsignedInt baseInstance() const { return _baseInstance; }
 
@@ -212,8 +216,10 @@ class MAGNUM_GL_EXPORT MeshView {
          * Ignored when calling @ref AbstractShaderProgram::drawTransformFeedback().
          * Default is @cpp 0 @ce.
          * @requires_gl42 Extension @gl_extension{ARB,base_instance}
-         * @requires_gl Base instance cannot be specified in OpenGL ES or
-         *      WebGL.
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt)
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
          */
         MeshView& setBaseInstance(UnsignedInt baseInstance) {
             _baseInstance = baseInstance;
@@ -257,16 +263,23 @@ class MAGNUM_GL_EXPORT MeshView {
         friend AbstractShaderProgram;
         friend Implementation::MeshState;
 
-        #ifndef MAGNUM_TARGET_WEBGL
         static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
-        #endif
+        #ifdef MAGNUM_TARGET_GLES
         static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
+        #endif
+
+        #ifdef MAGNUM_TARGET_GLES
+        #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 20005
+        static MAGNUM_GL_LOCAL void multiDrawElementsBaseVertexImplementationANGLE(GLenum mode, const GLsizei* count, GLenum type, const void* const* indices, GLsizei drawCount, const GLint* baseVertex);
+        #endif
+        static MAGNUM_GL_LOCAL void     multiDrawElementsBaseVertexImplementationAssert(GLenum, const GLsizei*, GLenum, const void* const*, GLsizei, const GLint*);
+        #endif
 
         Containers::Reference<Mesh> _original;
 
         bool _countSet{};
         Int _count{}, _baseVertex{}, _instanceCount{1};
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         UnsignedInt _baseInstance{};
         #endif
         GLintptr _indexOffset{};

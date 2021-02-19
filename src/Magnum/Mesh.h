@@ -240,38 +240,38 @@ In case of OpenGL, corresponds to @ref GL::MeshIndexType and is convertible to
 it using @ref GL::meshIndexType(). See documentation of each value for more
 information about the mapping.
 
-In case of Vulkan, corresponds to @type_vk_keyword{IndexType} and is
-convertible to it using @ref Vk::vkIndexType(). See documentation of each value
-for more information about the mapping. Note that not every type is available
-there, use @ref Vk::hasVkIndexType() to check for its presence.
+In case of Vulkan, corresponds to @ref Vk::MeshIndexType and is convertible to
+it using @ref Vk::meshIndexType(). See documentation of each value for more
+information about the mapping.
 @see @ref meshIndexTypeSize()
 */
 enum class MeshIndexType: UnsignedByte {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
-     * Unsigned byte
+     * @relativeref{Magnum,UnsignedByte}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedByte /
-     * @val_vk_keyword{INDEX_TYPE_UINT8_EXT,IndexType}. Note that using this
-     * type is discouraged, at least AMD GPUs are known to suggest (via debug
-     * output) using 16-byte types instead for better efficiency.
+     * @ref Vk::MeshIndexType::UnsignedByte. Even though OpenGL supports this
+     * type and Vulkan can as well via an extension, using this type is
+     * discouraged on contemporary GPU architectures. Prefer using 16-bit
+     * indices instead.
      */
     UnsignedByte = 1,
 
     /**
-     * Unsigned short
+     * @relativeref{Magnum,UnsignedShort}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedShort /
-     * @val_vk_keyword{INDEX_TYPE_UINT16,IndexType}.
+     * @ref Vk::MeshIndexType::UnsignedShort.
      */
     UnsignedShort,
 
     /**
-     * Unsigned int
+     * @relativeref{Magnum,UnsignedInt}.
      *
      * Corresponds to @ref GL::MeshIndexType::UnsignedInt /
-     * @val_vk_keyword{INDEX_TYPE_UINT32,IndexType}.
+     * @ref Vk::MeshIndexType::UnsignedInt.
      */
     UnsignedInt
 };

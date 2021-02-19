@@ -840,9 +840,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Draw multiple meshes at once
          * @m_since{2020,06}
          *
-         * In OpenGL ES, if @gl_extension{EXT,multi_draw_arrays} is not
-         * present, the functionality is emulated using a sequence of
-         * @ref draw(MeshView&) calls.
+         * On OpenGL ES, if neither @gl_extension{EXT,multi_draw_arrays} nor
+         * @m_class{m-doc-external} [ANGLE_multi_draw](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_multi_draw.txt)
+         * is present, and on WebGL if @webgl_extension{WEBGL,multi_draw} is
+         * not present, the functionality is emulated using a sequence of
+         * @ref draw(MeshView&) calls. Note that @webgl_extension{WEBGL,multi_draw}
+         * is only implemented since Emscripten 2.0.0, so it's not even
+         * advertised on older versions.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0),
          * OpenGL ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in
@@ -859,8 +863,14 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref MeshView::baseVertex() is not
          *      `0`
-         * @requires_gl Specifying base vertex for indexed meshes is not
-         *      available in OpenGL ES or WebGL.
+         * @requires_es_extension OpenGL ES 3.0 and extension
+         *      @gl_extension{OES,draw_elements_base_vertex} or
+         *      @gl_extension{EXT,draw_elements_base_vertex} if the mesh is
+         *      indexed and @ref MeshView::baseVertex() is not `0`
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,multi_draw_instanced_base_vertex_base_instance}
+         *      if the mesh is indexed and @ref MeshView::baseVertex() is not
+         *      `0`
          */
         void draw(Containers::ArrayView<const Containers::Reference<MeshView>> meshes);
 
@@ -1341,6 +1351,14 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifdef CORRADE_TARGET_WINDOWS
         void MAGNUM_GL_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
         #endif
+        #endif
+
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
         #endif
 
         void use();

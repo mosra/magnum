@@ -33,6 +33,8 @@
 #include "Magnum/Implementation/converterUtilities.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/ShaderTools/AbstractConverter.h"
+#include "Magnum/ShaderTools/Stage.h"
+#include "Magnum/ShaderTools/Implementation/spirv.h"
 
 namespace Magnum {
 
@@ -62,10 +64,10 @@ information.
 @code{.sh}
 magnum-shaderconverter [-h|--help] [--validate] [--link]
     [-C|--converter NAME]... [--plugin-dir DIR]
-    [-c|--converter-options key=val,key2=val2,…]... [-q|--quiet] [-v|--verbose]
-    [--warning-as-error] [-E|--preprocess-only] [-D|--define name=value]...
-    [-U|--undefine name]... [-O|--optimize LEVEL] [-g|--debug-info LEVEL]
-    [--input-format glsl|spv|spvasm|hlsl|metal]...
+    [-c|--converter-options key=val,key2=val2,…]... [--info] [-q|--quiet]
+    [-v|--verbose] [--warning-as-error] [-E|--preprocess-only]
+    [-D|--define name=value]... [-U|--undefine name]... [-O|--optimize LEVEL]
+    [-g|--debug-info LEVEL] [--input-format glsl|spv|spvasm|hlsl|metal]...
     [--output-format glsl|spv|spvasm|hlsl|metal]...
     [--input-version VERSION]... [--output-version VERSION]...
     [--] input... output
@@ -74,9 +76,10 @@ magnum-shaderconverter [-h|--help] [--validate] [--link]
 Arguments:
 
 -   `input` --- input file(s)
--   `output` --- output file, ignored if `--validate` is present. If neither
-    `--validate` nor `--link` is present, corresponds to the
-    @ref ShaderTools::AbstractConverter::convertFileToFile() function.
+-   `output` --- output file; ignored if `--info` is present, disallowed for
+    `--validate`. If neither `--info`, `--validate` nor `--link` is present,
+    corresponds to the @ref ShaderTools::AbstractConverter::convertFileToFile()
+    function.
 -   `-h`, `--help` --- display this help message and exit
 -   `--validate` --- validate input. Corresponds to the
     @ref ShaderTools::AbstractConverter::validateFile() function.
@@ -86,6 +89,7 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter(s)
+-   `--info` --- print SPIR-V module info and exit
 -   `-q`, `--quiet` --- quiet output from converter plugin(s). Corresponds to
     the @ref ShaderTools::ConverterFlag::Quiet flag.
 -   `-v`, `--verbose` --- verbose output from converter plugin(s). Corresponds
@@ -169,15 +173,71 @@ magnum-shaderconverter phong.frag -DDIFFUSE_TEXTURE -DNORMAL_TEXTURE --input-ver
 using namespace Corrade::Containers::Literals;
 using namespace Magnum;
 
+namespace {
+
+ShaderTools::Stage spvExecutionModelToStage(const SpvExecutionModel model) {
+    switch(model) {
+        #define _c(model, stage) case SpvExecutionModel ## model: return ShaderTools::Stage::stage;
+        _c(Vertex, Vertex)
+        _c(Fragment, Fragment)
+        _c(Geometry, Geometry)
+        _c(TessellationControl, TessellationControl)
+        _c(TessellationEvaluation, TessellationEvaluation)
+        _c(GLCompute, Compute)
+        _c(RayGenerationKHR, RayGeneration)
+        _c(AnyHitKHR, RayAnyHit)
+        _c(ClosestHitKHR, RayClosestHit)
+        _c(MissKHR, RayMiss)
+        _c(IntersectionKHR, RayIntersection)
+        _c(CallableKHR, RayCallable)
+        _c(TaskNV, MeshTask)
+        _c(MeshNV, Mesh)
+        _c(Kernel, Kernel)
+        #undef _c
+
+        case SpvExecutionModelMax: break;
+    }
+
+    /* Encode unknown stages with the highest bit set. SpvExecutionModelMax is
+       0x7fffffff, so this shouldn't lead to any data loss. */
+    return ShaderTools::Stage((1u << 31)|model);
+}
+
+void printSpirvInfo(Containers::ArrayView<const UnsignedInt> data) {
+    while(Containers::Optional<ShaderTools::Implementation::SpirvEntrypoint> entrypoint = ShaderTools::Implementation::spirvNextEntrypoint(data)) {
+        Debug d;
+        d << "Entrypoint" << entrypoint->name << "(" << Debug::nospace << spvExecutionModelToStage(entrypoint->executionModel) << Debug::nospace << ")" << Debug::newline;
+
+        Containers::Array<ShaderTools::Implementation::SpirvEntrypointInterface> interface{Containers::ValueInit, entrypoint->interfaces.size()};
+        ShaderTools::Implementation::spirvEntrypointInterface(data, *entrypoint, interface);
+        for(const ShaderTools::Implementation::SpirvEntrypointInterface& i: interface) {
+            d << "   ";
+            if(!i.storageClass) d << "(unknown)";
+            else if(*i.storageClass == SpvStorageClassInput)
+                d << "in";
+            else if(*i.storageClass == SpvStorageClassOutput)
+                d << "out";
+            else d << "SpvStorageClass(" << Debug::nospace << *i.storageClass << Debug::nospace << ")";
+
+            if(i.location) d << "(location=" << Debug::nospace << *i.location << Debug::nospace << ")";
+
+            d << Debug::newline;
+        }
+    }
+}
+
+}
+
 int main(int argc, char** argv) {
     Utility::Arguments args;
     args.addArrayArgument("input").setHelp("input", "input file(s)")
-        .addArgument("output").setHelp("output", "output file, ignored if --validate is present")
+        .addArgument("output").setHelp("output", "output file; ignored if --info is present, disallowed for --validate")
         .addBooleanOption("validate").setHelp("validate", "validate input")
         .addBooleanOption("link").setHelp("link", "link multiple input files together")
         .addArrayOption('C', "converter").setHelp("converter", "shader converter plugin(s)")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addArrayOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter(s)", "key=val,key2=val2,…")
+        .addBooleanOption("info").setHelp("info", "print SPIR-V module info and exit")
         .addBooleanOption('q', "quiet").setHelp("quiet", "quiet output from converter plugin(s)")
         .addBooleanOption('v', "verbose").setHelp("verbose", "verbose output from converter plugin(s)")
         .addBooleanOption("warning-as-error").setHelp("warning-as-error", "treat warnings as errors")
@@ -192,14 +252,20 @@ int main(int argc, char** argv) {
         .addArrayOption("input-version").setHelp("input-version", "input format version for each converter", "VERSION")
         .addArrayOption("output-version").setHelp("output-version", "output format version for each converter", "VERSION")
         .setParseErrorCallback([](const Utility::Arguments& args, Utility::Arguments::ParseError error, const std::string& key) {
-            /* If --validate is passed, we don't need the output argument */
+            /* If --info / --validate is passed, we don't need the output
+               argument */
             if(error == Utility::Arguments::ParseError::MissingArgument &&
-                key == "output" && args.isSet("validate")) return true;
+               key == "output" && (args.isSet("info") || args.isSet("validate")))
+                return true;
 
             /* Handle all other errors as usual */
             return false;
         })
         .setGlobalHelp(R"(Converts, compiles, optimizes and links shaders of different formats.
+
+If --info is given and the input looks like a SPIR-V binary, the utility prints
+information about its entrypoints using builtin SPIR-V reflection capabilities.
+If it's not a SPIR-V binary, it's converted to it first.
 
 If --validate is given, the utility will validate the input file using passed
 --converter (or AnyShaderConverter if none is specified), print the validation
@@ -231,11 +297,17 @@ see documentation of a particular converter for more information.)")
         .parse(argc, argv);
 
     /* Generic checks */
-    if(args.isSet("validate")) {
-        if(!args.value<Containers::StringView>("output").isEmpty()) {
-            Error{} << "Output file shouldn't be set for --validate";
+    if(!args.value<Containers::StringView>("output").isEmpty()) {
+        if(args.isSet("validate")) {
+            Error{} << "Output file shouldn't be set for --validate:" << args.value<Containers::StringView>("output");
             return 1;
         }
+
+        /* Not an error in this case, it should be possible to just append
+           --info to existing command line without having to remove anything.
+           But print a warning at least, it could also be a mistyped option. */
+        if(args.isSet("info"))
+            Warning{} << "Ignoring output file for --info:" << args.value<Containers::StringView>("output");
     }
     if(!args.isSet("link"))  {
         if(args.arrayValueCount("input") != 1) {
@@ -263,6 +335,17 @@ see documentation of a particular converter for more information.)")
         return 6;
     }
 
+    /* If we want just SPIR-V info and the input looks like a SPIR-V binary,
+       do that right away without going through any plugin. If it doesn't, we
+       try again after using a converter.s */
+    if(args.isSet("info")) {
+        const Containers::Array<char> data = Utility::Directory::read(args.arrayValue("input", 0));
+        if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size())) {
+            printSpirvInfo(spirv);
+            return 0;
+        }
+    }
+
     /* Set up a converter manager */
     PluginManager::Manager<ShaderTools::AbstractConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
@@ -285,8 +368,11 @@ see documentation of a particular converter for more information.)")
         if(i < args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
 
-        /* Parse format, if passed */
+        /* Parse format, if passed. If --info is desired, implicitly set the
+           output format to SPIR-V */
         ShaderTools::Format inputFormat{}, outputFormat{};
+        if(args.isSet("info"))
+            outputFormat = ShaderTools::Format::Spirv;
         auto parseFormat = [](Containers::StringView format) -> Containers::Optional<ShaderTools::Format> {
             if(format == ""_s) return ShaderTools::Format::Unspecified;
             if(format == "glsl"_s) return ShaderTools::Format::Glsl;
@@ -334,7 +420,7 @@ see documentation of a particular converter for more information.)")
         Containers::Array<std::pair<ShaderTools::Stage, Containers::StringView>> linkInputs;
         if(i == 0) {
             if((args.isSet("preprocess-only") || args.arrayValueCount("define") || args.arrayValueCount("undefine"))) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::Preprocess)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::Preprocess)) {
                     Error{} << "The -E / -D / -U options are set, but" << converterName << "doesn't support preprocessing";
                     return 10;
                 }
@@ -359,7 +445,7 @@ see documentation of a particular converter for more information.)")
             }
 
             if(!args.value<Containers::StringView>("optimize").isEmpty()) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::Optimize)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::Optimize)) {
                     Error{} << "The -O option is set, but" << converterName << "doesn't support optimization";
                     return 11;
                 }
@@ -368,7 +454,7 @@ see documentation of a particular converter for more information.)")
             }
 
             if(!args.value<Containers::StringView>("debug-info").isEmpty()) {
-                if(!(converter->features() & ShaderTools::ConverterFeature::DebugInfo)) {
+                if(!(converter->features() >= ShaderTools::ConverterFeature::DebugInfo)) {
                     Error{} << "The -g option is set, but" << converterName << "doesn't support debug info";
                     return 12;
                 }
@@ -386,6 +472,32 @@ see documentation of a particular converter for more information.)")
 
         converter->setFlags(flags);
 
+        /* If we want just SPIR-V info, convert to a SPIR-V and exit */
+        if(args.isSet("info")) {
+            /* The info exits right after, so this branch shouldn't get
+               re-entered again */
+            CORRADE_INTERNAL_ASSERT(i == 0);
+
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ConvertData)) {
+                Error{} << converterName << "doesn't support data conversion";
+                return 18; /* same code as the same message below */
+            }
+
+            if(!(data = converter->convertFileToData(ShaderTools::Stage::Unspecified, args.arrayValue<Containers::StringView>("input", 0)))) {
+                Error{} << "Cannot convert" << args.arrayValue<Containers::StringView>("input", 0);
+                return 20; /* same code as the same message below */
+            }
+
+            Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(data, data.size());
+            if(!spirv) {
+                Error{} << "The output is not a SPIR-V binary, can't print info";
+                return 23;
+            }
+
+            printSpirvInfo(spirv);
+            return 0;
+        }
+
         /* If validating, do it just with the first passed converter and then
            exit */
         if(args.isSet("validate")) {
@@ -393,7 +505,7 @@ see documentation of a particular converter for more information.)")
                re-entered again */
             CORRADE_INTERNAL_ASSERT(i == 0);
 
-            if(!(converter->features() & ShaderTools::ConverterFeature::ValidateFile)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ValidateFile)) {
                 Error{} << converterName << "doesn't support file validation";
                 return 13;
             }
@@ -416,7 +528,7 @@ see documentation of a particular converter for more information.)")
 
         /* This is the first *and* last --converter, go from a file to a file */
         if(i == 0 && converterCount <= 1) {
-            if(!(converter->features() & ShaderTools::ConverterFeature::ConvertFile)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ConvertFile)) {
                 Error{} << converterName << "doesn't support file conversion";
                 return 15;
             }
@@ -440,7 +552,7 @@ see documentation of a particular converter for more information.)")
 
         /* Otherwise we need to go through data */
         } else {
-            if(!(converter->features() & ShaderTools::ConverterFeature::ConvertData)) {
+            if(!(converter->features() >= ShaderTools::ConverterFeature::ConvertData)) {
                 Error{} << converterName << "doesn't support data conversion";
                 return 18;
             }

@@ -55,6 +55,7 @@ set(MagnumVk_GracefulAssert_SRCS
     ImageView.cpp
     Instance.cpp
     LayerProperties.cpp
+    Mesh.cpp
     MeshLayout.cpp
     Memory.cpp
     Pipeline.cpp
@@ -93,6 +94,7 @@ set(MagnumVk_HEADERS
     LayerProperties.h
     Memory.h
     MemoryAllocateInfo.h
+    Mesh.h
     MeshLayout.h
     Pipeline.h
     PipelineLayout.h

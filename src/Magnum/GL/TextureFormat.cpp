@@ -64,8 +64,10 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         _c(RGBA8)
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
+        #ifndef MAGNUM_TARGET_GLES2
         _c(SR8)
-        #ifdef MAGNUM_TARGET_GLES
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
         _c(SRG8)
         #endif
         #endif

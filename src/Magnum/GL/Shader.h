@@ -652,6 +652,11 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
         #endif
 
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        #endif
+
         Type _type;
         GLuint _id;
 

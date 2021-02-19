@@ -84,6 +84,12 @@ CommandBuffer& CommandBuffer::begin(const CommandBufferBeginInfo& info) {
 }
 
 void CommandBuffer::end() {
+    /* Clear everything that is valid only for the duration of this command
+       buffer recording -- so when the user calls reset() and begin() again,
+       the old values are not preserved */
+    /** @todo do this on begin() too? */
+    _dynamicRasterizationStates = {};
+
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS((**_device).EndCommandBuffer(_handle));
 }
 

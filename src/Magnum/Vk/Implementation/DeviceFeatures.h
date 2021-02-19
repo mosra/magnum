@@ -61,6 +61,8 @@ struct DeviceFeatures {
     VkPhysicalDeviceHostQueryResetFeatures hostQueryReset;
     VkPhysicalDeviceIndexTypeUint8FeaturesEXT indexTypeUint8;
     VkPhysicalDeviceExtendedDynamicStateFeaturesEXT extendedDynamicState;
+    VkPhysicalDeviceRobustness2FeaturesEXT robustness2;
+    VkPhysicalDeviceImageRobustnessFeaturesEXT imageRobustness;
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipeline;
     VkPhysicalDeviceRayQueryFeaturesKHR rayQuery;
 };

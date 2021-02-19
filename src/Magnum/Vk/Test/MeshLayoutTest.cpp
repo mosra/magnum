@@ -57,6 +57,8 @@ struct MeshLayoutTest: TestSuite::Tester {
     template<class T> void addAttribute();
     void addAttributeWrongOrder();
 
+    void rvalue();
+
     void compare();
     void compareExternalPointers();
 
@@ -83,6 +85,8 @@ MeshLayoutTest::MeshLayoutTest() {
               &MeshLayoutTest::addAttribute<VertexFormat>,
               &MeshLayoutTest::addAttribute<Magnum::VertexFormat>,
               &MeshLayoutTest::addAttributeWrongOrder,
+
+              &MeshLayoutTest::rvalue,
 
               &MeshLayoutTest::compare,
               &MeshLayoutTest::compareExternalPointers,
@@ -381,6 +385,19 @@ void MeshLayoutTest::addAttributeWrongOrder() {
     layout.addAttribute(5, 25, VertexFormat{}, 1);
     CORRADE_COMPARE(out.str(),
         "Vk::MeshLayout::addAttribute(): location 5 can't be ordered after 5\n");
+}
+
+void MeshLayoutTest::rvalue() {
+    MeshLayout&& layout = MeshLayout{MeshPrimitive::TriangleFan}
+        .addBinding(0, 37)
+        .addInstancedBinding(1, 26)
+        .addAttribute(0, 0, VertexFormat{}, 0)
+        .addAttribute(1, 1, Magnum::VertexFormat::Vector2, 0);
+
+    /* Just to test something, main point is that the above compiles, links and
+       returns a &&. Can't test anything related to the contents because the
+       destructor gets called at the end of the expression. */
+    CORRADE_VERIFY(&layout);
 }
 
 void MeshLayoutTest::compare() {

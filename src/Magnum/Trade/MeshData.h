@@ -690,7 +690,7 @@ to map custom @ref MeshAttribute values to human-readable string names using
 @ref AbstractImporter::meshAttributeName() and
 @ref AbstractImporter::meshAttributeForName(). Using @ref meshPrimitiveWrap()
 you can also supply implementation-specific values that are not available in
-the generic @ref MeshPrimitive enum, similarly see also
+the generic @relativeref{Magnum,MeshPrimitive} enum, similarly see also
 @ref Trade-MeshAttributeData-custom-vertex-format for details on
 implementation-specific @ref VertexFormat values.
 @see @ref AbstractImporter::mesh()

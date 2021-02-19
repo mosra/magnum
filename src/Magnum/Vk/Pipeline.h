@@ -30,6 +30,7 @@
  * @m_since_latest
  */
 
+#include <Corrade/Containers/BigEnumSet.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
@@ -116,6 +117,9 @@ class MAGNUM_VK_EXPORT Pipeline {
          * @param bindPoint         Pipeline bind point. Available through
          *      @ref bindPoint() afterwards.
          * @param handle            The @type_vk{Pipeline} handle
+         * @param dynamicStates     Dynamic states enabled on the rasterization
+         *      pipeline. Available through @ref dynamicRasterizationStates()
+         *      afterwards.
          * @param flags             Handle flags
          *
          * The @p handle is expected to be originating from @p device. Unlike
@@ -124,6 +128,8 @@ class MAGNUM_VK_EXPORT Pipeline {
          * different behavior.
          * @see @ref release()
          */
+        static Pipeline wrap(Device& device, PipelineBindPoint bindPoint, VkPipeline handle, const DynamicRasterizationStates& dynamicStates, HandleFlags flags = {});
+        /** @overload */
         static Pipeline wrap(Device& device, PipelineBindPoint bindPoint, VkPipeline handle, HandleFlags flags = {});
 
         /**
@@ -194,6 +200,15 @@ class MAGNUM_VK_EXPORT Pipeline {
         PipelineBindPoint bindPoint() const { return _bindPoint; }
 
         /**
+         * @brief Dynamic rasterization states enabled in this pipeline
+         *
+         * Contains the states passed to @ref RasterizationPipelineCreateInfo::setDynamicStates()
+         * or to the @ref wrap() call. Expects that @ref bindPoint() is
+         * @ref PipelineBindPoint::Rasterization.
+         */
+        DynamicRasterizationStates dynamicRasterizationStates() const;
+
+        /**
          * @brief Release the underlying Vulkan pipeline
          *
          * Releases ownership of the Vulkan pipeline and returns its
@@ -210,6 +225,9 @@ class MAGNUM_VK_EXPORT Pipeline {
         VkPipeline _handle;
         PipelineBindPoint _bindPoint;
         HandleFlags _flags;
+        union {
+            DynamicRasterizationStates rasterization;
+        } _dynamicStates;
 };
 
 /**
@@ -317,9 +335,9 @@ enum class PipelineStage: UnsignedInt {
     RayTracingShader = VK_PIPELINE_STAGE_RAY_TRACING_SHADER_BIT_KHR,
 
     /**
-     * Execution of all graphics stages. While numerically a single bit, it's
-     * equivalent to the logical OR of a supported and enabled subset of the
-     * following:
+     * Execution of all rasterization stages. While numerically a single bit,
+     * it's equivalent to the logical OR of a supported and enabled subset of
+     * the following:
      *
      * -    @ref PipelineStage::DrawIndirect
      * -    @ref PipelineStage::VertexInput
@@ -332,12 +350,23 @@ enum class PipelineStage: UnsignedInt {
      * -    @ref PipelineStage::LateFragmentTests
      * -    @ref PipelineStage::ColorAttachmentOutput
      *
-     * Note that this *does not* include @ref PipelineStage::RayTracingShader
-     * or @ref PipelineStage::AccelerationStructureBuild.
+     * As the name suggests, this *does not* include
+     * @ref PipelineStage::RayTracingShader or
+     * @ref PipelineStage::AccelerationStructureBuild.
+     * @todo mention mesh / task shaders once exposed
      */
-    AllGraphics = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
+    AllRasterization = VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT,
 
-    /** All commands */
+    /**
+     * All commands.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
+     */
     AllCommands = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT
 };
 
@@ -505,6 +534,13 @@ enum class Access: UnsignedInt {
     /**
      * All read accesses. Valid for any @ref PipelineStage, treated as
      * equivalent of a combination of all `*Read` flags valid in given context.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
      */
     MemoryRead = VK_ACCESS_MEMORY_READ_BIT,
 
@@ -512,6 +548,13 @@ enum class Access: UnsignedInt {
      * All write accesses. Valid for any @ref PipelineStage, treated as
      * equivalent of a combination of all `*Write` flags valid in given
      * context.
+     *
+     * @m_class{m-note m-success}
+     *
+     * @par
+     *      To avoid pipeline stalls and unnecessary synchronization, it's not
+     *      advised to use this flag except for debugging synchronization
+     *      issues.
      */
     MemoryWrite = VK_ACCESS_MEMORY_WRITE_BIT,
 
@@ -596,7 +639,10 @@ class MAGNUM_VK_EXPORT MemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param destinationAccesses   Destination memory access types
          *      participating in a dependency
          *
@@ -654,7 +700,10 @@ class MAGNUM_VK_EXPORT BufferMemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param destinationAccesses   Destination memory access types
          *      participating in a dependency
          * @param buffer                A @ref Buffer or a raw Vulkan buffer
@@ -722,7 +771,10 @@ class MAGNUM_VK_EXPORT ImageMemoryBarrier {
         /**
          * @brief Constructor
          * @param sourceAccesses        Source memory access types
-         *      participating in a dependency
+         *      participating in a dependency. While allowed, passing `Read`
+         *      accesses here is redundant --- that's already taken care of by
+         *      the stage execution dependency in
+         *      @ref CommandBuffer::pipelineBarrier().
          * @param oldLayout             Old layout in an image layout
          *      transition
          * @param destinationAccesses   Destination memory access types

@@ -56,6 +56,10 @@ struct DeviceState {
     void(*cmdNextSubpassImplementation)(CommandBuffer&, const VkSubpassEndInfo&, const VkSubpassBeginInfo&);
     void(*cmdEndRenderPassImplementation)(CommandBuffer&, const VkSubpassEndInfo&);
 
+    VkResult(*createShaderImplementation)(Device&, const VkShaderModuleCreateInfo&, const VkAllocationCallbacks*, VkShaderModule&);
+
+    void(*cmdBindVertexBuffersImplementation)(CommandBuffer&, UnsignedInt, UnsignedInt, const VkBuffer*, const UnsignedLong*, const UnsignedLong*);
+
     void(*cmdCopyBufferImplementation)(CommandBuffer&, const CopyBufferInfo&);
     void(*cmdCopyImageImplementation)(CommandBuffer&, const CopyImageInfo&);
     void(*cmdCopyBufferToImageImplementation)(CommandBuffer&, const CopyBufferToImageInfo&);

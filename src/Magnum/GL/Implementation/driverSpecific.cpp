@@ -40,6 +40,13 @@ namespace {
 /* Search the code for the following strings to see where they are implemented. */
 const char* KnownWorkarounds[]{
 /* [workarounds] */
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+/* ANGLE's shader linker insists on returning a message consisting of a
+   single newline on success, causing annoying noise in the console. Similar to
+   "intel-windows-chatty-shader-compiler". */
+"angle-chatty-shader-compiler",
+#endif
+
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 /* Calling glBufferData(), glMapBuffer(), glMapBufferRange() or glUnmapBuffer()
    on ANY buffer when ANY buffer is attached to a currently bound
@@ -336,6 +343,10 @@ const char* KnownWorkarounds[]{
    MeshGLTest::addVertexBufferIntWithShort(). */
 "intel-windows-broken-dsa-integer-vertex-attributes",
 
+/* Shader compiler on Intel Windows drivers insists on telling me "No errors."
+   when it should just stay silent. See also "angle-chatty-shader-compiler". */
+"intel-windows-chatty-shader-compiler",
+
 /* When using more than just a vertex and fragment shader (geometry shader,
    e.g.), ARB_explicit_uniform_location on Intel silently uses wrong
    locations, blowing up with either a non-descript
@@ -379,38 +390,6 @@ const char* KnownWorkarounds[]{
 #endif
 /* [workarounds] */
 };
-
-}
-
-namespace Implementation {
-
-/* Used in Shader.cpp (duh) */
-bool isShaderCompilationLogEmpty(const std::string&);
-bool isShaderCompilationLogEmpty(const std::string& result) {
-    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    /* Intel Windows drivers are too chatty */
-    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
-        return true;
-    #else
-    static_cast<void>(result);
-    #endif
-
-    return false;
-}
-
-/* Used in AbstractShaderProgram.cpp (duh) */
-bool isProgramLinkLogEmpty(const std::string&);
-bool isProgramLinkLogEmpty(const std::string& result) {
-    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    /* Intel Windows drivers are too chatty */
-    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
-        return true;
-    #else
-    static_cast<void>(result);
-    #endif
-
-    return false;
-}
 
 }
 
@@ -558,6 +537,28 @@ void Context::setupDriverWorkarounds() {
     if((detectedDriver() & Context::DetectedDriver::ArmMali) &&
         std::getenv("SHELL") && !isDriverWorkaroundDisabled("arm-mali-timer-queries-oom-in-shell"))
         _setRequiredVersion(EXT::disjoint_timer_query, None);
+    #endif
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    /* The WEBGL_multi_draw entrypoints are only available since Emscripten
+       2.0.0: https://github.com/emscripten-core/emscripten/pull/11650
+       However, the extension is advertised even on older versions and we have
+       no way to link to those entrypoints there. */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20000
+    _setRequiredVersion(WEBGL::multi_draw, None);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    /* WEBGL_multi_draw_instanced_base_vertex_base_instance only since
+       Emscripten 2.0.5: https://github.com/emscripten-core/emscripten/pull/12282 */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 20005
+    _setRequiredVersion(WEBGL::multi_draw_instanced_base_vertex_base_instance, None);
+    #endif
+    /* WEBGL_draw_instanced_base_vertex_base_instance only since Emscripten
+       1.39.15: https://github.com/emscripten-core/emscripten/pull/11054 */
+    #if __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13915
+    _setRequiredVersion(WEBGL::draw_instanced_base_vertex_base_instance, None);
+    #endif
+    #endif
     #endif
 
     #undef _setRequiredVersion

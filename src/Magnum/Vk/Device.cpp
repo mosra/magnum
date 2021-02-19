@@ -191,10 +191,12 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
         }
 
-        /* Enable the KHR_copy_commands2 extension. Not in any Vulkan version
-           yet. */
+        /* Enable the KHR_copy_commands2 and EXT_extended_dynamic_state
+           extensions. Not in any Vulkan version yet. */
         if(extensionProperties->isSupported<Extensions::KHR::copy_commands2>())
             addEnabledExtensions<Extensions::KHR::copy_commands2>();
+        if(extensionProperties->isSupported<Extensions::EXT::extended_dynamic_state>())
+            addEnabledExtensions<Extensions::EXT::extended_dynamic_state>();
 
         /* Enable the KHR_portability_subset extension, which *has to be*
            enabled when available. Not enabling any of its features though,
@@ -412,6 +414,8 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
             _state->features.hostQueryReset,
             _state->features.indexTypeUint8,
             _state->features.extendedDynamicState,
+            _state->features.robustness2,
+            _state->features.imageRobustness,
             _state->features.rayTracingPipeline,
             _state->features.rayQuery
         });
@@ -533,6 +537,10 @@ DeviceCreateInfo& DeviceCreateInfo::setEnabledFeatures(const DeviceFeatures& fea
         _state->features.indexTypeUint8, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_EXT);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.extendedDynamicState, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.robustness2, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT);
+    structureConnectIfUsed(next, _state->firstEnabledFeature,
+        _state->features.imageRobustness, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ROBUSTNESS_FEATURES_EXT);
     structureConnectIfUsed(next, _state->firstEnabledFeature,
         _state->features.rayTracingPipeline, VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR);
     structureConnectIfUsed(next, _state->firstEnabledFeature,

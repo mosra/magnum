@@ -26,11 +26,14 @@
 #include "Shader.h"
 #include "ShaderCreateInfo.h"
 
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Algorithms.h>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Handle.h"
+#include "Magnum/Vk/Implementation/DeviceState.h"
+#include "Magnum/Vk/Implementation/spirvPatching.h"
 
 namespace Magnum { namespace Vk {
 
@@ -87,7 +90,7 @@ Shader Shader::wrap(Device& device, const VkShaderModule handle, const HandleFla
 }
 
 Shader::Shader(Device& device, const ShaderCreateInfo& info): _device{&device}, _flags{HandleFlag::DestroyOnDestruction} {
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateShaderModule(device, info, nullptr, &_handle));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device.state().createShaderImplementation(device, *info, nullptr, _handle));
 }
 
 Shader::Shader(NoCreateT): _device{}, _handle{} {}
@@ -113,6 +116,38 @@ VkShaderModule Shader::release() {
     const VkShaderModule handle = _handle;
     _handle = {};
     return handle;
+}
+
+VkResult Shader::createImplementationDefault(Device& device, const VkShaderModuleCreateInfo& info, const VkAllocationCallbacks* callbacks, VkShaderModule& handle) {
+    return device->CreateShaderModule(device, &info, callbacks, &handle);
+}
+
+VkResult Shader::createImplementationSwiftShaderMultiEntryPointPatching(Device& device, const VkShaderModuleCreateInfo& info, const VkAllocationCallbacks* callbacks, VkShaderModule& handle) {
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    VkShaderModuleCreateInfo patchedInfo(info);
+
+    /** @todo there's too many casts and it's all slightly weird, figure out a
+        better API (the problem is that spirvData() skips the header and so we
+        can't use its output to copy anything anywhere, but even if we could
+        we'd need to call it again on the copied mutable data and that's even
+        worse than what's there now) */
+
+    /* Even though our ShaderCreateInfo *might* have the code owned and we thus
+       might not need to copy it, the owned code may also be read-only for
+       whatever reason (memory-mapped location etc). Thus, to prevent issues,
+       we go the safe route and copy always. */
+    Containers::Array<char> mutableCode{Containers::NoInit, info.codeSize};
+    Utility::copy(Containers::arrayView(reinterpret_cast<const char*>(info.pCode), info.codeSize), mutableCode);
+
+    /* If the code looks like SPIR-V, patch it. If not, supply the original and
+       let SwiftShader deal with it. */
+    if(Containers::ArrayView<const UnsignedInt> spirv = ShaderTools::Implementation::spirvData(mutableCode, mutableCode.size())) {
+        Implementation::spirvPatchSwiftShaderConflictingMultiEntrypointLocations(spirv);
+        patchedInfo.pCode = reinterpret_cast<UnsignedInt*>(mutableCode.data());
+    }
+
+    return createImplementationDefault(device, patchedInfo, callbacks, handle);
 }
 
 }}

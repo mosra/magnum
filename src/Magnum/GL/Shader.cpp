@@ -48,11 +48,6 @@ typedef char GLchar;
 
 namespace Magnum { namespace GL {
 
-namespace Implementation {
-    /* defined in Implementation/driverSpecific.cpp */
-    bool isShaderCompilationLogEmpty(const std::string& result);
-}
-
 namespace {
 
 std::string shaderName(const Shader::Type type) {
@@ -786,11 +781,15 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
         glGetShaderiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
 
         /* Error or warning message. The string is returned null-terminated,
-           scrap the \0 at the end afterwards */
+           strip the \0 at the end afterwards. */
         std::string message(logLength, '\0');
         if(message.size() > 1)
             glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(Math::max(logLength, 1)-1);
+
+        /* Some drivers are chatty and can't keep shut when there's nothing to
+           be said, handle that as well. */
+        Context::current().state().shader->cleanLogImplementation(message);
 
         /* Show error log */
         if(!success) {
@@ -800,7 +799,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
-        } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
+        } else if(!message.empty()) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) out << i;
@@ -814,6 +813,14 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
 
     return allSuccess;
 }
+
+void Shader::cleanLogImplementationNoOp(std::string&) {}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+void Shader::cleanLogImplementationIntelWindows(std::string& message) {
+    if(message == "No errors.\n") message = {};
+}
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {

@@ -163,7 +163,8 @@ struct {
         "Device: {}\n"
         "Device version: Vulkan {}.{}{}\n"
         "Using device driver workarounds:\n"
-        "    swiftshader-image-copy-extent-instead-of-layers\n"},
+        "    swiftshader-image-copy-extent-instead-of-layers\n"
+        "    swiftshader-spirv-multi-entrypoint-conflicting-locations\n"},
     /* Shouldn't print anything if quiet output is enabled */
     {"quiet", true,
         Containers::array({"",
@@ -171,7 +172,7 @@ struct {
         ""},
     {"disabled workarounds", true,
         Containers::array({"",
-            "--magnum-disable-workarounds", "swiftshader-image-copy-extent-instead-of-layers"}),
+            "--magnum-disable-workarounds", "swiftshader-image-copy-extent-instead-of-layers swiftshader-spirv-multi-entrypoint-conflicting-locations"}),
         "Device: {}\n"
         "Device version: Vulkan {}.{}{}\n"}
 };

@@ -69,7 +69,9 @@ namespace {
 constexpr Extension DeviceExtensions[] {
     Extensions::EXT::debug_marker{},
     Extensions::EXT::extended_dynamic_state{},
+    Extensions::EXT::image_robustness{},
     Extensions::EXT::index_type_uint8{},
+    Extensions::EXT::robustness2{},
     Extensions::EXT::texture_compression_astc_hdr{},
     Extensions::EXT::vertex_attribute_divisor{},
     Extensions::IMG::format_pvrtc{},

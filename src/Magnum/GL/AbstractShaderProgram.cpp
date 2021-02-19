@@ -46,11 +46,6 @@
 
 namespace Magnum { namespace GL {
 
-namespace Implementation {
-    /* Defined in Implementation/driverSpecific.cpp */
-    bool isProgramLinkLogEmpty(const std::string& result);
-}
-
 Int AbstractShaderProgram::maxVertexAttributes() {
     GLint& value = Context::current().state().shaderProgram->maxVertexAttributes;
 
@@ -363,10 +358,8 @@ void AbstractShaderProgram::draw(Mesh& mesh) {
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
     #else
     mesh.drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif
@@ -380,10 +373,8 @@ void AbstractShaderProgram::draw(MeshView& mesh) {
 
     use();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._baseInstance, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
     #else
     mesh._original->drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
     #endif
@@ -508,11 +499,15 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
         glGetProgramiv(shader._id, GL_INFO_LOG_LENGTH, &logLength);
 
         /* Error or warning message. The string is returned null-terminated,
-           scrap the \0 at the end afterwards */
+           strip the \0 at the end afterwards. */
         std::string message(logLength, '\n');
         if(message.size() > 1)
             glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(Math::max(logLength, 1)-1);
+
+        /* Some drivers are chatty and can't keep shut when there's nothing to
+           be said, handle that as well. */
+        Context::current().state().shaderProgram->cleanLogImplementation(message);
 
         /* Show error log */
         if(!success) {
@@ -522,7 +517,7 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
-        } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
+        } else if(!message.empty()) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "GL::AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) out << "of shader" << i;
@@ -536,6 +531,20 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
 
     return allSuccess;
 }
+
+void AbstractShaderProgram::cleanLogImplementationNoOp(std::string&) {}
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+void AbstractShaderProgram::cleanLogImplementationIntelWindows(std::string& message) {
+    if(message == "No errors.\n") message = {};
+}
+#endif
+
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractShaderProgram::cleanLogImplementationAngle(std::string& message) {
+    if(message == "\n") message = {};
+}
+#endif
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     const GLint location = glGetUniformLocation(_id, name);

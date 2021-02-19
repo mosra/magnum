@@ -57,8 +57,10 @@ namespace Magnum { namespace ShaderTools {
 
 @m_keywords{AnyShaderConverter}
 
-Detects file type based on file extension, loads corresponding plugin and then
-tries to either validate or convert the file with it. Detected file formats:
+Loads a plugin corresponding to a format either explicitly set using
+@ref setInputFormat() / @ref setOutputFormat() or detected based on input /
+output file extension plugin and then tries to either validate or convert the
+file with it. These formats are detected based on extension:
 
 -   GLSL (`*.glsl`, `*.vert`, `*.frag`, `*.geom`, `*.comp`, `*.tesc`, `*.tese`,
     `*.rgen`, `*.rint`, `*.rahit`, `*.rchit`, `*.rmiss`, `*.rcall`, `*.mesh`,
@@ -86,7 +88,9 @@ Supported conversion paths:
 -   SPIR-V Assembly to SPIR-V Assembly, converted with any plugin that provides
     `SpirvAssemblyShaderConverter`
 
-Only validating and converting files is supported.
+There's format detection based on file contents, so the plugin has to either
+operate on files or @ref setInputFormat() / @ref setOutputFormat() has to be
+explicitly set.
 
 @section ShaderTools-AnyConverter-usage Usage
 
@@ -138,7 +142,10 @@ class MAGNUM_ANYSHADERCONVERTER_EXPORT AnyConverter: public AbstractConverter {
         MAGNUM_ANYSHADERCONVERTER_LOCAL void doSetOptimizationLevel(Containers::StringView level) override;
 
         MAGNUM_ANYSHADERCONVERTER_LOCAL std::pair<bool, Containers::String> doValidateFile(Stage stage, Containers::StringView filename) override;
+        MAGNUM_ANYSHADERCONVERTER_LOCAL std::pair<bool, Containers::String> doValidateData(Stage stage, Containers::ArrayView<const char> data) override;
         MAGNUM_ANYSHADERCONVERTER_LOCAL bool doConvertFileToFile(Stage stage, Containers::StringView from, Containers::StringView to) override;
+        MAGNUM_ANYSHADERCONVERTER_LOCAL Containers::Array<char> doConvertFileToData(Magnum::ShaderTools::Stage stage, Containers::StringView from) override;
+        MAGNUM_ANYSHADERCONVERTER_LOCAL Containers::Array<char> doConvertDataToData(Magnum::ShaderTools::Stage stage, Containers::ArrayView<const char> data) override;
 
         struct State;
         Containers::Pointer<State> _state;

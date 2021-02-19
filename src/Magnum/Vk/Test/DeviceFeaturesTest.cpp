@@ -95,14 +95,14 @@ void DeviceFeaturesTest::mapping() {
 
 void DeviceFeaturesTest::debugFeature() {
     std::ostringstream out;
-    Debug{&out} << DeviceFeature::FullDrawIndexUint32 << DeviceFeature::VulkanMemoryModel << DeviceFeature(0xab);
-    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUint32 Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
+    Debug{&out} << DeviceFeature::FullDrawIndexUnsignedInt << DeviceFeature::VulkanMemoryModel << DeviceFeature(0xab);
+    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUnsignedInt Vk::DeviceFeature::VulkanMemoryModel Vk::DeviceFeature(0xab)\n");
 }
 
 void DeviceFeaturesTest::debugFeatures() {
     std::ostringstream out;
-    Debug{&out} << (DeviceFeature::FullDrawIndexUint32|DeviceFeature::VulkanMemoryModel|DeviceFeature(0xab)|DeviceFeature(0xcc)) << DeviceFeatures{};
-    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUint32|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
+    Debug{&out} << (DeviceFeature::FullDrawIndexUnsignedInt|DeviceFeature::VulkanMemoryModel|DeviceFeature(0xab)|DeviceFeature(0xcc)) << DeviceFeatures{};
+    CORRADE_COMPARE(out.str(), "Vk::DeviceFeature::FullDrawIndexUnsignedInt|Vk::DeviceFeature::VulkanMemoryModel|Vk::DeviceFeature(0xab)|Vk::DeviceFeature(0xcc) Vk::DeviceFeatures{}\n");
 }
 
 }}}}

@@ -42,6 +42,7 @@ corrade_add_test(VkInstanceTest InstanceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkLayerPropertiesTest LayerPropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkMemoryTest MemoryTest.cpp LIBRARIES MagnumVkTestLib)
+corrade_add_test(VkMeshTest MeshTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkMeshLayoutTest MeshLayoutTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkPipelineTest PipelineTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkPipelineLayoutTest PipelineLayoutTest.cpp LIBRARIES MagnumVk)
@@ -49,7 +50,10 @@ corrade_add_test(VkPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumVkTestLib
 corrade_add_test(VkQueueTest QueueTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkRenderPassTest RenderPassTest.cpp LIBRARIES MagnumVkTestLib)
+
 corrade_add_test(VkShaderTest ShaderTest.cpp LIBRARIES MagnumVk)
+target_include_directories(VkShaderTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
 corrade_add_test(VkShaderSetTest ShaderSetTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkVertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumVkTestLib)
 
@@ -140,6 +144,7 @@ set_target_properties(
     VkIntegrationTest
     VkLayerPropertiesTest
     VkMemoryTest
+    VkMeshTest
     VkMeshLayoutTest
     VkPipelineTest
     VkPipelineLayoutTest
@@ -148,20 +153,41 @@ set_target_properties(
     VkResultTest
     VkRenderPassTest
     VkShaderTest
+    VkShaderSetTest
     VkStructureHelpersTest
     VkVersionTest
     VkVertexFormatTest
     PROPERTIES FOLDER "Magnum/Vk/Test")
 
 if(BUILD_VK_TESTS)
+    # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
+    find_package(Corrade REQUIRED PluginManager)
+
     if(CORRADE_TARGET_ANDROID)
         set(VK_TEST_DIR ".")
     else()
         set(VK_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+    # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
+    # Corrade doesn't support dynamic plugins on iOS, this sorta works around
+    # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
+    # has CMake 3.6).
+    if(NOT BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+        endif()
+        if(WITH_TGAIMPORTER)
+            set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+        endif()
+    endif()
+
+    # First replace ${} variables, then $<> generator expressions
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
     corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkCommandBufferVkTest CommandBufferVkTest.cpp LIBRARIES MagnumVulkanTester)
@@ -176,17 +202,37 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkImageViewVkTest ImageViewVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkInstanceVkTest InstanceVkTest.cpp LIBRARIES MagnumVkTestLib)
     corrade_add_test(VkMemoryVkTest MemoryVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+
+    corrade_add_test(VkMeshVkTest MeshVkTest.cpp
+        LIBRARIES MagnumVkTestLib MagnumDebugTools MagnumVulkanTester
+        FILES
+            MeshTestFiles/flat.spv
+            MeshTestFiles/flat.tga
+            MeshTestFiles/noop.spv
+            MeshTestFiles/noop.tga
+            MeshTestFiles/vertexcolor.spv
+            MeshTestFiles/vertexcolor.tga)
+    target_include_directories(VkMeshVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(VkMeshVkTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(VkMeshVkTest PRIVATE TgaImporter)
+        endif()
+    endif()
+
     corrade_add_test(VkPipelineVkTest PipelineVkTest.cpp
         LIBRARIES MagnumVkTestLib MagnumVulkanTester
         FILES triangle-shaders.spv compute-noop.spv)
-    target_include_directories(VkPipelineVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(VkPipelineVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     corrade_add_test(VkPipelineLayoutVkTest PipelineLayoutVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkQueueVkTest QueueVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkRenderPassVkTest RenderPassVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkShaderVkTest ShaderVkTest.cpp
         LIBRARIES MagnumVk MagnumVulkanTester
         FILES triangle-shaders.spv)
-    target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
 
     set_target_properties(
@@ -203,6 +249,7 @@ if(BUILD_VK_TESTS)
         VkImageViewVkTest
         VkInstanceVkTest
         VkMemoryVkTest
+        VkMeshVkTest
         VkPipelineVkTest
         VkPipelineLayoutVkTest
         VkQueueVkTest

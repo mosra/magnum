@@ -33,4 +33,4 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
 endif()
 set_target_properties(MagnumFlextVkObjects PROPERTIES FOLDER "MagnumExternal/Vulkan")
 
-install(FILES flextVk.h flextVkGlobal.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/Vulkan)
+install(FILES flextVk.h flextVkGlobal.h spirv.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/Vulkan)

@@ -38,10 +38,6 @@ namespace Magnum { namespace Vk { namespace Test { namespace {
 struct EnumsTest: TestSuite::Tester {
     explicit EnumsTest();
 
-    void mapVkIndexType();
-    void mapVkIndexTypeUnsupported();
-    void mapVkIndexTypeInvalid();
-
     void mapVkFilter();
     void mapVkFilterInvalid();
 
@@ -55,11 +51,7 @@ struct EnumsTest: TestSuite::Tester {
 };
 
 EnumsTest::EnumsTest() {
-    addTests({&EnumsTest::mapVkIndexType,
-              &EnumsTest::mapVkIndexTypeUnsupported,
-              &EnumsTest::mapVkIndexTypeInvalid,
-
-              &EnumsTest::mapVkFilter,
+    addTests({&EnumsTest::mapVkFilter,
               &EnumsTest::mapVkFilterInvalid,
 
               &EnumsTest::mapVkSamplerMipmapMode,
@@ -69,74 +61,6 @@ EnumsTest::EnumsTest() {
               &EnumsTest::mapVkSamplerAddressModeArray,
               &EnumsTest::mapVkSamplerAddressModeUnsupported,
               &EnumsTest::mapVkSamplerAddressModeInvalid});
-}
-
-void EnumsTest::mapVkIndexType() {
-    CORRADE_VERIFY(hasVkIndexType(Magnum::MeshIndexType::UnsignedShort));
-    CORRADE_COMPARE(vkIndexType(Magnum::MeshIndexType::UnsignedShort), VK_INDEX_TYPE_UINT16);
-
-    CORRADE_VERIFY(hasVkIndexType(Magnum::MeshIndexType::UnsignedInt));
-    CORRADE_COMPARE(vkIndexType(Magnum::MeshIndexType::UnsignedInt), VK_INDEX_TYPE_UINT32);
-
-    /* Ensure all generic index types are handled. This goes through the first
-       16 bits, which should be enough. Going through 32 bits takes 8 seconds,
-       too much. */
-    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
-        const auto type = Magnum::MeshIndexType(i);
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic error "-Wswitch"
-        #endif
-        switch(type) {
-            #define _c(type) \
-                case Magnum::MeshIndexType::type: \
-                    CORRADE_VERIFY(UnsignedInt(vkIndexType(Magnum::MeshIndexType::type)) >= 0); \
-                    break;
-            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
-            #undef _c
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #endif
-    }
-}
-
-void EnumsTest::mapVkIndexTypeUnsupported() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    #if 1
-    CORRADE_SKIP("All index formats are supported.");
-    #else
-    CORRADE_VERIFY(!hasVkIndexType(Magnum::MeshIndexType::UnsignedByte));
-    std::ostringstream out;
-    {
-        Error redirectError{&out};
-        vkIndexType(Magnum::MeshIndexType::UnsignedByte);
-    }
-    CORRADE_COMPARE(out.str(),
-        "Vk::vkIndexType(): unsupported type MeshIndexType::UnsignedByte\n");
-    #endif
-}
-
-void EnumsTest::mapVkIndexTypeInvalid() {
-    #ifdef CORRADE_NO_ASSERT
-    CORRADE_SKIP("CORRADE_NO_ASSERT defined, can't test assertions");
-    #endif
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    hasVkIndexType(Magnum::MeshIndexType(0x0));
-    hasVkIndexType(Magnum::MeshIndexType(0x12));
-    vkIndexType(Magnum::MeshIndexType(0x0));
-    vkIndexType(Magnum::MeshIndexType(0x12));
-    CORRADE_COMPARE(out.str(),
-        "Vk::hasVkIndexType(): invalid type MeshIndexType(0x0)\n"
-        "Vk::hasVkIndexType(): invalid type MeshIndexType(0x12)\n"
-        "Vk::vkIndexType(): invalid type MeshIndexType(0x0)\n"
-        "Vk::vkIndexType(): invalid type MeshIndexType(0x12)\n");
 }
 
 void EnumsTest::mapVkFilter() {

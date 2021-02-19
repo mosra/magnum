@@ -46,6 +46,7 @@ struct ShaderProgramState {
     #ifndef MAGNUM_TARGET_GLES2
     void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const std::string>, AbstractShaderProgram::TransformFeedbackBufferMode);
     #endif
+    void(*cleanLogImplementation)(std::string&);
 
     void(AbstractShaderProgram::*uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
     void(AbstractShaderProgram::*uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);

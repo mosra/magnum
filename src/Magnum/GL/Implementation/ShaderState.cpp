@@ -25,11 +25,10 @@
 
 #include "ShaderState.h"
 
-#include "Magnum/GL/Shader.h"
-
-#if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
+/* Needed only for Emscripten+pthread- / Windows+Intel-specific workarounds,
+   but I won't bother crafting the preprocessor logic for this. */
 #include "Magnum/GL/Context.h"
-#endif
+#include "Magnum/GL/Shader.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 
@@ -56,9 +55,18 @@ ShaderState::ShaderState(Context& context, std::vector<std::string>&):
         addSourceImplementation = &Shader::addSourceImplementationDefault;
     }
 
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) || !defined(__EMSCRIPTEN_PTHREADS__)
-    static_cast<void>(context);
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
+    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler")) {
+        cleanLogImplementation = &Shader::cleanLogImplementationIntelWindows;
+    } else
     #endif
+    {
+        cleanLogImplementation = &Shader::cleanLogImplementationNoOp;
+    }
+
+    /* Needed only if neither of these ifdefs above hits, but I won't bother
+       crafting the preprocessor logic for this. */
+    static_cast<void>(context);
 }
 
 }}}

@@ -29,6 +29,7 @@
 #include "CommandBuffer.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/BigEnumSet.hpp>
 
 #include "Magnum/Vk/Assert.h"
 #include "Magnum/Vk/Device.h"
@@ -42,7 +43,12 @@ namespace Magnum { namespace Vk {
 
 struct RasterizationPipelineCreateInfo::State {
     Containers::Array<VkPipelineColorBlendAttachmentState> colorBlendAttachments;
-    Containers::Array<VkDynamicState> dynamicStates;
+
+    /* The enum is saved as well to be subsequently available through
+       Pipeline::dynamicRasterizationStates() */
+    DynamicRasterizationStates dynamicStates;
+    Containers::Array<VkDynamicState> dynamicStateList;
+
     /** @todo make an array once we support multiview */
     VkViewport viewport;
     VkRect2D scissor;
@@ -241,21 +247,24 @@ constexpr VkDynamicState DynamicRasterizationStateMapping[]{
 }
 
 RasterizationPipelineCreateInfo& RasterizationPipelineCreateInfo::setDynamicStates(const DynamicRasterizationStates& states) {
+    /* Save the enum so we can store it in the created Pipeline object later */
+    _state->dynamicStates = states;
+
     /* Count the number of states set, allocate for that */
     std::size_t count = 0;
     for(std::size_t i = 0; i != DynamicRasterizationStates::Size; ++i)
         count += Math::popcount(states.data()[i]);
-    _state->dynamicStates = Containers::Array<VkDynamicState>{Containers::NoInit, count};
+    _state->dynamicStateList = Containers::Array<VkDynamicState>{Containers::NoInit, count};
 
     std::size_t offset = 0;
     for(std::uint64_t i = 0; i != Containers::arraySize(DynamicRasterizationStateMapping); ++i)
         if(states & DynamicRasterizationState(i))
-            _state->dynamicStates[offset++] = DynamicRasterizationStateMapping[i];
+            _state->dynamicStateList[offset++] = DynamicRasterizationStateMapping[i];
     CORRADE_INTERNAL_ASSERT(offset == count);
 
     _dynamicInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     _dynamicInfo.dynamicStateCount = count;
-    _dynamicInfo.pDynamicStates = _state->dynamicStates;
+    _dynamicInfo.pDynamicStates = _state->dynamicStateList;
     _info.pDynamicState = &_dynamicInfo;
     return *this;
 }
@@ -277,13 +286,18 @@ ComputePipelineCreateInfo::ComputePipelineCreateInfo(const VkComputePipelineCrea
        member instead of doing a copy */
     _info(info) {}
 
-Pipeline Pipeline::wrap(Device& device, const PipelineBindPoint bindPoint, const VkPipeline handle, const HandleFlags flags) {
+Pipeline Pipeline::wrap(Device& device, const PipelineBindPoint bindPoint, const VkPipeline handle, const DynamicRasterizationStates& dynamicStates, const HandleFlags flags) {
     Pipeline out{NoCreate};
     out._device = &device;
     out._handle = handle;
     out._bindPoint = bindPoint;
     out._flags = flags;
+    out._dynamicStates.rasterization = dynamicStates;
     return out;
+}
+
+Pipeline Pipeline::wrap(Device& device, const PipelineBindPoint bindPoint, const VkPipeline handle, const HandleFlags flags) {
+    return wrap(device, bindPoint, handle, DynamicRasterizationStates{}, flags);
 }
 
 Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
@@ -293,7 +307,8 @@ Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
     _handle{},
     #endif
     _bindPoint{PipelineBindPoint::Rasterization},
-    _flags{HandleFlag::DestroyOnDestruction}
+    _flags{HandleFlag::DestroyOnDestruction},
+    _dynamicStates{info._state->dynamicStates}
 {
     /* Doesn't check that the viewport is really a dynamic state, but should
        catch most cases without false positives */
@@ -303,13 +318,17 @@ Pipeline::Pipeline(Device& device, const RasterizationPipelineCreateInfo& info):
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateGraphicsPipelines(device, {}, 1, info, nullptr, &_handle));
 }
 
-Pipeline::Pipeline(Device& device, const ComputePipelineCreateInfo& info): _device{&device}, _bindPoint{PipelineBindPoint::Compute}, _flags{HandleFlag::DestroyOnDestruction} {
+Pipeline::Pipeline(Device& device, const ComputePipelineCreateInfo& info): _device{&device}, _bindPoint{PipelineBindPoint::Compute}, _flags{HandleFlag::DestroyOnDestruction}, _dynamicStates{} {
     MAGNUM_VK_INTERNAL_ASSERT_SUCCESS(device->CreateComputePipelines(device, {}, 1, info, nullptr, &_handle));
 }
 
-Pipeline::Pipeline(NoCreateT): _device{}, _handle{}, _bindPoint{} {}
+Pipeline::Pipeline(NoCreateT): _device{}, _handle{}, _bindPoint{}, _dynamicStates{} {}
 
-Pipeline::Pipeline(Pipeline&& other) noexcept: _device{other._device}, _handle{other._handle}, _bindPoint{other._bindPoint}, _flags{other._flags} {
+Pipeline::Pipeline(Pipeline&& other) noexcept: _device{other._device}, _handle{other._handle}, _bindPoint{other._bindPoint}, _flags{other._flags},
+    /* Can't use {} with GCC 4.8 here because it tries to initialize the first
+       member instead of doing a copy */
+    _dynamicStates(other._dynamicStates)
+{
     other._handle = {};
 }
 
@@ -324,7 +343,14 @@ Pipeline& Pipeline::operator=(Pipeline&& other) noexcept {
     swap(other._handle, _handle);
     swap(other._bindPoint, _bindPoint);
     swap(other._flags, _flags);
+    swap(other._dynamicStates, _dynamicStates);
     return *this;
+}
+
+DynamicRasterizationStates Pipeline::dynamicRasterizationStates() const {
+    CORRADE_ASSERT(_bindPoint == PipelineBindPoint::Rasterization,
+        "Vk::Pipeline::dynamicRasterizationStates(): not a rasterization pipeline", {});
+    return _dynamicStates.rasterization;
 }
 
 VkPipeline Pipeline::release() {
@@ -386,6 +412,10 @@ ImageMemoryBarrier::ImageMemoryBarrier(const VkImageMemoryBarrier& barrier):
     _barrier(barrier) {}
 
 CommandBuffer& CommandBuffer::bindPipeline(Pipeline& pipeline) {
+    /* Save the set of dynamic states for future use */
+    if(pipeline.bindPoint() == PipelineBindPoint::Rasterization)
+        _dynamicRasterizationStates = pipeline.dynamicRasterizationStates();
+
     (**_device).CmdBindPipeline(_handle, VkPipelineBindPoint(pipeline.bindPoint()), pipeline);
     return *this;
 }
@@ -449,6 +479,30 @@ Debug& operator<<(Debug& debug, const PipelineBindPoint value) {
 
     /* Vulkan docs have the values in decimal, so not converting to hex */
     return debug << "(" << Debug::nospace << Int(value) << Debug::nospace << ")";
+}
+
+namespace {
+
+constexpr const char* DynamicRasterizationStateNames[]{
+    #define _c(value, vkValue) #value,
+    #include "Magnum/Vk/Implementation/dynamicRasterizationStateMapping.hpp"
+    #undef _c
+};
+
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationState value) {
+    debug << "Vk::DynamicRasterizationState" << Debug::nospace;
+
+    if(UnsignedInt(value) < Containers::arraySize(DynamicRasterizationStateNames)) {
+        return debug << "::" << Debug::nospace << DynamicRasterizationStateNames[UnsignedInt(value)];
+    }
+
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value) {
+    return Containers::bigEnumSetDebugOutput(debug, value, "Vk::DynamicRasterizationStates{}");
 }
 
 }}

@@ -161,10 +161,10 @@ Wraps a @type_vk_keyword{QueueFlagBits}.
 @m_enum_values_as_keywords
 */
 enum class QueueFlag: UnsignedInt {
-    /** Supports graphics operations */
+    /** Supports general graphics and rasterization operations. */
     Graphics = VK_QUEUE_GRAPHICS_BIT,
 
-    /** Supports compute operations */
+    /** Supports compute and ray tracing operations. */
     Compute = VK_QUEUE_COMPUTE_BIT,
 
     /** Supports transfer operations */
@@ -492,6 +492,12 @@ class MAGNUM_VK_EXPORT DeviceProperties {
          * -    If the @vk_extension{EXT,extended_dynamic_state} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceExtendedDynamicStateFeaturesEXT}
+         * -    If the @vk_extension{EXT,robustness2} extension is supported by
+         *      the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceRobustness2FeaturesEXT}
+         * -    If the @vk_extension{EXT,image_robustness} extension is
+         *      supported by the device, the `pNext` chain contains
+         *      @type_vk_keyword{PhysicalDeviceImageRobustnessFeaturesEXT}
          * -    If the @vk_extension{KHR,ray_tracing_pipeline} extension is
          *      supported by the device, the `pNext` chain contains
          *      @type_vk_keyword{PhysicalDeviceRayTracingPipelineFeaturesKHR}

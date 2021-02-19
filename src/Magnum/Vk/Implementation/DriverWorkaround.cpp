@@ -47,6 +47,22 @@ constexpr Containers::StringView KnownWorkarounds[]{
    layer offset/count, but never in both, so the extra fields feel redundant.
    Or maybe it's reserving space for layered 3D images? */
 "swiftshader-image-copy-extent-instead-of-layers"_s,
+
+/* Multi-entrypoint SPIR-V modules that use the same location indices for
+   vertex outputs and fragment outputs (for example passing interpolated vertex
+   color through location 0 and having fragment output at location 0 as well)
+   will cause the fragment output to be always zero. Happens only when such a
+   multi-entrypoint SPIR-V module is used for the vertex shader, doesn't happen
+   with single-entrypoint modules. The fix is remapping the vertex/fragment
+   interface to not use the same location IDs as the fragment output. That
+   however causes SwiftShader to complain about zero format in the now-unused
+   location 0 such as
+
+    SwiftShader/src/Vulkan/VkFormat.cpp:1351 WARNING: UNSUPPORTED: Format: 0
+    SwiftShader/src/Pipeline/VertexRoutine.cpp:494 WARNING: UNSUPPORTED: stream.format 0
+
+   but apart from this noise everything works as expected. */
+"swiftshader-spirv-multi-entrypoint-conflicting-locations"_s,
 /* [workarounds] */
 };
 

@@ -84,6 +84,8 @@ struct PipelineTest: TestSuite::Tester {
     void imageMemoryBarrierConstructFromVk();
 
     void debugBindPoint();
+    void debugDynamicRasterizationState();
+    void debugDynamicRasterizationStates();
 };
 
 PipelineTest::PipelineTest() {
@@ -124,7 +126,9 @@ PipelineTest::PipelineTest() {
               &PipelineTest::imageMemoryBarrierConstructNoInit,
               &PipelineTest::imageMemoryBarrierConstructFromVk,
 
-              &PipelineTest::debugBindPoint});
+              &PipelineTest::debugBindPoint,
+              &PipelineTest::debugDynamicRasterizationState,
+              &PipelineTest::debugDynamicRasterizationStates});
 }
 
 using namespace Containers::Literals;
@@ -719,6 +723,18 @@ void PipelineTest::debugBindPoint() {
     std::ostringstream out;
     Debug{&out} << PipelineBindPoint::Compute << PipelineBindPoint(-10007655);
     CORRADE_COMPARE(out.str(), "Vk::PipelineBindPoint::Compute Vk::PipelineBindPoint(-10007655)\n");
+}
+
+void PipelineTest::debugDynamicRasterizationState() {
+    std::ostringstream out;
+    Debug{&out} << DynamicRasterizationState::VertexInputBindingStride << DynamicRasterizationState(0xab);
+    CORRADE_COMPARE(out.str(), "Vk::DynamicRasterizationState::VertexInputBindingStride Vk::DynamicRasterizationState(0xab)\n");
+}
+
+void PipelineTest::debugDynamicRasterizationStates() {
+    std::ostringstream out;
+    Debug{&out} << (DynamicRasterizationState::Viewport|DynamicRasterizationState::Scissor|DynamicRasterizationState(0x2a)|DynamicRasterizationState(0x3f)) << DynamicRasterizationStates{};
+    CORRADE_COMPARE(out.str(), "Vk::DynamicRasterizationState::Viewport|Vk::DynamicRasterizationState::Scissor|Vk::DynamicRasterizationState(0x2a)|Vk::DynamicRasterizationState(0x3f) Vk::DynamicRasterizationStates{}\n");
 }
 
 }}}}

@@ -32,6 +32,7 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Vk/MeshLayout.h"
+#include "Magnum/Vk/Mesh.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/VertexFormat.h"
 #endif
@@ -39,12 +40,6 @@
 namespace Magnum { namespace Vk {
 
 namespace {
-
-constexpr VkIndexType IndexTypeMapping[]{
-    VK_INDEX_TYPE_UINT8_EXT,
-    VK_INDEX_TYPE_UINT16,
-    VK_INDEX_TYPE_UINT32
-};
 
 constexpr VkFilter FilterMapping[]{
     VK_FILTER_NEAREST,
@@ -75,24 +70,15 @@ bool hasVkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
 VkPrimitiveTopology vkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
     return VkPrimitiveTopology(meshPrimitive(primitive));
 }
-#endif
 
-bool hasVkIndexType(const Magnum::MeshIndexType type) {
-    CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
-        "Vk::hasVkIndexType(): invalid type" << type, {});
-    return UnsignedInt(IndexTypeMapping[UnsignedInt(type) - 1]) != ~UnsignedInt{};
+bool hasVkIndexType(const Magnum::MeshIndexType) {
+    return true;
 }
 
 VkIndexType vkIndexType(const Magnum::MeshIndexType type) {
-    CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
-        "Vk::vkIndexType(): invalid type" << type, {});
-    const VkIndexType out = IndexTypeMapping[UnsignedInt(type) - 1];
-    CORRADE_ASSERT(out != VkIndexType(~UnsignedInt{}),
-        "Vk::vkIndexType(): unsupported type" << type, {});
-    return out;
+    return VkIndexType(meshIndexType(type));
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkFormat(const Magnum::VertexFormat format) {
     return hasVertexFormat(format);
 }
@@ -104,9 +90,7 @@ bool hasVkFormat(const Magnum::PixelFormat format) {
 bool hasVkFormat(const Magnum::CompressedPixelFormat format) {
     return hasPixelFormat(format);
 }
-#endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
 VkFormat vkFormat(const Magnum::VertexFormat format) {
     return VkFormat(vertexFormat(format));
 }

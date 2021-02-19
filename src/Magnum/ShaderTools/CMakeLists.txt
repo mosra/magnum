@@ -30,13 +30,18 @@ set(MagnumShaderTools_SRCS )
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumShaderTools_GracefulAssert_SRCS
-    AbstractConverter.cpp)
+    AbstractConverter.cpp
+    Stage.cpp)
 
 set(MagnumShaderTools_HEADERS
     AbstractConverter.h
     ShaderTools.h
+    Stage.h
 
     visibility.h)
+
+set(MagnumShaderTools_PRIVATE_HEADERS
+    Implementation/spirv.h)
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -46,7 +51,8 @@ endif()
 # # Objects shared between main and test library
 # add_library(MagnumShaderToolsObjects OBJECT
 #     ${MagnumShaderTools_SRCS}
-#     ${MagnumShaderTools_HEADERS})
+# #     ${MagnumShaderTools_HEADERS}
+# #     ${MagnumShaderTools_PRIVATE_HEADERS})
 # target_include_directories(MagnumShaderToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 # if(NOT BUILD_STATIC)
 #     target_compile_definitions(MagnumShaderToolsObjects PRIVATE "MagnumShaderToolsObjects_EXPORTS")
@@ -59,7 +65,9 @@ endif()
 # Main ShaderTools library
 add_library(MagnumShaderTools ${SHARED_OR_STATIC}
 #     $<TARGET_OBJECTS:MagnumShaderToolsObjects>
-    ${MagnumShaderTools_GracefulAssert_SRCS})
+    ${MagnumShaderTools_GracefulAssert_SRCS}
+    ${MagnumShaderTools_HEADERS}
+    ${MagnumShaderTools_PRIVATE_HEADERS})
 set_target_properties(MagnumShaderTools PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/ShaderTools")

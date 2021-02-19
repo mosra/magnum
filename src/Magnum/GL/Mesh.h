@@ -172,11 +172,20 @@ MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive primitive);
 @m_enum_values_as_keywords
 */
 enum class MeshIndexType: GLenum {
-    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+    /**
+     * @relativeref{Magnum,UnsignedByte}.
+     *
+     * Even though OpenGL historically supports 8-bit indices, using this type
+     * is discouraged on contemporary GPU architectures. Prefer using 16-bit
+     * indices instead.
+     */
+    UnsignedByte = GL_UNSIGNED_BYTE,
+
+    /** @relativeref{Magnum,UnsignedShort} */
+    UnsignedShort = GL_UNSIGNED_SHORT,
 
     /**
-     * Unsigned int
+     * @relativeref{Magnum,UnsignedInt}
      * @requires_gles30 Extension @gl_extension{OES,element_index_uint}
      *       in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}
@@ -608,8 +617,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
-         * @requires_gles32 Base vertex cannot be specified for indexed meshes
-         *      in OpenGL ES 3.1 or WebGL.
+         * @requires_gles32 Extension @gl_extension{OES,draw_elements_base_vertex}
+         *      or @gl_extension{EXT,draw_elements_base_vertex} for indexed
+         *      meshes on OpenGL ES 3.1 and older
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
+         *      for indexed meshes
          */
         Mesh& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
@@ -647,7 +660,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /** @brief Base instance */
         UnsignedInt baseInstance() const { return _baseInstance; }
 
@@ -659,8 +672,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Default is @cpp 0 @ce.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @gl_extension{ARB,base_instance}
-         * @requires_gl Base instance cannot be specified in OpenGL ES or
-         *      WebGL.
+         * @requires_es_extension OpenGL ES 3.1 and extension
+         *      @m_class{m-doc-external} [ANGLE_base_vertex_base_instance](https://chromium.googlesource.com/angle/angle/+/master/extensions/ANGLE_base_vertex_base_instance.txt)
+         * @requires_webgl_extension WebGL 2.0 and extension
+         *      @webgl_extension{WEBGL,draw_instanced_base_vertex_base_instance}
          */
         Mesh& setBaseInstance(UnsignedInt baseInstance) {
             _baseInstance = baseInstance;
@@ -1068,10 +1083,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         void MAGNUM_GL_LOCAL bindVAO();
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void drawInternal(Int count, Int baseVertex, Int instanceCount, UnsignedInt baseInstance, GLintptr indexOffset, Int indexStart, Int indexEnd);
-        #elif !defined(MAGNUM_TARGET_GLES2)
-        void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
         void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
         #endif
@@ -1133,17 +1146,33 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL unbindImplementationDefault();
         void MAGNUM_GL_LOCAL unbindImplementationVAO();
 
-        #ifdef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationANGLE(GLint baseVertex, GLsizei count, GLsizei instanceCount);
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationEXT(GLint baseVertex, GLsizei count, GLsizei instanceCount);
-        void MAGNUM_GL_LOCAL drawArraysInstancedImplementationNV(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+        #ifdef MAGNUM_TARGET_GLES
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        #if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
+        #endif
+        static void MAGNUM_GL_LOCAL drawElementsBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLint);
         #endif
 
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationANGLE(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationEXT(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
-        void MAGNUM_GL_LOCAL drawElementsInstancedImplementationNV(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        #ifndef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationANGLE(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void* indices, GLint baseVertex);
+        #endif
+        static void MAGNUM_GL_LOCAL drawRangeElementsBaseVertexImplementationAssert(GLenum, GLuint, GLuint, GLsizei, GLenum, const void*, GLint);
+
+        static void MAGNUM_GL_LOCAL drawArraysInstancedBaseInstanceImplementationAssert(GLenum, GLint, GLsizei, GLsizei, GLuint);
+
+        #if !defined(MAGNUM_TARGET_WEBGL) || __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        static void MAGNUM_GL_LOCAL drawElementsInstancedBaseInstanceImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLuint baseInstance);
+        #endif
+        static void MAGNUM_GL_LOCAL drawElementsInstancedBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLuint);
+
+        static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexBaseInstanceImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint, GLuint);
+
+        #if defined(MAGNUM_TARGET_WEBGL) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ >= 13915
+        static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationANGLE(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instanceCount, GLint baseVertex);
+        #endif
+        static void MAGNUM_GL_LOCAL drawElementsInstancedBaseVertexImplementationAssert(GLenum, GLsizei, GLenum, const void*, GLsizei, GLint);
         #endif
         #endif
 
@@ -1158,10 +1187,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
            object is constructed using NoCreate). Also fits in the gap. */
         bool _constructed{};
         Int _count{}, _baseVertex{}, _instanceCount{1};
-        #ifndef MAGNUM_TARGET_GLES
-        UnsignedInt _baseInstance{};
-        #endif
         #ifndef MAGNUM_TARGET_GLES2
+        UnsignedInt _baseInstance{};
         UnsignedInt _indexStart{}, _indexEnd{};
         #endif
         GLintptr _indexOffset{};

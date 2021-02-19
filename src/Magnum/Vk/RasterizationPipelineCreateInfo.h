@@ -159,12 +159,13 @@ enum class DynamicRasterizationState: UnsignedByte {
     /**
      * Only the @ref MeshPrimitive topology class set in @ref MeshLayout and
      * passed to @ref RasterizationPipelineCreateInfo is used and the specific
-     * topology order and adjacency is expected to be set dynamically using
-     * @fn_vk{CmdSetPrimitiveTopologyEXT}.
+     * topology order and adjacency is expected to be set dynamically.
+     * @ref CommandBuffer::draw() does this automatically if a pipeline with
+     * this dynamic state is bound.
      * @requires_vk_feature @ref DeviceFeature::ExtendedDynamicState
      * @m_keywords{VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY_EXT}
      */
-    PrimitiveTopology,
+    MeshPrimitive,
 
     /**
      * Both the number of viewports and their ranges set in
@@ -191,10 +192,10 @@ enum class DynamicRasterizationState: UnsignedByte {
     /**
      * Stride set in @ref MeshLayout::addBinding() and passed to
      * @ref RasterizationPipelineCreateInfo is ignored and expected to be set
-     * dynamically using @fn_vk{CmdBindVertexBuffers2EXT}
+     * dynamically. @ref CommandBuffer::draw() does this automatically if a
+     * pipeline with this dynamic state is bound.
      * @requires_vk_feature @ref DeviceFeature::ExtendedDynamicState
      * @m_keywords{VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE_EXT}
-     * @todoc link to the actual API when exposed
      */
     VertexInputBindingStride,
 
@@ -272,6 +273,18 @@ A set of rasterization-related information from the
 typedef Containers::BigEnumSet<DynamicRasterizationState, 1> DynamicRasterizationStates;
 
 CORRADE_ENUMSET_OPERATORS(DynamicRasterizationStates)
+
+/**
+@debugoperatorenum{DynamicRasterizationState}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DynamicRasterizationState value);
+
+/**
+@debugoperatorenum{DynamicRasterizationState}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, const DynamicRasterizationStates& value);
 
 /**
 @brief Rasterization pipeline creation info
@@ -512,6 +525,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
         operator const VkGraphicsPipelineCreateInfo*() const { return &_info; }
 
     private:
+        friend Pipeline;
+
         VkGraphicsPipelineCreateInfo _info;
         VkPipelineViewportStateCreateInfo _viewportInfo;
         VkPipelineRasterizationStateCreateInfo _rasterizationInfo;
