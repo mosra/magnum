@@ -243,6 +243,14 @@ bool WindowlessWglContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessWglContext::release() {
+    if(wglMakeCurrent(_deviceContext, nullptr))
+        return true;
+
+    Error() << "Platform::WindowlessWglContext::release(): cannot release current context:" << GetLastError();
+    return false;
+}
+
 WindowlessWglContext::Configuration::Configuration():
     #ifndef MAGNUM_TARGET_GLES
     _flags{Flag::ForwardCompatible}

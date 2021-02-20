@@ -173,6 +173,14 @@ bool WindowlessWindowsEglContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessWindowsEglContext::release() {
+    if(eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT))
+        return true;
+
+    Error() << "Platform::WindowlessWindowsEglApplication::release(): cannot release current context:" << GetLastError();
+    return false;
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments): WindowlessWindowsEglApplication{arguments, Configuration{}} {}
 #endif

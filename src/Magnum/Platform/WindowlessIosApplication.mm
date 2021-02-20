@@ -74,6 +74,14 @@ bool WindowlessIosContext::makeCurrent() {
     return false;
 }
 
+bool WindowlessIosContext::release() {
+    if([EAGLContext setCurrentContext:nil])
+        return true;
+
+    Error() << "Platform::WindowlessIosContext::release(): cannot release current context";
+    return false;
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments): WindowlessIosApplication{arguments, Configuration{}} {}
 #endif
