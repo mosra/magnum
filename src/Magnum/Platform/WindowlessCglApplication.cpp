@@ -5,6 +5,7 @@
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
+    Copyright © 2021 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),

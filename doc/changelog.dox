@@ -108,6 +108,11 @@ See also:
 -   It's now possible to have multiple @ref Platform::EmscriptenApplication
     canvases on a single page (see [mosra/magnum#480](https://github.com/mosra/magnum/pull/480),
     [mosra/magnum#481](https://github.com/mosra/magnum/pull/481))
+-   Added @relativeref{Platform::WindowlessEglContext,release()} as a
+    counterpart to @relativeref{Platform::WindowlessEglContext,makeCurrent()}
+    to all @cpp Platform::Windowless*Context @ce classes. Useful for
+    transferring OpenGL contexts between threads, see also
+    [mosra/magnum#495](https://github.com/mosra/magnum/pull/495).
 
 @subsubsection changelog-latest-new-shaders Shaders library
 

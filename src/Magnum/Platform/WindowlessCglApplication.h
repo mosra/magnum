@@ -7,6 +7,7 @@
                 2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
+    Copyright © 2021 Konstantinos Chatzilygeroudis <costashatz@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -122,13 +123,18 @@ class WindowlessCglContext {
          * @brief Make the context current
          *
          * Prints error message and returns @cpp false @ce on failure,
-         * otherwise returns @cpp true @ce.
+         * otherwise returns @cpp true @ce. If the context is current on
+         * another thread, you have to @ref release() it there first --- an
+         * OpenGL context can't be current in multiple threads at the same
+         * time.
          */
         bool makeCurrent();
 
         /**
          * @brief Release current context
+         * @m_since_latest
          *
+         * Releases a context previously made current using @ref makeCurrent().
          * Prints error message and returns @cpp false @ce on failure,
          * otherwise returns @cpp true @ce.
          */
