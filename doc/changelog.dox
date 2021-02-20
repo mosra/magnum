@@ -217,6 +217,8 @@ See also:
     @ref Platform::EmscriptenApplication and @ref Platform::Sdl2Application now
     notify about that in the verbose output (enabled with `?magnum-log=verbose`),
     previously only autodetected canvas size got printed
+-   Added @ref Platform::WindowlessIosContext::glContext() for consistency with
+    other context classes
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 

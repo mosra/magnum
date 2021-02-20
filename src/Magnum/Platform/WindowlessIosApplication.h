@@ -119,6 +119,16 @@ class WindowlessIosContext {
          */
         bool makeCurrent();
 
+        /**
+         * @brief Underlying OpenGL context
+         * @m_since_latest
+         *
+         * Use in case you need to call EAGL functionality directly or in order
+         * to create a shared context. Returns @cpp nullptr @ce in case the
+         * context was not created yet.
+         */
+        EAGLContext* glContext() { return _context; }
+
     private:
         EAGLContext* _context{};
 };
