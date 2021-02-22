@@ -33,6 +33,8 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 RendererState::RendererState(Context& context, ContextState& contextState, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_WEBGL
     : resetNotificationStrategy()
@@ -90,7 +92,7 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
     #ifndef MAGNUM_TARGET_GLES
     if((context.detectedDriver() & Context::DetectedDriver::Mesa) &&
        (context.flags() & Context::Flag::ForwardCompatible) &&
-        !context.isDriverWorkaroundDisabled("mesa-forward-compatible-line-width-range"))
+        !context.isDriverWorkaroundDisabled("mesa-forward-compatible-line-width-range"_s))
         lineWidthRangeImplementation = &Renderer::lineWidthRangeImplementationMesaForwardCompatible;
     else
     #endif

@@ -35,6 +35,8 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 constexpr const Range2Di FramebufferState::DisengagedViewport;
 
 FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding{0}, drawBinding{0}, renderbufferBinding{0}, maxDrawBuffers{0}, maxColorAttachments{0}, maxRenderbufferSize{0},
@@ -131,10 +133,10 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         #ifdef CORRADE_TARGET_WINDOWS
-        if(context.detectedDriver() & Context::DetectedDriver::IntelWindows && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+        if(context.detectedDriver() & Context::DetectedDriver::IntelWindows && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
             copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
             textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
-        } else if(context.detectedDriver() & Context::DetectedDriver::Amd && !context.isDriverWorkaroundDisabled("amd-windows-broken-dsa-cubemap-copy")) {
+        } else if(context.detectedDriver() & Context::DetectedDriver::Amd && !context.isDriverWorkaroundDisabled("amd-windows-broken-dsa-cubemap-copy"_s)) {
             copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
             /* Cube map attachment is not broken */
             textureCubeMapImplementation = &Framebuffer::texture2DImplementationDSA;
@@ -160,7 +162,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment"))
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment"_s))
         #endif
     ) {
         /* Extension name added above */
@@ -179,7 +181,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-framebuffer-clear"))
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-framebuffer-clear"_s))
         #endif
     ) {
         /* Extension name added above */
@@ -288,15 +290,15 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     if(context.isVersionSupported(Version::GL450)
         #ifdef CORRADE_TARGET_WINDOWS
         && !((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-        !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken"))
+        !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken"_s))
         #endif
     ) {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
-            && !((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-implementation-color-read-format-dsa-broken"))
+            && !((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-implementation-color-read-format-dsa-broken"_s))
         ) {
             /* DSA extension added above */
 
-            if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-implementation-color-read-format-dsa-explicit-binding"))
+            if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-implementation-color-read-format-dsa-explicit-binding"_s))
                 implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSAMesa;
             else implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSA;
         } else {

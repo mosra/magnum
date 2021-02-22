@@ -35,6 +35,8 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 MeshState::MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
     , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
@@ -59,7 +61,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
             #ifdef CORRADE_TARGET_WINDOWS
             && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+            context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"_s))
             #endif
         ) {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
@@ -67,7 +69,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
             /* Intel Windows drivers are ... special */
             #ifdef CORRADE_TARGET_WINDOWS
             if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-               !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-integer-vertex-attributes"))
+               !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-integer-vertex-attributes"_s))
             {
                 attributePointerImplementation = &Mesh::attributePointerImplementationVAODSAIntelWindows;
             } else
@@ -328,7 +330,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"_s))
         #endif
     )
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAODSA;

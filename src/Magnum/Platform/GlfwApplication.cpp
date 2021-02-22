@@ -49,6 +49,8 @@
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 #ifdef GLFW_TRUE
 /* The docs say that it's the same, verify that just in case */
 static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values");
@@ -532,7 +534,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
          std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
          #endif
          std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
+         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
          #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug

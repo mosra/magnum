@@ -39,6 +39,8 @@ namespace { enum { None = 0, Success = 0 }; }
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 namespace {
 
 /*
@@ -188,7 +190,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
            strncmp() */
         if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
             std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             glXDestroyContext(_display, _context);

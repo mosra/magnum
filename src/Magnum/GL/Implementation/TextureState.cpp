@@ -41,6 +41,8 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     max3DSize{},
@@ -83,7 +85,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         #ifdef CORRADE_TARGET_WINDOWS
         if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-            !context.isDriverWorkaroundDisabled("intel-windows-half-baked-dsa-texture-bind"))
+            !context.isDriverWorkaroundDisabled("intel-windows-half-baked-dsa-texture-bind"_s))
         {
             unbindImplementation = &AbstractTexture::unbindImplementationDefault;
             bindImplementation = &AbstractTexture::bindImplementationDSAIntelWindows;
@@ -185,11 +187,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
 
         #ifdef CORRADE_TARGET_WINDOWS
-        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
             cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
             cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
-        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice")) {
+        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s)) {
             /* This one is not broken, but the others are */
             getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
             cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
@@ -257,14 +259,14 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Compressed cubemap image size query implementation (extensions added
        above) */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size")) {
+        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size"_s)) {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
             getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
         else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
     } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
         #ifdef CORRADE_TARGET_WINDOWS
         && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
         #endif
     ) {
         getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
@@ -308,7 +310,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
        above) */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"))
+        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"_s))
         getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
     else
         getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
@@ -318,11 +320,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         linux as well, test */
     if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"))
+        !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s))
         getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAAmdSliceBySlice;
     else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
         context.isExtensionSupported<Extensions::ARB::direct_state_access>() &&
-        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+        !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s))
         getFullCubeImageImplementation = &CubeMapTexture::getImageImplementationSliceBySlice;
     else
     #endif
@@ -426,7 +428,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #ifndef MAGNUM_TARGET_GLES
     /* NVidia workaround for compressed block data size implementation */
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"))
+        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"_s))
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround;
     else
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
@@ -436,7 +438,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* SVGA3D workaround for array / 3D / cube map texture upload. Overrides
        the DSA / non-DSA function pointers set above. */
     if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice")) {
+       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)) {
         #ifndef MAGNUM_TARGET_GLES
         image2DImplementation = &AbstractTexture::imageImplementationSvga3DSliceBySlice;
         #endif
@@ -470,21 +472,21 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* SVGA3D and Intel workaround for cube map texture upload. Overrides the
        DSA / non-DSA function pointers set above. */
     if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
-       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice")) {
+       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice"_s)) {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDSASliceBySlice;
         } else {
             cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
         }
     } else if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-       !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+       !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"_s)) {
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
     }
     #ifdef CORRADE_TARGET_WINDOWS
     /** @todo those *might* be happening with the proprietary AMD driver on
         linux as well, test */
     else if((context.detectedDriver() & Context::DetectedDriver::Amd) &&
-       !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice")) {
+       !context.isDriverWorkaroundDisabled("amd-windows-cubemap-image3d-slice-by-slice"_s)) {
         /* DSA version is broken (non-zero Z offset not allowed), need to
            emulate using classic APIs */
         cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSliceBySlice;
@@ -504,7 +506,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
 
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
-    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify")) {
+    if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
         CORRADE_INTERNAL_ASSERT(std::size_t(maxTextureUnits) <= decltype(bufferTextureBound)::Size);
         /* Assume ARB_multi_bind is not supported, otherwise we'd need to
            implement the workaround also for bindMultiImplementation */

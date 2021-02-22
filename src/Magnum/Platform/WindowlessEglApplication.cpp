@@ -72,6 +72,8 @@ typedef void (APIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char* command, EGL
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 #ifndef MAGNUM_TARGET_WEBGL
 namespace {
 
@@ -190,7 +192,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                        well-behaved driver versions, eglQueryDeviceAttribEXT()
                        returns false instead of segfaulting. */
                     const char* const eglExtensions = eglQueryDeviceStringEXT(devices[selectedDevice], EGL_EXTENSIONS);
-                    if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"))
+                    if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"_s))
                         continue;
 
                     if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog))
@@ -344,7 +346,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
-    if(!configuration.flags() && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"))) {
+    if(!configuration.flags() && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
         auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
@@ -399,7 +401,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
            strncmp() */
         if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
             std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             eglDestroyContext(_display, _context);
@@ -430,7 +432,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
        deep inside when making the context current */
-    if(version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"))) {
+    if(version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
         EGLint surfaceAttributes[] = {
             EGL_WIDTH, 32,
             EGL_HEIGHT, 32,

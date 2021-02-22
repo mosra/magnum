@@ -69,6 +69,8 @@
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 namespace {
 
 /*
@@ -560,7 +562,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
          std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
          #endif
          std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
+         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
         #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug

@@ -33,19 +33,21 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         #ifdef CORRADE_TARGET_WINDOWS
-        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-indexed-queries")) {
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-indexed-queries"_s)) {
             createImplementation = &AbstractQuery::createImplementationDefault;
-        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-dsa-createquery-except-xfb-overflow")) {
+        } else if((context.detectedDriver() & Context::DetectedDriver::Amd) && !context.isDriverWorkaroundDisabled("amd-windows-dsa-createquery-except-xfb-overflow"_s)) {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
             createImplementation = &AbstractQuery::createImplementationDSAExceptXfbOverflow;
         } else
         #endif
-        if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-dsa-createquery-except-pipeline-stats")) {
+        if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-dsa-createquery-except-pipeline-stats"_s)) {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
             createImplementation = &AbstractQuery::createImplementationDSAExceptPipelineStats;
         } else {

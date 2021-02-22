@@ -46,6 +46,8 @@
 
 namespace Magnum { namespace Platform {
 
+using namespace Containers::Literals;
+
 WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, GLContext* const magnumContext) {
     /* Register the window class (if not yet done) */
     WNDCLASSW wc;
@@ -188,7 +190,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
             std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
             std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);

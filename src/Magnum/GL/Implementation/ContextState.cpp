@@ -31,10 +31,12 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 ContextState::ContextState(Context& context, std::vector<std::string>&) {
     #ifndef MAGNUM_TARGET_GLES
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-zero-context-profile-mask"))
+        !context.isDriverWorkaroundDisabled("nv-zero-context-profile-mask"_s))
     {
         isCoreProfileImplementation = &Context::isCoreProfileImplementationNV;
     } else isCoreProfileImplementation = &Context::isCoreProfileImplementationDefault;

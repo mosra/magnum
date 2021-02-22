@@ -35,6 +35,8 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+using namespace Containers::Literals;
+
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_WEBGL
@@ -52,7 +54,7 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     #ifndef MAGNUM_TARGET_GLES2
     #ifdef CORRADE_TARGET_WINDOWS
     if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-        !context.isDriverWorkaroundDisabled("nv-windows-dangling-transform-feedback-varying-names"))
+        !context.isDriverWorkaroundDisabled("nv-windows-dangling-transform-feedback-varying-names"_s))
     {
         transformFeedbackVaryingsImplementation = &AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround;
     } else
@@ -63,12 +65,12 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     #endif
 
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler")) {
+    if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) && !context.isDriverWorkaroundDisabled("intel-windows-chatty-shader-compiler"_s)) {
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationIntelWindows;
     } else
     #endif
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-chatty-shader-compiler")) {
+    if((context.detectedDriver() & Context::DetectedDriver::Angle) && !context.isDriverWorkaroundDisabled("angle-chatty-shader-compiler"_s)) {
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationAngle;
     } else
     #endif
