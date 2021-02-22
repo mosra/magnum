@@ -670,16 +670,12 @@ Context::Context(Context&& other) noexcept: _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
     _flags{other._flags},
     #endif
-    _extensionRequiredVersion{Containers::NoInit},
+    _extensionRequiredVersion{other._extensionRequiredVersion},
     _extensionStatus{other._extensionStatus},
     _supportedExtensions{std::move(other._supportedExtensions)},
     _state{std::move(other._state)},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
-    /* StaticArray is deliberately non-copyable */
-    for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i)
-        _extensionRequiredVersion[i] = other._extensionRequiredVersion[i];
-
     if(currentContext == &other) currentContext = this;
 }
 
