@@ -80,7 +80,7 @@ namespace Extensions {
         constexpr static Version coreVersion() { return Version::_coreVersion; } \
         constexpr static Containers::StringView string() {                  \
             using namespace Containers::Literals;                           \
-            return "VK_" #vendor "_" #extension ""_s;                 \
+            return "VK_" #vendor "_" #extension ""_s;                       \
         }                                                                   \
     };
 namespace EXT {
