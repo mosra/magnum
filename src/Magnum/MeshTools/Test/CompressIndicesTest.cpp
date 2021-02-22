@@ -24,7 +24,6 @@
 */
 
 #include <sstream>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -35,6 +34,10 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#endif
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 

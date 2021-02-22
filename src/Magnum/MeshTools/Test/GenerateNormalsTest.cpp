@@ -24,7 +24,6 @@
 */
 
 #include <sstream>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -38,6 +37,10 @@
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/Primitives/Cylinder.h"
 #include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+#endif
 
 namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
