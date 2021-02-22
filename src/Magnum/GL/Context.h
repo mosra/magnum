@@ -57,17 +57,6 @@ namespace GL {
 namespace Implementation {
     struct ContextState;
     struct State;
-
-    enum: std::size_t {
-        ExtensionCount =
-            #ifndef MAGNUM_TARGET_GLES
-            192
-            #elif !defined(MAGNUM_TARGET_WEBGL)
-            160
-            #else
-            48
-            #endif
-    };
 }
 
 /**

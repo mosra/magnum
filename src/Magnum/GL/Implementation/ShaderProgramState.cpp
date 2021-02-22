@@ -37,7 +37,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
 
-ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
+ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): current(0), maxVertexAttributes(0)
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_WEBGL
         , maxGeometryOutputVertices{0}, maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0)
@@ -86,7 +86,8 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::ARB::separate_shader_objects::string());
+        extensions[Extensions::ARB::separate_shader_objects::Index] =
+                   Extensions::ARB::separate_shader_objects::string();
         #endif
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -133,7 +134,8 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(context.isExtensionSupported<Extensions::EXT::separate_shader_objects>()) {
-        extensions.push_back(Extensions::EXT::separate_shader_objects::string());
+        extensions[Extensions::EXT::separate_shader_objects::Index] =
+                   Extensions::EXT::separate_shader_objects::string();
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationSSOEXT;
         uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationSSOEXT;

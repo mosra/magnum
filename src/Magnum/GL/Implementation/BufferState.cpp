@@ -80,7 +80,7 @@ std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-BufferState::BufferState(Context& context, std::vector<std::string>& extensions): bindings()
+BufferState::BufferState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): bindings()
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     , minMapAlignment(0)
@@ -99,7 +99,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-buffer-dsa"_s))
         #endif
     ) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+        extensions[Extensions::ARB::direct_state_access::Index] =
+                   Extensions::ARB::direct_state_access::string();
 
         createImplementation = &Buffer::createImplementationDSA;
         copyImplementation = &Buffer::copyImplementationDSA;
@@ -140,7 +141,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::invalidate_subdata>()) {
-        extensions.emplace_back(Extensions::ARB::invalidate_subdata::string());
+        extensions[Extensions::ARB::invalidate_subdata::Index] =
+                   Extensions::ARB::invalidate_subdata::string();
 
         invalidateImplementation = &Buffer::invalidateImplementationARB;
         invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
@@ -154,7 +156,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::multi_bind>()) {
-        extensions.emplace_back(Extensions::ARB::multi_bind::string());
+        extensions[Extensions::ARB::multi_bind::Index] =
+                   Extensions::ARB::multi_bind::string();
 
         bindBasesImplementation = &Buffer::bindImplementationMulti;
         bindRangesImplementation = &Buffer::bindImplementationMulti;

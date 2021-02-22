@@ -25,9 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
-
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/Math/Range.h"
 
@@ -36,7 +33,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 struct ContextState;
 
 struct RendererState {
-    explicit RendererState(Context& context, ContextState& contextState, std::vector<std::string>& extensions);
+    explicit RendererState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     Range1D(*lineWidthRangeImplementation)();
     void(*clearDepthfImplementation)(GLfloat);

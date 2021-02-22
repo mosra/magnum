@@ -25,9 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
-
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 
 #ifdef _MSC_VER
@@ -40,7 +38,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct ContextState {
-    explicit ContextState(Context& context, std::vector<std::string>& extensions);
+    explicit ContextState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     #ifndef MAGNUM_TARGET_GLES
     enum class CoreProfile {

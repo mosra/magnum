@@ -36,7 +36,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
 
-ShaderState::ShaderState(Context& context, std::vector<std::string>&):
+ShaderState::ShaderState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*>):
     maxVertexOutputComponents{}, maxFragmentInputComponents{},
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{}, maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},

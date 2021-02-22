@@ -29,6 +29,8 @@
  * @brief Forward declarations for the @ref Magnum::GL namespace
  */
 
+#include <cstddef>
+
 #include "Magnum/Types.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -40,6 +42,20 @@ typedef unsigned int GLuint; /* Needed by Implementation/State.h */
 namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+namespace Implementation {
+    /* Needed by Context as well as all Implementation::*State classes */
+    enum: std::size_t {
+        ExtensionCount =
+            #ifndef MAGNUM_TARGET_GLES
+            192
+            #elif !defined(MAGNUM_TARGET_WEBGL)
+            160
+            #else
+            48
+            #endif
+    };
+}
+
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;

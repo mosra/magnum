@@ -35,7 +35,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
 
-RendererState::RendererState(Context& context, ContextState& contextState, std::vector<std::string>& extensions)
+RendererState::RendererState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions)
     #ifndef MAGNUM_TARGET_WEBGL
     : resetNotificationStrategy()
     #endif
@@ -46,7 +46,8 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::ARB::ES2_compatibility::string());
+        extensions[Extensions::ARB::ES2_compatibility::Index] =
+                   Extensions::ARB::ES2_compatibility::string();
         #endif
 
         clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
@@ -64,9 +65,11 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::ARB::robustness::string());
+        extensions[Extensions::ARB::robustness::Index] =
+                   Extensions::ARB::robustness::string();
         #else
-        extensions.push_back(Extensions::EXT::robustness::string());
+        extensions[Extensions::EXT::robustness::Index] =
+                   Extensions::EXT::robustness::string();
         #endif
 
         graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
@@ -103,12 +106,16 @@ RendererState::RendererState(Context& context, ContextState& contextState, std::
     #ifndef MAGNUM_TARGET_GLES
     minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
     #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(context.isVersionSupported(Version::GLES320))
+    if(context.isVersionSupported(Version::GLES320)) {
         minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
-    else if(context.isExtensionSupported<Extensions::OES::sample_shading>())
+    } else if(context.isExtensionSupported<Extensions::OES::sample_shading>()) {
+        extensions[Extensions::OES::sample_shading::Index] =
+                   Extensions::OES::sample_shading::string();
+
         minSampleShadingImplementation = &Renderer::minSampleShadingImplementationOES;
-    else
+    } else {
         minSampleShadingImplementation = nullptr;
+    }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

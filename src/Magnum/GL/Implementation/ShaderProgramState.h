@@ -25,9 +25,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
+#include <Corrade/Utility/StlForwardString.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/Math/Vector3.h"
@@ -39,7 +39,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct ShaderProgramState {
-    explicit ShaderProgramState(Context& context, std::vector<std::string>& extensions);
+    explicit ShaderProgramState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 

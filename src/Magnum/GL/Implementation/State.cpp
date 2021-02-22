@@ -25,9 +25,6 @@
 
 #include "State.h"
 
-#include <algorithm>
-#include <Corrade/Utility/DebugStl.h>
-
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/BufferState.h"
@@ -49,14 +46,12 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 State::State(Context& context, std::ostream* const out) {
-    /* List of extensions used in current context. Guesstimate count to avoid
-       unnecessary reallocations. */
-    std::vector<std::string> extensions;
-    #ifndef MAGNUM_TARGET_GLES
-    extensions.reserve(32);
-    #else
-    extensions.reserve(8);
-    #endif
+    /* Extensions that might get used by current context. The State classes
+       will set strings based on Extension::index() and then we'll go through
+       the list and print ones that aren't null. It's 1.5 kB of temporary data
+       but I think in terms of code size and overhead it's better than
+       populating a heap array and then std::sort() it to remove duplicates. */
+    const char* extensions[Implementation::ExtensionCount]{};
 
     buffer.reset(new BufferState{context, extensions});
     this->context.reset(new ContextState{context, extensions});
@@ -74,12 +69,9 @@ State::State(Context& context, std::ostream* const out) {
     transformFeedback.reset(new TransformFeedbackState{context, extensions});
     #endif
 
-    /* Sort the features and remove duplicates */
-    std::sort(extensions.begin(), extensions.end());
-    extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
-
     Debug{out} << "Using optional features:";
-    for(const auto& ext: extensions) Debug(out) << "   " << ext;
+    for(const char* extension: extensions)
+        if(extension) Debug(out) << "   " << extension;
 }
 
 State::~State() = default;

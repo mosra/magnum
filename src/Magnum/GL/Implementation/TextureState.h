@@ -25,8 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/StlForwardTuple.h>
 
@@ -53,7 +51,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct TextureState {
-    explicit TextureState(Context& context, std::vector<std::string>& extensions);
+    explicit TextureState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
     ~TextureState();
 
     void reset();

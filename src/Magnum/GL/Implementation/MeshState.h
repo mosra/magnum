@@ -25,9 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-#include <string>
-
 #include "Magnum/GL/Mesh.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
@@ -35,7 +32,7 @@ namespace Magnum { namespace GL { namespace Implementation {
 struct ContextState;
 
 struct MeshState {
-    explicit MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions);
+    explicit MeshState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
     ~MeshState();
 
     void reset();

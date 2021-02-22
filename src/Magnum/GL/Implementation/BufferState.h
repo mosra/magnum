@@ -25,8 +25,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-
 #include "Magnum/GL/Buffer.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
@@ -46,7 +44,7 @@ struct BufferState {
     static std::size_t indexForTarget(Buffer::TargetHint target);
     static const Buffer::TargetHint targetForIndex[TargetCount-1];
 
-    explicit BufferState(Context& context, std::vector<std::string>& extensions);
+    explicit BufferState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 
