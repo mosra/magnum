@@ -415,9 +415,15 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
+    #ifndef MAGNUM_TARGET_WEBGL
     const Containers::StringView renderer = rendererString();
-    const Containers::StringView vendor = vendorString();
+    #endif
+    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     const Containers::StringView version = versionString();
+    #endif
+    #if (!defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)) || defined(MAGNUM_TARGET_GLES)
+    const Containers::StringView vendor = vendorString();
+    #endif
 
     /* Apple has its own drivers */
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
