@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/StridedArrayView.h>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -1246,13 +1247,13 @@ void PhongGLTest::renderShininess() {
             "ARM Mali has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("AMD"),
             "AMD Mesa drivers have a much larger ring for the overflown shininess when it's exactly 0.");
-        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("llvmpipe") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("llvmpipe"),
             "Mesa llvmpipe drivers have a much larger ring for the overflown shininess.");
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().contains("AMD"),
             "AMD on macOS has a much larger ring for the overflown shininess when it's exactly 0.");
         #endif
         CORRADE_COMPARE_WITH(
@@ -1268,10 +1269,10 @@ void PhongGLTest::renderShininess() {
         || (data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader))
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().contains("AMD"))
         #endif
         #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
-        || (data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        || (data.shininess == 0.0f && GL::Context::current().rendererString().contains("AMD"))
         #endif
         #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
         || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali))

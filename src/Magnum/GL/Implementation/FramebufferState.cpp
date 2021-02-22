@@ -25,6 +25,8 @@
 
 #include "FramebufferState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Renderbuffer.h"

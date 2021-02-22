@@ -25,6 +25,8 @@
 
 #include "QueryState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/AbstractQuery.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

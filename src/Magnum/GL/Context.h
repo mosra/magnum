@@ -30,12 +30,11 @@
  */
 
 #include <cstdlib>
-#include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/StaticArray.h>
-#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/BoolVector.h"
@@ -44,6 +43,12 @@
 #include "Magnum/GL/OpenGL.h"
 
 #include "Magnum/GL/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For return types of Context::versionString() etc., which used to be a
+   std::string. Not ideal, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum {
 
@@ -513,52 +518,62 @@ class MAGNUM_GL_EXPORT Context {
          * @brief Vendor string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls.
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref rendererString(), @fn_gl{GetString} with
          *      @def_gl_keyword{VENDOR}
          */
-        std::string vendorString() const;
+        Containers::StringView vendorString() const;
 
         /**
          * @brief Renderer string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls.
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref vendorString(), @fn_gl{GetString} with
          *      @def_gl_keyword{RENDERER}
          */
-        std::string rendererString() const;
+        Containers::StringView rendererString() const;
 
         /**
          * @brief Version string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls.
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref shadingLanguageVersionString(), @ref version(),
          *      @fn_gl{GetString} with @def_gl_keyword{VERSION}
          */
-        std::string versionString() const;
+        Containers::StringView versionString() const;
 
         /**
          * @brief Shading language version string
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls.
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
          *      @def_gl_keyword{SHADING_LANGUAGE_VERSION}
          */
-        std::string shadingLanguageVersionString() const;
+        Containers::StringView shadingLanguageVersionString() const;
 
         /**
          * @brief Shading language version strings
          *
          * The result is *not* cached, repeated queries will result in repeated
-         * OpenGL calls.
+         * OpenGL calls. The returned view is always
+         * @relativeref{Corrade,Containers::StringViewFlag::NullTerminated} and
+         * @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @ref versionString(), @ref version(), @fn_gl{Get} with
          *      @def_gl_keyword{NUM_SHADING_LANGUAGE_VERSIONS}, @fn_gl{GetString}
          *      with @def_gl_keyword{SHADING_LANGUAGE_VERSION}
          */
-        std::vector<std::string> shadingLanguageVersionStrings() const;
+        Containers::Array<Containers::StringView> shadingLanguageVersionStrings() const;
 
         /**
          * @brief Extension strings
@@ -567,11 +582,13 @@ class MAGNUM_GL_EXPORT Context {
          * OpenGL calls. Note that this function returns list of all extensions
          * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
-         * @ref isExtensionSupported() for alternatives.
+         * @ref isExtensionSupported() for alternatives. The returned views are
+         * always @relativeref{Corrade,Containers::StringViewFlag::NullTerminated}
+         * and @relativeref{Corrade::Containers::StringViewFlag,Global}.
          * @see @fn_gl{Get} with @def_gl_keyword{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl_keyword{EXTENSIONS}
          */
-        std::vector<std::string> extensionStrings() const;
+        Containers::Array<Containers::StringView> extensionStrings() const;
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -589,7 +606,7 @@ class MAGNUM_GL_EXPORT Context {
          * the current.
          * @see @ref isExtensionSupported(), @ref Extension::extensions()
          */
-        const std::vector<Extension>& supportedExtensions() const {
+        Containers::ArrayView<const Extension> supportedExtensions() const {
             return _supportedExtensions;
         }
 
@@ -750,7 +767,7 @@ class MAGNUM_GL_EXPORT Context {
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
 
-        bool isDriverWorkaroundDisabled(const char* workaround);
+        bool isDriverWorkaroundDisabled(Containers::StringView workaround);
         Implementation::State& state() { return *_state; }
 
         /* This function is called from MeshState constructor, which means the
@@ -778,7 +795,7 @@ class MAGNUM_GL_EXPORT Context {
         friend Implementation::ContextState;
         #endif
 
-        void disableDriverWorkaround(const std::string& workaround);
+        void disableDriverWorkaround(Containers::StringView workaround);
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_GL_LOCAL void setupDriverWorkarounds();
@@ -794,17 +811,20 @@ class MAGNUM_GL_EXPORT Context {
         Flags _flags;
         #endif
 
-        Containers::StaticArray<Implementation::ExtensionCount, Version> _extensionRequiredVersion;
         Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
-        std::vector<Extension> _supportedExtensions;
+        /* For all extensions that are marked as supported in _extensionStatus,
+           this field contains the minimal required GL version the extension
+           needs. Extensions that are disabled have None here. */
+        Containers::StaticArray<Implementation::ExtensionCount, Version> _extensionRequiredVersion;
+        Containers::Array<Extension> _supportedExtensions;
 
         Containers::Pointer<Implementation::State> _state;
 
         Containers::Optional<DetectedDrivers> _detectedDrivers;
 
         /* True means known and disabled, false means known */
-        std::vector<std::pair<std::string, bool>> _driverWorkarounds;
-        std::vector<std::string> _disabledExtensions;
+        Containers::Array<std::pair<Containers::StringView, bool>> _driverWorkarounds;
+        Containers::Array<Extension> _disabledExtensions;
         InternalFlags _internalFlags;
 };
 

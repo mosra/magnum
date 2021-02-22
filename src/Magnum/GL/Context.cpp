@@ -26,13 +26,10 @@
 #include "Context.h"
 
 #include <algorithm>
-#include <iostream> /* for initialization log redirection */
-#include <string>
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h>
-#include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/AbstractFramebuffer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -67,6 +64,8 @@
 #endif
 
 namespace Magnum { namespace GL {
+
+using namespace Containers::Literals;
 
 /* When adding a new list, Extension::extensions() and Context::Context() needs
    to be adapted. Binary search is performed on the extensions, thus they have
@@ -523,6 +522,44 @@ constexpr Extension ExtensionListES320[]{
 #endif
 #undef _extension
 
+constexpr struct {
+    Version version;
+    Containers::ArrayView<const Extension> extensions;
+} KnownExtensionsForVersion[]{
+    #ifndef MAGNUM_TARGET_GLES
+    {Version::GL300, Containers::arrayView(ExtensionList300)},
+    {Version::GL310, Containers::arrayView(ExtensionList310)},
+    {Version::GL320, Containers::arrayView(ExtensionList320)},
+    {Version::GL330, Containers::arrayView(ExtensionList330)},
+    {Version::GL400, Containers::arrayView(ExtensionList400)},
+    {Version::GL410, Containers::arrayView(ExtensionList410)},
+    {Version::GL420, Containers::arrayView(ExtensionList420)},
+    {Version::GL430, Containers::arrayView(ExtensionList430)},
+    {Version::GL440, Containers::arrayView(ExtensionList440)},
+    {Version::GL450, Containers::arrayView(ExtensionList450)},
+    {Version::GL460, Containers::arrayView(ExtensionList460)},
+    #else
+    {Version::GLES300, Containers::arrayView(ExtensionListES300)},
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* No extensions in ES 3.1 */
+    {Version::GLES320, Containers::arrayView(ExtensionListES320)},
+    #endif
+    #endif
+    {Version::None, Containers::arrayView(ExtensionList)}
+};
+
+const Extension* findExtension(const Containers::StringView extension, const std::size_t since = 0) {
+    for(std::size_t i = since; i != Containers::arraySize(KnownExtensionsForVersion); ++i) {
+        const auto found = std::lower_bound(KnownExtensionsForVersion[i].extensions.begin(), KnownExtensionsForVersion[i].extensions.end(), extension, [](const Extension& a, const Containers::StringView& b) {
+            return a.string() < b;
+        });
+        if(found != KnownExtensionsForVersion[i].extensions.end() && found->string() == extension)
+            return found;
+    }
+
+    return {};
+}
+
 }
 
 Containers::ArrayView<const Extension> Extension::extensions(Version version) {
@@ -657,21 +694,39 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     if(args.value("gpu-validation") == "on" || args.value("gpu-validation") == "ON")
         _internalFlags |= InternalFlag::GpuValidation;
 
-    /* Disable driver workarounds */
-    for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
-        disableDriverWorkaround(workaround);
+    /* If there are any disabled workarounds, save them until tryCreate() uses
+       them. The disableWorkaround() function saves the internal string view
+       instead of the one passed from the command line so we don't need to
+       bother with String allocations. */
+    const Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
+    if(!disabledWorkarounds.isEmpty()) {
+        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        arrayReserve(_driverWorkarounds, split.size());
+        for(const Containers::StringView workaround: split)
+            disableDriverWorkaround(workaround);
+    }
 
-    /* Disable extensions */
-    for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
-        _disabledExtensions.push_back(extension);
+    /* Disable extensions. Here we search for them among the known extensions
+       and store the Extension objects instead, which avoids the string copying
+       and another binary search in tryCreate(). */
+    const Containers::StringView disabledExtensions = args.value<Containers::StringView>("disable-extensions");
+    if(!disabledExtensions.isEmpty()) {
+        const Containers::Array<Containers::StringView> split = disabledExtensions.splitWithoutEmptyParts();
+        arrayReserve(_disabledExtensions, split.size());
+        for(const Containers::StringView extension: split) {
+            if(const Extension* found = findExtension(extension)) {
+                arrayAppend(_disabledExtensions, *found);
+            }
+        }
+    }
 }
 
 Context::Context(Context&& other) noexcept: _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
     _flags{other._flags},
     #endif
-    _extensionRequiredVersion{other._extensionRequiredVersion},
     _extensionStatus{other._extensionStatus},
+    _extensionRequiredVersion{other._extensionRequiredVersion},
     _supportedExtensions{std::move(other._supportedExtensions)},
     _state{std::move(other._state)},
     _detectedDrivers{std::move(other._detectedDrivers)}
@@ -710,8 +765,8 @@ bool Context::tryCreate() {
 
     /* WebGL 2.0, treat it as ES 3.0 */
     #else
-    const std::string version = versionString();
-    if(version.find("WebGL 2") == std::string::npos) {
+    const Containers::StringView version = versionString();
+    if(!version.contains("WebGL 2"_s)) {
         Error{} << "GL::Context: unsupported version string:" << version;
         return false;
     }
@@ -738,17 +793,17 @@ bool Context::tryCreate() {
         #endif
 
         /* Allow ES2 context on driver that reports ES3 as supported */
-        const std::string version = versionString();
+        const Containers::StringView version = versionString();
         #ifndef MAGNUM_TARGET_GLES
-        if(version.compare(0, 3, "2.1") == 0)
+        if(version.hasPrefix("2.1"_s))
         #elif defined(MAGNUM_TARGET_WEBGL)
         /* Internet Explorer currently has 0.94 */
-        if(version.find("WebGL 1") != std::string::npos ||
-           version.find("WebGL 0") != std::string::npos)
+        if(version.contains("WebGL 1"_s) ||
+           version.contains("WebGL 0"_s))
         #else
-        if(version.find("OpenGL ES 2.0") != std::string::npos ||
+        if(version.contains("OpenGL ES 2.0"_s) ||
            /* It is possible to use Magnum compiled for ES2 on ES3 contexts */
-           version.find("OpenGL ES 3.") != std::string::npos)
+           version.contains("OpenGL ES 3."_s))
         #endif
         {
             majorVersion = 2;
@@ -804,51 +859,22 @@ bool Context::tryCreate() {
         glGetIntegerv(GL_CONTEXT_FLAGS, reinterpret_cast<GLint*>(&_flags));
     #endif
 
-    constexpr struct {
-        Version version;
-        Containers::ArrayView<const Extension> extensions;
-    } versions[]{
-        #ifndef MAGNUM_TARGET_GLES
-        {Version::GL300, Containers::arrayView(ExtensionList300)},
-        {Version::GL310, Containers::arrayView(ExtensionList310)},
-        {Version::GL320, Containers::arrayView(ExtensionList320)},
-        {Version::GL330, Containers::arrayView(ExtensionList330)},
-        {Version::GL400, Containers::arrayView(ExtensionList400)},
-        {Version::GL410, Containers::arrayView(ExtensionList410)},
-        {Version::GL420, Containers::arrayView(ExtensionList420)},
-        {Version::GL430, Containers::arrayView(ExtensionList430)},
-        {Version::GL440, Containers::arrayView(ExtensionList440)},
-        {Version::GL450, Containers::arrayView(ExtensionList450)},
-        {Version::GL460, Containers::arrayView(ExtensionList460)},
-        #else
-        {Version::GLES300, Containers::arrayView(ExtensionListES300)},
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* No extensions in ES 3.1 */
-        {Version::GLES320, Containers::arrayView(ExtensionListES320)},
-        #endif
-        #endif
-        {Version::None, Containers::arrayView(ExtensionList)}
-    };
-
     /* Get first future (not supported) version */
     std::size_t future = 0;
-    while(versions[future].version != Version::None && isVersionSupported(versions[future].version))
+    while(KnownExtensionsForVersion[future].version != Version::None && isVersionSupported(KnownExtensionsForVersion[future].version))
         ++future;
 
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
-        for(const Extension& extension: versions[i].extensions)
+        for(const Extension& extension: KnownExtensionsForVersion[i].extensions)
             _extensionStatus.set(extension.index(), true);
 
     /* Check for presence of future and vendor extensions */
-    const std::vector<std::string> extensions = extensionStrings();
-    for(const std::string& extension: extensions) {
-        for(std::size_t i = future; i != Containers::arraySize(versions); ++i)  {
-            const auto found = std::lower_bound(versions[i].extensions.begin(), versions[i].extensions.end(), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
-            if(found != versions[i].extensions.end() && found->string() == extension) {
-                _supportedExtensions.push_back(*found);
-                _extensionStatus.set(found->index(), true);
-            }
+    const Containers::Array<Containers::StringView> extensions = extensionStrings();
+    for(const Containers::StringView extension: extensions) {
+        if(const Extension* found = findExtension(extension, future)) {
+            arrayAppend(_supportedExtensions, *found);
+            _extensionStatus.set(found->index(), true);
         }
     }
 
@@ -856,7 +882,7 @@ bool Context::tryCreate() {
     for(auto& i: _extensionRequiredVersion) i = Version::None;
 
     /* Initialize required versions from extension info */
-    for(const auto& version: versions)
+    for(const auto& version: KnownExtensionsForVersion)
         for(const Extension& extension: version.extensions)
             _extensionRequiredVersion[extension.index()] = extension.requiredVersion();
 
@@ -873,31 +899,16 @@ bool Context::tryCreate() {
 
     /* Print some info and initialize state tracker (which also prints some
        more info). Mesa's renderer string has a space at the end, trim that. */
-    Debug{output} << "Renderer:" << Utility::String::trim(rendererString()) << "by" << vendorString();
+    Debug{output} << "Renderer:" << rendererString().trimmed() << "by" << vendorString();
     Debug{output} << "OpenGL version:" << versionString();
 
     /* Disable extensions as requested by the user */
     if(!_disabledExtensions.empty()) {
-        bool headerPrinted = false;
+        Debug{output} << "Disabling extensions:";
 
-        /* Disable extensions that are known and supported and print a message
-           for each */
-        for(auto&& extension: _disabledExtensions) {
-            for(const auto& version: versions)  {
-                const auto found = std::lower_bound(version.extensions.begin(), version.extensions.end(), extension, [](const Extension& a, const std::string& b) { return a.string() < b; });
-                /* No error message here because some of the extensions could
-                   be from Vulkan or OpenAL. That also means we print the
-                   header only when we actually have something to say */
-                if(found == version.extensions.end() || found->string() != extension)
-                    continue;
-
-                _extensionRequiredVersion[found->index()] = Version::None;
-                if(!headerPrinted) {
-                    Debug{output} << "Disabling extensions:";
-                    headerPrinted = true;
-                }
-                Debug{output} << "   " << extension;
-            }
+        for(const Extension& extension: _disabledExtensions) {
+            _extensionRequiredVersion[extension.index()] = Version::None;
+            Debug{output} << "   " << extension.string();
         }
     }
 
@@ -939,45 +950,42 @@ bool Context::tryCreate() {
     return true;
 }
 
-std::string Context::vendorString() const {
-    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+Containers::StringView Context::vendorString() const {
+    return {reinterpret_cast<const char*>(glGetString(GL_VENDOR)), Containers::StringViewFlag::Global};
 }
 
-std::string Context::rendererString() const {
-    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+Containers::StringView Context::rendererString() const {
+    return {reinterpret_cast<const char*>(glGetString(GL_RENDERER)), Containers::StringViewFlag::Global};
 }
 
-std::string Context::versionString() const {
-    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+Containers::StringView Context::versionString() const {
+    return {reinterpret_cast<const char*>(glGetString(GL_VERSION)), Containers::StringViewFlag::Global};
 }
 
-std::string Context::shadingLanguageVersionString() const {
-    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+Containers::StringView Context::shadingLanguageVersionString() const {
+    return {reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)), Containers::StringViewFlag::Global};
 }
 
-std::vector<std::string> Context::shadingLanguageVersionStrings() const {
+Containers::Array<Containers::StringView> Context::shadingLanguageVersionStrings() const {
     #ifndef MAGNUM_TARGET_GLES
     GLint versionCount = 0;
     glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &versionCount);
 
-    /* The implementation doesn't yet support this query (< OpenGL 4.3) */
-    if(!versionCount)
-        return {shadingLanguageVersionString()};
-
-    /* Get all of them */
-    std::vector<std::string> versions;
-    versions.reserve(versionCount);
-    for(GLint i = 0; i != versionCount; ++i)
-        versions.emplace_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
-    return versions;
-    #else
-    return {shadingLanguageVersionString()};
+    /* If zero, the implementation doesn't yet support this query (< GL4.3) */
+    /** @todo doesn't this throw a GL error? some better handling? */
+    if(versionCount) {
+        /* Get all of them */
+        Containers::Array<Containers::StringView> versions{std::size_t(versionCount)};
+        for(GLint i = 0; i != versionCount; ++i)
+            versions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)), Containers::StringViewFlag::Global};
+        return versions;
+    }
     #endif
+
+    return Containers::array({shadingLanguageVersionString()});
 }
 
-std::vector<std::string> Context::extensionStrings() const {
-    std::vector<std::string> extensions;
-
+Containers::Array<Containers::StringView> Context::extensionStrings() const {
     /* If we have GL 3.0 / GLES 3.0 at least, ask the new way. Otherwise don't
        even attempt to query GL_NUM_EXTENSIONS as that would cause a GL error
        on GL 2.1. Happens with Mesa's zink that's just 2.1 currently (Apr 2020)
@@ -989,9 +997,10 @@ std::vector<std::string> Context::extensionStrings() const {
     {
         GLint extensionCount = 0;
         glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
-        extensions.reserve(extensionCount);
+        Containers::Array<Containers::StringView> extensions{std::size_t(extensionCount)};
         for(GLint i = 0; i != extensionCount; ++i)
-            extensions.emplace_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
+            extensions[i] = {reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)), Containers::StringViewFlag::Global};
+        return extensions;
     }
     #ifndef MAGNUM_TARGET_GLES3
     else
@@ -1000,14 +1009,8 @@ std::vector<std::string> Context::extensionStrings() const {
 
     #ifndef MAGNUM_TARGET_GLES3
     /* OpenGL 2.1 / OpenGL ES 2.0 doesn't have glGetStringi() */
-    {
-        /* Don't crash when glGetString() returns nullptr (i.e. don't trust the
-           old implementations) */
-        extensions = Utility::String::splitWithoutEmptyParts(Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS))), ' ');
-    }
+    return Containers::StringView{reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)), Containers::StringViewFlag::Global}.splitWithoutEmptyParts();
     #endif
-
-    return extensions;
 }
 
 #ifndef MAGNUM_TARGET_GLES

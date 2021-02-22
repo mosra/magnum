@@ -195,6 +195,8 @@ class MagnumInfo: public Platform::WindowlessApplication {
         int exec() override { return 0; }
 };
 
+using namespace Containers::Literals;
+
 MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
@@ -359,7 +361,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug{} << "Detected driver:" << c.detectedDriver();
 
     Debug{} << "Supported GLSL versions:";
-    Debug{} << "   " << Utility::String::joinWithoutEmptyParts(c.shadingLanguageVersionStrings(), ", ");
+    Debug{} << "   " << ", "_s.joinWithoutEmptyParts(c.shadingLanguageVersionStrings());
 
     if(args.isSet("extension-strings")) {
         Debug{} << "Extension strings:" << Debug::newline

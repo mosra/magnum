@@ -458,6 +458,20 @@ See also:
     @ref Corrade::Containers::ArrayView are now removed. This should have a
     significant positive effect on compile times of code using the @ref GL,
     @ref Audio, @ref Trade and @ref Text libraries
+-   As part of the ongoing STL header dependency cleanup,
+    @ref GL::Context::vendorString(),
+    @relativeref{GL::Context,rendererString()},
+    @relativeref{GL::Context,versionString()},
+    @relativeref{GL::Context,shadingLanguageVersionString()},
+    @relativeref{GL::Context,shadingLanguageVersionStrings()} and
+    @relativeref{GL::Context,extensionStrings()} now return
+    @relativeref{Corrade,Containers::StringView} or a
+    @relativeref{Corrade,Containers::Array} /
+    @relativeref{Corrade,Containers::ArrayView} of them, instead of a
+    @ref std::string and a @ref std::vector. For at least some backwards
+    compatibility the @ref Corrade/Containers/StringStl.h header is included to
+    provide implicit conversions to a @ref std::string, but in most cases
+    you'll be forced to change the code that uses those APIs.
 -   @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 were present
     on ES2 builds by mistake --- the @gl_extension{EXT,texture_sRGB_R8} and
     @gl_extension{EXT,texture_sRGB_RG8} extensions require OpenGL ES 3.0 at

@@ -25,6 +25,7 @@
 
 #include "BufferState.h"
 
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"

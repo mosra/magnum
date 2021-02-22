@@ -24,6 +24,8 @@
 */
 
 #include <algorithm>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -38,6 +40,8 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
+
+    void stringFlags();
 
     void makeCurrent();
 
@@ -56,6 +60,8 @@ struct ContextGLTest: OpenGLTester {
 
 ContextGLTest::ContextGLTest() {
     addTests({
+        &ContextGLTest::stringFlags,
+
         &ContextGLTest::makeCurrent,
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -69,6 +75,45 @@ ContextGLTest::ContextGLTest() {
         &ContextGLTest::supportedVersion,
         &ContextGLTest::isExtensionSupported,
         &ContextGLTest::isExtensionDisabled});
+}
+
+void ContextGLTest::stringFlags() {
+    Context& context = Context::current();
+
+    CORRADE_VERIFY(!context.vendorString().isEmpty());
+    CORRADE_COMPARE(context.vendorString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.rendererString().isEmpty());
+    CORRADE_COMPARE(context.rendererString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.versionString().isEmpty());
+    CORRADE_COMPARE(context.versionString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    CORRADE_VERIFY(!context.shadingLanguageVersionString().isEmpty());
+    CORRADE_COMPARE(context.shadingLanguageVersionString().flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+
+    for(Containers::StringView languageVersion: context.shadingLanguageVersionStrings()) {
+        /* One of these might be empty */
+        CORRADE_COMPARE(languageVersion.flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+    }
+
+    for(Containers::StringView extension: context.extensionStrings()) {
+        CORRADE_VERIFY(!extension.isEmpty());
+
+        /* On GL 2.1 and GLES2 the extensions are split from a long string and
+           thus aren't all null-terminated, only the last one */
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isVersionSupported(Version::GL300))
+        #else
+        if(context.isVersionSupported(Version::GLES300))
+        #endif
+        {
+            CORRADE_COMPARE(extension.flags(), Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+        } else {
+            CORRADE_COMPARE_AS(extension.flags(), Containers::StringViewFlag::Global,
+                TestSuite::Compare::GreaterOrEqual);
+        }
+    }
 }
 
 void ContextGLTest::makeCurrent() {
@@ -166,7 +211,7 @@ void ContextGLTest::isExtensionSupported() {
         CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
 
     /* Test that we have proper extension list parser */
-    std::vector<std::string> extensions = Context::current().extensionStrings();
+    Containers::Array<Containers::StringView> extensions = Context::current().extensionStrings();
     CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),
         Extensions::EXT::texture_filter_anisotropic::string()) != extensions.end());
     CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),

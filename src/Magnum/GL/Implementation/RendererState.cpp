@@ -25,6 +25,8 @@
 
 #include "RendererState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/PixelStorage.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

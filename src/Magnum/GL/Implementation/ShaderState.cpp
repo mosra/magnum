@@ -27,6 +27,8 @@
 
 /* Needed only for Emscripten+pthread- / Windows+Intel-specific workarounds,
    but I won't bother crafting the preprocessor logic for this. */
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Shader.h"
 

@@ -34,6 +34,7 @@
 #ifdef MAGNUM_PLATFORM_USE_EGL
 #include <cstring>
 #include <EGL/egl.h>
+#include <Corrade/Containers/StringView.h>
 #include "Magnum/GL/Context.h"
 #endif
 

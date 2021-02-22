@@ -25,6 +25,8 @@
 
 #include "ContextState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/Context.h"
 
 namespace Magnum { namespace GL { namespace Implementation {

@@ -26,6 +26,7 @@
 #include "WindowlessWglApplication.h"
 
 #include <cstring>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 

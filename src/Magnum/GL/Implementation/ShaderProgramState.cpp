@@ -25,6 +25,8 @@
 
 #include "ShaderProgramState.h"
 
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

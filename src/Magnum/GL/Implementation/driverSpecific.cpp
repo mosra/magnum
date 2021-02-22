@@ -23,11 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstring>
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/GrowableArray.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -37,14 +34,16 @@ namespace Magnum { namespace GL {
 
 namespace {
 
-/* Search the code for the following strings to see where they are implemented. */
-const char* KnownWorkarounds[]{
+using namespace Containers::Literals;
+
+/* Search the code for the following strings to see where they are implemented */
+constexpr Containers::StringView KnownWorkarounds[]{
 /* [workarounds] */
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 /* ANGLE's shader linker insists on returning a message consisting of a
    single newline on success, causing annoying noise in the console. Similar to
    "intel-windows-chatty-shader-compiler". */
-"angle-chatty-shader-compiler",
+"angle-chatty-shader-compiler"_s,
 #endif
 
 #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
@@ -69,7 +68,7 @@ const char* KnownWorkarounds[]{
    data modification on *any* buffer, which would have extreme perf
    implications. So FORTUNATELY unbinding the textures worked around this too,
    and is a much nicer workaround after all. */
-"apple-buffer-texture-unbind-on-buffer-modify",
+"apple-buffer-texture-unbind-on-buffer-modify"_s,
 #endif
 
 #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
@@ -77,7 +76,7 @@ const char* KnownWorkarounds[]{
    running from the Android shell (through ADB). No such error happens in an
    APK. Detecting using the $SHELL environment variable and disabling
    GL_EXT_disjoint_timer_query in that case. */
-"arm-mali-timer-queries-oom-in-shell",
+"arm-mali-timer-queries-oom-in-shell"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
@@ -90,30 +89,30 @@ const char* KnownWorkarounds[]{
    svga3d-texture-upload-slice-by-slice workaround. The compressed image up/
    download is affected as well, but we lack APIs for easy format-dependent
    slicing and offset calculation, so those currently still fail. */
-"amd-windows-cubemap-image3d-slice-by-slice",
+"amd-windows-cubemap-image3d-slice-by-slice"_s,
 
 /* AMD Windows drivers have broken the DSA glCopyTextureSubImage3D(), returning
    GL_INVALID_VALUE. The non-DSA code path works. */
-"amd-windows-broken-dsa-cubemap-copy",
+"amd-windows-broken-dsa-cubemap-copy"_s,
 
 /* AMD Windows glCreateQueries() works for everything except
    GL_TRANSFORM_FEEDBACK_[STREAM_]OVERFLOW, probably they just forgot to adapt
    it to this new GL 4.6 addition. Calling the non-DSA code path in that case
    instead. Similar to "mesa-dsa-createquery-except-pipeline-stats". */
-"amd-windows-dsa-createquery-except-xfb-overflow",
+"amd-windows-dsa-createquery-except-xfb-overflow"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
 /* Creating core context with specific version on AMD and NV proprietary
    drivers on Linux/Windows and Intel drivers on Windows causes the context to
    be forced to given version instead of selecting latest available version */
-"no-forward-compatible-core-context",
+"no-forward-compatible-core-context"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
 /* On Windows Intel drivers ARB_shading_language_420pack is exposed in GLSL
    even though the extension (e.g. binding keyword) is not supported */
-"intel-windows-glsl-exposes-unsupported-shading-language-420pack",
+"intel-windows-glsl-exposes-unsupported-shading-language-420pack"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -121,12 +120,12 @@ const char* KnownWorkarounds[]{
    ARB_pipeline_statistics_query, probably just forgotten. Calling the non-DSA
    code path in that case instead. Similar to
    "amd-windows-dsa-createquery-except-xfb-overflow". */
-"mesa-dsa-createquery-except-pipeline-stats",
+"mesa-dsa-createquery-except-pipeline-stats"_s,
 
 /* Forward-compatible GL contexts on Mesa still report line width range as
    [1, 7], but setting wide line width fails. According to the specs the max
    value on forward compatible contexts should be 1.0, so patching it. */
-"mesa-forward-compatible-line-width-range",
+"mesa-forward-compatible-line-width-range"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
@@ -135,31 +134,31 @@ const char* KnownWorkarounds[]{
    arrays are not in scope anymore. Enabling *synchronous* debug output
    circumvents this bug. Can be triggered by running TransformFeedbackGLTest
    with GL_KHR_debug extension disabled. */
-"nv-windows-dangling-transform-feedback-varying-names",
+"nv-windows-dangling-transform-feedback-varying-names"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL 1.30 on
    NVidia and 1.40 on macOS. Everything is fine when using a newer GLSL
    version. */
-"no-layout-qualifiers-on-old-glsl",
+"no-layout-qualifiers-on-old-glsl"_s,
 
 /* NVidia drivers (358.16) report compressed block size from internal format
    query in bits instead of bytes */
-"nv-compressed-block-size-in-bits",
+"nv-compressed-block-size-in-bits"_s,
 
 /* NVidia drivers (358.16) report different compressed image size for cubemaps
    based on whether the texture is immutable or not and not based on whether
    I'm querying all faces (ARB_DSA) or a single face (non-DSA, EXT_DSA) */
-"nv-cubemap-inconsistent-compressed-image-size",
+"nv-cubemap-inconsistent-compressed-image-size"_s,
 
 /* NVidia drivers (358.16) return only the first slice of compressed cube map
    image when querying all six slices using the ARB_DSA API */
-"nv-cubemap-broken-full-compressed-image-query",
+"nv-cubemap-broken-full-compressed-image-query"_s,
 
 /* NVidia drivers return 0 when asked for GL_CONTEXT_PROFILE_MASK, so it needs
    to be worked around by asking for GL_ARB_compatibility */
-"nv-zero-context-profile-mask",
+"nv-zero-context-profile-mask"_s,
 
 /* (Headless) EGL contexts for desktop GL on NVidia 384 and 390 drivers don't
    have correct statically linked GL 1.0 and 1.1 functions (such as
@@ -167,7 +166,7 @@ const char* KnownWorkarounds[]{
    eglGetProcAddress(). Doesn't seem to happen on pre-384 and 396, but it's not
    possible to get driver version through EGL, so enabling this unconditionally
    on all EGL NV contexts. */
-"nv-egl-incorrect-gl11-function-pointers",
+"nv-egl-incorrect-gl11-function-pointers"_s,
 
 /* On NV driver 450.80.02, eglQueryDeviceAttribEXT() segfaults when querying
    GPUs that the user does not have access to (i.e. via cgroup). Instead,
@@ -175,19 +174,19 @@ const char* KnownWorkarounds[]{
    error that can be retrieved via eglGetError() to see if the user has access
    to that device. On well-behaved driver versions, eglQueryDeviceAttribEXT()
    returns false instead of segfaulting. */
-"nv-egl-crashy-query-device-attrib",
+"nv-egl-crashy-query-device-attrib"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 /* SVGA3D (VMware host GL driver) glDrawArrays() draws nothing when the vertex
    buffer memory is initialized using glNamedBufferData() from ARB_DSA. Using
    the non-DSA glBufferData() works. */
-"svga3d-broken-dsa-bufferdata",
+"svga3d-broken-dsa-bufferdata"_s,
 
 /* SVGA3D does out-of-bound writes in some cases of glGetTexSubImage(), leading
    to memory corruption on client machines. That's nasty, so the whole
    ARB_get_texture_sub_image is disabled. */
-"svga3d-gettexsubimage-oob-write",
+"svga3d-gettexsubimage-oob-write"_s,
 #endif
 
 /* SVGA3D has broken handling of glTex[ture][Sub]Image*D() for 1D arrays, 2D
@@ -196,25 +195,25 @@ const char* KnownWorkarounds[]{
    with buffer images. Seems to be fixed in Mesa 13, but I have no such system
    to verify that on.
    https://github.com/mesa3d/mesa/commit/2aa9ff0cda1f6ad97c83d5583fab7a84efabe19e */
-"svga3d-texture-upload-slice-by-slice",
+"svga3d-texture-upload-slice-by-slice"_s,
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
 /* Shader sources containing UTF-8 characters are converted to empty strings
    when running on Emscripten with -s USE_PTHREADS=1. Working around that by
    replacing all chars > 127 with spaces. Relevant code:
    https://github.com/kripken/emscripten/blob/7f89560101843198787530731f40a65288f6f15f/src/fetch-worker.js#L54-L58 */
-"emscripten-pthreads-broken-unicode-shader-sources",
+"emscripten-pthreads-broken-unicode-shader-sources"_s,
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 /* Empty EGL_CONTEXT_FLAGS_KHR cause SwiftShader 3.3.0.1 to fail context
    creation with EGL_BAD_ATTRIBUTE. Not sending the flags then. Relevant code:
    https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L810 */
-"swiftshader-no-empty-egl-context-flags",
+"swiftshader-no-empty-egl-context-flags"_s,
 
 /* SwiftShader 3.3.0.1 crashes deep inside eglMakeCurrent() when using
    EGL_NO_SURFACE. Supplying a 32x32 PBuffer to work around that. */
-"swiftshader-egl-context-needs-pbuffer",
+"swiftshader-egl-context-needs-pbuffer"_s,
 #endif
 
 #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -225,14 +224,14 @@ const char* KnownWorkarounds[]{
    ES3. OTOH, glVertexAttribDivisor is there for both ANGLE and EXT. Relevant
    code: https://github.com/google/swiftshader/blob/ad5c2952ca88730c07e04f6f1566194b66860c26/src/OpenGL/libGLESv2/libGLESv2.cpp#L6352-L6357
    Disabling the two extensions on ES2 contexts to avoid nullptr crashes. */
-"swiftshader-no-es2-draw-instanced-entrypoints",
+"swiftshader-no-es2-draw-instanced-entrypoints"_s,
 
 /* SwiftShader 4.1.0 on ES2 contexts reports GL_OES_texture_3D but from all its
    entrypoints only glTexImage3DOES is present, all others are present only in
    the ES3 unsuffixed versions. Relevant code:
    https://github.com/google/swiftshader/blob/ad5c2952ca88730c07e04f6f1566194b66860c26/src/OpenGL/libGLESv2/libGLESv2.cpp#L6504
    Disabling the extension on ES2 contexts to avoid nullptr crashes. */
-"swiftshader-no-es2-oes-texture-3d-entrypoints",
+"swiftshader-no-es2-oes-texture-3d-entrypoints"_s,
 #endif
 
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -242,14 +241,14 @@ const char* KnownWorkarounds[]{
    otherwise. No other driver does that. As a workaround, setting
    Buffer::TargetHint::TransformFeedback will make it use
    Buffer::TargetHint::Array instead, as that works okay. */
-"swiftshader-broken-xfb-buffer-binding-target",
+"swiftshader-broken-xfb-buffer-binding-target"_s,
 
 /* SwiftShader 4.1.0 does implement gl_VertexID for ES3 contexts, but in
    practice it doesn't work, returning a constant value. In order to make this
    easier to check, there's a dummy MAGNUM_shader_vertex_id extension that's
    defined on all GL 3.0+ and GLES 3.0+ / WebGL 2+ contexts *except* for
    SwiftShader. */
-"swiftshader-broken-shader-vertex-id",
+"swiftshader-broken-shader-vertex-id"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -258,7 +257,7 @@ const char* KnownWorkarounds[]{
    bound for reading. Relevant code:
    https://github.com/mesa3d/mesa/blob/212c0c630a849e4737e2808a993d708cbb2f18f7/src/mesa/main/framebuffer.c#L841-L843
    Workaround is to explicitly bind the framebuffer for reading. */
-"mesa-implementation-color-read-format-dsa-explicit-binding",
+"mesa-implementation-color-read-format-dsa-explicit-binding"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
@@ -272,7 +271,7 @@ const char* KnownWorkarounds[]{
    glGetInteger() is actually able to return a correct value in *one
    circumstance*, it's preferrable to the other random shit the driver is
    doing. */
-"intel-windows-implementation-color-read-format-completely-broken",
+"intel-windows-implementation-color-read-format-completely-broken"_s,
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
@@ -306,8 +305,8 @@ const char* KnownWorkarounds[]{
      on DSA that's not there. It's clearly Intel drivers fault.
    - With both enabled, things seem to be fine, and I hope it stays that way
      also for future driver updates. */
-"intel-windows-crazy-broken-buffer-dsa",
-"intel-windows-crazy-broken-vao-dsa",
+"intel-windows-crazy-broken-buffer-dsa"_s,
+"intel-windows-crazy-broken-vao-dsa"_s,
 
 /* ARB_direct_state_access implementation on Intel Windows drivers has broken
    *everything* related to cube map textures (but not cube map arrays) -- data
@@ -315,37 +314,37 @@ const char* KnownWorkarounds[]{
    complaining about "Wrong <func> 6 provided for <target> 34067" and similar
    (GL_TEXTURE_CUBE_MAP is 34067). Using the non-DSA code paths as a
    workaround (for the 3D image up/download as well). */
-"intel-windows-broken-dsa-for-cubemaps",
+"intel-windows-broken-dsa-for-cubemaps"_s,
 
 /* DSA glBindTextureUnit() on Intel Windows drivers simply doesn't work when
    passing 0 to it. Non-zero IDs work correctly except for cube maps. Using the
    non-DSA code path for unbinding and cube maps as a workaround. */
-"intel-windows-half-baked-dsa-texture-bind",
+"intel-windows-half-baked-dsa-texture-bind"_s,
 
 /* DSA glNamedFramebufferTexture() on Intel Windows drivers doesn't work for
    layered cube map array attachments. Non-layered or non-array cube map
    attachment works. Using the non-DSA code path as a workaround. */
-"intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment",
+"intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment"_s,
 
 /* DSA glClearNamedFramebuffer*() on Intel Windows drivers doesn't do anything.
    Using the non-DSA code path as a workaournd. */
-"intel-windows-broken-dsa-framebuffer-clear",
+"intel-windows-broken-dsa-framebuffer-clear"_s,
 
 /* Using DSA glCreateQueries() on Intel Windows drivers breaks
    glBeginQueryIndexed(). Using the non-DSA glGenQueries() instead makes it
    work properly. See TransformFeedbackGLTest for a test. */
-"intel-windows-broken-dsa-indexed-queries",
+"intel-windows-broken-dsa-indexed-queries"_s,
 
 /* DSA-ified "vertex layout" glVertexArrayAttribIFormat() is broken when
    passing shorts instead of full 32bit ints. Using the old-style
    glVertexAttribIPointer() works correctly. No idea if the non-DSA
    glVertexAttribIFormat() works or not. A test that triggers this issue is in
    MeshGLTest::addVertexBufferIntWithShort(). */
-"intel-windows-broken-dsa-integer-vertex-attributes",
+"intel-windows-broken-dsa-integer-vertex-attributes"_s,
 
 /* Shader compiler on Intel Windows drivers insists on telling me "No errors."
    when it should just stay silent. See also "angle-chatty-shader-compiler". */
-"intel-windows-chatty-shader-compiler",
+"intel-windows-chatty-shader-compiler"_s,
 
 /* When using more than just a vertex and fragment shader (geometry shader,
    e.g.), ARB_explicit_uniform_location on Intel silently uses wrong
@@ -359,7 +358,7 @@ const char* KnownWorkarounds[]{
    location 1, setting color to location 2 didn't work, ending up with a
    Generic error again (driver version 27). Because this is impossible to
    prevent, the extension is completely disabled on all Intel Windows drivers. */
-"intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped",
+"intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -367,13 +366,13 @@ const char* KnownWorkarounds[]{
    GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE is queried using
    glGetNamedFramebufferParameter(). Using either glGetInteger() or
    glGetFramebufferParameter() works correctly. */
-"nv-implementation-color-read-format-dsa-broken",
+"nv-implementation-color-read-format-dsa-broken"_s,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 /* ApiTrace needs an explicit initial glViewport() call to initialize its
    framebuffer size, otherwise it assumes it's zero-sized. */
-"apitrace-zero-initial-viewport",
+"apitrace-zero-initial-viewport"_s,
 #endif
 
 #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
@@ -386,10 +385,28 @@ const char* KnownWorkarounds[]{
    https://www.khronos.org/webgl/public-mailing-list/public_webgl/1705/msg00015.php
    and https://github.com/emscripten-core/emscripten/pull/9652 for the
    Emscripten-side part of this workaround. */
-"firefox-fake-disjoint-timer-query-webgl2",
+"firefox-fake-disjoint-timer-query-webgl2"_s,
 #endif
 /* [workarounds] */
 };
+
+/* I could use std::find(), right? Well, it'd be a whole lot more typing and
+   an #include <algorithm> *and* #include <iterator> or whatever as well,
+   because apparently ONE CAN'T GET std::begin() / std::end() without including
+   tens thousands lines of irrelevant shit, FFS.
+
+   Also the comparison to array end to discover if it wasn't found is just a
+   useless verbose crap shit as well, so we'll do better here and return a null
+   view instead.
+
+   Since the workaround list isn't really huge for an average platform (16 on
+   Linux, Windows probably ~30?) and there's very few used heavily, I won't
+   bother with some binary search, which needs extra testing effort. */
+Containers::StringView findWorkaround(Containers::StringView workaround) {
+    for(Containers::StringView i: KnownWorkarounds)
+        if(workaround == i) return i;
+    return {};
+}
 
 }
 
@@ -398,33 +415,33 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    const std::string renderer = rendererString();
-    const std::string vendor = vendorString();
-    const std::string version = versionString();
+    const Containers::StringView renderer = rendererString();
+    const Containers::StringView vendor = vendorString();
+    const Containers::StringView version = versionString();
 
     /* Apple has its own drivers */
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     /* AMD binary desktop drivers */
-    if(vendor.find("ATI Technologies Inc.") != std::string::npos)
+    if(vendor.contains("ATI Technologies Inc."_s))
         return *_detectedDrivers |= DetectedDriver::Amd;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /* Intel Windows drivers */
-    if(vendor.find("Intel") != std::string::npos)
+    if(vendor.contains("Intel"_s))
         return *_detectedDrivers |= DetectedDriver::IntelWindows;
     #endif
 
     /* Mesa drivers */
-    if(version.find("Mesa") != std::string::npos) {
+    if(version.contains("Mesa"_s)) {
         *_detectedDrivers |= DetectedDriver::Mesa;
 
-        if(renderer.find("SVGA3D") != std::string::npos)
+        if(renderer.contains("SVGA3D"_s))
             *_detectedDrivers |= DetectedDriver::Svga3D;
 
         return *_detectedDrivers;
     }
 
-    if(vendor.find("NVIDIA Corporation") != std::string::npos)
+    if(vendor.contains("NVIDIA Corporation"_s))
         return *_detectedDrivers |= DetectedDriver::NVidia;
     #endif
 
@@ -433,53 +450,63 @@ auto Context::detectedDriver() -> DetectedDrivers {
     /* ANGLE. Can detect easily on ES, have to resort to hacks on WebGL.
        Sources: http://stackoverflow.com/a/20149090 + http://webglreport.com */
     #ifndef MAGNUM_TARGET_WEBGL
-    if(renderer.find("ANGLE") != std::string::npos)
+    if(renderer.contains("ANGLE"_s))
         return *_detectedDrivers |= DetectedDriver::Angle;
     #else
     {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
-        if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer")
+        if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer"_s)
             return *_detectedDrivers |= DetectedDriver::Angle;
     }
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     /* SwiftShader */
-    if(renderer.find("SwiftShader") != std::string::npos)
+    if(renderer.contains("SwiftShader"_s))
         return *_detectedDrivers |= DetectedDriver::SwiftShader;
     #endif
     #endif
 
     #ifdef CORRADE_TARGET_ANDROID
-    if(vendor.find("ARM") != std::string::npos && renderer.find("Mali") != std::string::npos)
+    if(vendor.contains("ARM"_s) && renderer.contains("Mali"_s))
         return *_detectedDrivers |= DetectedDriver::ArmMali;
     #endif
 
     return *_detectedDrivers;
 }
 
-void Context::disableDriverWorkaround(const std::string& workaround) {
+void Context::disableDriverWorkaround(const Containers::StringView workaround) {
+    /* Find the workaround. Note that we'll add the found view to the array
+       and not the passed view, as the found view is guaranteed to stay in
+       scope */
+    const Containers::StringView found = findWorkaround(workaround);
+
     /* Ignore unknown workarounds */
     /** @todo this will probably cause false positives when both GL and Vulkan
         is used together? */
-    if(std::find(std::begin(KnownWorkarounds), std::end(KnownWorkarounds), workaround) == std::end(KnownWorkarounds)) {
-        Warning() << "GL: unknown workaround" << workaround;
+    if(found.isEmpty()) {
+        Warning{} << "GL: unknown workaround" << workaround;
         return;
     }
-    _driverWorkarounds.emplace_back(workaround, true);
+
+    arrayAppend(_driverWorkarounds, Containers::InPlaceInit, found, true);
 }
 
-bool Context::isDriverWorkaroundDisabled(const char* workaround) {
-    CORRADE_INTERNAL_ASSERT(std::find_if(std::begin(KnownWorkarounds), std::end(KnownWorkarounds), [&](const char* a) {
-        return std::strcmp(a, workaround) == 0;
-    }) != std::end(KnownWorkarounds));
+bool Context::isDriverWorkaroundDisabled(const Containers::StringView workaround) {
+    /* Find the workaround. Note that we'll add the found view to the array
+       and not the passed view, as the found view is guaranteed to stay in
+       scope */
+    Containers::StringView found = findWorkaround(workaround);
+    CORRADE_INTERNAL_ASSERT(!found.isEmpty());
 
     /* If the workaround was already asked for or disabled, return its state,
-       otherwise add it to the list as used one */
+       otherwise add it to the list as used one. Here we again cheat a bit and
+       compare just data pointers instead of the whole string as we store only
+       the views in the KnownWorkarounds list. */
     for(const auto& i: _driverWorkarounds)
-        if(i.first == workaround) return i.second;
-    _driverWorkarounds.emplace_back(workaround, false);
+        if(i.first.data() == found.data()) return i.second;
+    arrayAppend(_driverWorkarounds, Containers::InPlaceInit, found, false);
     return false;
 }
 
@@ -489,17 +516,17 @@ void Context::setupDriverWorkarounds() {
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl")) {
+    if(!isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"_s)) {
         _setRequiredVersion(ARB::explicit_attrib_location, GL320);
         _setRequiredVersion(ARB::explicit_uniform_location, GL320);
         _setRequiredVersion(ARB::shading_language_420pack, GL320);
     }
 
     #ifdef CORRADE_TARGET_WINDOWS
-    if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"))
+    if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"_s))
         _setRequiredVersion(ARB::shading_language_420pack, None);
 
-    if((detectedDriver() & DetectedDriver::IntelWindows) && isExtensionSupported<Extensions::ARB::explicit_uniform_location>() && !isDriverWorkaroundDisabled("intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped")) {
+    if((detectedDriver() & DetectedDriver::IntelWindows) && isExtensionSupported<Extensions::ARB::explicit_uniform_location>() && !isDriverWorkaroundDisabled("intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped"_s)) {
         _setRequiredVersion(ARB::explicit_uniform_location, None);
     }
     #endif
@@ -508,7 +535,7 @@ void Context::setupDriverWorkarounds() {
     #ifndef MAGNUM_TARGET_GLES
     if((detectedDriver() & DetectedDriver::Svga3D) &&
        isExtensionSupported<Extensions::ARB::get_texture_sub_image>() &&
-       !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"))
+       !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"_s))
         _setRequiredVersion(ARB::get_texture_sub_image, None);
     #endif
 
@@ -516,26 +543,26 @@ void Context::setupDriverWorkarounds() {
     if(detectedDriver() & Context::DetectedDriver::SwiftShader) {
         if((isExtensionSupported<Extensions::ANGLE::instanced_arrays>() ||
             isExtensionSupported<Extensions::EXT::instanced_arrays>()) &&
-           !isDriverWorkaroundDisabled("swiftshader-no-es2-draw-instanced-entrypoints")) {
+           !isDriverWorkaroundDisabled("swiftshader-no-es2-draw-instanced-entrypoints"_s)) {
             _setRequiredVersion(ANGLE::instanced_arrays, None);
             _setRequiredVersion(EXT::instanced_arrays, None);
         }
 
         if(isExtensionSupported<Extensions::OES::texture_3D>() &&
-           !isDriverWorkaroundDisabled("swiftshader-no-es2-oes-texture-3d-entrypoints"))
+           !isDriverWorkaroundDisabled("swiftshader-no-es2-oes-texture-3d-entrypoints"_s))
             _setRequiredVersion(OES::texture_3D, None);
     }
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if((detectedDriver() & Context::DetectedDriver::SwiftShader) &&
-       !isDriverWorkaroundDisabled("swiftshader-broken-shader-vertex-id"))
+       !isDriverWorkaroundDisabled("swiftshader-broken-shader-vertex-id"_s))
         _setRequiredVersion(MAGNUM::shader_vertex_id, None);
     #endif
 
     #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
     if((detectedDriver() & Context::DetectedDriver::ArmMali) &&
-        std::getenv("SHELL") && !isDriverWorkaroundDisabled("arm-mali-timer-queries-oom-in-shell"))
+        std::getenv("SHELL") && !isDriverWorkaroundDisabled("arm-mali-timer-queries-oom-in-shell"_s))
         _setRequiredVersion(EXT::disjoint_timer_query, None);
     #endif
 
@@ -565,7 +592,7 @@ void Context::setupDriverWorkarounds() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(isExtensionSupported<Extensions::GREMEDY::string_marker>() &&
-       !isDriverWorkaroundDisabled("apitrace-zero-initial-viewport")) {
+       !isDriverWorkaroundDisabled("apitrace-zero-initial-viewport"_s)) {
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
@@ -573,9 +600,9 @@ void Context::setupDriverWorkarounds() {
     #endif
 
     #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
-    if(rendererString() == "Mozilla") {
+    if(rendererString() == "Mozilla"_s) {
         for(const auto& extension: extensionStrings()) {
-            if(extension == "GL_EXT_disjoint_timer_query" && !isDriverWorkaroundDisabled("firefox-fake-disjoint-timer-query-webgl2")) {
+            if(extension == "GL_EXT_disjoint_timer_query"_s && !isDriverWorkaroundDisabled("firefox-fake-disjoint-timer-query-webgl2"_s)) {
                 _extensionStatus.set(Extensions::EXT::disjoint_timer_query_webgl2::Index, true);
             }
         }
