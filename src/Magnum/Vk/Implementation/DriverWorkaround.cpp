@@ -78,8 +78,8 @@ constexpr Containers::StringView KnownWorkarounds[]{
    Moreover, based on the experience with GL, I don't expect there being too
    many workarounds used heavily (10 at most, maybe?) so I won't bother with
    some binary search, which needs extra testing effort. */
-Containers::StringView findWorkaround(Containers::StringView workaround) {
-    for(Containers::StringView i: KnownWorkarounds)
+Containers::StringView findWorkaround(const Containers::StringView workaround) {
+    for(const Containers::StringView i: KnownWorkarounds)
         if(workaround == i) return i;
     return {};
 }
@@ -90,7 +90,7 @@ void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>
     /* Find the workaround. Note that we'll add the found view to the array
        and not the passed view, as the found view is guaranteed to stay in
        scope */
-    Containers::StringView found = findWorkaround(workaround);
+    const Containers::StringView found = findWorkaround(workaround);
 
     /* Ignore unknown workarounds */
     /** @todo this will probably cause false positives when both GL and Vulkan
@@ -105,7 +105,7 @@ void disableWorkaround(Containers::Array<std::pair<Containers::StringView, bool>
 
 Containers::Array<std::pair<Containers::StringView, bool>> disableAllWorkarounds() {
     Containers::Array<std::pair<Containers::StringView, bool>> encounteredWorkarounds;
-    for(Containers::StringView i: KnownWorkarounds)
+    for(const Containers::StringView i: KnownWorkarounds)
         arrayAppend(encounteredWorkarounds, Containers::InPlaceInit, i, true);
     return encounteredWorkarounds;
 }

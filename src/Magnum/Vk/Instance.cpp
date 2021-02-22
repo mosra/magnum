@@ -355,7 +355,7 @@ template<class T> void Instance::initializeExtensions(const Containers::ArrayVie
             InstanceExtension::extensions(Version::Vk11),
           /*InstanceExtension::extensions(Version::Vk12) is empty */
         }) {
-            auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const InstanceExtension& a, const T& b) {
+            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const InstanceExtension& a, const T& b) {
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });
             if(found->string() != extension) continue;

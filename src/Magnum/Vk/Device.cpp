@@ -141,9 +141,9 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
        we don't need to bother with String allocations. */
     Containers::StringView disabledWorkarounds = args.value<Containers::StringView>("disable-workarounds");
     if(!disabledWorkarounds.isEmpty()) {
-        Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
+        const Containers::Array<Containers::StringView> split = disabledWorkarounds.splitWithoutEmptyParts();
         arrayReserve(_state->encounteredWorkarounds, split.size());
-        for(Containers::StringView workaround: split)
+        for(const Containers::StringView workaround: split)
             Implementation::disableWorkaround(_state->encounteredWorkarounds, workaround);
     }
 
@@ -837,7 +837,7 @@ template<class T> void Device::initializeExtensions(const Containers::ArrayView<
         for(const Version version: KnownVersionsForExtensions) {
             const Containers::ArrayView<const Extension> knownExtensions =
                 Extension::extensions(version);
-            auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
+            const auto found = std::lower_bound(knownExtensions.begin(), knownExtensions.end(), extension, [](const Extension& a, const T& b) {
                 return a.string() < static_cast<const Containers::StringView&>(b);
             });
             if(found->string() != extension) continue;
