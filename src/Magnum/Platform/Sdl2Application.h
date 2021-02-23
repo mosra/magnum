@@ -1269,16 +1269,7 @@ class Sdl2Application::GLConfiguration {
          * @see @ref setFlags(), @ref GL::Context::Flags
          * @requires_gles Context flags are not available in WebGL.
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
-            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
-            #ifndef MAGNUM_TARGET_GLES
-            |SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
-            #endif
-            > Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
         #endif
 
         explicit GLConfiguration();

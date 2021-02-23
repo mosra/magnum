@@ -179,11 +179,7 @@ class WindowlessWindowsEglContext::Configuration {
          *
          * @see @ref setFlags(), @ref Context::Flags
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
         constexpr /*implicit*/ Configuration() {}
 

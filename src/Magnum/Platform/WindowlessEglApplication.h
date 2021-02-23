@@ -213,15 +213,7 @@ class WindowlessEglContext::Configuration {
          * @see @ref setFlags(), @ref Context::Flags
          * @requires_gles Context flags are not available in WebGL.
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
-            #ifndef MAGNUM_TARGET_GLES
-            |EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR
-            #endif
-            > Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
         #endif
 
         /*implicit*/ Configuration();

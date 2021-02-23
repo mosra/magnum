@@ -216,15 +216,7 @@ class WindowlessGlxContext::Configuration {
          *
          * @see @ref setFlags(), @ref Context::Flags
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, GLX_CONTEXT_DEBUG_BIT_ARB
-            #ifndef MAGNUM_TARGET_GLES
-            |GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
-            #endif
-            > Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
         /*implicit*/ Configuration();
 

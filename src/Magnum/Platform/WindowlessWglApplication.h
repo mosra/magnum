@@ -203,15 +203,7 @@ class WindowlessWglContext::Configuration {
          *
          * @see @ref setFlags(), @ref Context::Flags
          */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB
-            #ifndef MAGNUM_TARGET_GLES
-            |WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
-            #endif
-            > Flags;
-        #else
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
         /*implicit*/ Configuration();
 
