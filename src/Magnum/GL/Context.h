@@ -821,7 +821,7 @@ class MAGNUM_GL_EXPORT Context {
         friend Implementation::ContextState;
         #endif
 
-        void disableDriverWorkaround(Containers::StringView workaround);
+        MAGNUM_GL_LOCAL void disableDriverWorkaround(Containers::StringView workaround);
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_GL_LOCAL void setupDriverWorkarounds();
