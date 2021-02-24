@@ -226,6 +226,9 @@ See also:
     other context classes
 -   Undefining even more noise from `Xlib.h` (see
     [mosra/magnum#498](https://github.com/mosra/magnum/pull/498))
+-   Added @ref Platform::EmscriptenApplication::Configuration::addWindowFlags()
+    and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
+    for consistency with other application implementations
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 

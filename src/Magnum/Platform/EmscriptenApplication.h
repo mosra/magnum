@@ -1232,9 +1232,42 @@ class EmscriptenApplication::Configuration {
         /**
          * @brief Set window flags
          * @return Reference to self (for method chaining)
+         *
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
          */
         Configuration& setWindowFlags(WindowFlags windowFlags) {
             _windowFlags = windowFlags;
+            return *this;
+        }
+
+        /**
+         * @brief Add window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearWindowFlags()
+         */
+        Configuration& addWindowFlags(WindowFlags flags) {
+            _windowFlags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear window flags
+         * @return Reference to self (for method chaining)
+         * @m_since_latest
+         *
+         * Unlike @ref setWindowFlags(), ANDs the inverse of @p flags with
+         * existing instead of replacing them. Useful for removing default
+         * flags.
+         * @see @ref addWindowFlags()
+         */
+        Configuration& clearWindowFlags(WindowFlags flags) {
+            _windowFlags &= ~flags;
             return *this;
         }
 
