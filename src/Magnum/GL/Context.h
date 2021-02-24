@@ -94,9 +94,8 @@ class MAGNUM_GL_EXPORT Extension {
         /** @brief Extension string */
         constexpr const char* string() const { return _string; }
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index{index}, _requiredVersion{requiredVersion}, _coreVersion{coreVersion}, _string{string} {}
-    #endif
+        /** @brief Construct from a compile-time extension */
+        template<class E, class = typename std::enable_if<Implementation::IsExtension<E>::value>::type> constexpr /*implicit*/ Extension(const E&): _index{E::Index}, _requiredVersion{E::requiredVersion()}, _coreVersion{E::coreVersion()}, _string{E::string()} {}
 
     private:
         std::size_t _index;
