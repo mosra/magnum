@@ -432,14 +432,14 @@ TextureState::TextureState(Context& context, Containers::StaticArrayView<Impleme
         extensions[Extensions::ARB::texture_filter_anisotropic::Index] =
                    Extensions::ARB::texture_filter_anisotropic::string();
 
-        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArb;
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArbOrExt;
     } else
     #endif
     if(context.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>()) {
         extensions[Extensions::EXT::texture_filter_anisotropic::Index] =
                    Extensions::EXT::texture_filter_anisotropic::string();
 
-        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArbOrExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
     #ifndef MAGNUM_TARGET_GLES

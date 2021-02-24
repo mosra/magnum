@@ -586,10 +586,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArb(GLfloat anisotropy);
-        #endif
-        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
+        void MAGNUM_GL_LOCAL setMaxAnisotropyImplementationArbOrExt(GLfloat anisotropy);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_GL_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
