@@ -57,6 +57,14 @@ namespace GL {
 namespace Implementation {
     struct ContextState;
     struct State;
+
+    template<class...> class IsExtension;
+    template<> class IsExtension<> { public: enum: bool { value = true }; };
+    CORRADE_HAS_TYPE(IsExtension<U>, decltype(T::Index));
+    template<class T, class U, class ...Args> class IsExtension<T, U, Args...> {
+        /** @todo C++17: use &&... instead of all this */
+        public: enum: bool { value = IsExtension<T>::value && IsExtension<U, Args...>::value };
+    };
 }
 
 /**
@@ -650,8 +658,8 @@ class MAGNUM_GL_EXPORT Context {
          *      @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(),
          *      @ref isExtensionDisabled()
          */
-        template<class T> bool isExtensionSupported() const {
-            return isExtensionSupported<T>(version());
+        template<class E> bool isExtensionSupported() const {
+            return isExtensionSupported<E>(version());
         }
 
         /**
@@ -664,8 +672,9 @@ class MAGNUM_GL_EXPORT Context {
          *
          * @snippet MagnumGL.cpp Context-isExtensionSupported-version
          */
-        template<class T> bool isExtensionSupported(Version version) const {
-            return _extensionRequiredVersion[T::Index] <= version && _extensionStatus[T::Index];
+        template<class E> bool isExtensionSupported(Version version) const {
+            static_assert(Implementation::IsExtension<E>::value, "expected an OpenGL extension");
+            return _extensionRequiredVersion[E::Index] <= version && _extensionStatus[E::Index];
         }
 
         /**
@@ -688,8 +697,8 @@ class MAGNUM_GL_EXPORT Context {
          * extensions return `false` in @ref isExtensionSupported() even if
          * they are advertised as being supported by the driver.
          */
-        template<class T> bool isExtensionDisabled() const {
-            return isExtensionDisabled<T>(version());
+        template<class E> bool isExtensionDisabled() const {
+            return isExtensionDisabled<E>(version());
         }
 
         /**
@@ -698,9 +707,11 @@ class MAGNUM_GL_EXPORT Context {
          * Similar to above, but can also check for extensions which are
          * disabled only for particular versions.
          */
-        template<class T> bool isExtensionDisabled(Version version) const {
-            /* The extension is advertised, but the minimal version has been increased */
-            return T::requiredVersion() <= version && _extensionRequiredVersion[T::Index] > version;
+        template<class E> bool isExtensionDisabled(Version version) const {
+            static_assert(Implementation::IsExtension<E>::value, "expected an OpenGL extension");
+            /* The extension is advertised, but the minimal version has been
+               increased */
+            return E::requiredVersion() <= version && _extensionRequiredVersion[E::Index] > version;
         }
 
         /**

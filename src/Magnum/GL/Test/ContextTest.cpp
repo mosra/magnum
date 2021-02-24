@@ -37,6 +37,8 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void isExtension();
+
     void constructNoCreate();
     void constructCopyMove();
 
@@ -52,7 +54,9 @@ struct ContextTest: TestSuite::Tester {
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::constructNoCreate,
+    addTests({&ContextTest::isExtension,
+
+              &ContextTest::constructNoCreate,
               &ContextTest::constructCopyMove,
 
               &ContextTest::makeCurrentNoOp,
@@ -64,6 +68,45 @@ ContextTest::ContextTest() {
 
               &ContextTest::debugDetectedDriver,
               &ContextTest::debugDetectedDrivers});
+}
+
+void ContextTest::isExtension() {
+    CORRADE_VERIFY(Implementation::IsExtension<Extensions::KHR::debug>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<Extension>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<int>::value);
+
+    {
+        /* Not really a problem right now, but once people hit this we might
+           want to guard against this (especially because the Index might be
+           out of bounds) */
+        struct ALExtension {
+            enum: std::size_t { Index };
+        };
+        CORRADE_EXPECT_FAIL("AL/Vk extensions are not rejected right now.");
+        CORRADE_VERIFY(!Implementation::IsExtension<ALExtension>::value);
+    }
+
+    /* Variadic check (used in variadic addEnabledExtensions()), check that it
+       properly fails for each occurence of a non-extension */
+    CORRADE_VERIFY((Implementation::IsExtension<
+        Extensions::KHR::debug,
+        Extensions::EXT::texture_filter_anisotropic,
+        Extensions::KHR::texture_compression_astc_hdr>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extension,
+        Extensions::KHR::debug,
+        Extensions::EXT::texture_filter_anisotropic>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::debug,
+        Extension,
+        Extensions::EXT::texture_filter_anisotropic>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::debug,
+        Extensions::EXT::texture_filter_anisotropic,
+        Extension>::value));
+
+    /* Empty variadic list should return true */
+    CORRADE_VERIFY(Implementation::IsExtension<>::value);
 }
 
 void ContextTest::constructNoCreate() {
