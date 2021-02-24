@@ -31,7 +31,7 @@
  */
 #endif
 
-#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Utility.h>
 
 #include "Magnum/configure.h"
 
