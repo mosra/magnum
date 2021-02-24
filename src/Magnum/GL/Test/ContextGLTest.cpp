@@ -198,6 +198,9 @@ void ContextGLTest::stringFlags() {
                 TestSuite::Compare::GreaterOrEqual);
         }
     }
+
+    /* There should be no errors caused by any of these */
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void ContextGLTest::constructConfiguration() {
