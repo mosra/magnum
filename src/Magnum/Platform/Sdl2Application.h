@@ -1288,8 +1288,9 @@ class Sdl2Application::GLConfiguration {
          * @return Reference to self (for method chaining)
          *
          * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
-         * on OpenGL ES.
-         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
+         * on OpenGL ES. To avoid clearing default flags by accident, prefer to
+         * use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& setFlags(Flags flags) {
@@ -1823,7 +1824,9 @@ class Sdl2Application::Configuration {
          * @brief Set window flags
          * @return Reference to self (for method chaining)
          *
-         * Default are none.
+         * Default are none. To avoid clearing default flags by accident,
+         * prefer to use @ref addWindowFlags() and @ref clearWindowFlags()
+         * instead.
          */
         Configuration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;

@@ -190,7 +190,9 @@ class WindowlessWindowsEglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref GL::Context::flags().
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;

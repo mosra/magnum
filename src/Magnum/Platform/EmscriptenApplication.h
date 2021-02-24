@@ -1006,8 +1006,10 @@ class EmscriptenApplication::GLConfiguration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is @ref Flag::EnableExtensionsByDefault.
-         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
+         * Default is @ref Flag::EnableExtensionsByDefault. To avoid clearing
+         * default flags by accident, prefer to use @ref addFlags() and
+         * @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
             _flags = flags;

@@ -834,8 +834,9 @@ class GlfwApplication::GLConfiguration {
          * @return Reference to self (for method chaining)
          *
          * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
-         * on OpenGL ES.
-         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
+         * on OpenGL ES. To avoid clearing default flags by accident, prefer to
+         * use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
             _flags = flags;
@@ -1250,7 +1251,9 @@ class GlfwApplication::Configuration {
          * @brief Set window flags
          * @return  Reference to self (for method chaining)
          *
-         * Default is @ref WindowFlag::Focused.
+         * Default is @ref WindowFlag::Focused. To avoid clearing default flags
+         * by accident, prefer to use @ref addWindowFlags() and
+         * @ref clearWindowFlags() instead.
          */
         Configuration& setWindowFlags(WindowFlags windowFlags) {
             _windowFlags = windowFlags;
