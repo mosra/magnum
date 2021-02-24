@@ -328,8 +328,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             #endif
         #ifndef MAGNUM_TARGET_WEBGL
         /* Needs to be last because we're zeroing this out for SwiftShader (see
-           below) */
-        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
+           below).
+
+           Also mask out the upper 32bits used for other flags. */
+        EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags) & 0xffffffffu),
         #endif
         EGL_NONE
     };
@@ -369,8 +371,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         const EGLint fallbackAttributes[] = {
             /* Discard the ForwardCompatible flag for the fallback. Having it
                set makes the fallback context creation fail on Mesa's Zink
-               (which is just 2.1) and I assume on others as well. */
-            EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+               (which is just 2.1) and I assume on others as well.
+
+               Also mask out the upper 32bits used for other flags. */
+            EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
             EGL_NONE
         };
         _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
@@ -409,8 +413,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                 /* Discard the ForwardCompatible flag for the fallback.
                    Compared to the above case of a 2.1 fallback it's not really
                    needed here (AFAIK it works in both cases), but let's be
-                   consistent. */
-                EGL_CONTEXT_FLAGS_KHR, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                   consistent.
+
+                   Also mask out the upper 32bits used for other flags. */
+                EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
                 EGL_NONE
             };
             _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
@@ -519,12 +525,14 @@ bool WindowlessEglContext::release() {
 }
 
 WindowlessEglContext::Configuration::Configuration()
-    #ifndef MAGNUM_TARGET_GLES
-    : _flags{Flag::ForwardCompatible}, _device{}
-    #elif !defined(MAGNUM_TARGET_WEBGL)
-    : _flags{}, _device{}
+    #ifndef MAGNUM_TARGET_WEBGL
+    : _device{}
     #endif
-    {}
+{
+    #ifndef MAGNUM_TARGET_GLES
+    addFlags(Flag::ForwardCompatible);
+    #endif
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments): WindowlessEglApplication{arguments, Configuration{}} {}
@@ -574,7 +582,7 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
     #endif
 
     WindowlessEglContext glContext{mergedConfiguration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

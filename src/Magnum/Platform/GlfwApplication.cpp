@@ -578,7 +578,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwMakeContextCurrent(_window);
 
     /* Destroy everything when the Magnum context creation fails */
-    if(!_context->tryCreate()) {
+    if(!_context->tryCreate(glConfiguration)) {
         glfwDestroyWindow(_window);
         _window = nullptr;
     }
@@ -894,13 +894,12 @@ void GlfwApplication::stopTextInput() {
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0}, _version{GL::Version::None},
+    _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false}
+{
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible},
-    #else
-    _flags{},
+    addFlags(Flag::ForwardCompatible);
     #endif
-    _srgbCapable{false} {}
+}
 
 GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif

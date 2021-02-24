@@ -54,7 +54,7 @@ or crashes on GL calls, you might want to try these things:
 
 -   Enable @ref GL::DebugOutput "debug output" to see more detailed errors,
     warnings and performance hints. You can do that easily through the
-    `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+    `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
     or an environment variable.
     -   If you are on Mac, the native OpenGL implementation doesn't support
         this. Instead you can manually verify that

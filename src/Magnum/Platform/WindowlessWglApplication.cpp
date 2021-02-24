@@ -139,12 +139,14 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         #endif
         WGL_CONTEXT_MINOR_VERSION_ARB, 0,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
-        WGL_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #else
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
         WGL_CONTEXT_MINOR_VERSION_ARB, 1,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-        WGL_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #endif
         0
     };
@@ -157,7 +159,8 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
         const int fallbackContextAttributes[] = {
             /** @todo or keep the fwcompat? */
-            WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+            /* Mask out the upper 32bits used for other flags */
+            WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
             0
         };
         _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
@@ -196,7 +199,8 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
             wglDeleteContext(_context);
             const int fallbackContextAttributes[] = {
                 /** @todo or keep the fwcompat? */
-                WGL_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                /* Mask out the upper 32bits used for other flags */
+                WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
                 0
             };
             _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
@@ -254,13 +258,11 @@ bool WindowlessWglContext::release() {
     return false;
 }
 
-WindowlessWglContext::Configuration::Configuration():
+WindowlessWglContext::Configuration::Configuration() {
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible}
-    #else
-    _flags{}
+    addFlags(Flag::ForwardCompatible);
     #endif
-    {}
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}
@@ -282,7 +284,7 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration& configurati
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     WindowlessWglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

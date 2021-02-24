@@ -108,6 +108,9 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         .addBooleanOption("exit-immediately").setHelp("exit-immediately", "exit the application immediately from the constructor, to test that the app doesn't run any event handlers after")
         .addBooleanOption("borderless").setHelp("borderless", "no window decoration")
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
+        #ifdef MAGNUM_TARGET_GL
+        .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        #endif
         .parse(arguments.argc, arguments.argv);
 
     if(args.isSet("exit-immediately")) {
@@ -123,7 +126,14 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         conf.addWindowFlags(Configuration::WindowFlag::Borderless);
     if(args.isSet("always-on-top"))
         conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
-    create(conf);
+    #ifdef MAGNUM_TARGET_GL
+    if(args.isSet("quiet")) {
+        create(conf, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
+    } else
+    #endif
+    {
+        create(conf);
+    }
 
     /* For testing resize events */
     Debug{} << "window size" << windowSize()

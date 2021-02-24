@@ -58,7 +58,7 @@ typedef int Bool;
 #endif
 
 #include "Magnum/Magnum.h"
-#include "Magnum/GL/OpenGL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -179,16 +179,16 @@ class WindowlessEglContext {
     @ref WindowlessEglApplication::createContext(),
     @ref WindowlessEglApplication::tryCreateContext()
 */
-class WindowlessEglContext::Configuration {
+class WindowlessEglContext::Configuration: public GL::Context::Configuration {
     public:
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
-         * @requires_gles Context flags are not available in WebGL.
          */
-        enum class Flag: int {
+        enum class Flag: UnsignedLong {
+            #ifndef MAGNUM_TARGET_WEBGL
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Forward compatible context
@@ -200,31 +200,47 @@ class WindowlessEglContext::Configuration {
             #endif
 
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is present.
+             * @requires_gles Context flags are not available in WebGL.
              */
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+            #endif
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
         };
 
         /**
          * @brief Context flags
          *
          * @see @ref setFlags(), @ref Context::Flags
-         * @requires_gles Context flags are not available in WebGL.
          */
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
         /*implicit*/ Configuration();
 
-        #ifndef MAGNUM_TARGET_WEBGL
-        /**
-         * @brief Context flags
-         *
-         * @requires_gles Context flags are not available in WebGL.
-         */
-        Flags flags() const { return _flags; }
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
@@ -234,10 +250,9 @@ class WindowlessEglContext::Configuration {
          * on OpenGL ES. To avoid clearing default flags by accident, prefer to
          * use @ref addFlags() and @ref clearFlags() instead.
          * @see @ref GL::Context::flags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -248,10 +263,9 @@ class WindowlessEglContext::Configuration {
          * Unlike @ref setFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
          * @see @ref clearFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -262,13 +276,13 @@ class WindowlessEglContext::Configuration {
          * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
          * instead of replacing them. Useful for removing default flags.
          * @see @ref addFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Device ID to use
          * @m_since{2019,10}
@@ -364,9 +378,13 @@ class WindowlessEglContext::Configuration {
         EGLContext sharedContext() const { return _sharedContext; }
         #endif
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
+        #endif
+
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        Flags _flags;
         UnsignedInt _device;
         /* Assumes that you can't have 2^32 - 1 GPUs */
         UnsignedInt _cudaDevice = ~UnsignedInt{};
@@ -503,7 +521,7 @@ can override that either with @ref Configuration::setDevice() or using a
 `--magnum-device` command-line option (and the `MAGNUM_DEVICE` environment
 variable). Unfortunately EGL doesn't provide any reasonable way to enumerate or
 filter named devices, so the best you can do is checking reported device count
-printed by the `--magnum-log verbose` @ref GL-Context-command-line "command-line option",
+printed by the `--magnum-log verbose` @ref GL-Context-usage-command-line "command-line option",
 and then going from `0` up to figure out the desired device ID.
 
 On systems with NVIDIA GPUs and CUDA, it's possible to directly select a
@@ -521,7 +539,7 @@ Systems running Mesa 19.2 (which has the above extensions) that also have
 `libEGL_nvidia.so` installed (for example as a CUDA dependency) may fail
 to create the context with the following error (with additional output
 produced when the `--magnum-gpu-validation`
-@ref GL-Context-command-line "command-line option" is enabled):
+@ref GL-Context-usage-command-line "command-line option" is enabled):
 
 @m_class{m-console-wrap}
 

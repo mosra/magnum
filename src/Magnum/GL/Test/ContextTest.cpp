@@ -25,7 +25,9 @@
 
 #include <set>
 #include <sstream>
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
@@ -38,6 +40,11 @@ struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
     void isExtension();
+
+    void configurationConstruct();
+    void configurationConstructUnknownWorkaround();
+    void configurationConstructCopy();
+    void configurationConstructMove();
 
     void constructNoCreate();
     void constructCopyMove();
@@ -56,6 +63,11 @@ struct ContextTest: TestSuite::Tester {
 ContextTest::ContextTest() {
     addTests({&ContextTest::isExtension,
 
+              &ContextTest::configurationConstruct,
+              &ContextTest::configurationConstructUnknownWorkaround,
+              &ContextTest::configurationConstructCopy,
+              &ContextTest::configurationConstructMove,
+
               &ContextTest::constructNoCreate,
               &ContextTest::constructCopyMove,
 
@@ -71,7 +83,7 @@ ContextTest::ContextTest() {
 }
 
 void ContextTest::isExtension() {
-    CORRADE_VERIFY(Implementation::IsExtension<Extensions::KHR::debug>::value);
+    CORRADE_VERIFY(Implementation::IsExtension<Extensions::EXT::texture_filter_anisotropic>::value);
     CORRADE_VERIFY(!Implementation::IsExtension<Extension>::value);
     CORRADE_VERIFY(!Implementation::IsExtension<int>::value);
 
@@ -86,8 +98,9 @@ void ContextTest::isExtension() {
         CORRADE_VERIFY(!Implementation::IsExtension<ALExtension>::value);
     }
 
-    /* Variadic check (used in variadic addEnabledExtensions()), check that it
-       properly fails for each occurence of a non-extension */
+    /* Variadic check (used in variadic Configuration::addDisabledExtensions()),
+       check that it properly fails for each occurence of a non-extension */
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_VERIFY((Implementation::IsExtension<
         Extensions::KHR::debug,
         Extensions::EXT::texture_filter_anisotropic,
@@ -104,9 +117,217 @@ void ContextTest::isExtension() {
         Extensions::KHR::debug,
         Extensions::EXT::texture_filter_anisotropic,
         Extension>::value));
+    #else
+    CORRADE_VERIFY((Implementation::IsExtension<
+        Extensions::OES::texture_float_linear,
+        Extensions::EXT::texture_filter_anisotropic,
+        Extensions::WEBGL::compressed_texture_s3tc>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extension,
+        Extensions::OES::texture_float_linear,
+        Extensions::EXT::texture_filter_anisotropic>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::OES::texture_float_linear,
+        Extension,
+        Extensions::EXT::texture_filter_anisotropic>::value));
+    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::OES::texture_float_linear,
+        Extensions::EXT::texture_filter_anisotropic,
+        Extension>::value));
+    #endif
 
     /* Empty variadic list should return true */
     CORRADE_VERIFY(Implementation::IsExtension<>::value);
+}
+
+void ContextTest::configurationConstruct() {
+    #ifndef MAGNUM_TARGET_GLES
+    const Containers::StringView a = "no-layout-qualifiers-on-old-glsl";
+    const Containers::StringView b = "nv-compressed-block-size-in-bits";
+    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size";
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    const Containers::StringView a = "swiftshader-no-empty-egl-context-flags";
+    const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer";
+    const Containers::StringView c = "angle-chatty-shader-compiler";
+    #else
+    /* No general WebGL workarounds to test */
+    #endif
+    /* Deliberately not having the literals global to test that they get
+       converted to something else */
+    CORRADE_VERIFY(!(a.flags() & Containers::StringViewFlag::Global));
+
+    Context::Configuration configuration;
+    configuration
+        .setFlags(Context::Configuration::Flag::GpuValidation|
+                  Context::Configuration::Flag::VerboseLog)
+        #ifndef MAGNUM_TARGET_WEBGL
+        .addDisabledWorkarounds({a, b})
+        .addDisabledWorkarounds({c})
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        .addDisabledExtensions({Extensions::EXT::texture_filter_anisotropic{},
+                                Extensions::KHR::debug{}})
+        .addDisabledExtensions<Extensions::KHR::robustness,
+                               Extensions::KHR::texture_compression_astc_hdr>()
+        #else
+        .addDisabledExtensions({Extensions::EXT::texture_filter_anisotropic{},
+                                Extensions::EXT::texture_compression_rgtc{}})
+        .addDisabledExtensions<Extensions::EXT::float_blend,
+                               Extensions::OES::texture_float_linear>()
+        #endif
+        ;
+
+    CORRADE_COMPARE(UnsignedLong(configuration.flags()), UnsignedLong(
+        Context::Configuration::Flag::GpuValidation|
+        Context::Configuration::Flag::VerboseLog));
+
+    /* The workaround strings should get interned */
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE_AS(configuration.disabledWorkarounds(),
+        Containers::arrayView({a, b, c}),
+        TestSuite::Compare::Container);
+    CORRADE_VERIFY(configuration.disabledWorkarounds()[0].data() != a.data());
+    CORRADE_VERIFY(configuration.disabledWorkarounds()[1].data() != b.data());
+    CORRADE_VERIFY(configuration.disabledWorkarounds()[2].data() != c.data());
+    CORRADE_COMPARE(configuration.disabledWorkarounds()[0].flags(),
+        Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(configuration.disabledWorkarounds()[1].flags(),
+        Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+    CORRADE_COMPARE(configuration.disabledWorkarounds()[2].flags(),
+        Containers::StringViewFlag::Global|Containers::StringViewFlag::NullTerminated);
+    #endif
+
+    CORRADE_COMPARE(configuration.disabledExtensions().size(), 4);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(configuration.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[1].index(), Extensions::KHR::debug::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[2].index(), Extensions::KHR::robustness::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[3].index(), Extensions::KHR::texture_compression_astc_hdr::Index);
+    #else
+    CORRADE_COMPARE(configuration.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[1].index(), Extensions::EXT::texture_compression_rgtc::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[2].index(), Extensions::EXT::float_blend::Index);
+    CORRADE_COMPARE(configuration.disabledExtensions()[3].index(), Extensions::OES::texture_float_linear::Index);
+    #endif
+}
+
+void ContextTest::configurationConstructUnknownWorkaround() {
+    Context::Configuration configuration;
+
+    /* Unknown workarounds should get ignored -- we're storing views on
+       internally known workaround strings to avoid allocations so there's no
+       other way */
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    configuration.addDisabledWorkarounds({"all-drivers-are-shit"});
+    CORRADE_VERIFY(configuration.disabledWorkarounds().empty());
+    CORRADE_COMPARE(out.str(), "GL::Context::Configuration::addDisabledWorkarounds(): unknown workaround all-drivers-are-shit\n");
+}
+
+void ContextTest::configurationConstructCopy() {
+    #ifndef MAGNUM_TARGET_GLES
+    Containers::StringView workaround = "no-layout-qualifiers-on-old-glsl";
+    Containers::StringView another = "nv-compressed-block-size-in-bits";
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    Containers::StringView workaround = "swiftshader-no-empty-egl-context-flags";
+    Containers::StringView another = "angle-chatty-shader-compiler";
+    #else
+    /* No general WebGL workarounds to test */
+    #endif
+
+    Context::Configuration a;
+    a.setFlags(Context::Configuration::Flag::VerboseLog)
+     #ifndef MAGNUM_TARGET_WEBGL
+     .addDisabledWorkarounds({workaround})
+     #endif
+     .addDisabledExtensions<Extensions::EXT::texture_filter_anisotropic>();
+
+    Context::Configuration b = a;
+    CORRADE_COMPARE(UnsignedLong(b.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE_AS(b.disabledWorkarounds(),
+        Containers::arrayView({workaround}),
+        TestSuite::Compare::Container);
+    #endif
+    CORRADE_COMPARE(b.disabledExtensions().size(), 1);
+    CORRADE_COMPARE(b.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
+
+    Context::Configuration c;
+    c.setFlags(Context::Configuration::Flag::QuietLog)
+     #ifndef MAGNUM_TARGET_WEBGL
+     .addDisabledWorkarounds({another})
+     .addDisabledExtensions<Extensions::KHR::debug>()
+     #else
+     .addDisabledExtensions<Extensions::OES::texture_float_linear>()
+     #endif
+     ;
+
+    c = b;
+    CORRADE_COMPARE(UnsignedLong(c.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE_AS(c.disabledWorkarounds(),
+        Containers::arrayView({workaround}),
+        TestSuite::Compare::Container);
+    #endif
+    CORRADE_COMPARE(c.disabledExtensions().size(), 1);
+    CORRADE_COMPARE(c.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
+}
+
+void ContextTest::configurationConstructMove() {
+    #ifndef MAGNUM_TARGET_GLES
+    Containers::StringView workaround = "no-layout-qualifiers-on-old-glsl";
+    Containers::StringView another = "nv-compressed-block-size-in-bits";
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    Containers::StringView workaround = "swiftshader-no-empty-egl-context-flags";
+    Containers::StringView another = "angle-chatty-shader-compiler";
+    #else
+    /* No general WebGL workarounds to test */
+    #endif
+
+    Context::Configuration a;
+    a.setFlags(Context::Configuration::Flag::VerboseLog)
+     #ifndef MAGNUM_TARGET_WEBGL
+     .addDisabledWorkarounds({workaround})
+     #endif
+     .addDisabledExtensions<Extensions::EXT::texture_filter_anisotropic>();
+
+    Context::Configuration b = std::move(a);
+    CORRADE_COMPARE(UnsignedLong(b.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
+    CORRADE_VERIFY(a.disabledWorkarounds().empty());
+    CORRADE_VERIFY(a.disabledExtensions().empty());
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE_AS(b.disabledWorkarounds(),
+        Containers::arrayView({workaround}),
+        TestSuite::Compare::Container);
+    #endif
+    CORRADE_COMPARE(b.disabledExtensions().size(), 1);
+    CORRADE_COMPARE(b.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
+
+    Context::Configuration c;
+    c.setFlags(Context::Configuration::Flag::QuietLog)
+     #ifndef MAGNUM_TARGET_WEBGL
+     .addDisabledWorkarounds({another, another})
+     .addDisabledExtensions<Extensions::KHR::debug,
+                            Extensions::KHR::debug>()
+     #else
+     .addDisabledExtensions<Extensions::OES::texture_float_linear,
+                            Extensions::OES::texture_float_linear>()
+     #endif
+     ;
+
+    c = std::move(b);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(b.disabledWorkarounds().size(), 2);
+    #endif
+    CORRADE_COMPARE(b.disabledExtensions().size(), 2);
+    CORRADE_COMPARE(UnsignedLong(c.flags()), UnsignedLong(Context::Configuration::Flag::VerboseLog));
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE_AS(c.disabledWorkarounds(),
+        Containers::arrayView({workaround}),
+        TestSuite::Compare::Container);
+    #endif
+    CORRADE_COMPARE(c.disabledExtensions().size(), 1);
+    CORRADE_COMPARE(c.disabledExtensions()[0].index(), Extensions::EXT::texture_filter_anisotropic::Index);
 }
 
 void ContextTest::constructNoCreate() {

@@ -58,26 +58,29 @@ class GLContext: public GL::Context {
          * @brief Constructor
          *
          * Equivalent to calling @ref GLContext(NoCreateT, Int, const char**)
-         * followed by @ref create().
+         * followed by @ref create(const Configuration&).
          */
-        explicit GLContext(Int argc, const char** argv): GLContext{NoCreate, argc, argv} { create(); }
+        explicit GLContext(Int argc, const char** argv, const Configuration& configuration = {}): GLContext{NoCreate, argc, argv} {
+            create(configuration);
+        }
 
         /** @overload */
-        explicit GLContext(Int argc, char** argv): GLContext{argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, char** argv, const Configuration& configuration = {}): GLContext{argc, const_cast<const char**>(argv), configuration} {}
 
         /** @overload */
-        explicit GLContext(Int argc, std::nullptr_t argv): GLContext{argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, std::nullptr_t argv, const Configuration& configuration = {}): GLContext{argc, static_cast<const char**>(argv), configuration} {}
 
         /**
          * @brief Default constructor
          *
-         * Equivalent to passing @cpp {0, nullptr} @ce to
-         * @ref GLContext(Int, const char**). Even if the command-line options
-         * are not propagated, it's still possible to affect the renderer
-         * behavior from the environment. See @ref GL-Context-command-line for
-         * more information.
+         * Equivalent to passing @cpp {0, nullptr, configuration} @ce to
+         * @ref GLContext(Int, const char**, const Configuration&). Even if the
+         * command-line options are not propagated, it's still possible to
+         * affect the setup behavior from the environment or by passing a
+         * @relativeref{GL::Context,Configuration} instance. See
+         * @ref GL-Context-usage for more information.
          */
-        explicit GLContext(): GLContext{0, nullptr} {}
+        explicit GLContext(const Configuration& configuration = {}): GLContext{0, nullptr, configuration} {}
 
         /**
          * @brief Construct without creating the context
@@ -85,7 +88,7 @@ class GLContext: public GL::Context {
          * Parses command-line arguments and sets @ref version() to
          * @ref GL::Version::None, everything else is left in an empty state.
          * Use @ref create() or @ref tryCreate() to create the context.
-         * @see @ref GLContext(Int, const char**)
+         * @see @ref GLContext(Int, const char**, const Configuration&)
          */
         explicit GLContext(NoCreateT, Int argc, const char** argv):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -118,8 +121,9 @@ class GLContext: public GL::Context {
          * Equivalent to passing @cpp {NoCreate, 0, nullptr} @ce to
          * @ref GLContext(NoCreateT, Int, const char**). Even if the
          * command-line options are not propagated, it's still possible to
-         * affect the renderer behavior from the environment. See
-         * @ref GL-Context-command-line for more information.
+         * affect the renderer behavior from the environment or by passing
+         * a @relativeref{GL::Context,Configuration} instance to @ref create()
+         * or @ref tryCreate(). See @ref GL-Context-usage for more information.
          */
         explicit GLContext(NoCreateT): GLContext{NoCreate, 0, nullptr} {}
 
@@ -133,13 +137,15 @@ class GLContext: public GL::Context {
          * detected version is unsupported or any other error occurs, a message
          * is printed to output and the application exits. See @ref tryCreate()
          * for an alternative.
-         * @see @ref GLContext(Int, char**), @ref GL-Context-command-line,
-         *      @fn_gl{Get} with @def_gl{MAJOR_VERSION},
+         * @see @ref GLContext(Int, char**, const Configuration&),
+         *      @ref GL-Context-usage, @fn_gl{Get} with @def_gl{MAJOR_VERSION},
          *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
          *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with
          *      @def_gl{EXTENSIONS}
          */
-        void create() { return GL::Context::create(); }
+        void create(const Configuration& configuration = Configuration{}) {
+            return GL::Context::create(configuration);
+        }
 
         /**
          * @brief Try to create the context
@@ -147,7 +153,9 @@ class GLContext: public GL::Context {
          * Unlike @ref create(), instead of exiting prints a message to error
          * output and returns `false` on error.
          */
-        bool tryCreate() { return GL::Context::tryCreate(); }
+        bool tryCreate(const Configuration& configuration = Configuration{}) {
+            return GL::Context::tryCreate(configuration);
+        }
 };
 
 }}

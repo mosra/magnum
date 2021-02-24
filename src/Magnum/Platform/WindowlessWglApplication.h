@@ -42,7 +42,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/OpenGL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -172,14 +172,15 @@ class WindowlessWglContext {
     @ref WindowlessWglApplication::createContext(),
     @ref WindowlessWglApplication::tryCreateContext()
 */
-class WindowlessWglContext::Configuration {
+class WindowlessWglContext::Configuration: public GL::Context::Configuration {
     public:
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
-        enum class Flag: int {
+        enum class Flag: UnsignedLong {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Forward compatible context
@@ -191,11 +192,30 @@ class WindowlessWglContext::Configuration {
             #endif
 
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is present.
              */
-            Debug = WGL_CONTEXT_DEBUG_BIT_ARB
+            Debug = WGL_CONTEXT_DEBUG_BIT_ARB,
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
         };
 
         /**
@@ -208,7 +228,9 @@ class WindowlessWglContext::Configuration {
         /*implicit*/ Configuration();
 
         /** @brief Context flags */
-        Flags flags() const { return _flags; }
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
@@ -220,7 +242,7 @@ class WindowlessWglContext::Configuration {
          * @see @ref GL::Context::flags()
          */
         Configuration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -233,7 +255,7 @@ class WindowlessWglContext::Configuration {
          * @see @ref clearFlags()
          */
         Configuration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -246,7 +268,7 @@ class WindowlessWglContext::Configuration {
          * @see @ref addFlags()
          */
         Configuration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -274,8 +296,12 @@ class WindowlessWglContext::Configuration {
          */
         HGLRC sharedContext() const { return _sharedContext; }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
+        #endif
+
     private:
-        Flags _flags;
         HGLRC _sharedContext = nullptr;
 };
 

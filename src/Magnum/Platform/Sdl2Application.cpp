@@ -484,7 +484,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
+        /* Mask out the upper 32bits used for other flags */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags) & 0xffffffffu));
 
     /* Request usable version otherwise */
     } else {
@@ -501,7 +502,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
+        /* Mask out the upper 32bits used for other flags */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags) & 0xffffffffu));
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -579,8 +581,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
         /* Discard the ForwardCompatible flag for the fallback. Having it set
            makes the fallback context creation fail on Mesa's Zink (which is
-           just 2.1) and I assume on others as well. */
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags) & int(~GLConfiguration::Flag::ForwardCompatible));
+           just 2.1) and I assume on others as well.
+
+           Also mask out the upper 32bits used for other flags. */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(UnsignedLong(glFlags & ~GLConfiguration::Flag::ForwardCompatible) & 0xffffffffu));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -666,7 +670,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     /* Destroy everything also when the Magnum context creation fails */
-    if(!_context->tryCreate()) {
+    if(!_context->tryCreate(glConfiguration)) {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
         SDL_DestroyWindow(_window);
@@ -1184,15 +1188,13 @@ Sdl2Application::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
     _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(GL::Version::None),
+    , _version{GL::Version::None}, _srgbCapable{false}
+    #endif
+{
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible},
-    #else
-    _flags{},
+    addFlags(Flag::ForwardCompatible);
     #endif
-    _srgbCapable{false}
-    #endif
-    {}
+}
 
 Sdl2Application::GLConfiguration::~GLConfiguration() = default;
 #endif

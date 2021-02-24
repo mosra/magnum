@@ -43,7 +43,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/GL.h"
+#include "Magnum/GL/Context.h"
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -777,14 +777,15 @@ The created window is always with a double-buffered OpenGL context.
 
 @see @ref GlfwApplication(), @ref create(), @ref tryCreate()
 */
-class GlfwApplication::GLConfiguration {
+class GlfwApplication::GLConfiguration: public GL::Context::Configuration {
     public:
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
-        enum class Flag: UnsignedByte {
+        enum class Flag: UnsignedLong {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Forward compatible context
@@ -807,13 +808,32 @@ class GlfwApplication::GLConfiguration {
             #endif
 
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is present.
              */
             Debug = 1 << 2,
 
-            Stereo = 1 << 3     /**< Stereo rendering */
+            Stereo = 1 << 3,    /**< Stereo rendering */
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
         };
 
         /**
@@ -827,7 +847,9 @@ class GlfwApplication::GLConfiguration {
         ~GLConfiguration();
 
         /** @brief Context flags */
-        Flags flags() const { return _flags; }
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
@@ -839,7 +861,7 @@ class GlfwApplication::GLConfiguration {
          * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -852,7 +874,7 @@ class GlfwApplication::GLConfiguration {
          * @see @ref clearFlags()
          */
         GLConfiguration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -865,7 +887,7 @@ class GlfwApplication::GLConfiguration {
          * @see @ref addFlags()
          */
         GLConfiguration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -958,12 +980,16 @@ class GlfwApplication::GLConfiguration {
             return *this;
         }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
         GL::Version _version;
-        Flags _flags;
         bool _srgbCapable;
 };
 

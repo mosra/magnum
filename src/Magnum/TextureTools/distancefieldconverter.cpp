@@ -108,7 +108,7 @@ Arguments:
 -   `--output-size "X Y"` --- size of output image
 -   `--radius N` --- distance field computation radius
 -   `--magnum-...` --- engine-specific options (see
-    @ref GL-Context-command-line for details)
+    @ref GL-Context-usage-command-line for details)
 
 Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
 @ref PixelFormat::RGBA8Unorm are accepted on input.

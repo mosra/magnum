@@ -105,7 +105,7 @@ bool AbstractXApplication::tryCreate(const Configuration& configuration, const G
     _contextHandler->makeCurrent();
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 
 AbstractXApplication::~AbstractXApplication() {

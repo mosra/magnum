@@ -126,12 +126,14 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
-        GLX_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        GLX_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #else
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 1,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-        GLX_CONTEXT_FLAGS_ARB, GLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        GLX_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #endif
         0
     };
@@ -155,8 +157,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         const GLint fallbackContextAttributes[] = {
             /* Discard the ForwardCompatible flag for the fallback. Having it
                set makes the fallback context creation fail on Mesa's Zink
-               (which is just 2.1) and I assume on others as well. */
-            GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+               (which is just 2.1) and I assume on others as well.
+
+               Also mask out the upper 32bits used for other flags. */
+            GLX_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
             0
         };
         {
@@ -198,8 +202,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
                 /* Discard the ForwardCompatible flag for the fallback.
                    Compared to the above case of a 2.1 fallback it's not really
                    needed here (AFAIK it works in both cases), but let's be
-                   consistent. */
-                GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
+                   consistent.
+
+                   Also mask out the upper 32bits used for other flags. */
+                GLX_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
                 0
             };
             {
@@ -267,13 +273,11 @@ bool WindowlessGlxContext::release() {
     return false;
 }
 
-WindowlessGlxContext::Configuration::Configuration():
+WindowlessGlxContext::Configuration::Configuration() {
     #ifndef MAGNUM_TARGET_GLES
-    _flags{Flag::ForwardCompatible}
-    #else
-    _flags{}
+    addFlags(Flag::ForwardCompatible);
     #endif
-    {}
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments): WindowlessGlxApplication{arguments, Configuration{}}  {}
@@ -295,7 +299,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration& configurati
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
 
     WindowlessGlxContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

@@ -42,7 +42,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/GL.h"
+#include "Magnum/GL/Context.h"
 #endif
 
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
@@ -1229,20 +1229,19 @@ The created window is always with a double-buffered OpenGL context.
 
 @see @ref Sdl2Application(), @ref create(), @ref tryCreate()
 */
-class Sdl2Application::GLConfiguration {
+class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
     public:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
-         * @requires_gles Context flags are not available in WebGL.
          */
-        enum class Flag: int {
+        enum class Flag: UnsignedLong {
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Forward compatible context
-             *
+             * Forward compatible context.
              * @requires_gl Core/compatibility profile distinction and forward
              *      compatibility applies only to desktop GL.
              */
@@ -1250,38 +1249,60 @@ class Sdl2Application::GLConfiguration {
             #endif
 
             /**
-             * Debug context. Enabled automatically if the
-             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * Debug context. Enabled automatically if supported by the driver
+             * and the @ref Flag::GpuValidation flag is set or if the
+             * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
              * is present.
+             * @requires_gles Context flags are not available in WebGL.
              */
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,
 
-            /** Context with robust access */
+            /**
+             * Context with robust access.
+             * @requires_gles Context flags are not available in WebGL.
+             */
             RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
 
-            /** Context with reset isolation */
-            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
+            /**
+             * Context with reset isolation.
+             * @requires_gles Context flags are not available in WebGL.
+             */
+            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG,
+            #endif
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
         };
 
         /**
          * @brief Context flags
          *
          * @see @ref setFlags(), @ref GL::Context::Flags
-         * @requires_gles Context flags are not available in WebGL.
          */
         typedef Containers::EnumSet<Flag> Flags;
-        #endif
 
         explicit GLConfiguration();
         ~GLConfiguration();
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Context flags
-         *
-         * @requires_gles Context flags are not available in WebGL.
-         */
-        Flags flags() const { return _flags; }
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
@@ -1291,10 +1312,9 @@ class Sdl2Application::GLConfiguration {
          * on OpenGL ES. To avoid clearing default flags by accident, prefer to
          * use @ref addFlags() and @ref clearFlags() instead.
          * @see @ref GL::Context::flags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1305,10 +1325,9 @@ class Sdl2Application::GLConfiguration {
          * Unlike @ref setFlags(), ORs the flags with existing instead of
          * replacing them. Useful for preserving the defaults.
          * @see @ref clearFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1319,13 +1338,13 @@ class Sdl2Application::GLConfiguration {
          * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
          * instead of replacing them. Useful for removing default flags.
          * @see @ref addFlags()
-         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Context version
          *
@@ -1434,13 +1453,17 @@ class Sdl2Application::GLConfiguration {
         }
         #endif
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
-        Flags _flags;
         bool _srgbCapable;
         #endif
 };

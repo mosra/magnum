@@ -60,7 +60,7 @@ typedef int Bool;
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -336,7 +336,7 @@ Double-buffered OpenGL context.
     @ref Configuration, @ref create(), @ref tryCreate()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
 */
-class AbstractXApplication::GLConfiguration {
+class AbstractXApplication::GLConfiguration: public GL::Context::Configuration {
     public:
         explicit GLConfiguration();
         ~GLConfiguration();
@@ -349,6 +349,23 @@ class AbstractXApplication::GLConfiguration {
             _version = version;
             return *this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        GLConfiguration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(flags);
+            return *this;
+        }
+        GLConfiguration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(flags);
+            return *this;
+        }
+        GLConfiguration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(flags);
+            return *this;
+        }
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
 
     private:
         GL::Version _version;

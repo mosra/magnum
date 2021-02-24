@@ -39,7 +39,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/OpenGL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -164,10 +164,8 @@ class WindowlessCglContext {
     @ref WindowlessCglApplication::createContext(),
     @ref WindowlessCglApplication::tryCreateContext()
 */
-class WindowlessCglContext::Configuration {
+class WindowlessCglContext::Configuration: public GL::Context::Configuration {
     public:
-        constexpr /*implicit*/ Configuration() {}
-
         /**
          * @brief Create a shared context
          * @return Reference to self (for method chaining)
@@ -191,6 +189,23 @@ class WindowlessCglContext::Configuration {
          * @m_since{2020,06}
          */
         CGLContextObj sharedContext() const { return _sharedContext; }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        Configuration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(flags);
+            return *this;
+        }
+        Configuration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(flags);
+            return *this;
+        }
+        Configuration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(flags);
+            return *this;
+        }
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
+        #endif
 
     private:
         CGLContextObj _sharedContext = nullptr;

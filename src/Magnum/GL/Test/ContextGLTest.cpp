@@ -24,6 +24,9 @@
 */
 
 #include <algorithm>
+#include <sstream>
+#include <Corrade/Containers/ScopeGuard.h>
+#include <Corrade/Containers/StringStl.h>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
@@ -43,6 +46,8 @@ struct ContextGLTest: OpenGLTester {
 
     void stringFlags();
 
+    void constructConfiguration();
+
     void makeCurrent();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -58,10 +63,89 @@ struct ContextGLTest: OpenGLTester {
     void isExtensionDisabled();
 };
 
-ContextGLTest::ContextGLTest() {
-    addTests({
-        &ContextGLTest::stringFlags,
+using namespace Containers::Literals;
 
+struct {
+    const char* name;
+    Containers::Optional<Extension> needsExtensionPresent, needsExtensionMissing;
+    Context::Configuration::Flags flags;
+    Containers::Array<Containers::StringView> disabledWorkarounds;
+    Containers::Array<Extension> disabledExtensions;
+    Containers::Array<const char*> args;
+    Containers::StringView logShouldContain, logShouldNotContain;
+} ConstructConfigurationData[] {
+    {"default log", {}, {},
+        {},
+        {}, {}, {},
+        "Renderer: ", {}},
+    {"quiet", {}, {},
+        Context::Configuration::Flag::QuietLog,
+        {}, {}, {},
+        {}, "Renderer: "},
+    {"quiet on command line", {}, {}, {}, {}, {},
+        Containers::array({"", "--magnum-log", "quiet"}),
+        {}, "Renderer: "},
+    {"quiet and verbose", {}, {},
+        Context::Configuration::Flag::QuietLog|Context::Configuration::Flag::VerboseLog,
+        {}, {}, {},
+        /* Verbose has a precedence */
+        "Renderer: ", {}},
+    {"quiet and verbose on command line", {}, {},
+        Context::Configuration::Flag::QuietLog,
+        {}, {},
+        Containers::array({"", "--magnum-log", "verbose"}),
+        /* Command-line has a precedence */
+        "Renderer: ", {}},
+    {"verbose and quiet on command line", {}, {},
+        Context::Configuration::Flag::VerboseLog,
+        {}, {},
+        Containers::array({"", "--magnum-log", "quiet"}),
+        /* Command-line has a precedence */
+        {}, "Renderer: "},
+    #ifndef MAGNUM_TARGET_GLES
+    {"default workarounds", {}, {}, {}, {}, {}, {},
+        "\nUsing driver workarounds:\n    no-layout-qualifiers-on-old-glsl\n", {}},
+    {"disabled workaround", {}, {}, {},
+        Containers::array({"no-layout-qualifiers-on-old-glsl"_s}), {}, {},
+        {}, "no-layout-qualifiers-on-old-glsl"},
+    {"disabled workaround on command line", {}, {}, {}, {}, {},
+        Containers::array({"", "--magnum-disable-workarounds", "no-layout-qualifiers-on-old-glsl"}),
+        {}, "no-layout-qualifiers-on-old-glsl"},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    {"default extensions ARB",
+        Extension{Extensions::ARB::texture_filter_anisotropic{}},
+        {}, {}, {}, {}, {},
+        "    GL_ARB_texture_filter_anisotropic\n", {}},
+    #endif
+    {"default extensions EXT",
+        Extension{Extensions::EXT::texture_filter_anisotropic{}},
+        #ifndef MAGNUM_TARGET_GLES
+        Extension{Extensions::ARB::texture_filter_anisotropic{}},
+        #else
+        {},
+        #endif
+        {}, {}, {}, {},
+        "    GL_EXT_texture_filter_anisotropic\n", {}},
+    {"disabled extension",
+        Extension{Extensions::EXT::texture_filter_anisotropic{}},
+        {}, {}, {},
+        Containers::array<Extension>({Extensions::EXT::texture_filter_anisotropic{}}), {},
+        "Disabling extensions:\n    GL_EXT_texture_filter_anisotropic\n", {}},
+    {"disabled extension on command line",
+        Extension{Extensions::EXT::texture_filter_anisotropic{}},
+        {}, {}, {}, {},
+        Containers::array({"", "--magnum-disable-extensions", "GL_EXT_texture_filter_anisotropic"}),
+        "Disabling extensions:\n    GL_EXT_texture_filter_anisotropic\n", {}},
+};
+
+ContextGLTest::ContextGLTest() {
+    addTests({&ContextGLTest::stringFlags});
+
+    addInstancedTests({&ContextGLTest::constructConfiguration},
+        Containers::arraySize(ConstructConfigurationData));
+
+    addTests({
         &ContextGLTest::makeCurrent,
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -114,6 +198,43 @@ void ContextGLTest::stringFlags() {
                 TestSuite::Compare::GreaterOrEqual);
         }
     }
+}
+
+void ContextGLTest::constructConfiguration() {
+    auto&& data = ConstructConfigurationData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    if(std::getenv("MAGNUM_DISABLE_WORKAROUNDS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_WORKAROUNDS environment variable set");
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
+    CORRADE_VERIFY(Context::hasCurrent());
+
+    if(data.needsExtensionPresent && !Context::current().isExtensionSupported(*data.needsExtensionPresent))
+        CORRADE_SKIP(data.needsExtensionPresent->string() + std::string{" is not supported, skippping"});
+    if(data.needsExtensionMissing && Context::current().isExtensionSupported(*data.needsExtensionMissing))
+        CORRADE_SKIP(data.needsExtensionMissing->string() + std::string{" is supported, skippping"});
+
+    std::ostringstream out;
+    {
+        Context* current = &Context::current();
+        Context::makeCurrent(nullptr);
+        Containers::ScopeGuard resetCurrent{current, Context::makeCurrent};
+
+        Debug redirectOut{&out};
+        Platform::GLContext ctx{Int(data.args.size()), data.args, Context::Configuration{}
+            .setFlags(data.flags)
+            .addDisabledWorkarounds(data.disabledWorkarounds)
+            .addDisabledExtensions(data.disabledExtensions)
+        };
+    }
+
+    /** @todo TestSuite::Compare::StringContains / NotContains for proper diag */
+    if(!data.logShouldContain.isEmpty())
+        CORRADE_VERIFY(Containers::StringView{out.str()}.contains(data.logShouldContain));
+    if(!data.logShouldNotContain.isEmpty())
+        CORRADE_VERIFY(!Containers::StringView{out.str()}.contains(data.logShouldNotContain));
 }
 
 void ContextGLTest::makeCurrent() {

@@ -49,6 +49,12 @@ See also:
 
 @subsubsection changelog-latest-new-gl GL library
 
+-   New @ref GL::Context::Configuration class providing runtime alternatives to
+    the `--magnum-log`, `--magnum-gpu-validation`, `--magnum-disable-extensions`
+    and `--magnum-disable-workarounds` command line options. The class is then
+    inherited by all @ref Platform::Sdl2Application::GLConfiguration "Platform::*Application::GLConfiguration"
+    and @ref Platform::WindowlessEglApplication::Configuration "Platform::Windowless*Application::Configuration"
+    classes.
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all
@@ -1412,7 +1418,8 @@ Released 2019-10-24, tagged as
     (see the @cpp "swiftshader-broken-shader-vertex-id" @ce workaround in
     @ref opengl-workarounds for more information). This pseudo-extension can be
     also explicitly disabled using the usual `--magnum-disable-extensions`
-    @ref GL-Context-command-line "command-line option" for testing purposes.
+    @ref GL-Context-usage-command-line "command-line option" for testing
+    purposes.
 -   An assorted collection of workarounds for Intel Windows drivers "fixing"
     various issues related to @gl_extension{ARB,direct_state_access} by using a
     non-DSA code path in the affected cases --- see
@@ -1463,7 +1470,7 @@ Released 2019-10-24, tagged as
     a defined output. On core and ES/WebGL contexts this is enabled implicitly,
     but for example NVidia drivers have @cpp gl_PointCoord @ce undefined when
     `GL_POINT_SPRITE` is not enabled on compatibility contexts.
--   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+-   New `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output. This flag also causes
     @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
@@ -1476,7 +1483,7 @@ Released 2019-10-24, tagged as
     @ref GL::Buffer::setData() / @ref GL::Buffer::setSubData() for a succint
     upload of basic types
 -   Added an ability to use Magnum with multiple OpenGL contexts using
-    @ref GL::Context::makeCurrent(), see @ref GL-Context-multiple for more
+    @ref GL::Context::makeCurrent(), see @ref GL-Context-usage-multiple for more
     information
 -   @ref GL::AbstractFramebuffer::read(), @ref GL::Texture::image(),
     @ref GL::Texture::subImage(), @ref GL::Texture::compressedImage(),
@@ -1678,7 +1685,7 @@ Released 2019-10-24, tagged as
 -   @ref GL::OpenGLTester no longer implicitly enables @ref GL::DebugOutput as
     it can be quite spammy when complex shaders or benchmarks are allowed. For
     easier debugging, users are encouraged to use the new
-    `--magnum-gpu-validation` @ref GL-Context-command-line "command line option"
+    `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command line option"
     instead.
 -   Added an ability to create @ref GL::DynamicAttribute directly from a
     @ref GL::Attribute

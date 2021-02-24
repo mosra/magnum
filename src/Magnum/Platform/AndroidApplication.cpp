@@ -167,7 +167,7 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 
 Vector2i AndroidApplication::framebufferSize() const {

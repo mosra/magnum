@@ -108,18 +108,32 @@ class MAGNUM_GL_EXPORT Extension {
 @brief Magnum OpenGL context
 
 Provides access to OpenGL version and extension information and manages
-Magnum's internal OpenGL state tracker. An instance available through
-@ref Context::current() is automatically created during construction of
-`Platform::*Application` classes and you can safely assume the instance is
-available during the whole `*Application` lifetime. It's also possible to
-create the context without using any `*Application` class using the
+Magnum's internal OpenGL state tracker.
+
+@section GL-Context-usage Creating a context
+
+In order to use any Magnum OpenGL functionality, an instance of this class has
+to exist and be made current. If you use any `Platform::*Application` classes,
+an instance available through @ref Context::current() is automatically created
+during construction (or after @ref Platform::Sdl2Application::create() "Platform::*Application::create()"
+/ @relativeref{Platform::Sdl2Application,tryCreate()} and you can safely assume
+the instance is available during the whole `*Application` lifetime. It's also
+possible to create the context without using any `*Application` class using the
 @ref Platform::GLContext subclass, see @ref platform for more information.
 
-@section GL-Context-command-line Command-line options
+Various options can be passed using the @ref Configuration class, which is then
+extended by various
+@ref Platform::Sdl2Application::GLConfiguration "Platform::*Application::GLConfiguration"
+and @ref Platform::WindowlessEglContext::Configuration "Platform::Windowless*Application::Configuration"
+subclasses.
 
-The context is configurable through command-line options, that are passed
-either from the `Platform::*Application` classes or from the
-@ref Platform::GLContext class. Usage:
+@subsection GL-Context-usage-command-line Command-line options
+
+In addition to the @ref Configuration, the context is configurable through
+command-line options, that are passed either from the `Platform::*Application`
+classes or from the @ref Platform::GLContext class. In case an option is set in
+both the @ref Configuration and on command-line / environment, the two are
+combined together --- flags ORed together, lists joined. Usage:
 
 @code{.sh}
 <application> [--magnum-help] [--magnum-disable-workarounds LIST]
@@ -134,20 +148,23 @@ Arguments:
 -   `--magnum-help` --- display this help message and exit
 -   `--magnum-disable-workarounds LIST` --- driver workarounds to disable (see
     @ref opengl-workarounds for detailed info) (environment:
-    `MAGNUM_DISABLE_WORKAROUNDS`)
+    `MAGNUM_DISABLE_WORKAROUNDS`). Corresponds to
+    @ref Configuration::addDisabledWorkarounds().
 -   `--magnum-disable-extensions LIST` --- API extensions to disable
-    (environment: `MAGNUM_DISABLE_EXTENSIONS`)
+    (environment: `MAGNUM_DISABLE_EXTENSIONS`). Corresponds to
+    @ref Configuration::addDisabledExtensions().
 -   `--magnum-gpu-validation off|on` --- GPU validation using
     @gl_extension{KHR,debug}, if present (environment:
     `MAGNUM_GPU_VALIDATION`) (default: `off`). This sets up @ref DebugOutput
     callbacks and also causes
     @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
     to be enabled for context creation for both windowed and windowless
-    applications on supported platforms
+    applications on supported platforms. Corresponds to
+    @ref Configuration::Flag::GpuValidation.
 -   `--magnum-log default|quiet|verbose` --- console logging
-    (environment: `MAGNUM_LOG`) (default: `default`). If you need to suppress
-    the engine startup log from code, the recommended way is to redirect
-    @ref Utility-Debug-scoped-output "debug output to null" during context creation.
+    (environment: `MAGNUM_LOG`) (default: `default`). Corresponds to
+    @ref Configuration::Flag::QuietLog and
+    @relativeref{Configuration::Flag,VerboseLog}.
 
 Note that all options are prefixed with `--magnum-` to avoid conflicts with
 options passed to the application itself. Options that don't have this prefix
@@ -158,15 +175,7 @@ Particular application implementations add more options for DPI scaling or
 GPU selection, see @ref Platform::Sdl2Application, @ref Platform::GlfwApplication
 and @ref Platform::WindowlessEglApplication for details.
 
-@section GL-Context-multithreading Thread safety
-
-If Corrade is compiled with @ref CORRADE_BUILD_MULTITHREADED (the default), the
-@ref hasCurrent() and @ref current() accessors are thread-local, matching the
-OpenGL context thread locality. This might cause some performance penalties ---
-if you are sure that you never need to have multiple independent thread-local
-Magnum context, build Corrade with the option disabled.
-
-@section GL-Context-multiple Using multiple OpenGL contexts
+@subsection GL-Context-usage-multiple Using multiple OpenGL contexts
 
 By default, Magnum assumes you have one OpenGL context active at all times, and
 all state tracking is done by the @ref Context instance that's associated with
@@ -187,9 +196,19 @@ Once all needed instances are created, switch between them right after making
 the underlying GL context current:
 
 @snippet MagnumGL-framebuffer.cpp Context-makeCurrent
+
+@section GL-Context-multithreading Thread safety
+
+If Corrade is compiled with @ref CORRADE_BUILD_MULTITHREADED (the default), the
+@ref hasCurrent() and @ref current() accessors are thread-local, matching the
+OpenGL context thread locality. This might cause some performance penalties ---
+if you are sure that you never need to have multiple independent thread-local
+Magnum context, build Corrade with the option disabled.
 */
 class MAGNUM_GL_EXPORT Context {
     public:
+        class Configuration;
+
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Context flag
@@ -204,7 +223,8 @@ class MAGNUM_GL_EXPORT Context {
              * Debug context. Enabled automatically by @ref Platform windowed
              * and windowless application implementations if the
              * `--magnum-gpu-validation`
-             * @ref GL-Context-command-line "command-line option" is present.
+             * @ref GL-Context-usage-command-line "command-line option" is
+             * present.
              * @requires_gl43 Extension @gl_extension{KHR,debug}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,debug}
@@ -485,7 +505,7 @@ class MAGNUM_GL_EXPORT Context {
          * @m_since{2019,10}
          *
          * To be used when you need to manage multiple OpenGL contexts. See
-         * @ref GL-Context-multiple for more information.
+         * @ref GL-Context-usage-multiple for more information.
          */
         static void makeCurrent(Context* context);
 
@@ -693,8 +713,10 @@ class MAGNUM_GL_EXPORT Context {
          * @brief Whether given extension is disabled
          *
          * Can be used for detecting driver bug workarounds. Disabled
-         * extensions return `false` in @ref isExtensionSupported() even if
-         * they are advertised as being supported by the driver.
+         * extensions return @cpp false @ce in @ref isExtensionSupported() even
+         * if they are advertised as being supported by the driver.
+         * @see @ref Configuration::addDisabledExtensions(),
+         *      @ref GL-Context-usage-command-line
          */
         template<class E> bool isExtensionDisabled() const {
             return isExtensionDisabled<E>(version());
@@ -705,6 +727,8 @@ class MAGNUM_GL_EXPORT Context {
          *
          * Similar to above, but can also check for extensions which are
          * disabled only for particular versions.
+         * @see @ref Configuration::addDisabledExtensions(),
+         *      @ref GL-Context-usage-command-line
          */
         template<class E> bool isExtensionDisabled(Version version) const {
             static_assert(Implementation::IsExtension<E>::value, "expected an OpenGL extension");
@@ -717,8 +741,11 @@ class MAGNUM_GL_EXPORT Context {
          * @brief Whether given extension is disabled
          *
          * Can be used e.g. for listing extensions available on current
-         * hardware, but for general usage prefer @ref isExtensionDisabled() const,
-         * as it does most operations in compile time.
+         * hardware, but for general usage prefer
+         * @ref isExtensionDisabled() const, as it does most operations at
+         * compile time.
+         * @see @ref Configuration::addDisabledExtensions(),
+         *      @ref GL-Context-usage-command-line
          */
         bool isExtensionDisabled(const Extension& extension) const {
             return isVersionSupported(extension.requiredVersion()) && !isVersionSupported(_extensionRequiredVersion[extension.index()]);
@@ -786,8 +813,8 @@ class MAGNUM_GL_EXPORT Context {
         explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
         explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
 
-        bool tryCreate();
-        void create();
+        bool tryCreate(const Configuration& configuration);
+        void create(const Configuration& configuration);
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
@@ -846,6 +873,206 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDriver value);
 
 /** @debugoperatorclassenum{Context,Context::DetectedDrivers} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDrivers value);
+
+/**
+@brief Configuration
+@m_since_latest
+
+Affects how Magnum's context creation behaves. See @ref GL-Context-usage for
+more information.
+@see @ref Platform::GLContext::GLContext(),
+    @ref Platform::GLContext::create(),
+    @ref Platform::GLContext::tryCreate()
+*/
+class MAGNUM_GL_EXPORT Context::Configuration {
+    public:
+        /**
+         * @brief Context setup flag
+         *
+         * Flags affecting the actual GL context are merged with this enum in
+         * @ref Platform::Sdl2Application::GLConfiguration::Flag "Platform::*Application::GLConfiguration::Flag"
+         * and @ref Platform::WindowlessEglContext::Configuration::Flag "Platform::Windowless*Application::Configuration::Flag"
+         * and after context creation available through @ref Context::Flag /
+         * @ref Context::flags().
+         * @see @ref Flags, @ref setFlags()
+         */
+        enum class Flag: UnsignedLong {
+            /* Keeping the 32-bit range reserved for actual GL context flags */
+
+            /**
+             * Print only warnings and errors instead of the usual startup log
+             * listing used extensions and workarounds. Ignored if
+             * @ref Flag::VerboseLog is set.
+             *
+             * Corresponds to the `--magnum-log quiet`
+             * @ref GL-Context-usage-command-line "command-line option".
+             */
+            QuietLog = 1ull << 61,
+
+            /**
+             * Print additional information on startup in addition to the usual
+             * startup log that lists used extensions and workarounds. Has a
+             * precedence over @ref Flag::QuietLog.
+             *
+             * Corresponds to the `--magnum-log verbose`
+             * @ref GL-Context-usage-command-line "command-line option".
+             */
+            VerboseLog = 1ull << 62,
+
+            /**
+             * Enable GPU validation, if available.
+             *
+             * Corresponds to the `--magnum-gou-validation on`
+             * @ref GL-Context-usage-command-line "command-line option".
+             */
+            GpuValidation = 1ull << 63
+        };
+
+        /**
+         * @brief Context setup flags
+         *
+         * @see @ref setFlags(), @ref GL::Context::Flags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /*implicit*/ Configuration();
+
+        /** @brief Copy constructor */
+        /* The class has to be copyable in order to make command-line and
+           configuration options easy to merge in application implementations
+           -- these make a mutable copy and add what arrived via command line */
+        Configuration(const Configuration& other);
+
+        /** @brief Move constructor */
+        Configuration(Configuration&&) noexcept;
+
+        ~Configuration();
+
+        /** @brief Copy constructor */
+        Configuration& operator=(const Configuration& other);
+
+        /** @brief Move assignment */
+        Configuration& operator=(Configuration&&) noexcept;
+
+        /** @brief Context setup flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context setup flags
+         * @return Reference to self (for method chaining)
+         *
+         * By default no flags are set. Note that subclasses might have
+         * different flag defaults, see their documentation for more
+         * information. To avoid clearing default flags by accident, prefer to
+         * use @ref addFlags() and @ref clearFlags() instead.
+         *
+         * Particular @ref Flag values correspond to the `--magnum-log` and
+         * `--magnum-gpu-validation`
+         * @ref GL-Context-usage-command-line "command-line options".
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add context setup flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear context setup flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
+        /** @brief Disabled driver workarounds */
+        Containers::ArrayView<const Containers::StringView> disabledWorkarounds() const;
+
+        /**
+         * @brief Add disabled driver workarounds
+         * @return Reference to self (for method chaining)
+         *
+         * Accepts strings from the list at @ref opengl-workarounds. Unknown
+         * workarounds are ignored with a warning. By default no workarounds
+         * are disabled.
+         *
+         * Corresponds to the `--magnum-disable-workarounds`
+         * @ref GL-Context-usage-command-line "command-line option".
+         */
+        Configuration& addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds);
+        /** @overload */
+        Configuration& addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds);
+
+        /** @brief Disabled extensions */
+        Containers::ArrayView<const Extension> disabledExtensions() const;
+
+        /**
+         * @brief Add disabled extensions
+         * @return Reference to self (for method chaining)
+         *
+         * By default no extensions are disabled, except for those disabled by
+         * driver workarounds.
+         *
+         * Corresponds to the `--magnum-disable-extensions`
+         * @ref GL-Context-usage-command-line "command-line option".
+         */
+        Configuration& addDisabledExtensions(Containers::ArrayView<const Extension> extensions);
+        /** @overload */
+        Configuration& addDisabledExtensions(std::initializer_list<Extension> extensions);
+        /** @overload */
+        template<class ...E> Configuration& addDisabledExtensions() {
+            static_assert(Implementation::IsExtension<E...>::value, "expected only OpenGL extensions");
+            return addDisabledExtensions({E{}...});
+        }
+
+    private:
+        Flags _flags;
+        Containers::Array<Containers::StringView> _disabledWorkarounds;
+        Containers::Array<Extension> _disabledExtensions;
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#define MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Type)       \
+    Type& addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds) { \
+        GL::Context::Configuration::addDisabledWorkarounds(workarounds);    \
+        return *this;                                                       \
+    }                                                                       \
+    Type& addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds) { \
+        GL::Context::Configuration::addDisabledWorkarounds(workarounds);    \
+        return *this;                                                       \
+    }                                                                       \
+                                                                            \
+    Type& addDisabledExtensions(Containers::ArrayView<const GL::Extension> extensions) { \
+        GL::Context::Configuration::addDisabledExtensions(extensions);      \
+        return *this;                                                       \
+    }                                                                       \
+    Type& addDisabledExtensions(std::initializer_list<GL::Extension> extensions) { \
+        GL::Context::Configuration::addDisabledExtensions(extensions);      \
+        return *this;                                                       \
+    }                                                                       \
+    template<class ...E> Type& addDisabledExtensions() {                    \
+        GL::Context::Configuration::addDisabledExtensions<E...>();          \
+        return *this;                                                       \
+    }
+#endif
+
+CORRADE_ENUMSET_OPERATORS(Context::Configuration::Flags)
 
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported

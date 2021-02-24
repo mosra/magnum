@@ -132,7 +132,7 @@ by default to make the test output more readable. Instead of relying on debug
 output to report errors, the @ref MAGNUM_VERIFY_NO_GL_ERROR() macro should be
 used to reliably check for errors regardless of platform support. For easier
 debugging of OpenGL errors users are encuraged to use the
-`--magnum-gpu-validation` @ref GL-Context-command-line "command line option",
+`--magnum-gpu-validation` @ref GL-Context-usage-command-line "command line option",
 which is supported here as well as in all other application implementations.
 
 @section GL-OpenGLTester-benchmarks GPU time benchmarks

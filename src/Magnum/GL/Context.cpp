@@ -749,14 +749,39 @@ Context::~Context() {
     if(currentContext == this) currentContext = nullptr;
 }
 
-void Context::create() {
+void Context::create(const Configuration& configuration) {
     /* Hard exit if the context cannot be created */
-    if(!tryCreate()) std::exit(1);
+    if(!tryCreate(configuration)) std::exit(1);
 }
 
-bool Context::tryCreate() {
+bool Context::tryCreate(const Configuration& configuration) {
     CORRADE_ASSERT(_version == Version::None,
         "Platform::Context::tryCreate(): context already created", false);
+
+    /* Merge the configuration with parameters passed on the command line /
+       environment. For the log command-line gets a priority -- if it says
+       quiet, it'll override the verbose setting from the configuration; if
+       it says verbose, the quiet setting from the configuration will be
+       ignored */
+    if((configuration.flags() & Configuration::Flag::VerboseLog) && (_internalFlags & InternalFlag::DisplayInitializationLog))
+        _internalFlags |= InternalFlag::DisplayVerboseInitializationLog;
+    else if((configuration.flags() & Configuration::Flag::QuietLog) && !(_internalFlags >= InternalFlag::DisplayVerboseInitializationLog))
+        _internalFlags &= ~InternalFlag::DisplayInitializationLog;
+
+    /* GPU validation is enabled if either enables it */
+    if(configuration.flags() & Configuration::Flag::GpuValidation)
+        _internalFlags |= InternalFlag::GpuValidation;
+
+    /* Driver workarounds get merged. Not using disableDriverWorkaround() here
+       since the Configuration already contains the internal string views. */
+    for(const Containers::StringView workaround: configuration.disabledWorkarounds())
+        arrayAppend(_driverWorkarounds, Containers::InPlaceInit, workaround, true);
+
+    /* Extensions get merged also. Here we had the chance to force users to
+       give us the predefined extension types so no need to search for their
+       IDs */
+    for(const Extension& extension: configuration.disabledExtensions())
+        arrayAppend(_disabledExtensions, extension);
 
     /* Load GL function pointers. Pass this instance to it so it can use it for
        potential driver-specific workarounds. */
@@ -1137,6 +1162,50 @@ void Context::resetState(const States states) {
     if(states & State::TransformFeedback)
         _state->transformFeedback->reset();
     #endif
+}
+
+Context::Configuration::Configuration() = default;
+
+Context::Configuration::Configuration(const Configuration& other): _flags{other._flags} {
+    addDisabledWorkarounds(other._disabledWorkarounds);
+    addDisabledExtensions(other._disabledExtensions);
+}
+
+Context::Configuration::Configuration(Configuration&&) noexcept = default;
+
+Context::Configuration::~Configuration() = default;
+
+Context::Configuration& Context::Configuration::operator=(const Configuration& other) {
+    _flags = other._flags;
+    arrayResize(_disabledWorkarounds, 0);
+    /** @todo arrayClear(), ffs */
+    arrayResize(_disabledExtensions, Containers::NoInit, 0);
+    addDisabledWorkarounds(other._disabledWorkarounds);
+    addDisabledExtensions(other._disabledExtensions);
+    return *this;
+}
+
+Context::Configuration& Context::Configuration::operator=(Configuration&&) noexcept = default;
+
+Containers::ArrayView<const Containers::StringView> Context::Configuration::disabledWorkarounds() const {
+    return _disabledWorkarounds;
+}
+
+Containers::ArrayView<const Extension> Context::Configuration::disabledExtensions() const {
+    return _disabledExtensions;
+}
+
+Context::Configuration& Context::Configuration::addDisabledWorkarounds(std::initializer_list<Containers::StringView> workarounds) {
+    return addDisabledWorkarounds(Containers::arrayView(workarounds));
+}
+
+Context::Configuration& Context::Configuration::addDisabledExtensions(Containers::ArrayView<const Extension> extensions) {
+    arrayAppend(_disabledExtensions, extensions);
+    return *this;
+}
+
+Context::Configuration& Context::Configuration::addDisabledExtensions(std::initializer_list<Extension> extensions) {
+    return addDisabledExtensions(Containers::arrayView(extensions));
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -23,14 +23,28 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Arguments.h>
+
 #include "Magnum/Platform/WindowlessCglApplication.h"
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct WindowlessCglApplicationTest: Platform::WindowlessApplication {
-    explicit WindowlessCglApplicationTest(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+    explicit WindowlessCglApplicationTest(const Arguments& arguments);
     int exec() override { return 0; }
 };
+
+WindowlessCglApplicationTest::WindowlessCglApplicationTest(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
+    Utility::Arguments args;
+    args.addSkippedPrefix("magnum", "engine-specific options")
+        .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .parse(arguments.argc, arguments.argv);
+
+    if(args.isSet("quiet"))
+        createContext(Configuration{}.addFlags(Configuration::Flag::QuietLog));
+    else
+        createContext();
+}
 
 }}}}
 

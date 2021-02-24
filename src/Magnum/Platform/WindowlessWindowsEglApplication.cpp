@@ -129,7 +129,8 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
             #error unsupported OpenGL ES version
             #endif
         #endif
-        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
+        /* Mask out the upper 32bits used for other flags */
+        EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags) & 0xffffffffu),
         EGL_NONE
     };
 
@@ -201,7 +202,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& conf
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
     WindowlessWindowsEglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

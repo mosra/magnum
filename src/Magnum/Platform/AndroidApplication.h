@@ -36,7 +36,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -448,7 +448,7 @@ Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref AndroidApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
-class AndroidApplication::GLConfiguration {
+class AndroidApplication::GLConfiguration: public GL::Context::Configuration {
     public:
         /*implicit*/ GLConfiguration();
 
@@ -503,6 +503,23 @@ class AndroidApplication::GLConfiguration {
             _stencilBufferSize = size;
             return *this;
         }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        GLConfiguration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(flags);
+            return *this;
+        }
+        GLConfiguration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(flags);
+            return *this;
+        }
+        GLConfiguration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(flags);
+            return *this;
+        }
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
 
     private:
         Vector4i _colorBufferSize;

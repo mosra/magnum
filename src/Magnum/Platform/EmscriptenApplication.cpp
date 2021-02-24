@@ -450,7 +450,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return _context->tryCreate(glConfiguration);
 }
 #endif
 
@@ -770,7 +770,10 @@ void EmscriptenApplication::textInputEvent(TextInputEvent&) {}
 #ifdef MAGNUM_TARGET_GL
 EmscriptenApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 8}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0} {}
+    _sampleCount{0}
+{
+    addFlags(Flag::EnableExtensionsByDefault);
+}
 #endif
 
 int EmscriptenApplication::exec() {

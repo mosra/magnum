@@ -616,4 +616,27 @@ void Context::setupDriverWorkarounds() {
     #endif
 }
 
+Context::Configuration& Context::Configuration::addDisabledWorkarounds(Containers::ArrayView<const Containers::StringView> workarounds) {
+    arrayReserve(_disabledWorkarounds, _disabledWorkarounds.size() + workarounds.size());
+
+    for(const Containers::StringView workaround: workarounds) {
+        /* Find the workaround. Note that we'll add the found view to the array
+           and not the passed view, as the found view is guaranteed to stay in
+           scope */
+        const Containers::StringView found = findWorkaround(workaround);
+
+        /* Ignore unknown workarounds */
+        /** @todo this will probably cause false positives when both GL and
+            Vulkan is used together? */
+        if(found.isEmpty()) {
+            Warning{} << "GL::Context::Configuration::addDisabledWorkarounds(): unknown workaround" << workaround;
+            continue;
+        }
+
+        arrayAppend(_disabledWorkarounds, Containers::InPlaceInit, found);
+    }
+
+    return *this;
+}
+
 }}

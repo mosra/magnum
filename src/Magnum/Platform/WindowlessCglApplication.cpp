@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessCglContext::WindowlessCglContext(const Configuration & configuration, GLContext*) {
+WindowlessCglContext::WindowlessCglContext(const Configuration& configuration, GLContext*) {
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
@@ -128,7 +128,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration& configurati
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
     WindowlessCglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

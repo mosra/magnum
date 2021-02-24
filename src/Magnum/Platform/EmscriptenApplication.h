@@ -40,7 +40,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -926,14 +926,15 @@ The created context is always with a double-buffered OpenGL context.
 @see @ref EmscriptenApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
-class EmscriptenApplication::GLConfiguration {
+class EmscriptenApplication::GLConfiguration: public GL::Context::Configuration {
     public:
         /**
          * @brief Context flag
          *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
-        enum class Flag: Int {
+        enum class Flag: UnsignedLong {
             /**
              * Premultiplied alpha. If set, the alpha channel of the rendering
              * context will be treated as representing premultiplied alpha
@@ -987,7 +988,25 @@ class EmscriptenApplication::GLConfiguration {
              * Proxy content to main thread. For more details, see the
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread).
              */
-            ProxyContextToMainThread = 1 << 7
+            ProxyContextToMainThread = 1 << 7,
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
         };
 
         /**
@@ -1000,7 +1019,9 @@ class EmscriptenApplication::GLConfiguration {
         /*implicit*/ GLConfiguration();
 
         /** @brief Context flags */
-        Flags flags() const { return _flags; }
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
 
         /**
          * @brief Set context flags
@@ -1012,7 +1033,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
-            _flags = flags;
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1025,7 +1046,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref clearFlags()
          */
         GLConfiguration& addFlags(Flags flags) {
-            _flags |= flags;
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1038,7 +1059,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref addFlags()
          */
         GLConfiguration& clearFlags(Flags flags) {
-            _flags &= ~flags;
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
             return *this;
         }
 
@@ -1112,12 +1133,15 @@ class EmscriptenApplication::GLConfiguration {
             return *this;
         }
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(GLConfiguration)
+        #endif
+
     private:
         Vector4i _colorBufferSize;
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
-
-        Flags _flags{Flag::EnableExtensionsByDefault};
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)

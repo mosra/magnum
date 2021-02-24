@@ -118,7 +118,7 @@ Arguments:
 -   `--all-extensions` --- display extensions also for fully supported versions
 -   `--limits` --- display also limits and implementation-defined values
 -   `--magnum-...` --- engine-specific options (see
-    @ref GL-Context-command-line for details)
+    @ref GL-Context-usage-command-line for details)
 
 @subsection magnum-gl-info-usage-emscripten Usage on Emscripten
 
