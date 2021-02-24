@@ -428,7 +428,7 @@ TextureState::TextureState(Context& context, Containers::StaticArrayView<Impleme
 
     /* Anisotropic filter implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>()) {
+    if(context.isExtensionSupported<Extensions::ARB::texture_filter_anisotropic>()) {
         extensions[Extensions::ARB::texture_filter_anisotropic::Index] =
                    Extensions::ARB::texture_filter_anisotropic::string();
 
