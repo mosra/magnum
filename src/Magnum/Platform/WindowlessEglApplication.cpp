@@ -578,7 +578,9 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
     Configuration mergedConfiguration{configuration};
     #ifndef MAGNUM_TARGET_WEBGL
     if(!mergedConfiguration.device())
-        mergedConfiguration.setDevice(_commandLineDevice).setCudaDevice(_commandLineCudaDevice);
+        mergedConfiguration
+            .setDevice(_commandLineDevice)
+            .setCudaDevice(_commandLineCudaDevice);
     #endif
 
     WindowlessEglContext glContext{mergedConfiguration, _context.get()};
