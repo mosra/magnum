@@ -285,7 +285,9 @@ constexpr Extension ExtensionList[]{
     Extensions::EXT::texture_compression_bptc{},
     Extensions::EXT::texture_compression_rgtc{},
     Extensions::EXT::texture_filter_anisotropic{},
+    #ifndef MAGNUM_TARGET_GLES2
     Extensions::EXT::texture_norm16{},
+    #endif
     Extensions::OES::texture_float_linear{},
     #ifndef MAGNUM_TARGET_GLES2
     Extensions::OVR::multiview2{},

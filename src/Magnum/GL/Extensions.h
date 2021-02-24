@@ -301,8 +301,8 @@ namespace ANGLE {
     _extension(13,EXT,texture_compression_bptc,     GLES200,    None) // #39
     #ifndef MAGNUM_TARGET_GLES2
     _extension(14,EXT,clip_cull_distance,           GLES300,    None) // #43
+    _extension(15,EXT,texture_norm16,               GLES300,    None) // #44
     #endif
-    _extension(15,EXT,texture_norm16,               GLES200,    None) // #44
     #ifndef MAGNUM_TARGET_GLES2
     _extension(16,EXT,draw_buffers_indexed,         GLES300,    None) // #45
     #endif

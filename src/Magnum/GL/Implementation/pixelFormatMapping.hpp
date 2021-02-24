@@ -115,15 +115,9 @@ _n(RG16Unorm, LuminanceAlpha, UnsignedShort)
 _n(RGB16Unorm, RGB, UnsignedShort)
 _n(RGBA16Unorm, RGBA, UnsignedShort)
 #endif
-/* Available everywhere except ES2 (WebGL 1 has it) */
-#ifndef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES
 _c(R16Snorm, Red, Short, R16Snorm)
 _c(RG16Snorm, RG, Short, RG16Snorm)
-_c(RGB16Snorm, RGB, Short, RGB16Snorm)
-_c(RGBA16Snorm, RGBA, Short, RGBA16Snorm)
-#elif defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
-_c(R16Snorm, Luminance, Short, R16Snorm)
-_c(RG16Snorm, LuminanceAlpha, Short, RG16Snorm)
 _c(RGB16Snorm, RGB, Short, RGB16Snorm)
 _c(RGBA16Snorm, RGBA, Short, RGBA16Snorm)
 #else

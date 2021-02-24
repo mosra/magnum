@@ -335,15 +335,15 @@ enum class TextureFormat: GLenum {
     RGBA8Snorm = GL_RGBA8_SNORM,
     #endif
 
-    /* Available everywhere except ES2 (WebGL 1 has it) */
-    #if !(defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gles30 Only byte-sized normalized formats are available in
      *      OpenGL ES 2.0
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     R16 = GL_R16,
@@ -357,7 +357,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RG16 = GL_RG16,
@@ -370,7 +371,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RGB16 = GL_RGB16,
@@ -383,7 +385,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RGBA16 = GL_RGBA16,
@@ -397,7 +400,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     R16Snorm = GL_R16_SNORM,
@@ -411,7 +415,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RG16Snorm = GL_RG16_SNORM,
@@ -425,7 +430,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RGB16Snorm = GL_RGB16_SNORM,
@@ -439,7 +445,8 @@ enum class TextureFormat: GLenum {
      * @requires_gles31 Only byte-sized normalized formats are available in
      *      OpenGL ES 3.0 and older; not defined on ES2
      * @requires_es_extension OpenGL ES 3.1 and @gl_extension{EXT,texture_norm16}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,texture_norm16}
+     * @requires_webgl_extension WebGL 2.0 and extension
+     *      @webgl_extension{EXT,texture_norm16}
      */
     #ifndef MAGNUM_TARGET_GLES
     RGBA16Snorm = GL_RGBA16_SNORM,

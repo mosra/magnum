@@ -506,17 +506,6 @@ typedef khronos_uint64_t GLuint64;
 #define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT 0x8E8E
 #define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT 0x8E8F
 
-/* GL_EXT_texture_norm16 */
-
-#define GL_R16_EXT 0x822A
-#define GL_RG16_EXT 0x822C
-#define GL_RGBA16_EXT 0x805B
-#define GL_RGB16_EXT 0x8054
-#define GL_R16_SNORM_EXT 0x8F98
-#define GL_RG16_SNORM_EXT 0x8F99
-#define GL_RGB16_SNORM_EXT 0x8F9A
-#define GL_RGBA16_SNORM_EXT 0x8F9B
-
 /* GL_EXT_texture_compression_s3tc */
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
