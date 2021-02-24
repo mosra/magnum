@@ -738,7 +738,9 @@ Context::Context(Context&& other) noexcept: _version{other._version},
     #endif
     _extensionStatus{other._extensionStatus},
     _extensionRequiredVersion{other._extensionRequiredVersion},
+    #ifdef MAGNUM_BUILD_DEPRECATED
     _supportedExtensions{std::move(other._supportedExtensions)},
+    #endif
     _state{std::move(other._state)},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
@@ -909,7 +911,9 @@ bool Context::tryCreate(const Configuration& configuration) {
     const Containers::Array<Containers::StringView> extensions = extensionStrings();
     for(const Containers::StringView extension: extensions) {
         if(const Extension* found = findExtension(extension, future)) {
+            #ifdef MAGNUM_BUILD_DEPRECATED
             arrayAppend(_supportedExtensions, *found);
+            #endif
             _extensionStatus.set(found->index(), true);
         }
     }

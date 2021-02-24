@@ -615,16 +615,21 @@ class MAGNUM_GL_EXPORT Context {
         Flags flags() const { return _flags; }
         #endif
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Supported extensions
          *
          * The list contains only extensions from OpenGL versions newer than
          * the current.
-         * @see @ref isExtensionSupported(), @ref Extension::extensions()
+         * @m_deprecated_since_latest Deprecated as it doesn't provide anything
+         *      that @ref extensionStrings(), @ref Extension::extensions() and
+         *      @ref isExtensionSupported() wouldn't provide already and only
+        *       causes extra overhead during context creation.
          */
-        Containers::ArrayView<const Extension> supportedExtensions() const {
+        CORRADE_DEPRECATED("use extensionStrings(), Extension::extensions() and isExtensionSupported() instead") Containers::ArrayView<const Extension> supportedExtensions() const {
             return _supportedExtensions;
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -842,7 +847,9 @@ class MAGNUM_GL_EXPORT Context {
            this field contains the minimal required GL version the extension
            needs. Extensions that are disabled have None here. */
         Containers::StaticArray<Implementation::ExtensionCount, Version> _extensionRequiredVersion;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         Containers::Array<Extension> _supportedExtensions;
+        #endif
 
         Containers::Pointer<Implementation::State> _state;
 
