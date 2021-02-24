@@ -246,8 +246,9 @@ void ContextGLTest::makeCurrent() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     {
-        const char* argv[]{"", "--magnum-log", "off"};
-        Platform::GLContext ctx{Int(Containers::arraySize(argv)), argv};
+        Platform::GLContext ctx{Context::Configuration{}
+            .setFlags(Context::Configuration::Flag::QuietLog)
+        };
 
         CORRADE_VERIFY(Context::hasCurrent());
     }
