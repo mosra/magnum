@@ -533,7 +533,13 @@ constexpr Extension ExtensionListES320[]{
     };
 #endif
 
-constexpr struct {
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+/* MSVC 2015 ICEs in the loop below if this is constexpr. Don't, then. */
+const
+#else
+constexpr
+#endif
+struct {
     Version version;
     Containers::ArrayView<const Extension> extensions;
 } KnownExtensionsForVersion[]{
