@@ -529,7 +529,6 @@ class AndroidApplication::GLConfiguration: public GL::Context::Configuration {
 /**
 @brief Configuration
 
-Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref AndroidApplication(), @ref GLConfiguration, @ref create(),
     @ref tryCreate()
 */
