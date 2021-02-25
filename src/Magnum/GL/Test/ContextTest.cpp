@@ -36,6 +36,8 @@
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
+using namespace Containers::Literals;
+
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
@@ -141,20 +143,24 @@ void ContextTest::isExtension() {
 }
 
 void ContextTest::configurationConstruct() {
+    /* In order to verify the string literals get properly interned I could
+       make them non-global (by converting from const char*) and then test that
+       they are global and with a different pointer. However, compilers are
+       clever and on static builds they could just deduplicate the literals,
+       which would cause this test to fail. Instead I make them
+       non-null-terminated which blocks the compiler from combining them
+       together. */
     #ifndef MAGNUM_TARGET_GLES
-    const Containers::StringView a = "no-layout-qualifiers-on-old-glsl";
-    const Containers::StringView b = "nv-compressed-block-size-in-bits";
-    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size";
+    const Containers::StringView a = "no-layout-qualifiers-on-old-glsl!"_s.except(1);
+    const Containers::StringView b = "nv-compressed-block-size-in-bits!"_s.except(1);
+    const Containers::StringView c = "nv-cubemap-inconsistent-compressed-image-size!"_s.except(1);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const Containers::StringView a = "swiftshader-no-empty-egl-context-flags";
-    const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer";
-    const Containers::StringView c = "angle-chatty-shader-compiler";
+    const Containers::StringView a = "swiftshader-no-empty-egl-context-flags!"_s.except(1);
+    const Containers::StringView b = "swiftshader-egl-context-needs-pbuffer!"_s.except(1);
+    const Containers::StringView c = "angle-chatty-shader-compiler!"_s.except(1);
     #else
     /* No general WebGL workarounds to test */
     #endif
-    /* Deliberately not having the literals global to test that they get
-       converted to something else */
-    CORRADE_VERIFY(!(a.flags() & Containers::StringViewFlag::Global));
 
     Context::Configuration configuration;
     configuration
