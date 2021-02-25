@@ -242,26 +242,27 @@ void ContextGLTest::constructConfiguration() {
 
 void ContextGLTest::makeCurrent() {
     CORRADE_VERIFY(Context::hasCurrent());
-
-    Context& current = Context::current();
-    Context::makeCurrent(nullptr);
-
-    CORRADE_VERIFY(!Context::hasCurrent());
+    Context* current = &Context::current();
 
     {
-        Platform::GLContext ctx{Context::Configuration{}
-            .setFlags(Context::Configuration::Flag::QuietLog)
-        };
+        Context::makeCurrent(nullptr);
+        Containers::ScopeGuard resetCurrent{current, Context::makeCurrent};
 
-        CORRADE_VERIFY(Context::hasCurrent());
+        CORRADE_VERIFY(!Context::hasCurrent());
+
+        {
+            Platform::GLContext ctx{Context::Configuration{}
+                .setFlags(Context::Configuration::Flag::QuietLog)
+            };
+
+            CORRADE_VERIFY(Context::hasCurrent());
+        }
+
+        CORRADE_VERIFY(!Context::hasCurrent());
     }
 
-    CORRADE_VERIFY(!Context::hasCurrent());
-
-    Context::makeCurrent(&current);
-
     CORRADE_VERIFY(Context::hasCurrent());
-    CORRADE_COMPARE(&Context::current(), &current);
+    CORRADE_COMPARE(&Context::current(), current);
 }
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
