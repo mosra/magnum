@@ -102,6 +102,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     /* Otherwise find the display and initialize EGL */
     {
         #ifndef MAGNUM_TARGET_WEBGL
+        const bool displayVerboseLog = magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog);
+
         /* If relevant extensions are supported, try to find some display using
            those APIs, as that works reliably also when running headless. This
            would ideally use EGL 1.5 APIs but since we still want to support
@@ -195,7 +197,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"_s))
                         continue;
 
-                    if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog))
+                    if(displayVerboseLog)
                         Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglExtensions;
 
                     EGLAttrib cudaDeviceNumber;
@@ -210,7 +212,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     return;
                 }
 
-                if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog)) {
+                if(displayVerboseLog) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing EGL device" << selectedDevice << "for CUDA device" << configuration.cudaDevice();
                 }
 
@@ -218,7 +220,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             } else {
                 /* Print the log *before* calling eglQueryDevices() again, as
                    the `count` gets overwritten by it */
-                if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog)) {
+                if(displayVerboseLog) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
                 }
 
