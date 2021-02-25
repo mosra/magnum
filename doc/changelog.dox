@@ -295,7 +295,8 @@ See also:
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   @ref GL::Context move constructor was not marked @cpp noexcept @ce by
-    accident
+    accident and it was also not really moving everything properly, especially
+    when delayed creation was done on the moved-to object
 -   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux

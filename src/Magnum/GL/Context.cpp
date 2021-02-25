@@ -738,7 +738,9 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     }
 }
 
-Context::Context(Context&& other) noexcept: _version{other._version},
+Context::Context(Context&& other) noexcept:
+    _functionLoader{other._functionLoader},
+    _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
     _flags{other._flags},
     #endif
@@ -748,7 +750,10 @@ Context::Context(Context&& other) noexcept: _version{other._version},
     _supportedExtensions{std::move(other._supportedExtensions)},
     #endif
     _state{std::move(other._state)},
-    _detectedDrivers{std::move(other._detectedDrivers)}
+    _detectedDrivers{std::move(other._detectedDrivers)},
+    _driverWorkarounds{std::move(other._driverWorkarounds)},
+    _disabledExtensions{std::move(other._disabledExtensions)},
+    _internalFlags{other._internalFlags}
 {
     if(currentContext == &other) currentContext = this;
 }
