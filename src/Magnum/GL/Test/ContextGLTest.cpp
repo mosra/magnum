@@ -48,6 +48,8 @@ struct ContextGLTest: OpenGLTester {
 
     void constructConfiguration();
 
+    void constructMove();
+
     void makeCurrent();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -139,11 +141,54 @@ struct {
         "Disabling extensions:\n    GL_EXT_texture_filter_anisotropic\n", {}},
 };
 
+struct {
+    const char* name;
+    Context::Configuration::Flags flags;
+    Containers::Array<Containers::StringView> disabledWorkarounds;
+    Containers::Array<Extension> disabledExtensions;
+    bool workaroundDisabled, extensionDisabled;
+    Containers::Array<const char*> args;
+    Containers::StringView logShouldContain, logShouldNotContain;
+} ConstructMoveData[] {
+    {"default log", {}, {}, {}, false, false, {},
+        "Renderer: ", {}},
+    {"quiet log",
+        Context::Configuration::Flag::QuietLog,
+        {}, {}, false, false, {},
+        {}, "Renderer: "},
+    {"quiet log on command line", {}, {}, {}, false, false,
+        Containers::array({"", "--magnum-log", "quiet"}),
+        {}, "Renderer: "},
+    {"disabled extension", {}, {},
+        Containers::array<Extension>({Extensions::EXT::texture_filter_anisotropic{}}),
+        false, true, {},
+        "Disabling extensions:\n    GL_EXT_texture_filter_anisotropic\n", {}},
+    {"disabled extension on command line", {}, {}, {},
+        false, true,
+        Containers::array({"", "--magnum-disable-extensions", "GL_EXT_texture_filter_anisotropic"}),
+        "Disabling extensions:\n    GL_EXT_texture_filter_anisotropic\n", {}},
+    #ifndef MAGNUM_TARGET_GLES
+    {"disabled workaround", {},
+        Containers::array({"no-layout-qualifiers-on-old-glsl"_s}),
+        {},
+        true, false,
+        {},
+        {}, "no-layout-qualifiers-on-old-glsl"},
+    {"disabled workaround on command line", {}, {}, {},
+        true, false,
+        Containers::array({"", "--magnum-disable-workarounds", "no-layout-qualifiers-on-old-glsl"}),
+        {}, "no-layout-qualifiers-on-old-glsl"},
+    #endif
+};
+
 ContextGLTest::ContextGLTest() {
     addTests({&ContextGLTest::stringFlags});
 
     addInstancedTests({&ContextGLTest::constructConfiguration},
         Containers::arraySize(ConstructConfigurationData));
+
+    addInstancedTests({&ContextGLTest::constructMove},
+        Containers::arraySize(ConstructMoveData));
 
     addTests({
         &ContextGLTest::makeCurrent,
@@ -238,6 +283,108 @@ void ContextGLTest::constructConfiguration() {
         CORRADE_VERIFY(Containers::StringView{out.str()}.contains(data.logShouldContain));
     if(!data.logShouldNotContain.isEmpty())
         CORRADE_VERIFY(!Containers::StringView{out.str()}.contains(data.logShouldNotContain));
+}
+
+void ContextGLTest::constructMove() {
+    auto&& data = ConstructMoveData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    if(std::getenv("MAGNUM_DISABLE_WORKAROUNDS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_WORKAROUNDS environment variable set");
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
+    CORRADE_VERIFY(Context::hasCurrent());
+
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>())
+        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() + std::string{" is not supported, skipping"});
+
+    Context* current = &Context::current();
+    Context::makeCurrent(nullptr);
+    Containers::ScopeGuard resetCurrent{current, Context::makeCurrent};
+
+    /* First gather just the command-line parameters. Nothing to verify here as
+       it's not initialized yet. */
+    Platform::GLContext a{NoCreate, Int(data.args.size()), data.args};
+
+    /* The context is not created yet, so it doesn't set it as current yet */
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* This function pointer should get populated by create() if the function
+       loader gets moved correctly */
+    glGenBuffers = nullptr;
+    #endif
+
+    /* Move and create. This should take into account all parameters passed
+       from above and combine them with what arrived through Configuration. */
+    Platform::GLContext b = std::move(a);
+
+    /* The context is still not created here either */
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    std::ostringstream out;
+    {
+        Debug redirectOut{&out};
+        b.create(Context::Configuration{}
+            .setFlags(data.flags)
+            #ifndef MAGNUM_TARGET_GLES
+            .addDisabledWorkarounds(data.disabledWorkarounds)
+            #endif
+            .addDisabledExtensions(data.disabledExtensions));
+    }
+    /** @todo TestSuite::Compare::StringContains / NotContains for proper diag */
+    if(!data.logShouldContain.isEmpty())
+        CORRADE_VERIFY(Containers::StringView{out.str()}.contains(data.logShouldContain));
+    if(!data.logShouldNotContain.isEmpty())
+        CORRADE_VERIFY(!Containers::StringView{out.str()}.contains(data.logShouldNotContain));
+
+    /* The context is created now */
+    CORRADE_VERIFY(Context::hasCurrent());
+    CORRADE_COMPARE(&Context::current(), &b);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* The function pointer got populated */
+    CORRADE_VERIFY(glGenBuffers);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* This is an internal undocumented API but shh */
+    CORRADE_COMPARE(b.isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"), data.workaroundDisabled);
+    #endif
+    CORRADE_COMPARE(b.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>(), !data.extensionDisabled);
+    CORRADE_COMPARE(b.isExtensionDisabled<Extensions::EXT::texture_filter_anisotropic>(), data.extensionDisabled);
+    const Version version = b.version();
+    CORRADE_VERIFY(UnsignedInt(version));
+    #ifndef MAGNUM_TARGET_WEBGL
+    const Context::Flags flags = b.flags();
+    #endif
+    const Context::DetectedDrivers detectedDriver = b.detectedDriver();
+    const Implementation::State* state = &b.state();
+
+    /* Now move the created context and verify the remaining state gets
+       transferred as well */
+    Platform::GLContext c = std::move(b);
+    #ifndef MAGNUM_TARGET_GLES
+    /* This is an internal undocumented API but shh */
+    CORRADE_COMPARE(c.isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl"), data.workaroundDisabled);
+    #endif
+    CORRADE_COMPARE(c.isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>(), !data.extensionDisabled);
+    CORRADE_COMPARE(c.isExtensionDisabled<Extensions::EXT::texture_filter_anisotropic>(), data.extensionDisabled);
+    CORRADE_COMPARE(c.version(), version);
+    #ifndef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(c.flags(), flags);
+    #endif
+    CORRADE_COMPARE(c.detectedDriver(), detectedDriver);
+    CORRADE_COMPARE(&c.state(), state);
+
+    /* The current context pointer is transferred to the moved-to instance */
+    CORRADE_VERIFY(Context::hasCurrent());
+    CORRADE_COMPARE(&Context::current(), &c);
+
+    /* Only move-construction allowed */
+    CORRADE_VERIFY(!std::is_move_assignable<Context>{});
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<Context>::value);
 }
 
 void ContextGLTest::makeCurrent() {

@@ -49,7 +49,7 @@ struct ContextTest: TestSuite::Tester {
     void configurationConstructMove();
 
     void constructNoCreate();
-    void constructCopyMove();
+    void constructCopy();
 
     void makeCurrentNoOp();
 
@@ -71,7 +71,7 @@ ContextTest::ContextTest() {
               &ContextTest::configurationConstructMove,
 
               &ContextTest::constructNoCreate,
-              &ContextTest::constructCopyMove,
+              &ContextTest::constructCopy,
 
               &ContextTest::makeCurrentNoOp,
 
@@ -353,15 +353,9 @@ void ContextTest::constructNoCreate() {
     CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Context>::value));
 }
 
-void ContextTest::constructCopyMove() {
-    /* Only move-construction allowed */
+void ContextTest::constructCopy() {
     CORRADE_VERIFY(!std::is_copy_constructible<Context>{});
-    CORRADE_VERIFY(std::is_move_constructible<Context>{});
     CORRADE_VERIFY(!std::is_copy_assignable<Context>{});
-    CORRADE_VERIFY(!std::is_move_assignable<Context>{});
-
-    CORRADE_VERIFY(std::is_nothrow_move_constructible<Context>::value);
-    /* No move assignment */
 }
 
 void ContextTest::makeCurrentNoOp() {
