@@ -129,7 +129,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                --magnum-gpu-validation is enabled because otherwise it's
                fucking hard to discover what's to blame (lost > 3 hours
                already). See class docs for more info and a workaround. */
-            if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)) {
+            if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)) {
                 auto eglDebugMessageControl = reinterpret_cast<EGLint(*)(EGLDEBUGPROCKHR, const EGLAttrib*)>(eglGetProcAddress("eglDebugMessageControlKHR"));
                 const EGLAttrib debugAttribs[] = {
                     EGL_DEBUG_MSG_WARN_KHR, EGL_TRUE,
@@ -151,7 +151,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             if(!count) {
                 Error e;
                 e << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found, likely a driver issue";
-                if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
+                if(!magnumContext || !(magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
                     e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
                 return;
             }
@@ -195,7 +195,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     if(eglGetError() == EGL_BAD_DEVICE_EXT && !magnumContext->isDriverWorkaroundDisabled("nv-egl-crashy-query-device-attrib"_s))
                         continue;
 
-                    if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog))
+                    if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog))
                         Debug{} << "Platform::WindowlessEglApplication: eglQueryDeviceStringEXT(EGLDevice=" << Debug::nospace << selectedDevice << Debug::nospace << "):" << eglExtensions;
 
                     EGLAttrib cudaDeviceNumber;
@@ -210,7 +210,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
                     return;
                 }
 
-                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog)) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing EGL device" << selectedDevice << "for CUDA device" << configuration.cudaDevice();
                 }
 
@@ -218,7 +218,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             } else {
                 /* Print the log *before* calling eglQueryDevices() again, as
                    the `count` gets overwritten by it */
-                if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
+                if(magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog)) {
                     Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
                 }
 
@@ -302,7 +302,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #ifndef MAGNUM_TARGET_WEBGL
     /* Request debug context if --magnum-gpu-validation is enabled */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if(magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
         flags |= Configuration::Flag::Debug;
     #endif
 

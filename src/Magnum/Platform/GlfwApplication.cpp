@@ -432,7 +432,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Request debug context if --magnum-gpu-validation is enabled */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
-    if(_context->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if(_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
         glFlags |= GLConfiguration::Flag::Debug;
 
     #ifdef GLFW_CONTEXT_NO_ERROR

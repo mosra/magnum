@@ -65,6 +65,17 @@ namespace Implementation {
         /** @todo C++17: use &&... instead of all this */
         public: enum: bool { value = IsExtension<T>::value && IsExtension<U, Args...>::value };
     };
+
+    /* Context::Configuration::Flag, but because we need to use it inside
+       Context before the Configuration class is defined, it has to be here */
+    enum class ContextConfigurationFlag: UnsignedLong {
+        /* Keeping the 32-bit range reserved for actual GL context flags */
+        QuietLog = 1ull << 61,
+        VerboseLog = 1ull << 62,
+        GpuValidation = 1ull << 63
+    };
+    typedef Containers::EnumSet<ContextConfigurationFlag> ContextConfigurationFlags;
+    CORRADE_ENUMSET_OPERATORS(ContextConfigurationFlags)
 }
 
 /**
@@ -789,15 +800,6 @@ class MAGNUM_GL_EXPORT Context {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
-        /* Applications want an easy way to know if GPU validation is enabled */
-        enum class InternalFlag: UnsignedByte {
-            DisplayInitializationLog = 1 << 0,
-            DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
-            GpuValidation = 1 << 2
-        };
-        typedef Containers::EnumSet<InternalFlag> InternalFlags;
-        CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
-
         bool isDriverWorkaroundDisabled(Containers::StringView workaround);
         Implementation::State& state() { return *_state; }
 
@@ -805,7 +807,7 @@ class MAGNUM_GL_EXPORT Context {
            state() pointer is not ready yet so we have to pass it directly */
         MAGNUM_GL_LOCAL bool isCoreProfileInternal(Implementation::ContextState& state);
 
-        InternalFlags internalFlags() const { return _internalFlags; }
+        Implementation::ContextConfigurationFlags configurationFlags() const { return _configurationFlags; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -855,10 +857,13 @@ class MAGNUM_GL_EXPORT Context {
 
         Containers::Optional<DetectedDrivers> _detectedDrivers;
 
+        /** @todo these are all needed only until the state gets created and
+            then can be discarded -- what to do? we could avoid including
+            Array altogether */
         /* True means known and disabled, false means known */
         Containers::Array<std::pair<Containers::StringView, bool>> _driverWorkarounds;
         Containers::Array<Extension> _disabledExtensions;
-        InternalFlags _internalFlags;
+        Implementation::ContextConfigurationFlags _configurationFlags;
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -903,8 +908,10 @@ class MAGNUM_GL_EXPORT Context::Configuration {
          * @ref Context::flags().
          * @see @ref Flags, @ref setFlags()
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Flag: UnsignedLong {
-            /* Keeping the 32-bit range reserved for actual GL context flags */
+            /* Docs only, keep in sync with
+               Implementation::ContextConfigurationFlag please */
 
             /**
              * Print only warnings and errors instead of the usual startup log
@@ -934,13 +941,20 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              */
             GpuValidation = 1ull << 63
         };
+        #else
+        typedef Implementation::ContextConfigurationFlag Flag;
+        #endif
 
         /**
          * @brief Context setup flags
          *
          * @see @ref setFlags(), @ref GL::Context::Flags
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag> Flags;
+        #else
+        typedef Implementation::ContextConfigurationFlags Flags;
+        #endif
 
         /*implicit*/ Configuration();
 
@@ -1078,8 +1092,6 @@ class MAGNUM_GL_EXPORT Context::Configuration {
         return *this;                                                       \
     }
 #endif
-
-CORRADE_ENUMSET_OPERATORS(Context::Configuration::Flags)
 
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported

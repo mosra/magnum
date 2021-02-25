@@ -703,13 +703,13 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
 
     /* Decide how to display initialization log */
     if(args.value("log") == "verbose" || args.value("log") == "VERBOSE")
-        _internalFlags |= InternalFlag::DisplayVerboseInitializationLog;
-    else if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
-        _internalFlags |= InternalFlag::DisplayInitializationLog;
+        _configurationFlags |= Configuration::Flag::VerboseLog;
+    else if(args.value("log") == "quiet" || args.value("log") == "QUIET")
+        _configurationFlags |= Configuration::Flag::QuietLog;
 
     /* Decide whether to enable GPU validation */
     if(args.value("gpu-validation") == "on" || args.value("gpu-validation") == "ON")
-        _internalFlags |= InternalFlag::GpuValidation;
+        _configurationFlags |= Configuration::Flag::GpuValidation;
 
     /* If there are any disabled workarounds, save them until tryCreate() uses
        them. The disableWorkaround() function saves the internal string view
@@ -753,7 +753,7 @@ Context::Context(Context&& other) noexcept:
     _detectedDrivers{std::move(other._detectedDrivers)},
     _driverWorkarounds{std::move(other._driverWorkarounds)},
     _disabledExtensions{std::move(other._disabledExtensions)},
-    _internalFlags{other._internalFlags}
+    _configurationFlags{other._configurationFlags}
 {
     if(currentContext == &other) currentContext = this;
 }
@@ -776,14 +776,14 @@ bool Context::tryCreate(const Configuration& configuration) {
        quiet, it'll override the verbose setting from the configuration; if
        it says verbose, the quiet setting from the configuration will be
        ignored */
-    if((configuration.flags() & Configuration::Flag::VerboseLog) && (_internalFlags & InternalFlag::DisplayInitializationLog))
-        _internalFlags |= InternalFlag::DisplayVerboseInitializationLog;
-    else if((configuration.flags() & Configuration::Flag::QuietLog) && !(_internalFlags >= InternalFlag::DisplayVerboseInitializationLog))
-        _internalFlags &= ~InternalFlag::DisplayInitializationLog;
+    if((configuration.flags() & Configuration::Flag::VerboseLog) && !(_configurationFlags & Configuration::Flag::QuietLog))
+        _configurationFlags |= Configuration::Flag::VerboseLog;
+    else if((configuration.flags() & Configuration::Flag::QuietLog) && !(_configurationFlags & Configuration::Flag::VerboseLog))
+        _configurationFlags |= Configuration::Flag::QuietLog;
 
     /* GPU validation is enabled if either enables it */
     if(configuration.flags() & Configuration::Flag::GpuValidation)
-        _internalFlags |= InternalFlag::GpuValidation;
+        _configurationFlags |= Configuration::Flag::GpuValidation;
 
     /* Driver workarounds get merged. Not using disableDriverWorkaround() here
        since the Configuration already contains the internal string views. */
@@ -946,7 +946,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     currentContext = this;
 
     /* Decide whether to print the initialization output or not */
-    std::ostream* output = _internalFlags & InternalFlag::DisplayInitializationLog ? Debug::output() : nullptr;
+    std::ostream* output = _configurationFlags & Configuration::Flag::QuietLog ? nullptr : Debug::output();
 
     /* Print some info and initialize state tracker (which also prints some
        more info). Mesa's renderer string has a space at the end, trim that. */
@@ -978,7 +978,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     Renderer::initializeContextBasedFunctionality();
 
     /* Enable GPU validation, if requested */
-    if(_internalFlags & InternalFlag::GpuValidation) {
+    if(_configurationFlags & Configuration::Flag::GpuValidation) {
         #ifndef MAGNUM_TARGET_WEBGL
         if(isExtensionSupported<Extensions::KHR::debug>()) {
             Renderer::enable(Renderer::Feature::DebugOutput);
@@ -987,7 +987,7 @@ bool Context::tryCreate(const Configuration& configuration) {
 
             if((detectedDriver() & DetectedDriver::Amd) && !(flags() & Flag::Debug)) {
                 Warning{} << "GL::Context: GPU validation on AMD drivers requires debug context to work properly";
-            } else if(_internalFlags >= InternalFlag::DisplayVerboseInitializationLog) {
+            } else if(_configurationFlags & Configuration::Flag::VerboseLog) {
                 Debug{} << "GL::Context: enabling GPU validation";
             }
 

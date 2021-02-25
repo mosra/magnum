@@ -124,7 +124,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
     /* Request debug context if --magnum-gpu-validation is enabled */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+    if(magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
         flags |= Configuration::Flag::Debug;
 
     /* Optimistically choose core context first */
