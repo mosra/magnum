@@ -32,7 +32,6 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 /* Saner way to define the insane Xlib macros (anyway, FUCK YOU XLIB) */
 namespace { enum { None = 0, Success = 0 }; }
@@ -288,7 +287,7 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessGlxApplication::createContext() { createContext({}); }
 
@@ -297,10 +296,10 @@ void WindowlessGlxApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessGlxApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
 
-    WindowlessGlxContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
+    WindowlessGlxContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

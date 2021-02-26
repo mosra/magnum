@@ -35,12 +35,9 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <Corrade/Containers/Pointer.h>
-
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define GL_SILENCE_DEPRECATION /* YES I KNOW, APPLE! FFS */
@@ -399,7 +396,7 @@ class WindowlessCglApplication {
 
     private:
         WindowlessCglContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

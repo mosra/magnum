@@ -31,7 +31,6 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
@@ -273,7 +272,7 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 
@@ -282,10 +281,10 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessWglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
+    WindowlessWglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

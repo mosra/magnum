@@ -40,7 +40,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 /** @todo drop once we don't support < 1.38.27 anymore */
@@ -237,7 +236,7 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     args.parse(arguments.argc, arguments.argv);
     #endif
@@ -262,7 +261,7 @@ EmscriptenApplication::~EmscriptenApplication() {
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after */
-    _context.reset();
+    _context = Containers::NullOpt;
 
     emscripten_webgl_destroy_context(_glContext);
     #endif

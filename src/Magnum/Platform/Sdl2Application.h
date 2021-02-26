@@ -34,7 +34,6 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -42,7 +41,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/Context.h"
+#include "Magnum/Platform/GLContext.h"
 #endif
 
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
@@ -1209,7 +1208,10 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GLContext _glContext{};
         #endif
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because we delay-create it in a constructor
+           with populated Arguments and it gets explicitly destroyed before the
+           GL context */
+        Containers::Optional<Platform::GLContext> _context;
         #endif
 
         Flags _flags;

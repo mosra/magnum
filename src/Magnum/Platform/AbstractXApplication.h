@@ -35,6 +35,7 @@
 #ifdef MAGNUM_TARGET_GL
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include <X11/Xlib.h>
@@ -60,9 +61,8 @@ typedef int Bool;
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
@@ -319,7 +319,9 @@ class AbstractXApplication {
         Atom _deleteWindow{};
 
         Containers::Pointer<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because it gets explicitly destroyed before
+           the GL context */
+        Containers::Optional<Platform::GLContext> _context;
         int _exitCode = 0;
 
         /** @todo Get this from the created window */

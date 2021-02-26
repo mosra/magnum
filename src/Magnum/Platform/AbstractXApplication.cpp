@@ -29,7 +29,6 @@
 #include <Corrade/Utility/System.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/AbstractContextHandler.h"
 
@@ -42,7 +41,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     create(configuration, glConfiguration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{Containers::InPlaceInit, NoCreate, arguments.argc, arguments.argv}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::create() { create({}); }
 
@@ -111,7 +110,7 @@ bool AbstractXApplication::tryCreate(const Configuration& configuration, const G
 AbstractXApplication::~AbstractXApplication() {
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after */
-    _context.reset();
+    _context = Containers::NullOpt;
 
     /* Shut down context handler */
     _contextHandler.reset();

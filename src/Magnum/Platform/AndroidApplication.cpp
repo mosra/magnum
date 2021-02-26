@@ -30,7 +30,6 @@
 #include <android_native_app_glue.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 #include "Implementation/Egl.h"
@@ -71,7 +70,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, const Configu
     create(configuration, glConfiguration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new GLContext{NoCreate, 0, nullptr}} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{Containers::InPlaceInit, NoCreate} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }
@@ -79,7 +78,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _
 AndroidApplication::~AndroidApplication() {
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after */
-    _context.reset();
+    _context = Containers::NullOpt;
 
     eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(_display, _glContext);

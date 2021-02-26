@@ -40,12 +40,10 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
@@ -468,7 +466,7 @@ class WindowlessWindowsEglApplication {
 
     private:
         WindowlessWindowsEglContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

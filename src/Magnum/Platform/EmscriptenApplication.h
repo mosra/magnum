@@ -36,13 +36,21 @@
 
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
+
+/* Needed by the MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro */
+/** @todo use an Optional */
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
+
+#ifdef MAGNUM_TARGET_GL
+#include <Corrade/Containers/Optional.h>
+
+#include "Magnum/Platform/GLContext.h"
+#endif
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
 
@@ -902,7 +910,10 @@ class EmscriptenApplication {
 
         #ifdef MAGNUM_TARGET_GL
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because we delay-create it in a constructor
+           with populated Arguments and it gets explicitly destroyed before the
+           GL context */
+        Containers::Optional<Platform::GLContext> _context;
         #endif
 
         /* These are saved from command-line arguments */

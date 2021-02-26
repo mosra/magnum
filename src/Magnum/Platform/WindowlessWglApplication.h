@@ -38,12 +38,10 @@
 #endif
 #include <windows.h>
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
@@ -496,7 +494,7 @@ class WindowlessWglApplication {
 
     private:
         WindowlessWglContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

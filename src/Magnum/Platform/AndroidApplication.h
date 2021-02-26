@@ -32,13 +32,14 @@
 #endif
 
 #include <EGL/egl.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
 #include <android/input.h>
@@ -435,7 +436,9 @@ class AndroidApplication {
         EGLContext _glContext;
         Vector2i _previousMouseMovePosition{-1};
 
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because it gets explicitly destroyed before
+           the GL context */
+        Containers::Optional<Platform::GLContext> _context;
         Containers::Pointer<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)

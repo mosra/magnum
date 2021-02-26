@@ -32,7 +32,6 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 namespace Magnum { namespace Platform {
 
@@ -114,7 +113,7 @@ WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 WindowlessCglApplication::~WindowlessCglApplication() = default;
 
@@ -125,10 +124,10 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessCglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
+    WindowlessCglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

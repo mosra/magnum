@@ -35,7 +35,6 @@
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -43,7 +42,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/GL/Context.h"
+#include "Magnum/Platform/GLContext.h"
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -757,7 +756,10 @@ class GlfwApplication {
         GLFWwindow* _window{nullptr};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
-        Containers::Pointer<Platform::GLContext> _context;
+        /* Has to be in an Optional because we delay-create it in a constructor
+           with populated Arguments and it gets explicitly destroyed before the
+           GL context */
+        Containers::Optional<Platform::GLContext> _context;
         #endif
         int _exitCode = 0;
 

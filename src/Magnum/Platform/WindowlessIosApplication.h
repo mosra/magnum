@@ -33,12 +33,10 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/Platform/Platform.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifdef __OBJC__
 @class EAGLContext;
@@ -354,7 +352,7 @@ class WindowlessIosApplication {
 
     private:
         WindowlessIosContext _glContext;
-        Containers::Pointer<Platform::GLContext> _context;
+        Platform::GLContext _context;
 };
 
 /** @hideinitializer

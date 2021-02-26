@@ -44,7 +44,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 namespace Magnum { namespace Platform {
@@ -82,7 +81,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     /** @todo this is duplicated here and in Sdl2Application, figure out a nice
         non-duplicated way to handle this */
@@ -671,7 +670,7 @@ GlfwApplication::~GlfwApplication() {
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after */
-    _context.reset();
+    _context = Containers::NullOpt;
     #endif
 
     glfwDestroyWindow(_window);

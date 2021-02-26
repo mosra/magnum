@@ -29,7 +29,6 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
@@ -191,7 +190,7 @@ WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments
     createContext(configuration);
 }
 
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{NoCreate, arguments.argc, arguments.argv} {}
 
 void WindowlessWindowsEglApplication::createContext() { createContext({}); }
 
@@ -200,10 +199,10 @@ void WindowlessWindowsEglApplication::createContext(const Configuration& configu
 }
 
 bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context.version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessWindowsEglContext glContext{configuration, _context.get()};
-    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
+    WindowlessWindowsEglContext glContext{configuration, &_context};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context.tryCreate(configuration))
         return false;
 
     _glContext = std::move(glContext);

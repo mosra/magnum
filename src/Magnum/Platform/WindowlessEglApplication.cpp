@@ -36,7 +36,6 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
@@ -555,7 +554,7 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, N
         .addOption("cuda-device", "").setHelp("cuda-device", "CUDA device to use. Takes precedence over --magnum-device.", "N")
         .setFromEnvironment("cuda-device");
     #endif
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
 
     #ifndef MAGNUM_TARGET_WEBGL
     if(args.value("device").empty())
@@ -588,7 +587,7 @@ bool WindowlessEglApplication::tryCreateContext(const Configuration& configurati
             .setCudaDevice(_commandLineCudaDevice);
     #endif
 
-    WindowlessEglContext glContext{mergedConfiguration, _context.get()};
+    WindowlessEglContext glContext{mergedConfiguration, &*_context};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate(configuration))
         return false;
 

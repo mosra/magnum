@@ -56,7 +56,6 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/GLContext.h"
 #endif
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
@@ -125,7 +124,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
     #ifdef MAGNUM_TARGET_GL
-    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    _context.emplace(NoCreate, args, arguments.argc, arguments.argv);
     #else
     /** @todo this is duplicated here and in GlfwApplication, figure out a nice
         non-duplicated way to handle this */
@@ -798,7 +797,7 @@ Sdl2Application::~Sdl2Application() {
     #ifdef MAGNUM_TARGET_GL
     /* Destroy Magnum context first to avoid it potentially accessing the
        now-destroyed GL context after */
-    _context.reset();
+    _context = Containers::NullOpt;
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(_glContext) SDL_GL_DeleteContext(_glContext);
