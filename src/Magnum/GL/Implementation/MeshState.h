@@ -33,7 +33,9 @@ struct ContextState;
 
 struct MeshState {
     explicit MeshState(Context& context, ContextState& contextState, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
+    #ifndef MAGNUM_TARGET_GLES
     ~MeshState();
+    #endif
 
     void reset();
 

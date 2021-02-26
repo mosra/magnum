@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
@@ -51,8 +51,12 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct TextureState {
-    explicit TextureState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
-    ~TextureState();
+    explicit TextureState(Context& context,
+        Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings,
+        #endif
+        Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions);
 
     void reset();
 
@@ -155,13 +159,19 @@ struct TextureState {
     GLint bufferOffsetAlignment;
     #endif
 
-    Containers::Array<std::pair<GLenum, GLuint>> bindings;
+    /* These arrays get allocated in State in a single allocation and views to
+       them are passed here via the constructor. */
+
+    /* Texture type, texture object ID. While not true, for simplicity this
+       assumes that each slot can have just one ID bound, not one ID per
+       texture type. */
+    Containers::ArrayView<std::pair<GLenum, GLuint>> bindings;
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     Math::BoolVector<80> bufferTextureBound;
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Texture object ID, level, layered, layer, access */
-    Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
     #endif
 };
 

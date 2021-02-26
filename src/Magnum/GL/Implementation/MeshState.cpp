@@ -405,15 +405,15 @@ MeshState::MeshState(Context& context, ContextState& contextState, Containers::S
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
 MeshState::~MeshState() {
-    #ifndef MAGNUM_TARGET_GLES
     /* If the default VAO was created, we need to delete it to avoid leaks.
        Delete also the scratch VAO if the engine was so unlucky to have to run
        awful external GL code (it was created in Context::resetState()). */
     if(defaultVAO) glDeleteVertexArrays(1, &defaultVAO);
     if(scratchVAO) glDeleteVertexArrays(1, &scratchVAO);
-    #endif
 }
+#endif
 
 void MeshState::reset() {
     currentVAO = State::DisengagedBinding;

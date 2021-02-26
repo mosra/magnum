@@ -186,6 +186,9 @@ See also:
 
 @subsubsection changelog-latest-changes-gl GL library
 
+-   The @ref GL::Context class got significantly optimized in terms of compile
+    time, header size and runtime as well, significantly reducing the amount of
+    allocations done at startup.
 -   Added @ref GL::Framebuffer::Status::IncompleteDimensions for ES2. This enum
     isn't available on ES3 or desktop GL, but NVidia drivers are known to emit
     it, which is why it got added.

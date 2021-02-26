@@ -25,7 +25,9 @@
 
 #include "State.h"
 
+#include <tuple>
 #include <Corrade/Containers/ArrayTuple.h>
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -48,6 +50,26 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std::ostream* const out) {
+    /* TextureState needs to track state per texture / image binding, fetch
+       how many of them is there and allocate here as well so we don't need to
+       do another nested allocation */
+    GLint maxTextureUnits{};
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    GLint maxImageUnits{};
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::shader_image_load_store>())
+    #else
+    if(context.isVersionSupported(Version::GLES310))
+    #endif
+    {
+        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
+        CORRADE_INTERNAL_ASSERT(maxImageUnits > 0);
+    }
+    #endif
+
     /* I have to say, the ArrayTuple is quite a crazy thing */
     Containers::ArrayView<State> stateView;
     Containers::ArrayView<BufferState> bufferStateView;
@@ -62,6 +84,10 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
     Containers::ArrayView<ShaderState> shaderStateView;
     Containers::ArrayView<ShaderProgramState> shaderProgramStateView;
     Containers::ArrayView<TextureState> textureStateView;
+    Containers::ArrayView<std::pair<GLenum, GLuint>> textureBindings;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     Containers::ArrayView<TransformFeedbackState> transformFeedbackStateView;
     #endif
@@ -79,10 +105,20 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
         {Containers::NoInit, 1, shaderStateView},
         {Containers::NoInit, 1, shaderProgramStateView},
         {Containers::NoInit, 1, textureStateView},
+        {Containers::ValueInit, std::size_t(maxTextureUnits), textureBindings},
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        {Containers::ValueInit, std::size_t(maxImageUnits), imageBindings},
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         {Containers::NoInit, 1, transformFeedbackStateView}
         #endif
     };
+
+    #ifdef MAGNUM_TARGET_GLES
+    /* This whole thing would be trivially destructible except for MeshState
+       which has to delete scratch VAOs on desktop in a custom destructor. */
+    CORRADE_INTERNAL_ASSERT(!data.deleter());
+    #endif
 
     /* Extensions that might get used by current context. The State classes
        will set strings based on Extension::index() and then we'll go through
@@ -120,7 +156,11 @@ std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std:
     new(&state.renderer) RendererState{context, stateView.front().context, extensions};
     new(&state.shader) ShaderState(context, extensions);
     new(&state.shaderProgram) ShaderProgramState{context, extensions};
-    new(&state.texture) TextureState{context, extensions};
+    new(&state.texture) TextureState{context, textureBindings,
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        imageBindings,
+        #endif
+        extensions};
     #ifndef MAGNUM_TARGET_GLES2
     new(&state.transformFeedback) TransformFeedbackState{context, extensions};
     #endif

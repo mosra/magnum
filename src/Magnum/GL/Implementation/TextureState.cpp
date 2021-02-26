@@ -43,7 +43,13 @@ namespace Magnum { namespace GL { namespace Implementation {
 
 using namespace Containers::Literals;
 
-TextureState::TextureState(Context& context, Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions): maxSize{},
+TextureState::TextureState(Context& context,
+    Containers::ArrayView<std::pair<GLenum, GLuint>> bindings,
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    Containers::ArrayView<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings,
+    #endif
+    Containers::StaticArrayView<Implementation::ExtensionCount, const char*> extensions):
+    maxSize{},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     max3DSize{},
     #endif
@@ -54,16 +60,22 @@ TextureState::TextureState(Context& context, Containers::StaticArrayView<Impleme
     #ifndef MAGNUM_TARGET_GLES
     maxRectangleSize{}, maxBufferSize{},
     #endif
-    maxTextureUnits(0),
+    /* This value got queried in State already to allocate the bindings array,
+       reuse it here */
+    maxTextureUnits{GLint(bindings.size())},
     #ifndef MAGNUM_TARGET_GLES2
     maxLodBias{0.0f},
     #endif
-    maxMaxAnisotropy(0.0f), currentTextureUnit(0)
+    maxMaxAnisotropy(0.0f), currentTextureUnit(0),
     #ifndef MAGNUM_TARGET_GLES2
-    , maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0)
+    maxColorSamples(0), maxDepthSamples(0), maxIntegerSamples(0),
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    , bufferOffsetAlignment(0)
+    bufferOffsetAlignment(0),
+    #endif
+    bindings{bindings}
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    , imageBindings{imageBindings}
     #endif
 {
     /* Create implementation */
@@ -517,11 +529,6 @@ TextureState::TextureState(Context& context, Containers::StaticArrayView<Impleme
     }
     #endif
 
-    /* Allocate texture bindings array to hold all possible texture units */
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
-    CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
-    bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
-
     #if defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
     if(!context.isDriverWorkaroundDisabled("apple-buffer-texture-unbind-on-buffer-modify"_s)) {
         CORRADE_INTERNAL_ASSERT(std::size_t(maxTextureUnits) <= decltype(bufferTextureBound)::Size);
@@ -536,23 +543,7 @@ TextureState::TextureState(Context& context, Containers::StaticArrayView<Impleme
         /* bindImplementation already set above */
         bindInternalImplementation = &AbstractTexture::bindImplementationDefault;
     }
-
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Allocate image bindings array to hold all possible image units */
-    #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::shader_image_load_store>())
-    #else
-    if(context.isVersionSupported(Version::GLES310))
-    #endif
-    {
-        GLint maxImageUnits;
-        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
-        imageBindings = Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>>{Containers::ValueInit, std::size_t(maxImageUnits)};
-    }
-    #endif
 }
-
-TextureState::~TextureState() = default;
 
 void TextureState::reset() {
     std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});
