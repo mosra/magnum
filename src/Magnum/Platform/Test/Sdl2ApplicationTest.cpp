@@ -192,6 +192,8 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     GLConfiguration glConf;
     if(args.isSet("quiet"))
         glConf.addFlags(GLConfiguration::Flag::QuietLog);
+    /* No GL-specific verbose log in Sdl2Application that we'd need to handle
+       explicitly */
     if(args.isSet("gpu-validation"))
         glConf.addFlags(GLConfiguration::Flag::GpuValidation);
     create(conf, glConf);

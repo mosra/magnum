@@ -40,6 +40,7 @@ WindowlessCglApplicationTest::WindowlessCglApplicationTest(const Arguments& argu
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
         .parse(arguments.argc, arguments.argv);
 
+    /* No verbose logs in the app, no GPU validation in CGL either */
     if(args.isSet("quiet"))
         createContext(Configuration{}.addFlags(Configuration::Flag::QuietLog));
     else

@@ -170,10 +170,13 @@ EmscriptenApplicationTest::EmscriptenApplicationTest(const Arguments& arguments)
 
     Configuration conf;
     conf.setWindowFlags(Configuration::WindowFlag::Resizable);
+    GLConfiguration glConf;
     if(args.isSet("quiet"))
-        create(conf, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
-    else
-        create(conf);
+        glConf.addFlags(GLConfiguration::Flag::QuietLog);
+    /* No GL-specific verbose log in EmscriptenApplication that we'd need to
+       handle explicitly */
+    /* No GPU validation on WebGL */
+    create(conf, glConf);
 
     Debug{} << "window size" << windowSize()
         #ifdef MAGNUM_TARGET_GL

@@ -44,6 +44,7 @@ WindowlessGlxApplicationTest::WindowlessGlxApplicationTest(const Arguments& argu
     Configuration conf;
     if(args.isSet("quiet"))
         conf.addFlags(Configuration::Flag::QuietLog);
+    /* No verbose logs in this app */
     if(args.isSet("gpu-validation"))
         conf.addFlags(Configuration::Flag::GpuValidation);
     createContext(conf);
