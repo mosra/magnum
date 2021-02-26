@@ -668,6 +668,12 @@ void GlfwApplication::setupCallbacks() {
 }
 
 GlfwApplication::~GlfwApplication() {
+    #ifdef MAGNUM_TARGET_GL
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context.reset();
+    #endif
+
     glfwDestroyWindow(_window);
     for(auto& cursor: _cursors)
         glfwDestroyCursor(cursor);

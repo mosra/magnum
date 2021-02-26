@@ -109,6 +109,8 @@ bool AbstractXApplication::tryCreate(const Configuration& configuration, const G
 }
 
 AbstractXApplication::~AbstractXApplication() {
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
     _context.reset();
 
     /* Shut down context handler */

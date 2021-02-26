@@ -77,6 +77,10 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _
 }
 
 AndroidApplication::~AndroidApplication() {
+    /* Destroy Magnum context first to avoid it potentially accessing the
+       now-destroyed GL context after */
+    _context.reset();
+
     eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(_display, _glContext);
     eglDestroySurface(_display, _surface);
