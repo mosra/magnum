@@ -122,9 +122,10 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
 
     /* Optimistically choose core context first */

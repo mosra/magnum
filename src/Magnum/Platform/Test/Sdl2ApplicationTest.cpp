@@ -167,6 +167,7 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
         #endif
         #ifdef MAGNUM_TARGET_GL
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("gpu-validation").setHelp("gpu-validation", "like --magnum-gpu-validation, but specified via a Context::Configuration instead")
         #endif
         .parse(arguments.argc, arguments.argv);
 
@@ -188,13 +189,19 @@ Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::
     #endif
     #endif
     #ifdef MAGNUM_TARGET_GL
-    if(args.isSet("quiet")) {
-        create(conf, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
-    } else
+    GLConfiguration glConf;
+    if(args.isSet("quiet"))
+        glConf.addFlags(GLConfiguration::Flag::QuietLog);
+    if(args.isSet("gpu-validation"))
+        glConf.addFlags(GLConfiguration::Flag::GpuValidation);
+    create(conf, glConf);
+    #else
+    create(conf);
     #endif
-    {
-        create(conf);
-    }
+
+    #if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
+    Debug{} << "GL context flags:" << GL::Context::current().flags();
+    #endif
 
     /* For testing resize events */
     Debug{} << "window size" << windowSize()

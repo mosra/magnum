@@ -430,9 +430,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
     glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
-    if(_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
+    if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
 
     #ifdef GLFW_CONTEXT_NO_ERROR

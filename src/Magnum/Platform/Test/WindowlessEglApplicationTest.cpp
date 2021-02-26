@@ -38,12 +38,19 @@ WindowlessEglApplicationTest::WindowlessEglApplicationTest(const Arguments& argu
     Utility::Arguments args;
     args.addSkippedPrefix("magnum", "engine-specific options")
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("gpu-validation").setHelp("gpu-validation", "like --magnum-gpu-validation, but specified via a Context::Configuration instead")
         .parse(arguments.argc, arguments.argv);
 
+    Configuration conf;
     if(args.isSet("quiet"))
-        createContext(Configuration{}.addFlags(Configuration::Flag::QuietLog));
-    else
-        createContext();
+        conf.addFlags(Configuration::Flag::QuietLog);
+    if(args.isSet("gpu-validation"))
+        conf.addFlags(Configuration::Flag::GpuValidation);
+    createContext(conf);
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{} << "GL context flags:" << GL::Context::current().flags();
+    #endif
 }
 
 }}}}

@@ -465,9 +465,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     _dpiScaling = dpiScaling(configuration);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     GLConfiguration::Flags glFlags = glConfiguration.flags();
-    if(_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
+    if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
 
     /* Set context version, if user-specified */

@@ -302,9 +302,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     }
 
     #ifndef MAGNUM_TARGET_WEBGL
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
     #endif
 

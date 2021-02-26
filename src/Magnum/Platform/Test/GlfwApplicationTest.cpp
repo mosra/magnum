@@ -110,6 +110,7 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
         .addBooleanOption("always-on-top").setHelp("always-on-top", "always on top")
         #ifdef MAGNUM_TARGET_GL
         .addBooleanOption("quiet").setHelp("quiet", "like --magnum-log quiet, but specified via a Context::Configuration instead")
+        .addBooleanOption("gpu-validation").setHelp("gpu-validation", "like --magnum-gpu-validation, but specified via a Context::Configuration instead")
         #endif
         .parse(arguments.argc, arguments.argv);
 
@@ -127,13 +128,19 @@ GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::
     if(args.isSet("always-on-top"))
         conf.addWindowFlags(Configuration::WindowFlag::AlwaysOnTop);
     #ifdef MAGNUM_TARGET_GL
-    if(args.isSet("quiet")) {
-        create(conf, GLConfiguration{}.addFlags(GLConfiguration::Flag::QuietLog));
-    } else
+    GLConfiguration glConf;
+    if(args.isSet("quiet"))
+        glConf.addFlags(GLConfiguration::Flag::QuietLog);
+    if(args.isSet("gpu-validation"))
+        glConf.addFlags(GLConfiguration::Flag::GpuValidation);
+    create(conf, glConf);
+    #else
+    create(conf);
     #endif
-    {
-        create(conf);
-    }
+
+    #ifdef MAGNUM_TARGET_GL
+    Debug{} << "GL context flags:" << GL::Context::current().flags();
+    #endif
 
     /* For testing resize events */
     Debug{} << "window size" << windowSize()

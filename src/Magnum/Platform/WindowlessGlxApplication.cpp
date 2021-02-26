@@ -109,9 +109,10 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
     /* Get pointer to proper context creation function */
     const PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = reinterpret_cast<PFNGLXCREATECONTEXTATTRIBSARBPROC>(glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXCreateContextAttribsARB")));
 
-    /* Request debug context if --magnum-gpu-validation is enabled */
+    /* Request debug context if GpuValidation is enabled either via the
+       configuration or via command-line */
     Configuration::Flags flags = configuration.flags();
-    if(magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation)
+    if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
 
     /* Optimistically choose core context first */
