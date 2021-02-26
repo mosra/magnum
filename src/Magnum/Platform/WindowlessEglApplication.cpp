@@ -102,7 +102,9 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     /* Otherwise find the display and initialize EGL */
     {
         #ifndef MAGNUM_TARGET_WEBGL
-        const bool displayVerboseLog = magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog);
+        /* Display verbose log if specified either on command line or in
+           Configuration but not if the command line overrides it to be quiet */
+        const bool displayVerboseLog = ((configuration.flags() & Configuration::Flag::VerboseLog) && (!magnumContext || !(magnumContext->configurationFlags() & GL::Context::Configuration::Flag::QuietLog))) || (magnumContext && (magnumContext->configurationFlags() >= GL::Context::Configuration::Flag::VerboseLog));
 
         /* If relevant extensions are supported, try to find some display using
            those APIs, as that works reliably also when running headless. This
