@@ -114,7 +114,7 @@ Int DebugOutput::maxLoggedMessages() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current().state().debug->maxLoggedMessages;
+    GLint& value = Context::current().state().debug.maxLoggedMessages;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES2
@@ -131,7 +131,7 @@ Int DebugOutput::maxMessageLength() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current().state().debug->maxMessageLength;
+    GLint& value = Context::current().state().debug.maxMessageLength;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES2
@@ -145,7 +145,7 @@ Int DebugOutput::maxMessageLength() {
 }
 
 void DebugOutput::setCallback(const Callback callback, const void* userParam) {
-    Context::current().state().debug->callbackImplementation(callback, userParam);
+    Context::current().state().debug.callbackImplementation(callback, userParam);
 }
 
 void DebugOutput::setDefaultCallback() {
@@ -155,7 +155,7 @@ void DebugOutput::setDefaultCallback() {
 }
 
 void DebugOutput::setEnabledInternal(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
-    Context::current().state().debug->controlImplementation(source, type, severity, ids, enabled);
+    Context::current().state().debug.controlImplementation(source, type, severity, ids, enabled);
 }
 
 void DebugOutput::controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool) {}
@@ -177,13 +177,13 @@ void DebugOutput::callbackImplementationNoOp(Callback, const void*) {}
 #ifndef MAGNUM_TARGET_GLES2
 void DebugOutput::callbackImplementationKhrDesktopES32(const Callback callback, const void* userParam) {
     /* Replace the callback */
-    const Callback original = Context::current().state().debug->messageCallback.callback;
-    Context::current().state().debug->messageCallback.callback = callback;
-    Context::current().state().debug->messageCallback.userParam = userParam;
+    const Callback original = Context::current().state().debug.messageCallback.callback;
+    Context::current().state().debug.messageCallback.callback = callback;
+    Context::current().state().debug.messageCallback.userParam = userParam;
 
     /* Adding callback */
     if(!original && callback)
-        glDebugMessageCallback(callbackWrapper,  &Context::current().state().debug->messageCallback);
+        glDebugMessageCallback(callbackWrapper,  &Context::current().state().debug.messageCallback);
 
     /* Deleting callback */
     else if(original && !callback)
@@ -194,13 +194,13 @@ void DebugOutput::callbackImplementationKhrDesktopES32(const Callback callback, 
 #ifdef MAGNUM_TARGET_GLES
 void DebugOutput::callbackImplementationKhrES(const Callback callback, const void* userParam) {
     /* Replace the callback */
-    const Callback original = Context::current().state().debug->messageCallback.callback;
-    Context::current().state().debug->messageCallback.callback = callback;
-    Context::current().state().debug->messageCallback.userParam = userParam;
+    const Callback original = Context::current().state().debug.messageCallback.callback;
+    Context::current().state().debug.messageCallback.callback = callback;
+    Context::current().state().debug.messageCallback.userParam = userParam;
 
     /* Adding callback */
     if(!original && callback)
-        glDebugMessageCallbackKHR(callbackWrapper, &Context::current().state().debug->messageCallback);
+        glDebugMessageCallbackKHR(callbackWrapper, &Context::current().state().debug.messageCallback);
 
     /* Deleting callback */
     else if(original && !callback)
@@ -267,7 +267,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
 #endif
 
 void DebugMessage::insertInternal(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
-    Context::current().state().debug->messageInsertImplementation(source, type, id, severity, string);
+    Context::current().state().debug.messageInsertImplementation(source, type, id, severity, string);
 }
 
 void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char>) {}
@@ -333,7 +333,7 @@ Int DebugGroup::maxStackDepth() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current().state().debug->maxStackDepth;
+    GLint& value = Context::current().state().debug.maxStackDepth;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES2
@@ -348,13 +348,13 @@ Int DebugGroup::maxStackDepth() {
 
 void DebugGroup::pushInternal(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
     CORRADE_ASSERT(!_active, "GL::DebugGroup::push(): group is already active", );
-    Context::current().state().debug->pushGroupImplementation(source, id, message);
+    Context::current().state().debug.pushGroupImplementation(source, id, message);
     _active = true;
 }
 
 void DebugGroup::pop() {
     CORRADE_ASSERT(_active, "GL::DebugGroup::pop(): group is not active", );
-    Context::current().state().debug->popGroupImplementation();
+    Context::current().state().debug.popGroupImplementation();
     _active = false;
 }
 

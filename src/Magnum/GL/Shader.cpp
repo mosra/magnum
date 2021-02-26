@@ -113,7 +113,7 @@ constexpr bool isTypeSupported(Shader::Type) { return true; }
 }
 
 Int Shader::maxVertexOutputComponents() {
-    GLint& value = Context::current().state().shader->maxVertexOutputComponents;
+    GLint& value = Context::current().state().shader.maxVertexOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -143,7 +143,7 @@ Int Shader::maxTessellationControlInputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxTessellationControlInputComponents;
+    GLint& value = Context::current().state().shader.maxTessellationControlInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -161,7 +161,7 @@ Int Shader::maxTessellationControlOutputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxTessellationControlOutputComponents;
+    GLint& value = Context::current().state().shader.maxTessellationControlOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -179,7 +179,7 @@ Int Shader::maxTessellationControlTotalOutputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxTessellationControlTotalOutputComponents;
+    GLint& value = Context::current().state().shader.maxTessellationControlTotalOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -197,7 +197,7 @@ Int Shader::maxTessellationEvaluationInputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxTessellationEvaluationInputComponents;
+    GLint& value = Context::current().state().shader.maxTessellationEvaluationInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -215,7 +215,7 @@ Int Shader::maxTessellationEvaluationOutputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxTessellationEvaluationOutputComponents;
+    GLint& value = Context::current().state().shader.maxTessellationEvaluationOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -233,7 +233,7 @@ Int Shader::maxGeometryInputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxGeometryInputComponents;
+    GLint& value = Context::current().state().shader.maxGeometryInputComponents;
 
     /* Get the value, if not already cached */
     /** @todo The extension has only `GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB`, this is supported since GL 3.2 (wtf?) */
@@ -252,7 +252,7 @@ Int Shader::maxGeometryOutputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxGeometryOutputComponents;
+    GLint& value = Context::current().state().shader.maxGeometryOutputComponents;
 
     /* Get the value, if not already cached */
     /** @todo The extension has only `GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB`, this is supported since GL 3.2 (wtf?) */
@@ -271,7 +271,7 @@ Int Shader::maxGeometryTotalOutputComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxGeometryTotalOutputComponents;
+    GLint& value = Context::current().state().shader.maxGeometryTotalOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -282,7 +282,7 @@ Int Shader::maxGeometryTotalOutputComponents() {
 #endif
 
 Int Shader::maxFragmentInputComponents() {
-    GLint& value = Context::current().state().shader->maxFragmentInputComponents;
+    GLint& value = Context::current().state().shader.maxFragmentInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -316,7 +316,7 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxAtomicCounterBuffers[index];
+    GLint& value = Context::current().state().shader.maxAtomicCounterBuffers[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -341,7 +341,7 @@ Int Shader::maxCombinedAtomicCounterBuffers() {
     #endif
         return 0;
 
-    GLint& value = Context::current().state().shader->maxCombinedAtomicCounterBuffers;
+    GLint& value = Context::current().state().shader.maxCombinedAtomicCounterBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -363,7 +363,7 @@ Int Shader::maxAtomicCounters(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxAtomicCounters[index];
+    GLint& value = Context::current().state().shader.maxAtomicCounters[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -388,7 +388,7 @@ Int Shader::maxCombinedAtomicCounters() {
     #endif
         return 0;
 
-    GLint& value = Context::current().state().shader->maxCombinedAtomicCounters;
+    GLint& value = Context::current().state().shader.maxCombinedAtomicCounters;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -410,7 +410,7 @@ Int Shader::maxImageUniforms(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxImageUniforms[index];
+    GLint& value = Context::current().state().shader.maxImageUniforms[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -435,7 +435,7 @@ Int Shader::maxCombinedImageUniforms() {
     #endif
         return 0;
 
-    GLint& value = Context::current().state().shader->maxCombinedImageUniforms;
+    GLint& value = Context::current().state().shader.maxCombinedImageUniforms;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -457,7 +457,7 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxShaderStorageBlocks[index];
+    GLint& value = Context::current().state().shader.maxShaderStorageBlocks[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -482,7 +482,7 @@ Int Shader::maxCombinedShaderStorageBlocks() {
     #endif
         return 0;
 
-    GLint& value = Context::current().state().shader->maxCombinedShaderStorageBlocks;
+    GLint& value = Context::current().state().shader.maxCombinedShaderStorageBlocks;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -497,7 +497,7 @@ Int Shader::maxTextureImageUnits(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxTextureImageUnits[index];
+    GLint& value = Context::current().state().shader.maxTextureImageUnits[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -517,7 +517,7 @@ Int Shader::maxTextureImageUnits(const Type type) {
 }
 
 Int Shader::maxCombinedTextureImageUnits() {
-    GLint& value = Context::current().state().shader->maxTextureImageUnitsCombined;
+    GLint& value = Context::current().state().shader.maxTextureImageUnitsCombined;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -536,7 +536,7 @@ Int Shader::maxUniformBlocks(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxUniformBlocks[index];
+    GLint& value = Context::current().state().shader.maxUniformBlocks[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -561,7 +561,7 @@ Int Shader::maxCombinedUniformBlocks() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().shader->maxCombinedUniformBlocks;
+    GLint& value = Context::current().state().shader.maxCombinedUniformBlocks;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -576,7 +576,7 @@ Int Shader::maxUniformComponents(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxUniformComponents[index];
+    GLint& value = Context::current().state().shader.maxUniformComponents[index];
 
     /* Get the value, if not already cached */
     #ifndef MAGNUM_TARGET_GLES2
@@ -618,7 +618,7 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current().state().shader->maxCombinedUniformComponents[index];
+    GLint& value = Context::current().state().shader.maxCombinedUniformComponents[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -681,17 +681,17 @@ Shader::~Shader() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Shader::label() const {
     #ifndef MAGNUM_TARGET_GLES2
-    return Context::current().state().debug->getLabelImplementation(GL_SHADER, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_SHADER, _id);
     #else
-    return Context::current().state().debug->getLabelImplementation(GL_SHADER_KHR, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_SHADER_KHR, _id);
     #endif
 }
 
 Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES2
-    Context::current().state().debug->labelImplementation(GL_SHADER, _id, label);
+    Context::current().state().debug.labelImplementation(GL_SHADER, _id, label);
     #else
-    Context::current().state().debug->labelImplementation(GL_SHADER_KHR, _id, label);
+    Context::current().state().debug.labelImplementation(GL_SHADER_KHR, _id, label);
     #endif
     return *this;
 }
@@ -701,7 +701,7 @@ std::vector<std::string> Shader::sources() const { return _sources; }
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        auto addSource = Context::current().state().shader->addSourceImplementation;
+        auto addSource = Context::current().state().shader.addSourceImplementation;
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41)
            in case shader version was not Version::None, because then source 0
@@ -789,7 +789,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
 
         /* Some drivers are chatty and can't keep shut when there's nothing to
            be said, handle that as well. */
-        Context::current().state().shader->cleanLogImplementation(message);
+        Context::current().state().shader.cleanLogImplementation(message);
 
         /* Show error log */
         if(!success) {

@@ -25,6 +25,8 @@
 
 #include "State.h"
 
+#include <Corrade/Containers/ArrayTuple.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/BufferState.h"
@@ -45,7 +47,43 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-State::State(Context& context, std::ostream* const out) {
+std::pair<Containers::ArrayTuple, State&> State::allocate(Context& context, std::ostream* const out) {
+    /* I have to say, the ArrayTuple is quite a crazy thing */
+    Containers::ArrayView<State> stateView;
+    Containers::ArrayView<BufferState> bufferStateView;
+    Containers::ArrayView<ContextState> contextStateView;
+    #ifndef MAGNUM_TARGET_WEBGL
+    Containers::ArrayView<DebugState> debugStateView;
+    #endif
+    Containers::ArrayView<FramebufferState> framebufferStateView;
+    Containers::ArrayView<MeshState> meshStateView;
+    Containers::ArrayView<QueryState> queryStateView;
+    Containers::ArrayView<RendererState> rendererStateView;
+    Containers::ArrayView<ShaderState> shaderStateView;
+    Containers::ArrayView<ShaderProgramState> shaderProgramStateView;
+    Containers::ArrayView<TextureState> textureStateView;
+    #ifndef MAGNUM_TARGET_GLES2
+    Containers::ArrayView<TransformFeedbackState> transformFeedbackStateView;
+    #endif
+    Containers::ArrayTuple data{
+        {Containers::NoInit, 1, stateView},
+        {Containers::NoInit, 1, bufferStateView},
+        {Containers::NoInit, 1, contextStateView},
+        #ifndef MAGNUM_TARGET_WEBGL
+        {Containers::NoInit, 1, debugStateView},
+        #endif
+        {Containers::NoInit, 1, framebufferStateView},
+        {Containers::NoInit, 1, meshStateView},
+        {Containers::NoInit, 1, queryStateView},
+        {Containers::NoInit, 1, rendererStateView},
+        {Containers::NoInit, 1, shaderStateView},
+        {Containers::NoInit, 1, shaderProgramStateView},
+        {Containers::NoInit, 1, textureStateView},
+        #ifndef MAGNUM_TARGET_GLES2
+        {Containers::NoInit, 1, transformFeedbackStateView}
+        #endif
+    };
+
     /* Extensions that might get used by current context. The State classes
        will set strings based on Extension::index() and then we'll go through
        the list and print ones that aren't null. It's 1.5 kB of temporary data
@@ -53,27 +91,45 @@ State::State(Context& context, std::ostream* const out) {
        populating a heap array and then std::sort() it to remove duplicates. */
     const char* extensions[Implementation::ExtensionCount]{};
 
-    buffer.reset(new BufferState{context, extensions});
-    this->context.reset(new ContextState{context, extensions});
+    State& state = *(new(&stateView.front()) State{
+        bufferStateView.front(),
+        contextStateView.front(),
+        #ifndef MAGNUM_TARGET_WEBGL
+        debugStateView.front(),
+        #endif
+        framebufferStateView.front(),
+        meshStateView.front(),
+        queryStateView.front(),
+        rendererStateView.front(),
+        shaderStateView.front(),
+        shaderProgramStateView.front(),
+        textureStateView.front(),
+        #ifndef MAGNUM_TARGET_GLES2
+        transformFeedbackStateView.front()
+        #endif
+    });
+
+    new(&state.buffer) BufferState{context, extensions};
+    new(&state.context) ContextState{context, extensions};
     #ifndef MAGNUM_TARGET_WEBGL
-    debug.reset(new DebugState{context, extensions});
+    new(&state.debug) DebugState{context, extensions};
     #endif
-    framebuffer.reset(new FramebufferState{context, extensions});
-    mesh.reset(new MeshState{context, *this->context, extensions});
-    query.reset(new QueryState{context, extensions});
-    renderer.reset(new RendererState{context, *this->context, extensions});
-    shader.reset(new ShaderState(context, extensions));
-    shaderProgram.reset(new ShaderProgramState{context, extensions});
-    texture.reset(new TextureState{context, extensions});
+    new(&state.framebuffer) FramebufferState{context, extensions};
+    new(&state.mesh) MeshState{context, stateView.front().context, extensions};
+    new(&state.query) QueryState{context, extensions};
+    new(&state.renderer) RendererState{context, stateView.front().context, extensions};
+    new(&state.shader) ShaderState(context, extensions);
+    new(&state.shaderProgram) ShaderProgramState{context, extensions};
+    new(&state.texture) TextureState{context, extensions};
     #ifndef MAGNUM_TARGET_GLES2
-    transformFeedback.reset(new TransformFeedbackState{context, extensions});
+    new(&state.transformFeedback) TransformFeedbackState{context, extensions};
     #endif
 
     Debug{out} << "Using optional features:";
     for(const char* extension: extensions)
         if(extension) Debug(out) << "   " << extension;
-}
 
-State::~State() = default;
+    return {std::move(data), state};
+}
 
 }}}

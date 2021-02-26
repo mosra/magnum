@@ -47,7 +47,7 @@ Int TransformFeedback::maxInterleavedComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().transformFeedback->maxInterleavedComponents;
+    GLint& value = Context::current().state().transformFeedback.maxInterleavedComponents;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS, &value);
@@ -61,7 +61,7 @@ Int TransformFeedback::maxSeparateAttributes() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().transformFeedback->maxSeparateAttributes;
+    GLint& value = Context::current().state().transformFeedback.maxSeparateAttributes;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS, &value);
@@ -75,7 +75,7 @@ Int TransformFeedback::maxSeparateComponents() {
         return 0;
     #endif
 
-    GLint& value = Context::current().state().transformFeedback->maxSeparateComponents;
+    GLint& value = Context::current().state().transformFeedback.maxSeparateComponents;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS, &value);
@@ -88,7 +88,7 @@ Int TransformFeedback::maxBuffers() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
         return maxSeparateAttributes();
 
-    GLint& value = Context::current().state().transformFeedback->maxBuffers;
+    GLint& value = Context::current().state().transformFeedback.maxBuffers;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_TRANSFORM_FEEDBACK_BUFFERS, &value);
@@ -100,7 +100,7 @@ Int TransformFeedback::maxVertexStreams() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
         return 1;
 
-    GLint& value = Context::current().state().transformFeedback->maxVertexStreams;
+    GLint& value = Context::current().state().transformFeedback.maxVertexStreams;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_VERTEX_STREAMS, &value);
@@ -110,7 +110,7 @@ Int TransformFeedback::maxVertexStreams() {
 #endif
 
 TransformFeedback::TransformFeedback(): _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().transformFeedback->createImplementation)();
+    (this->*Context::current().state().transformFeedback.createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
@@ -130,14 +130,14 @@ TransformFeedback::~TransformFeedback() {
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
-    GLuint& binding = Context::current().state().transformFeedback->binding;
+    GLuint& binding = Context::current().state().transformFeedback.binding;
     if(binding == _id) binding = 0;
 
     glDeleteTransformFeedbacks(1, &_id);
 }
 
 void TransformFeedback::bindInternal() {
-    GLuint& bound = Context::current().state().transformFeedback->binding;
+    GLuint& bound = Context::current().state().transformFeedback.binding;
 
     /* Already bound, nothing to do */
     if(bound == _id) return;
@@ -162,23 +162,23 @@ inline void TransformFeedback::createIfNotAlready() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string TransformFeedback::label() {
     createIfNotAlready();
-    return Context::current().state().debug->getLabelImplementation(GL_TRANSFORM_FEEDBACK, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_TRANSFORM_FEEDBACK, _id);
 }
 
 TransformFeedback& TransformFeedback::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    Context::current().state().debug->labelImplementation(GL_TRANSFORM_FEEDBACK, _id, label);
+    Context::current().state().debug.labelImplementation(GL_TRANSFORM_FEEDBACK, _id, label);
     return *this;
 }
 #endif
 
 TransformFeedback& TransformFeedback::attachBuffer(const UnsignedInt index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    (this->*Context::current().state().transformFeedback->attachRangeImplementation)(index, buffer, offset, size);
+    (this->*Context::current().state().transformFeedback.attachRangeImplementation)(index, buffer, offset, size);
     return *this;
 }
 
 TransformFeedback& TransformFeedback::attachBuffer(const UnsignedInt index, Buffer& buffer) {
-    (this->*Context::current().state().transformFeedback->attachBaseImplementation)(index, buffer);
+    (this->*Context::current().state().transformFeedback.attachBaseImplementation)(index, buffer);
     return *this;
 }
 
@@ -206,13 +206,13 @@ void TransformFeedback::attachImplementationDSA(const GLuint index, Buffer& buff
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
-    (this->*Context::current().state().transformFeedback->attachRangesImplementation)(firstIndex, buffers);
+    (this->*Context::current().state().transformFeedback.attachRangesImplementation)(firstIndex, buffers);
     return *this;
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 TransformFeedback& TransformFeedback::attachBuffers(const UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
-    (this->*Context::current().state().transformFeedback->attachBasesImplementation)(firstIndex, buffers);
+    (this->*Context::current().state().transformFeedback.attachBasesImplementation)(firstIndex, buffers);
     return *this;
 }
 

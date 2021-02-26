@@ -40,22 +40,22 @@ namespace Magnum { namespace GL {
 DefaultFramebuffer defaultFramebuffer;
 
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
-    return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
+    return Status((this->*Context::current().state().framebuffer.checkStatusImplementation)(target));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 DefaultFramebuffer& DefaultFramebuffer::clearColor(const Color4& color) {
-    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_COLOR, 0, color.data());
+    (this->*Context::current().state().framebuffer.clearFImplementation)(GL_COLOR, 0, color.data());
     return *this;
 }
 
 DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4i& color) {
-    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_COLOR, 0, color.data());
+    (this->*Context::current().state().framebuffer.clearIImplementation)(GL_COLOR, 0, color.data());
     return *this;
 }
 
 DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4ui& color) {
-    (this->*Context::current().state().framebuffer->clearUIImplementation)(GL_COLOR, 0, color.data());
+    (this->*Context::current().state().framebuffer.clearUIImplementation)(GL_COLOR, 0, color.data());
     return *this;
 }
 #endif
@@ -73,22 +73,22 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
-    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
+    (this->*Context::current().state().framebuffer.drawBuffersImplementation)(max+1, _attachments);
     return *this;
 }
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const DrawAttachment attachment) {
     #ifndef MAGNUM_TARGET_GLES
-    (this->*Context::current().state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer.drawBufferImplementation)(GLenum(attachment));
     #else
-    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
+    (this->*Context::current().state().framebuffer.drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
     #endif
     return *this;
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 DefaultFramebuffer& DefaultFramebuffer::mapForRead(const ReadAttachment attachment) {
-    (this->*Context::current().state().framebuffer->readBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer.readBufferImplementation)(GLenum(attachment));
     return *this;
 }
 
@@ -98,7 +98,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current().state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
+    (this->*Context::current().state().framebuffer.invalidateImplementation)(attachments.size(), _attachments);
 }
 #endif
 
@@ -109,12 +109,12 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current().state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
+    (this->*Context::current().state().framebuffer.invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
 #endif
 
 void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
-    Implementation::FramebufferState& state = *context.state().framebuffer;
+    Implementation::FramebufferState& state = context.state().framebuffer;
 
     /* Initial framebuffer size */
     GLint viewport[4];

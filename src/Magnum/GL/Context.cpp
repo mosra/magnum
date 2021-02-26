@@ -963,7 +963,9 @@ bool Context::tryCreate(const Configuration& configuration) {
         }
     }
 
-    _state.emplace(*this, output);
+    std::pair<Containers::ArrayTuple, Implementation::State&> state = Implementation::State::allocate(*this, output);
+    _stateData = std::move(state.first);
+    _state = &state.second;
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.empty()) {
@@ -1066,7 +1068,7 @@ Containers::Array<Containers::StringView> Context::extensionStrings() const {
 
 #ifndef MAGNUM_TARGET_GLES
 bool Context::isCoreProfile() {
-    return isCoreProfileInternal(*_state->context);
+    return isCoreProfileInternal(_state->context);
 }
 
 bool Context::isCoreProfileInternal(Implementation::ContextState& state) {
@@ -1137,45 +1139,45 @@ void Context::resetState(const States states) {
     #endif
 
     if(states & State::Buffers)
-        _state->buffer->reset();
+        _state->buffer.reset();
     if(states & State::Framebuffers)
-        _state->framebuffer->reset();
+        _state->framebuffer.reset();
     if(states & State::Meshes)
-        _state->mesh->reset();
+        _state->mesh.reset();
 
     #ifndef MAGNUM_TARGET_GLES
     /* Bind a scratch VAO for external GL code that is not VAO-aware and just
        enables vertex attributes on the default VAO. Generate it on-demand as
        we don't expect this case to be used very often. */
     if(states & State::BindScratchVao) {
-        if(!_state->mesh->scratchVAO)
-            glGenVertexArrays(1, &_state->mesh->scratchVAO);
+        if(!_state->mesh.scratchVAO)
+            glGenVertexArrays(1, &_state->mesh.scratchVAO);
 
-        _state->mesh->bindVAOImplementation(_state->mesh->scratchVAO);
+        _state->mesh.bindVAOImplementation(_state->mesh.scratchVAO);
 
     /* Otherwise just unbind the current VAO and leave the the default */
     } else
     #endif
     if(states & State::MeshVao)
-        _state->mesh->bindVAOImplementation(0);
+        _state->mesh.bindVAOImplementation(0);
 
     if(states & State::PixelStorage) {
-        _state->renderer->unpackPixelStorage.reset();
-        _state->renderer->packPixelStorage.reset();
+        _state->renderer.unpackPixelStorage.reset();
+        _state->renderer.packPixelStorage.reset();
     }
 
     /* Nothing to reset for renderer yet */
 
     if(states & State::Shaders) {
         /* Nothing to reset for shaders */
-        _state->shaderProgram->reset();
+        _state->shaderProgram.reset();
     }
 
     if(states & State::Textures)
-        _state->texture->reset();
+        _state->texture.reset();
     #ifndef MAGNUM_TARGET_GLES2
     if(states & State::TransformFeedback)
-        _state->transformFeedback->reset();
+        _state->transformFeedback.reset();
     #endif
 }
 

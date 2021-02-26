@@ -84,7 +84,7 @@ Int Framebuffer::maxColorAttachments() {
     #endif
     #endif
 
-    GLint& value = Context::current().state().framebuffer->maxColorAttachments;
+    GLint& value = Context::current().state().framebuffer.maxColorAttachments;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES2
@@ -100,7 +100,7 @@ Int Framebuffer::maxColorAttachments() {
 Framebuffer::Framebuffer(const Range2Di& viewport): AbstractFramebuffer{0, viewport, ObjectFlag::DeleteOnDestruction} {
     CORRADE_INTERNAL_ASSERT(viewport != Implementation::FramebufferState::DisengagedViewport);
     _viewport = viewport;
-    (this->*Context::current().state().framebuffer->createImplementation)();
+    (this->*Context::current().state().framebuffer.createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
@@ -120,7 +120,7 @@ Framebuffer::~Framebuffer() {
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
     if(state.readBinding == _id) state.readBinding = 0;
 
     /* For draw binding reset also viewport */
@@ -140,33 +140,33 @@ Framebuffer::~Framebuffer() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Framebuffer::label() {
     createIfNotAlready();
-    return Context::current().state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
+    return Context::current().state().debug.getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
 Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    Context::current().state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
+    Context::current().state().debug.labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;
 }
 #endif
 
 Framebuffer::Status Framebuffer::checkStatus(const FramebufferTarget target) {
-    return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
+    return Status((this->*Context::current().state().framebuffer.checkStatusImplementation)(target));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 Framebuffer& Framebuffer::clearColor(const Int attachment, const Color4& color) {
-    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_COLOR, attachment, color.data());
+    (this->*Context::current().state().framebuffer.clearFImplementation)(GL_COLOR, attachment, color.data());
     return *this;
 }
 
 Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4i& color) {
-    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_COLOR, attachment, color.data());
+    (this->*Context::current().state().framebuffer.clearIImplementation)(GL_COLOR, attachment, color.data());
     return *this;
 }
 
 Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4ui& color) {
-    (this->*Context::current().state().framebuffer->clearUIImplementation)(GL_COLOR, attachment, color.data());
+    (this->*Context::current().state().framebuffer.clearUIImplementation)(GL_COLOR, attachment, color.data());
     return *this;
 }
 #endif
@@ -184,22 +184,22 @@ Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
-    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
+    (this->*Context::current().state().framebuffer.drawBuffersImplementation)(max+1, _attachments);
     return *this;
 }
 
 Framebuffer& Framebuffer::mapForDraw(const DrawAttachment attachment) {
     #ifndef MAGNUM_TARGET_GLES
-    (this->*Context::current().state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer.drawBufferImplementation)(GLenum(attachment));
     #else
-    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
+    (this->*Context::current().state().framebuffer.drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
     #endif
     return *this;
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Framebuffer& Framebuffer::mapForRead(const ColorAttachment attachment) {
-    (this->*Context::current().state().framebuffer->readBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer.readBufferImplementation)(GLenum(attachment));
     return *this;
 }
 
@@ -209,7 +209,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current().state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
+    (this->*Context::current().state().framebuffer.invalidateImplementation)(attachments.size(), _attachments);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -219,116 +219,116 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current().state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
+    (this->*Context::current().state().framebuffer.invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
 #endif
 #endif
 
 Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
-    (this->*Context::current().state().framebuffer->renderbufferImplementation)(attachment, renderbuffer.id());
+    (this->*Context::current().state().framebuffer.renderbufferImplementation)(attachment, renderbuffer.id());
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Texture1D& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->texture1DImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.texture1DImplementation)(attachment, texture.id(), level);
     return *this;
 }
 #endif
 
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Texture2D& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D, texture.id(), level);
+    (this->*Context::current().state().framebuffer.texture2DImplementation)(attachment, GL_TEXTURE_2D, texture.id(), level);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, RectangleTexture& texture) {
-    (this->*Context::current().state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
+    (this->*Context::current().state().framebuffer.texture2DImplementation)(attachment, GL_TEXTURE_RECTANGLE, texture.id(), 0);
     return *this;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
-    (this->*Context::current().state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
+    (this->*Context::current().state().framebuffer.texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
 }
 #endif
 
 Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment, CubeMapTexture& texture, CubeMapCoordinate coordinate, const Int level) {
-    (this->*Context::current().state().framebuffer->textureCubeMapImplementation)(attachment, GLenum(coordinate), texture.id(), level);
+    (this->*Context::current().state().framebuffer.textureCubeMapImplementation)(attachment, GLenum(coordinate), texture.id(), level);
     return *this;
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
-    (this->*Context::current().state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+    (this->*Context::current().state().framebuffer.textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture1DArray& texture, Int level, Int layer) {
-    (this->*Context::current().state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+    (this->*Context::current().state().framebuffer.textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture2DArray& texture, Int level, Int layer) {
-    (this->*Context::current().state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+    (this->*Context::current().state().framebuffer.textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer) {
-    (this->*Context::current().state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
+    (this->*Context::current().state().framebuffer.textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer) {
-    (this->*Context::current().state().framebuffer->textureLayerImplementation)(attachment, texture.id(), 0, layer);
+    (this->*Context::current().state().framebuffer.textureLayerImplementation)(attachment, texture.id(), 0, layer);
     return *this;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture3D& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.textureImplementation)(attachment, texture.id(), level);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture1DArray& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.textureImplementation)(attachment, texture.id(), level);
     return *this;
 }
 #endif
 
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture2DArray& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.textureImplementation)(attachment, texture.id(), level);
     return *this;
 }
 
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, CubeMapTexture& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.textureImplementation)(attachment, texture.id(), level);
     return *this;
 }
 
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, CubeMapTextureArray& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->layeredTextureCubeMapArrayImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer.layeredTextureCubeMapArrayImplementation)(attachment, texture.id(), level);
     return *this;
 }
 
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, MultisampleTexture2DArray& texture) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), 0);
+    (this->*Context::current().state().framebuffer.textureImplementation)(attachment, texture.id(), 0);
     return *this;
 }
 #endif
 
 Framebuffer& Framebuffer::detach(const BufferAttachment attachment) {
-    (this->*Context::current().state().framebuffer->renderbufferImplementation)(attachment, 0);
+    (this->*Context::current().state().framebuffer.renderbufferImplementation)(attachment, 0);
     return *this;
 }
 

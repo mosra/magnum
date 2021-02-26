@@ -51,7 +51,7 @@
 namespace Magnum { namespace GL {
 
 Vector2i AbstractFramebuffer::maxViewportSize() {
-    Vector2i& value = Context::current().state().framebuffer->maxViewportSize;
+    Vector2i& value = Context::current().state().framebuffer.maxViewportSize;
 
     /* Get the value, if not already cached */
     if(value == Vector2i())
@@ -72,7 +72,7 @@ Int AbstractFramebuffer::maxDrawBuffers() {
     #endif
     #endif
 
-    GLint& value = Context::current().state().framebuffer->maxDrawBuffers;
+    GLint& value = Context::current().state().framebuffer.maxDrawBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -91,7 +91,7 @@ Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::blend_func_extended>())
         return 0;
 
-    GLint& value = Context::current().state().framebuffer->maxDualSourceDrawBuffers;
+    GLint& value = Context::current().state().framebuffer.maxDualSourceDrawBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -124,13 +124,13 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
     static_cast<void>(target);
     bindImplementationSingle();
     #else
-    (this->*Context::current().state().framebuffer->bindImplementation)(target);
+    (this->*Context::current().state().framebuffer.bindImplementation)(target);
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
     if(state.readBinding == _id) return;
 
@@ -146,7 +146,7 @@ void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
 inline
 #endif
 void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     if(target == FramebufferTarget::Read) {
         if(state.readBinding == _id) return;
@@ -167,13 +167,13 @@ FramebufferTarget AbstractFramebuffer::bindInternal() {
     #elif defined(MAGNUM_TARGET_WEBGL)
     return bindImplementationSingle();
     #else
-    return (this->*Context::current().state().framebuffer->bindInternalImplementation)();
+    return (this->*Context::current().state().framebuffer.bindInternalImplementation)();
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
 FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
 
     /* Bind the framebuffer, if not already */
@@ -197,7 +197,7 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
 inline
 #endif
 FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
     if(state.readBinding == _id)
@@ -215,11 +215,11 @@ FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
 }
 
 PixelFormat AbstractFramebuffer::implementationColorReadFormat() {
-    return PixelFormat((this->*Context::current().state().framebuffer->implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_FORMAT));
+    return PixelFormat((this->*Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_FORMAT));
 }
 
 PixelType AbstractFramebuffer::implementationColorReadType() {
-    return PixelType((this->*Context::current().state().framebuffer->implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_TYPE));
+    return PixelType((this->*Context::current().state().framebuffer.implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_TYPE));
 }
 
 GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationGlobal(const GLenum what) {
@@ -254,7 +254,7 @@ GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFrame
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    Context::current().state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
+    Context::current().state().framebuffer.blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
 }
 #endif
 
@@ -290,14 +290,14 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
-    if(Context::current().state().framebuffer->drawBinding == _id)
+    if(Context::current().state().framebuffer.drawBinding == _id)
         setViewportInternal();
 
     return *this;
 }
 
 void AbstractFramebuffer::setViewportInternal() {
-    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
+    Implementation::FramebufferState& state = Context::current().state().framebuffer;
 
     CORRADE_INTERNAL_ASSERT(_viewport != Implementation::FramebufferState::DisengagedViewport);
     CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
@@ -320,17 +320,17 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
 
 #ifndef MAGNUM_TARGET_GLES2
 AbstractFramebuffer& AbstractFramebuffer::clearDepth(const Float depth) {
-    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_DEPTH, 0, &depth);
+    (this->*Context::current().state().framebuffer.clearFImplementation)(GL_DEPTH, 0, &depth);
     return *this;
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clearStencil(const Int stencil) {
-    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_STENCIL, 0, &stencil);
+    (this->*Context::current().state().framebuffer.clearIImplementation)(GL_STENCIL, 0, &stencil);
     return *this;
 }
 
 AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, const Int stencil) {
-    (this->*Context::current().state().framebuffer->clearFIImplementation)(GL_DEPTH_STENCIL, depth, stencil);
+    (this->*Context::current().state().framebuffer.clearFIImplementation)(GL_DEPTH_STENCIL, depth, stencil);
     return *this;
 }
 #endif
@@ -345,8 +345,8 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, const MutableImageView
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
-    Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (Context::current().state().framebuffer->readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data()
+    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    (Context::current().state().framebuffer.readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
@@ -382,8 +382,8 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
         image.setData(image.storage(), image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
+    Context::current().state().renderer.applyPixelStoragePack(image.storage());
+    (Context::current().state().framebuffer.readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
 }
 
 BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {
@@ -433,52 +433,52 @@ void AbstractFramebuffer::copyImage(const Range2Di& rectangle, Texture1DArray& t
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture1D& texture, const Int level, const Int offset) {
     CORRADE_ASSERT(rectangle.sizeY() == 1, "GL::AbstractFramebuffer::copyImage(): height must be 1 for 1D textures", );
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub1DImplementation(rectangle, texture, level, offset);
+    Context::current().state().framebuffer.copySub1DImplementation(rectangle, texture, level, offset);
 }
 #endif
 
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture2D& texture, const Int level, const Vector2i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_2D, level, offset);
+    Context::current().state().framebuffer.copySub2DImplementation(rectangle, texture, GL_TEXTURE_2D, level, offset);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, RectangleTexture& texture, const Vector2i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_RECTANGLE, 0, offset);
+    Context::current().state().framebuffer.copySub2DImplementation(rectangle, texture, GL_TEXTURE_RECTANGLE, 0, offset);
 }
 #endif
 
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTexture& texture, const Int level, const Vector3i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySubCubeMapImplementation(rectangle, texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X + offset.z(), level, offset.xy());
+    Context::current().state().framebuffer.copySubCubeMapImplementation(rectangle, texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X + offset.z(), level, offset.xy());
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture3D& texture, const Int level, const Vector3i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+    Context::current().state().framebuffer.copySub3DImplementation(rectangle, texture, level, offset);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture1DArray& texture, const Int level, const Vector2i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_1D_ARRAY, level, offset);
+    Context::current().state().framebuffer.copySub2DImplementation(rectangle, texture, GL_TEXTURE_1D_ARRAY, level, offset);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture2DArray& texture, const Int level, const Vector3i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+    Context::current().state().framebuffer.copySub3DImplementation(rectangle, texture, level, offset);
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTextureArray& texture, const Int level, const Vector3i& offset) {
     bindInternal(FramebufferTarget::Read);
-    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+    Context::current().state().framebuffer.copySub3DImplementation(rectangle, texture, level, offset);
 }
 #endif
 

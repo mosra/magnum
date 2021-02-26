@@ -32,7 +32,7 @@
 namespace Magnum { namespace GL { namespace Implementation {
 
 GLint maxTextureSideSize() {
-    GLint& value = Context::current().state().texture->maxSize;
+    GLint& value = Context::current().state().texture.maxSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_TEXTURE_SIZE, &value);
@@ -42,7 +42,7 @@ GLint maxTextureSideSize() {
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 GLint max3DTextureDepth() {
-    GLint& value = Context::current().state().texture->max3DSize;
+    GLint& value = Context::current().state().texture.max3DSize;
 
     if(value == 0)
         #ifndef MAGNUM_TARGET_GLES2
@@ -57,7 +57,7 @@ GLint max3DTextureDepth() {
 
 #ifndef MAGNUM_TARGET_GLES2
 GLint maxTextureArrayLayers() {
-    GLint& value = Context::current().state().texture->maxArrayLayers;
+    GLint& value = Context::current().state().texture.maxArrayLayers;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &value);
@@ -67,7 +67,7 @@ GLint maxTextureArrayLayers() {
 #endif
 
 GLint maxCubeMapTextureSideSize() {
-    GLint& value = Context::current().state().texture->maxCubeMapSize;
+    GLint& value = Context::current().state().texture.maxCubeMapSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, &value);

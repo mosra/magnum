@@ -31,9 +31,9 @@
 
 #include <cstdlib>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayTuple.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/StaticArray.h>
 
 #include "Magnum/Magnum.h"
@@ -853,7 +853,8 @@ class MAGNUM_GL_EXPORT Context {
         Containers::Array<Extension> _supportedExtensions;
         #endif
 
-        Containers::Pointer<Implementation::State> _state;
+        Containers::ArrayTuple _stateData;
+        Implementation::State* _state;
 
         Containers::Optional<DetectedDrivers> _detectedDrivers;
 
