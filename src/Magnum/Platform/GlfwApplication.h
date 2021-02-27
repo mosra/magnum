@@ -116,7 +116,7 @@ the first part and point `CMAKE_PREFIX_PATH` to its installation dir if
 necessary.
 
 @code{.cmake}
-add_subdirectory(glfw)
+add_subdirectory(glfw EXCLUDE_FROM_ALL)
 
 set(WITH_GLFWAPPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
