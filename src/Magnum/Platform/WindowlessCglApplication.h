@@ -164,6 +164,83 @@ class WindowlessCglContext {
 class WindowlessCglContext::Configuration: public GL::Context::Configuration {
     public:
         /**
+         * @brief Context flag
+         *
+         * Includes also everything from @ref GL::Context::Configuration::Flag.
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
+         */
+        enum class Flag: UnsignedLong {
+            /**
+             * @copydoc GL::Context::Configuration::Flag::QuietLog
+             * @m_since_latest
+             */
+            QuietLog = UnsignedLong(GL::Context::Configuration::Flag::QuietLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::VerboseLog
+             * @m_since_latest
+             */
+            VerboseLog = UnsignedLong(GL::Context::Configuration::Flag::VerboseLog),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidation
+             * @m_since_latest
+             */
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        typedef Containers::EnumSet<Flag> Flags;
+
+        /** @brief Context flags */
+        Flags flags() const {
+            return Flag(UnsignedLong(GL::Context::Configuration::flags()));
+        }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. To avoid clearing default flags by accident,
+         * prefer to use @ref addFlags() and @ref clearFlags() instead.
+         * @see @ref GL::Context::flags()
+         */
+        Configuration& setFlags(Flags flags) {
+            GL::Context::Configuration::setFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            GL::Context::Configuration::clearFlags(GL::Context::Configuration::Flag(UnsignedLong(flags)));
+            return *this;
+        }
+
+        /**
          * @brief Create a shared context
          * @return Reference to self (for method chaining)
          * @m_since{2020,06}
@@ -189,18 +266,6 @@ class WindowlessCglContext::Configuration: public GL::Context::Configuration {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Configuration& setFlags(Flags flags) {
-            GL::Context::Configuration::setFlags(flags);
-            return *this;
-        }
-        Configuration& addFlags(Flags flags) {
-            GL::Context::Configuration::addFlags(flags);
-            return *this;
-        }
-        Configuration& clearFlags(Flags flags) {
-            GL::Context::Configuration::clearFlags(flags);
-            return *this;
-        }
         MAGNUM_GL_CONTEXT_CONFIGURATION_SUBCLASS_IMPLEMENTATION(Configuration)
         #endif
 
