@@ -25,6 +25,10 @@
 
 #include "BufferTexture.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/BufferTextureFormat.h"
@@ -131,6 +135,11 @@ BufferTexture& BufferTexture::resetBuffer() {
     /* R8 is the default state according to ARB_texture_buffer_object, so use
        that */
     (this->*Context::current().state().texture.setBufferImplementation)(BufferTextureFormat::R8, nullptr);
+    return *this;
+}
+
+BufferTexture& BufferTexture::setLabel(const Containers::StringView label) {
+    AbstractTexture::setLabel(label);
     return *this;
 }
 

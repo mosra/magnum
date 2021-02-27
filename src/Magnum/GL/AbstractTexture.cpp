@@ -27,6 +27,9 @@
 
 #include <tuple>
 #include <Corrade/Containers/Array.h>
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -261,12 +264,12 @@ void AbstractTexture::createIfNotAlready() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string AbstractTexture::label() {
+Containers::String AbstractTexture::label() {
     createIfNotAlready();
     return Context::current().state().debug.getLabelImplementation(GL_TEXTURE, _id);
 }
 
-AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayView<const char> label) {
+AbstractTexture& AbstractTexture::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     Context::current().state().debug.labelImplementation(GL_TEXTURE, _id, label);
     return *this;

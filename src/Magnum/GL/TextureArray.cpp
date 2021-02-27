@@ -25,6 +25,10 @@
 
 #include "TextureArray.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -92,6 +96,13 @@ template<UnsignedInt dimensions> CompressedImage<dimensions+1> TextureArray<dime
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions+1> TextureArray<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>&& image, const BufferUsage usage) {
     compressedSubImage(level, range, image, usage);
     return std::move(image);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_WEBGL
+template<UnsignedInt dimensions> TextureArray<dimensions>& TextureArray<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
 }
 #endif
 

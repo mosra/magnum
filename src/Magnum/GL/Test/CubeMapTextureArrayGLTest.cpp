@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Image.h"
@@ -46,6 +47,8 @@ struct CubeMapTextureArrayGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+
+    void label();
 
     void bind();
     void bindImage();
@@ -269,6 +272,8 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::constructMove,
               &CubeMapTextureArrayGLTest::wrap,
 
+              &CubeMapTextureArrayGLTest::label,
+
               &CubeMapTextureArrayGLTest::bind,
               &CubeMapTextureArrayGLTest::bindImage,
 
@@ -326,6 +331,8 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::invalidateSubImage});
 }
 
+using namespace Containers::Literals;
+
 void CubeMapTextureArrayGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
@@ -375,6 +382,25 @@ void CubeMapTextureArrayGLTest::wrap() {
     /* ...so we can wrap it again */
     CubeMapTextureArray::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void CubeMapTextureArrayGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    CubeMapTextureArray texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void CubeMapTextureArrayGLTest::bind() {

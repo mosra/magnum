@@ -38,6 +38,12 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/GL.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For label() / setLabel(), which used to be a std::string. Not ideal for the
+   return type, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 /**
@@ -605,7 +611,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label();
+        Containers::String label();
 
         /**
          * @brief Set mesh label
@@ -620,14 +626,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        Mesh& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> Mesh& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        Mesh& setLabel(Containers::StringView label);
         #endif
 
         /**
@@ -1133,10 +1132,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags);
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
-
-        #ifndef MAGNUM_TARGET_WEBGL
-        Mesh& setLabelInternal(Containers::ArrayView<const char> label);
-        #endif
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {

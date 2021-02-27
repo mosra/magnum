@@ -27,6 +27,9 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include <tuple>
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -160,12 +163,12 @@ inline void TransformFeedback::createIfNotAlready() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string TransformFeedback::label() {
+Containers::String TransformFeedback::label() {
     createIfNotAlready();
     return Context::current().state().debug.getLabelImplementation(GL_TRANSFORM_FEEDBACK, _id);
 }
 
-TransformFeedback& TransformFeedback::setLabelInternal(const Containers::ArrayView<const char> label) {
+TransformFeedback& TransformFeedback::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     Context::current().state().debug.labelImplementation(GL_TRANSFORM_FEEDBACK, _id, label);
     return *this;

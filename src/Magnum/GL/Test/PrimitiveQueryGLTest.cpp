@@ -41,6 +41,10 @@
 #include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct PrimitiveQueryGLTest: OpenGLTester {
@@ -48,6 +52,10 @@ struct PrimitiveQueryGLTest: OpenGLTester {
 
     void constructMove();
     void wrap();
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    void label();
+    #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     void primitivesGenerated();
@@ -66,6 +74,10 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
               &PrimitiveQueryGLTest::wrap,
 
               #ifndef MAGNUM_TARGET_WEBGL
+              &PrimitiveQueryGLTest::label,
+              #endif
+
+              #ifndef MAGNUM_TARGET_WEBGL
               &PrimitiveQueryGLTest::primitivesGenerated,
               #endif
               #ifndef MAGNUM_TARGET_GLES
@@ -77,6 +89,10 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
               #endif
               });
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void PrimitiveQueryGLTest::constructMove() {
     /* Move constructor tested in AbstractQuery. Compared to other *Query
@@ -112,6 +128,46 @@ void PrimitiveQueryGLTest::wrap() {
     PrimitiveQuery::wrap(id, PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten);
     glDeleteQueries(1, &id);
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void PrimitiveQueryGLTest::label() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
+        CORRADE_SKIP(Extensions::EXT::transform_feedback::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
+    #endif
+
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    PrimitiveQuery query{PrimitiveQuery::Target::PrimitivesGenerated};
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+    #endif
+    {
+        query.begin(); query.end();
+
+        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+
+    CORRADE_COMPARE(query.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    query.setLabel("MyQuery!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(query.label(), "MyQuery");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 void PrimitiveQueryGLTest::primitivesGenerated() {

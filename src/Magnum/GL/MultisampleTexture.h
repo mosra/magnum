@@ -100,7 +100,7 @@ Note that multisample textures don't support compressed formats.
     array textures.
 @requires_gles Multisample textures are not available in WebGL.
  */
-template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
+template<UnsignedInt dimensions> class MAGNUM_GL_EXPORT MultisampleTexture: public AbstractTexture {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Texture dimension count */
@@ -302,14 +302,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        MultisampleTexture<dimensions>& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> MultisampleTexture<dimensions>& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        MultisampleTexture<dimensions>& setLabel(Containers::StringView label);
         #endif
 
     private:

@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::GL::AbstractFramebuffer, enum @ref Magnum::GL::FramebufferClear, @ref Magnum::GL::FramebufferBlit, @ref Magnum::GL::FramebufferBlitFilter, @ref Magnum::GL::FramebufferTarget, enum set @ref Magnum::GL::FramebufferClearMask
  */
 
+#include <utility> /* std::swap() */
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/GL/GL.h"

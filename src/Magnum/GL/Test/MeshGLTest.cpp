@@ -49,6 +49,10 @@
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 /* Tests also the MeshView class. */
@@ -741,6 +745,10 @@ MeshGLTest::MeshGLTest() {
     Renderer::setClearColor(0x000000_rgbf);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
+
 void MeshGLTest::construct() {
     {
         const Mesh mesh;
@@ -925,14 +933,16 @@ void MeshGLTest::label() {
         CORRADE_SKIP("Required extension is not supported");
 
     Mesh mesh;
-
     CORRADE_COMPARE(mesh.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    mesh.setLabel("MyMesh");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    mesh.setLabel("MyMesh!"_s.except(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(mesh.label(), "MyMesh");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 

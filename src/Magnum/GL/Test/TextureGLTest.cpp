@@ -42,6 +42,10 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TextureGLTest: OpenGLTester {
@@ -63,6 +67,14 @@ struct TextureGLTest: OpenGLTester {
     void wrap2D();
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void wrap3D();
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef MAGNUM_TARGET_GLES
+    void label1D();
+    #endif
+    void label2D();
+    void label3D();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -445,6 +457,14 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::wrap3D,
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::label1D,
+        #endif
+        &TextureGLTest::label2D,
+        &TextureGLTest::label3D,
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::bind1D,
         #endif
@@ -652,6 +672,10 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::srgbAlphaStorage});
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::construct1D() {
     {
@@ -754,6 +778,67 @@ void TextureGLTest::wrap3D() {
     /* ...so we can wrap it again */
     Texture3D::wrap(id);
     glDeleteTextures(1, &id);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_WEBGL
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::label1D() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    Texture1D texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
+
+void TextureGLTest::label2D() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    Texture2D texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void TextureGLTest::label3D() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    Texture3D texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 

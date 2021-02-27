@@ -26,6 +26,9 @@
 #include "Framebuffer.h"
 
 #include <Corrade/Containers/Array.h>
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/Context.h"
@@ -142,12 +145,12 @@ Framebuffer::~Framebuffer() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Framebuffer::label() {
+Containers::String Framebuffer::label() {
     createIfNotAlready();
     return Context::current().state().debug.getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
-Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
+Framebuffer& Framebuffer::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     Context::current().state().debug.labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;

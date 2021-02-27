@@ -41,6 +41,11 @@
 #include <vector>
 #endif
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For label() / setLabel(), which used to be a std::string */
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace Implementation { struct ShaderProgramState; }
@@ -726,7 +731,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{PROGRAM_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label() const;
+        Containers::String label() const;
 
         /**
          * @brief Set shader program label
@@ -741,14 +746,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      with @def_gl{PROGRAM_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        AbstractShaderProgram& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> AbstractShaderProgram& setLabel(const char (&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        AbstractShaderProgram& setLabel(Containers::StringView label);
         #endif
 
         /**
@@ -1647,10 +1645,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
     private:
-        #ifndef MAGNUM_TARGET_WEBGL
-        AbstractShaderProgram& setLabelInternal(Containers::ArrayView<const char> label);
-        #endif
-
         void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
         #ifndef MAGNUM_TARGET_GLES
         void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);

@@ -58,7 +58,7 @@ waiting for the result.
     OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
 */
-class SampleQuery: public AbstractQuery {
+class MAGNUM_GL_EXPORT SampleQuery: public AbstractQuery {
     public:
         /**
          * @brief Query target
@@ -250,14 +250,7 @@ class SampleQuery: public AbstractQuery {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        SampleQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> SampleQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
+        SampleQuery& setLabel(Containers::StringView label);
         #endif
 
     private:

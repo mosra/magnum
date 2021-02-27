@@ -23,8 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/DebugStl.h>
-
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -38,19 +36,14 @@ struct AbstractQueryGLTest: OpenGLTester {
     void construct();
     void constructMove();
 
-    #ifndef MAGNUM_TARGET_WEBGL
-    void label();
-    #endif
+    /* label() tested in subclasses because these all have to provide overloads
+       to return correct type for method chaining and these overloads have to
+       be deinlined to avoid including a StringView */
 };
 
 AbstractQueryGLTest::AbstractQueryGLTest() {
     addTests({&AbstractQueryGLTest::construct,
-              &AbstractQueryGLTest::constructMove,
-
-              #ifndef MAGNUM_TARGET_WEBGL
-              &AbstractQueryGLTest::label
-              #endif
-              });
+              &AbstractQueryGLTest::constructMove});
 }
 
 void AbstractQueryGLTest::construct() {
@@ -109,43 +102,6 @@ void AbstractQueryGLTest::constructMove() {
 
     /* nothrow move constructibility tested in subclasses */
 }
-
-#ifndef MAGNUM_TARGET_WEBGL
-void AbstractQueryGLTest::label() {
-    #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
-    #endif
-
-    /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
-        CORRADE_SKIP("Required extension is not available");
-
-    #ifndef MAGNUM_TARGET_GLES
-    SampleQuery query{SampleQuery::Target::SamplesPassed};
-    #else
-    SampleQuery query{SampleQuery::Target::AnySamplesPassed};
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
-    #endif
-    {
-        query.begin(); query.end();
-
-        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
-        CORRADE_VERIFY(false);
-    }
-
-    CORRADE_COMPARE(query.label(), "");
-
-    query.setLabel("MyQuery");
-    CORRADE_COMPARE(query.label(), "MyQuery");
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-#endif
 
 }}}}
 

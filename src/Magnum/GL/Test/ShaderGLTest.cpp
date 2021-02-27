@@ -31,6 +31,10 @@
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
@@ -70,6 +74,10 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void ShaderGLTest::construct() {
     {
@@ -155,10 +163,14 @@ void ShaderGLTest::label() {
     Shader shader(Version::GLES200, Shader::Type::Vertex);
     #endif
     CORRADE_COMPARE(shader.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
-    shader.setLabel("MyShader");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    shader.setLabel("MyShader!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
     CORRADE_COMPARE(shader.label(), "MyShader");
-
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif

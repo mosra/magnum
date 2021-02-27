@@ -25,6 +25,10 @@
 
 #include "Texture.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/maxTextureSize.h"
@@ -101,8 +105,19 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions> Texture<dimen
     compressedSubImage(level, range, image, usage);
     return std::move(image);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+template<UnsignedInt dimensions> Texture<dimensions>& Texture<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
 template class MAGNUM_GL_EXPORT Texture<1>;
+#endif
+#if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_WEBGL)
 template class MAGNUM_GL_EXPORT Texture<2>;
 template class MAGNUM_GL_EXPORT Texture<3>;
 #endif

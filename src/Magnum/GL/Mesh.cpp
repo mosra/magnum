@@ -27,6 +27,9 @@
 
 #include <vector>
 #include <Corrade/Containers/StridedArrayView.h>
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -326,7 +329,7 @@ inline void Mesh::createIfNotAlready() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Mesh::label() {
+Containers::String Mesh::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_VERTEX_ARRAY, _id);
@@ -335,7 +338,7 @@ std::string Mesh::label() {
     #endif
 }
 
-Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
+Mesh& Mesh::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_VERTEX_ARRAY, _id, label);

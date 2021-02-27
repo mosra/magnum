@@ -246,14 +246,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        BufferTexture& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> BufferTexture& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        BufferTexture& setLabel(const Containers::StringView label);
         #endif
 
     private:

@@ -38,6 +38,12 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For label() / setLabel(), which used to be a std::string. Not ideal for the
+   return type, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 namespace Magnum { namespace GL {
 
@@ -257,7 +263,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          *      with @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label();
+        Containers::String label();
 
         /**
          * @brief Set transform feedback label
@@ -272,15 +278,8 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          *      @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */
-        TransformFeedback& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
+        TransformFeedback& setLabel(Containers::StringView label);
         #endif
-
-        /** @overload */
-        template<std::size_t size> TransformFeedback& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
-        }
 
         /**
          * @brief Attach range of buffer
@@ -435,10 +434,6 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         void MAGNUM_GL_LOCAL attachImplementationDSA(GLuint firstIndex, std::initializer_list<Buffer*> buffers);
-        #endif
-
-        #ifndef MAGNUM_TARGET_WEBGL
-        TransformFeedback& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         GLuint _id;

@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/GL/Buffer.h"
@@ -47,6 +48,8 @@ struct BufferTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+
+    void label();
 
     void bind();
     void bindImage();
@@ -72,6 +75,8 @@ BufferTextureGLTest::BufferTextureGLTest() {
               &BufferTextureGLTest::constructMove,
               &BufferTextureGLTest::wrap,
 
+              &BufferTextureGLTest::label,
+
               &BufferTextureGLTest::bind,
               &BufferTextureGLTest::bindImage,
 
@@ -91,6 +96,8 @@ BufferTextureGLTest::BufferTextureGLTest() {
               #endif
               });
 }
+
+using namespace Containers::Literals;
 
 void BufferTextureGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
@@ -141,6 +148,25 @@ void BufferTextureGLTest::wrap() {
     /* ...so we can wrap it again */
     BufferTexture::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void BufferTextureGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    BufferTexture texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void BufferTextureGLTest::bind() {

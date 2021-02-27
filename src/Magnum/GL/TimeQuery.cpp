@@ -2,7 +2,7 @@
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-                2020, 2021, 2022 Vladimír Vondruš <mosra@centrum.cz>
+                2020, 2021 Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -23,39 +23,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/GL/Buffer.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/OpenGLTester.h"
+#include "TimeQuery.h"
 
 #ifndef MAGNUM_TARGET_WEBGL
-#include <Corrade/Containers/String.h>
+#include <Corrade/Containers/StringView.h>
 #endif
 
-namespace Magnum { namespace GL { namespace Test { namespace {
+namespace Magnum { namespace GL {
 
-struct AbstractObjectGLTest: OpenGLTester {
-    explicit AbstractObjectGLTest();
-
-    void labelNoOp();
-};
-
-AbstractObjectGLTest::AbstractObjectGLTest() {
-    addTests({&AbstractObjectGLTest::labelNoOp});
+#ifndef MAGNUM_TARGET_WEBGL
+TimeQuery& TimeQuery::setLabel(Containers::StringView label) {
+    AbstractQuery::setLabel(label);
+    return *this;
 }
+#endif
 
-void AbstractObjectGLTest::labelNoOp() {
-    if(Context::current().isExtensionSupported<GL::Extensions::KHR::debug>())
-        CORRADE_SKIP(GL::Extensions::KHR::debug::string() << "is supported.");
-    if(Context::current().isExtensionSupported<GL::Extensions::EXT::debug_label>())
-        CORRADE_SKIP(GL::Extensions::EXT::debug_label::string() << "is supported.");
-
-    Buffer buffer;
-    buffer.setLabel("MyBuffer");
-    CORRADE_COMPARE(buffer.label(), "");
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-}}}}
-
-CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractObjectGLTest)
+}}

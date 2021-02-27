@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -45,6 +46,8 @@ struct PipelineStatisticsQueryGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    void label();
+
     void queryVerticesSubmitted();
 };
 
@@ -52,8 +55,12 @@ PipelineStatisticsQueryGLTest::PipelineStatisticsQueryGLTest() {
     addTests({&PipelineStatisticsQueryGLTest::constructMove,
               &PipelineStatisticsQueryGLTest::wrap,
 
+              &PipelineStatisticsQueryGLTest::label,
+
               &PipelineStatisticsQueryGLTest::queryVerticesSubmitted});
 }
+
+using namespace Containers::Literals;
 
 void PipelineStatisticsQueryGLTest::constructMove() {
     /* Move constructor tested in AbstractQuery, here we just verify there
@@ -80,6 +87,39 @@ void PipelineStatisticsQueryGLTest::wrap() {
     /* ...so we can wrap it again */
     PipelineStatisticsQuery::wrap(id, PipelineStatisticsQuery::Target::ClippingInputPrimitives);
     glDeleteQueries(1, &id);
+}
+
+void PipelineStatisticsQueryGLTest::label() {
+    if(!Context::current().isExtensionSupported<Extensions::ARB::pipeline_statistics_query>())
+        CORRADE_SKIP(Extensions::ARB::pipeline_statistics_query::string() << "is not available");
+
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    PipelineStatisticsQuery query{PipelineStatisticsQuery::Target::ClippingInputPrimitives};
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+    #endif
+    {
+        query.begin(); query.end();
+
+        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+
+    CORRADE_COMPARE(query.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    query.setLabel("MyQuery!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(query.label(), "MyQuery");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void PipelineStatisticsQueryGLTest::queryVerticesSubmitted() {

@@ -23,14 +23,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/DebugStl.h>
-
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/Renderbuffer.h"
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Math/Vector2.h"
+
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -67,6 +69,10 @@ RenderbufferGLTest::RenderbufferGLTest() {
               #endif
               });
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void RenderbufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
@@ -145,14 +151,16 @@ void RenderbufferGLTest::label() {
         CORRADE_SKIP("Required extension is not available");
 
     Renderbuffer renderbuffer;
-
     CORRADE_COMPARE(renderbuffer.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    renderbuffer.setLabel("MyRenderbuffer");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    renderbuffer.setLabel("MyRenderbuffer!"_s.except(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 

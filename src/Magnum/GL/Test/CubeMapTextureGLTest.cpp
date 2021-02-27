@@ -44,6 +44,10 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct CubeMapTextureGLTest: OpenGLTester {
@@ -52,6 +56,10 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    void label();
+    #endif
 
     void bind();
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -312,6 +320,10 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::constructMove,
               &CubeMapTextureGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
+              &CubeMapTextureGLTest::label,
+              #endif
+
               &CubeMapTextureGLTest::bind,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &CubeMapTextureGLTest::bindImage,
@@ -437,6 +449,10 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::invalidateSubImage});
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
+
 template<std::size_t size, class T> Containers::ArrayView<const T> unsafeSuffix(const T(&data)[size], std::size_t offset) {
     static_assert(sizeof(T) == 1, "");
     return {data - offset, size + offset};
@@ -476,6 +492,27 @@ void CubeMapTextureGLTest::wrap() {
     CubeMapTexture::wrap(id);
     glDeleteTextures(1, &id);
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void CubeMapTextureGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    CubeMapTexture texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 void CubeMapTextureGLTest::bind() {
     CubeMapTexture texture;

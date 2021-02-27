@@ -25,7 +25,6 @@
 
 #include <tuple>
 #include <Corrade/Containers/Reference.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -43,6 +42,10 @@
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
+
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -110,6 +113,10 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addInstancedTests({&TransformFeedbackGLTest::draw}, DrawDataCount);
     #endif
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void TransformFeedbackGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
@@ -189,7 +196,6 @@ void TransformFeedbackGLTest::label() {
         CORRADE_SKIP("Required extension is not available");
 
     TransformFeedback feedback;
-
     CORRADE_COMPARE(feedback.label(), "");
     {
         #ifdef MAGNUM_TARGET_GLES
@@ -200,7 +206,9 @@ void TransformFeedbackGLTest::label() {
         MAGNUM_VERIFY_NO_GL_ERROR();
     }
 
-    feedback.setLabel("MyXfb");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    feedback.setLabel("MyXfb!"_s.except(1));
     {
         #ifdef MAGNUM_TARGET_GLES
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&
@@ -210,7 +218,9 @@ void TransformFeedbackGLTest::label() {
         MAGNUM_VERIFY_NO_GL_ERROR();
 
         CORRADE_COMPARE(feedback.label(), "MyXfb");
-        MAGNUM_VERIFY_NO_GL_ERROR(); /* Check for errors again to flush the error state */
+        /* Here it's *essential* to check for errors again to flush the error
+           state in case of the XFAIL */
+        MAGNUM_VERIFY_NO_GL_ERROR();
     }
 }
 #endif

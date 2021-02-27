@@ -29,12 +29,19 @@
  * @brief Class @ref Magnum::GL::AbstractTexture
  */
 
+#include <utility> /* std::swap() */
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For label() / setLabel(), which used to be a std::string. Not ideal for the
+   return type, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -366,7 +373,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label();
+        Containers::String label();
 
         /**
          * @brief Set texture label
@@ -381,14 +388,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */
-        AbstractTexture& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> AbstractTexture& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        AbstractTexture& setLabel(Containers::StringView label);
         #endif
 
         /**
@@ -442,10 +442,6 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         explicit AbstractTexture(GLenum target);
         explicit AbstractTexture(NoCreateT, GLenum target) noexcept: _target{target}, _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
-
-        #ifndef MAGNUM_TARGET_WEBGL
-        AbstractTexture& setLabelInternal(Containers::ArrayView<const char> label);
-        #endif
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 

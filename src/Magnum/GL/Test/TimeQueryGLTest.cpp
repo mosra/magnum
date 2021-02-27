@@ -22,7 +22,6 @@
     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     DEALINGS IN THE SOFTWARE.
 */
-
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/GL/Context.h"
@@ -33,6 +32,10 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/TimeQuery.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TimeQueryGLTest: OpenGLTester {
@@ -40,6 +43,10 @@ struct TimeQueryGLTest: OpenGLTester {
 
     void constructMove();
     void wrap();
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    void label();
+    #endif
 
     void queryTime();
     void queryTimestamp();
@@ -49,9 +56,17 @@ TimeQueryGLTest::TimeQueryGLTest() {
     addTests({&TimeQueryGLTest::constructMove,
               &TimeQueryGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
+              &TimeQueryGLTest::label,
+              #endif
+
               &TimeQueryGLTest::queryTime,
               &TimeQueryGLTest::queryTimestamp});
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void TimeQueryGLTest::constructMove() {
     /* Move constructor tested in AbstractQuery, here we just verify there
@@ -95,6 +110,49 @@ void TimeQueryGLTest::wrap() {
     glDeleteQueriesEXT(1, &id);
     #endif
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void TimeQueryGLTest::label() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
+        CORRADE_SKIP(Extensions::ARB::timer_query::string() << "is not supported.");
+    #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
+        CORRADE_SKIP(Extensions::EXT::disjoint_timer_query_webgl2::string() << "is not supported.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
+        CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() << "is not supported.");
+    #endif
+
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    TimeQuery query{TimeQuery::Target::TimeElapsed};
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+    #endif
+    {
+        query.begin(); query.end();
+
+        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+
+    CORRADE_COMPARE(query.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    query.setLabel("MyQuery!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(query.label(), "MyQuery");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 void TimeQueryGLTest::queryTime() {
     #ifndef MAGNUM_TARGET_GLES

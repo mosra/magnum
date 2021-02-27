@@ -25,6 +25,10 @@
 
 #include "PrimitiveQuery.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 void PrimitiveQuery::begin() {
@@ -48,5 +52,12 @@ void PrimitiveQuery::end() {
     AbstractQuery::end();
     #endif
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+PrimitiveQuery& PrimitiveQuery::setLabel(Containers::StringView label) {
+    AbstractQuery::setLabel(label);
+    return *this;
+}
+#endif
 
 }}

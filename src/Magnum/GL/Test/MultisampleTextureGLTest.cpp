@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/GL/Context.h"
@@ -45,6 +46,9 @@ struct MultisampleTextureGLTest: OpenGLTester {
 
     void wrap2D();
     void wrap2DArray();
+
+    void label2D();
+    void label2DArray();
 
     void bind2D();
     void bind2DArray();
@@ -71,6 +75,9 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
               &MultisampleTextureGLTest::wrap2D,
               &MultisampleTextureGLTest::wrap2DArray,
 
+              &MultisampleTextureGLTest::label2D,
+              &MultisampleTextureGLTest::label2DArray,
+
               &MultisampleTextureGLTest::bind2D,
               &MultisampleTextureGLTest::bind2DArray,
 
@@ -86,6 +93,8 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
               &MultisampleTextureGLTest::invalidateSubImage2D,
               &MultisampleTextureGLTest::invalidateSubImage2DArray});
 }
+
+using namespace Containers::Literals;
 
 void MultisampleTextureGLTest::construct2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -178,6 +187,45 @@ void MultisampleTextureGLTest::wrap2DArray() {
     /* ...so we can wrap it again */
     MultisampleTexture2DArray::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void MultisampleTextureGLTest::label2D() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    MultisampleTexture2D texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void MultisampleTextureGLTest::label2DArray() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    MultisampleTexture2DArray texture;
+
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void MultisampleTextureGLTest::bind2D() {

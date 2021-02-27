@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::GL::AbstractQuery
  */
 
+#include <utility> /* std::swap() */
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 
@@ -36,6 +37,12 @@
 #include "Magnum/GL/AbstractObject.h"
 
 #include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For label() / setLabel(), which used to be a std::string. Not ideal for the
+   return type, but at least something. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -93,7 +100,7 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
          *      @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label() const;
+        Containers::String label() const;
 
         /**
          * @brief Set query label
@@ -108,14 +115,7 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
          *      with @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        AbstractQuery& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> AbstractQuery& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        AbstractQuery& setLabel(Containers::StringView label);
         #endif
 
         /**
@@ -183,10 +183,6 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
         GLenum _target;
 
     private:
-        #ifndef MAGNUM_TARGET_WEBGL
-        AbstractQuery& setLabelInternal(Containers::ArrayView<const char> label);
-        #endif
-
         void MAGNUM_GL_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL createImplementationDSA();

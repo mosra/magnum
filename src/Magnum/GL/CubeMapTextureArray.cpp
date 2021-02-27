@@ -26,6 +26,8 @@
 #include "CubeMapTextureArray.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include <Corrade/Containers/StringView.h>
+
 #include "Magnum/Image.h"
 #include "Magnum/GL/BufferImage.h"
 #include "Magnum/GL/Context.h"
@@ -88,6 +90,11 @@ CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level,
     return std::move(image);
 }
 #endif
+
+CubeMapTextureArray& CubeMapTextureArray::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
 
 }}
 #endif

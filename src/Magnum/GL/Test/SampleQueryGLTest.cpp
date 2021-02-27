@@ -39,6 +39,10 @@
 #include "Magnum/GL/SampleQuery.h"
 #include "Magnum/GL/Shader.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct SampleQueryGLTest: OpenGLTester {
@@ -46,6 +50,10 @@ struct SampleQueryGLTest: OpenGLTester {
 
     void constructMove();
     void wrap();
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    void label();
+    #endif
 
     void querySamplesPassed();
     #ifndef MAGNUM_TARGET_GLES
@@ -57,12 +65,20 @@ SampleQueryGLTest::SampleQueryGLTest() {
     addTests({&SampleQueryGLTest::constructMove,
               &SampleQueryGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
+              &SampleQueryGLTest::label,
+              #endif
+
               &SampleQueryGLTest::querySamplesPassed,
               #ifndef MAGNUM_TARGET_GLES
               &SampleQueryGLTest::conditionalRender
               #endif
               });
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void SampleQueryGLTest::constructMove() {
     /* Move constructor tested in AbstractQuery, here we just verify there
@@ -100,6 +116,47 @@ void SampleQueryGLTest::wrap() {
     glDeleteQueriesEXT(1, &id);
     #endif
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void SampleQueryGLTest::label() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
+    #endif
+
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    #ifndef MAGNUM_TARGET_GLES
+    SampleQuery query{SampleQuery::Target::SamplesPassed};
+    #else
+    SampleQuery query{SampleQuery::Target::AnySamplesPassed};
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+    #endif
+    {
+        query.begin(); query.end();
+
+        CORRADE_EXPECT_FAIL("Without ARB_direct_state_access, the object must be used at least once before setting/querying label.");
+        CORRADE_VERIFY(false);
+    }
+
+    CORRADE_COMPARE(query.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    query.setLabel("MyQuery!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(query.label(), "MyQuery");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 struct MyShader: public AbstractShaderProgram {
     typedef Attribute<0, Vector2> Position;

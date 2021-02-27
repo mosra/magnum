@@ -26,12 +26,18 @@
 #include "MultisampleTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 
 #include "Magnum/GL/Implementation/maxTextureSize.h"
 
-namespace Magnum { namespace GL { namespace Implementation {
+namespace Magnum { namespace GL {
+
+namespace Implementation {
 
 template<> Vector2i MAGNUM_GL_EXPORT maxMultisampleTextureSize<2>() {
     #ifndef MAGNUM_TARGET_GLES
@@ -56,5 +62,15 @@ template<> Vector3i MAGNUM_GL_EXPORT maxMultisampleTextureSize<3>() {
     return {Vector2i{Implementation::maxTextureSideSize()}, Implementation::max3DTextureDepth()};
 }
 
-}}}
+}
+
+template<UnsignedInt dimensions> MultisampleTexture<dimensions>& MultisampleTexture<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+
+template class MAGNUM_GL_EXPORT MultisampleTexture<2>;
+template class MAGNUM_GL_EXPORT MultisampleTexture<3>;
+
+}}
 #endif

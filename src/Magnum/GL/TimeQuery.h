@@ -55,7 +55,7 @@ times are reported in nanoseconds.
 @todo timestamp with glGet + example usage
 @todo @gl_extension{EXT,disjoint_timer_query} --- GL_GPU_DISJOINT_EXT support? where?
 */
-class TimeQuery: public AbstractQuery {
+class MAGNUM_GL_EXPORT TimeQuery: public AbstractQuery {
     public:
         /**
          * @brief Query target
@@ -142,14 +142,7 @@ class TimeQuery: public AbstractQuery {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        TimeQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
+        TimeQuery& setLabel(Containers::StringView label);
         #endif
 
         /**

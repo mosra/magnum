@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Image.h"
@@ -47,6 +48,8 @@ struct RectangleTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
     void wrap();
+
+    void label();
 
     void bind();
     void bindImage();
@@ -119,6 +122,8 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::constructMove,
               &RectangleTextureGLTest::wrap,
 
+              &RectangleTextureGLTest::label,
+
               &RectangleTextureGLTest::bind,
               &RectangleTextureGLTest::bindImage,
 
@@ -154,6 +159,8 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::invalidateImage,
               &RectangleTextureGLTest::invalidateSubImage});
 }
+
+using namespace Containers::Literals;
 
 void RectangleTextureGLTest::construct() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
@@ -194,6 +201,25 @@ void RectangleTextureGLTest::wrap() {
     /* ...so we can wrap it again */
     RectangleTexture::wrap(id);
     glDeleteTextures(1, &id);
+}
+
+void RectangleTextureGLTest::label() {
+    /* No-Op version is tested in AbstractObjectGLTest */
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
+        CORRADE_SKIP("Required extension is not available");
+
+    RectangleTexture texture;
+    CORRADE_COMPARE(texture.label(), "");
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    texture.setLabel("MyTexture!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(texture.label(), "MyTexture");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::bind() {

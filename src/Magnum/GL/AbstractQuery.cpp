@@ -25,6 +25,9 @@
 
 #include "AbstractQuery.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/Context.h"
@@ -91,7 +94,7 @@ void AbstractQuery::createImplementationDSAExceptPipelineStats() {
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string AbstractQuery::label() const {
+Containers::String AbstractQuery::label() const {
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_QUERY, _id);
     #else
@@ -99,7 +102,7 @@ std::string AbstractQuery::label() const {
     #endif
 }
 
-AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayView<const char> label) {
+AbstractQuery& AbstractQuery::setLabel(const Containers::StringView label) {
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_QUERY, _id, label);
     #else

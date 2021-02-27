@@ -41,6 +41,10 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
 #include "Magnum/GL/TextureArray.h"
@@ -323,6 +327,10 @@ FramebufferGLTest::FramebufferGLTest() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
+
 void FramebufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
@@ -405,14 +413,16 @@ void FramebufferGLTest::label() {
         CORRADE_SKIP("Required extension is not supported");
 
     Framebuffer framebuffer({{}, Vector2i(32)});
-
     CORRADE_COMPARE(framebuffer.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    framebuffer.setLabel("MyFramebuffer");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    framebuffer.setLabel("MyFramebuffer!"_s.except(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(framebuffer.label(), "MyFramebuffer");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 

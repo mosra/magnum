@@ -43,6 +43,10 @@ struct AbstractTextureGLTest: OpenGLTester {
     void construct();
     void constructMove();
 
+    /* label() tested in subclasses because these all have to provide overloads
+       to return correct type for method chaining and these overloads have to
+       be deinlined to avoid including a StringView */
+
     #ifndef MAGNUM_TARGET_GLES
     void imageQueryViewNullptr();
     void imageQueryViewBadSize();
@@ -57,10 +61,6 @@ struct AbstractTextureGLTest: OpenGLTester {
     void compressedSubImageQueryViewBadSize();
     void compressedSubImageQueryViewBadDataSize();
     void compressedSubImageQueryViewBadFormat();
-    #endif
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    void label();
     #endif
 };
 
@@ -82,10 +82,6 @@ AbstractTextureGLTest::AbstractTextureGLTest() {
               &AbstractTextureGLTest::compressedSubImageQueryViewBadSize,
               &AbstractTextureGLTest::compressedSubImageQueryViewBadDataSize,
               &AbstractTextureGLTest::compressedSubImageQueryViewBadFormat,
-              #endif
-
-              #ifndef MAGNUM_TARGET_WEBGL
-              &AbstractTextureGLTest::label
               #endif
               });
 }
@@ -390,25 +386,6 @@ void AbstractTextureGLTest::compressedSubImageQueryViewBadFormat() {
     Error redirectError{&out};
     texture.compressedSubImage(0, {{}, Vector2i{4}}, image);
     CORRADE_COMPARE(out.str(), "GL::AbstractTexture::compressedSubImage(): expected image view format GL::CompressedPixelFormat::RGBAS3tcDxt3 but got GL::CompressedPixelFormat::RGBAS3tcDxt1\n");
-}
-#endif
-
-#ifndef MAGNUM_TARGET_WEBGL
-void AbstractTextureGLTest::label() {
-    /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
-        CORRADE_SKIP("Required extension is not available");
-
-    Texture2D texture;
-
-    CORRADE_COMPARE(texture.label(), "");
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    texture.setLabel("MyTexture");
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    CORRADE_COMPARE(texture.label(), "MyTexture");
 }
 #endif
 

@@ -46,6 +46,10 @@
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Color.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct AbstractShaderProgramGLTest: OpenGLTester {
@@ -129,6 +133,8 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               });
 }
 
+using namespace Containers::Literals;
+
 class DummyShader: public AbstractShaderProgram {
     public:
         explicit DummyShader() {}
@@ -180,9 +186,12 @@ void AbstractShaderProgramGLTest::label() {
     DummyShader shader;
     CORRADE_COMPARE(shader.label(), "");
 
-    shader.setLabel("DummyShader");
-    CORRADE_COMPARE(shader.label(), "DummyShader");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    shader.setLabel("DummyShader!"_s.except(1));
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
+    CORRADE_COMPARE(shader.label(), "DummyShader");
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif

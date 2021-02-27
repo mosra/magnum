@@ -27,6 +27,9 @@
 
 #include <tuple>
 #include <Corrade/Containers/Array.h>
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Context.h"
@@ -227,7 +230,7 @@ void Buffer::createIfNotAlready() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Buffer::label() {
+Containers::String Buffer::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_BUFFER, _id);
@@ -236,7 +239,7 @@ std::string Buffer::label() {
     #endif
 }
 
-Buffer& Buffer::setLabelInternal(const Containers::ArrayView<const char> label) {
+Buffer& Buffer::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_BUFFER, _id, label);

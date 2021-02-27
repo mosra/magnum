@@ -28,12 +28,15 @@
 #include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
+
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/String.h>
+#endif
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -102,6 +105,10 @@ BufferGLTest::BufferGLTest() {
               #endif
               &BufferGLTest::invalidate});
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+using namespace Containers::Literals;
+#endif
 
 void BufferGLTest::construct() {
     {
@@ -194,14 +201,16 @@ void BufferGLTest::label() {
         CORRADE_SKIP("Required extension is not available");
 
     Buffer buffer;
-
     CORRADE_COMPARE(buffer.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    buffer.setLabel("MyBuffer");
+    /* Test the string size gets correctly used, instead of relying on null
+       termination */
+    buffer.setLabel("MyBuffer!"_s.except(1));
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(buffer.label(), "MyBuffer");
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 

@@ -25,6 +25,10 @@
 
 #include "RectangleTexture.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/Image.h"
 #include "Magnum/GL/BufferImage.h"
@@ -86,6 +90,11 @@ CompressedImage2D RectangleTexture::compressedSubImage(const Range2Di& range, Co
 CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, const BufferUsage usage) {
     compressedSubImage(range, image, usage);
     return std::move(image);
+}
+
+RectangleTexture& RectangleTexture::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
 }
 
 }}

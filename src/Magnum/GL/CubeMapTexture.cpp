@@ -25,6 +25,10 @@
 
 #include "CubeMapTexture.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
+#endif
+
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #ifndef MAGNUM_TARGET_GLES2
@@ -724,6 +728,13 @@ void CubeMapTexture::subImageImplementationDSA(const CubeMapCoordinate coordinat
 
 void CubeMapTexture::compressedSubImageImplementationDSA(const CubeMapCoordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, size.x(), size.y(), 1, GLenum(format), dataSize, data);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_WEBGL
+CubeMapTexture& CubeMapTexture::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
 }
 #endif
 
