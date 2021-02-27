@@ -533,6 +533,7 @@ WindowlessEglContext::Configuration::Configuration()
     : _device{}
     #endif
 {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
     #ifndef MAGNUM_TARGET_GLES
     addFlags(Flag::ForwardCompatible);
     #endif

@@ -182,6 +182,10 @@ bool WindowlessWindowsEglContext::release() {
     return false;
 }
 
+WindowlessWindowsEglContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments): WindowlessWindowsEglApplication{arguments, Configuration{}} {}
 #endif

@@ -196,6 +196,13 @@ See also:
     now advertised as a @cpp "intel-windows-chatty-shader-compiler" @ce
     workaround, instead of being done silently. See @ref opengl-workarounds for
     more information.
+-   @ref Platform::WindowlessEglApplication "Platform::Windowless*Application"
+    instances no longer touch default framebuffer state in order to avoid
+    potential race conditions with a windowed context on another thread. This
+    is also exposed via a new @ref GL::Context::Configuration::Flag::Windowless
+    flag for integration with custom-created OpenGL contexts. See also
+    [mosra/magnum#493](https://github.com/mosra/magnum/pull/493) and
+    [mosra/magnum#494](https://github.com/mosra/magnum/pull/494).
 
 @subsubsection changelog-latest-changes-math Math library
 

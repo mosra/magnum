@@ -1236,7 +1236,9 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
         /**
          * @brief Context flag
          *
-         * Includes also everything from @ref GL::Context::Configuration::Flag.
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is not meant to be enabled for windowed apps.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedLong {

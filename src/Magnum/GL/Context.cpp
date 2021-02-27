@@ -785,6 +785,10 @@ bool Context::tryCreate(const Configuration& configuration) {
     if(configuration.flags() & Configuration::Flag::GpuValidation)
         _configurationFlags |= Configuration::Flag::GpuValidation;
 
+    /* Same for windowless */
+    if(configuration.flags() & Configuration::Flag::Windowless)
+        _configurationFlags |= Configuration::Flag::Windowless;
+
     /* Driver workarounds get merged. Not using disableDriverWorkaround() here
        since the Configuration already contains the internal string views. */
     for(const Containers::StringView workaround: configuration.disabledWorkarounds())
@@ -974,9 +978,13 @@ bool Context::tryCreate(const Configuration& configuration) {
             if(!workaround.second) Debug(output) << "   " << workaround.first;
     }
 
-    /* Initialize functionality based on current OpenGL version and extensions */
     /** @todo Get rid of these */
-    DefaultFramebuffer::initializeContextBasedFunctionality(*this);
+    /* Initialize functionality based on current OpenGL version and extensions.
+       If we are on a windowless context don't touch the default framebuffer
+       to avoid potential race conditions with default framebuffer on another
+       thread. */
+    if(!(_configurationFlags & Configuration::Flag::Windowless))
+        DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality();
 
     /* Enable GPU validation, if requested */

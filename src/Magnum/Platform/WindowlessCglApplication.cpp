@@ -105,6 +105,10 @@ bool WindowlessCglContext::release() {
     return false;
 }
 
+WindowlessCglContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
 #endif

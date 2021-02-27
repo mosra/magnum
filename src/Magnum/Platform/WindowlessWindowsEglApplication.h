@@ -161,7 +161,9 @@ class WindowlessWindowsEglContext::Configuration: public GL::Context::Configurat
         /**
          * @brief Context flag
          *
-         * Includes also everything from @ref GL::Context::Configuration::Flag.
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is enabled implicitly by default.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedLong {
@@ -198,6 +200,8 @@ class WindowlessWindowsEglContext::Configuration: public GL::Context::Configurat
          * @see @ref setFlags(), @ref Context::Flags
          */
         typedef Containers::EnumSet<Flag> Flags;
+
+        /*implicit*/ Configuration();
 
         /** @brief Context flags */
         Flags flags() const {

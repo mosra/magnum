@@ -274,6 +274,7 @@ bool WindowlessGlxContext::release() {
 }
 
 WindowlessGlxContext::Configuration::Configuration() {
+    GL::Context::Configuration::addFlags(GL::Context::Configuration::Flag::Windowless);
     #ifndef MAGNUM_TARGET_GLES
     addFlags(Flag::ForwardCompatible);
     #endif

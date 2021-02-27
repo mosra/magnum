@@ -70,6 +70,7 @@ namespace Implementation {
        Context before the Configuration class is defined, it has to be here */
     enum class ContextConfigurationFlag: UnsignedLong {
         /* Keeping the 32-bit range reserved for actual GL context flags */
+        Windowless = 1ull << 60,
         QuietLog = 1ull << 61,
         VerboseLog = 1ull << 62,
         GpuValidation = 1ull << 63
@@ -913,6 +914,19 @@ class MAGNUM_GL_EXPORT Context::Configuration {
         enum class Flag: UnsignedLong {
             /* Docs only, keep in sync with
                Implementation::ContextConfigurationFlag please */
+
+            /**
+             * Treat the context as windowless, assume there's no default
+             * framebuffer and thus don't touch @ref defaultFramebuffer in any
+             * way. Useful for preventing race conditions when creating OpenGL
+             * contexts in background threads.
+             *
+             * This flag is implicitly enabled in all
+             * @ref Platform::WindowlessEglContext::Configuration "Platform::Windowless*Application::Configuration",
+             * and, conversely, not possible to enable in any
+             * @ref Platform::Sdl2Application::GLConfiguration::Flag "Platform::*Application::GLConfiguration".
+             */
+            Windowless = 1ull << 60,
 
             /**
              * Print only warnings and errors instead of the usual startup log

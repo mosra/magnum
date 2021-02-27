@@ -175,7 +175,9 @@ class WindowlessWglContext::Configuration: public GL::Context::Configuration {
         /**
          * @brief Context flag
          *
-         * Includes also everything from @ref GL::Context::Configuration::Flag.
+         * Includes also everything from @ref GL::Context::Configuration::Flag
+         * except for @relativeref{GL::Context::Configuration,Flag::Windowless},
+         * which is enabled implicitly by default.
          * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedLong {
