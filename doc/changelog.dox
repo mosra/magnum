@@ -315,6 +315,9 @@ See also:
     [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
 -   Various changes to Vcpkg packages to account for newly added libraries and
     plugin interfaces ([mosra/magnum#485](https://github.com/mosra/magnum/issues/485))
+-   The `FindSDL2.cmake` module was updated to allow using SDL2 as a
+    subproject. See the @ref Platform-Sdl2Application-usage "Platform::Sdl2Application docs"
+    for more information. See also [mosra/magnum#496](https://github.com/mosra/magnum/issues/496).
 
 @subsection changelog-latest-bugfixes Bug fixes
 

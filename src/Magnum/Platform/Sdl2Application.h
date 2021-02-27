@@ -217,16 +217,50 @@ find_package(Magnum REQUIRED Sdl2Application)
 target_link_libraries(your-app PRIVATE Magnum::Sdl2Application)
 @endcode
 
-Additionally, if you're using Magnum as a CMake subproject, do the following
+Additionally, if you're using Magnum as a CMake subproject, bundle the
+[SDL repository](https://github.com/libsdl-org/SDL) and do the following
 * *before* calling @cmake find_package() @ce to ensure it's enabled, as the
-library is not built by default.  Using SDL2 itself as a CMake subproject isn't
-tested at the moment, so you need to provide it as a system dependency and
-point `CMAKE_PREFIX_PATH` to its installation dir if necessary.
+library is not built by default. If you want to use system-installed SDL2,
+omit the first part and point `CMAKE_PREFIX_PATH` to its installation dir if
+necessary.
 
 @code{.cmake}
+# This is the most minimal set of features which still make Sdl2Application
+# work. If you need something from these, remove the setting. The SDL_AUDIO
+# option should not be needed either as Magnum doesn't use it, but if it's
+# disabled it causes linker errors. Either SDL_DLOPEN or SDL_LOADSO needs to be
+# enabled depending on the system to allow linking dependencies at runtime, so
+# it's better to just leave them both on.
+set(SDL_ATOMIC OFF CACHE BOOL "" FORCE)
+set(SDL_CPUINFO OFF CACHE BOOL "" FORCE)
+set(SDL_EVENTS OFF CACHE BOOL "" FORCE)
+set(SDL_FILE OFF CACHE BOOL "" FORCE)
+set(SDL_FILESYSTEM OFF CACHE BOOL "" FORCE)
+set(SDL_HAPTIC OFF CACHE BOOL "" FORCE)
+set(SDL_LOCALE OFF CACHE BOOL "" FORCE)
+set(SDL_POWER OFF CACHE BOOL "" FORCE)
+set(SDL_RENDER OFF CACHE BOOL "" FORCE)
+set(SDL_SENSOR OFF CACHE BOOL "" FORCE)
+set(SDL_THREADS OFF CACHE BOOL "" FORCE)
+set(SDL_TIMERS OFF CACHE BOOL "" FORCE)
+# This assumes you want to have SDL as a static library. If not, set SDL_STATIC
+# to OFF instead.
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+add_subdirectory(SDL EXCLUDE_FROM_ALL)
+
 set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
+
+<b></b>
+
+@m_class{m-note m-warning}
+
+@par
+    While SDL itself, being a C project, builds quite fast, when using it as a
+    CMake subproject be prepared that it will *significantly* increase the
+    CMake configure time due to excessive platform checks, and pollute the
+    CMake option list with a lot of unprefixed SDL-specific options.
 
 If no other application is requested, you can also use the generic
 `Magnum::Application` alias to simplify porting. Again, see @ref building and

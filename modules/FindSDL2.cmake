@@ -42,6 +42,63 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# If we have a CMake subproject, use the targets directly. I'd prefer the
+# static variant, however SDL2 defines its own SDL2::SDL2 alias for only the
+# dynamic variant since https://github.com/libsdl-org/SDL/pull/4074 and so I'm
+# forced to use that, if available.
+if(TARGET SDL2)
+    # In case we don't have https://github.com/libsdl-org/SDL/pull/4074 yet,
+    # do the alias ourselves.
+    if(NOT TARGET SDL2::SDL2)
+        # Aliases of (global) targets are only supported in CMake 3.11, so we
+        # work around it by this. This is easier than fetching all possible
+        # properties (which are impossible to track of) and then attempting to
+        # rebuild them into a new target.
+        add_library(SDL2::SDL2 INTERFACE IMPORTED)
+        set_target_properties(SDL2::SDL2 PROPERTIES INTERFACE_LINK_LIBRARIES SDL2)
+    endif()
+
+    # Just to make FPHSA print some meaningful location, nothing else. Not
+    # using the INTERFACE_INCLUDE_DIRECTORIES as that contains
+    # $<BUILD_INTERFACE and looks ugly in the output. Funnily enough, the
+    # BUILD_INTERFACE thing works here without having to override it with
+    # custom-found paths like I do in FindAssimp and elsewhere. Needs further
+    # investigation.
+    get_target_property(_SDL2_SOURCE_DIR SDL2 SOURCE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args("SDL2" DEFAULT_MSG _SDL2_SOURCE_DIR)
+
+    if(CORRADE_TARGET_WINDOWS)
+        # .dll is in LOCATION, .lib is in IMPLIB. Yay, useful!
+        get_target_property(SDL2_DLL_DEBUG SDL2 IMPORTED_LOCATION_DEBUG)
+        get_target_property(SDL2_DLL_RELEASE SDL2 IMPORTED_LOCATION_RELEASE)
+    endif()
+
+    return()
+
+# The static build is a separate target for some reason. I wonder HOW that
+# makes more sense than just having a build-time option for static/shared and
+# use the same name for both. Are all depending projects supposed to branch on
+# it like this?!
+elseif(TARGET SDL2-static)
+    # The target should not be defined by SDL itself. If it is, that's from us.
+    if(NOT TARGET SDL2::SDL2)
+        # Aliases of (global) targets are only supported in CMake 3.11, so we
+        # work around it by this. This is easier than fetching all possible
+        # properties (which are impossible to track of) and then attempting to
+        # rebuild them into a new target.
+        add_library(SDL2::SDL2 INTERFACE IMPORTED)
+        set_target_properties(SDL2::SDL2 PROPERTIES INTERFACE_LINK_LIBRARIES SDL2-static)
+    endif()
+
+    # Just to make FPHSA print some meaningful location, nothing else
+    get_target_property(_SDL2_SOURCE_DIR SDL2-static SOURCE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args("SDL2" DEFAULT_MSG _SDL2_SOURCE_DIR)
+
+    return()
+endif()
+
 # In Emscripten SDL is linked automatically, thus no need to find the library.
 # Also the includes are in SDL subdirectory, not SDL2.
 if(CORRADE_TARGET_EMSCRIPTEN)
