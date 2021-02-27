@@ -150,7 +150,8 @@ if(NOT MAGNUM_TARGET_WEBGL)
     list(APPEND MagnumGL_SRCS
         DebugOutput.cpp
 
-        Implementation/DebugState.cpp)
+        Implementation/DebugState.cpp
+        Implementation/defaultDebugCallback.h)
 
     list(APPEND MagnumGL_HEADERS
         DebugOutput.h)

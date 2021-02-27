@@ -26,20 +26,25 @@
 #include "DebugOutput.h"
 
 #ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/DebugState.h"
+#include "Magnum/GL/Implementation/defaultDebugCallback.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <string>
+#endif
 
 namespace Magnum { namespace GL {
 
 namespace Implementation {
 
-void defaultDebugCallback(const DebugOutput::Source source, const DebugOutput::Type type, const UnsignedInt id, const DebugOutput::Severity severity, const std::string& string, std::ostream* out) {
+void defaultDebugCallback(const DebugOutput::Source source, const DebugOutput::Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::StringView string, std::ostream* out) {
     Debug output{out};
     output << "Debug output:";
 
@@ -105,7 +110,7 @@ APIENTRY
 #endif
 callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     const auto& callback = *static_cast<const Implementation::DebugState::MessageCallback*>(userParam);
-    callback.callback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), std::string{message, std::size_t(length)}, callback.userParam);
+    callback.callback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), {message, std::size_t(length)}, callback.userParam);
 }
 
 }
@@ -149,8 +154,25 @@ void DebugOutput::setCallback(const Callback callback, const void* userParam) {
     Context::current().state().debug.callbackImplementation(callback);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void DebugOutput::setCallback(void(*const callback)(Source, Type, UnsignedInt, Severity, const std::string&, const void*), const void* userParam) {
+    /* This is a second delegation step after the callbackWrapper() which
+       converts from raw GL types. Alternatively there could be a deprecated
+       version of all callbackImplementation*() variants, but this is less
+       code in total -- just two extra members in the MessageCallback
+       struct. */
+    Context::current().state().debug.messageCallback.userParam = &Context::current().state().debug.messageCallback;
+    Context::current().state().debug.messageCallback.callbackStlString = callback;
+    Context::current().state().debug.messageCallback.userParamStlString = userParam;
+    Context::current().state().debug.callbackImplementation([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const Containers::StringView string, const void* userParam) {
+        const auto& messageCallback = *static_cast<const Implementation::DebugState::MessageCallback*>(userParam);
+        messageCallback.callbackStlString(source, type, id, severity, string, messageCallback.userParamStlString);
+    });
+}
+#endif
+
 void DebugOutput::setDefaultCallback() {
-    setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void*) {
+    setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const Containers::StringView string, const void*) {
         Implementation::defaultDebugCallback(source, type, id, severity, string, Debug::output());
     });
 }
@@ -267,30 +289,30 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
 }
 #endif
 
-void DebugMessage::insertInternal(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
+void DebugMessage::insert(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::StringView string) {
     Context::current().state().debug.messageInsertImplementation(source, type, id, severity, string);
 }
 
-void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char>) {}
+void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::StringView) {}
 
 #ifndef MAGNUM_TARGET_GLES2
-void DebugMessage::insertImplementationKhrDesktopES32(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
+void DebugMessage::insertImplementationKhrDesktopES32(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::StringView string) {
     glDebugMessageInsert(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void DebugMessage::insertImplementationKhrES(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
+void DebugMessage::insertImplementationKhrES(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::StringView string) {
     glDebugMessageInsertKHR(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
 }
 #endif
 
-void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
+void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::StringView string) {
     glInsertEventMarkerEXT(string.size(), string.data());
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
+void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::StringView string) {
     glStringMarkerGREMEDY(string.size(), string.data());
 }
 #endif
@@ -347,7 +369,11 @@ Int DebugGroup::maxStackDepth() {
     return value;
 }
 
-void DebugGroup::pushInternal(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
+DebugGroup::DebugGroup(const Source source, const UnsignedInt id, const Containers::StringView message): DebugGroup{} {
+    push(source, id, message);
+}
+
+void DebugGroup::push(const Source source, const UnsignedInt id, const Containers::StringView message) {
     CORRADE_ASSERT(!_active, "GL::DebugGroup::push(): group is already active", );
     Context::current().state().debug.pushGroupImplementation(source, id, message);
     _active = true;
@@ -359,21 +385,21 @@ void DebugGroup::pop() {
     _active = false;
 }
 
-void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::ArrayView<const char>) {}
+void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::StringView) {}
 
 #ifndef MAGNUM_TARGET_GLES2
-void DebugGroup::pushImplementationKhrDesktopES32(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
+void DebugGroup::pushImplementationKhrDesktopES32(const Source source, const UnsignedInt id, const Containers::StringView message) {
     glPushDebugGroup(GLenum(source), id, message.size(), message.data());
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void DebugGroup::pushImplementationKhrES(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
+void DebugGroup::pushImplementationKhrES(const Source source, const UnsignedInt id, const Containers::StringView message) {
     glPushDebugGroupKHR(GLenum(source), id, message.size(), message.data());
 }
 #endif
 
-void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::ArrayView<const char> message) {
+void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::StringView message) {
     glPushGroupMarkerEXT(message.size(), message.data());
 }
 

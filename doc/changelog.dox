@@ -863,6 +863,10 @@ See also:
     particular, if `BUILD_DEPRECATED` is set but `MAGNUM_BUILD_DEPRECATED` not,
     the unprefixed options are also recognized. See also
     [mosra/corrade#139](https://github.com/mosra/corrade/issues/139).
+-   @ref GL::DebugOutput::setCallback() taking a @ref std::string in the
+    callback function pointer is deprecated in favor of a version taking a
+    @ref Containers::StringView. See also [mosra/magnum#499](https://github.com/mosra/magnum/pull/499)
+    and [mosra/magnum#596](https://github.com/mosra/magnum/pull/596).
 -   The @cpp Array @ce, @cpp Array1D @ce, @cpp Array2D @ce and
     @cpp Array3D @ce types that were used exclusively for specifying
     @ref SamplerWrapping in various texture APIs are deprecated in favor of

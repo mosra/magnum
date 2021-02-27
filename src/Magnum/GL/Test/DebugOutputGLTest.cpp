@@ -24,12 +24,15 @@
 */
 
 #include <sstream>
-#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Containers/StringView.h>
+#include <Corrade/Containers/ScopeGuard.h>
+#include <Corrade/Utility/DebugStl.h> /** @todo remove once Debug is stream-free */
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/DebugOutput.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Implementation/defaultDebugCallback.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
 
@@ -37,6 +40,9 @@ struct DebugOutputGLTest: OpenGLTester {
     explicit DebugOutputGLTest();
 
     void setCallbackDefault();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setCallbackDeprecated();
+    #endif
 
     void setup();
     void teardown();
@@ -54,18 +60,56 @@ struct DebugOutputGLTest: OpenGLTester {
     std::ostringstream _out;
 };
 
+using namespace Containers::Literals;
+
+const struct {
+    const char* name;
+    Containers::StringView message;
+} MessageData[]{
+    {"",
+        "Hello from OpenGL command stream!"},
+    {"non-null-terminated string",
+        "Hello from OpenGL command stream!!"_s.exceptSuffix(1)},
+};
+
+const struct {
+    const char* name;
+    Containers::StringView automaticGroupName, manualGroupName;
+} GroupData[]{
+    {"",
+        "Automatic debug group",
+        "Manual debug group"},
+    {"non-null-terminated string",
+        "Automatic debug group!"_s.exceptSuffix(1),
+        "Manual debug group!"_s.exceptSuffix(1)}
+};
+
 DebugOutputGLTest::DebugOutputGLTest() {
-    addTests({&DebugOutputGLTest::setCallbackDefault});
+    addTests({&DebugOutputGLTest::setCallbackDefault,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &DebugOutputGLTest::setCallbackDeprecated,
+              #endif
+              });
 
     addTests({&DebugOutputGLTest::setEnabled,
 
-              &DebugOutputGLTest::messageNoOp,
-              &DebugOutputGLTest::message,
-              &DebugOutputGLTest::messageFallback,
+              &DebugOutputGLTest::messageNoOp},
+        &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
 
-              &DebugOutputGLTest::groupNoOp,
-              &DebugOutputGLTest::group,
-              &DebugOutputGLTest::groupFallback},
+    addInstancedTests({&DebugOutputGLTest::message},
+        Containers::arraySize(MessageData),
+        &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
+
+    addTests({&DebugOutputGLTest::messageFallback,
+
+              &DebugOutputGLTest::groupNoOp},
+        &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
+
+    addInstancedTests({&DebugOutputGLTest::group},
+        Containers::arraySize(GroupData),
+        &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
+
+    addTests({&DebugOutputGLTest::groupFallback},
         &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
 }
 
@@ -78,6 +122,36 @@ void DebugOutputGLTest::setCallbackDefault() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void DebugOutputGLTest::setCallbackDeprecated() {
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
+
+    Renderer::enable(Renderer::Feature::DebugOutput);
+    Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
+
+    Containers::ScopeGuard guard{[]() {
+        Renderer::disable(Renderer::Feature::DebugOutput);
+        Renderer::disable(Renderer::Feature::DebugOutputSynchronous);
+        DebugOutput::setDefaultCallback();
+    }};
+
+    std::ostringstream out;
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
+        Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
+    }, &out);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
+        1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(out.str(),
+        "Debug output: high severity application marker (1337): Hello from OpenGL command stream!\n");
+}
+#endif
+
 void DebugOutputGLTest::setup() {
     _out.str({});
 
@@ -86,7 +160,7 @@ void DebugOutputGLTest::setup() {
 
     Renderer::enable(Renderer::Feature::DebugOutput);
     Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
-    DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
+    DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string, const void* userPtr) {
         Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
     }, &_out);
 }
@@ -141,12 +215,15 @@ void DebugOutputGLTest::messageNoOp() {
 }
 
 void DebugOutputGLTest::message() {
+    auto&& data = MessageData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     /* Need to be careful, because the test runner is using debug output too */
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
-        1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
+        1337, DebugOutput::Severity::High, data.message);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(_out.str(),
@@ -184,14 +261,17 @@ void DebugOutputGLTest::groupNoOp() {
 }
 
 void DebugOutputGLTest::group() {
+    auto&& data = GroupData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     /* Need to be careful, because the test runner is using debug output too */
     {
-        DebugGroup g1{DebugGroup::Source::Application, 42, "Automatic debug group"};
+        DebugGroup g1{DebugGroup::Source::Application, 42, data.automaticGroupName};
         DebugGroup g2;
-        g2.push(DebugGroup::Source::ThirdParty, 1337, "Manual debug group");
+        g2.push(DebugGroup::Source::ThirdParty, 1337, data.manualGroupName);
         g2.pop();
     }
 

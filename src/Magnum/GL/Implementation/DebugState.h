@@ -40,16 +40,20 @@ struct DebugState {
     Containers::String(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, Containers::StringView);
 
-    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
+    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::StringView);
     void(*controlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
     void(*callbackImplementation)(DebugOutput::Callback);
-    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::ArrayView<const char>);
+    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::StringView);
     void(*popGroupImplementation)();
 
     GLint maxLabelLength, maxLoggedMessages, maxMessageLength, maxStackDepth;
     struct MessageCallback {
         DebugOutput::Callback callback{};
         const void* userParam{};
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        void(*callbackStlString)(DebugOutput::Source, DebugOutput::Type, UnsignedInt, DebugOutput::Severity, const std::string&, const void*);
+        const void* userParamStlString{};
+        #endif
     } messageCallback;
 };
 
