@@ -352,7 +352,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
-    if(!configuration.flags() && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
+    if(!(UnsignedLong(flags) & 0xffffffffu) && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
         auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
