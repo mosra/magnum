@@ -195,14 +195,17 @@ class WindowlessWglContext::Configuration: public GL::Context::Configuration {
              * Debug context. Enabled automatically if supported by the driver
              * and the @ref Flag::GpuValidation flag is set or if the
              * `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
-             * is present.
+             * is set to `on`.
              */
             Debug = WGL_CONTEXT_DEBUG_BIT_ARB,
 
             /**
              * Context without error reporting. Might result in better
              * performance, but situations that would have generated errors
-             * instead cause undefined behavior.
+             * instead cause undefined behavior. Enabled automatically if
+             * supported by the driver and the @ref Flag::GpuValidationNoError
+             * flag is set or if the `--magnum-gpu-validation` @ref GL-Context-usage-command-line "command-line option"
+             * is set to `no-error`.
              * @m_since_latest
              */
             /* Treated as a separate attribute and not a flag in WGL, thus
@@ -225,7 +228,13 @@ class WindowlessWglContext::Configuration: public GL::Context::Configuration {
              * @copydoc GL::Context::Configuration::Flag::GpuValidation
              * @m_since_latest
              */
-            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
         };
 
         /**

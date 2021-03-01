@@ -433,6 +433,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     GLConfiguration::Flags glFlags = glConfiguration.flags();
     if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
+    #ifdef GLFW_CONTEXT_NO_ERROR
+    else if((glFlags & GLConfiguration::Flag::GpuValidationNoError) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        glFlags |= GLConfiguration::Flag::NoError;
+    #endif
 
     #ifdef GLFW_CONTEXT_NO_ERROR
     glfwWindowHint(GLFW_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);

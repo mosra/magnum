@@ -693,7 +693,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds").setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "API extensions to disable", "LIST")
-        .addOption("gpu-validation", "off").setHelp("gpu-validation", "GPU validation using KHR_debug (if present)", "off|on")
+        .addOption("gpu-validation", "off").setHelp("gpu-validation", "GPU validation using KHR_debug (if present)", "off|on|no-error")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-extensions")
@@ -707,9 +707,11 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     else if(args.value("log") == "quiet" || args.value("log") == "QUIET")
         _configurationFlags |= Configuration::Flag::QuietLog;
 
-    /* Decide whether to enable GPU validation */
+    /* Decide whether to enable GPU validation / no error context */
     if(args.value("gpu-validation") == "on" || args.value("gpu-validation") == "ON")
         _configurationFlags |= Configuration::Flag::GpuValidation;
+    else if(args.value("gpu-validation") == "no-error")
+        _configurationFlags |= Configuration::Flag::GpuValidationNoError;
 
     /* If there are any disabled workarounds, save them until tryCreate() uses
        them. The disableWorkaround() function saves the internal string view
@@ -784,6 +786,8 @@ bool Context::tryCreate(const Configuration& configuration) {
     /* GPU validation is enabled if either enables it */
     if(configuration.flags() & Configuration::Flag::GpuValidation)
         _configurationFlags |= Configuration::Flag::GpuValidation;
+    if(configuration.flags() & Configuration::Flag::GpuValidationNoError)
+        _configurationFlags |= Configuration::Flag::GpuValidationNoError;
 
     /* Same for windowless */
     if(configuration.flags() & Configuration::Flag::Windowless)

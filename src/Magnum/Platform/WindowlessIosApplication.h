@@ -179,7 +179,13 @@ class WindowlessIosContext::Configuration: public GL::Context::Configuration {
              * @copydoc GL::Context::Configuration::Flag::GpuValidation
              * @m_since_latest
              */
-            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation)
+            GpuValidation = UnsignedLong(GL::Context::Configuration::Flag::GpuValidation),
+
+            /**
+             * @copydoc GL::Context::Configuration::Flag::GpuValidationNoError
+             * @m_since_latest
+             */
+            GpuValidationNoError = UnsignedLong(GL::Context::Configuration::Flag::GpuValidationNoError)
         };
 
         /**

@@ -55,6 +55,12 @@ See also:
     inherited by all @ref Platform::Sdl2Application::GLConfiguration "Platform::*Application::GLConfiguration"
     and @ref Platform::WindowlessEglApplication::Configuration "Platform::Windowless*Application::Configuration"
     classes.
+-   The `--magnum-gpu-validation` option accepts a new value, `no-error`, which
+    creates OpenGL contexts without error reporting. Those may result in better
+    performance on certain drivers, however note that errors on such context
+    have undefined behavior and may cause stability issues. This option is also
+    programatically settable via a new
+    @ref GL::Context::Configuration::Flag::GpuValidationNoError flag.
 -   Implemented @gl_extension{EXT,texture_norm16} and
     @webgl_extension{EXT,texture_norm16} ES and WebGL extensions, making
     normalized 16-bit texture and renderbuffer formats available on all

@@ -312,6 +312,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     Configuration::Flags flags = configuration.flags();
     if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
+    else if((flags & Configuration::Flag::GpuValidationNoError) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidationNoError))
+        flags |= Configuration::Flag::NoError;
     #endif
 
     /** @todo needs a growable DynamicArray with disabled alloc or somesuch */

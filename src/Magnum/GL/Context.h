@@ -70,10 +70,11 @@ namespace Implementation {
        Context before the Configuration class is defined, it has to be here */
     enum class ContextConfigurationFlag: UnsignedLong {
         /* Keeping the 32-bit range reserved for actual GL context flags */
-        Windowless = 1ull << 60,
-        QuietLog = 1ull << 61,
-        VerboseLog = 1ull << 62,
-        GpuValidation = 1ull << 63
+        Windowless = 1ull << 59,
+        QuietLog = 1ull << 60,
+        VerboseLog = 1ull << 61,
+        GpuValidation = 1ull << 62,
+        GpuValidationNoError = 1ull << 63
     };
     typedef Containers::EnumSet<ContextConfigurationFlag> ContextConfigurationFlags;
     CORRADE_ENUMSET_OPERATORS(ContextConfigurationFlags)
@@ -165,14 +166,15 @@ Arguments:
 -   `--magnum-disable-extensions LIST` --- API extensions to disable
     (environment: `MAGNUM_DISABLE_EXTENSIONS`). Corresponds to
     @ref Configuration::addDisabledExtensions().
--   `--magnum-gpu-validation off|on` --- GPU validation using
+-   `--magnum-gpu-validation off|on|no-error` --- GPU validation using
     @gl_extension{KHR,debug}, if present (environment:
     `MAGNUM_GPU_VALIDATION`) (default: `off`). This sets up @ref DebugOutput
     callbacks and also causes
     @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
     to be enabled for context creation for both windowed and windowless
     applications on supported platforms. Corresponds to
-    @ref Configuration::Flag::GpuValidation.
+    @ref Configuration::Flag::GpuValidation /
+    @ref Configuration::Flag::GpuValidationNoError.
 -   `--magnum-log default|quiet|verbose` --- console logging
     (environment: `MAGNUM_LOG`) (default: `default`). Corresponds to
     @ref Configuration::Flag::QuietLog and
@@ -234,9 +236,10 @@ class MAGNUM_GL_EXPORT Context {
             /**
              * Debug context. Enabled automatically by @ref Platform windowed
              * and windowless application implementations if the
+             * @ref Configuration::Flag::GpuValidation flag is set or if the
              * `--magnum-gpu-validation`
              * @ref GL-Context-usage-command-line "command-line option" is
-             * present.
+             * set to `on`.
              * @requires_gl43 Extension @gl_extension{KHR,debug}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,debug}
@@ -258,7 +261,12 @@ class MAGNUM_GL_EXPORT Context {
             #endif
 
             /**
-             * Context without error reporting
+             * Context without error reporting. Enabled automatically by
+             * @ref Platform windowed and windowless application
+             * implementations if the @ref Configuration::Flag::GpuValidationNoError
+             * flag is set or if the `--magnum-gpu-validation`
+             * @ref GL-Context-usage-command-line "command-line option" is
+             * set to `no-error`.
              * @requires_gl46 Extension @gl_extension{KHR,no_error}
              * @requires_es_extension Extension @gl_extension{KHR,no_error}
              */
@@ -926,7 +934,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              * and, conversely, not possible to enable in any
              * @ref Platform::Sdl2Application::GLConfiguration::Flag "Platform::*Application::GLConfiguration".
              */
-            Windowless = 1ull << 60,
+            Windowless = 1ull << 59,
 
             /**
              * Print only warnings and errors instead of the usual startup log
@@ -936,7 +944,7 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              * Corresponds to the `--magnum-log quiet`
              * @ref GL-Context-usage-command-line "command-line option".
              */
-            QuietLog = 1ull << 61,
+            QuietLog = 1ull << 60,
 
             /**
              * Print additional information on startup in addition to the usual
@@ -946,15 +954,25 @@ class MAGNUM_GL_EXPORT Context::Configuration {
              * Corresponds to the `--magnum-log verbose`
              * @ref GL-Context-usage-command-line "command-line option".
              */
-            VerboseLog = 1ull << 62,
+            VerboseLog = 1ull << 61,
 
             /**
-             * Enable GPU validation, if available.
+             * Enable GPU validation, if available. Has a precedence over
+             * @ref Flag::GpuValidationNoError.
              *
              * Corresponds to the `--magnum-gou-validation on`
              * @ref GL-Context-usage-command-line "command-line option".
              */
-            GpuValidation = 1ull << 63
+            GpuValidation = 1ull << 62,
+
+            /**
+             * Enable a context without error reporting, if available. Ignored
+             * if @ref Flag::GpuValidation is set.
+             *
+             * Corresponds to the `--magnum-gou-validation no-error`
+             * @ref GL-Context-usage-command-line "command-line option".
+             */
+            GpuValidationNoError = 1ull << 63
         };
         #else
         typedef Implementation::ContextConfigurationFlag Flag;
