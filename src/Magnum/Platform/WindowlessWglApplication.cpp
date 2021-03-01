@@ -40,6 +40,10 @@
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
 #define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
 #define WGL_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
+
+#ifndef WGL_ARB_create_context_no_error
+#define WGL_CONTEXT_OPENGL_NO_ERROR_ARB 0x31B3
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
@@ -126,8 +130,9 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
 
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
     /* Optimistically choose core context first */
-    const GLint contextAttributes[] = {
+    GLint contextAttributes[11] = {
         #ifdef MAGNUM_TARGET_GLES
         #ifdef MAGNUM_TARGET_GLES3
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -147,8 +152,22 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         /* Mask out the upper 32bits used for other flags */
         WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags) & 0xffffffffu),
         #endif
+
+        /* The rest is added optionally */
+        0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
         0
     };
+
+    std::size_t nextAttribute = 8;
+    CORRADE_INTERNAL_ASSERT(!contextAttributes[nextAttribute]);
+
+    if(flags & Configuration::Flag::NoError) {
+        contextAttributes[nextAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+        contextAttributes[nextAttribute++] = true;
+    }
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(contextAttributes));
+
     _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -156,12 +175,26 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
     if(!_context) {
         Warning() << "Platform::WindowlessWglContext: cannot create core context, falling back to compatibility context:" << GetLastError();
 
-        const int fallbackContextAttributes[] = {
+        /** @todo duplicated three times, do better */
+        GLint fallbackContextAttributes[5] = {
             /** @todo or keep the fwcompat? */
             /* Mask out the upper 32bits used for other flags */
             WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+            /* The rest is added dynamically */
+            0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
             0
         };
+        std::size_t nextFallbackAttribute = 2;
+        CORRADE_INTERNAL_ASSERT(!fallbackContextAttributes[nextFallbackAttribute]);
+
+        if(flags & Configuration::Flag::NoError) {
+            fallbackContextAttributes[nextFallbackAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+            fallbackContextAttributes[nextFallbackAttribute++] = true;
+        }
+
+        CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackContextAttributes));
+
         _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary
@@ -190,12 +223,27 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         {
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);
-            const int fallbackContextAttributes[] = {
+
+            /** @todo duplicated three times, do better */
+            GLint fallbackContextAttributes[5] = {
                 /** @todo or keep the fwcompat? */
                 /* Mask out the upper 32bits used for other flags */
                 WGL_CONTEXT_FLAGS_ARB, GLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+                /* The rest is added dynamically */
+                0, 0, /* WGL_CONTEXT_OPENGL_NO_ERROR_ARB */
                 0
             };
+            std::size_t nextFallbackAttribute = 2;
+            CORRADE_INTERNAL_ASSERT(!fallbackContextAttributes[nextFallbackAttribute]);
+
+            if(flags & Configuration::Flag::NoError) {
+                fallbackContextAttributes[nextFallbackAttribute++] = WGL_CONTEXT_OPENGL_NO_ERROR_ARB;
+                fallbackContextAttributes[nextFallbackAttribute++] = true;
+            }
+
+            CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackContextAttributes));
+
             _context = wglCreateContextAttribsARB(_deviceContext, configuration.sharedContext(), fallbackContextAttributes);
         }
     }

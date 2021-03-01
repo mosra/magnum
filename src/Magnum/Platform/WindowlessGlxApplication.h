@@ -213,6 +213,16 @@ class WindowlessGlxContext::Configuration: public GL::Context::Configuration {
             Debug = GLX_CONTEXT_DEBUG_BIT_ARB,
 
             /**
+             * Context without error reporting. Might result in better
+             * performance, but situations that would have generated errors
+             * instead cause undefined behavior.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in GLX, thus
+               handling manually. */
+            NoError = 1ull << 32,
+
+            /**
              * @copydoc GL::Context::Configuration::Flag::QuietLog
              * @m_since_latest
              */

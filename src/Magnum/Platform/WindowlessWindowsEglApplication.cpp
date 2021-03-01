@@ -32,6 +32,10 @@
 
 #include "Implementation/Egl.h"
 
+#ifndef EGL_KHR_create_context_no_error
+#define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31B3
+#endif
+
 namespace Magnum { namespace Platform {
 
 WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& configuration, GLContext* const magnumContext) {
@@ -118,7 +122,8 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
     if((flags & Configuration::Flag::GpuValidation) || (magnumContext && magnumContext->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         flags |= Configuration::Flag::Debug;
 
-    const EGLint attributes[] = {
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
+    EGLint attributes[7] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES3
@@ -131,8 +136,21 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
         #endif
         /* Mask out the upper 32bits used for other flags */
         EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags) & 0xffffffffu),
+
+        /* The rest is added optionally */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
         EGL_NONE
     };
+
+    std::size_t nextAttribute = 4;
+    CORRADE_INTERNAL_ASSERT(attributes[nextAttribute] == EGL_NONE);
+
+    if(flags & Configuration::Flag::NoError) {
+        attributes[nextAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+        attributes[nextAttribute++] = true;
+    }
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(attributes));
 
     if(!(_context = eglCreateContext(_display, config, configuration.sharedContext(), attributes))) {
         Error() << "Platform::WindowlessWindowsEglContext: cannot create EGL context:" << Implementation::eglErrorString(eglGetError());

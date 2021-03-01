@@ -1272,6 +1272,21 @@ class Sdl2Application::GLConfiguration: public GL::Context::Configuration {
              * @requires_gles Context flags are not available in WebGL.
              */
             ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG,
+
+            #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * Context without error reporting. Might result in better
+             * performance, but situations that would have generated errors
+             * instead cause undefined behavior.
+             *
+             * @note Available since SDL 2.0.6.
+             * @requires_gles Context flags are not available in WebGL.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in SDL, thus
+               handling manually. */
+            NoError = 1ull << 32,
+            #endif
             #endif
 
             /**

@@ -208,6 +208,17 @@ class WindowlessEglContext::Configuration: public GL::Context::Configuration {
              * @requires_gles Context flags are not available in WebGL.
              */
             Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR,
+
+            /**
+             * Context without error reporting. Might result in better
+             * performance, but situations that would have generated errors
+             * instead cause undefined behavior.
+             * @requires_gles Context flags are not available in WebGL.
+             * @m_since_latest
+             */
+            /* Treated as a separate attribute and not a flag in EGL, thus
+               handling manually. */
+            NoError = 1ull << 32,
             #endif
 
             /**

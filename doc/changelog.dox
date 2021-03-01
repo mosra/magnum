@@ -119,6 +119,12 @@ See also:
     to all @cpp Platform::Windowless*Context @ce classes. Useful for
     transferring OpenGL contexts between threads, see also
     [mosra/magnum#495](https://github.com/mosra/magnum/pull/495).
+-   Implemented @relativeref{Platform::WindowlessEglApplication,Configuration::Flag::NoError}
+    in @ref Platform::WindowlessEglApplication,
+    @ref Platform::WindowlessGlxApplication,
+    @ref Platform::WindowlessWglApplication,
+    @ref Platform::WindowlessWindowsEglApplication and
+    @ref Platform::Sdl2Application
 
 @subsubsection changelog-latest-new-shaders Shaders library
 

@@ -67,6 +67,10 @@ typedef void* EGLObjectKHR;
 typedef void* EGLLabelKHR;
 typedef void (APIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char* command, EGLint messageType, EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char* message);
 #endif
+
+#ifndef EGL_KHR_create_context_no_error
+#define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31B3
+#endif
 #endif
 
 namespace Magnum { namespace Platform {
@@ -310,10 +314,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         flags |= Configuration::Flag::Debug;
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
-    const /* Is modified below to work around a SwiftShader limitation */
-    #endif
-    EGLint attributes[] = {
+    /** @todo needs a growable DynamicArray with disabled alloc or somesuch */
+    EGLint attributes[7] = {
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES
             #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13824)
@@ -330,22 +332,31 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             #else
             3,
             #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        /* Needs to be last because we're zeroing this out for SwiftShader (see
-           below).
 
-           Also mask out the upper 32bits used for other flags. */
-        EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags) & 0xffffffffu),
-        #endif
+        /* The rest is added optionally */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
+        EGL_NONE, EGL_NONE, /* EGL_CONTEXT_FLAGS_KHR, need to be last */
         EGL_NONE
     };
 
-    #ifdef MAGNUM_TARGET_WEBGL
-    static_cast<void>(configuration);
-    static_cast<void>(magnumContext);
-    #endif
+    #ifndef MAGNUM_TARGET_WEBGL
+    std::size_t nextAttribute = 2;
+    CORRADE_INTERNAL_ASSERT(attributes[nextAttribute] == EGL_NONE);
 
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(flags & Configuration::Flag::NoError) {
+        attributes[nextAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+        attributes[nextAttribute++] = true;
+    }
+
+    /* Context flags need to be last because we're zeroing this out for
+       SwiftShader (see below). Also mask out the upper 32bits used for other
+       flags. */
+    attributes[nextAttribute++] = EGL_CONTEXT_FLAGS_KHR;
+    attributes[nextAttribute++] = EGLint(UnsignedLong(flags) & 0xffffffffu);
+
+    CORRADE_INTERNAL_ASSERT(nextAttribute < Containers::arraySize(attributes));
+
+    #ifdef MAGNUM_TARGET_GLES
     const Containers::StringView version = eglQueryString(_display, EGL_VERSION);
 
     /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
@@ -353,10 +364,16 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
     if(!(UnsignedLong(flags) & 0xffffffffu) && version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
-        auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
+        auto& contextFlags = attributes[nextAttribute - 2];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
     }
+    #endif
+    #endif
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    static_cast<void>(configuration);
+    static_cast<void>(magnumContext);
     #endif
 
     _context = eglCreateContext(_display, config,
@@ -372,15 +389,30 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     if(!_context) {
         Warning{} << "Platform::WindowlessEglContext: cannot create core context, falling back to compatibility context:" << Implementation::eglErrorString(eglGetError());
 
-        const EGLint fallbackAttributes[] = {
+        /** @todo duplicated three times, do better */
+        EGLint fallbackAttributes[5] = {
             /* Discard the ForwardCompatible flag for the fallback. Having it
                set makes the fallback context creation fail on Mesa's Zink
                (which is just 2.1) and I assume on others as well.
 
                Also mask out the upper 32bits used for other flags. */
             EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+            /* The rest is added dynamically */
+            EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
             EGL_NONE
         };
+
+        std::size_t nextFallbackAttribute = 2;
+        CORRADE_INTERNAL_ASSERT(fallbackAttributes[nextFallbackAttribute] == EGL_NONE);
+
+        if(flags & Configuration::Flag::NoError) {
+            fallbackAttributes[nextFallbackAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+            fallbackAttributes[nextFallbackAttribute++] = true;
+        }
+
+        CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackAttributes));
+
         _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
 
     /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
@@ -411,16 +443,30 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         {
             /* Destroy the core context and create a compatibility one */
             eglDestroyContext(_display, _context);
-            const GLint fallbackAttributes[] = {
+
+            /** @todo duplicated three times, do better */
+            GLint fallbackAttributes[5] = {
                 /* Discard the ForwardCompatible flag for the fallback.
                    Compared to the above case of a 2.1 fallback it's not really
                    needed here (AFAIK it works in both cases), but let's be
-                   consistent.
-
-                   Also mask out the upper 32bits used for other flags. */
+                   consistent. Also mask out the upper 32bits used for other
+                   flags. */
                 EGL_CONTEXT_FLAGS_KHR, EGLint(UnsignedLong(flags & ~Configuration::Flag::ForwardCompatible) & 0xffffffffu),
+
+                /* The rest is added dynamically */
+                EGL_NONE, EGL_NONE, /* EGL_CONTEXT_OPENGL_NO_ERROR_KHR */
                 EGL_NONE
             };
+            std::size_t nextFallbackAttribute = 2;
+            CORRADE_INTERNAL_ASSERT(fallbackAttributes[nextFallbackAttribute] == EGL_NONE);
+
+            if(flags & Configuration::Flag::NoError) {
+                fallbackAttributes[nextFallbackAttribute++] = EGL_CONTEXT_OPENGL_NO_ERROR_KHR;
+                fallbackAttributes[nextFallbackAttribute++] = true;
+            }
+
+            CORRADE_INTERNAL_ASSERT(nextFallbackAttribute < Containers::arraySize(fallbackAttributes));
+
             _context = eglCreateContext(_display, config, configuration.sharedContext(), fallbackAttributes);
         }
 

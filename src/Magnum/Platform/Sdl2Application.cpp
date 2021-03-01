@@ -470,6 +470,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     if((glFlags & GLConfiguration::Flag::GpuValidation) || (_context->configurationFlags() & GL::Context::Configuration::Flag::GpuValidation))
         glFlags |= GLConfiguration::Flag::Debug;
 
+    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
+    #endif
+
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
