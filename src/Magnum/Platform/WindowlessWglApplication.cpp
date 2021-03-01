@@ -25,7 +25,6 @@
 
 #include "WindowlessWglApplication.h"
 
-#include <cstring>
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -183,17 +182,11 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
 
         /* The workaround check is the last so it doesn't appear in workaround
            list on unrelated drivers */
-        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-        constexpr static const char intelVendorString[] = "Intel";
-        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp() */
-        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
-            std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
-            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
+        const Containers::StringView vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        if((vendorString == "NVIDIA Corporation"_s ||
+            vendorString == "Intel"_s ||
+            vendorString == "ATI Technologies Inc."_s)
+           && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);

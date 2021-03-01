@@ -26,7 +26,7 @@
 
 #include "Sdl2Application.h"
 
-#include <cstring>
+#include <cstring> /** @todo remove, needed for std::strlen() in TextInputEvent */
 #ifdef CORRADE_TARGET_CLANG_CL
 /* SDL does #pragma pack(push,8) and #pragma pack(pop,8) in different headers
    (begin_code.h and end_code.h) and clang-cl doesn't like that, even though it
@@ -545,26 +545,18 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
        version, they force the version to the one specified, which is
        completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
-    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-    #ifdef CORRADE_TARGET_WINDOWS
-    constexpr static const char intelVendorString[] = "Intel";
-    #endif
-    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-    const char* vendorString;
+    Containers::StringView vendorString;
     #endif
     if(glConfiguration.version() == GL::Version::None && (!_glContext
         #ifndef CORRADE_TARGET_APPLE
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp(). Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE
-           WORKAROUNDS */
+        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        (vendorString == "NVIDIA Corporation"_s ||
          #ifdef CORRADE_TARGET_WINDOWS
-         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         vendorString == "Intel"_s ||
          #endif
-         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
+         vendorString == "ATI Technologies Inc."_s)
+        && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
         #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug

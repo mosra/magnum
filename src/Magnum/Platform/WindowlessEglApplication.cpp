@@ -27,7 +27,7 @@
 
 #include "WindowlessEglApplication.h"
 
-#include <cstring>
+#include <cstring> /** @todo used by extensionSupported(), cleann up */
 #include <string>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
@@ -346,13 +346,13 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    const char* version = eglQueryString(_display, EGL_VERSION);
+    const Containers::StringView version = eglQueryString(_display, EGL_VERSION);
 
     /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
-    if(!(UnsignedLong(flags) & 0xffffffffu) && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
+    if(!(UnsignedLong(flags) & 0xffffffffu) && version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"_s))) {
         auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
@@ -401,15 +401,13 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
 
         /* The workaround check is the last so it doesn't appear in workaround
            list on unrelated drivers */
-        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp() */
-        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
-            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
+        const Containers::StringView vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        /* Unlike GLFW/SDL2/WGL there's no Intel here because EGL doesn't work
+           with native drivers on Windows, only though ANGLE etc, and those
+           don't suffer from this issue. */
+        if((vendorString == "NVIDIA Corporation"_s ||
+            vendorString == "ATI Technologies Inc."_s)
+           && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s)))
         {
             /* Destroy the core context and create a compatibility one */
             eglDestroyContext(_display, _context);
@@ -442,7 +440,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
        deep inside when making the context current */
-    if(version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
+    if(version.contains("SwiftShader"_s) && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"_s))) {
         EGLint surfaceAttributes[] = {
             EGL_WIDTH, 32,
             EGL_HEIGHT, 32,

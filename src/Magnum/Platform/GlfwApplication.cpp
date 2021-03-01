@@ -28,7 +28,6 @@
 
 #include "GlfwApplication.h"
 
-#include <cstring>
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
@@ -498,9 +497,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        succeeds, make the context current so we can query GL_VENDOR below.
        If we are on Wayland, this is causing a segfault; a blinking window is
        acceptable in this case. */
-    constexpr const char waylandString[] = "wayland";
-    const char* const xdgSessionType = std::getenv("XDG_SESSION_TYPE");
-    if(!xdgSessionType || std::strncmp(xdgSessionType, waylandString, sizeof(waylandString)) != 0)
+    if(std::getenv("XDG_SESSION_TYPE") != "wayland"_s)
         glfwWindowHint(GLFW_VISIBLE, false);
     else if(_verboseLog)
         Warning{} << "Platform::GlfwApplication: Wayland detected, GL context has to be created with the window visible and may cause flicker on startup";
@@ -515,27 +512,19 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        version, they force the version to the one specified, which is
        completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
-    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
-    #ifdef CORRADE_TARGET_WINDOWS
-    constexpr static const char intelVendorString[] = "Intel";
-    #endif
-    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
-    const char* vendorString;
+    Containers::StringView vendorString;
     #endif
     if(glConfiguration.version() == GL::Version::None && (!_window
         #ifndef CORRADE_TARGET_APPLE
-        /* If context creation fails *really bad*, glGetString() may actually
-           return nullptr. Check for that to avoid crashes deep inside
-           strncmp(). Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE
-           WORKAROUNDS */
+        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        (vendorString == "NVIDIA Corporation"_s ||
          #ifdef CORRADE_TARGET_WINDOWS
-         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         vendorString == "Intel"_s ||
          #endif
-         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
-         #endif
+         vendorString == "ATI Technologies Inc."_s)
+        && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"_s))
+        #endif
     )) {
         /* Don't print any warning when doing the workaround, because the bug
            will be there probably forever */
