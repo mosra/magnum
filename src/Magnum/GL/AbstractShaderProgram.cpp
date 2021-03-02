@@ -565,72 +565,136 @@ UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::A
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Float> values) {
-    Context::current().state().shaderProgram.uniform1fvImplementation(_id, location, values.size(), values.data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1fvImplementation
+    #else
+    uniform1fvImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform1fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLfloat* const values) {
     use(id);
     glUniform1fv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location,  const Containers::ArrayView<const Math::Vector<2, Float>> values) {
-    Context::current().state().shaderProgram.uniform2fvImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2fvImplementation
+    #else
+    uniform2fvImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform2fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLfloat* const values) {
     use(id);
     glUniform2fv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, Float>> values) {
-    Context::current().state().shaderProgram.uniform3fvImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3fvImplementation
+    #else
+    uniform3fvImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform3fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLfloat* const values) {
     use(id);
     glUniform3fv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, Float>> values) {
-    Context::current().state().shaderProgram.uniform4fvImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4fvImplementation
+    #else
+    uniform4fvImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform4fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLfloat* const values) {
     use(id);
     glUniform4fv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Int> values) {
-    Context::current().state().shaderProgram.uniform1ivImplementation(_id, location, values.size(), values.data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1ivImplementation
+    #else
+    uniform1ivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform1ivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLint* values) {
     use(id);
     glUniform1iv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<2, Int>> values) {
-    Context::current().state().shaderProgram.uniform2ivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2ivImplementation
+    #else
+    uniform2ivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform2ivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLint* const values) {
     use(id);
     glUniform2iv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, Int>> values) {
-    Context::current().state().shaderProgram.uniform3ivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3ivImplementation
+    #else
+    uniform3ivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform3ivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLint* const values) {
     use(id);
     glUniform3iv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, Int>> values) {
-    Context::current().state().shaderProgram.uniform4ivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4ivImplementation
+    #else
+    uniform4ivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform4ivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLint* const values) {
     use(id);
     glUniform4iv(location, count, values);
@@ -638,36 +702,68 @@ void AbstractShaderProgram::uniform4ivImplementationDefault(const GLuint id, con
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const UnsignedInt> values) {
-    Context::current().state().shaderProgram.uniform1uivImplementation(_id, location, values.size(), values.data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform1uivImplementation
+    #else
+    uniform1uivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform1uivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLuint* const values) {
     use(id);
     glUniform1uiv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<2, UnsignedInt>> values) {
-    Context::current().state().shaderProgram.uniform2uivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform2uivImplementation
+    #else
+    uniform2uivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform2uivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLuint* const values) {
     use(id);
     glUniform2uiv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, UnsignedInt>> values) {
-    Context::current().state().shaderProgram.uniform3uivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform3uivImplementation
+    #else
+    uniform3uivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform3uivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLuint* const values) {
     use(id);
     glUniform3uiv(location, count, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, UnsignedInt>> values) {
-    Context::current().state().shaderProgram.uniform4uivImplementation(_id, location, values.size(), values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniform4uivImplementation
+    #else
+    uniform4uivImplementationDefault
+    #endif
+        (_id, location, values.size(), values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniform4uivImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLuint* const values) {
     use(id);
     glUniform4uiv(location, count, values);
@@ -713,27 +809,51 @@ void AbstractShaderProgram::uniform4dvImplementationDefault(const GLuint id, con
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 2, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix2fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix2fvImplementation
+    #else
+    uniformMatrix2fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix2fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix2fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 3, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix3fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix3fvImplementation
+    #else
+    uniformMatrix3fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix3fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix3fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 4, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix4fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix4fvImplementation
+    #else
+    uniformMatrix4fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix4fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix4fv(location, count, transpose, values);
@@ -741,54 +861,102 @@ void AbstractShaderProgram::uniformMatrix4fvImplementationDefault(const GLuint i
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 3, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix2x3fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix2x3fvImplementation
+    #else
+    uniformMatrix2x3fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix2x3fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix2x3fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 2, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix3x2fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix3x2fvImplementation
+    #else
+    uniformMatrix3x2fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix3x2fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix3x2fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 4, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix2x4fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix2x4fvImplementation
+    #else
+    uniformMatrix2x4fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix2x4fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix2x4fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 2, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix4x2fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix4x2fvImplementation
+    #else
+    uniformMatrix4x2fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix4x2fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix4x2fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 4, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix3x4fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix3x4fvImplementation
+    #else
+    uniformMatrix3x4fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix3x4fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix3x4fv(location, count, transpose, values);
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 3, Float>> values) {
-    Context::current().state().shaderProgram.uniformMatrix4x3fvImplementation(_id, location, values.size(), GL_FALSE, values.data()->data());
+    #ifndef MAGNUM_TARGET_WEBGL
+    Context::current().state().shaderProgram.uniformMatrix4x3fvImplementation
+    #else
+    uniformMatrix4x3fvImplementationDefault
+    #endif
+        (_id, location, values.size(), GL_FALSE, values.data()->data());
 }
 
+#ifdef MAGNUM_TARGET_WEBGL
+inline
+#endif
 void AbstractShaderProgram::uniformMatrix4x3fvImplementationDefault(const GLuint id, const GLint location, const GLsizei count, const GLboolean transpose, const GLfloat* const values) {
     use(id);
     glUniformMatrix4x3fv(location, count, transpose, values);

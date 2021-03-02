@@ -48,6 +48,7 @@ struct ShaderProgramState {
     #endif
     void(*cleanLogImplementation)(std::string&);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void(*uniform1fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
     void(*uniform2fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
     void(*uniform3fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
@@ -90,6 +91,7 @@ struct ShaderProgramState {
     void(*uniformMatrix4x2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
     void(*uniformMatrix3x4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
     void(*uniformMatrix4x3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    #endif
     #endif
 
     /* Currently used program */

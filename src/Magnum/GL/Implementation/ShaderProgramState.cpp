@@ -78,7 +78,8 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         cleanLogImplementation = &AbstractShaderProgram::cleanLogImplementationNoOp;
     }
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::ARB::separate_shader_objects>())
     #else
@@ -210,6 +211,7 @@ ShaderProgramState::ShaderProgramState(Context& context, Containers::StaticArray
         uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformMatrix4x3dvImplementationDefault;
         #endif
     }
+    #endif
 
     #ifdef MAGNUM_TARGET_WEBGL
     static_cast<void>(context);
