@@ -40,8 +40,15 @@
 #undef Always
 #undef Bool
 #undef Complex
+#undef Convex
 #undef None
 #undef Status
+#undef Success
+#undef Button1
+#undef Button2
+#undef Button3
+#undef Button4
+#undef Button5
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 
