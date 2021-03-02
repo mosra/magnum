@@ -1361,139 +1361,56 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         static MAGNUM_GL_LOCAL void cleanLogImplementationAngle(std::string& message);
         #endif
 
+        MAGNUM_GL_LOCAL static void use(GLuint id);
         void use();
 
-        /*
-            Currently, there are three supported ways to call glProgramUniform():
-
-            - EXT_separate_shader_objects (OpenGL ES extension, EXT suffix)
-            - ARB_separate_shader_objects (desktop GL only, no suffix)
-            - OpenGL ES 3.1, no suffix
-
-            To avoid copypasta and filesize bloat, this is merged to just two
-            variants of implementation functions:
-
-            - uniformImplementationSSO() -- functions without suffix, used if
-                ARB_separate_shader_objects desktop extension or OpenGL ES 3.1
-                is available, completely disabled for ES2
-            - uniformImplementationSSOEXT() -- functions with EXT suffix, used
-                if EXT_separate_shader_objects ES 2.0 / ES 3.0 extension is
-                available
-        */
-
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLfloat* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
+        /* To avoid pointless extra function pointer indirections and copypaste
+           for all suffixed/unsuffixed variants, these are all static with a
+           signature matching the DSA APIs. On DSA-enabled platforms the
+           glProgramUniform*() functions are used directly, otherwise these all
+           use() the shader first and then call the old-style API. */
+        MAGNUM_GL_LOCAL static void uniform1fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniform2fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniform3fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniform4fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniform1ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void uniform2ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void uniform3ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void uniform4ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLuint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
+        MAGNUM_GL_LOCAL static void uniform1uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void uniform2uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void uniform3uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void uniform4uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLdouble* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
-        #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLfloat* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLuint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLdouble* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
-        #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLfloat* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
-        #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLuint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
-        #endif
+        MAGNUM_GL_LOCAL static void uniform1dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniform2dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniform3dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniform4dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
         #endif
 
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix2x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix2x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
-        #endif
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
-        #endif
-        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
-        #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
-        #endif
+        MAGNUM_GL_LOCAL static void uniformMatrix2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix2x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix2x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix3x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void uniformMatrix4x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
         #endif
 
         GLuint _id;
