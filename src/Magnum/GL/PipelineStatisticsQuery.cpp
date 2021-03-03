@@ -23,41 +23,21 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "PrimitiveQuery.h"
+#include "PipelineStatisticsQuery.h"
 
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Containers/StringView.h>
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
 namespace Magnum { namespace GL {
 
-void PrimitiveQuery::begin() {
-    #ifndef MAGNUM_TARGET_GLES
-    _index = 0;
-    #endif
-    AbstractQuery::begin();
-}
-
-#ifndef MAGNUM_TARGET_GLES
-void PrimitiveQuery::begin(const UnsignedInt index) {
-    glBeginQueryIndexed(_target, _index = index, _id);
-}
-#endif
-
-void PrimitiveQuery::end() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!_index) glEndQuery(_target);
-    else glEndQueryIndexed(_target, _index);
-    #else
-    AbstractQuery::end();
-    #endif
-}
-
 #ifndef MAGNUM_TARGET_WEBGL
-PrimitiveQuery& PrimitiveQuery::setLabel(Containers::StringView label) {
+PipelineStatisticsQuery& PipelineStatisticsQuery::setLabel(Containers::StringView label) {
     AbstractQuery::setLabel(label);
     return *this;
 }
 #endif
 
 }}
+#endif

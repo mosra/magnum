@@ -101,7 +101,16 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions> Texture<dimen
     compressedSubImage(level, range, image, usage);
     return std::move(image);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+template<UnsignedInt dimensions> Texture<dimensions>& Texture<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES) || !defined(MAGNUM_TARGET_WEBGL)
 template class MAGNUM_GL_EXPORT Texture<1>;
 template class MAGNUM_GL_EXPORT Texture<2>;
 template class MAGNUM_GL_EXPORT Texture<3>;

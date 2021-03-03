@@ -69,6 +69,9 @@ DebugOutputGLTest::DebugOutputGLTest() {
         &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
 }
 
+#error verify with non-null-terminated strings
+#error verify the deprecated old-style callback still works
+
 void DebugOutputGLTest::setCallbackDefault() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));

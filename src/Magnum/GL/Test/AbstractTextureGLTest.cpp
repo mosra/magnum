@@ -402,6 +402,8 @@ void AbstractTextureGLTest::label() {
 
     Texture2D texture;
 
+#error TODO test no null terminated
+
     CORRADE_COMPARE(texture.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 

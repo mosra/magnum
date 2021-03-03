@@ -688,14 +688,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        RectangleTexture& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> RectangleTexture& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        RectangleTexture& setLabel(Containers::StringView label);
         #endif
 
     private:

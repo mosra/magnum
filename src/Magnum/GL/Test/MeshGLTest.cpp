@@ -527,6 +527,8 @@ void MeshGLTest::label() {
 
     Mesh mesh;
 
+#error TODO test no null terminated
+
     CORRADE_COMPARE(mesh.label(), "");
     MAGNUM_VERIFY_NO_GL_ERROR();
 

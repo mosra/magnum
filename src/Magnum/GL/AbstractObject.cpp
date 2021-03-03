@@ -123,77 +123,65 @@ Int AbstractObject::maxLabelLength() {
     return value;
 }
 
-void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayView<const char>) {}
+void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::StringView) {}
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractObject::labelImplementationKhrDesktopES32(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
-    glObjectLabel(identifier, name, label.size(), label);
+void AbstractObject::labelImplementationKhrDesktopES32(const GLenum identifier, const GLuint name, const Containers::StringView label) {
+    glObjectLabel(identifier, name, label.size(), label.data());
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void AbstractObject::labelImplementationKhrES(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
-    glObjectLabelKHR(identifier, name, label.size(), label);
+void AbstractObject::labelImplementationKhrES(const GLenum identifier, const GLuint name, const Containers::StringView label) {
+    glObjectLabelKHR(identifier, name, label.size(), label.data());
 }
 #endif
 
-void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
+void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::StringView label) {
     const GLenum type = extTypeFromKhrIdentifier(identifier);
-    glLabelObjectEXT(type, name, label.size(), label);
+    glLabelObjectEXT(type, name, label.size(), label.data());
 }
 
-std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return  {}; }
+Containers::String AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return  {}; }
 
 #ifndef MAGNUM_TARGET_GLES2
-std::string AbstractObject::getLabelImplementationKhrDesktopES32(const GLenum identifier, const GLuint name) {
+Containers::String AbstractObject::getLabelImplementationKhrDesktopES32(const GLenum identifier, const GLuint name) {
     /* Get label size (w/o null terminator). Specifying 0 as size is not
        allowed, thus we pass the maximum instead. */
     GLsizei size = 0;
     glGetObjectLabel(identifier, name, maxLabelLength(), &size, nullptr);
 
-    /* Make place also for the null terminator */
-    std::string label;
-    label.resize(size+1);
-    glGetObjectLabel(identifier, name, size+1, nullptr, &label[0]);
-
-    /* Pop null terminator and return the string */
-    label.resize(size);
+    /* The storage already includes the null terminator */
+    Containers::String label{Containers::NoInit, std::size_t(size)};
+    glGetObjectLabel(identifier, name, size+1, nullptr, label.data());
     return label;
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-std::string AbstractObject::getLabelImplementationKhrES(const GLenum identifier, const GLuint name) {
+Containers::String AbstractObject::getLabelImplementationKhrES(const GLenum identifier, const GLuint name) {
     /* Get label size (w/o null terminator). Specifying 0 as size is not
        allowed, thus we pass the maximum instead. */
     GLsizei size = 0;
     glGetObjectLabelKHR(identifier, name, maxLabelLength(), &size, nullptr);
 
-    /* Make place also for the null terminator */
-    std::string label;
-    label.resize(size+1);
-    glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
-
-    /* Pop null terminator and return the string */
-    label.resize(size);
+    /* The storage already includes the null terminator */
+    Containers::String label{Containers::NoInit, std::size_t(size)};
+    glGetObjectLabelKHR(identifier, name, size+1, nullptr, label.data());
     return label;
 }
 #endif
 
-std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, const GLuint name) {
-    GLsizei size = 0;
+Containers::String AbstractObject::getLabelImplementationExt(const GLenum identifier, const GLuint name) {
+    const GLenum type = extTypeFromKhrIdentifier(identifier);
 
     /* Get label size (w/o null terminator) */
-    const GLenum type = extTypeFromKhrIdentifier(identifier);
+    GLsizei size = 0;
     glGetObjectLabelEXT(type, name, 0, &size, nullptr);
 
-    /* Make place also for the null terminator */
-    std::string label;
-    label.resize(size+1);
-    glGetObjectLabelEXT(type, name, size+1, nullptr, &label[0]);
-
-    /* Pop null terminator and return the string */
-    label.resize(size);
+    /* The storage already includes the null terminator */
+    Containers::String label{Containers::NoInit, std::size_t(size)};
+    glGetObjectLabelEXT(type, name, size+1, nullptr, label.data());
     return label;
 }
 #endif

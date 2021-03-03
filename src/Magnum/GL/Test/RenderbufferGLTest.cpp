@@ -144,6 +144,8 @@ void RenderbufferGLTest::label() {
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+#error TODO test no null terminated
+
     Renderbuffer renderbuffer;
 
     CORRADE_COMPARE(renderbuffer.label(), "");

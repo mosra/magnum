@@ -404,6 +404,8 @@ void FramebufferGLTest::label() {
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+#error TODO test no null terminated
+
     Framebuffer framebuffer({{}, Vector2i(32)});
 
     CORRADE_COMPARE(framebuffer.label(), "");

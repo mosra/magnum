@@ -183,7 +183,7 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label();
+        Containers::String label();
 
         /**
          * @brief Set renderbuffer label
@@ -198,14 +198,7 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
-        Renderbuffer& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> Renderbuffer& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        Renderbuffer& setLabel(Containers::StringView label);
         #endif
 
         /**
@@ -254,10 +247,6 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
         #endif
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
-
-        #ifndef MAGNUM_TARGET_WEBGL
-        Renderbuffer& setLabelInternal(Containers::ArrayView<const char> label);
-        #endif
 
         void MAGNUM_GL_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES

@@ -1181,14 +1181,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        CubeMapTexture& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> CubeMapTexture& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        CubeMapTexture& setLabel(Containers::StringView label);
         #endif
 
     private:

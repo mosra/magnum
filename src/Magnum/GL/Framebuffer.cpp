@@ -143,12 +143,12 @@ Framebuffer::~Framebuffer() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Framebuffer::label() {
+Containers::String Framebuffer::label() {
     createIfNotAlready();
     return Context::current().state().debug.getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
-Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
+Framebuffer& Framebuffer::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     Context::current().state().debug.labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;

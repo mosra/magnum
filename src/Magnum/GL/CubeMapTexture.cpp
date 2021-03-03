@@ -717,4 +717,11 @@ void CubeMapTexture::compressedSubImageImplementationDSA(const CubeMapCoordinate
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+CubeMapTexture& CubeMapTexture::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+#endif
+
 }}

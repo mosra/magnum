@@ -89,5 +89,10 @@ CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level,
 }
 #endif
 
+CubeMapTextureArray& CubeMapTextureArray::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+
 }}
 #endif

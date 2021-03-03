@@ -95,6 +95,13 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions+1> TextureArra
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+template<UnsignedInt dimensions> TextureArray<dimensions>& TextureArray<dimensions>::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 template class MAGNUM_GL_EXPORT TextureArray<1>;
 #endif

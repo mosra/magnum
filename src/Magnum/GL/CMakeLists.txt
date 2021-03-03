@@ -36,6 +36,7 @@ set(MagnumGL_SRCS
     Shader.cpp
     Texture.cpp
     TextureFormat.cpp
+    TimeQuery.cpp
     Version.cpp
 
     Implementation/BufferState.cpp
@@ -108,7 +109,9 @@ set(MagnumGL_PRIVATE_HEADERS
 
 # Desktop-only stuff
 if(NOT TARGET_GLES)
-    list(APPEND MagnumGL_SRCS RectangleTexture.cpp)
+    list(APPEND MagnumGL_SRCS
+        PipelineStatisticsQuery.cpp
+        RectangleTexture.cpp)
     list(APPEND MagnumGL_HEADERS
         PipelineStatisticsQuery.h
         RectangleTexture.h)
@@ -166,6 +169,8 @@ endif()
 
 # Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
 if(NOT (TARGET_WEBGL AND TARGET_GLES2))
+    list(APPEND MagnumGL_SRCS
+        SampleQuery.cpp)
     list(APPEND MagnumGL_HEADERS
         SampleQuery.h)
 endif()

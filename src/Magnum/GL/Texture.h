@@ -1355,14 +1355,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        Texture<dimensions>& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> Texture<dimensions>& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        Texture<dimensions>& setLabel(Containers::StringView label);
         #endif
 
     private:

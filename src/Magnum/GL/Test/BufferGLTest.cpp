@@ -191,6 +191,8 @@ void BufferGLTest::label() {
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+#error TODO test no null terminated
+
     Buffer buffer;
 
     CORRADE_COMPARE(buffer.label(), "");

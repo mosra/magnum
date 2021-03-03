@@ -44,9 +44,9 @@ struct ShaderProgramState {
     void reset();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const std::string>, AbstractShaderProgram::TransformFeedbackBufferMode);
+    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const Containers::StringView>, AbstractShaderProgram::TransformFeedbackBufferMode);
     #endif
-    void(*cleanLogImplementation)(std::string&);
+    void(*cleanLogImplementation)(Containers::String&);
 
     #ifndef MAGNUM_TARGET_WEBGL
     void(APIENTRY *uniform1fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);

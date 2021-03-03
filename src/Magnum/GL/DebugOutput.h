@@ -31,12 +31,17 @@
  */
 #endif
 
-#include <string>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Containers.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For all stuff that took std::string before. The main pain point is the
+   callback, the rest should be fine with just this. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 namespace Magnum { namespace GL {
@@ -287,7 +292,16 @@ class MAGNUM_GL_EXPORT DebugOutput {
          *
          * @see @ref setCallback()
          */
-        typedef void(*Callback)(Source, Type, UnsignedInt, Severity, const std::string&, const void*);
+        typedef void(*Callback)(Source, Type, UnsignedInt, Severity, Containers::StringView, const void*);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Debug callback
+         * @m_deprecated_since_latest Use a @ref Callback taking a
+         *      @ref Containers::StringView instead.
+         */
+        typedef void(CORRADE_DEPRECATED("use a callback taking a Containers::StringView instead") *StdStringCallback)(Source, Type, UnsignedInt, Severity, const std::string&, const void*);
+        #endif
 
         /**
          * @brief Max count of debug messages in log
@@ -393,6 +407,22 @@ class MAGNUM_GL_EXPORT DebugOutput {
          *      @fn_gl_keyword{DebugMessageCallback}
          */
         static void setCallback(Callback callback, const void* userParam = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Set debug message callback
+         * @m_deprecated_since_latest Use a @ref Callback taking a
+         *      @ref Containers::StringView instead.
+         */
+        CORRADE_DEPRECATED("use a callback taking a Containers::StringView instead") static void setCallback(StdStringCallback callback, const void* userParam = nullptr);
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Because otherwise the call is ambiguous with nullptr due to the
+           deprecated overload */
+        static void setCallback(std::nullptr_t, const void* userParam = nullptr) {
+            setCallback(static_cast<Callback>(nullptr), userParam);
+        }
+        #endif
+        #endif
 
         /**
          * @brief Set default debug message callback
@@ -587,30 +617,22 @@ class MAGNUM_GL_EXPORT DebugMessage {
          *      @fn_gl_extension_keyword{InsertEventMarker,EXT,debug_marker} or
          *      @fn_gl_extension_keyword{StringMarker,GREMEDY,string_marker}
          */
-        static void insert(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string) {
-            insertInternal(source, type, id, severity, {string.data(), string.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> static void insert(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, const char(&string)[size]) {
-            insertInternal(source, type, id, severity, {string, size - 1});
-        }
+        static void insert(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string);
 
         /** @brief There's no point in having an instance of this class */
         DebugMessage() = delete;
 
     private:
-        static void insertInternal(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
-        static MAGNUM_GL_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
+        static MAGNUM_GL_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView);
         #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void insertImplementationKhrDesktopES32(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        static MAGNUM_GL_LOCAL void insertImplementationKhrDesktopES32(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string);
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void insertImplementationKhrES(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        static MAGNUM_GL_LOCAL void insertImplementationKhrES(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string);
         #endif
-        static MAGNUM_GL_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
+        static MAGNUM_GL_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView string);
         #ifndef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
+        static MAGNUM_GL_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::StringView string);
         #endif
 };
 
@@ -734,12 +756,7 @@ class MAGNUM_GL_EXPORT DebugGroup {
          * Calls @ref push().
          * @see @link ~DebugGroup() @endlink, @ref pop()
          */
-        explicit DebugGroup(Source source, UnsignedInt id, const std::string& message): DebugGroup{} {
-            push(source, id, message);
-        }
-
-        /** @overload */
-        template<std::size_t size> explicit DebugGroup(Source source, UnsignedInt id, const char(&message)[size]): DebugGroup{} {
+        explicit DebugGroup(Source source, UnsignedInt id, Containers::StringView message): DebugGroup{} {
             push(source, id, message);
         }
 
@@ -768,14 +785,7 @@ class MAGNUM_GL_EXPORT DebugGroup {
          *      @ref Renderer::Error::StackOverflow, @fn_gl_keyword{PushDebugGroup}
          *      or @fn_gl_extension_keyword{PushGroupMarker,EXT,debug_marker}
          */
-        void push(Source source, UnsignedInt id, const std::string& message) {
-            pushInternal(source, id, {message.data(), message.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> void push(Source source, UnsignedInt id, const char(&message)[size]) {
-            pushInternal(source, id, {message, size - 1});
-        }
+        void push(Source source, UnsignedInt id, Containers::StringView message);
 
         /**
          * @brief Pop debug group from the stack
@@ -798,16 +808,14 @@ class MAGNUM_GL_EXPORT DebugGroup {
         void pop();
 
     private:
-        void pushInternal(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
-
-        static MAGNUM_GL_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_GL_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::StringView message);
         #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void pushImplementationKhrDesktopES32(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_GL_LOCAL void pushImplementationKhrDesktopES32(Source source, UnsignedInt id, Containers::StringView message);
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void pushImplementationKhrES(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_GL_LOCAL void pushImplementationKhrES(Source source, UnsignedInt id, Containers::StringView message);
         #endif
-        static MAGNUM_GL_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_GL_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::StringView message);
 
         static MAGNUM_GL_LOCAL void popImplementationNoOp();
         #ifndef MAGNUM_TARGET_GLES2
@@ -826,7 +834,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugGroup::Source value);
 
 /* Exposed for testing */
 namespace Implementation {
-    MAGNUM_GL_EXPORT void defaultDebugCallback(DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, std::ostream* output);
+    MAGNUM_GL_EXPORT void defaultDebugCallback(DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::StringView string, std::ostream* output);
 }
 
 }}

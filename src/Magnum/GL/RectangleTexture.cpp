@@ -88,5 +88,10 @@ CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& ran
     return std::move(image);
 }
 
+RectangleTexture& RectangleTexture::setLabel(Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+
 }}
 #endif

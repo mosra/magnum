@@ -29,13 +29,18 @@
  * @brief Class @ref Magnum::GL::Shader
  */
 
-#include <string>
-#include <vector>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For all name/source stuff that used to be a std::string.
+   Since that's all only function parameters and no return types, it should
+   cover all cases. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -581,7 +586,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          *      @def_gl{SHADER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        std::string label() const;
+        Containers::String label() const;
 
         /**
          * @brief Set shader label
@@ -596,21 +601,14 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          *      with @def_gl{SHADER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
-        Shader& setLabel(const std::string& label) {
-            return setLabelInternal({label.data(), label.size()});
-        }
-
-        /** @overload */
-        template<std::size_t size> Shader& setLabel(const char(&label)[size]) {
-            return setLabelInternal({label, size - 1});
-        }
+        Shader& setLabel(Containers::StringView label);
         #endif
 
         /** @brief Shader type */
         Type type() const { return _type; }
 
         /** @brief Shader sources */
-        std::vector<std::string> sources() const;
+        Containers::ArrayView<const Containers::String> sources() const;
 
         /**
          * @brief Add shader source
@@ -622,7 +620,9 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
          * @ref GL-Shader-errors "compilation error reporting".
          * @see @ref addFile()
          */
-        Shader& addSource(std::string source);
+        Shader& addSource(Containers::StringView source);
+        /** @overload */
+        Shader& addSource(Containers::String&& source);
 
         /**
          * @brief Add shader source file
@@ -645,22 +645,20 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         bool compile();
 
     private:
-        Shader& setLabelInternal(Containers::ArrayView<const char> label);
-
-        void MAGNUM_GL_LOCAL addSourceImplementationDefault(std::string source);
+        void MAGNUM_GL_LOCAL addSourceImplementationDefault(Containers::String&& source);
         #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
-        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
+        void MAGNUM_GL_LOCAL addSourceImplementationEmscriptenPthread(Containers::String&& source);
         #endif
 
-        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationNoOp(Containers::String& message);
         #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(std::string& message);
+        static MAGNUM_GL_LOCAL void cleanLogImplementationIntelWindows(Containers::String& message);
         #endif
 
         Type _type;
         GLuint _id;
 
-        std::vector<std::string> _sources;
+        Containers::Array<Containers::String> _sources;
 };
 
 /** @debugoperatorclassenum{Shader,Shader::Type} */

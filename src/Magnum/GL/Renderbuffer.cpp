@@ -106,12 +106,12 @@ inline void Renderbuffer::createIfNotAlready() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Renderbuffer::label() {
+Containers::String Renderbuffer::label() {
     createIfNotAlready();
     return Context::current().state().debug.getLabelImplementation(GL_RENDERBUFFER, _id);
 }
 
-Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
+Renderbuffer& Renderbuffer::setLabel(const Containers::StringView label) {
     createIfNotAlready();
     Context::current().state().debug.labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;

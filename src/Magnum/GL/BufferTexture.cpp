@@ -134,5 +134,10 @@ BufferTexture& BufferTexture::resetBuffer() {
     return *this;
 }
 
+BufferTexture& BufferTexture::setLabel(const Containers::StringView label) {
+    AbstractTexture::setLabel(label);
+    return *this;
+}
+
 }}
 #endif

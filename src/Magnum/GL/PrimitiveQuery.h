@@ -202,14 +202,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        PrimitiveQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> PrimitiveQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
+        PrimitiveQuery& setLabel(Containers::StringView label);
         #endif
 
     private:

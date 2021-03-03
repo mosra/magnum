@@ -177,6 +177,8 @@ void AbstractShaderProgramGLTest::label() {
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
+#error TODO test no null terminated
+
     DummyShader shader;
     CORRADE_COMPARE(shader.label(), "");
 
@@ -404,6 +406,11 @@ void AbstractShaderProgramGLTest::linkFailure() {
 
 void AbstractShaderProgramGLTest::uniformNotFound() {
     MyPublicShader program;
+
+#error test uniform location, \
+        uniform block index, \
+        ... \
+       with non-null-terminated stirngs
 
     Shader vert(
         #ifndef MAGNUM_TARGET_GLES

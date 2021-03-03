@@ -48,7 +48,7 @@ performance measurements.
     WebGL.
 @see @ref PrimitiveQuery, @ref SampleQuery, @ref TimeQuery
 */
-class PipelineStatisticsQuery: public AbstractQuery {
+class MAGNUM_GL_EXPORT PipelineStatisticsQuery: public AbstractQuery {
     public:
         /**
          * @brief Query target
@@ -164,14 +164,7 @@ class PipelineStatisticsQuery: public AbstractQuery {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        PipelineStatisticsQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> PipelineStatisticsQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
+        PipelineStatisticsQuery& setLabel(Containers::StringView label);
         #endif
 
     private:

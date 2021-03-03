@@ -128,6 +128,8 @@ void AbstractQueryGLTest::label() {
     SampleQuery query{SampleQuery::Target::AnySamplesPassed};
     #endif
 
+#error TODO test no null terminated
+
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
     #endif

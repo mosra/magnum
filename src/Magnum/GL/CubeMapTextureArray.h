@@ -873,14 +873,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        CubeMapTextureArray& setLabel(const std::string& label) {
-            AbstractTexture::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> CubeMapTextureArray& setLabel(const char(&label)[size]) {
-            AbstractTexture::setLabel<size>(label);
-            return *this;
-        }
+        CubeMapTextureArray& setLabel(Containers::StringView label);
         #endif
 
     private:

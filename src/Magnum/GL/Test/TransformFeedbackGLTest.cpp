@@ -200,6 +200,8 @@ void TransformFeedbackGLTest::label() {
         MAGNUM_VERIFY_NO_GL_ERROR();
     }
 
+#error TODO test no null terminated
+
     feedback.setLabel("MyXfb");
     {
         #ifdef MAGNUM_TARGET_GLES
@@ -548,6 +550,8 @@ void TransformFeedbackGLTest::interleaved() {
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
         }
     } shader;
+
+// TODO: test setTransformFeedbackOutputs() -- non-null-terminated (and non-global on NV&Windows)
 
     Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);

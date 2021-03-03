@@ -25,8 +25,9 @@
 
 #include "Shader.h"
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Containers/String.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -48,18 +49,20 @@ typedef char GLchar;
 
 namespace Magnum { namespace GL {
 
+using namespace Containers::Literals;
+
 namespace {
 
-std::string shaderName(const Shader::Type type) {
+Containers::StringView shaderName(const Shader::Type type) {
     switch(type) {
-        case Shader::Type::Vertex:                  return "vertex";
+        case Shader::Type::Vertex:                  return "vertex"_s;
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        case Shader::Type::Geometry:                return "geometry";
-        case Shader::Type::TessellationControl:     return "tessellation control";
-        case Shader::Type::TessellationEvaluation:  return "tessellation evaluation";
-        case Shader::Type::Compute:                 return "compute";
+        case Shader::Type::Geometry:                return "geometry"_s;
+        case Shader::Type::TessellationControl:     return "tessellation control"_s;
+        case Shader::Type::TessellationEvaluation:  return "tessellation evaluation"_s;
+        case Shader::Type::Compute:                 return "compute"_s;
         #endif
-        case Shader::Type::Fragment:                return "fragment";
+        case Shader::Type::Fragment:                return "fragment"_s;
     }
 
     CORRADE_INTERNAL_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
@@ -638,37 +641,52 @@ Int Shader::maxCombinedUniformComponents(const Type type) {
 }
 #endif
 
+namespace {
+
+/* GL accepts explicit sizes so we don't need to have the strings
+   null-terminated, contrary to what the String class says in the docs */
+Containers::String globalStringView(const Containers::StringView view) {
+    if(view.flags() & Containers::StringViewFlag::NullTerminated)
+        return Containers::String{view.data(), view.size(), [](char*, std::size_t) {}};
+    return view;
+}
+
+}
+
 Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
     _id = glCreateShader(GLenum(_type));
 
+    Containers::StringView versionString;
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: _sources.emplace_back("#version 120\n"); return;
-        case Version::GL300: _sources.emplace_back("#version 130\n"); return;
-        case Version::GL310: _sources.emplace_back("#version 140\n"); return;
-        case Version::GL320: _sources.emplace_back("#version 150\n"); return;
-        case Version::GL330: _sources.emplace_back("#version 330\n"); return;
-        case Version::GL400: _sources.emplace_back("#version 400\n"); return;
-        case Version::GL410: _sources.emplace_back("#version 410\n"); return;
-        case Version::GL420: _sources.emplace_back("#version 420\n"); return;
-        case Version::GL430: _sources.emplace_back("#version 430\n"); return;
-        case Version::GL440: _sources.emplace_back("#version 440\n"); return;
-        case Version::GL450: _sources.emplace_back("#version 450\n"); return;
-        case Version::GL460: _sources.emplace_back("#version 460\n"); return;
+        case Version::GL210: versionString = "#version 120\n"_s; break;
+        case Version::GL300: versionString = "#version 130\n"_s; return;
+        case Version::GL310: versionString = "#version 140\n"_s; return;
+        case Version::GL320: versionString = "#version 150\n"_s; return;
+        case Version::GL330: versionString = "#version 330\n"_s; return;
+        case Version::GL400: versionString = "#version 400\n"_s; return;
+        case Version::GL410: versionString = "#version 410\n"_s; return;
+        case Version::GL420: versionString = "#version 420\n"_s; return;
+        case Version::GL430: versionString = "#version 430\n"_s; return;
+        case Version::GL440: versionString = "#version 440\n"_s; return;
+        case Version::GL450: versionString = "#version 450\n"_s; return;
+        case Version::GL460: versionString = "#version 460\n"_s; return;
         #endif
         /* `#version 100` really is GLSL ES 1.00 and *not* GLSL 1.00. What a mess. */
-        case Version::GLES200: _sources.emplace_back("#version 100\n"); return;
-        case Version::GLES300: _sources.emplace_back("#version 300 es\n"); return;
+        case Version::GLES200: versionString = "#version 100\n"_s; return;
+        case Version::GLES300: versionString = "#version 300 es\n"_s; return;
         #ifndef MAGNUM_TARGET_WEBGL
-        case Version::GLES310: _sources.emplace_back("#version 310 es\n"); return;
-        case Version::GLES320: _sources.emplace_back("#version 320 es\n"); return;
+        case Version::GLES310: versionString = "#version 310 es\n"_s; return;
+        case Version::GLES320: versionString = "#version 320 es\n"_s; return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */
         case Version::None: return;
     }
 
-    CORRADE_ASSERT_UNREACHABLE("GL::Shader::Shader(): unsupported version" << version, );
+    CORRADE_ASSERT(!versionString.isEmpty(), "GL::Shader::Shader(): unsupported version" << version, );
+
+    arrayAppend(_sources, globalStringView(versionString));
 }
 
 Shader::~Shader() {
@@ -679,7 +697,7 @@ Shader::~Shader() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-std::string Shader::label() const {
+Containers::String Shader::label() const {
     #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug.getLabelImplementation(GL_SHADER, _id);
     #else
@@ -687,7 +705,7 @@ std::string Shader::label() const {
     #endif
 }
 
-Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) {
+Shader& Shader::setLabel(const Containers::StringView label) {
     #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug.labelImplementation(GL_SHADER, _id, label);
     #else
@@ -697,10 +715,10 @@ Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) 
 }
 #endif
 
-std::vector<std::string> Shader::sources() const { return _sources; }
+Containers::ArrayView<const Containers::String> Shader::sources() const { return _sources; }
 
-Shader& Shader::addSource(std::string source) {
-    if(!source.empty()) {
+Shader& Shader::addSource(Containers::String&& source) {
+    if(!source.isEmpty()) {
         auto addSource = Context::current().state().shader.addSourceImplementation;
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41)
@@ -714,6 +732,7 @@ Shader& Shader::addSource(std::string source) {
            order to avoid complex logic in compile() where we assert for at
            least some user-provided source, an empty string is added here
            instead. */
+#error this needs Utility::format, ffs
         if(!_sources.empty()) (this->*addSource)("#line 1 " + std::to_string((_sources.size()+1)/2) + '\n');
         else (this->*addSource)({});
 
@@ -740,6 +759,7 @@ Shader& Shader::addFile(const std::string& filename) {
     CORRADE_ASSERT(Utility::Directory::exists(filename),
         "GL::Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
 
+    // TODO: sigh needs SIGH, sigh
     addSource(Utility::Directory::readString(filename));
     return *this;
 }
@@ -814,10 +834,10 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
     return allSuccess;
 }
 
-void Shader::cleanLogImplementationNoOp(std::string&) {}
+void Shader::cleanLogImplementationNoOp(Containers::String&) {}
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
-void Shader::cleanLogImplementationIntelWindows(std::string& message) {
+void Shader::cleanLogImplementationIntelWindows(Containers::String& message) {
     if(message == "No errors.\n") message = {};
 }
 #endif

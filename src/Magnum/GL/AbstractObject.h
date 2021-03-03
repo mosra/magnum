@@ -29,12 +29,17 @@
  * @brief Class @ref Magnum::GL::AbstractObject
  */
 
-#include <string>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For the label stuff that used to be a std::string. Won't cover all cases but
+   should be sufficient. */
+#include <Corrade/Containers/StringStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -110,21 +115,21 @@ class MAGNUM_GL_EXPORT AbstractObject {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        static MAGNUM_GL_LOCAL void labelImplementationNoOp(GLenum, GLuint, Containers::ArrayView<const char> label);
-        static MAGNUM_GL_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, Containers::ArrayView<const char> label);
+        static MAGNUM_GL_LOCAL void labelImplementationNoOp(GLenum, GLuint, Containers::StringView label);
+        static MAGNUM_GL_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, Containers::StringView label);
         #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL void labelImplementationKhrDesktopES32(GLenum identifier, GLuint name, Containers::ArrayView<const char> label);
+        static MAGNUM_GL_LOCAL void labelImplementationKhrDesktopES32(GLenum identifier, GLuint name, Containers::StringView label);
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL void labelImplementationKhrES(GLenum identifier, GLuint name, Containers::ArrayView<const char> label);
+        static MAGNUM_GL_LOCAL void labelImplementationKhrES(GLenum identifier, GLuint name, Containers::StringView label);
         #endif
-        static MAGNUM_GL_LOCAL std::string getLabelImplementationNoOp(GLenum, GLuint);
-        static MAGNUM_GL_LOCAL std::string getLabelImplementationExt(GLenum identifier, GLuint name);
+        static MAGNUM_GL_LOCAL Containers::String getLabelImplementationNoOp(GLenum, GLuint);
+        static MAGNUM_GL_LOCAL Containers::String getLabelImplementationExt(GLenum identifier, GLuint name);
         #ifndef MAGNUM_TARGET_GLES2
-        static MAGNUM_GL_LOCAL std::string getLabelImplementationKhrDesktopES32(GLenum identifier, GLuint name);
+        static MAGNUM_GL_LOCAL Containers::String getLabelImplementationKhrDesktopES32(GLenum identifier, GLuint name);
         #endif
         #ifdef MAGNUM_TARGET_GLES
-        static MAGNUM_GL_LOCAL std::string getLabelImplementationKhrES(GLenum identifier, GLuint name);
+        static MAGNUM_GL_LOCAL Containers::String getLabelImplementationKhrES(GLenum identifier, GLuint name);
         #endif
         #endif
 };
