@@ -41,6 +41,7 @@ namespace Magnum { namespace GL {
 @brief Mask for framebuffer clearing
 
 @see @ref AbstractFramebuffer, @ref FramebufferClearMask
+@m_enum_values_as_keywords
 */
 enum class FramebufferClear: GLbitfield {
     Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
