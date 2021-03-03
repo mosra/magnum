@@ -224,6 +224,8 @@ See also:
     previously only autodetected canvas size got printed
 -   Added @ref Platform::WindowlessIosContext::glContext() for consistency with
     other context classes
+-   Undefining even more noise from `Xlib.h` (see
+    [mosra/magnum#498](https://github.com/mosra/magnum/pull/498))
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
