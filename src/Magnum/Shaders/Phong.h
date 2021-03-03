@@ -917,7 +917,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         #endif
 
         /**
-         * @brief Set position for given light
+         * @brief Set color for given light
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
@@ -967,7 +967,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Phong& setLightSpecularColors(std::initializer_list<Magnum::Color3> colors);
 
         /**
-         * @brief Set position for given light
+         * @brief Set specular color for given light
          * @return Reference to self (for method chaining)
          * @m_since_latest
          *
