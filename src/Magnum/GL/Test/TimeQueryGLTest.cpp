@@ -27,7 +27,10 @@
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/TimeQuery.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
@@ -105,22 +108,37 @@ void TimeQueryGLTest::queryTime() {
         CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
+    Renderbuffer renderbuffer;
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(32));
+
+    Framebuffer framebuffer({{}, Vector2i{256, 256}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
+
+    /* A query with nothing inside should be almost zero */
     TimeQuery q1{TimeQuery::Target::TimeElapsed};
     q1.begin();
     q1.end();
-    const auto result1 = q1.result<UnsignedInt>();
-
+    const auto result1 = q1.result<UnsignedLong>();
     MAGNUM_VERIFY_NO_GL_ERROR();
+    Debug{} << "Doing nothing took" << result1/1.0e6f << "ms";
+    CORRADE_COMPARE_AS(result1, 0, TestSuite::Compare::GreaterOrEqual);
 
+    /* A query with a clear inside should be nonzero and larger than nothing */
     TimeQuery q2{TimeQuery::Target::TimeElapsed};
     q2.begin();
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::finish();
+    framebuffer.clear(FramebufferClear::Color);
     q2.end();
-    const auto result2 = q2.result<UnsignedInt>();
-
+    const auto result2 = q2.result<UnsignedLong>();
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::GreaterOrEqual);
+    Debug{} << "Clear took" << result2/1.0e6f << "ms";
+    CORRADE_VERIFY(result2);
+    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::Greater);
 }
 
 void TimeQueryGLTest::queryTimestamp() {
@@ -135,6 +153,18 @@ void TimeQueryGLTest::queryTimestamp() {
         CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
+    Renderbuffer renderbuffer;
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(32));
+
+    Framebuffer framebuffer({{}, Vector2i{256, 256}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
+
     TimeQuery q1{TimeQuery::Target::Timestamp},
         q2{TimeQuery::Target::Timestamp},
         q{TimeQuery::Target::TimeElapsed};
@@ -142,19 +172,23 @@ void TimeQueryGLTest::queryTimestamp() {
     q1.timestamp();
 
     q.begin();
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::finish();
+    framebuffer.clear(FramebufferClear::Color);
     q.end();
 
     q2.timestamp();
 
-    const auto result = q.result<UnsignedInt>();
+    const auto result = q.result<UnsignedLong>();
     const auto result1 = q1.result<UnsignedLong>();
     const auto result2 = q2.result<UnsignedLong>();
-
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::GreaterOrEqual);
-    CORRADE_COMPARE_AS(result2 - result1, result, TestSuite::Compare::GreaterOrEqual);
+
+    Debug{} << "Clear took" << result/1.0e6f << "ms, timestamp difference is"
+        << (result2 - result1)/1.0e6f << "ms";
+
+    /* The timestamps should be monotonically increasing and the difference
+       slightly larger than the elapsed time because these are outside of it */
+    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::Greater);
+    CORRADE_COMPARE_AS(result2 - result1, result, TestSuite::Compare::Greater);
 }
 
 }}}}
