@@ -49,48 +49,48 @@ struct ShaderProgramState {
     void(*cleanLogImplementation)(std::string&);
 
     #ifndef MAGNUM_TARGET_WEBGL
-    void(*uniform1fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
-    void(*uniform2fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
-    void(*uniform3fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
-    void(*uniform4fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
-    void(*uniform1ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
-    void(*uniform2ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
-    void(*uniform3ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
-    void(*uniform4ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
+    void(APIENTRY *uniform1fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
+    void(APIENTRY *uniform2fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
+    void(APIENTRY *uniform3fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
+    void(APIENTRY *uniform4fvImplementation)(GLuint, GLint, GLsizei, const GLfloat*);
+    void(APIENTRY *uniform1ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
+    void(APIENTRY *uniform2ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
+    void(APIENTRY *uniform3ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
+    void(APIENTRY *uniform4ivImplementation)(GLuint, GLint, GLsizei, const GLint*);
     #ifndef MAGNUM_TARGET_GLES2
-    void(*uniform1uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
-    void(*uniform2uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
-    void(*uniform3uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
-    void(*uniform4uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
+    void(APIENTRY *uniform1uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
+    void(APIENTRY *uniform2uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
+    void(APIENTRY *uniform3uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
+    void(APIENTRY *uniform4uivImplementation)(GLuint, GLint, GLsizei, const GLuint*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(*uniform1dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
-    void(*uniform2dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
-    void(*uniform3dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
-    void(*uniform4dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
+    void(APIENTRY *uniform1dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
+    void(APIENTRY *uniform2dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
+    void(APIENTRY *uniform3dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
+    void(APIENTRY *uniform4dvImplementation)(GLuint, GLint, GLsizei, const GLdouble*);
     #endif
 
-    void(*uniformMatrix2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
     #ifndef MAGNUM_TARGET_GLES2
-    void(*uniformMatrix2x3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix3x2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix2x4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix4x2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix3x4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
-    void(*uniformMatrix4x3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix2x3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix3x2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix2x4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix4x2fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix3x4fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
+    void(APIENTRY *uniformMatrix4x3fvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLfloat*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    void(*uniformMatrix2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix2x3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix3x2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix2x4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix4x2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix3x4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
-    void(*uniformMatrix4x3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix2x3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix3x2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix2x4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix4x2dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix3x4dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
+    void(APIENTRY *uniformMatrix4x3dvImplementation)(GLuint, GLint, GLsizei, GLboolean, const GLdouble*);
     #endif
     #endif
 

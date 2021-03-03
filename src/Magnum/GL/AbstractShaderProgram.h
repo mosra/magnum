@@ -1369,48 +1369,48 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
            signature matching the DSA APIs. On DSA-enabled platforms the
            glProgramUniform*() functions are used directly, otherwise these all
            use() the shader first and then call the old-style API. */
-        MAGNUM_GL_LOCAL static void uniform1fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniform2fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniform3fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniform4fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniform1ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
-        MAGNUM_GL_LOCAL static void uniform2ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
-        MAGNUM_GL_LOCAL static void uniform3ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
-        MAGNUM_GL_LOCAL static void uniform4ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4fvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4ivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLint* values);
         #ifndef MAGNUM_TARGET_GLES2
-        MAGNUM_GL_LOCAL static void uniform1uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
-        MAGNUM_GL_LOCAL static void uniform2uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
-        MAGNUM_GL_LOCAL static void uniform3uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
-        MAGNUM_GL_LOCAL static void uniform4uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4uivImplementationDefault(GLuint id, GLint location, GLsizei count, const GLuint* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        MAGNUM_GL_LOCAL static void uniform1dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniform2dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniform3dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniform4dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform1dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform2dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform3dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniform4dvImplementationDefault(GLuint id, GLint location, GLsizei count, const GLdouble* values);
         #endif
 
-        MAGNUM_GL_LOCAL static void uniformMatrix2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
         #ifndef MAGNUM_TARGET_GLES2
-        MAGNUM_GL_LOCAL static void uniformMatrix2x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix2x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4x2fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3x4fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4x3fvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLfloat* values);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        MAGNUM_GL_LOCAL static void uniformMatrix2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix2x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix2x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix3x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
-        MAGNUM_GL_LOCAL static void uniformMatrix4x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix2x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4x2dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix3x4dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
+        MAGNUM_GL_LOCAL static void APIENTRY uniformMatrix4x3dvImplementationDefault(GLuint id, GLint location, GLsizei count, GLboolean transpose, const GLdouble* values);
         #endif
 
         GLuint _id;
