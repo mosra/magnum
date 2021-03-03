@@ -313,6 +313,8 @@ See also:
 -   The Homebrew package now uses `std_cmake_args` instead of hardcoded build
     type and install prefix, which resolves certain build issues (see
     [mosra/homebrew-magnum#6](https://github.com/mosra/homebrew-magnum/pull/6))
+-   Various changes to Vcpkg packages to account for newly added libraries and
+    plugin interfaces ([mosra/magnum#485](https://github.com/mosra/magnum/issues/485))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
