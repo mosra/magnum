@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/SceneGraph/AbstractFeature.hpp"
 #include "Magnum/SceneGraph/MatrixTransformation3D.hpp"
@@ -673,7 +674,14 @@ void ObjectTest::treeDestructionOrder() {
             "Destructing a feature 4 attached to an object 1\n");
     }
 
-    CORRADE_COMPARE(out.str(),
+    const char* vtableBehavior =
+        #ifndef CORRADE_TARGET_CLANG
+        "no scene"
+        #else
+        "a scene" /* See below. */
+        #endif
+        ;
+    CORRADE_COMPARE(out.str(), Utility::formatString(
         "Destructing an object 5 with 0 parents and no scene\n"
         "Destructing a feature 4 attached to an object 1\n"
 
@@ -698,11 +706,10 @@ void ObjectTest::treeDestructionOrder() {
            object and then the feature attached to it */
         "Destructing the scene\n"
         /* The scene got partially destructed at this point and only an Object
-           remains of it, which means the isScene() override saying it's a
-           scene is no longer present */
-        "Destructing an object 4 with 1 parents and no scene\n"
-        "Destructing a feature 3 attached to an object 4\n"
-    );
+           may remain of it, which means the isScene() override saying it's a
+           scene is no longer present. GCC does this but not Clang. */
+        "Destructing an object 4 with 1 parents and {}\n"
+        "Destructing a feature 3 attached to an object 4\n", vtableBehavior));
 }
 
 }}}}
