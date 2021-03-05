@@ -590,9 +590,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
          *
-         * The @p version parameter corresponds to the `--input-version` option
-         * in @ref magnum-shaderconverter "magnum-shaderconverter", the
-         * @p format isn't currently exposed there.
+         * The @p format parameter corresponds to the `--input-format` option
+         * in @ref magnum-shaderconverter "magnum-shaderconverter",
+         * @p version to `--input-version`.
          * @see @ref setOutputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -614,9 +614,9 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          * @ref linkDataToData(), @ref linkDataToFile(), @ref linkFilesToFile()
          * or @ref linkFilesToData() call will fail.
          *
-         * The @p version parameter corresponds to the `--output-version`
-         * option in @ref magnum-shaderconverter "magnum-shaderconverter", the
-         * @p format isn't currently exposed there.
+         * The @p format parameter corresponds to the `--output-format` option
+         * in @ref magnum-shaderconverter "magnum-shaderconverter",
+         * @p version to `--output-version`.
          * @see @ref setInputFormat()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
