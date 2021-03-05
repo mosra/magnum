@@ -359,12 +359,21 @@ void AbstractConverterTest::setFlags() {
 
         ConverterFlags _flags;
     } converter;
-
     CORRADE_COMPARE(converter.flags(), ConverterFlags{});
     CORRADE_COMPARE(converter._flags, ConverterFlags{});
+
     converter.setFlags(ConverterFlag::Verbose);
     CORRADE_COMPARE(converter.flags(), ConverterFlag::Verbose);
     CORRADE_COMPARE(converter._flags, ConverterFlag::Verbose);
+
+    /** @todo use a real flag when we have more than one */
+    converter.addFlags(ConverterFlag(4));
+    CORRADE_COMPARE(converter.flags(), ConverterFlag::Verbose|ConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, ConverterFlag::Verbose|ConverterFlag(4));
+
+    converter.clearFlags(ConverterFlag::Verbose);
+    CORRADE_COMPARE(converter.flags(), ConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, ConverterFlag(4));
 }
 
 void AbstractConverterTest::setFlagsBothQuietAndVerbose() {

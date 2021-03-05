@@ -170,12 +170,21 @@ void AbstractImageConverterTest::setFlags() {
 
         ImageConverterFlags _flags;
     } converter;
-
     CORRADE_COMPARE(converter.flags(), ImageConverterFlags{});
     CORRADE_COMPARE(converter._flags, ImageConverterFlags{});
+
     converter.setFlags(ImageConverterFlag::Verbose);
     CORRADE_COMPARE(converter.flags(), ImageConverterFlag::Verbose);
     CORRADE_COMPARE(converter._flags, ImageConverterFlag::Verbose);
+
+    /** @todo use a real flag when we have more than one */
+    converter.addFlags(ImageConverterFlag(4));
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlag::Verbose|ImageConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, ImageConverterFlag::Verbose|ImageConverterFlag(4));
+
+    converter.clearFlags(ImageConverterFlag::Verbose);
+    CORRADE_COMPARE(converter.flags(), ImageConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, ImageConverterFlag(4));
 }
 
 void AbstractImageConverterTest::setFlagsNotImplemented() {

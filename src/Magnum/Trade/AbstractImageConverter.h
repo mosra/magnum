@@ -262,12 +262,34 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ImageConverterFlag for more
-         * information. By default no flags are set.
+         * information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
          *
          * Corresponds to the `-v` / `--verbose` option in
          * @ref magnum-imageconverter "magnum-imageconverter".
          */
         void setFlags(ImageConverterFlags flags);
+
+        /**
+         * @brief Add converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(ImageConverterFlags flags);
+
+        /**
+         * @brief Clear converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(ImageConverterFlags flags);
 
         /**
          * @brief Convert image to different format

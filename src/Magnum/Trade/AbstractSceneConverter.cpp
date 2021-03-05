@@ -89,6 +89,14 @@ void AbstractSceneConverter::setFlags(SceneConverterFlags flags) {
 
 void AbstractSceneConverter::doSetFlags(SceneConverterFlags) {}
 
+void AbstractSceneConverter::addFlags(SceneConverterFlags flags) {
+    setFlags(_flags|flags);
+}
+
+void AbstractSceneConverter::clearFlags(SceneConverterFlags flags) {
+    setFlags(_flags & ~flags);
+}
+
 Containers::Optional<MeshData> AbstractSceneConverter::convert(const MeshData& mesh) {
     CORRADE_ASSERT(features() & SceneConverterFeature::ConvertMesh,
         "Trade::AbstractSceneConverter::convert(): mesh conversion not supported", {});

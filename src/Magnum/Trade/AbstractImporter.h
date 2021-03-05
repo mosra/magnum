@@ -397,7 +397,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * It's expected that this function is called *before* a file is
          * opened. Some flags can be set only if the importer supports
          * particular features, see documentation of each @ref ImporterFlag for
-         * more information. By default no flags are set.
+         * more information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
          *
          * Corresponds to the `-v` / `--verbose` option in
          * @ref magnum-imageconverter "magnum-imageconverter",
@@ -405,6 +407,26 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @ref magnum-player "magnum-player".
          */
         void setFlags(ImporterFlags flags);
+
+        /**
+         * @brief Add importer flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(ImporterFlags flags);
+
+        /**
+         * @brief Clear importer flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(ImporterFlags flags);
 
         /**
          * @brief File opening callback function

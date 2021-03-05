@@ -142,12 +142,21 @@ void AbstractSceneConverterTest::setFlags() {
 
         SceneConverterFlags _flags;
     } converter;
-
     CORRADE_COMPARE(converter.flags(), SceneConverterFlags{});
     CORRADE_COMPARE(converter._flags, SceneConverterFlags{});
+
     converter.setFlags(SceneConverterFlag::Verbose);
     CORRADE_COMPARE(converter.flags(), SceneConverterFlag::Verbose);
     CORRADE_COMPARE(converter._flags, SceneConverterFlag::Verbose);
+
+    /** @todo use a real flag when we have more than one */
+    converter.addFlags(SceneConverterFlag(4));
+    CORRADE_COMPARE(converter.flags(), SceneConverterFlag::Verbose|SceneConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, SceneConverterFlag::Verbose|SceneConverterFlag(4));
+
+    converter.clearFlags(SceneConverterFlag::Verbose);
+    CORRADE_COMPARE(converter.flags(), SceneConverterFlag(4));
+    CORRADE_COMPARE(converter._flags, SceneConverterFlag(4));
 }
 
 void AbstractSceneConverterTest::setFlagsNotImplemented() {

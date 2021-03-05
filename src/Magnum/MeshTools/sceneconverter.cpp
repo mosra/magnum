@@ -261,7 +261,7 @@ used.)")
     }
 
     /* Set options, if passed */
-    if(args.isSet("verbose")) importer->setFlags(Trade::ImporterFlag::Verbose);
+    if(args.isSet("verbose")) importer->addFlags(Trade::ImporterFlag::Verbose);
     Implementation::setOptions(*importer, args.value("importer-options"));
 
     std::chrono::high_resolution_clock::duration importTime;
@@ -766,7 +766,7 @@ used.)")
         }
 
         /* Set options, if passed */
-        if(args.isSet("verbose")) converter->setFlags(Trade::SceneConverterFlag::Verbose);
+        if(args.isSet("verbose")) converter->addFlags(Trade::SceneConverterFlag::Verbose);
         if(i < args.arrayValueCount("converter-options"))
             Implementation::setOptions(*converter, args.arrayValue("converter-options", i));
 

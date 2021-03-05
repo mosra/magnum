@@ -95,6 +95,14 @@ void AbstractConverter::setFlags(const ConverterFlags flags) {
 
 void AbstractConverter::doSetFlags(ConverterFlags) {}
 
+void AbstractConverter::addFlags(ConverterFlags flags) {
+    setFlags(_flags|flags);
+}
+
+void AbstractConverter::clearFlags(ConverterFlags flags) {
+    setFlags(_flags & ~flags);
+}
+
 void AbstractConverter::setInputFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     /* Clearing the *File bits as those are present in *Data as well and thus
        this would pass even if only file conversion/validation is supported,

@@ -471,13 +471,35 @@ class MAGNUM_SHADERTOOLS_EXPORT AbstractConverter: public PluginManager::Abstrac
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ConverterFlag for more
-         * information. By default no flags are set.
+         * information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
          *
          * Corresponds to the `-q` / `--quiet`, `-v` / `--verbose`,
          * `--warning-as-error` and `-E` / `--preprocess-only` options
          * in @ref magnum-shaderconverter "magnum-shaderconverter".
          */
         void setFlags(ConverterFlags flags);
+
+        /**
+         * @brief Add converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(ConverterFlags flags);
+
+        /**
+         * @brief Clear converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(ConverterFlags flags);
 
         /**
          * @brief Input file callback function

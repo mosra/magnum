@@ -231,12 +231,34 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          *
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref SceneConverterFlag for more
-         * information. By default no flags are set.
+         * information. By default no flags are set. To avoid clearing
+         * potential future default flags by accident, prefer to use
+         * @ref addFlags() and @ref clearFlags() instead.
          *
          * Corresponds to the `-v` / `--verbose` option in
          * @ref magnum-sceneconverter "magnum-sceneconverter".
          */
         void setFlags(SceneConverterFlags flags);
+
+        /**
+         * @brief Add converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ORed with @p flags.
+         * Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        void addFlags(SceneConverterFlags flags);
+
+        /**
+         * @brief Clear converter flags
+         * @m_since_latest
+         *
+         * Calls @ref setFlags() with the existing flags ANDed with inverse of
+         * @p flags. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        void clearFlags(SceneConverterFlags flags);
 
         /**
          * @brief Convert a mesh

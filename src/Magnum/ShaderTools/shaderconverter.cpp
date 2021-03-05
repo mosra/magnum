@@ -470,7 +470,7 @@ see documentation of a particular converter for more information.)")
             }
         }
 
-        converter->setFlags(flags);
+        converter->addFlags(flags);
 
         /* If we want just SPIR-V info, convert to a SPIR-V and exit */
         if(args.isSet("info")) {

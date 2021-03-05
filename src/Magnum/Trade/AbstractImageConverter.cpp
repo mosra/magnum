@@ -85,6 +85,14 @@ void AbstractImageConverter::setFlags(ImageConverterFlags flags) {
 
 void AbstractImageConverter::doSetFlags(ImageConverterFlags) {}
 
+void AbstractImageConverter::addFlags(ImageConverterFlags flags) {
+    setFlags(_flags|flags);
+}
+
+void AbstractImageConverter::clearFlags(ImageConverterFlags flags) {
+    setFlags(_flags & ~flags);
+}
+
 Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
     CORRADE_ASSERT(features() & ImageConverterFeature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});

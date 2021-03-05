@@ -173,6 +173,11 @@ See also:
     well as support in @ref Trade::AnySceneImporter "AnySceneImporter"
 -   @ref Trade::LightData got extended to support light attenuation and range
     parameters as well and spot light inner and outer angle
+-   @ref Trade::AbstractImporter, @ref Trade::AbstractImageConverter and
+    @ref Trade::AbstractSceneConverter now has @relativeref{Trade::AbstractImporter,addFlags()} and
+    @relativeref{Trade::AbstractImporter,clearFlags()} convenience helpers that
+    are encouraged over @relativeref{Trade::AbstractImporter,setFlags()} as it
+    avoid accidentally clearing default flags potentially added in the future.
 
 @subsubsection changelog-latest-new-vk Vk library
 
