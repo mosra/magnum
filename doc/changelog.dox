@@ -263,6 +263,12 @@ See also:
     and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
     for consistency with other application implementations
 
+@subsubsection changelog-latest-changes-shaders SceneGraph library
+
+-   @ref SceneGraph trees are now destructed in a way that preserves
+    @ref SceneGraph::Object::parent() links up to the root as well as
+    @ref SceneGraph::AbstractFeature::object() references
+
 @subsubsection changelog-latest-changes-shaders Shaders library
 
 -   In the original implementation of normal mapping in @ref Shaders::Phong,
@@ -524,6 +530,12 @@ See also:
     afterwards. This can cause compilation breakages in case the type
     constructor has the parent parameter non-optional, pass the parent
     explicitly in that case.
+-   @ref SceneGraph trees are now destructed in a way that preserves
+    @ref SceneGraph::Object::parent() links up to the root as well as
+    @ref SceneGraph::AbstractFeature::object() references. Previous behavior
+    made both @cpp nullptr @ce even before the object/feature destructors were
+    called and so it's assumed no code relied on such behavior, nevertheless
+    it's a subtle change worth mentioning.
 -   Due to the rework of @ref Shaders::Phong to support directional and
     attenuated point lights, the original behavior of unattenuated point lights
     isn't available anymore. For backwards compatibility, light positions
