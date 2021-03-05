@@ -98,6 +98,9 @@ enum class SceneConverterFlag: UnsignedByte {
      * Print verbose diagnostic during conversion. By default the converter
      * only prints messages on error or when some operation might cause
      * unexpected data modification or loss.
+     *
+     * Corresponds to the `-v` / `--verbose` option in
+     * @ref magnum-sceneconverter "magnum-sceneconverter".
      */
     Verbose = 1 << 0
 
@@ -229,6 +232,9 @@ class MAGNUM_TRADE_EXPORT AbstractSceneConverter: public PluginManager::Abstract
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref SceneConverterFlag for more
          * information. By default no flags are set.
+         *
+         * Corresponds to the `-v` / `--verbose` option in
+         * @ref magnum-sceneconverter "magnum-sceneconverter".
          */
         void setFlags(SceneConverterFlags flags);
 

@@ -110,6 +110,9 @@ enum class ImageConverterFlag: UnsignedByte {
      * Print verbose diagnostic during conversion. By default the converter
      * only prints messages on error or when some operation might cause
      * unexpected data modification or loss.
+     *
+     * Corresponds to the `-v` / `--verbose` option in
+     * @ref magnum-imageconverter "magnum-imageconverter".
      */
     Verbose = 1 << 0
 
@@ -260,6 +263,9 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          * Some flags can be set only if the converter supports particular
          * features, see documentation of each @ref ImageConverterFlag for more
          * information. By default no flags are set.
+         *
+         * Corresponds to the `-v` / `--verbose` option in
+         * @ref magnum-imageconverter "magnum-imageconverter".
          */
         void setFlags(ImageConverterFlags flags);
 

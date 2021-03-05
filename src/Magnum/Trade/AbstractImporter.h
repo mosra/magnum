@@ -101,6 +101,11 @@ enum class ImporterFlag: UnsignedByte {
      * Print verbose diagnostic during import. By default the importer only
      * prints messages on error or when some operation might cause unexpected
      * data modification or loss.
+     *
+     * Corresponds to the `-v` / `--verbose` option in
+     * @ref magnum-imageconverter "magnum-imageconverter",
+     * @ref magnum-sceneconverter "magnum-sceneconverter" and
+     * @ref magnum-player "magnum-player".
      */
     Verbose = 1 << 0,
 
@@ -393,6 +398,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * opened. Some flags can be set only if the importer supports
          * particular features, see documentation of each @ref ImporterFlag for
          * more information. By default no flags are set.
+         *
+         * Corresponds to the `-v` / `--verbose` option in
+         * @ref magnum-imageconverter "magnum-imageconverter",
+         * @ref magnum-sceneconverter "magnum-sceneconverter" and
+         * @ref magnum-player "magnum-player".
          */
         void setFlags(ImporterFlags flags);
 
