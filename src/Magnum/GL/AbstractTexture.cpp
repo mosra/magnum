@@ -28,7 +28,6 @@
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/Array.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
 #ifndef MAGNUM_TARGET_GLES2
@@ -2354,12 +2353,12 @@ void AbstractTexture::DataHelper<3>::invalidateSubImage(AbstractTexture& texture
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const Array1D<SamplerWrapping>& wrapping) {
-    (texture.*Context::current().state().texture.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
+void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const Math::Vector<1, SamplerWrapping>& wrapping) {
+    (texture.*Context::current().state().texture.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping[0]));
 }
 #endif
 
-void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<SamplerWrapping>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Math::Vector2<SamplerWrapping>& wrapping) {
     const Implementation::TextureState& state = Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
@@ -2367,7 +2366,7 @@ void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Array3D<SamplerWrapping>& wrapping) {
+void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Math::Vector3<SamplerWrapping>& wrapping) {
     const Implementation::TextureState& state = Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));

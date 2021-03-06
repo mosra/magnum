@@ -29,12 +29,18 @@
  * @brief Function @ref Magnum::Vk::hasVkPrimitiveTopology(), @ref Magnum::Vk::vkPrimitiveTopology(), @ref Magnum::Vk::hasVkIndexType(), @ref Magnum::Vk::vkIndexType(), @ref Magnum::Vk::hasVkFormat(), @ref Magnum::Vk::vkFormat(), @ref Magnum::Vk::vkFilter(), @ref Magnum::Vk::vkSamplerMipmapMode(), @ref Magnum::Vk::hasVkSamplerAddressMode(), @ref Magnum::Vk::vkSamplerAddressMode()
  */
 
-#include "Magnum/Array.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Vulkan.h"
 #include "Magnum/Vk/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
+#endif
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For implicit conversions to Vector<SamplerWrapping>, not used otherwise */
+#include "Magnum/Array.h"
 #endif
 
 namespace Magnum { namespace Vk {
@@ -147,8 +153,8 @@ to query availability of given mode.
 MAGNUM_VK_EXPORT VkSamplerAddressMode vkSamplerAddressMode(Magnum::SamplerWrapping wrapping);
 
 /** @overload */
-template<UnsignedInt dimensions> Array<dimensions, VkSamplerAddressMode> vkSamplerAddressMode(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
-    Array<dimensions, VkSamplerAddressMode> out; /** @todo NoInit */
+template<std::size_t dimensions> Math::Vector<dimensions, VkSamplerAddressMode> vkSamplerAddressMode(const Math::Vector<dimensions, Magnum::SamplerWrapping>& wrapping) {
+    Math::Vector<dimensions, VkSamplerAddressMode> out{NoInit};
     for(std::size_t i = 0; i != dimensions; ++i)
         out[i] = vkSamplerAddressMode(wrapping[i]);
     return out;

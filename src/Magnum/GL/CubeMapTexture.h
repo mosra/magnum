@@ -29,11 +29,15 @@
  * @brief Class @ref Magnum::GL::CubeMapTexture, enum @ref Magnum::GL::CubeMapCoordinate
  */
 
-#include "Magnum/Array.h"
 #include "Magnum/Sampler.h"
 #include "Magnum/GL/AbstractTexture.h"
 #include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector2.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For implicit conversions to Vector<SamplerWrapping>, not used otherwise */
+#include "Magnum/Array.h"
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -348,14 +352,30 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setWrapping() for more information.
          */
-        CubeMapTexture& setWrapping(const Array2D<SamplerWrapping>& wrapping) {
+        CubeMapTexture& setWrapping(const Math::Vector2<SamplerWrapping>& wrapping) {
             DataHelper<2>::setWrapping(*this, wrapping);
             return *this;
         }
 
         /** @overload */
-        CubeMapTexture& setWrapping(const Array2D<Magnum::SamplerWrapping>& wrapping) {
+        CubeMapTexture& setWrapping(const Math::Vector2<Magnum::SamplerWrapping>& wrapping) {
             return setWrapping(samplerWrapping(wrapping));
+        }
+
+        /**
+         * @brief Set the same wrapping for all dimensions
+         * @return Reference to self (for method chaining)
+         *
+         * Same as calling @ref setWrapping(const Math::Vector2<SamplerWrapping>&)
+         * with the same value for all dimensions.
+         */
+        CubeMapTexture& setWrapping(SamplerWrapping wrapping) {
+            return setWrapping(Math::Vector2<SamplerWrapping>{wrapping});
+        }
+
+        /** @overload */
+        CubeMapTexture& setWrapping(Magnum::SamplerWrapping wrapping) {
+            return setWrapping(Math::Vector2<Magnum::SamplerWrapping>{wrapping});
         }
 
         #ifndef MAGNUM_TARGET_WEBGL

@@ -29,10 +29,15 @@
  * @brief Class @ref Magnum::GL::Sampler, enum @ref Magnum::GL::SamplerFilter, @ref Magnum::GL::SamplerMipmap, @ref Magnum::GL::SamplerWrapping, @ref Magnum::GL::SamplerCompareMode, @ref Magnum::GL::SamplerCompareFunction, @ref Magnum::GL::SamplerDepthStencilMode, function @ref Magnum::GL::samplerFilter(), @ref Magnum::GL::samplerMipmap(), @ref Magnum::GL::hasSamplerWrapping(), @ref Magnum::GL::samplerWrapping()
  */
 
-#include "Magnum/Array.h"
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
+#include "Magnum/Math/Vector3.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For implicit conversions to Vector<SamplerWrapping>, not used otherwise */
+#include "Magnum/Array.h"
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -201,8 +206,8 @@ function expects that given format is available on the target. Use
 MAGNUM_GL_EXPORT SamplerWrapping samplerWrapping(Magnum::SamplerWrapping wrapping);
 
 /** @overload */
-template<UnsignedInt dimensions> Array<dimensions, SamplerWrapping> samplerWrapping(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
-    Array<dimensions, SamplerWrapping> out; /** @todo NoInit */
+template<std::size_t dimensions> Math::Vector<dimensions, SamplerWrapping> samplerWrapping(const Math::Vector<dimensions, Magnum::SamplerWrapping>& wrapping) {
+    Math::Vector<dimensions, SamplerWrapping> out{NoInit};
     for(std::size_t i = 0; i != dimensions; ++i)
         out[i] = samplerWrapping(wrapping[i]);
     return out;

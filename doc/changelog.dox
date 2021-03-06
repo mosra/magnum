@@ -380,6 +380,18 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   The @cpp Array @ce, @cpp Array1D @ce, @cpp Array2D @ce and
+    @cpp Array3D @ce types that were used exclusively for specifying
+    @ref SamplerWrapping in various texture APIs are deprecated in favor of
+    @ref Math::Vector and its subclasses and all existing APIs were switched to
+    it. The only advantage of this type compared to @ref Math::Vector was that
+    it provided an implicit constructor from a single value (whereas
+    @ref Math::Vector has it @cpp explicit @ce), and that's now solved by
+    simply providing an overload with just a single value where it matters.
+    It was also commonly confused with @relativeref{Corrade,Containers::Array},
+    which is a type with totally different semantics. To avoid breaking
+    existing code, conversion from and to @ref Math::Vector is now provided and
+    this type is included in all places where it was originally used.
 -   Markup styling for Emscripten application was switched to prefer using
     CSS classes instead of the @cb{.css} #container @ce, @cb{.css} #sizer @ce,
     @cb{.css} #expander @ce, @cb{.css} #listener @ce, @cb{.css} #canvas @ce,

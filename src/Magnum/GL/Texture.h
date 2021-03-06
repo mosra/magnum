@@ -29,12 +29,16 @@
  * @brief Class @ref Magnum::GL::Texture, typedef @ref Magnum::GL::Texture1D, @ref Magnum::GL::Texture2D, @ref Magnum::GL::Texture3D
  */
 
-#include "Magnum/Array.h"
 #include "Magnum/Sampler.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractTexture.h"
 #include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector3.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* For implicit conversions to Vector<SamplerWrapping>, not used otherwise */
+#include "Magnum/Array.h"
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -468,14 +472,30 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_WRAP_S},
          *      @def_gl_keyword{TEXTURE_WRAP_T}, @def_gl_keyword{TEXTURE_WRAP_R}
          */
-        Texture<dimensions>& setWrapping(const Array<dimensions, SamplerWrapping>& wrapping) {
+        Texture<dimensions>& setWrapping(const Math::Vector<dimensions, SamplerWrapping>& wrapping) {
             DataHelper<dimensions>::setWrapping(*this, wrapping);
             return *this;
         }
 
         /** @overload */
-        Texture<dimensions>& setWrapping(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
+        Texture<dimensions>& setWrapping(const Math::Vector<dimensions, Magnum::SamplerWrapping>& wrapping) {
             return setWrapping(samplerWrapping(wrapping));
+        }
+
+        /**
+         * @brief Set the same wrapping for all dimensions
+         * @return Reference to self (for method chaining)
+         *
+         * Same as calling @ref setWrapping(const Math::Vector<dimensions, SamplerWrapping>&)
+         * with the same value for all dimensions.
+         */
+        Texture<dimensions>& setWrapping(SamplerWrapping wrapping) {
+            return setWrapping(Math::Vector<dimensions, SamplerWrapping>{wrapping});
+        }
+
+        /** @overload */
+        Texture<dimensions>& setWrapping(Magnum::SamplerWrapping wrapping) {
+            return setWrapping(Math::Vector<dimensions, Magnum::SamplerWrapping>{wrapping});
         }
 
         #ifndef MAGNUM_TARGET_WEBGL

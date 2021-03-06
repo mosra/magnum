@@ -34,6 +34,10 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /* Bring whole Corrade namespace */
@@ -1129,10 +1133,12 @@ typedef Math::Frustum<Double> Frustumd;
  */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt, class T> class Array;
-template<class T> class Array1D;
-template<class T> class Array2D;
-template<class T> class Array3D;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt, class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector instead") Array1D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector2 instead") Array2D;
+template<class T> class CORRADE_DEPRECATED("use Math::Vector3 instead") Array3D;
+#endif
 
 enum class InputFileCallbackPolicy: UnsignedByte;
 

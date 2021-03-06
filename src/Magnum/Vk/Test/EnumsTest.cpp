@@ -115,7 +115,7 @@ void EnumsTest::mapVkSamplerAddressMode() {
 }
 
 void EnumsTest::mapVkSamplerAddressModeArray() {
-    CORRADE_COMPARE(vkSamplerAddressMode<2>({SamplerWrapping::Repeat, SamplerWrapping::ClampToBorder}), (Array2D<VkSamplerAddressMode>{VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER}));
+    CORRADE_COMPARE(vkSamplerAddressMode<2>({SamplerWrapping::Repeat, SamplerWrapping::ClampToBorder}), (Math::Vector2<VkSamplerAddressMode>{VK_SAMPLER_ADDRESS_MODE_REPEAT, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER}));
 }
 
 void EnumsTest::mapVkSamplerAddressModeUnsupported() {

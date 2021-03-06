@@ -40,7 +40,7 @@ struct SamplerTest: TestSuite::Tester {
     void mapMipmap();
     void mapMipmapInvalid();
     void mapWrapping();
-    void mapWrappingArray();
+    void mapWrappingVector();
     void mapWrappingInvalid();
     void mapWrappingUnsupported();
 
@@ -62,7 +62,7 @@ SamplerTest::SamplerTest() {
               &SamplerTest::mapMipmap,
               &SamplerTest::mapMipmapInvalid,
               &SamplerTest::mapWrapping,
-              &SamplerTest::mapWrappingArray,
+              &SamplerTest::mapWrappingVector,
               &SamplerTest::mapWrappingInvalid,
               &SamplerTest::mapWrappingUnsupported,
 
@@ -137,8 +137,8 @@ void SamplerTest::mapWrapping() {
     #endif
 }
 
-void SamplerTest::mapWrappingArray() {
-    CORRADE_COMPARE(samplerWrapping<2>({Magnum::SamplerWrapping::Repeat, Magnum::SamplerWrapping::ClampToEdge}), (Array2D<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge}));
+void SamplerTest::mapWrappingVector() {
+    CORRADE_COMPARE(samplerWrapping<2>({Magnum::SamplerWrapping::Repeat, Magnum::SamplerWrapping::ClampToEdge}), (Math::Vector2<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge}));
 }
 
 void SamplerTest::mapWrappingInvalid() {

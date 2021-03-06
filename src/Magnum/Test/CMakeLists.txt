@@ -23,7 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
 corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES MagnumTestLib)
@@ -41,7 +40,6 @@ corrade_add_test(MagnumVersionTest VersionTest.cpp LIBRARIES Magnum)
 corrade_add_test(VertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumTestLib)
 
 set_target_properties(
-    ArrayTest
     ImageTest
     ImageViewTest
     MeshTest
@@ -53,6 +51,11 @@ set_target_properties(
     MagnumVersionTest
     VertexFormatTest
     PROPERTIES FOLDER "Magnum/Test")
+
+if(MAGNUM_BUILD_DEPRECATED)
+    corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
+    set_target_properties(ArrayTest PROPERTIES FOLDER "Magnum/Test")
+endif()
 
 set_property(TARGET
     MeshTest
