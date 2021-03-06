@@ -135,9 +135,6 @@ template<class T> class Array1D: public Array<1, T> {
          */
         constexpr /*implicit*/ Array1D(T x): Array<1, T>(x) {}
 
-        /** @brief Copy constructor */
-        constexpr Array1D(const Array<1, T>& other): Array<1, T>(other) {}
-
         T& x() { return Array<1, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<1, T>::_data[0]; } /**< @overload */
 };
@@ -160,9 +157,6 @@ template<class T> class Array2D: public Array<2, T> {
 
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
-
-        /** @brief Copy constructor */
-        constexpr Array2D(const Array<2, T>& other): Array<2, T>(other) {}
 
         T& x() { return Array<2, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<2, T>::_data[0]; } /**< @overload */
@@ -189,9 +183,6 @@ template<class T> class Array3D: public Array<3, T> {
 
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
-
-        /** @brief Copy constructor */
-        constexpr Array3D(const Array<3, T>& other): Array<3, T>(other) {}
 
         T& x() { return Array<3, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<3, T>::_data[0]; } /**< @overload */
