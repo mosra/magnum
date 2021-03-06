@@ -263,7 +263,7 @@ See also:
     and @ref Platform::EmscriptenApplication::Configuration::clearWindowFlags()
     for consistency with other application implementations
 
-@subsubsection changelog-latest-changes-shaders SceneGraph library
+@subsubsection changelog-latest-changes-scenegraph SceneGraph library
 
 -   @ref SceneGraph trees are now destructed in a way that preserves
     @ref SceneGraph::Object::parent() links up to the root as well as
