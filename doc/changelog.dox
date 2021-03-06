@@ -407,6 +407,10 @@ See also:
 -   @cpp Trade::AbstractMaterialData @ce as well as its containing header
     `Magnum/Trade/AbstractMaterialData.h` is now a deprecated alias to the new
     and more flexible @ref Trade::MaterialData.
+-   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
+    OpenGEX specification, is deprecated in favor of
+    @ref Trade::LightData::Type::Directional as that's the more commonly used
+    term
 -   @cpp Trade::PhongMaterialData::ambientCoordinateSet() @ce,
     @cpp diffuseCoordinateSet() @ce, @cpp specularCoordinateSet() @ce and
     @cpp normalCoordinateSet() @ce are deprecated in favor of more consistently
@@ -562,10 +566,6 @@ See also:
     interfaces, which are also @cpp const @ce and can't fail. Documentation of
     each function was expanded to suggest a recommended place for potential
     error handling.
--   @cpp Trade::LightData::Type::Infinite @ce, originally adapted from the
-    OpenGEX specification, is deprecated in favor of
-    @ref Trade::LightData::Type::Directional as that's the more commonly used
-    term
 
 @subsection changelog-latest-documentation Documentation
 
