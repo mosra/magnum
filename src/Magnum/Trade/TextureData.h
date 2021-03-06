@@ -64,7 +64,7 @@ class TextureData {
          * @param image                 Texture image ID
          * @param importerState         Importer-specific state
          */
-        TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, Array3D<SamplerWrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        explicit TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, Array3D<SamplerWrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;

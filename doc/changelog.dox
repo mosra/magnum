@@ -566,6 +566,8 @@ See also:
     interfaces, which are also @cpp const @ce and can't fail. Documentation of
     each function was expanded to suggest a recommended place for potential
     error handling.
+-   @ref Trade::TextureData constructor was not @cpp explicit @ce by mistake,
+    now it is
 
 @subsection changelog-latest-documentation Documentation
 
