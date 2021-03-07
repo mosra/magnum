@@ -1032,7 +1032,7 @@ cmd.begin()
 }
 
 {
-Vk::Device device{DOXYGEN_IGNORE(NoCreate)};
+Vk::Device device{NoCreate};
 /* The include should be a no-op here since it was already included above */
 /* [Shader-creation] */
 #include <Magnum/Vk/ShaderCreateInfo.h>

@@ -41,6 +41,8 @@ namespace Magnum { namespace Vk {
 @m_since_latest
 
 Wraps a @type_vk_keyword{IndexType}.
+@see @ref Magnum::MeshIndexType, @ref meshIndexType(),
+    @ref Mesh::setIndexBuffer()
 */
 enum class MeshIndexType: Int {
     /**

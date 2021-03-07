@@ -64,11 +64,13 @@ Vulkan handle                           | Matching API
 @type_vk{DescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{Device}                        | @ref Device
 @type_vk{DeviceMemory}                  | @ref Memory
+@type_vk{Event}                         | |
 @type_vk{Fence}                         | @ref Fence
 @type_vk{Framebuffer}                   | @ref Framebuffer
 @type_vk{Image}                         | @ref Image
 @type_vk{ImageView}                     | @ref ImageView
 @type_vk{Instance}                      | @ref Instance
+@type_vk{PipelineCache}                 | |
 @type_vk{PhysicalDevice}                | @ref DeviceProperties
 @type_vk{Pipeline}                      | @ref Pipeline
 @type_vk{PipelineLayout}                | @ref PipelineLayout
@@ -830,7 +832,7 @@ Vulkan enum                             | Matching API
 @type_vk{DescriptorUpdateTemplateType} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DescriptorType}                | |
 @type_vk{DeviceQueueCreateFlagBits}, \n @type_vk{DeviceQueueCreateFlags} | |
-@type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
+@type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceDriver
 @type_vk{DynamicState}                  | @ref DynamicRasterizationState
 
 @subsection vulkan-mapping-enums-e E
@@ -968,7 +970,7 @@ Vulkan enum                             | Matching API
 @type_vk{SemaphoreWaitFlagBits} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @type_vk{SemaphoreWaitFlags} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderFloatControlsIndependence} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderGroupShaderKHR} @m_class{m-label m-flat m-warning} **KHR** | |
-@type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flags
+@type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flag, \n @ref ShaderCreateInfo::Flags
 @type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage
 @type_vk{SharingMode}                   | |
 @type_vk{SparseImageFormatFlagBits}, \n @type_vk{SparseImageFormatFlags} | |
