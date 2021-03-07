@@ -30,7 +30,6 @@ corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDevicePropertiesTest DevicePropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceFeaturesTest DeviceFeaturesTest.cpp LIBRARIES MagnumVk)
-corrade_add_test(VkEnumsTest EnumsTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkExtensionsTest ExtensionsTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkExtensionPropertiesTest ExtensionPropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkFenceTest FenceTest.cpp LIBRARIES MagnumVk)
@@ -50,6 +49,7 @@ corrade_add_test(VkPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumVkTestLib
 corrade_add_test(VkQueueTest QueueTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkResultTest ResultTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkRenderPassTest RenderPassTest.cpp LIBRARIES MagnumVkTestLib)
+corrade_add_test(VkSamplerTest SamplerTest.cpp LIBRARIES MagnumVkTestLib)
 
 corrade_add_test(VkShaderTest ShaderTest.cpp LIBRARIES MagnumVk)
 target_include_directories(VkShaderTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
@@ -132,7 +132,6 @@ set_target_properties(
     VkDeviceTest
     VkDeviceFeaturesTest
     VkDevicePropertiesTest
-    VkEnumsTest
     VkExtensionsTest
     VkExtensionPropertiesTest
     VkFenceTest
@@ -152,6 +151,7 @@ set_target_properties(
     VkQueueTest
     VkResultTest
     VkRenderPassTest
+    VkSamplerTest
     VkShaderTest
     VkShaderSetTest
     VkStructureHelpersTest
@@ -226,13 +226,17 @@ if(BUILD_VK_TESTS)
         LIBRARIES MagnumVkTestLib MagnumVulkanTester
         FILES triangle-shaders.spv compute-noop.spv)
     target_include_directories(VkPipelineVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
     corrade_add_test(VkPipelineLayoutVkTest PipelineLayoutVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkQueueVkTest QueueVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkRenderPassVkTest RenderPassVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
+    corrade_add_test(VkSamplerVkTest SamplerVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
+
     corrade_add_test(VkShaderVkTest ShaderVkTest.cpp
         LIBRARIES MagnumVk MagnumVulkanTester
         FILES triangle-shaders.spv)
     target_include_directories(VkShaderVkTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+
     corrade_add_test(VkVersionVkTest VersionVkTest.cpp LIBRARIES MagnumVk)
 
     set_target_properties(
@@ -254,6 +258,7 @@ if(BUILD_VK_TESTS)
         VkPipelineLayoutVkTest
         VkQueueVkTest
         VkRenderPassVkTest
+        VkSamplerVkTest
         VkShaderVkTest
         VkVersionVkTest
         PROPERTIES FOLDER "Magnum/Vk/Test")

@@ -31,6 +31,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/VertexFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Vk/Assert.h"
@@ -59,6 +60,7 @@
 #include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
 #include "Magnum/Vk/RenderPassCreateInfo.h"
 #include "Magnum/Vk/Result.h"
+#include "Magnum/Vk/SamplerCreateInfo.h"
 #include "Magnum/Vk/ShaderCreateInfo.h"
 #include "Magnum/Vk/ShaderSet.h"
 #include "MagnumExternal/Vulkan/flextVkGlobal.h"
@@ -1029,6 +1031,29 @@ cmd.begin()
    DOXYGEN_IGNORE()
    .end();
 /* [RenderPass-usage-end] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [Sampler-creation] */
+#include <Magnum/Vk/SamplerCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}};
+/* [Sampler-creation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [Sampler-creation-linear] */
+Vk::Sampler sampler{device, Vk::SamplerCreateInfo{}
+    .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
+    .setMagnificationFilter(SamplerFilter::Linear)
+    .setWrapping(SamplerWrapping::ClampToEdge)
+};
+/* [Sampler-creation-linear] */
 }
 
 {

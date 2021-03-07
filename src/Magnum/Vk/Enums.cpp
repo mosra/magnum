@@ -23,46 +23,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_NO_DEPRECATED_VK_ENUMS
+
 #include "Enums.h"
 
-#include <Corrade/Containers/ArrayView.h>
-
-#include "Magnum/Mesh.h"
-#include "Magnum/Sampler.h"
-
-#ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/Vk/MeshLayout.h"
 #include "Magnum/Vk/Mesh.h"
 #include "Magnum/Vk/PixelFormat.h"
+#include "Magnum/Vk/SamplerCreateInfo.h"
 #include "Magnum/Vk/VertexFormat.h"
-#endif
 
 namespace Magnum { namespace Vk {
 
-namespace {
-
-constexpr VkFilter FilterMapping[]{
-    VK_FILTER_NEAREST,
-    VK_FILTER_LINEAR
-};
-
-constexpr VkSamplerMipmapMode SamplerMipmapModeMapping[]{
-    VK_SAMPLER_MIPMAP_MODE_NEAREST, /* See vkSamplerMipmapMode() for details */
-    VK_SAMPLER_MIPMAP_MODE_NEAREST,
-    VK_SAMPLER_MIPMAP_MODE_LINEAR
-};
-
-constexpr VkSamplerAddressMode SamplerAddressModeMapping[]{
-    VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
-    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
-    VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
-    VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
-};
-
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
 bool hasVkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
     return hasMeshPrimitive(primitive);
 }
@@ -71,7 +43,7 @@ VkPrimitiveTopology vkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
     return VkPrimitiveTopology(meshPrimitive(primitive));
 }
 
-bool hasVkIndexType(const Magnum::MeshIndexType) {
+bool hasVkIndexType(Magnum::MeshIndexType) {
     return true;
 }
 
@@ -102,33 +74,21 @@ VkFormat vkFormat(const Magnum::PixelFormat format) {
 VkFormat vkFormat(const Magnum::CompressedPixelFormat format) {
     return VkFormat(pixelFormat(format));
 }
-#endif
 
 VkFilter vkFilter(const Magnum::SamplerFilter filter) {
-    CORRADE_ASSERT(UnsignedInt(filter) < Containers::arraySize(FilterMapping),
-        "Vk::vkFilter(): invalid filter" << filter, {});
-    return FilterMapping[UnsignedInt(filter)];
+    return VkFilter(samplerFilter(filter));
 }
 
 VkSamplerMipmapMode vkSamplerMipmapMode(const Magnum::SamplerMipmap mipmap) {
-    CORRADE_ASSERT(UnsignedInt(mipmap) < Containers::arraySize(SamplerMipmapModeMapping),
-        "Vk::vkSamplerMipmapMode(): invalid mode" << mipmap, {});
-    return SamplerMipmapModeMapping[UnsignedInt(mipmap)];
+    return VkSamplerMipmapMode(samplerMipmap(mipmap));
 }
 
-bool hasVkSamplerAddressMode(const Magnum::SamplerWrapping wrapping) {
-    CORRADE_ASSERT(UnsignedInt(wrapping) < Containers::arraySize(SamplerAddressModeMapping),
-        "Vk::hasVkSamplerAddressMode(): invalid wrapping" << wrapping, {});
-    return UnsignedInt(SamplerAddressModeMapping[UnsignedInt(wrapping)]) != ~UnsignedInt{};
+bool hasVkSamplerAddressMode(Magnum::SamplerWrapping) {
+    return true;
 }
 
 VkSamplerAddressMode vkSamplerAddressMode(const Magnum::SamplerWrapping wrapping) {
-    CORRADE_ASSERT(UnsignedInt(wrapping) < Containers::arraySize(SamplerAddressModeMapping),
-        "Vk::vkSamplerAddressMode(): invalid wrapping" << wrapping, {});
-    const VkSamplerAddressMode out = SamplerAddressModeMapping[UnsignedInt(wrapping)];
-    CORRADE_ASSERT(out != VkSamplerAddressMode(~UnsignedInt{}),
-        "Vk::vkSamplerAddressMode(): unsupported wrapping" << wrapping, {});
-    return out;
+    return VkSamplerAddressMode(samplerWrapping(wrapping));
 }
 
 }}

@@ -119,6 +119,11 @@ class RenderPassCreateInfo;
    SubpassDependency are useful only to be passed directly to
    RenderPassCreateInfo */
 enum class Result: Int;
+class Sampler;
+class SamplerCreateInfo;
+enum class SamplerFilter: Int;
+enum class SamplerMipmap: Int;
+enum class SamplerWrapping: Int;
 class Shader;
 class ShaderCreateInfo;
 class ShaderSet;

@@ -77,7 +77,7 @@ Vulkan handle                           | Matching API
 @type_vk{QueryPool}                     | |
 @type_vk{Queue}                         | @ref Queue
 @type_vk{RenderPass}                    | @ref RenderPass
-@type_vk{Sampler}                       | |
+@type_vk{Sampler}                       | @ref Sampler
 @type_vk{SamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{Semaphore}                     | |
 @type_vk{ShaderModule}                  | @ref Shader
@@ -205,7 +205,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreatePipelineLayout}, \n @fn_vk{DestroyPipelineLayout} | @ref PipelineLayout constructor and destructor
 @fn_vk{CreateQueryPool}, \n @fn_vk{DestroyQueryPool} | |
 @fn_vk{CreateRenderPass}, \n @fn_vk{CreateRenderPass2} @m_class{m-label m-flat m-success} **KHR, 1.2**, \n @fn_vk{DestroyRenderPass} | @ref RenderPass constructor and destructor
-@fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | |
+@fn_vk{CreateSampler}, \n @fn_vk{DestroySampler} | @ref Sampler constructor and destructor
 @fn_vk{CreateSamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** , \n @fn_vk{DestroySamplerYcbcrConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateSemaphore}, \n @fn_vk{DestroySemaphore} | |
 @fn_vk{CreateShaderModule}, \n @fn_vk{DestroyShaderModule} | @ref Shader constructor and destructor
@@ -707,7 +707,7 @@ Vulkan structure                        | Matching API
 
 Vulkan structure                        | Matching API
 --------------------------------------- | ------------
-@type_vk{SamplerCreateInfo}             | |
+@type_vk{SamplerCreateInfo}             | @ref SamplerCreateInfo
 @type_vk{SamplerReductionModeCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{SamplerYcbcrConversionCreateInfo} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{SamplerYcbcrConversionImageFormatProperties} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
@@ -854,7 +854,7 @@ Vulkan enum                             | Matching API
 
 Vulkan enum                             | Matching API
 --------------------------------------- | ------------
-@type_vk{Filter}                        | only @ref vkFilter()
+@type_vk{Filter}                        | @ref SamplerFilter
 @type_vk{Format}                        | @ref PixelFormat, @ref VertexFormat
 @type_vk{FormatFeatureFlagBits}, \n @type_vk{FormatFeatureFlags} | |
 @type_vk{FramebufferCreateFlagBits}, \n @type_vk{FramebufferCreateFlags} | @ref FramebufferCreateInfo::Flag, \n @ref FramebufferCreateInfo::Flags
@@ -960,9 +960,9 @@ Vulkan enum                             | Matching API
 Vulkan enum                             | Matching API
 --------------------------------------- | ------------
 @type_vk{SampleCountFlagBits}, \n @type_vk{SampleCountFlags} | not exposed, using plain integers instead
-@type_vk{SamplerAddressMode}            | only @ref vkSamplerAddressMode()
-@type_vk{SamplerMipmapMode}             | only @ref vkSamplerMipmapMode()
-@type_vk{SamplerCreateFlagBits}, \n @type_vk{SamplerCreateFlags} | |
+@type_vk{SamplerAddressMode}            | @ref SamplerWrapping
+@type_vk{SamplerMipmapMode}             | @ref SamplerMipmap
+@type_vk{SamplerCreateFlagBits}, \n @type_vk{SamplerCreateFlags} | @ref SamplerCreateInfo::Flag, \n @ref SamplerCreateInfo::Flags
 @type_vk{SamplerReductionMode} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{SamplerYcbcrModelConversion} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{SamplerYcbcrRange} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
