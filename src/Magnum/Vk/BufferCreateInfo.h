@@ -49,10 +49,19 @@ Wraps a @type_vk_keyword{BufferUsageFlagBits}.
 @m_enum_values_as_keywords
 */
 enum class BufferUsage: UnsignedInt {
-    /** Source of a transfer command */
+    /**
+     * Source of a transfer command.
+     * @see @ref CommandBuffer::copyBuffer(),
+     *      @ref CommandBuffer::copyBufferToImage()
+     */
     TransferSource = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 
-    /** Destination of a transfer command */
+    /**
+     * Destination of a transfer command.
+     * @see @ref CommandBuffer::fillBuffer(),
+     *      @ref CommandBuffer::copyBuffer(),
+     *      @ref CommandBuffer::copyImageToBuffer()
+     */
     TransferDestination = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 
     /** Suitable for creating a uniform texel buffer view */
@@ -67,10 +76,16 @@ enum class BufferUsage: UnsignedInt {
     /** Suitable for a storage buffer */
     StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 
-    /** Suitable for an index buffer */
+    /**
+     * Suitable for an index buffer.
+     * @see @ref Mesh::setIndexBuffer()
+     */
     IndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 
-    /** Suitable for a vertex buffer */
+    /**
+     * Suitable for a vertex buffer.
+     * @see @ref Mesh::addVertexBuffer()
+     */
     VertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 
     /** Suitable for a indirect draw buffer */

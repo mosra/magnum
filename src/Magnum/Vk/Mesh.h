@@ -276,7 +276,8 @@ class MAGNUM_VK_EXPORT Mesh {
          * @param binding   Binding corresponding to a particular
          *      @ref MeshLayout::addBinding() call
          * @param buffer    A @ref Buffer instance or a raw Vulkan buffer
-         *      handle
+         *      handle. Expected to have been created with
+         *      @ref BufferUsage::VertexBuffer.
          * @param offset    Offset into the buffer, in bytes
          * @return Reference to self (for method chaining)
          *
@@ -297,7 +298,8 @@ class MAGNUM_VK_EXPORT Mesh {
         /**
          * @brief Set an index buffer
          * @param buffer    A @ref Buffer instance or a raw Vulkan buffer
-         *      handle
+         *      handle. Expected to have been created with
+         *      @ref BufferUsage::IndexBuffer.
          * @param offset    Offset into the buffer, in bytes
          * @param indexType Index type
          * @return Reference to self (for method chaining)

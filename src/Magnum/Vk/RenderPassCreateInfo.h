@@ -358,9 +358,8 @@ class MAGNUM_VK_EXPORT AttachmentReference {
          * @brief Constructor
          * @param attachment    Attachment index from the list passed to
          *      @ref RenderPassCreateInfo::setAttachments()
-         * @param layout        Image layout. Should correspond to what's
-         *      passed to @p initialLayout and @p finalLayout in
-         *      @ref AttachmentDescription constructor.
+         * @param layout        Image layout. Should correspond to where the
+         *      reference is used in a @ref SubpassDescription.
          *
          * The following @type_vk{AttachmentReference2} fields are pre-filled
          * in addition to `sType`, everything else is zero-filled:
@@ -563,8 +562,10 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * Attachments that are being read from in this subpass. The elements
          * correspond to shader input attachment indices, i.e. a shader input
          * attachment index @cpp 5 @ce will read from the attachment specified
-         * at offset @cpp 5 @ce in this list. Use a default-constructed
-         * @ref AttachmentReference to specify that given input will be unused.
+         * at offset @cpp 5 @ce in this list. Attachment references should use
+         * either @ref ImageLayout::General or @ref ImageLayout::ShaderReadOnly;
+         * use a default-constructed @ref AttachmentReference to specify that
+         * given input will be unused.
          */
         SubpassDescription& setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) &;
         /** @overload */
@@ -585,9 +586,11 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          *
          * The elements correspond to shader color attachment indices, i.e. a
          * shader output attachment index @cpp 5 @ce will write from the
-         * attachment specified at offset @cpp 5 @ce in this list. Use a
-         * default-constructed @ref AttachmentReference to specify that given
-         * output will be unused.
+         * attachment specified at offset @cpp 5 @ce in this list. Attachment
+         * references should use either @ref ImageLayout::General or
+         * @ref ImageLayout::ColorAttachment; use a default-constructed
+         * @ref AttachmentReference to specify that given output will be
+         * unused.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         SubpassDescription& setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments, Containers::ArrayView<const AttachmentReference> resolveAttachments = {}) &;
@@ -610,9 +613,11 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * @return Reference to self (for method chaining)
          *
          * Depth/stencil attachment that is being written to in this subpass.
-         * Calling this function with a default-constructed
-         * @ref AttachmentReference is equivalent to not calling it at all, and
-         * both mean there's no depth/stencil attachment.
+         * The attachment reference should use either @ref ImageLayout::General
+         * or @ref ImageLayout::DepthStencilAttachment; calling this function
+         * with a default-constructed @ref AttachmentReference is equivalent to
+         * not calling it at all, and both mean there's no depth/stencil
+         * attachment.
          */
         SubpassDescription& setDepthStencilAttachment(AttachmentReference attachment) &;
         /** @overload */
