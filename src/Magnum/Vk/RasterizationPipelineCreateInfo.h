@@ -454,8 +454,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          * @f$ [0.0, 1.0] @f$.
          *
          * The following @type_vk{GraphicsPipelineCreateInfo} and substructure
-         * fields are modified, in addition to `sType` of newly referenced
-         * structures:
+         * fields are modified by this function, in addition to `sType` of
+         * newly referenced structures:
          *
          * -    `pViewportState`
          * -    @cpp pViewportState->viewportCount @ce to @cpp 1 @ce
@@ -501,8 +501,8 @@ class MAGNUM_VK_EXPORT RasterizationPipelineCreateInfo {
          * @brief Set dynamic states
          *
          * The following @type_vk{GraphicsPipelineCreateInfo} and substructure
-         * fields are modified, in addition to `sType` of newly referenced
-         * structures:
+         * fields are modified by this function, in addition to `sType` of
+         * newly referenced structures:
          *
          * -    `pDynamicState`
          * -    @cpp pDynamicState->dynamicStateCount @ce to count of values

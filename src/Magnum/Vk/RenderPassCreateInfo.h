@@ -566,6 +566,12 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * either @ref ImageLayout::General or @ref ImageLayout::ShaderReadOnly;
          * use a default-constructed @ref AttachmentReference to specify that
          * given input will be unused.
+         *
+         * The following @type_vk{SubpassDescription2} fields are set by this
+         * function:
+         *
+         * -    `inputAttachmentCount` to @cpp attachments.size() @ce
+         * -    `pInputAttachments` to a copy of @p attachments
          */
         SubpassDescription& setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) &;
         /** @overload */
@@ -591,6 +597,14 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * @ref ImageLayout::ColorAttachment; use a default-constructed
          * @ref AttachmentReference to specify that given output will be
          * unused.
+         *
+         * The following @type_vk{SubpassDescription2} fields are set by this
+         * function:
+         *
+         * -    `colorAttachmentCount` to @cpp attachments.size() @ce
+         * -    `pColorAttachments` to a copy of @p attachments
+         * -    `pResolveAttachments` to a copy of @p resolveAttachments, if
+         *      the parameter is non-empty
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         SubpassDescription& setColorAttachments(Containers::ArrayView<const AttachmentReference> attachments, Containers::ArrayView<const AttachmentReference> resolveAttachments = {}) &;
@@ -618,6 +632,11 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * with a default-constructed @ref AttachmentReference is equivalent to
          * not calling it at all, and both mean there's no depth/stencil
          * attachment.
+         *
+         * The following @type_vk{SubpassDescription2} fields are set by this
+         * function:
+         *
+         * -    `pDepthStencilAttachment` to a copy of @p attachment
          */
         SubpassDescription& setDepthStencilAttachment(AttachmentReference attachment) &;
         /** @overload */
@@ -631,6 +650,11 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * be preserved throughout the subpass. The @p attachment values are
          * indices into the list passed to
          * @ref RenderPassCreateInfo::setAttachments().
+         *
+         * The following @type_vk{SubpassDescription2} fields are set by this
+         * function:
+         *
+         * -    `pPreserveAttachments` to a copy of @p attachments
          */
         SubpassDescription& setPreserveAttachments(Containers::ArrayView<const UnsignedInt> attachments) &;
         /** @overload */
@@ -966,6 +990,12 @@ class MAGNUM_VK_EXPORT RenderPassCreateInfo {
          *
          * Subsequent calls to this function will *replace* the previous set,
          * not append to it.
+         *
+         * The following @type_vk{RenderPassCreateInfo2} fields are set by this
+         * function:
+         *
+         * -    `attachmentCount` to @cpp attachments.size() @ce
+         * -    `pAttachments` to a copy of @p attachments
          */
         RenderPassCreateInfo& setAttachments(Containers::ArrayView<const AttachmentDescription> attachments);
         /** @overload */
@@ -984,6 +1014,16 @@ class MAGNUM_VK_EXPORT RenderPassCreateInfo {
          *      to nested allocations inside @ref SubpassDescription, it's more
          *      efficient to *move* the instances one by one than having to
          *      deep-copy a list.
+         *
+         * The following @type_vk{RenderPassCreateInfo2} fields are set by this
+         * function:
+         *
+         * -    `subpassCount` to the count of subpasses added previously by
+         *      this function plus @cpp 1 @ce
+         * -    `pSubpasses` to an array containing all subpass descriptions
+         *      added previously by this function together with @p subpass;
+         *      ownership of associated @ref SubpassDescription state is moved
+         *      to the @ref RenderPassCreateInfo instance
          */
         RenderPassCreateInfo& addSubpass(SubpassDescription&& subpass);
 
@@ -991,8 +1031,14 @@ class MAGNUM_VK_EXPORT RenderPassCreateInfo {
          * @brief Set subpass dependencies
          * @return Reference to self (for method chaining)
          *
-         * ubsequent calls to this function will *replace* the previous set,
+         * Subsequent calls to this function will *replace* the previous set,
          * not append to it.
+         *
+         * The following @type_vk{RenderPassCreateInfo2} fields are set by this
+         * function:
+         *
+         * -    `dependencyCount` to @cpp dependencies.size() @ce
+         * -    `pDependencies` to a copy of @p dependencies
          */
         RenderPassCreateInfo& setDependencies(Containers::ArrayView<const SubpassDependency> dependencies);
         /** @overload */
