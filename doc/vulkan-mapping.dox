@@ -971,7 +971,7 @@ Vulkan enum                             | Matching API
 @type_vk{ShaderFloatControlsIndependence} @m_class{m-label m-flat m-success} **KHR, 1.2** | |
 @type_vk{ShaderGroupShaderKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @type_vk{ShaderModuleCreateFlagBits}, \n @type_vk{ShaderModuleCreateFlags} | @ref ShaderCreateInfo::Flag, \n @ref ShaderCreateInfo::Flags
-@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage
+@type_vk{ShaderStageFlagBits}, \n @type_vk{ShaderStageFlags} | @ref ShaderStage, \n @ref ShaderStages
 @type_vk{SharingMode}                   | |
 @type_vk{SparseImageFormatFlagBits}, \n @type_vk{SparseImageFormatFlags} | |
 @type_vk{SparseMemoryBindFlagBits}, \n @type_vk{SparseMemoryBindFlags} | |

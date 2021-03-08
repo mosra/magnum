@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::Shader, enum @ref Magnum::Vk::ShaderStage
+ * @brief Class @ref Magnum::Vk::Shader, enum @ref Magnum::Vk::ShaderStage, enum set @ref Magnum::Vk::ShaderStages
  * @m_since_latest
  */
 
@@ -47,6 +47,7 @@ namespace Implementation { struct DeviceState; }
 
 Wraps @type_vk_keyword{ShaderStageFlagBits}.
 @m_enum_values_as_keywords
+@see @ref ShaderStages, @ref ShaderSet::addShader()
 */
 enum class ShaderStage: UnsignedInt {
     /** Vertex stage */
@@ -112,6 +113,17 @@ enum class ShaderStage: UnsignedInt {
      */
     RayCallable = VK_SHADER_STAGE_CALLABLE_BIT_KHR
 };
+
+/**
+@brief Shader stages
+@m_since_latest
+
+Type-safe wrapper for @type_vk_keyword{ShaderStageFlags}. Note that
+@cpp ~Vk::ShaderStages{} @ce can be used for @val_vk_keyword{SHADER_STAGE_ALL,ShaderStageFlagBits}.
+*/
+typedef Containers::EnumSet<ShaderStage, VK_SHADER_STAGE_ALL> ShaderStages;
+
+CORRADE_ENUMSET_OPERATORS(ShaderStages)
 
 /**
 @brief Shader

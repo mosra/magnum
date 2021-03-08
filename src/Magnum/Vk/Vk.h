@@ -129,6 +129,10 @@ class ShaderCreateInfo;
 class ShaderSet;
 /* ShaderSpecialization used only directly with ShaderSet */
 enum class ShaderStage: UnsignedInt;
+/* 0x7FFFFFFF = VK_SHADER_STAGE_ALL, but that would mean including the whole
+   Vulkan headers. Using a number here and then the actual enum value in
+   Shadder.h to ensure it doesn't get out of sync. */
+typedef Containers::EnumSet<ShaderStage, 0x7FFFFFFF> ShaderStages;
 class SubmitInfo;
 class SubpassBeginInfo;
 class SubpassEndInfo;
