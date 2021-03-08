@@ -447,6 +447,9 @@ jobs:
       TARGET_GLES2: "ON"
     steps:
     - install-base-linux
+    # The build is extremely flaky lately (Mar 2021). Not sure why it wasn't a
+    # problem before.
+    - cap-ninja-jobs
     - build:
         script: emscripten.sh
 
@@ -457,6 +460,9 @@ jobs:
       TARGET_GLES2: "OFF"
     steps:
     - install-base-linux
+    # The build is extremely flaky lately (Mar 2021). Not sure why it wasn't a
+    # problem before.
+    - cap-ninja-jobs
     - build:
         script: emscripten.sh
 
