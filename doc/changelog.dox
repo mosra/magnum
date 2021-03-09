@@ -224,7 +224,8 @@ See also:
 @subsubsection changelog-latest-changes-math Math library
 
 -   Added @ref Math::castInto() overloads for casting between @ref UnsignedByte
-    and @ref UnsignedShort or @ref Byte and @ref Short
+    and @ref UnsignedShort or @ref Byte and @ref Short, and for casting between
+    @ref Float and @ref Double
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

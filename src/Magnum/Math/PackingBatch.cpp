@@ -288,6 +288,14 @@ void castInto(const Corrade::Containers::StridedArrayView2D<const Short>& src, c
     castIntoImplementation(src, dst);
 }
 
+void castInto(const Corrade::Containers::StridedArrayView2D<const Float>& src, const Corrade::Containers::StridedArrayView2D<Double>& dst) {
+    castIntoImplementation(src, dst);
+}
+
+void castInto(const Corrade::Containers::StridedArrayView2D<const Double>& src, const Corrade::Containers::StridedArrayView2D<Float>& dst) {
+    castIntoImplementation(src, dst);
+}
+
 static_assert(sizeof(HalfMantissaTable) + sizeof(HalfOffsetTable) + sizeof(HalfExponentTable) == 8576,
     "improper size of half->float conversion tables");
 
