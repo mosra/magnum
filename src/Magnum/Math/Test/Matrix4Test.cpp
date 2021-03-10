@@ -115,6 +115,8 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void transform();
     void transformProjection();
 
+    void euler();
+
     void strictWeakOrdering();
 
     void debug();
@@ -183,6 +185,8 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::invertedRigidNotRigid,
               &Matrix4Test::transform,
               &Matrix4Test::transformProjection,
+
+              &Matrix4Test::euler,
 
               &Matrix4Test::strictWeakOrdering,
 
@@ -984,6 +988,38 @@ void Matrix4Test::transformProjection() {
     Vector3 v{0.0f, 0.0f, -100.0f};
 
     CORRADE_COMPARE(a.transformPoint(v), Vector3(0.0f, 0.0f, 1.0f));
+}
+
+void Matrix4Test::euler() {
+    Matrix4 a{
+        {-0.459509, -0.888116, -0.0100141, 0},
+        {0.888142, -0.45937, -0.0135043, 0},
+        {0.00739323, -0.0150993, 0.999859, 0},
+        {-0.406013, 10.1443, -2.54406, 1}};
+    Debug{} << a;
+
+    {
+        Math::Vector3<Rad> b = a.toEuler(); // XYZ
+        Debug{} << b;
+        Debug{} <<
+            Matrix4::rotationZ(b.z())*
+            Matrix4::rotationY(b.y())*
+            Matrix4::rotationX(b.x());
+    } {
+        Math::Vector3<Rad> b = a.toEulerXZY();
+        Debug{} << b;
+        Debug{} << Matrix4{
+            Matrix4::rotationY(b.y())*
+            Matrix4::rotationZ(b.z())*
+            Matrix4::rotationX(b.x())};
+    } {
+        Math::Vector3<Rad> b = a.toEulerYZX();
+        Debug{} << b;
+        Debug{} <<
+            Matrix4::rotationX(b.x())*
+            Matrix4::rotationZ(b.z())*
+            Matrix4::rotationY(b.y());
+    }
 }
 
 void Matrix4Test::strictWeakOrdering() {

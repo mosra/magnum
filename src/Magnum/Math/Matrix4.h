@@ -491,6 +491,10 @@ template<class T> class Matrix4: public Matrix4x4<T> {
             return rotationScaling().isOrthogonal() && row(3) == Vector4<T>(T(0), T(0), T(0), T(1));
         }
 
+        Vector3<Rad<T>> toEuler() const;
+        Vector3<Rad<T>> toEulerXZY() const;
+        Vector3<Rad<T>> toEulerYZX() const;
+
         /**
          * @brief 3D rotation and scaling part of the matrix
          *
@@ -1086,6 +1090,80 @@ template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vec
     const Vector3<T> right = cross(up, backward).normalized();
     const Vector3<T> realUp = cross(backward, right);
     return from({right, realUp, backward}, eye);
+}
+
+template<class T> Vector3<Rad<T>> Matrix4<T>::toEuler() const { /* XYZ */
+    Vector3<Rad<T>> euler{Magnum::NoInit};
+
+    const T m11 = (*this)[0][0];
+    const T m12 = (*this)[0][1];
+    const T m13 = (*this)[0][2];
+    const T m21 = (*this)[1][0];
+    const T m22 = (*this)[1][1];
+    const T m23 = (*this)[1][2];
+    const T m33 = (*this)[2][2];
+
+    euler.y() = Rad<T>(std::asin(-Math::min(Math::max(m13, T(-1.0)), T(1.0))));
+
+    if(!TypeTraits<T>::equalsZero(m13 - T(1.0), T(1.0))) {
+        euler.x() = Rad<T>(std::atan2(m23, m33));
+        euler.z() = Rad<T>(std::atan2(m12, m11));
+    } else {
+        euler.x() = Rad<T>(0.0);
+        euler.z() = Rad<T>(std::atan2(-m21, m22));
+    }
+
+    return euler;
+}
+
+/* https://github.com/mrdoob/three.js/blob/6892dd0aba1411d35c5e2b44dc6ff280b24d6aa2/src/math/Euler.js#L213 */
+template<class T> Vector3<Rad<T>> Matrix4<T>::toEulerXZY() const {
+    Vector3<Rad<T>> euler{Magnum::NoInit};
+
+    const T m11 = (*this)[0][0];
+    const T m12 = (*this)[0][1];
+    const T m13 = (*this)[0][2];
+    const T m22 = (*this)[1][1];
+    const T m31 = (*this)[2][0];
+    const T m32 = (*this)[2][1];
+    const T m33 = (*this)[2][2];
+
+    euler.z() = Rad<T>(std::asin(Math::min(Math::max(m12, T(-1.0)), T(1.0))));
+
+    if(!TypeTraits<T>::equalsZero(m12 - T(1.0), T(1.0))) {
+        euler.x() = Rad<T>(std::atan2(-m32, m22));
+        euler.y() = Rad<T>(std::atan2(-m13, m11));
+    } else {
+        euler.x() = Rad<T>(0.0);
+        euler.y() = Rad<T>(std::atan2(m31, m33));
+    }
+
+    return euler;
+}
+
+/* https://github.com/mrdoob/three.js/blob/6892dd0aba1411d35c5e2b44dc6ff280b24d6aa2/src/math/Euler.js#L229 */
+template<class T> Vector3<Rad<T>> Matrix4<T>::toEulerYZX() const {
+    Vector3<Rad<T>> euler{Magnum::NoInit};
+
+    const T m11 = (*this)[0][0];
+    const T m21 = (*this)[1][0];
+    const T m22 = (*this)[1][1];
+    const T m23 = (*this)[1][2];
+    const T m31 = (*this)[2][0];
+    const T m32 = (*this)[2][1];
+    const T m33 = (*this)[2][2];
+
+    euler.z() = Rad<T>(std::asin(-Math::min(Math::max(m21, T(-1.0)), T(1.0))));
+
+    if(!TypeTraits<T>::equalsZero(m21 - T(1.0), T(1.0))) {
+        euler.x() = Rad<T>(std::atan2(m23, m22));
+        euler.y() = Rad<T>(std::atan2(m31, m11));
+    } else {
+        euler.x() = Rad<T>(0.0);
+        euler.y() = Rad<T>(std::atan2(-m32, m33));
+    }
+
+    return euler;
 }
 
 template<class T> Matrix3x3<T> Matrix4<T>::rotation() const {
