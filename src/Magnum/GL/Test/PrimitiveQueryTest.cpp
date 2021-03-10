@@ -48,7 +48,7 @@ void PrimitiveQueryTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, PrimitiveQuery>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, PrimitiveQuery>::value);
 }
 
 void PrimitiveQueryTest::constructCopy() {

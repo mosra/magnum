@@ -48,7 +48,7 @@ void RectangleTextureTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, RectangleTexture>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, RectangleTexture>::value);
 }
 
 void RectangleTextureTest::constructCopy() {

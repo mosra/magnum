@@ -164,7 +164,7 @@ void Matrix3Test::construct() {
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Vector3, Vector3, Vector3>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, Vector3, Vector3, Vector3>::value);
 }
 
 void Matrix3Test::constructIdentity() {
@@ -185,10 +185,10 @@ void Matrix3Test::constructIdentity() {
     CORRADE_COMPARE(identity3, identity3Expected);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix3>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Matrix3>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Matrix3>::value);
 }
 
 void Matrix3Test::constructZero() {
@@ -197,10 +197,10 @@ void Matrix3Test::constructZero() {
                                {0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix3>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Matrix3>::value);
 }
 
 void Matrix3Test::constructNoInit() {
@@ -217,10 +217,10 @@ void Matrix3Test::constructNoInit() {
                                    {7.9f, -1.0f, 8.0f}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Matrix3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Matrix3>::value);
 }
 
 void Matrix3Test::constructOneValue() {
@@ -230,9 +230,9 @@ void Matrix3Test::constructOneValue() {
                                 Vector3{1.5f, 1.5f, 1.5f}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Matrix3>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, Float>::value);
 }
 
 void Matrix3Test::constructConversion() {
@@ -245,9 +245,9 @@ void Matrix3Test::constructConversion() {
                                 {7, -1, 8}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Matrix3, Matrix3i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Matrix3, Matrix3i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Matrix3i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3, Matrix3i>::value);
 }
 
 void Matrix3Test::constructFromDifferentSize() {
@@ -304,8 +304,8 @@ void Matrix3Test::convert() {
         CORRADE_COMPARE(d.a[0], a.a[0]);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Mat3, Matrix3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix3, Mat3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Mat3, Matrix3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Matrix3, Mat3>::value);
 }
 
 void Matrix3Test::isRigidTransformation() {

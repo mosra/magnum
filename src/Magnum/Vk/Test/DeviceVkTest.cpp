@@ -498,8 +498,8 @@ void DeviceVkTest::createInfoWrongQueueOutputCount() {
 }
 
 void DeviceVkTest::createInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<DeviceCreateInfo>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<DeviceCreateInfo>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<DeviceCreateInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<DeviceCreateInfo>{});
 }
 
 void DeviceVkTest::createInfoConstructMove() {

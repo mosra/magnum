@@ -218,10 +218,10 @@ void ShaderTest::createInfoConstructNoInit() {
     /* The deleter should be zero-init'd and thus no function called on
        destruction */
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<ShaderCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<ShaderCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, ShaderCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, ShaderCreateInfo>::value);
 }
 
 void ShaderTest::createInfoConstructFromVk() {
@@ -287,12 +287,12 @@ void ShaderTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Shader>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Shader>::value);
 }
 
 void ShaderTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Shader, const Shader&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Shader, const Shader&>{}));
+    CORRADE_VERIFY(!std::is_constructible<Shader, const Shader&>{});
+    CORRADE_VERIFY(!std::is_assignable<Shader, const Shader&>{});
 }
 
 }}}}

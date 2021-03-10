@@ -61,10 +61,10 @@ void FenceTest::createInfoConstructNoInit() {
     new(&info) FenceCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<FenceCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<FenceCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, FenceCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, FenceCreateInfo>::value);
 }
 
 void FenceTest::createInfoConstructFromVk() {
@@ -82,7 +82,7 @@ void FenceTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Fence>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Fence>::value);
 }
 
 void FenceTest::constructCopy() {

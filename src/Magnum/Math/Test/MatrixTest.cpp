@@ -139,7 +139,7 @@ void MatrixTest::construct() {
                                  Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                                  Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, Vector4, Vector4, Vector4, Vector4>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x4, Vector4, Vector4, Vector4, Vector4>::value);
 }
 
 void MatrixTest::constructIdentity() {
@@ -162,10 +162,10 @@ void MatrixTest::constructIdentity() {
     CORRADE_COMPARE(identity3, identity3Expected);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4x4>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x4, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Matrix4x4>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Matrix4x4>::value);
 }
 
 void MatrixTest::constructZero() {
@@ -175,10 +175,10 @@ void MatrixTest::constructZero() {
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x4, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix4x4>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Matrix4x4>::value);
 }
 
 void MatrixTest::constructNoInit() {
@@ -197,10 +197,10 @@ void MatrixTest::constructNoInit() {
                                      Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x4, Magnum::NoInitT>::value);
 
         /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Matrix4x4>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Matrix4x4>::value);
 }
 
 void MatrixTest::constructOneValue() {
@@ -210,9 +210,9 @@ void MatrixTest::constructOneValue() {
                                   Vector3{1.5f, 1.5f, 1.5f}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix3x3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Matrix3x3>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3x3, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix3x3, Float>::value);
 }
 
 void MatrixTest::constructOneComponent() {
@@ -227,7 +227,7 @@ void MatrixTest::constructOneComponent() {
     constexpr Matrix1x1 c = Vector1{1.5f};
     CORRADE_COMPARE(c, Matrix1x1{Vector1{1.5f}});
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix1x1, Vector1>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix1x1, Vector1>::value);
 }
 
 void MatrixTest::constructConversion() {
@@ -242,9 +242,9 @@ void MatrixTest::constructConversion() {
                                   Vector4i(7, -1, 8, -1)));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Matrix4x4, Matrix4x4i>::value));
+    CORRADE_VERIFY(!std::is_convertible<Matrix4x4, Matrix4x4i>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, Matrix4x4i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Matrix4x4, Matrix4x4i>::value);
 }
 
 void MatrixTest::constructFromDifferentSize() {
@@ -302,8 +302,8 @@ void MatrixTest::convert() {
         CORRADE_COMPARE(d.a[i], a.a[i]);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Mat3, Matrix3x3>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Matrix3x3, Mat3>::value));
+    CORRADE_VERIFY(!std::is_convertible<Mat3, Matrix3x3>::value);
+    CORRADE_VERIFY(!std::is_convertible<Matrix3x3, Mat3>::value);
 }
 
 void MatrixTest::isOrthogonal() {
@@ -445,19 +445,19 @@ typedef BasicMat2<Float> Mat2;
 void MatrixTest::subclassTypes() {
     const Mat2 c;
     Mat2 a;
-    CORRADE_VERIFY((std::is_same<decltype(c[1]), const Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(a[1]), Vec2&>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.row(1)), Vec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c[1]), const Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(a[1]), Vec2&>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.row(1)), Vec2>::value);
 
     const Mat2 c2;
     const Vec2 cv;
-    CORRADE_VERIFY((std::is_same<decltype(c*c2), Mat2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c*cv), Vec2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c*c2), Mat2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c*cv), Vec2>::value);
 
-    CORRADE_VERIFY((std::is_same<decltype(c.transposed()), Mat2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.diagonal()), Vec2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.inverted()), Mat2>::value));
-    CORRADE_VERIFY((std::is_same<decltype(c.invertedOrthogonal()), Mat2>::value));
+    CORRADE_VERIFY(std::is_same<decltype(c.transposed()), Mat2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.diagonal()), Vec2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.inverted()), Mat2>::value);
+    CORRADE_VERIFY(std::is_same<decltype(c.invertedOrthogonal()), Mat2>::value);
 }
 
 void MatrixTest::subclass() {

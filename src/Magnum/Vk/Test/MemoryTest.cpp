@@ -81,10 +81,10 @@ void MemoryTest::requirementsConstructNoInit() {
     new(&requirements) MemoryRequirements{NoInit};
     CORRADE_COMPARE(requirements->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<MemoryRequirements, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<MemoryRequirements, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, MemoryRequirements>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, MemoryRequirements>::value);
 }
 
 void MemoryTest::requirementsConstructFromVk() {
@@ -137,10 +137,10 @@ void MemoryTest::allocateInfoConstructNoInit() {
     new(&info) MemoryAllocateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<MemoryAllocateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<MemoryAllocateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, MemoryAllocateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, MemoryAllocateInfo>::value);
 }
 
 void MemoryTest::allocateInfoConstructFromVk() {
@@ -158,7 +158,7 @@ void MemoryTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Memory>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Memory>::value);
 }
 
 void MemoryTest::constructCopy() {

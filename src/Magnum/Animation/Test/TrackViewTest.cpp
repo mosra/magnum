@@ -607,8 +607,8 @@ void TrackViewTest::convertToConstView() {
     CORRADE_COMPARE(ca[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
 
     /* Conversion back is not possible */
-    CORRADE_VERIFY((std::is_convertible<TrackView<Float, Vector3>,  TrackView<const Float, const Vector3>>::value));
-    CORRADE_VERIFY(!(std::is_convertible<TrackView<const Float, const Vector3>,  TrackView<Float, Vector3>>::value));
+    CORRADE_VERIFY(std::is_convertible<TrackView<Float, Vector3>,  TrackView<const Float, const Vector3>>::value);
+    CORRADE_VERIFY(!std::is_convertible<TrackView<const Float, const Vector3>,  TrackView<Float, Vector3>>::value);
 }
 
 const std::pair<Float, Float> Keyframes[]{

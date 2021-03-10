@@ -103,39 +103,39 @@ void ContextTest::isExtension() {
     /* Variadic check (used in variadic Configuration::addDisabledExtensions()),
        check that it properly fails for each occurence of a non-extension */
     #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_VERIFY((Implementation::IsExtension<
+    CORRADE_VERIFY(Implementation::IsExtension<
         Extensions::KHR::debug,
         Extensions::EXT::texture_filter_anisotropic,
-        Extensions::KHR::texture_compression_astc_hdr>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::texture_compression_astc_hdr>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extension,
         Extensions::KHR::debug,
-        Extensions::EXT::texture_filter_anisotropic>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::EXT::texture_filter_anisotropic>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::KHR::debug,
         Extension,
-        Extensions::EXT::texture_filter_anisotropic>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::EXT::texture_filter_anisotropic>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::KHR::debug,
         Extensions::EXT::texture_filter_anisotropic,
-        Extension>::value));
+        Extension>::value);
     #else
-    CORRADE_VERIFY((Implementation::IsExtension<
+    CORRADE_VERIFY(Implementation::IsExtension<
         Extensions::OES::texture_float_linear,
         Extensions::EXT::texture_filter_anisotropic,
-        Extensions::WEBGL::compressed_texture_s3tc>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::WEBGL::compressed_texture_s3tc>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extension,
         Extensions::OES::texture_float_linear,
-        Extensions::EXT::texture_filter_anisotropic>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::EXT::texture_filter_anisotropic>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::OES::texture_float_linear,
         Extension,
-        Extensions::EXT::texture_filter_anisotropic>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::EXT::texture_filter_anisotropic>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::OES::texture_float_linear,
         Extensions::EXT::texture_filter_anisotropic,
-        Extension>::value));
+        Extension>::value);
     #endif
 
     /* Empty variadic list should return true */
@@ -350,7 +350,7 @@ void ContextTest::constructNoCreate() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Context>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Context>::value);
 }
 
 void ContextTest::constructCopy() {

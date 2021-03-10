@@ -73,10 +73,10 @@ void UnitTest::construct() {
     CORRADE_COMPARE(Float(a), 25.0f);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+    CORRADE_VERIFY(!std::is_convertible<Float, Sec>::value);
+    CORRADE_VERIFY(!std::is_convertible<Sec, Float>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Float>::value);
 }
 
 void UnitTest::constructDefault() {
@@ -86,10 +86,10 @@ void UnitTest::constructDefault() {
     CORRADE_COMPARE(b, Sec(0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Sec>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Sec>::value);
 }
 
 void UnitTest::constructNoInit() {
@@ -102,10 +102,10 @@ void UnitTest::constructNoInit() {
         CORRADE_COMPARE(a, Sec{25.0f});
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Sec>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Sec>::value);
 }
 
 void UnitTest::constructConversion() {
@@ -114,9 +114,9 @@ void UnitTest::constructConversion() {
     CORRADE_COMPARE(b, Sec(25.0f));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Sec, Seci>::value));
+    CORRADE_VERIFY(!std::is_convertible<Sec, Seci>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Seci>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Sec, Seci>::value);
 }
 
 void UnitTest::compare() {

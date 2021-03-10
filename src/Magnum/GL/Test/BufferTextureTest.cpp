@@ -48,7 +48,7 @@ void BufferTextureTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, BufferTexture>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, BufferTexture>::value);
 }
 
 void BufferTextureTest::constructCopy() {

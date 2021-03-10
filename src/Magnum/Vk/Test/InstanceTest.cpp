@@ -57,10 +57,10 @@ void InstanceTest::createInfoConstructNoInit() {
     new(&info) InstanceCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<InstanceCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<InstanceCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, InstanceCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, InstanceCreateInfo>::value);
 }
 
 void InstanceTest::createInfoConstructFromVk() {
@@ -71,7 +71,7 @@ void InstanceTest::createInfoConstructFromVk() {
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<VkInstanceCreateInfo, InstanceCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<VkInstanceCreateInfo, InstanceCreateInfo>::value);
 }
 
 void InstanceTest::constructNoCreate() {
@@ -83,7 +83,7 @@ void InstanceTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Instance>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Instance>::value);
 }
 
 void InstanceTest::constructCopy() {

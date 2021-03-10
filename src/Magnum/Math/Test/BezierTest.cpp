@@ -121,7 +121,7 @@ void BezierTest::construct() {
     constexpr QuadraticBezier2D a = {Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
     CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, Vector2, Vector2, Vector2>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<QuadraticBezier2D, Vector2, Vector2, Vector2>::value);
 }
 
 void BezierTest::constructDefault() {
@@ -131,10 +131,10 @@ void BezierTest::constructDefault() {
     CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{}, Vector2{}, Vector2{}}));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<QuadraticBezier2D>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<QuadraticBezier2D, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, QuadraticBezier2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, QuadraticBezier2D>::value);
 }
 
 void BezierTest::constructNoInit() {
@@ -147,10 +147,10 @@ void BezierTest::constructNoInit() {
         CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<QuadraticBezier2D, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, QuadraticBezier2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, QuadraticBezier2D>::value);
 }
 
 void BezierTest::constructConversion() {
@@ -165,9 +165,9 @@ void BezierTest::constructConversion() {
     CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<QuadraticBezier2Dd, QuadraticBezier2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<QuadraticBezier2Dd, QuadraticBezier2D>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, QuadraticBezier2Dd>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<QuadraticBezier2D, QuadraticBezier2Dd>::value);
 }
 
 void BezierTest::constructFromCubicHermite() {
@@ -208,8 +208,8 @@ void BezierTest::convert() {
     CORRADE_COMPARE(d.y1, a.y1);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<QBezier2D, QuadraticBezier2D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<QuadraticBezier2D, QBezier2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<QBezier2D, QuadraticBezier2D>::value);
+    CORRADE_VERIFY(!std::is_convertible<QuadraticBezier2D, QBezier2D>::value);
 }
 
 void BezierTest::data() {
@@ -238,8 +238,8 @@ void BezierTest::data() {
 }
 
 void BezierTest::compare() {
-    CORRADE_VERIFY((QuadraticBezier2D{Vector2{0.5f, 1.0f + TypeTraits<Float>::epsilon()/2}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}} == QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
-    CORRADE_VERIFY((QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f + TypeTraits<Float>::epsilon()*2}} != QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f}}));
+    CORRADE_VERIFY(QuadraticBezier2D{Vector2{0.5f, 1.0f + TypeTraits<Float>::epsilon()/2}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}} == QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}});
+    CORRADE_VERIFY(QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f + TypeTraits<Float>::epsilon()*2}} != QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f}});
 }
 
 void BezierTest::valueLinear() {

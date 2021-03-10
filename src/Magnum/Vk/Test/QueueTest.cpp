@@ -70,7 +70,7 @@ void QueueTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Queue>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Queue>::value);
 }
 
 void QueueTest::constructCopy() {
@@ -120,10 +120,10 @@ void QueueTest::submitInfoConstructNoInit() {
     new(&info) SubmitInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<SubmitInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<SubmitInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, SubmitInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, SubmitInfo>::value);
 }
 
 void QueueTest::submitInfoConstructCommandBuffers() {
@@ -148,8 +148,8 @@ void QueueTest::submitInfoConstructFromVk() {
 }
 
 void QueueTest::submitInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<SubmitInfo>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<SubmitInfo>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<SubmitInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<SubmitInfo>{});
 }
 
 void QueueTest::submitInfoConstructMove() {

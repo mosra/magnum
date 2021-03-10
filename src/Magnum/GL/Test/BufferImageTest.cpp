@@ -54,7 +54,7 @@ void BufferImageTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, BufferImage2D>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, BufferImage2D>::value);
 }
 
 void BufferImageTest::constructNoCreateCompressed() {

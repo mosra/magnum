@@ -48,7 +48,7 @@ void TransformFeedbackTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, TransformFeedback>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, TransformFeedback>::value);
 }
 
 void TransformFeedbackTest::constructCopy() {

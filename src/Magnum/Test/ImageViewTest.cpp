@@ -477,9 +477,9 @@ void ImageViewTest::construct3DFrom1D() {
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView); conversion from const to
        mutable is not possible either */
-    CORRADE_VERIFY((std::is_convertible<ImageView1D, ImageView3D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ImageView3D, ImageView1D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ImageView1D, MutableImageView3D>::value));
+    CORRADE_VERIFY(std::is_convertible<ImageView1D, ImageView3D>::value);
+    CORRADE_VERIFY(!std::is_convertible<ImageView3D, ImageView1D>::value);
+    CORRADE_VERIFY(!std::is_convertible<ImageView1D, MutableImageView3D>::value);
 }
 
 void ImageViewTest::construct3DFrom2D() {
@@ -506,8 +506,8 @@ void ImageViewTest::construct3DFrom2D() {
 
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView) */
-    CORRADE_VERIFY((std::is_convertible<MutableImageView1D, MutableImageView3D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<MutableImageView3D, MutableImageView1D>::value));
+    CORRADE_VERIFY(std::is_convertible<MutableImageView1D, MutableImageView3D>::value);
+    CORRADE_VERIFY(!std::is_convertible<MutableImageView3D, MutableImageView1D>::value);
 }
 
 void ImageViewTest::constructCompressed3DFrom1D() {
@@ -534,9 +534,9 @@ void ImageViewTest::constructCompressed3DFrom1D() {
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView); conversion from const to
        mutable is not possible either */
-    CORRADE_VERIFY((std::is_convertible<CompressedImageView1D, CompressedImageView3D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<CompressedImageView3D, CompressedImageView1D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<CompressedImageView1D, MutableCompressedImageView3D>::value));
+    CORRADE_VERIFY(std::is_convertible<CompressedImageView1D, CompressedImageView3D>::value);
+    CORRADE_VERIFY(!std::is_convertible<CompressedImageView3D, CompressedImageView1D>::value);
+    CORRADE_VERIFY(!std::is_convertible<CompressedImageView1D, MutableCompressedImageView3D>::value);
 }
 
 void ImageViewTest::constructCompressed3DFrom2D() {
@@ -560,8 +560,8 @@ void ImageViewTest::constructCompressed3DFrom2D() {
 
     /* Conversion the other way is not allowed (will be later, but explicitly
        via a slice<1>() like with StridedArrayView) */
-    CORRADE_VERIFY((std::is_convertible<MutableCompressedImageView1D, MutableCompressedImageView3D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<MutableCompressedImageView3D, MutableCompressedImageView1D>::value));
+    CORRADE_VERIFY(std::is_convertible<MutableCompressedImageView1D, MutableCompressedImageView3D>::value);
+    CORRADE_VERIFY(!std::is_convertible<MutableCompressedImageView3D, MutableCompressedImageView1D>::value);
 }
 
 void ImageViewTest::constructFromMutable() {

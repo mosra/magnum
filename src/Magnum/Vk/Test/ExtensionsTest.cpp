@@ -65,22 +65,22 @@ void ExtensionsTest::isInstanceExtension() {
 
     /* Variadic check (used in variadic addEnabledExtensions()), check that it
        properly fails for each occurence of a device extension */
-    CORRADE_VERIFY((Implementation::IsInstanceExtension<
+    CORRADE_VERIFY(Implementation::IsInstanceExtension<
         Extensions::KHR::get_physical_device_properties2,
         Extensions::KHR::external_memory_capabilities,
-        Extensions::KHR::external_fence_capabilities>::value));
-    CORRADE_VERIFY(!(Implementation::IsInstanceExtension<
+        Extensions::KHR::external_fence_capabilities>::value);
+    CORRADE_VERIFY(!Implementation::IsInstanceExtension<
         Extensions::KHR::draw_indirect_count, /* not */
         Extensions::KHR::external_memory_capabilities,
-        Extensions::KHR::external_fence_capabilities>::value));
-    CORRADE_VERIFY(!(Implementation::IsInstanceExtension<
+        Extensions::KHR::external_fence_capabilities>::value);
+    CORRADE_VERIFY(!Implementation::IsInstanceExtension<
         Extensions::KHR::get_physical_device_properties2,
         Extensions::KHR::external_memory, /* not */
-        Extensions::KHR::external_fence_capabilities>::value));
-    CORRADE_VERIFY(!(Implementation::IsInstanceExtension<
+        Extensions::KHR::external_fence_capabilities>::value);
+    CORRADE_VERIFY(!Implementation::IsInstanceExtension<
         Extensions::KHR::get_physical_device_properties2,
         Extensions::KHR::external_memory_capabilities,
-        Extensions::KHR::external_fence>::value)); /* not */
+        Extensions::KHR::external_fence>::value); /* not */
 
     /* Empty variadic list should return true */
     CORRADE_VERIFY(Implementation::IsInstanceExtension<>::value);
@@ -104,22 +104,22 @@ void ExtensionsTest::isExtension() {
 
     /* Variadic check (used in variadic addEnabledExtensions()), check that it
        properly fails for each occurence of a device extension */
-    CORRADE_VERIFY((Implementation::IsExtension<
+    CORRADE_VERIFY(Implementation::IsExtension<
         Extensions::KHR::external_memory,
         Extensions::KHR::depth_stencil_resolve,
-        Extensions::KHR::external_fence>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::external_fence>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::KHR::external_memory_capabilities, /* not */
         Extensions::KHR::depth_stencil_resolve,
-        Extensions::KHR::external_fence>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::external_fence>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::KHR::external_memory,
         Extensions::EXT::debug_report, /* not */
-        Extensions::KHR::external_fence>::value));
-    CORRADE_VERIFY(!(Implementation::IsExtension<
+        Extensions::KHR::external_fence>::value);
+    CORRADE_VERIFY(!Implementation::IsExtension<
         Extensions::KHR::external_memory,
         Extensions::KHR::depth_stencil_resolve,
-        Extensions::KHR::external_fence_capabilities>::value)); /* not */
+        Extensions::KHR::external_fence_capabilities>::value); /* not */
 
     /* Empty variadic list should return true */
     CORRADE_VERIFY(Implementation::IsExtension<>::value);
@@ -133,12 +133,12 @@ void ExtensionsTest::constructInstanceExtensionFromCompileTimeExtension() {
     CORRADE_COMPARE(a.string(), Extensions::KHR::get_physical_device_properties2::string());
 
     /* Should be convertible from device extensions, but not instance exts */
-    CORRADE_VERIFY((std::is_convertible<Extensions::KHR::get_physical_device_properties2, InstanceExtension>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Extensions::KHR::external_memory, InstanceExtension>::value));
+    CORRADE_VERIFY(std::is_convertible<Extensions::KHR::get_physical_device_properties2, InstanceExtension>::value);
+    CORRADE_VERIFY(!std::is_convertible<Extensions::KHR::external_memory, InstanceExtension>::value);
 
     /* Shouldn't be convertible from strings to avoid ambiguity in APIs that
        have string/extension overloads */
-    CORRADE_VERIFY(!(std::is_convertible<Containers::StringView, InstanceExtension>::value));
+    CORRADE_VERIFY(!std::is_convertible<Containers::StringView, InstanceExtension>::value);
 }
 
 void ExtensionsTest::constructExtensionFromCompileTimeExtension() {
@@ -149,12 +149,12 @@ void ExtensionsTest::constructExtensionFromCompileTimeExtension() {
     CORRADE_COMPARE(a.string(), Extensions::KHR::external_memory::string());
 
     /* Should be convertible from device extensions, but not instance exts */
-    CORRADE_VERIFY((std::is_convertible<Extensions::KHR::external_memory, Extension>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Extensions::KHR::get_physical_device_properties2, Extension>::value));
+    CORRADE_VERIFY(std::is_convertible<Extensions::KHR::external_memory, Extension>::value);
+    CORRADE_VERIFY(!std::is_convertible<Extensions::KHR::get_physical_device_properties2, Extension>::value);
 
     /* Shouldn't be convertible from strings to avoid ambiguity in APIs that
        have string/extension overloads */
-    CORRADE_VERIFY(!(std::is_convertible<Containers::StringView, Extension>::value));
+    CORRADE_VERIFY(!std::is_convertible<Containers::StringView, Extension>::value);
 }
 
 void ExtensionsTest::instanceExtensions() {

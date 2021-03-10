@@ -54,7 +54,7 @@ void ExtensionPropertiesTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, ExtensionProperties>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, ExtensionProperties>::value);
 }
 
 void ExtensionPropertiesTest::constructInstanceNoCreate() {
@@ -64,7 +64,7 @@ void ExtensionPropertiesTest::constructInstanceNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, InstanceExtensionProperties>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, InstanceExtensionProperties>::value);
 }
 
 void ExtensionPropertiesTest::constructCopy() {

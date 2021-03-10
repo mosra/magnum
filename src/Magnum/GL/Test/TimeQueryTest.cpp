@@ -48,7 +48,7 @@ void TimeQueryTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, TimeQuery>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, TimeQuery>::value);
 }
 
 void TimeQueryTest::constructCopy() {

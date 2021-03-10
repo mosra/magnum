@@ -205,9 +205,9 @@ void RangeTest::construct() {
     CORRADE_COMPARE(b, (Range<2, Int>({3, 5}, {23, 78})));
     CORRADE_COMPARE(c, (Range<3, Int>({3, 5, -7}, {23, 78, 2})));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, Int, Int>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, Vector2i, Vector2i>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, Vector3i, Vector3i>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range1Di, Int, Int>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range2Di, Vector2i, Vector2i>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range3Di, Vector3i, Vector3i>::value);
 }
 
 void RangeTest::constructDefault() {
@@ -228,14 +228,14 @@ void RangeTest::constructDefault() {
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Range1Di>::value);
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Range2Di>::value);
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Range3Di>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, ZeroInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, ZeroInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range1Di, ZeroInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range2Di, ZeroInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range3Di, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Range1Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Range2Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Range3Di>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Range1Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Range2Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Range3Di>::value);
 }
 
 void RangeTest::constructNoInit() {
@@ -256,14 +256,14 @@ void RangeTest::constructNoInit() {
         CORRADE_COMPARE(c, (Range3Di{{3, 5, -7}, {23, 78, 2}}));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, Magnum::NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, Magnum::NoInitT>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range1Di, Magnum::NoInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range2Di, Magnum::NoInitT>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range3Di, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range1Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range2Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Range3Di>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Range1Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Range2Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Range3Di>::value);
 }
 
 void RangeTest::constructFromSize() {
@@ -320,14 +320,14 @@ void RangeTest::constructConversion() {
     CORRADE_COMPARE(f, Range3Di({1, 2, -1}, {-15, 7, 0}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Range<2, Float>, Range<2, Int>>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Range1D, Range1Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Range2D, Range2Di>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Range3D, Range3Di>::value));
+    CORRADE_VERIFY(!std::is_convertible<Range<2, Float>, Range<2, Int>>::value);
+    CORRADE_VERIFY(!std::is_convertible<Range1D, Range1Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<Range2D, Range2Di>::value);
+    CORRADE_VERIFY(!std::is_convertible<Range3D, Range3Di>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range1D, Range1Di>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range2D, Range2Di>::value));
-    CORRADE_VERIFY((std::is_nothrow_constructible<Range3D, Range3Di>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range1D, Range1Di>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range2D, Range2Di>::value);
+    CORRADE_VERIFY(std::is_nothrow_constructible<Range3D, Range3Di>::value);
 }
 
 void RangeTest::constructCopy() {
@@ -390,14 +390,14 @@ void RangeTest::convert() {
     CORRADE_COMPARE(m.d, c.d);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Rect, Range<2, Float>>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Dim, Range1D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Rect, Range2D>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Box, Range3D>::value));
+    CORRADE_VERIFY(!std::is_convertible<Rect, Range<2, Float>>::value);
+    CORRADE_VERIFY(!std::is_convertible<Dim, Range1D>::value);
+    CORRADE_VERIFY(!std::is_convertible<Rect, Range2D>::value);
+    CORRADE_VERIFY(!std::is_convertible<Box, Range3D>::value);
 
-    CORRADE_VERIFY(!(std::is_convertible<Range1D, Dim>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Range2D, Rect>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Range3D, Box>::value));
+    CORRADE_VERIFY(!std::is_convertible<Range1D, Dim>::value);
+    CORRADE_VERIFY(!std::is_convertible<Range2D, Rect>::value);
+    CORRADE_VERIFY(!std::is_convertible<Range3D, Box>::value);
 }
 
 void RangeTest::access() {
@@ -871,12 +871,12 @@ typedef BasicRect<Int> Recti;
 
 void RangeTest::subclassTypes() {
     const Vector2i a;
-    CORRADE_VERIFY((std::is_same<decltype(Recti::fromSize(a, a)), Recti>::value));
+    CORRADE_VERIFY(std::is_same<decltype(Recti::fromSize(a, a)), Recti>::value);
 
     const Recti r;
-    CORRADE_VERIFY((std::is_same<decltype(r.translated(a)), Recti>::value));
-    CORRADE_VERIFY((std::is_same<decltype(r.padded(a)), Recti>::value));
-    CORRADE_VERIFY((std::is_same<decltype(r.scaled(a)), Recti>::value));
+    CORRADE_VERIFY(std::is_same<decltype(r.translated(a)), Recti>::value);
+    CORRADE_VERIFY(std::is_same<decltype(r.padded(a)), Recti>::value);
+    CORRADE_VERIFY(std::is_same<decltype(r.scaled(a)), Recti>::value);
 }
 
 void RangeTest::subclass() {

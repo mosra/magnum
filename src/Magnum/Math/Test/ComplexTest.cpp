@@ -174,7 +174,7 @@ void ComplexTest::construct() {
     CORRADE_COMPARE(a.real(), 0.5f);
     CORRADE_COMPARE(a.imaginary(), -3.7f);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Float, Float>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, Float, Float>::value);
 }
 
 void ComplexTest::constructIdentity() {
@@ -186,20 +186,20 @@ void ComplexTest::constructIdentity() {
     CORRADE_COMPARE(b.length(), 1.0f);
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Complex>::value);
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, IdentityInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, IdentityInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Complex>::value));
+    CORRADE_VERIFY(!std::is_convertible<IdentityInitT, Complex>::value);
 }
 
 void ComplexTest::constructZero() {
     constexpr Complex a{ZeroInit};
     CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, ZeroInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, ZeroInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Complex>::value));
+    CORRADE_VERIFY(!std::is_convertible<ZeroInitT, Complex>::value);
 }
 
 void ComplexTest::constructNoInit() {
@@ -212,10 +212,10 @@ void ComplexTest::constructNoInit() {
         CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
     }
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Magnum::NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, Magnum::NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Magnum::NoInitT, Complex>::value));
+    CORRADE_VERIFY(!std::is_convertible<Magnum::NoInitT, Complex>::value);
 }
 
 void ComplexTest::constructFromVector() {
@@ -228,10 +228,10 @@ void ComplexTest::constructFromVector() {
     CORRADE_COMPARE(b, vec);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Vector2, Complex>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Complex, Vector2>::value));
+    CORRADE_VERIFY(!std::is_convertible<Vector2, Complex>::value);
+    CORRADE_VERIFY(!std::is_convertible<Complex, Vector2>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Vector2>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, Vector2>::value);
 }
 
 void ComplexTest::constructConversion() {
@@ -243,9 +243,9 @@ void ComplexTest::constructConversion() {
     CORRADE_COMPARE(b, (Complexi{1, 2}));
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Complex, Complexi>::value));
+    CORRADE_VERIFY(!std::is_convertible<Complex, Complexi>::value);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Complexi>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<Complex, Complexi>::value);
 }
 
 void ComplexTest::constructCopy() {
@@ -271,8 +271,8 @@ void ComplexTest::convert() {
     CORRADE_COMPARE(d.im, a.im);
 
     /* Implicit conversion is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<Cmpl, Complex>::value));
-    CORRADE_VERIFY(!(std::is_convertible<Complex, Cmpl>::value));
+    CORRADE_VERIFY(!std::is_convertible<Cmpl, Complex>::value);
+    CORRADE_VERIFY(!std::is_convertible<Complex, Cmpl>::value);
 }
 
 void ComplexTest::data() {
@@ -308,8 +308,8 @@ void ComplexTest::isNormalized() {
 template<class T> void ComplexTest::isNormalizedEpsilon() {
     setTestCaseTemplateName(TypeTraits<T>::name());
 
-    CORRADE_VERIFY((Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}.isNormalized()));
-    CORRADE_VERIFY(!(Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized()));
+    CORRADE_VERIFY(Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}.isNormalized());
+    CORRADE_VERIFY(!Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized());
 }
 
 void ComplexTest::addSubtract() {

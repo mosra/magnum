@@ -64,7 +64,7 @@ void DevicePropertiesTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, DeviceProperties>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, DeviceProperties>::value);
 }
 
 void DevicePropertiesTest::constructCopy() {

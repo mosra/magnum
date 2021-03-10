@@ -108,10 +108,10 @@ void FramebufferTest::createInfoConstructNoInit() {
     new(&info) FramebufferCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<FramebufferCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<FramebufferCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, FramebufferCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, FramebufferCreateInfo>::value);
 }
 
 void FramebufferTest::createInfoConstructFromVk() {
@@ -123,8 +123,8 @@ void FramebufferTest::createInfoConstructFromVk() {
 }
 
 void FramebufferTest::createInfoConstructCopy() {
-    CORRADE_VERIFY(!(std::is_copy_constructible<FramebufferCreateInfo>{}));
-    CORRADE_VERIFY(!(std::is_copy_assignable<FramebufferCreateInfo>{}));
+    CORRADE_VERIFY(!std::is_copy_constructible<FramebufferCreateInfo>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<FramebufferCreateInfo>{});
 }
 
 void FramebufferTest::createInfoConstructMove() {
@@ -162,7 +162,7 @@ void FramebufferTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Framebuffer>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Framebuffer>::value);
 }
 
 void FramebufferTest::constructCopy() {

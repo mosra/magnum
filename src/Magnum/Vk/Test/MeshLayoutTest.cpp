@@ -205,10 +205,10 @@ void MeshLayoutTest::constructNoInit() {
     CORRADE_COMPARE(layout.vkPipelineVertexInputStateCreateInfo().sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
     CORRADE_COMPARE(layout.vkPipelineInputAssemblyStateCreateInfo().sType, VK_STRUCTURE_TYPE_EXTERNAL_FENCE_PROPERTIES);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<MeshLayout, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<MeshLayout, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, MeshLayout>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, MeshLayout>::value);
 }
 
 void MeshLayoutTest::constructFromVk() {

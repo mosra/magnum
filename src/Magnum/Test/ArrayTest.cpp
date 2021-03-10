@@ -78,8 +78,8 @@ void ArrayTest::construct() {
 }
 
 void ArrayTest::equality() {
-    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7)));
-    CORRADE_VERIFY((Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8)));
+    CORRADE_VERIFY(Array<3, Int>(5, 6, 7) == Array<3, Int>(5, 6, 7));
+    CORRADE_VERIFY(Array<3, Int>(5, 6, 7) != Array<3, Int>(5, 6, 8));
 }
 
 void ArrayTest::access() {

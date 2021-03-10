@@ -64,7 +64,7 @@ void TextureArrayTest::construct1DNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Texture1DArray>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Texture1DArray>::value);
 }
 #endif
 
@@ -75,7 +75,7 @@ void TextureArrayTest::construct2DNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, Texture2DArray>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, Texture2DArray>::value);
 }
 
 #ifndef MAGNUM_TARGET_GLES

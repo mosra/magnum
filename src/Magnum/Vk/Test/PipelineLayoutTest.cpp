@@ -62,10 +62,10 @@ void PipelineLayoutTest::createInfoConstructNoInit() {
     new(&info) PipelineLayoutCreateInfo{NoInit};
     CORRADE_COMPARE(info->sType, VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2);
 
-    CORRADE_VERIFY((std::is_nothrow_constructible<PipelineLayoutCreateInfo, NoInitT>::value));
+    CORRADE_VERIFY(std::is_nothrow_constructible<PipelineLayoutCreateInfo, NoInitT>::value);
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoInitT, PipelineLayoutCreateInfo>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoInitT, PipelineLayoutCreateInfo>::value);
 }
 
 void PipelineLayoutTest::createInfoConstructFromVk() {
@@ -83,7 +83,7 @@ void PipelineLayoutTest::constructNoCreate() {
     }
 
     /* Implicit construction is not allowed */
-    CORRADE_VERIFY(!(std::is_convertible<NoCreateT, PipelineLayout>::value));
+    CORRADE_VERIFY(!std::is_convertible<NoCreateT, PipelineLayout>::value);
 }
 
 void PipelineLayoutTest::constructCopy() {
