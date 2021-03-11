@@ -60,7 +60,7 @@ Vulkan handle                           | Matching API
 @type_vk{DebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DescriptorPool}                | |
 @type_vk{DescriptorSet}                 | |
-@type_vk{DescriptorSetLayout}           | |
+@type_vk{DescriptorSetLayout}           | @ref DescriptorSetLayout
 @type_vk{DescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{Device}                        | @ref Device
 @type_vk{DeviceMemory}                  | @ref Memory
@@ -191,7 +191,7 @@ Vulkan function                         | Matching API
 @fn_vk{CreateDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @fn_vk{DestroyDebugUtilsMessengerEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @fn_vk{CreateDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR**, \n @fn_vk{DestroyDeferredOperationKHR} @m_class{m-label m-flat m-warning} **KHR** | |
 @fn_vk{CreateDescriptorPool}, \n @fn_vk{DestroyDescriptorPool} | |
-@fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | |
+@fn_vk{CreateDescriptorSetLayout}, \n @fn_vk{DestroyDescriptorSetLayout} | @ref DescriptorSetLayout constructor and destructor
 @fn_vk{CreateDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1**, \n @fn_vk{DestroyDescriptorUpdateTemplate} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @fn_vk{CreateDevice}, \n @fn_vk{DestroyDevice} | @ref Device constructor and destructor
 @fn_vk{CreateEvent}, \n @fn_vk{DestroyEvent} | |
@@ -466,10 +466,9 @@ Vulkan structure                        | Matching API
 @type_vk{DescriptorPoolCreateInfo}      | |
 @type_vk{DescriptorPoolSize}            | |
 @type_vk{DescriptorSetAllocateInfo}     | |
-@type_vk{DescriptorSetLayoutBinding}    | |
-@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} | |
-@type_vk{DescriptorSetLayoutCreateInfo} | |
-@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorSetLayoutBinding}    | @ref DescriptorSetLayoutBinding
+@type_vk{DescriptorSetLayoutBindingFlagsCreateInfo} @m_class{m-label m-flqat m-success} **EXT, 1.2** | @ref DescriptorSetLayoutCreateInfo
+@type_vk{DescriptorSetLayoutCreateInfo} | @ref DescriptorSetLayoutCreateInfo
 @type_vk{DescriptorSetLayoutSupport} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{DescriptorSetVariableDescriptorCountAllocateInfo} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
 @type_vk{DescriptorSetVariableDescriptorCountLayoutSupport} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
@@ -826,11 +825,11 @@ Vulkan enum                             | Matching API
 @type_vk{DebugReportObjectTypeEXT} @m_class{m-label m-danger} **deprecated** @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DebugUtilsMessageSeverityFlagBitsEXT} @m_class{m-label m-flat m-warning} **EXT**, \n @type_vk{DebugUtilsMessageTypeFlagsEXT} @m_class{m-label m-flat m-warning} **EXT** | |
 @type_vk{DependencyFlagBits}, \n @type_vk{DependencyFlags} | @ref DependencyFlag, \n @ref DependencyFlags
-@type_vk{DescriptorBindingFlagBits} @m_class{m-label m-flat m-success} **EXT, 1.2**, \n @type_vk{DescriptorBindingFlags} @m_class{m-label m-flat m-success} **EXT, 1.2** | |
+@type_vk{DescriptorBindingFlagBits} @m_class{m-label m-flat m-success} **EXT, 1.2**, \n @type_vk{DescriptorBindingFlags} @m_class{m-label m-flat m-success} **EXT, 1.2** | @ref DescriptorSetLayoutBinding::Flag, \n @ref DescriptorSetLayoutBinding::Flags
 @type_vk{DescriptorPoolCreateFlagBits}, \n @type_vk{DescriptorPoolCreateFlags} | |
-@type_vk{DescriptorSetLayoutCreateFlagBits}, \n @type_vk{DescriptorSetLayoutCreateFlags} | |
+@type_vk{DescriptorSetLayoutCreateFlagBits}, \n @type_vk{DescriptorSetLayoutCreateFlags} | @ref DescriptorSetLayoutCreateInfo::Flag, \n @ref DescriptorSetLayoutCreateInfo::Flags
 @type_vk{DescriptorUpdateTemplateType} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
-@type_vk{DescriptorType}                | |
+@type_vk{DescriptorType}                | @ref DescriptorType
 @type_vk{DeviceQueueCreateFlagBits}, \n @type_vk{DeviceQueueCreateFlags} | |
 @type_vk{DriverId} @m_class{m-label m-flat m-success} **KHR, 1.2** | @ref DeviceDriver
 @type_vk{DynamicState}                  | @ref DynamicRasterizationState

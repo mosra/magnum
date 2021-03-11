@@ -64,16 +64,28 @@ enum class BufferUsage: UnsignedInt {
      */
     TransferDestination = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 
-    /** Suitable for creating a uniform texel buffer view */
+    /**
+     * Suitable for creating a uniform texel buffer view.
+     * @see @ref DescriptorType::UniformTexelBuffer
+     */
     UniformTexelBuffer = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT,
 
-    /** Suitable for creating a storage texel buffer view */
+    /**
+     * Suitable for creating a storage texel buffer view.
+     * @see @ref DescriptorType::StorageTexelBuffer
+     */
     StorageTexelBuffer = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT,
 
-    /** Suitable for a uniform buffer */
+    /**
+     * Suitable for a uniform buffer.
+     * @see @ref DescriptorType::UniformBuffer
+     */
     UniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 
-    /** Suitable for a storage buffer */
+    /**
+     * Suitable for a storage buffer.
+     * @see @ref DescriptorType::StorageBuffer
+     */
     StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 
     /**

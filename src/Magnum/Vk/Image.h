@@ -133,6 +133,9 @@ enum class ImageLayout: Int {
      *
      * Only valid for images created with @ref ImageUsage::Sampled or
      * @ref ImageUsage::InputAttachment.
+     * @see @ref DescriptorType::CombinedImageSampler,
+     *      @ref DescriptorType::SampledImage,
+     *      @ref DescriptorType::InputAttachment
      */
     ShaderReadOnly = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 

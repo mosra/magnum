@@ -39,6 +39,7 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
+#include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"
@@ -310,6 +311,55 @@ Vk::Fence fence{device};
 queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
 fence.wait();
 /* [CommandBuffer-usage-submit] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [DescriptorSetLayout-creation] */
+#include <Magnum/Vk/DescriptorSetLayoutCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer}},
+    {{1, Vk::DescriptorType::CombinedImageSampler, 1,
+      Vk::ShaderStage::Fragment}}
+}};
+/* [DescriptorSetLayout-creation] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* [DescriptorSetLayout-creation-immutable-samplers] */
+Vk::Sampler sampler{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer}},
+    {{1, Vk::DescriptorType::CombinedImageSampler, {sampler},
+      Vk::ShaderStage::Fragment}}
+}};
+/* [DescriptorSetLayout-creation-immutable-samplers] */
+}
+
+{
+Vk::Instance instance{NoCreate};
+/* [DescriptorSetLayout-creation-binding-flags] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
+    DOXYGEN_IGNORE()
+    .setEnabledFeatures(
+        Vk::DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind|
+        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+    )
+};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{0, Vk::DescriptorType::UniformBuffer, 1,
+      ~Vk::ShaderStages{},
+      Vk::DescriptorSetLayoutBinding::Flag::UpdateAfterBind}},
+    DOXYGEN_IGNORE()
+}};
+/* [DescriptorSetLayout-creation-binding-flags] */
 }
 
 {

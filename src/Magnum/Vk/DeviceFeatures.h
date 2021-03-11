@@ -876,81 +876,95 @@ enum class DeviceFeature: UnsignedShort {
     ShaderStorageTexelBufferArrayNonUniformIndexing,
 
     /**
-     * Whether uniform buffer descriptors can be updated after a set is bound.
+     * Whether @ref DescriptorType::UniformBuffer /
+     * @relativeref{DescriptorType,UniformBufferDynamic} can be updated after a
+     * set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingUniformBufferUpdateAfterBind,
 
     /**
-     * Whether sampled image descriptors can be updated after a set is bound.
+     * Whether @ref DescriptorType::CombinedImageSampler /
+     * @relativeref{DescriptorType,SampledImage} can be updated after a set is
+     * bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingSampledImageUpdateAfterBind,
 
     /**
-     * Whether storage image descriptors can be updated after a set is bound.
+     * Whether @ref DescriptorType::StorageImage can be updated after a set is
+     * bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageImageUpdateAfterBind,
 
     /**
-     * Whether storage buffer descriptors can be updated after a set is bound.
+     * Whether @ref DescriptorType::StorageBuffer /
+     * @relativeref{DescriptorType,StorageBufferDynamic} can be updated after a
+     * set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageBufferUpdateAfterBind,
 
     /**
-     * Whether uniform texel buffer descriptors can be updated after a set is
-     * bound.
+     * Whether @ref DescriptorType::UniformTexelBuffer can be updated after a
+     * set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingStorageTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingUniformTexelBufferUpdateAfterBind,
 
     /**
-     * Whether storage texel buffer descriptors can be updated after a set is
-     * bound.
+     * Whether @ref DescriptorType::StorageTexelBuffer can be updated after a
+     * set is bound.
      * @see @ref DeviceFeature::DescriptorBindingAccelerationStructureUpdateAfterBind,
      *      @relativeref{DeviceFeature,DescriptorBindingUniformBufferUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingSampledImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageImageUpdateAfterBind},
      *      @relativeref{DeviceFeature,DescriptorBindingStorageBufferUpdateAfterBind},
-     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind}
+     *      @relativeref{DeviceFeature,DescriptorBindingUniformTexelBufferUpdateAfterBind},
+     *      @ref DescriptorSetLayoutBinding::Flag::UpdateAfterBind
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingStorageTexelBufferUpdateAfterBind,
 
     /**
      * Whether descriptors can be updated while the set is in use.
+     * @see @ref DescriptorSetLayoutBinding::Flag::UpdateUnusedWhilePending
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingUpdateUnusedWhilePending,
@@ -958,6 +972,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether a descriptor set binding in which some descriptors are not valid
      * can be statically used.
+     * @see @ref DescriptorSetLayoutBinding::Flag::PartiallyBound
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingPartiallyBound,
@@ -965,6 +980,7 @@ enum class DeviceFeature: UnsignedShort {
     /**
      * Whether descriptor sets with a variably-sized last binding are
      * supported.
+     * @see @ref DescriptorSetLayoutBinding::Flag::VariableDescriptorCount
      * @requires_vk12 Extension @vk_extension{EXT,descriptor_indexing}
      */
     DescriptorBindingVariableDescriptorCount,

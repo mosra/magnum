@@ -29,6 +29,7 @@ find_package(Vulkan REQUIRED)
 set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
+    DescriptorSetLayout.cpp
     Extensions.cpp
     Fence.cpp
     Framebuffer.cpp
@@ -72,6 +73,8 @@ set(MagnumVk_HEADERS
     CommandPool.h
     CommandPoolCreateInfo.h
     ComputePipelineCreateInfo.h
+    DescriptorSetLayout.h
+    DescriptorSetLayoutCreateInfo.h
     Device.h
     DeviceCreateInfo.h
     DeviceFeatures.h

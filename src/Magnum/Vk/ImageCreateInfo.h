@@ -82,7 +82,8 @@ enum class ImageUsage: UnsignedInt {
      *
      * Not all pixel formats support sampling, see @ref PixelFormat for more
      * information.
-     * @see @ref ImageLayout::ShaderReadOnly
+     * @see @ref ImageLayout::ShaderReadOnly,
+     *      @ref DescriptorType::SampledImage
      */
     Sampled = VK_IMAGE_USAGE_SAMPLED_BIT,
 
@@ -92,7 +93,8 @@ enum class ImageUsage: UnsignedInt {
      * Not all pixel formats support shader storage, with some requiring the
      * @ref DeviceFeature::ShaderStorageImageExtendedFormats feature. See
      * @ref PixelFormat for more information.
-     * @see @ref ImageLayout::General
+     * @see @ref ImageLayout::General,
+     *      @ref DescriptorType::StorageImage
      */
     Storage = VK_IMAGE_USAGE_STORAGE_BIT,
 
@@ -125,6 +127,7 @@ enum class ImageUsage: UnsignedInt {
      * Input attachment in a shader or framebuffer
      *
      * @see @ref ImageLayout::ShaderReadOnly,
+     *      @ref DescriptorType::InputAttachment,
      *      @ref SubpassDescription::setInputAttachments()
      */
     InputAttachment = VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT
