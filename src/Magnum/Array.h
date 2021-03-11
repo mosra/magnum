@@ -184,6 +184,11 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector2 instead")  Array2D
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
 
+        /** @brief Convert to a vector */
+        /*implicit*/ operator Math::Vector2<T>() const {
+            return Math::Vector2<T>::from(Array<2, T>::_data);
+        }
+
         T& x() { return Array<2, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<2, T>::_data[0]; } /**< @overload */
         T& y() { return Array<2, T>::_data[1]; } /**< @brief Y component */
@@ -213,6 +218,11 @@ template<class T> class CORRADE_DEPRECATED("use Math::Vector3 instead") Array3D:
 
         /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
+
+        /** @brief Convert to a vector */
+        /*implicit*/ operator Math::Vector3<T>() const {
+            return Math::Vector3<T>::from(Array<3, T>::_data);
+        }
 
         T& x() { return Array<3, T>::_data[0]; } /**< @brief X component */
         constexpr T x() const { return Array<3, T>::_data[0]; } /**< @overload */
