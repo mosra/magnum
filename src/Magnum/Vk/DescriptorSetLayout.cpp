@@ -123,7 +123,9 @@ DescriptorSetLayoutCreateInfo::DescriptorSetLayoutCreateInfo(const Containers::A
         bindingsCopy[i] = b;
         if(b->pImmutableSamplers) {
             Utility::copy(
-                {b->pImmutableSamplers, b->descriptorCount},
+                /* Just {} makes MSVC (and clang-cl!!) pick ArrayView<void>
+                   for some reason */
+                Containers::arrayView(b->pImmutableSamplers, b->descriptorCount),
                 immutableSamplersCopy.slice(immutableSamplerOffset, immutableSamplerOffset + b->descriptorCount));
             bindingsCopy[i].pImmutableSamplers = immutableSamplersCopy + immutableSamplerOffset;
             immutableSamplerOffset += b->descriptorCount;
