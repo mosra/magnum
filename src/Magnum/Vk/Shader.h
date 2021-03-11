@@ -129,7 +129,8 @@ CORRADE_ENUMSET_OPERATORS(ShaderStages)
 @brief Shader
 @m_since_latest
 
-Wraps a @type_vk_keyword{ShaderModule}.
+Wraps a @type_vk_keyword{ShaderModule}, which contains a SPIR-V binary with one
+or more shader entrypoints.
 
 @section Vk-Shader-creation Shader creation
 

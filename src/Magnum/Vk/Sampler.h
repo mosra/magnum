@@ -42,7 +42,8 @@ namespace Magnum { namespace Vk {
 @brief Sampler
 @m_since_latest
 
-Wraps a @type_vk_keyword{Sampler}.
+Wraps a @type_vk_keyword{Sampler}, which describes how shaders perform
+texturing.
 
 @section Vk-Sampler-creation Sampler creation
 

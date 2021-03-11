@@ -175,7 +175,9 @@ CORRADE_ENUMSET_OPERATORS(CommandBufferResetFlags)
 @brief Command buffer
 @m_since_latest
 
-Wraps a @type_vk_keyword{CommandBuffer}.
+Wraps a @type_vk_keyword{CommandBuffer}. Command buffers are used to record
+all work done on a Vulkan device such as pipeline setup, draws, compute
+dispatch or data transfers.
 
 @section Vk-CommandBuffer-allocation Command buffer allocation and recycling
 

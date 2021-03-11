@@ -119,6 +119,7 @@ MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, MemoryFlags value);
 @m_since_latest
 
 Wraps a @type_vk_keyword{DeviceMemory} and handles its allocation and mapping.
+Device memory is backing Vulkan buffers, images and other objects.
 
 @section Vk-Memory-allocation Memory allocation
 

@@ -54,7 +54,8 @@ namespace Implementation {
 @m_since_latest
 
 Wraps a @type_vk_keyword{Device} and stores device-specific Vulkan function
-pointers.
+pointers. A device provides an abstraction over a physical GPU or a CPU with
+Vulkan capabilities.
 
 @section Vk-Device-creation Device creation
 

@@ -43,10 +43,12 @@ namespace Magnum { namespace Vk {
 @brief Queue
 @m_since_latest
 
-Wraps a @type_vk_keyword{Queue}. See @ref Vk-Device-creation for information
-about how queues are created and retrieved from a device and
-@ref Vk-CommandBuffer-usage for an overview of recording and submitting
-command buffers to a queue.
+Wraps a @type_vk_keyword{Queue}, which is used to submit command buffers for
+execution on the device.
+
+See @ref Vk-Device-creation for information about how queues are created and
+retrieved from a device and @ref Vk-CommandBuffer-usage for an overview of
+recording and submitting command buffers to a queue.
 @see @ref DeviceCreateInfo::addQueues(), @ref submit()
 */
 class MAGNUM_VK_EXPORT Queue {
