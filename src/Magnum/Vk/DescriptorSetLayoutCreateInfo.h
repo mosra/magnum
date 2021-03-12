@@ -405,8 +405,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutCreateInfo {
          * pre-filled in addition to `sType`, everything else is zero-filled:
          *
          * -    `flags`
-         * -    `bindingCount` to @cpp bindings.size() @ce
-         * -    `pBindings` to a copy of @p bindings
+         * -    `bindingCount` and `pBindings` to a copy of @p bindings
          *
          * If any of the @p bindings has @ref DescriptorSetLayoutBinding::flags()
          * non-empty, a @type_vk{DescriptorSetLayoutBindingFlagsCreateInfo}

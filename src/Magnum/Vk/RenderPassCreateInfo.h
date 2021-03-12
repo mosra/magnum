@@ -570,8 +570,8 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * The following @type_vk{SubpassDescription2} fields are set by this
          * function:
          *
-         * -    `inputAttachmentCount` to @cpp attachments.size() @ce
-         * -    `pInputAttachments` to a copy of @p attachments
+         * -    `inputAttachmentCount` and `pInputAttachments` to a copy of
+         *      @p attachments
          */
         SubpassDescription& setInputAttachments(Containers::ArrayView<const AttachmentReference> attachments) &;
         /** @overload */
@@ -601,8 +601,8 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * The following @type_vk{SubpassDescription2} fields are set by this
          * function:
          *
-         * -    `colorAttachmentCount` to @cpp attachments.size() @ce
-         * -    `pColorAttachments` to a copy of @p attachments
+         * -    `colorAttachmentCount` and `pColorAttachments` to a copy of
+         *      @p attachments
          * -    `pResolveAttachments` to a copy of @p resolveAttachments, if
          *      the parameter is non-empty
          */
@@ -654,7 +654,8 @@ class MAGNUM_VK_EXPORT SubpassDescription {
          * The following @type_vk{SubpassDescription2} fields are set by this
          * function:
          *
-         * -    `pPreserveAttachments` to a copy of @p attachments
+         * -    `preserveAttachmentCount` and `pPreserveAttachments` to a copy
+         *      of @p attachments
          */
         SubpassDescription& setPreserveAttachments(Containers::ArrayView<const UnsignedInt> attachments) &;
         /** @overload */
@@ -994,8 +995,8 @@ class MAGNUM_VK_EXPORT RenderPassCreateInfo {
          * The following @type_vk{RenderPassCreateInfo2} fields are set by this
          * function:
          *
-         * -    `attachmentCount` to @cpp attachments.size() @ce
-         * -    `pAttachments` to a copy of @p attachments
+         * -    `attachmentCount` and `pAttachments` to a copy of
+         *      @p attachments
          */
         RenderPassCreateInfo& setAttachments(Containers::ArrayView<const AttachmentDescription> attachments);
         /** @overload */
@@ -1037,8 +1038,8 @@ class MAGNUM_VK_EXPORT RenderPassCreateInfo {
          * The following @type_vk{RenderPassCreateInfo2} fields are set by this
          * function:
          *
-         * -    `dependencyCount` to @cpp dependencies.size() @ce
-         * -    `pDependencies` to a copy of @p dependencies
+         * -    `dependencyCount` and `pDependencies` to a copy of
+         *      @p dependencies
          */
         RenderPassCreateInfo& setDependencies(Containers::ArrayView<const SubpassDependency> dependencies);
         /** @overload */

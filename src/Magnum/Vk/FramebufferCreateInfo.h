@@ -91,7 +91,8 @@ class MAGNUM_VK_EXPORT FramebufferCreateInfo {
          *
          * -    `flags`
          * -    `renderPass`
-         * -    `attachmentCount` and `pAttachments` to @p attachments
+         * -    `attachmentCount` and `pAttachments` to a copy of
+         *      @p attachments
          * -    `width`, `height` and `layers` to @p size
          */
         explicit FramebufferCreateInfo(VkRenderPass renderPass, Containers::ArrayView<const Containers::Reference<ImageView>> attachments, const Vector3i& size, Flags flags = {});

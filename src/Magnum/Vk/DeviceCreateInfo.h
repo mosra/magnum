@@ -175,9 +175,6 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          * All listed extensions are expected to be supported either globally
          * or in at least one of the enabled layers, use
          * @ref ExtensionProperties::isSupported() to check for their presence.
-         * The function makes copies of string views that are not global or
-         * null-terminated, use the @link Containers::Literals::operator""_s() @endlink
-         * literal to prevent that where possible.
          *
          * The following @type_vk{DeviceCreateInfo} fields are set by this
          * function:
@@ -186,7 +183,12 @@ class MAGNUM_VK_EXPORT DeviceCreateInfo {
          *      previously by this function plus @cpp extensions.size() @ce
          * -    `pEnabledExtensionNames` to an array containing all extension
          *      strings added previously by this function together with ones
-         *      from @p extensions
+         *      from @p extensions (doing a copy where needed)
+         *
+         * @note The function makes copies of string views that are not global
+         *      or null-terminated, use the
+         *      @link Containers::Literals::operator""_s() @endlink
+         *      literal to prevent that where possible.
          */
         DeviceCreateInfo& addEnabledExtensions(Containers::ArrayView<const Containers::StringView> extensions) &;
         /** @overload */
