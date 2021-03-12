@@ -43,7 +43,23 @@ namespace Magnum { namespace Vk {
 @brief Pipeline layout
 @m_since_latest
 
-Wraps a @type_vk_keyword{PipelineLayout}. Used in a @ref Pipeline.
+Wraps a @type_vk_keyword{PipelineLayout}. Specifies what descriptor set layouts
+and push constants are used in a @ref Pipeline.
+
+@section Vk-PipelineLayout-creation Pipeline layout creation
+
+Except for the rare case when your shader doesn't have any bindings, in which
+case a default-constructed @ref PipelineLayoutCreateInfo would be enough,
+you'll want to list @ref DescriptorSetLayout instances for all descriptor sets
+needed by shaders in the pipeline:
+
+@snippet MagnumVk.cpp PipelineLayout-creation
+
+@section Vk-PipelineLayout-usage Pipeline layout usage
+
+Once created, the pipeline layout instance is used for @ref Pipeline creation
+and for descriptor set binding. See the corresponding class documentation for
+more information.
 */
 class MAGNUM_VK_EXPORT PipelineLayout {
     public:

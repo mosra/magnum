@@ -55,7 +55,7 @@
 #include "Magnum/Vk/MemoryAllocateInfo.h"
 #include "Magnum/Vk/Mesh.h"
 #include "Magnum/Vk/Pipeline.h"
-#include "Magnum/Vk/PipelineLayout.h"
+#include "Magnum/Vk/PipelineLayoutCreateInfo.h"
 #include "Magnum/Vk/PixelFormat.h"
 #include "Magnum/Vk/Queue.h"
 #include "Magnum/Vk/RasterizationPipelineCreateInfo.h"
@@ -1019,6 +1019,24 @@ DOXYGEN_IGNORE()
 
 cmd.bindPipeline(pipeline);
 /* [Pipeline-usage] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [PipelineLayout-creation] */
+#include <Magnum/Vk/PipelineLayoutCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorSetLayout layout1{DOXYGEN_IGNORE(NoCreate)};
+Vk::DescriptorSetLayout layout2{DOXYGEN_IGNORE(NoCreate)};
+DOXYGEN_IGNORE()
+
+Vk::PipelineLayout{device, Vk::PipelineLayoutCreateInfo{
+    layout1, layout2, DOXYGEN_IGNORE(layout1)
+}};
+/* [PipelineLayout-creation] */
 }
 
 {
