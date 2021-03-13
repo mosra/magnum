@@ -57,6 +57,8 @@ class CopyImageToBufferInfo;
 /* Not forward-declaring CopyBufferToImageInfo1D etc right now, I see no need */
 enum class DependencyFlag: UnsignedInt;
 typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
+class DescriptorPool;
+class DescriptorPoolCreateInfo;
 class DescriptorSetLayout;
 class DescriptorSetLayoutCreateInfo;
 enum class DescriptorType: Int;

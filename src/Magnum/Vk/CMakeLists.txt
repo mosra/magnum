@@ -48,6 +48,7 @@ set(MagnumVk_SRCS
 
 set(MagnumVk_GracefulAssert_SRCS
     Buffer.cpp
+    DescriptorPool.cpp
     Device.cpp
     DeviceProperties.cpp
     DeviceFeatures.cpp
@@ -74,6 +75,8 @@ set(MagnumVk_HEADERS
     CommandPool.h
     CommandPoolCreateInfo.h
     ComputePipelineCreateInfo.h
+    DescriptorPool.h
+    DescriptorPoolCreateInfo.h
     DescriptorSetLayout.h
     DescriptorSetLayoutCreateInfo.h
     DescriptorType.h

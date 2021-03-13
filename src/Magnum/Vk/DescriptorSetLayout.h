@@ -89,7 +89,7 @@ specify additional flags per binding. All of them require a certain
 @section Vk-DescriptorSetLayout-usage Descriptor set layout usage
 
 A descriptor set layout is used in a @ref PipelineLayout creation and
-subsequently for descriptor set allocation from a descriptor pool. See the
+subsequently for descriptor set allocation from a @ref DescriptorPool. See the
 corresponding class documentation for more information.
 */
 class MAGNUM_VK_EXPORT DescriptorSetLayout {

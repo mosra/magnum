@@ -74,6 +74,11 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
              * submission will use the most recently set descriptors for
              * the binding and the updates do not invalidate the command
              * buffer.
+             *
+             * Descriptor set layouts using this flag can be only allocated
+             * from a @ref DescriptorPool that has
+             * @ref DescriptorPoolCreateInfo::Flag::UpdateAfterBind set as
+             * well.
              * @requires_vk_feature @ref DeviceFeature::DescriptorBindingSampledImageUpdateAfterBind
              *      if used on a @ref DescriptorType::CombinedImageSampler /
              *      @relativeref{DescriptorType,SampledImage}
@@ -114,6 +119,10 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
              * This descriptor binding has a variable size that will be
              * specified when a descriptor set is allocated using this layout,
              * and the @p descriptorCount value is treated as an upper bound.
+             *
+             * Allowed only on the last binding number in the layout, not
+             * allowed on a @ref DescriptorType::UniformBufferDynamic or
+             * @ref DescriptorType::StorageBufferDynamic.
              * @requires_vk_feature @ref DeviceFeature::DescriptorBindingVariableDescriptorCount
              */
             VariableDescriptorCount = VK_DESCRIPTOR_BINDING_VARIABLE_DESCRIPTOR_COUNT_BIT
@@ -135,7 +144,9 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
          * @param descriptorType    Descriptor type
          * @param descriptorCount   Number of descriptors contained in the
          *      binding. If the shader binding is not an array, use @cpp 1 @ce,
-         *      zero is allowed as well.
+         *      zero is allowed as well. For a @ref Flag::VariableDescriptorCount
+         *      this is used as an upper bound and a concrete size is specified
+         *      during descriptor set allocation.
          * @param stages            Shader stages that access the binding.
          *      Use @cpp ~Vk::ShaderStages{} @ce to specify that all stages
          *      may access the binding.

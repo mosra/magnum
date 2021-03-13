@@ -39,6 +39,7 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
+#include "Magnum/Vk/DescriptorPoolCreateInfo.h"
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
 #include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
@@ -312,6 +313,21 @@ Vk::Fence fence{device};
 queue.submit({Vk::SubmitInfo{}.setCommandBuffers({cmd})}, fence);
 fence.wait();
 /* [CommandBuffer-usage-submit] */
+}
+
+{
+Vk::Device device{NoCreate};
+/* The include should be a no-op here since it was already included above */
+/* [DescriptorPool-creation] */
+#include <Magnum/Vk/DescriptorPoolCreateInfo.h>
+
+DOXYGEN_IGNORE()
+
+Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{8, {
+    {Vk::DescriptorType::UniformBuffer, 24},
+    {Vk::DescriptorType::CombinedImageSampler, 16}
+}}};
+/* [DescriptorPool-creation] */
 }
 
 {

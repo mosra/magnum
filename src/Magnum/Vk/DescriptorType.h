@@ -41,7 +41,7 @@ namespace Magnum { namespace Vk {
 @m_since_latest
 
 Wraps @type_vk_keyword{DescriptorType}.
-@see @ref DescriptorSetLayoutBinding
+@see @ref DescriptorSetLayoutBinding, @ref DescriptorPoolCreateInfo
 @m_enum_values_as_keywords
 */
 enum class DescriptorType: Int {
