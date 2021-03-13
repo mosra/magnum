@@ -30,6 +30,7 @@
  * @m_since_latest
  */
 
+#include "Magnum/Vk/visibility.h"
 #include "Magnum/Vk/Vk.h"
 #include "Magnum/Vk/Vulkan.h"
 
@@ -148,6 +149,12 @@ enum class DescriptorType: Int {
      */
     AccelerationStructure = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
 };
+
+/**
+@debugoperatorenum{DescriptorType}
+@m_since_latest
+*/
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, DescriptorType value);
 
 }}
 

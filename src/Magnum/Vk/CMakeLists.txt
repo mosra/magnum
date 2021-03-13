@@ -30,6 +30,7 @@ set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
     DescriptorSetLayout.cpp
+    DescriptorType.cpp
     Extensions.cpp
     Fence.cpp
     Framebuffer.cpp

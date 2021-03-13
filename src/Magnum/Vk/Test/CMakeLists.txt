@@ -28,6 +28,7 @@ corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkCommandBufferTest CommandBufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDescriptorSetLayoutTest DescriptorSetLayoutTest.cpp LIBRARIES MagnumVk)
+corrade_add_test(VkDescriptorTypeTest DescriptorTypeTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDevicePropertiesTest DevicePropertiesTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceFeaturesTest DeviceFeaturesTest.cpp LIBRARIES MagnumVk)
@@ -131,6 +132,7 @@ set_target_properties(
     VkCommandBufferTest
     VkCommandPoolTest
     VkDescriptorSetLayoutTest
+    VkDescriptorTypeTest
     VkDeviceTest
     VkDeviceFeaturesTest
     VkDevicePropertiesTest
