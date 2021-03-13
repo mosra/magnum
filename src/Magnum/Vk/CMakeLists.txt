@@ -75,6 +75,7 @@ set(MagnumVk_HEADERS
     ComputePipelineCreateInfo.h
     DescriptorSetLayout.h
     DescriptorSetLayoutCreateInfo.h
+    DescriptorType.h
     Device.h
     DeviceCreateInfo.h
     DeviceFeatures.h

@@ -26,6 +26,7 @@
 #include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
+#include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/PipelineLayoutCreateInfo.h"
 #include "Magnum/Vk/Result.h"
 #include "Magnum/Vk/VulkanTester.h"

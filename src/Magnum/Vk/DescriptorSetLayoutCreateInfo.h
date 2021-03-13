@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::DescriptorSetLayoutCreateInfo, @ref Magnum::Vk::DescriptorSetLayoutBinding, enum @ref Magnum::Vk::DescriptorType
+ * @brief Class @ref Magnum::Vk::DescriptorSetLayoutCreateInfo, @ref Magnum::Vk::DescriptorSetLayoutBinding
  * @m_since_latest
  */
 
@@ -47,120 +47,6 @@
 #include "Magnum/Vk/Vulkan.h"
 
 namespace Magnum { namespace Vk {
-
-/**
-@brief Descriptor type
-@m_since_latest
-
-Wraps @type_vk_keyword{DescriptorType}.
-@see @ref DescriptorSetLayoutBinding
-@m_enum_values_as_keywords
-*/
-enum class DescriptorType: Int {
-    /**
-     * @ref Sampler.
-     *
-     * @see @ref DescriptorType::CombinedImageSampler
-     */
-    Sampler = VK_DESCRIPTOR_TYPE_SAMPLER,
-
-    /**
-     * @ref Sampler combined with an @ref Image.
-     *
-     * @m_class{m-note m-success}
-     *
-     * @par
-     *      On some implementations it may be more efficient to sample from an
-     *      a combined image sampler than a separate
-     *      @ref DescriptorType::Sampler and @ref DescriptorType::SampledImage.
-     *
-     * The image is expected to have been created with @ref ImageUsage::Sampled
-     * and be in either @ref ImageLayout::General or
-     * @ref ImageLayout::ShaderReadOnly.
-     */
-    CombinedImageSampler = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-
-    /**
-     * Sampled @ref Image.
-     *
-     * The image is expected to have been created with @ref ImageUsage::Sampled
-     * and be in either @ref ImageLayout::General or
-     * @ref ImageLayout::ShaderReadOnly.
-     * @see @ref DescriptorType::CombinedImageSampler
-     */
-    SampledImage = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-
-    /**
-     * Storage @ref Image.
-     *
-     * The image is expected to have been created with @ref ImageUsage::Storage
-     * and be in @ref ImageLayout::General.
-     */
-    StorageImage = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-
-    /**
-     * Uniform texel buffer view.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::UniformTexelBuffer.
-     */
-    UniformTexelBuffer = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,
-
-    /**
-     * Storage texel buffer view.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::StorageTexelBuffer.
-     */
-    StorageTexelBuffer = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
-
-    /**
-     * Uniform @ref Buffer.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::UniformBuffer.
-     */
-    UniformBuffer = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-
-    /**
-     * Storage @ref Buffer.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::StorageBuffer.
-     */
-    StorageBuffer = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-
-    /**
-     * Uniform @ref Buffer with a dynamic offset.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::UniformBuffer.
-     */
-    UniformBufferDynamic = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-
-    /**
-     * Storage @ref Buffer with a dynamic offset.
-     *
-     * The buffer is expected to have been created with
-     * @ref BufferUsage::StorageBuffer.
-     */
-    StorageBufferDynamic = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
-
-    /**
-     * Input @ref Image attachment.
-     *
-     * The image is expected to have been created with
-     * @ref ImageUsage::InputAttachment and be in @ref ImageLayout::General.
-     */
-    InputAttachment = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
-
-    /**
-     * Acceleration structure.
-     *
-     * @requires_vk_feature @ref DeviceFeature::AccelerationStructure
-     */
-    AccelerationStructure = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR
-};
 
 /**
 @brief Descriptor set layout binding

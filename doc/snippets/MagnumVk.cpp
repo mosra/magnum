@@ -40,6 +40,7 @@
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
+#include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
 #include "Magnum/Vk/DeviceFeatures.h"
 #include "Magnum/Vk/DeviceProperties.h"

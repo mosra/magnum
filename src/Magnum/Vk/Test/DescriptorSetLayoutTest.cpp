@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
+#include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/Shader.h"
 
 namespace Magnum { namespace Vk { namespace Test { namespace {
