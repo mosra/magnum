@@ -23,8 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Reference.h>
-
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
 #include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/Result.h"
