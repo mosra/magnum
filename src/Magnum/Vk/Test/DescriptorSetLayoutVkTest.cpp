@@ -34,6 +34,8 @@ struct DescriptorSetLayoutVkTest: VulkanTester {
     explicit DescriptorSetLayoutVkTest();
 
     void construct();
+    void constructEmpty();
+    void constructEmptyBinding();
     void constructMove();
 
     void wrap();
@@ -41,6 +43,8 @@ struct DescriptorSetLayoutVkTest: VulkanTester {
 
 DescriptorSetLayoutVkTest::DescriptorSetLayoutVkTest() {
     addTests({&DescriptorSetLayoutVkTest::construct,
+              &DescriptorSetLayoutVkTest::constructEmpty,
+              &DescriptorSetLayoutVkTest::constructEmptyBinding,
               &DescriptorSetLayoutVkTest::constructMove,
 
               &DescriptorSetLayoutVkTest::wrap});
@@ -50,6 +54,32 @@ void DescriptorSetLayoutVkTest::construct() {
     {
         DescriptorSetLayout layout{device(), DescriptorSetLayoutCreateInfo{
             {{15, DescriptorType::UniformBuffer}}
+        }};
+        CORRADE_VERIFY(layout.handle());
+        CORRADE_COMPARE(layout.handleFlags(), HandleFlag::DestroyOnDestruction);
+    }
+
+    /* Shouldn't crash or anything */
+    CORRADE_VERIFY(true);
+}
+
+void DescriptorSetLayoutVkTest::constructEmpty() {
+    {
+        /* Although rather weird, the spec allows this */
+        DescriptorSetLayout layout{device(), DescriptorSetLayoutCreateInfo{}};
+        CORRADE_VERIFY(layout.handle());
+        CORRADE_COMPARE(layout.handleFlags(), HandleFlag::DestroyOnDestruction);
+    }
+
+    /* Shouldn't crash or anything */
+    CORRADE_VERIFY(true);
+}
+
+void DescriptorSetLayoutVkTest::constructEmptyBinding() {
+    {
+        /* Also weird, but the spec *also* allows this */
+        DescriptorSetLayout layout{device(), DescriptorSetLayoutCreateInfo{
+            {{15, DescriptorType::UniformBuffer, 0}}
         }};
         CORRADE_VERIFY(layout.handle());
         CORRADE_COMPARE(layout.handleFlags(), HandleFlag::DestroyOnDestruction);

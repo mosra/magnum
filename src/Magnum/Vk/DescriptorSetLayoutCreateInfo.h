@@ -134,8 +134,8 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
          *      binding in a shader
          * @param descriptorType    Descriptor type
          * @param descriptorCount   Number of descriptors contained in the
-         *      binding. Has to be at least @cpp 1 @ce. If the shader binding
-         *      is not an array, use @cpp 1 @ce.
+         *      binding. If the shader binding is not an array, use @cpp 1 @ce,
+         *      zero is allowed as well.
          * @param stages            Shader stages that access the binding.
          *      Use @cpp ~Vk::ShaderStages{} @ce to specify that all stages
          *      may access the binding.
@@ -163,7 +163,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
          * @param descriptorType    Descriptor type. Should be either
          *      @ref DescriptorType::Sampler or
          *      @ref DescriptorType::CombinedImageSampler.
-         * @param immutableSamplers Immutable samplers
+         * @param immutableSamplers Immutable samplers. Allowed to be empty.
          * @param stages            Shader stages that access the binding.
          *      Use @cpp ~Vk::ShaderStages{} @ce to specify that all stages
          *      may access the binding.
@@ -283,8 +283,8 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutCreateInfo {
 
         /**
          * @brief Constructor
-         * @param bindings      Descriptor set layout bindings. At least one
-         *      binding has to be present.
+         * @param bindings      Descriptor set layout bindings. Allowed to be
+         *      empty.
          * @param flags         Descriptor set layout creation flags
          *
          * The following @type_vk{DescriptorSetLayoutCreateInfo} fields are
