@@ -75,7 +75,7 @@ void AssertDisabledTest::successOr() {
 
     Result a = Result::ErrorUnknown;
     Result r = Result::ErrorExtensionNotPresent;
-    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, a = r);
+    Result a2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(a = r, Result::Incomplete);
     CORRADE_COMPARE(a, Result::ErrorExtensionNotPresent);
     CORRADE_COMPARE(a2, a);
 
@@ -83,7 +83,7 @@ void AssertDisabledTest::successOr() {
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, Result::ErrorDeviceLost);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Result::ErrorDeviceLost, Result::ErrorDeviceLost);
 }
 
 void AssertDisabledTest::vkSuccess() {
@@ -104,7 +104,7 @@ void AssertDisabledTest::vkSuccessOr() {
 
     VkResult b = VK_ERROR_UNKNOWN;
     VkResult s = VK_ERROR_EXTENSION_NOT_PRESENT;
-    Result b2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, b = s);
+    Result b2 = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(b = s, Result::Incomplete);
     CORRADE_COMPARE(Result(b), Result::ErrorExtensionNotPresent);
     CORRADE_COMPARE(b2, Result(b));
 
@@ -112,7 +112,7 @@ void AssertDisabledTest::vkSuccessOr() {
 
     /* Test also that a standalone macro won't cause warnings about unused
        expression results */
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(ErrorDeviceLost, VK_ERROR_DEVICE_LOST);
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(VK_ERROR_DEVICE_LOST, Result::ErrorDeviceLost);
 }
 
 }}}}

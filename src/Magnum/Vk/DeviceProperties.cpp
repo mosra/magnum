@@ -562,7 +562,7 @@ UnsignedInt enumerateDevicesInto(Instance& instance, Containers::ArrayView<Devic
     /* Allocate memory for the output, fetch the handles into it */
     Containers::ArrayView<VkPhysicalDevice> handles{reinterpret_cast<VkPhysicalDevice*>(out.data()), out.size()};
     UnsignedInt count = out.size();
-    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(Incomplete, instance->EnumeratePhysicalDevices(instance, &count, handles.data()));
+    MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(instance->EnumeratePhysicalDevices(instance, &count, handles.data()), Result::Incomplete);
 
     /* Expect the final count isn't larger than the output array */
     CORRADE_INTERNAL_ASSERT(count <= out.size());

@@ -195,8 +195,9 @@ Vk::Device device{instance, std::move(info)};
 Vk::Device device{NoCreate};
 VkFence fence{};
 /* [MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR] */
-const Vk::Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(NotReady,
-    vkGetFenceStatus(device, fence));
+const Vk::Result result = MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(
+    vkGetFenceStatus(device, fence),
+    Vk::Result::NotReady);
 if(result == Vk::Result::Success) {
     // signaled
 } else {
