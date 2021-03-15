@@ -180,6 +180,11 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
 
         /* Only if we don't have Vulkan 1.1, on which these are core */
         if(_state->version < Version::Vk11) {
+            /* Needed for VK_ERROR_OUT_OF_POOL_MEMORY support in DescriptorSet
+               allocation */
+            if(extensionProperties->isSupported<Extensions::KHR::maintenance1>())
+                addEnabledExtensions<Extensions::KHR::maintenance1>();
+
             /* Used for the extra extension points in MemoryAllocationInfo */
             if(extensionProperties->isSupported<Extensions::KHR::get_memory_requirements2>())
                 addEnabledExtensions<Extensions::KHR::get_memory_requirements2>();
