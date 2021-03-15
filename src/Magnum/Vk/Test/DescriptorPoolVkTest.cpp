@@ -94,7 +94,13 @@ void DescriptorPoolVkTest::setupVariableDescriptorCount() {
     if(!_deviceVariableDescriptorCount.handle()) _deviceVariableDescriptorCount.create(instance(),
         DeviceCreateInfo{std::move(properties)}
             .addQueues(QueueFlag::Graphics, {0.0f}, {_queue})
-            .addEnabledExtensions<Extensions::EXT::descriptor_indexing>()
+            .addEnabledExtensions<
+                /* Dependency of EXT_descriptor_indexing if 1.1 isn't
+                   supported. For simpler handling we enable it always, instead
+                   of only when we're on 1.0. */
+                Extensions::KHR::maintenance3,
+                Extensions::EXT::descriptor_indexing
+             >()
             .setEnabledFeatures(DeviceFeature::DescriptorBindingVariableDescriptorCount)
     );
 }
