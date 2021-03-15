@@ -180,37 +180,44 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
 
         /* Only if we don't have Vulkan 1.1, on which these are core */
         if(_state->version < Version::Vk11) {
+            /* Used for the extra extension points in MemoryAllocationInfo */
             if(extensionProperties->isSupported<Extensions::KHR::get_memory_requirements2>())
                 addEnabledExtensions<Extensions::KHR::get_memory_requirements2>();
+
+            /* Used for the extra extension points in bindMemory() */
             if(extensionProperties->isSupported<Extensions::KHR::bind_memory2>())
                 addEnabledExtensions<Extensions::KHR::bind_memory2>();
         }
+
         /* Only if we don't have Vulkan 1.2, on which these are core */
         if(_state->version < Version::Vk12) {
+            /* Used for the extra extension points in RenderPassCreateInfo and
+               related structs */
             if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>())
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
         }
 
-        /* Enable the KHR_copy_commands2 and EXT_extended_dynamic_state
-           extensions. Not in any Vulkan version yet. */
+        /* Used for the extra extension points in CopyBuffer, CopyImage etc.
+           Not in any Vulkan version yet. */
         if(extensionProperties->isSupported<Extensions::KHR::copy_commands2>())
             addEnabledExtensions<Extensions::KHR::copy_commands2>();
+
+        /* Used for dynamic stride and primitive specification in
+           CommandBuffer::draw(). Not in any Vulkan version yet. */
         if(extensionProperties->isSupported<Extensions::EXT::extended_dynamic_state>())
             addEnabledExtensions<Extensions::EXT::extended_dynamic_state>();
 
-        /* Enable the KHR_portability_subset extension, which *has to be*
-           enabled when available. Not enabling any of its features though,
-           that responsibility lies on the user. */
+        /* The KHR_portability_subset extension *has to be* enabled when
+           available. Not enabling any of its features though, that
+           responsibility lies on the user. If KHR_portability_subset is not
+           supported, mark its features as *implicitly* supported -- those
+           don't get explicitly enabled and are also not listed in the list of
+           enabled features in the startup log */
         if(extensionProperties->isSupported<Extensions::KHR::portability_subset>()) {
             addEnabledExtensions<Extensions::KHR::portability_subset>();
-
-        /* Otherwise, if KHR_portability_subset is not supported, mark its
-           features as *implicitly* supported -- those don't get explicitly
-           enabled and are also not listed in the list of enabled features in
-           the startup log */
-        /** @todo wrap this under a NoImplicitFeatures flag? it doesn't actually
-            *do* anything though */
         } else {
+            /** @todo wrap this under a NoImplicitFeatures flag? it doesn't
+                actually *do* anything though */
             _state->implicitFeatures = Implementation::deviceFeaturesPortabilitySubset();
         }
     }
