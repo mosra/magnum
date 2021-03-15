@@ -116,7 +116,7 @@ check() {
         MAGNUM_DEVICE=cpu CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
         for device in "" cpu; do
             MAGNUM_DEVICE=$device MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
-            MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1" MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
+            MAGNUM_DEVICE=$device MAGNUM_DISABLE_EXTENSIONS="VK_KHR_get_physical_device_properties2 VK_KHR_get_memory_requirements2 VK_KHR_bind_memory2 VK_KHR_create_renderpass2 VK_KHR_copy_commands2 VK_KHR_maintenance1 VK_KHR_multiview VK_KHR_maintenance2" MAGNUM_VULKAN_VERSION=1.0 CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R VkTest
         done
     done
 }

@@ -277,6 +277,9 @@ void DeviceVkTest::createInfoExtensions() {
 }
 
 void DeviceVkTest::createInfoExtensionsCopiedStrings() {
+    if(std::getenv("MAGNUM_DISABLE_EXTENSIONS"))
+        CORRADE_SKIP("Can't test with the MAGNUM_DISABLE_EXTENSIONS environment variable set");
+
     Containers::StringView globalButNotNullTerminated = "VK_KHR_maintenance25"_s.except(1);
     Containers::String localButNullTerminated = Extensions::KHR::draw_indirect_count::string();
 

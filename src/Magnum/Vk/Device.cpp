@@ -185,6 +185,14 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
             if(extensionProperties->isSupported<Extensions::KHR::maintenance1>())
                 addEnabledExtensions<Extensions::KHR::maintenance1>();
 
+            /* Dependencies of VK_KHR_create_renderpass2, which is enabled
+               below. If an extension is supported, all its dependencies should
+               be too, so not checking for their presence again. */
+            if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>()) {
+                addEnabledExtensions<Extensions::KHR::multiview>();
+                addEnabledExtensions<Extensions::KHR::maintenance2>();
+            }
+
             /* Used for the extra extension points in MemoryAllocationInfo */
             if(extensionProperties->isSupported<Extensions::KHR::get_memory_requirements2>())
                 addEnabledExtensions<Extensions::KHR::get_memory_requirements2>();
@@ -197,7 +205,8 @@ DeviceCreateInfo::DeviceCreateInfo(DeviceProperties& deviceProperties, const Ext
         /* Only if we don't have Vulkan 1.2, on which these are core */
         if(_state->version < Version::Vk12) {
             /* Used for the extra extension points in RenderPassCreateInfo and
-               related structs */
+               related structs. Depends on VK_KHR_multiview and
+               VK_KHR_maintenance2, which were enabled above. */
             if(extensionProperties->isSupported<Extensions::KHR::create_renderpass2>())
                 addEnabledExtensions<Extensions::KHR::create_renderpass2>();
         }
