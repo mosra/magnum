@@ -365,6 +365,7 @@ Vk::Instance instance{NoCreate};
 /* [DescriptorSetLayout-creation-binding-flags] */
 Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
     DOXYGEN_IGNORE()
+    .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
     .setEnabledFeatures(
         Vk::DeviceFeature::DescriptorBindingUniformBufferUpdateAfterBind|
         DOXYGEN_IGNORE(Vk::DeviceFeatures{})
