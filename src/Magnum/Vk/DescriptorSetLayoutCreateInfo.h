@@ -117,8 +117,9 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
 
             /**
              * This descriptor binding has a variable size that will be
-             * specified when a descriptor set is allocated using this layout,
-             * and the @p descriptorCount value is treated as an upper bound.
+             * specified in @ref DescriptorPool::allocate(VkDescriptorSetLayout, UnsignedInt),
+             * and the @p descriptorCount value specified in the constructor is
+             * treated as an upper bound.
              *
              * Allowed only on the last binding number in the layout, not
              * allowed on a @ref DescriptorType::UniformBufferDynamic or
@@ -146,7 +147,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
          *      binding. If the shader binding is not an array, use @cpp 1 @ce,
          *      zero is allowed as well. For a @ref Flag::VariableDescriptorCount
          *      this is used as an upper bound and a concrete size is specified
-         *      during descriptor set allocation.
+         *      in @ref DescriptorPool::allocate(VkDescriptorSetLayout, UnsignedInt).
          * @param stages            Shader stages that access the binding.
          *      Use @cpp ~Vk::ShaderStages{} @ce to specify that all stages
          *      may access the binding.

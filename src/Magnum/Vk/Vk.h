@@ -59,6 +59,7 @@ enum class DependencyFlag: UnsignedInt;
 typedef Containers::EnumSet<DependencyFlag> DependencyFlags;
 class DescriptorPool;
 class DescriptorPoolCreateInfo;
+class DescriptorSet;
 class DescriptorSetLayout;
 class DescriptorSetLayoutCreateInfo;
 enum class DescriptorType: Int;

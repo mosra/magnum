@@ -25,6 +25,7 @@
 
 #include <string>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Algorithms.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -40,6 +41,7 @@
 #include "Magnum/Vk/CommandPoolCreateInfo.h"
 #include "Magnum/Vk/ComputePipelineCreateInfo.h"
 #include "Magnum/Vk/DescriptorPoolCreateInfo.h"
+#include "Magnum/Vk/DescriptorSet.h"
 #include "Magnum/Vk/DescriptorSetLayoutCreateInfo.h"
 #include "Magnum/Vk/DescriptorType.h"
 #include "Magnum/Vk/DeviceCreateInfo.h"
@@ -329,6 +331,66 @@ Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{8, {
     {Vk::DescriptorType::CombinedImageSampler, 16}
 }}};
 /* [DescriptorPool-creation] */
+}
+
+{
+/* [DescriptorSet-allocation] */
+Vk::DescriptorSetLayout layout{DOXYGEN_IGNORE(NoCreate)};
+Vk::DescriptorPool pool{DOXYGEN_IGNORE(NoCreate)};
+
+Vk::DescriptorSet set = pool.allocate(layout);
+/* [DescriptorSet-allocation] */
+}
+
+{
+Vk::DescriptorSetLayout layout{NoCreate};
+Vk::DescriptorPool pool{NoCreate}, overflowPool{NoCreate};
+/* [DescriptorSet-allocation-try] */
+Containers::Optional<Vk::DescriptorSet> set = pool.tryAllocate(layout);
+
+/* Oops, the pool is full (or fragmented). Hope the plan B doesn't fail too. */
+if(!set) set = overflowPool.allocate(layout);
+/* [DescriptorSet-allocation-try] */
+}
+
+{
+Vk::Device device{NoCreate};
+Vk::DescriptorSetLayout layout{NoCreate};
+/* [DescriptorSet-allocation-free] */
+Vk::DescriptorPool pool{device, Vk::DescriptorPoolCreateInfo{DOXYGEN_IGNORE(0), {
+    DOXYGEN_IGNORE()
+}, Vk::DescriptorPoolCreateInfo::Flag::FreeDescriptorSet}};
+
+{
+    Vk::DescriptorSet set = pool.allocate(layout);
+
+    // the set gets automatically freed at the end of scope
+}
+/* [DescriptorSet-allocation-free] */
+}
+
+{
+Vk::Instance instance{NoCreate};
+Vk::DescriptorPool pool{NoCreate};
+/* [DescriptorSet-allocation-variable] */
+Vk::Device device{instance, Vk::DeviceCreateInfo{DOXYGEN_IGNORE(Vk::pickDevice(instance))}
+    DOXYGEN_IGNORE()
+    .addEnabledExtensions<Vk::Extensions::EXT::descriptor_indexing>()
+    .setEnabledFeatures(
+        Vk::DeviceFeature::DescriptorBindingVariableDescriptorCount|
+        DOXYGEN_IGNORE(Vk::DeviceFeatures{})
+    )
+};
+
+Vk::DescriptorSetLayout layout{device, Vk::DescriptorSetLayoutCreateInfo{
+    {{DOXYGEN_IGNORE(0), Vk::DescriptorType::SampledImage, 8,
+      Vk::ShaderStage::Fragment,
+      Vk::DescriptorSetLayoutBinding::Flag::VariableDescriptorCount}},
+    DOXYGEN_IGNORE()
+}};
+
+Vk::DescriptorSet set = pool.allocate(layout, 4);
+/* [DescriptorSet-allocation-variable] */
 }
 
 {

@@ -42,9 +42,10 @@ namespace Magnum { namespace Vk {
 @brief Descriptor set layout
 @m_since_latest
 
-Wraps a @type_vk_keyword{DescriptorSetLayout}. A descriptor set layout lists
-descriptors (such as uniform buffers or samplers) used by shaders in a
-@ref Pipeline.
+Wraps a @type_vk_keyword{DescriptorSetLayout}. A descriptor set layout
+specifies what descriptors (such as uniform buffers or samplers) can be used by
+shaders in a @ref Pipeline, concrete descriptors are then bound using a
+@ref DescriptorSet.
 
 @section Vk-DescriptorSetLayout-creation Descriptor set layout creation
 
@@ -89,8 +90,8 @@ specify additional flags per binding. All of them require a certain
 @section Vk-DescriptorSetLayout-usage Descriptor set layout usage
 
 A descriptor set layout is used in a @ref PipelineLayout creation and
-subsequently for descriptor set allocation from a @ref DescriptorPool. See the
-corresponding class documentation for more information.
+subsequently for @ref DescriptorSet allocation from a @ref DescriptorPool. See
+the corresponding class documentation for more information.
 */
 class MAGNUM_VK_EXPORT DescriptorSetLayout {
     public:

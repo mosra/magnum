@@ -28,6 +28,7 @@ corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES MagnumVkTestLib)
 corrade_add_test(VkCommandBufferTest CommandBufferTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkCommandPoolTest CommandPoolTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDescriptorPoolTest DescriptorPoolTest.cpp LIBRARIES MagnumVkTestLib)
+corrade_add_test(VkDescriptorSetTest DescriptorSetTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDescriptorSetLayoutTest DescriptorSetLayoutTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDescriptorTypeTest DescriptorTypeTest.cpp LIBRARIES MagnumVk)
 corrade_add_test(VkDeviceTest DeviceTest.cpp LIBRARIES MagnumVk)
@@ -133,6 +134,7 @@ set_target_properties(
     VkCommandBufferTest
     VkCommandPoolTest
     VkDescriptorPoolTest
+    VkDescriptorSetTest
     VkDescriptorSetLayoutTest
     VkDescriptorTypeTest
     VkDeviceTest
@@ -198,7 +200,8 @@ if(BUILD_VK_TESTS)
     corrade_add_test(VkBufferVkTest BufferVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkCommandBufferVkTest CommandBufferVkTest.cpp LIBRARIES MagnumVulkanTester)
     corrade_add_test(VkCommandPoolVkTest CommandPoolVkTest.cpp LIBRARIES MagnumVulkanTester)
-    corrade_add_test(VkDescriptorPoolVkTest DescriptorPoolVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
+    corrade_add_test(VkDescriptorPoolVkTest DescriptorPoolVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
+    corrade_add_test(VkDescriptorSetVkTest DescriptorSetVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkDescriptorSetLayoutVkTest DescriptorSetLayoutVkTest.cpp LIBRARIES MagnumVk MagnumVulkanTester)
     corrade_add_test(VkDeviceVkTest DeviceVkTest.cpp LIBRARIES MagnumVkTestLib MagnumVulkanTester)
     corrade_add_test(VkDevicePropertiesVkTest DevicePropertiesVkTest.cpp LIBRARIES  MagnumVkTestLib MagnumVulkanTester)
@@ -252,6 +255,7 @@ if(BUILD_VK_TESTS)
         VkCommandBufferVkTest
         VkCommandPoolVkTest
         VkDescriptorPoolVkTest
+        VkDescriptorSetVkTest
         VkDescriptorSetLayoutVkTest
         VkDeviceVkTest
         VkDevicePropertiesVkTest

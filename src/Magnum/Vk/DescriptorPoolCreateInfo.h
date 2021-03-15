@@ -70,8 +70,13 @@ class MAGNUM_VK_EXPORT DescriptorPoolCreateInfo {
              *
              * @par
              *      Not using this flag may help the driver to use simpler
-             *      per-pool allocators instead of per-set. Without this flag
-             *      set, descriptor pool fragmentation can't occur.
+             *      per-pool allocators instead of per-set. With this flag set,
+             *      descriptor pool fragmentation may occur, which can result
+             *      in @ref DescriptorPool::allocate() failures even if the
+             *      number of individual free descriptors in the pool is large
+             *      enough.
+             *
+             * @see @ref Result::ErrorFragmentedPool
              */
             FreeDescriptorSet = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
 

@@ -29,6 +29,7 @@ find_package(Vulkan REQUIRED)
 set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
+    DescriptorSet.cpp
     DescriptorSetLayout.cpp
     DescriptorType.cpp
     Extensions.cpp
@@ -77,6 +78,7 @@ set(MagnumVk_HEADERS
     ComputePipelineCreateInfo.h
     DescriptorPool.h
     DescriptorPoolCreateInfo.h
+    DescriptorSet.h
     DescriptorSetLayout.h
     DescriptorSetLayoutCreateInfo.h
     DescriptorType.h
