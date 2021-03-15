@@ -927,7 +927,7 @@ Vulkan enum                             | Matching API
 @type_vk{PipelineStageFlagBits}, \n @type_vk{PipelineStageFlags} | @ref PipelineStage, \n @ref PipelineStages
 @type_vk{PointClippingBehavior} @m_class{m-label m-flat m-success} **KHR, 1.1** | |
 @type_vk{PolygonMode}                   | |
-@type_vk{PrimitveTopology}              | @ref MeshPrimitive
+@type_vk{PrimitiveTopology}             | @ref MeshPrimitive
 
 @subsection vulkan-mapping-enums-q Q
 

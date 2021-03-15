@@ -140,7 +140,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayoutBinding {
         /**
          * @brief Constructor
          * @param binding           Binding corresponding to a particular
-         *      binding in a shader
+         *      binding in a shader. Has to be unique in the layout.
          * @param descriptorType    Descriptor type
          * @param descriptorCount   Number of descriptors contained in the
          *      binding. If the shader binding is not an array, use @cpp 1 @ce,

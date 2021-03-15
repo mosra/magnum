@@ -164,7 +164,7 @@ class MAGNUM_VK_EXPORT CommandPool {
         HandleFlags handleFlags() const { return _flags; }
 
         /**
-         * @brief Allocate a command buffer
+         * @brief Allocate a single command buffer
          *
          * @see @fn_vk_keyword{AllocateCommandBuffers}
          */
