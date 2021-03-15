@@ -42,7 +42,9 @@ struct MeshTest: TestSuite::Tester {
     void mapIndexTypeInvalid();
 
     void construct();
-    void countsOffsets();
+    void constructCountsOffsets();
+    void constructCopy();
+    void constructMove();
 
     void addVertexBuffer();
     void addVertexBufferOwned();
@@ -61,7 +63,9 @@ MeshTest::MeshTest() {
               &MeshTest::mapIndexTypeInvalid,
 
               &MeshTest::construct,
-              &MeshTest::countsOffsets,
+              &MeshTest::constructCountsOffsets,
+              &MeshTest::constructCopy,
+              &MeshTest::constructMove,
 
               &MeshTest::addVertexBuffer,
               &MeshTest::addVertexBufferOwned,
@@ -124,7 +128,7 @@ void MeshTest::construct() {
     CORRADE_VERIFY(!mesh.isIndexed());
 }
 
-void MeshTest::countsOffsets() {
+void MeshTest::constructCountsOffsets() {
     Mesh mesh{MeshLayout{MeshPrimitive::Triangles}};
     mesh.setCount(15)
         .setVertexOffset(3)
@@ -136,6 +140,26 @@ void MeshTest::countsOffsets() {
     CORRADE_COMPARE(mesh.indexOffset(), 5);
     CORRADE_COMPARE(mesh.instanceCount(), 7);
     CORRADE_COMPARE(mesh.instanceOffset(), 9);
+}
+
+void MeshTest::constructCopy() {
+    CORRADE_VERIFY(!std::is_copy_constructible<Mesh>{});
+    CORRADE_VERIFY(!std::is_copy_assignable<Mesh>{});
+}
+
+void MeshTest::constructMove() {
+    /* The move is defaulted, so test just the very basics */
+    Mesh a{MeshLayout{MeshPrimitive::Triangles}};
+    a.setCount(15);
+
+    Mesh b = std::move(a);
+    CORRADE_COMPARE(b.layout().vkPipelineInputAssemblyStateCreateInfo().topology, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+    CORRADE_COMPARE(b.count(), 15);
+
+    Mesh c{MeshLayout{MeshPrimitive::Points}};
+    c = std::move(b);
+    CORRADE_COMPARE(c.layout().vkPipelineInputAssemblyStateCreateInfo().topology, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+    CORRADE_COMPARE(c.count(), 15);
 }
 
 void MeshTest::addVertexBuffer() {
