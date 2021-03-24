@@ -1320,7 +1320,7 @@ class MAGNUM_TRADE_EXPORT MaterialAttributeData {
             char name[Implementation::MaterialAttributeDataSize - sizeof(MaterialAttributeType) - sizeof(T)];
             T value;
         };
-        union CORRADE_ALIGNAS(8) Storage {
+        union alignas(8) Storage {
             constexpr explicit Storage() noexcept: data{} {}
 
             constexpr explicit Storage(Containers::StringView name, Containers::StringView value) noexcept: s{MaterialAttributeType::String, name, value} {}
