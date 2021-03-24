@@ -108,6 +108,9 @@ including the @ref Magnum/Vk/Assert.h header.
         return Magnum::Vk::Result(call);                                    \
     }()
 #elif defined(CORRADE_STANDARD_ASSERT)
+/* MinGW GCC 8 for some reason needs the `return Magnum::Vk::Result();` at the
+   end, otherwise it complains about non-void function exiting with no return.
+   All other compilers understand the abort() as a noreturn function. */
 #define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(call, ...)                        \
     [&]() {                                                                 \
         const Magnum::Vk::Result _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) = Magnum::Vk::Result(call); \
@@ -116,6 +119,7 @@ including the @ref Magnum/Vk/Assert.h header.
                 return _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__);     \
         }                                                                   \
         assert(false);                                                      \
+        return Magnum::Vk::Result();                                        \
     }()
 #else
 #define MAGNUM_VK_INTERNAL_ASSERT_SUCCESS_OR(call, ...)                        \
@@ -127,6 +131,7 @@ including the @ref Magnum/Vk/Assert.h header.
         }                                                                   \
         Corrade::Utility::Error{Corrade::Utility::Error::defaultOutput()} << "Call " #call " failed with" << _CORRADE_HELPER_PASTE(magnumVkResult, __LINE__) << "at " __FILE__ ":" CORRADE_LINE_STRING; \
         std::abort();                                                       \
+        return Magnum::Vk::Result();                                        \
     }()
 #endif
 #endif
