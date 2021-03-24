@@ -40,7 +40,10 @@ namespace Magnum { namespace Vk {
 DescriptorPoolCreateInfo::DescriptorPoolCreateInfo(const UnsignedInt maxSets, const Containers::ArrayView<const std::pair<DescriptorType, UnsignedInt>> poolSizes, const Flags flags): _info{} {
     CORRADE_ASSERT(maxSets,
         "Vk::DescriptorPoolCreateInfo: there has to be at least one set", );
-    CORRADE_ASSERT(poolSizes,
+    /* On certain compilers, {} (empty initializer list) gets converted to an
+       arrayview that's not null, interesting. Explicitly using .empty() to
+       ensure the assert gets properly fired. */
+    CORRADE_ASSERT(!poolSizes.empty(),
         "Vk::DescriptorPoolCreateInfo: there has to be at least one pool", );
 
     Containers::ArrayView<VkDescriptorPoolSize> poolSizesCopy;
