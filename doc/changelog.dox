@@ -337,6 +337,9 @@ See also:
     accident and it was also not really moving everything properly, especially
     when delayed creation was done on the moved-to object
 -   @ref GL::Renderer::MemoryBarrier::ShaderStorage had an incorrect value
+-   @ref GL::Shader limit queries for a particular shader stage on desktop were
+    out-of-bounds array accesses, causing wrong or random values being returned
+    for most shader-related limits
 -   Fixed assertions related to OpenGL driver workarounds when the proprietary
     AMDGPU PRO drivers are used on Linux
 -   @ref Platform::EmscriptenApplication randomly created antialiased contexts
