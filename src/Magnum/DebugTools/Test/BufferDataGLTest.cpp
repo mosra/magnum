@@ -49,10 +49,10 @@ constexpr Int Data[] = {2, 7, 5, 13, 25};
 void BufferDataGLTest::data() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::map_buffer_range::string() << "is not supported.");
     #endif
 
     GL::Buffer buffer;
@@ -66,10 +66,10 @@ void BufferDataGLTest::data() {
 void BufferDataGLTest::subData() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::map_buffer_range::string() << "is not supported.");
     #endif
 
     GL::Buffer buffer;

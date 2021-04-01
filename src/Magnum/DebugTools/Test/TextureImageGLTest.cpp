@@ -208,7 +208,7 @@ constexpr UnsignedInt Data2DUInt[] = { 0xcafebabe,
 void TextureImageGLTest::subImage2DUInt() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_integer>())
-        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::texture_integer::string() << "is not supported.");
     #endif
 
     GL::Texture2D texture;

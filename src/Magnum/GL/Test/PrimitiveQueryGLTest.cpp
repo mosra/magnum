@@ -96,7 +96,7 @@ void PrimitiveQueryGLTest::constructMove() {
 void PrimitiveQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() << "is not supported.");
     #endif
 
     GLuint id;
@@ -117,10 +117,10 @@ void PrimitiveQueryGLTest::wrap() {
 void PrimitiveQueryGLTest::primitivesGenerated() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
-        CORRADE_SKIP(Extensions::EXT::transform_feedback::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::transform_feedback::string() << "is not supported.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -199,7 +199,7 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
-        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() << "is not supported.");
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
@@ -262,7 +262,7 @@ void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
 void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() << "is not supported.");
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -341,7 +341,7 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
 void PrimitiveQueryGLTest::transformFeedbackOverflow() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback_overflow_query>())
-        CORRADE_SKIP(Extensions::ARB::transform_feedback_overflow_query::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::ARB::transform_feedback_overflow_query::string() << "is not supported.");
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */

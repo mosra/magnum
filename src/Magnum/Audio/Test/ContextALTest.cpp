@@ -131,7 +131,7 @@ void ContextALTest::isExtensionUnsupported() {
     Context context;
 
     if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>())
-        CORRADE_SKIP("Extension" + std::string{Extensions::ALC::SOFTX::HRTF::string()} + " is supported, can't test.");
+        CORRADE_SKIP("Extension" << Extensions::ALC::SOFTX::HRTF::string() << "is supported, can't test.");
 
     CORRADE_VERIFY(!context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>());
     CORRADE_VERIFY(!context.isExtensionDisabled<Extensions::ALC::SOFTX::HRTF>());

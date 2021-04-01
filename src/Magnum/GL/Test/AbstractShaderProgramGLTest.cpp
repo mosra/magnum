@@ -269,7 +269,7 @@ void AbstractShaderProgramGLTest::create() {
 void AbstractShaderProgramGLTest::createMultipleOutputs() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
 
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -326,9 +326,9 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::blend_func_extended>())
-        CORRADE_SKIP(GL::Extensions::ARB::blend_func_extended::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::blend_func_extended::string() << "is not supported.");
 
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
@@ -590,7 +590,7 @@ MyDoubleShader::MyDoubleShader() {
 
 void AbstractShaderProgramGLTest::uniformDouble() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::gpu_shader_fp64>())
-        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() << "is not supported.");
 
     MyDoubleShader shader;
 
@@ -603,7 +603,7 @@ void AbstractShaderProgramGLTest::uniformDouble() {
 
 void AbstractShaderProgramGLTest::uniformDoubleVector() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::gpu_shader_fp64>())
-        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() << "is not supported.");
 
     MyDoubleShader shader;
 
@@ -616,7 +616,7 @@ void AbstractShaderProgramGLTest::uniformDoubleVector() {
 
 void AbstractShaderProgramGLTest::uniformDoubleMatrix() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::gpu_shader_fp64>())
-        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() << "is not supported.");
 
     MyDoubleShader shader;
 
@@ -629,7 +629,7 @@ void AbstractShaderProgramGLTest::uniformDoubleMatrix() {
 
 void AbstractShaderProgramGLTest::uniformDoubleArray() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::gpu_shader_fp64>())
-        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::ARB::gpu_shader_fp64::string() << "is not supported.");
 
     MyDoubleShader shader;
 
@@ -654,7 +654,7 @@ void AbstractShaderProgramGLTest::uniformDoubleArray() {
 void AbstractShaderProgramGLTest::createUniformBlocks() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
     Utility::Resource rs("AbstractShaderProgramGLTest");
@@ -711,7 +711,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
 void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
     MyPublicShader program;
@@ -790,7 +790,7 @@ UniformBlockShader::UniformBlockShader() {
 void AbstractShaderProgramGLTest::uniformBlock() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::uniform_buffer_object::string() << "is not supported.");
     #endif
 
     UniformBlockShader shader;
@@ -807,7 +807,7 @@ void AbstractShaderProgramGLTest::uniformBlock() {
 void AbstractShaderProgramGLTest::compute() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::compute_shader>())
-        CORRADE_SKIP(Extensions::ARB::compute_shader::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::ARB::compute_shader::string() << "is not supported.");
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");

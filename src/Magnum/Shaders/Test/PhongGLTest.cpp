@@ -600,7 +600,7 @@ void PhongGLTest::construct() {
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & Phong::Flag::ObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     Phong shader{data.flags, data.lightCount};
@@ -1432,7 +1432,7 @@ void PhongGLTest::renderObjectId() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
@@ -1752,7 +1752,7 @@ void PhongGLTest::renderInstanced() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::instanced_arrays>())
-        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::instanced_arrays::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_WEBGL
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>() &&
@@ -1761,7 +1761,7 @@ void PhongGLTest::renderInstanced() {
         CORRADE_SKIP("GL_{ANGLE,EXT,NV}_instanced_arrays is not supported");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ANGLE::instanced_arrays>())
-        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ANGLE::instanced_arrays::string() << "is not supported.");
     #endif
     #endif
 

@@ -56,7 +56,7 @@ AbstractQueryGLTest::AbstractQueryGLTest() {
 void AbstractQueryGLTest::construct() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
     #endif
 
     {
@@ -76,7 +76,7 @@ void AbstractQueryGLTest::construct() {
 void AbstractQueryGLTest::constructMove() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -114,7 +114,7 @@ void AbstractQueryGLTest::constructMove() {
 void AbstractQueryGLTest::label() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
     #endif
 
     /* No-Op version is tested in AbstractObjectGLTest */

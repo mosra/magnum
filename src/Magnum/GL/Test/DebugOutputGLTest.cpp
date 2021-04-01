@@ -71,7 +71,7 @@ DebugOutputGLTest::DebugOutputGLTest() {
 
 void DebugOutputGLTest::setCallbackDefault() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     DebugOutput::setDefaultCallback();
 
@@ -102,7 +102,7 @@ void DebugOutputGLTest::teardown() {
 
 void DebugOutputGLTest::setEnabled() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     /* Try at least some combinations. Calling a less-specific version will
        reset the more-specific setting from earlier. */
@@ -142,7 +142,7 @@ void DebugOutputGLTest::messageNoOp() {
 
 void DebugOutputGLTest::message() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     /* Need to be careful, because the test runner is using debug output too */
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
@@ -185,7 +185,7 @@ void DebugOutputGLTest::groupNoOp() {
 
 void DebugOutputGLTest::group() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
+        CORRADE_SKIP(Extensions::KHR::debug::string() << "is not supported.");
 
     /* Need to be careful, because the test runner is using debug output too */
     {

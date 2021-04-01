@@ -81,19 +81,19 @@ void FrameProfilerGLTest::test() {
     if(data.values & GLFrameProfiler::Value::GpuDuration) {
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::timer_query>())
-            CORRADE_SKIP(GL::Extensions::ARB::timer_query::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::ARB::timer_query::string() << "is not supported.");
         #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query_webgl2>())
-            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query_webgl2::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query_webgl2::string() << "is not supported.");
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query>())
-            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
+            CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() << "is not supported.");
         #endif
     }
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.values & GLFrameProfiler::Value::VertexFetchRatio) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -188,7 +188,7 @@ void FrameProfilerGLTest::test() {
 #ifndef MAGNUM_TARGET_GLES
 void FrameProfilerGLTest::vertexFetchRatioDivisionByZero() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
 
     GLFrameProfiler profiler{GLFrameProfiler::Value::VertexFetchRatio, 4};
 
@@ -214,7 +214,7 @@ void FrameProfilerGLTest::vertexFetchRatioDivisionByZero() {
 
 void FrameProfilerGLTest::primitiveClipRatioDivisionByZero() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::pipeline_statistics_query>())
-        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() + std::string(" is not available"));
+        CORRADE_SKIP(GL::Extensions::ARB::pipeline_statistics_query::string() << "is not supported.");
 
     GLFrameProfiler profiler{GLFrameProfiler::Value::PrimitiveClipRatio, 4};
 

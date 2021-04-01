@@ -76,7 +76,7 @@ void SampleQueryGLTest::constructMove() {
 void SampleQueryGLTest::wrap() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
     #endif
 
     GLuint id;
@@ -161,7 +161,7 @@ MyShader::MyShader() {
 void SampleQueryGLTest::querySamplesPassed() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() << "is not supported.");
     #endif
 
     Renderbuffer renderbuffer;
@@ -219,7 +219,7 @@ void SampleQueryGLTest::querySamplesPassed() {
 #ifndef MAGNUM_TARGET_GLES
 void SampleQueryGLTest::conditionalRender() {
     if(!Context::current().isExtensionSupported<Extensions::NV::conditional_render>())
-        CORRADE_SKIP(Extensions::NV::conditional_render::string() + std::string(" is not available."));
+        CORRADE_SKIP(Extensions::NV::conditional_render::string() << "is not supported.");
 
     Renderbuffer renderbuffer;
     renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(32));

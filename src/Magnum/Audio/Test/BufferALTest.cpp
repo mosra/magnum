@@ -84,7 +84,7 @@ void BufferALTest::properties() {
 
 void BufferALTest::loopPoints() {
     if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
-        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() << "is not supported.");
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -95,7 +95,7 @@ void BufferALTest::loopPoints() {
 
 void BufferALTest::setLoopPoints() {
     if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
-        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() << "is not supported.");
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -106,7 +106,7 @@ void BufferALTest::setLoopPoints() {
 
 void BufferALTest::setLoopSince() {
     if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
-        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() << "is not supported.");
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -117,7 +117,7 @@ void BufferALTest::setLoopSince() {
 
 void BufferALTest::setLoopUntil() {
     if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
-        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() << "is not supported.");
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -128,7 +128,7 @@ void BufferALTest::setLoopUntil() {
 
 void BufferALTest::resetLoopPoints() {
     if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
-        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() << "is not supported.");
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };

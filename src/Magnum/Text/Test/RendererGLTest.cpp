@@ -263,7 +263,7 @@ void RendererGLTest::renderMeshIndexType() {
 void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
-        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() << "is not supported.");
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>() &&
        !GL::Context::current().isExtensionSupported<GL::Extensions::OES::mapbuffer>())

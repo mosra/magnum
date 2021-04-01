@@ -380,7 +380,7 @@ template<class T> void CompileGLTest::twoDimensions() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -558,7 +558,7 @@ template<class T> void CompileGLTest::threeDimensions() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags & Flag::ObjectId && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -852,10 +852,10 @@ template<class T> void CompileGLTest::threeDimensions() {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+            CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
         #else
         if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+            CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
         #endif
 
         _framebuffer.clear(GL::FramebufferClear::Color);

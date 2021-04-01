@@ -260,9 +260,9 @@ void ContextGLTest::constructConfiguration() {
     CORRADE_VERIFY(Context::hasCurrent());
 
     if(data.needsExtensionPresent && !Context::current().isExtensionSupported(*data.needsExtensionPresent))
-        CORRADE_SKIP(data.needsExtensionPresent->string() + std::string{" is not supported, skippping"});
+        CORRADE_SKIP(data.needsExtensionPresent->string() << "is not supported.");
     if(data.needsExtensionMissing && Context::current().isExtensionSupported(*data.needsExtensionMissing))
-        CORRADE_SKIP(data.needsExtensionMissing->string() + std::string{" is supported, skippping"});
+        CORRADE_SKIP(data.needsExtensionMissing->string() << "is supported.");
 
     std::ostringstream out;
     {
@@ -297,7 +297,7 @@ void ContextGLTest::constructMove() {
     CORRADE_VERIFY(Context::hasCurrent());
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>())
-        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() + std::string{" is not supported, skipping"});
+        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() << "is not supported.");
 
     Context* current = &Context::current();
     Context::makeCurrent(nullptr);
@@ -457,7 +457,7 @@ void ContextGLTest::isVersionSupported() {
 #ifndef MAGNUM_TARGET_GLES
 void ContextGLTest::isVersionSupportedES() {
     if(!Context::current().isExtensionSupported<Extensions::ARB::ES2_compatibility>())
-        CORRADE_SKIP(Extensions::ARB::ES2_compatibility::string() + std::string(" extension should not be supported, can't test"));
+        CORRADE_SKIP(Extensions::ARB::ES2_compatibility::string() << "should not be supported, can't test.");
 
     /* No assertions should be fired */
     CORRADE_VERIFY(Context::current().isVersionSupported(Version::GLES200));
@@ -475,13 +475,13 @@ void ContextGLTest::supportedVersion() {
 void ContextGLTest::isExtensionSupported() {
     #ifndef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::GREMEDY::string_marker>())
-        CORRADE_SKIP(Extensions::GREMEDY::string_marker::string() + std::string(" extension should not be supported, can't test"));
+        CORRADE_SKIP(Extensions::GREMEDY::string_marker::string() << "should not be supported, can't test.");
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>())
-        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() + std::string(" extension should be supported, can't test"));
+        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() << "should be supported, can't test.");
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>())
-        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() << "should be supported, can't test.");
 
     /* Test that we have proper extension list parser */
     Containers::Array<Containers::StringView> extensions = Context::current().extensionStrings();
@@ -501,10 +501,10 @@ void ContextGLTest::isExtensionSupported() {
 void ContextGLTest::isExtensionDisabled() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
-        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() << "should be supported, can't test.");
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>())
-        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() << "should be supported, can't test.");
 
     /* This is not disabled anywhere */
     CORRADE_VERIFY(!Context::current().isExtensionDisabled<Extensions::ARB::vertex_array_object>());

@@ -544,7 +544,7 @@ void MeshVisualizerGLTest::construct2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -586,7 +586,7 @@ void MeshVisualizerGLTest::construct3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -626,10 +626,10 @@ void MeshVisualizerGLTest::construct3D() {
 void MeshVisualizerGLTest::constructWireframeGeometryShader2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -654,10 +654,10 @@ void MeshVisualizerGLTest::constructGeometryShader3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -713,10 +713,10 @@ void MeshVisualizerGLTest::construct3DGeometryShaderDisabledButNeeded() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
@@ -733,10 +733,10 @@ void MeshVisualizerGLTest::construct3DConflictingBitangentInput() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
@@ -900,10 +900,10 @@ void MeshVisualizerGLTest::setTangentBitangentNormalNotEnabled3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     std::ostringstream out;
@@ -961,10 +961,10 @@ void MeshVisualizerGLTest::renderTeardown() {
 void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1010,10 +1010,10 @@ void MeshVisualizerGLTest::renderDefaultsWireframe2D() {
 void MeshVisualizerGLTest::renderDefaultsWireframe3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1064,7 +1064,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Configure a texture with preset filtering and wrapping. The goal here is
@@ -1113,7 +1113,7 @@ void MeshVisualizerGLTest::renderDefaultsObjectId3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Configure a texture with preset filtering and wrapping. The goal here is
@@ -1308,10 +1308,10 @@ void MeshVisualizerGLTest::renderDefaultsPrimitiveId3D() {
 void MeshVisualizerGLTest::renderDefaultsTangentBitangentNormal() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(4, 8,
@@ -1347,10 +1347,10 @@ void MeshVisualizerGLTest::renderWireframe2D() {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!(data.flags & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1439,10 +1439,10 @@ void MeshVisualizerGLTest::renderWireframe3D() {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!(data.flags & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1539,7 +1539,7 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags2D & MeshVisualizer2D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
@@ -1558,10 +1558,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId2D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(data.flags2D & MeshVisualizer2D::Flag::Wireframe && !(data.flags2D & MeshVisualizer2D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
     #endif
 
@@ -1639,7 +1639,7 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if((data.flags3D & MeshVisualizer3D::Flag::InstancedObjectId) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
-        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::gpu_shader4::string() << "is not supported.");
     #endif
 
     /* Interestingly for PrimitiveIdFromVertexId gl_VertexID in SwiftShader
@@ -1658,10 +1658,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(data.flags3D & MeshVisualizer3D::Flag::Wireframe && !(data.flags3D & MeshVisualizer3D::Flag::NoGeometryShader) && !GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
     #endif
 
@@ -1746,10 +1746,10 @@ void MeshVisualizerGLTest::renderObjectVertexPrimitiveId3D() {
 void MeshVisualizerGLTest::renderWireframe3DPerspective() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Mesh plane = MeshTools::compile(Primitives::planeSolid());
@@ -1790,10 +1790,10 @@ void MeshVisualizerGLTest::renderTangentBitangentNormal() {
 
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
-        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() << "is not supported.");
     #else
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
-        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() << "is not supported.");
     #endif
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
