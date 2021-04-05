@@ -142,6 +142,8 @@ keeping a loaded file in scope until it's consumed by the @ref Shader
 constructor:
 
 @snippet MagnumVk.cpp Shader-creation
+
+@see @ref CORRADE_INTERNAL_ASSERT_EXPRESSION()
 */
 class MAGNUM_VK_EXPORT Shader {
     public:
