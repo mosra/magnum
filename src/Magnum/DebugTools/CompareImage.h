@@ -200,14 +200,26 @@ template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareIm
 namespace Magnum { namespace DebugTools {
 
 /**
-@brief Image comparator
+@brief Image comparator for @ref Corrade::TestSuite
 
-To be used with @ref Corrade::TestSuite. Basic use is really simple:
+The simplest way to use the comparator is by passing it to
+@ref CORRADE_COMPARE_AS() along with an actual and expected image, as shown
+below. That will compare image sizes, pixel formats and pixel data for equality
+taking into account pixel storage parameters of each image, without requiring
+you to manually go through all relevant properties and looping over pixel data:
 
-@snippet debugtools-compareimage.cpp 0
+@snippet debugtools-compareimage.cpp basic
 
 @note For comparing image files, there are also @ref CompareImageFile,
     @ref CompareImageToFile and @ref CompareFileToImage variants.
+
+Where the comparator actually shines, however, is comparing with some delta ---
+since images produced by real-world hardware, algorithms and lossy compression
+schemes are rarely exactly bit-equal. Using @ref CORRADE_COMPARE_WITH() instead
+to be able to pass parameters to the constructor, it takes a max delta for a
+single pixel and mean delta averaged over all pixels:
+
+@snippet debugtools-compareimage.cpp delta
 
 Based on actual images used, in case of comparison failure the comparator can
 give for example the following output:
