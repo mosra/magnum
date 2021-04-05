@@ -1190,7 +1190,7 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
 }
 
 void CompareImageTest::imageFileActualIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1213,7 +1213,7 @@ void CompareImageTest::imageFileActualIsCompressed() {
 }
 
 void CompareImageTest::imageFileExpectedIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
         CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1389,7 +1389,7 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
 }
 
 void CompareImageTest::imageToFileExpectedIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
@@ -1528,7 +1528,7 @@ void CompareImageTest::fileToImageActualLoadFailed() {
 }
 
 void CompareImageTest::fileToImageActualIsCompressed() {
-    PluginManager::Manager<Trade::AbstractImporter> manager;
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_INSTALL_DIR};
     if(manager.load("AnyImageImporter") < PluginManager::LoadState::Loaded ||
        manager.load("DdsImporter") < PluginManager::LoadState::Loaded)
             CORRADE_SKIP("AnyImageImporter or DdsImporter plugins can't be loaded.");
